@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p />
+    <w:p><w:r><w:t xml:space="preserve">  Hello &amp; բարև 🌍  </w:t><w:tab/><w:t>column</w:t><w:br/><w:t>next line</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Last paragraph.</w:t></w:r></w:p>
+    <w:p />
+  </w:body>
+</w:document>

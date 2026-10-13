@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <RootNamespace>WordNet.Tests.Android</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>false</IsTestProject>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <ApplicationId>org.wordnet.validation</ApplicationId>
+    <ApplicationTitle>wordnet validation</ApplicationTitle>
+    <RuntimeIdentifier>android-arm64</RuntimeIdentifier>
+    <AndroidPackageFormats>apk</AndroidPackageFormats>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <!-- Reflection discovers the desktop tests; this harness does not qualify trimming/AOT. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <NuGetLockFilePath Condition="'$(WordnetPackageVersion)' != ''">obj/packaged/packages.lock.json</NuGetLockFilePath>
+    <!-- Kept outside the default solution so desktop builds do not need mobile workloads. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
+    <PackageReference Include="wordnet" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
+    <PackageReference Include="DocumentFormat.OpenXml" PrivateAssets="all" Publish="true" />
+    <!-- This app supplies its own runner/entry point; use v3 attributes and assertions. -->
+    <PackageReference Include="xunit.v3.extensibility.core" PrivateAssets="all" Publish="true" />
+    <PackageReference Include="xunit.v3.assert" PrivateAssets="all" Publish="true" />
+    <Compile Include="../wordnet.Conversion.Tests/*.cs" Link="SharedTests/%(Filename)%(Extension)" />
+    <AndroidAsset Include="../wordnet.Conversion.Tests/Fixtures/**/*" Link="Fixtures/%(RecursiveDir)%(Filename)%(Extension)" />
+    <AndroidAsset Include="../../artifacts/ocr/tessdata/eng.traineddata" Link="tessdata/eng.traineddata" />
+    <AndroidNativeLibrary Include="../../artifacts/android-native/jni/arm64-v8a/*.so" Abi="arm64-v8a" />
+  </ItemGroup>
+  <Target Name="RequireOcrPrerequisites" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('../../artifacts/android-native/jni/arm64-v8a/libtesseract.so')" Text="Run eng/prepare-android-tests.ps1 before building the device test app." />
+    <Error Condition="!Exists('../../artifacts/ocr/tessdata/eng.traineddata')" Text="Run eng/prepare-android-tests.ps1 before building the device test app." />
+  </Target>
+</Project>

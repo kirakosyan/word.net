@@ -1,0 +1,70 @@
+name: Build, test, and pack
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  desktop:
+    name: ${{ matrix.os }} / .NET 8 and 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-11-arm, ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+          dotnet-version: 8.0.x
+      - name: Restore pinned dependencies
+        run: dotnet restore wordnet.sln --locked-mode
+      - name: Install Linux OCR prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y libtesseract5 libfontconfig1 fontconfig
+          mkdir -p ~/.local/share/fonts/wordnet
+          cp src/wordnet/Resources/Fonts/*.ttf ~/.local/share/fonts/wordnet/
+          fc-cache -f
+      - name: Provision pinned English OCR data and test library
+        shell: pwsh
+        run: ./eng/prepare-ocr-tests.ps1 -Architecture ('${{ runner.arch }}'.ToLowerInvariant())
+      - name: Build all library and desktop test targets
+        run: dotnet build wordnet.sln --configuration Release --no-restore
+      - name: Run .NET 8 conversion and robustness tests
+        run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net8.0 --no-build --no-restore --logger "trx;LogFileName=net8.trx" --results-directory artifacts/test-results
+      - name: Run .NET 10 conversion and robustness tests
+        run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net10.0 --no-build --no-restore --logger "trx;LogFileName=net10.trx" --results-directory artifacts/test-results
+      - name: Run .NET Framework conversion and robustness tests
+        if: runner.os == 'Windows' && runner.arch == 'X64'
+        run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net472 --no-build --no-restore --logger "trx;LogFileName=net472.trx" --results-directory artifacts/test-results
+      - name: Check formatting
+        if: matrix.os == 'ubuntu-24.04'
+        run: dotnet format wordnet.sln --verify-no-changes --no-restore
+      - name: Pack and validate framework API compatibility
+        if: matrix.os == 'ubuntu-24.04'
+        run: dotnet pack src/wordnet/wordnet.csproj --configuration Release --no-build --no-restore --output artifacts/packages
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: tests-${{ matrix.os }}
+          path: artifacts/test-results/*.trx
+          if-no-files-found: warn
+      - name: Upload local prerelease packages
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: nuget-packages
+          path: artifacts/packages/*.*nupkg
+          if-no-files-found: error
