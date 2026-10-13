@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory = $true)][string]$AdbPath,
     [string]$Serial,
     [string]$ResultsPath,
-    [int]$TimeoutSeconds = 300
+    [int]$TimeoutSeconds = 300,
+    [ValidateRange(0, 100)][int]$RequiredApiLevel = 0
 )
 $ErrorActionPreference = 'Stop'
 if (-not $ResultsPath) { $ResultsPath = Join-Path $PSScriptRoot '../artifacts/test-results/android-arm64/results.xml' }
@@ -17,6 +18,10 @@ function Invoke-Adb([string[]]$Arguments) {
 }
 $apk = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../tests/wordnet.Android.Compatibility/bin/Release/net10.0-android/android-arm64/org.wordnet.validation-Signed.apk'))
 if (-not (Test-Path -LiteralPath $apk)) { throw 'Build the Android test app with -c Release -t:SignAndroidPackage first.' }
+$api = ((Invoke-Adb @('shell', 'getprop', 'ro.build.version.sdk')) -join '').Trim()
+$abi = ((Invoke-Adb @('shell', 'getprop', 'ro.product.cpu.abilist')) -join '').Trim()
+if ($abi -notmatch '(^|,)arm64-v8a(,|$)') { throw "Android qualification requires ARM64; connected ABI list is $abi." }
+if ($RequiredApiLevel -and $api -ne [string]$RequiredApiLevel) { throw "Expected Android API $RequiredApiLevel, but $Serial reports API $api." }
 Invoke-Adb @('install', '--no-incremental', '-r', $apk)
 Invoke-Adb @('shell', 'am', 'force-stop', 'org.wordnet.validation')
 # Remove only this harness's previous report so a stale pass cannot satisfy a new run.

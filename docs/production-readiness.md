@@ -43,6 +43,9 @@ The returned standalone-bundle results from an additional Windows x64 PC pass al
 301 cases with no failures/skips in 15.08 seconds. Assembly hashes and case names match
 the supplied bundle. Its Framework release key is 533509 (4.8.1), so the actual 4.7.2
 gate remains open. Report hashes are recorded in [testing](testing.md).
+The [minimum-runtime runbook](minimum-runtime-qualification.md) provides a Windows
+Server 2019 Docker VM setup for an x64 test PC and an isolated API 21 ARM64 emulator
+probe. These setup tools preserve the gates until actual complete reports pass.
 
 ## Measurements and limits
 
