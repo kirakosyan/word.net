@@ -21,6 +21,7 @@ Invoke-Adb @('install', '--no-incremental', '-r', $apk)
 Invoke-Adb @('shell', 'am', 'force-stop', 'org.wordnet.validation')
 # Remove only this harness's previous report so a stale pass cannot satisfy a new run.
 Invoke-Adb @('shell', 'run-as', 'org.wordnet.validation', 'rm', '-f', 'files/results.xml')
+Invoke-Adb @('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP')
 Invoke-Adb @('shell', 'am', 'start', '-W', '-n', 'org.wordnet.validation/org.wordnet.validation.MainActivity')
 $timer = [Diagnostics.Stopwatch]::StartNew()
 while ($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
@@ -32,7 +33,8 @@ while ($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
         [IO.File]::WriteAllText($path, $report, [Text.UTF8Encoding]::new($false))
         $suite = ([xml]$report).testsuite
         Write-Output "Android: $($suite.tests) tests, $($suite.failures) failures, $($suite.skipped) skipped. Report: $path"
-        if ([int]$suite.tests -lt 236 -or [int]$suite.failures -ne 0 -or [int]$suite.skipped -ne 0) { throw 'Android qualification failed; inspect the report.' }
+        $required = [int](Get-Content -LiteralPath (Join-Path $PSScriptRoot 'required-tests.txt') -Raw)
+        if ([int]$suite.tests -lt $required -or [int]$suite.failures -ne 0 -or [int]$suite.skipped -ne 0) { throw 'Android qualification failed; inspect the report.' }
         exit 0
     }
     Start-Sleep -Seconds 2

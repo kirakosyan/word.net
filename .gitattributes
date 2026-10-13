@@ -5,6 +5,8 @@
 *.json text eol=lf
 *.yml text eol=lf
 *.md text eol=lf
+*.sh text eol=lf
+*.Dockerfile text eol=lf
 *.sln text eol=crlf
 *.doc binary
 *.docx binary
@@ -14,3 +16,4 @@
 *.azw3 binary
 *.xps binary
 *.png binary
+*.tif binary

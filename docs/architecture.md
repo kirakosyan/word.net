@@ -11,7 +11,7 @@ All targets retain matching APIs:
 ```mermaid
 flowchart LR
     A[Bounded input] --> B[Format reader]
-    B --> C[Styled runs, lists, images and simple tables]
+    B --> C[Sections, paragraphs, runs, lists, images and tables]
     C --> D[Format writer]
     D --> E[Bounded staging]
     E --> F[Caller stream]
@@ -41,8 +41,9 @@ are immutable; provider types stay outside the public API.
 | XPS | Own XPS 2005 package relationships, glyph positions and embedded fonts |
 
 The model carries absolute font sizes/RGB colors, decimal/bullet lists, inline PNG/JPEG
-with physical dimensions, table/cell widths and per-side padding. It has no section
-geometry, advanced numbering, revisions or editable charts/equations yet. Detected
+with physical dimensions, section geometry, paragraph spacing/indentation/pagination,
+multi-paragraph cells, spans, repeating headers and row controls. It has no advanced
+numbering, revisions or editable charts/equations yet. Detected
 losses are diagnosed. See the [fidelity profile](document-fidelity.md).
 DOCX bold/italic style inheritance follows published toggle semantics; direct values
 are absolute. Sources include [WordprocessingML properties](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.bold),
@@ -53,7 +54,7 @@ are absolute. Sources include [WordprocessingML properties](https://learn.micros
 
 ## Layout and OCR
 
-Shared A4 layout uses pinned Noto Sans, font advances, wrapping, pagination, headings
+Shared layout uses section geometry (A4 when unspecified), pinned Noto Sans, font advances, wrapping, pagination, headings
 and absolute table/cell widths and padding (equal-width fallback). Mixed font sizes and
 images determine line height; dimensions are preserved or oversized content fails.
 Left/center/right alignment is applied independently to
@@ -61,8 +62,10 @@ each measured line, including table cells; trailing spaces do not shift visible 
 The model carries physical alignment through Word and ebook adapters. DOCX document
 defaults, based-on styles and direct overrides resolve before writing. Markdown supports
 column alignment but diagnoses aligned prose or conflicting alignment within a column.
-Missing glyphs, unsupported shaping and oversized
-table rows fail. Faithful original pagination and richer typography remain unfinished.
+Missing glyphs and unsupported shaping fail. Ordinary long table rows split between
+lines and repeat headers. Non-splitting rows and vertically merged groups must fit a page.
+Keep chains have bounded lookahead; unsupported keep-with-table controls report loss.
+Faithful original pagination and richer typography remain unfinished.
 
 PDF import always reports reconstruction loss. Digital text becomes editable paragraphs.
 With OCR configured, image-only pages and pages with an image occupying at least half
@@ -77,6 +80,11 @@ lifetime, preventing unload while native dependencies retain workers or thread-l
 Each call owns and releases its engine and image/text buffers. Local English data/native
 dependencies are explicitly provisioned.
 Recognition returns English printed paragraphs, not handwriting or reconstructed tables.
+Wide uninterrupted gutters can reorder two columns down the left column then the right.
+The optional `CorrectOrientation` overload tries right-angle rotation and up to five degrees
+of skew correction using bounded dark-pixel projection scoring. Selection compares OCR
+confidence, so preprocessing remains opt-in and requires output review. Existing constructor
+signatures and default correction-disabled behavior are preserved.
 Confidence diagnostics average the per-page mean confidences across all OCR pages and
 include the page count; they are information, not an accuracy guarantee. Whole-page OCR
 reports image loss and replacement of existing digital text separately from reconstruction.
@@ -107,8 +115,9 @@ Parsing/loss/validation failures leave caller output untouched; final-copy cance
 I/O errors can leave partial data.
 
 Async paths perform async I/O without hidden worker threads. Parser, rasterizer and
-native recognition calls execute synchronously. Cancellation checks surround operations;
-they cannot interrupt native recognition mid-call. Hard deadlines require host isolation.
+native recognition calls execute synchronously. Tesseract's progress monitor receives the
+cancellation token during recognition. Other parser/rasterizer/native setup operations may
+not cooperate promptly. Hard deadlines require [host isolation](hosting.md).
 
 ## Deployment
 

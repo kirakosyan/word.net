@@ -7,7 +7,22 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
-        var paragraphs = model.Blocks.SelectMany(b => b is ParagraphBlock p ? new[] { p } : ((TableBlock)b).Rows.SelectMany(r => r)).ToArray();
+        foreach (TableBlock table in model.Blocks.OfType<TableBlock>()) TableValidation.Validate(table, context);
+        var paragraphs = model.Paragraphs.ToArray();
+        if (format is DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Mobi or DocumentFormat.Azw3)
+        {
+            if (model.Blocks.OfType<TableBlock>().SelectMany(t => t.Rows).SelectMany(r => r).Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None))
+                context.Loss("Table.Merges", "Merged-cell geometry is not preserved by this output profile.");
+        }
+        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+        {
+            if (model.FinalSection != null || model.Blocks.Any(b => b.Section != null))
+                context.Loss("Layout.Sections", "Page geometry and section breaks are not preserved by this reflowable output profile.");
+            if (paragraphs.Any(p => p.Layout.HasValues))
+                context.Loss("Layout.Paragraph", "Paragraph spacing, indentation and pagination controls are not preserved by this output profile.");
+            if (model.Blocks.OfType<TableBlock>().Any(t => t.NonSplittingRows.Count > 0))
+                context.Loss("Table.Pagination", "Non-splitting table-row controls are not preserved by this reflowable output profile.");
+        }
         if (format is DocumentFormat.Text or DocumentFormat.Markdown)
         {
             if (paragraphs.Any(p => p.Runs.Any(r => r.FontSize.HasValue || r.Color != null)))

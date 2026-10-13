@@ -17,6 +17,7 @@ internal sealed partial class DocxReader
     private readonly Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
     private string? defaultStyle;
     private ParagraphAlignment defaultAlignment;
+    private ParagraphLayout defaultLayout = new ParagraphLayout();
     private TextStyle defaultRun = new TextStyle();
 
     private DocxReader(ConversionContext context, Dictionary<string, XElement> relationships)
@@ -85,6 +86,9 @@ internal sealed partial class DocxReader
 
         var document = new DocumentModel();
         reader.ReadBlocks(bodies[0], document.Blocks);
+        if (reader.sectionCount > 0 && bodies[0].Element(W + "sectPr") == null)
+            reader.EndSection(new XElement(W + "sectPr"), document.Blocks);
+        document.FinalSection = reader.finalSection;
         if (package.PartNames.Any(name => !knownParts.Contains(name)))
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         return document;
@@ -126,6 +130,7 @@ internal sealed partial class DocxReader
         var defaults = new TextStyle();
         ReadParagraphProperties(root.Element(W + "docDefaults")?.Element(W + "pPrDefault")?.Element(W + "pPr"), defaults);
         defaultAlignment = defaults.Alignment;
+        defaultLayout = defaults.Layout.Copy();
         ReadRunProperties(root.Element(W + "docDefaults")?.Element(W + "rPrDefault")?.Element(W + "rPr"), defaultRun);
 
         foreach (XElement style in root.Elements(W + "style"))
@@ -152,6 +157,7 @@ internal sealed partial class DocxReader
             if (element.Name == W + "p")
             {
                 blocks.Add(ReadParagraph(element));
+                if (element.Element(W + "pPr")?.Element(W + "sectPr") is XElement section) EndSection(section, blocks, paragraphBoundary: true);
             }
             else if (element.Name == W + "tbl")
             {
@@ -159,10 +165,7 @@ internal sealed partial class DocxReader
             }
             else if (element.Name == W + "sectPr")
             {
-                if (element.HasElements)
-                {
-                    context.Loss("Docx.PageLayout", "Section geometry, headers and page layout are not retained by the current document model.");
-                }
+                EndSection(element, blocks);
             }
             else
             {
@@ -186,7 +189,7 @@ internal sealed partial class DocxReader
         }
 
         ReadParagraphProperties(properties, style);
-        var paragraph = new ParagraphBlock { HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = ResolveList(style) };
+        var paragraph = new ParagraphBlock { HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = ResolveList(style), Layout = style.Layout.Copy() };
         ReadInlines(element, paragraph.Runs, style, null);
         return paragraph;
     }
@@ -276,14 +279,19 @@ internal sealed partial class DocxReader
                 continue;
             }
 
-            var cells = new List<ParagraphBlock>();
+            var cells = new List<TableCell>();
             foreach (XElement rowChild in child.Elements())
             {
                 if (rowChild.Name == W + "trPr")
                 {
                     XElement? header = rowChild.Element(W + "tblHeader");
-                    table.HasHeaderRow |= table.Rows.Count == 0 && header != null && IsOn(header);
-                    if (rowChild.Elements().Any(property => property.Name != W + "tblHeader"))
+                    if (header != null && IsOn(header))
+                    {
+                        if (table.HeaderRowCount == table.Rows.Count) table.HeaderRowCount++;
+                        else context.Loss("Docx.TableHeaders", "Noncontiguous repeating header rows are not retained.");
+                    }
+                    if (rowChild.Element(W + "cantSplit") is XElement cantSplit && IsOn(cantSplit)) table.NonSplittingRows.Add(table.Rows.Count);
+                    if (rowChild.Elements().Any(property => property.Name != W + "tblHeader" && property.Name != W + "cantSplit"))
                     {
                         context.Loss("Docx.TableFormatting", "Table row formatting is not retained.");
                     }
@@ -297,36 +305,20 @@ internal sealed partial class DocxReader
                     continue;
                 }
 
-                var cell = new ParagraphBlock();
+                var cell = new TableCell();
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
-                bool firstParagraph = true;
                 foreach (XElement content in rowChild.Elements())
                 {
                     if (content.Name == W + "tcPr") continue;
                     if (content.Name != W + "p")
                     {
-                        context.Loss("Docx.TableCell", "Cell merges, cell formatting and nested tables are not supported.");
+                        context.Loss("Docx.TableCell", "Nested tables and unsupported cell content are not retained.");
                         continue;
                     }
 
-                    if (!firstParagraph)
-                    {
-                        cell.Runs.Add(new TextRun("\n"));
-                        context.Loss("Docx.CellParagraphs", "Multiple table-cell paragraphs become line breaks.");
-                    }
-
-                    ParagraphBlock paragraph = ReadParagraph(content);
-                    if (firstParagraph) { cell.Alignment = paragraph.Alignment; cell.List = paragraph.List; }
-                    else if (paragraph.List != null) context.Loss("Docx.CellList", "Only the first cell paragraph's list membership is retained.");
-                    if (paragraph.HeadingLevel != 0 || paragraph.IsCodeBlock)
-                    {
-                        context.Loss("Docx.CellParagraphFormatting", "Heading and block-code formatting inside table cells is flattened.");
-                    }
-
-                    cell.Runs.AddRange(paragraph.Runs);
-                    firstParagraph = false;
+                    cell.Paragraphs.Add(ReadParagraph(content));
                 }
-
+                if (cell.Paragraphs.Count == 0) cell.Paragraphs.Add(new ParagraphBlock());
                 cells.Add(cell);
             }
 
@@ -340,7 +332,7 @@ internal sealed partial class DocxReader
     {
         if (id == null)
         {
-            TextStyle initial = characterStyle ? new TextStyle() : defaultRun.Copy(); initial.Alignment = defaultAlignment; return initial;
+            TextStyle initial = characterStyle ? new TextStyle() : defaultRun.Copy(); initial.Alignment = defaultAlignment; initial.Layout = defaultLayout.Copy(); return initial;
         }
 
         if (!visiting.Add(id) || visiting.Count > context.Options.MaximumNestingDepth)
@@ -351,7 +343,7 @@ internal sealed partial class DocxReader
         if (!styles.TryGetValue(id, out XElement? element))
         {
             context.Loss("Docx.MissingStyle", "A referenced style is missing; default text formatting is used.");
-            TextStyle initial = characterStyle ? new TextStyle() : defaultRun.Copy(); initial.Alignment = defaultAlignment; return initial;
+            TextStyle initial = characterStyle ? new TextStyle() : defaultRun.Copy(); initial.Alignment = defaultAlignment; initial.Layout = defaultLayout.Copy(); return initial;
         }
 
         TextStyle style = ResolveStyle((string?)element.Element(W + "basedOn")?.Attribute(W + "val"), visiting, characterStyle);
@@ -414,7 +406,8 @@ internal sealed partial class DocxReader
                 if (property.Element(W + "ilvl") is XElement lvl) style.ListLevel = Integer(lvl, W + "val", 0, 8);
                 if (property.Elements().Any(e => e.Name != W + "numId" && e.Name != W + "ilvl")) context.Loss("Docx.ListRevision", "Numbering revisions are not retained.");
             }
-            else if (property.Name != W + "pStyle")
+            else if (ReadLayoutProperty(property, style.Layout)) { }
+            else if (property.Name != W + "pStyle" && property.Name != W + "sectPr")
             {
                 context.Loss("Docx.ParagraphFormatting", "Paragraph formatting such as spacing, paragraph-mark styling or page controls is not retained.");
             }
@@ -498,7 +491,13 @@ internal sealed partial class DocxReader
         internal bool HasColor { get; set; }
         internal int ListId { get; set; }
         internal int ListLevel { get; set; }
+        internal ParagraphLayout Layout { get; set; } = new ParagraphLayout();
 
-        internal TextStyle Copy() => (TextStyle)MemberwiseClone();
+        internal TextStyle Copy()
+        {
+            var copy = (TextStyle)MemberwiseClone();
+            copy.Layout = Layout.Copy();
+            return copy;
+        }
     }
 }

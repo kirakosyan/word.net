@@ -25,12 +25,12 @@ internal static class PdfFormat
         foreach (FixedPage page in pages)
         {
             context.CheckCancellation();
-            PdfPageBuilder target = builder.AddPage(FixedLayout.Width, FixedLayout.Height);
+            PdfPageBuilder target = builder.AddPage(page.Settings.Width, page.Settings.Height);
             foreach (PositionedText text in page.Text)
             {
                 if (text.Image is DocumentImage image)
                 {
-                    var rectangle = new PdfRectangle(text.X, FixedLayout.Height - text.Y, text.X + image.Width, FixedLayout.Height - text.Y + image.Height);
+                    var rectangle = new PdfRectangle(text.X, page.Settings.Height - text.Y, text.X + image.Width, page.Settings.Height - text.Y + image.Height);
                     if (image.Extension == "png") target.AddPng(image.Bytes, rectangle); else target.AddJpeg(image.Bytes, rectangle);
                     if (image.AlternativeText.Length > 0) context.Loss("Pdf.ImageAlternativeText", "This PDF profile does not create accessibility tags for images.");
                 }
@@ -38,7 +38,7 @@ internal static class PdfFormat
                 {
                     string color = text.Color ?? "000000";
                     target.SetTextAndFillColor(Convert.ToByte(color.Substring(0, 2), 16), Convert.ToByte(color.Substring(2, 2), 16), Convert.ToByte(color.Substring(4, 2), 16));
-                    target.AddText(text.Text, text.Size, new PdfPoint(text.X, FixedLayout.Height - text.Y), fonts[text.Font]);
+                    target.AddText(text.Text, text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), fonts[text.Font]);
                 }
             }
         }
@@ -46,6 +46,13 @@ internal static class PdfFormat
     }
 
     internal static DocumentModel Read(Stream input, ConversionContext context)
+    {
+        try { return ReadCore(input, context); }
+        catch (PdfDocumentFormatException error)
+        { throw new InvalidDataException("Pdf.Structure: Invalid PDF structure.", error); }
+    }
+
+    private static DocumentModel ReadCore(Stream input, ConversionContext context)
     {
         using PdfDocument pdf = PdfDocument.Open(input, SkiaRenderingParsingOptions.Instance);
         if (pdf.IsEncrypted) throw new NotSupportedException("Pdf.Encryption: Encrypted PDFs are unsupported.");
@@ -55,7 +62,7 @@ internal static class PdfFormat
         for (int p = 1; p <= pdf.NumberOfPages; p++)
         {
             context.CheckCancellation();
-            var page = pdf.GetPage(p);
+            var page = ReadPage(pdf, p);
             string text = ContentOrderTextExtractor.GetText(page);
             bool images = page.NumberOfImages > 0;
             var embeddedImages = page.GetImages().ToArray();
@@ -117,5 +124,15 @@ internal static class PdfFormat
             result.Blocks.AddRange(content.Blocks);
         }
         return result;
+    }
+
+    private static UglyToad.PdfPig.Content.Page ReadPage(PdfDocument pdf, int page)
+    {
+        try { return pdf.GetPage(page); }
+        // Malformed indirect font dictionaries/stream delimiters can currently make
+        // PdfPig throw these implementation exceptions. Keep this guard at the provider
+        // call so defects in our own mapping code are not mistaken for invalid input.
+        catch (Exception error) when (error is NullReferenceException or IndexOutOfRangeException)
+        { throw new InvalidDataException("Pdf.Resources: Invalid page resource or stream structure.", error); }
     }
 }

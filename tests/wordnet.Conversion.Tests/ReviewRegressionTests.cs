@@ -129,7 +129,7 @@ public sealed partial class ReviewRegressionTests
     }
 
     [Fact]
-    public void StrictDocxImportAcceptsDocumentMetadataButRejectsRealGeometryLoss()
+    public void StrictDocxImportAcceptsMetadataAndGeometryButRejectsHeaderLoss()
     {
         string roots = "<Relationships xmlns='" + TestDocuments.PackageR + "'><Relationship Id='main' Type='" + TestDocuments.R + "/officeDocument' Target='word/document.xml'/>"
             + "<Relationship Id='core' Type='http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties' Target='docProps/core.xml'/></Relationships>";
@@ -138,7 +138,13 @@ public sealed partial class ReviewRegressionTests
         Assert.Equal("Content", Encoding.UTF8.GetString(Convert(input, DocumentFormat.Docx, DocumentFormat.Text, out ConversionResult report, new ConversionOptions())));
         Assert.Contains(report.Diagnostics, d => d.Code == "Docx.AuxiliaryMetadata");
         byte[] geometry = TestDocuments.Docx(TestDocuments.Body(TestDocuments.TextParagraph("Content") + "<w:sectPr><w:pgSz w:w='15840' w:h='12240'/></w:sectPr>"));
-        AssertStrictFailure(geometry, DocumentFormat.Docx, DocumentFormat.Pdf);
+        using (UglyToad.PdfPig.PdfDocument pdf = UglyToad.PdfPig.PdfDocument.Open(Convert(geometry, DocumentFormat.Docx, DocumentFormat.Pdf, out _, new ConversionOptions())))
+        {
+            Assert.Equal(792, pdf.GetPage(1).Width);
+            Assert.Equal(612, pdf.GetPage(1).Height);
+        }
+        byte[] header = TestDocuments.Docx(TestDocuments.Body(TestDocuments.TextParagraph("Content") + "<w:sectPr><w:titlePg/></w:sectPr>"));
+        AssertStrictFailure(header, DocumentFormat.Docx, DocumentFormat.Pdf);
     }
 
     [Theory]

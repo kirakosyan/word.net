@@ -24,17 +24,31 @@ internal static partial class DocFormat
         var text = new StringBuilder();
         var characters = new List<WriteRun>();
         var paragraphs = new List<WriteRun>();
+        var sections = new List<(int Start, PageSettings Settings)>();
+        PageSettings? previousSection = null;
         using var data = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
-        var lists = model.Blocks.SelectMany(block => block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(r => r))
+        var lists = model.Paragraphs
             .Where(p => p.List != null).Select(p => p.List!).GroupBy(l => l.Id).ToList();
         if (lists.Count > 2046) throw new NotSupportedException("Doc.ListCount: Too many numbering instances.");
         TableBlock? activeTable = null;
-        List<ParagraphBlock>? activeRow = null;
+        List<TableCell>? activeRow = null;
+        bool cantSplit = false;
         int imageId = 1024;
         bool previousTable = false;
         foreach (DocumentBlock block in model.Blocks)
         {
             context.CheckCancellation();
+            if (sections.Count == 0 || !ReferenceEquals(previousSection, block.Section))
+            {
+                if (text.Length > 0)
+                {
+                    if (previousTable) AddParagraph(new ParagraphBlock(), '\f', false, false, 0, false);
+                    else text[text.Length - 1] = '\f';
+                }
+                sections.Add((text.Length, block.Section ?? new PageSettings()));
+                previousSection = block.Section;
+                previousTable = false;
+            }
             if (block is ParagraphBlock paragraph)
             {
                 AddParagraph(paragraph, '\r', false, false, 0, false);
@@ -50,11 +64,14 @@ internal static partial class DocFormat
                 }
                 for (int r = 0; r < table.Rows.Count; r++)
                 {
-                    List<ParagraphBlock> row = table.Rows[r];
+                    List<TableCell> row = table.Rows[r];
                     activeRow = row;
+                    cantSplit = table.NonSplittingRows.Contains(r);
                     if (row.Count is < 1 or > 63) throw new NotSupportedException("Doc.TableColumns: DOC rows require between one and 63 cells.");
-                    bool header = r == 0 && table.HasHeaderRow;
-                    foreach (ParagraphBlock cell in row) AddParagraph(cell, '\u0007', true, false, 0, header);
+                    bool header = r < table.HeaderRowCount;
+                    foreach (TableCell cell in row)
+                        for (int p = 0; p < cell.Paragraphs.Count; p++)
+                            AddParagraph(cell.Paragraphs[p], p == cell.Paragraphs.Count - 1 ? '\u0007' : '\r', true, false, 0, header);
                     AddParagraph(new ParagraphBlock(), '\u0007', true, true, row.Count, header);
                 }
                 previousTable = true;
@@ -62,13 +79,22 @@ internal static partial class DocFormat
         }
         // MS-DOC requires the main story to end in a paragraph, outside any table.
         if (text.Length == 0 || previousTable) AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+        if (sections.Count == 0) sections.Add((0, model.FinalSection ?? new PageSettings()));
+        else if (model.FinalSection != null && !ReferenceEquals(previousSection, model.FinalSection))
+        {
+            text[text.Length - 1] = '\f';
+            sections.Add((text.Length, model.FinalSection));
+            AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+        }
         context.CheckCharacters(text.Length);
         byte[] encoded = Unicode.GetBytes(text.ToString());
         int textEnd = checked(TextOffset + encoded.Length);
         int firstPage = checked((textEnd + 511) / 512);
         List<byte[]> chpx = BuildPages(characters, false, context);
         List<byte[]> papx = BuildPages(paragraphs, true, context);
-        byte[] word = new byte[checked((firstPage + chpx.Count + papx.Count) * 512)];
+        int sectionOffset = checked((firstPage + chpx.Count + papx.Count) * 512);
+        byte[][] sectionProperties = sections.Select(s => SectionProperties(s.Settings)).ToArray();
+        byte[] word = new byte[checked(sectionOffset + sectionProperties.Sum(p => p.Length + 2))];
         W16(word, 0, 0xa5ec); W16(word, 2, 0xc1); W16(word, 6, 0x409); W16(word, 10, 0x1200); W16(word, 12, 0xbf);
         W32(word, 24, TextOffset); W32(word, 28, textEnd); W16(word, 32, 14); W16(word, 62, 22);
         W32(word, 64, word.Length); W32(word, 76, text.Length); W16(word, 152, 93);
@@ -78,7 +104,17 @@ internal static partial class DocFormat
 
         using var tableStream = new MemoryStream();
         Add(1, WriteStyles());
-        byte[] sed = new byte[20]; W32(sed, 4, text.Length); W32(sed, 10, -1); W32(sed, 16, -1); Add(6, sed);
+        byte[] sed = new byte[4 + sections.Count * 16];
+        for (int i = 0; i < sections.Count; i++)
+        {
+            W32(sed, i * 4, sections[i].Start);
+            int entry = (sections.Count + 1) * 4 + i * 12;
+            W32(sed, entry + 2, sectionOffset); W32(sed, entry + 8, -1);
+            W16(word, sectionOffset, sectionProperties[i].Length);
+            Array.Copy(sectionProperties[i], 0, word, sectionOffset + 2, sectionProperties[i].Length);
+            sectionOffset += sectionProperties[i].Length + 2;
+        }
+        W32(sed, sections.Count * 4, text.Length); Add(6, sed);
         Add(12, WritePageIndex(chpx, firstPage));
         Add(13, WritePageIndex(papx, firstPage + chpx.Count));
         byte[] fontName = Unicode.GetBytes("Noto Sans\0"); byte[] fonts = new byte[44 + fontName.Length];
@@ -128,6 +164,7 @@ internal static partial class DocFormat
             var properties = new List<byte>();
             properties.Add((byte)paragraph.HeadingLevel); properties.Add(0);
             properties.AddRange(Sprm(0x2403, (int)paragraph.Alignment));
+            properties.AddRange(ParagraphProperties(paragraph.Layout));
             if (paragraph.List != null)
             {
                 properties.AddRange(Sprm(0x260a, paragraph.List.Level));
@@ -138,20 +175,28 @@ internal static partial class DocFormat
             {
                 properties.AddRange(Sprm(0x2417, 1));
                 if (header) properties.AddRange(Sprm(0x3404, 1));
+                if (cantSplit) properties.AddRange(Sprm(0x3403, 1));
                 if (activeTable!.Width is double preferredWidth)
                 {
                     byte[] preferred = new byte[5]; W16(preferred, 0, 0xf614); preferred[2] = 3;
                     W16(preferred, 3, checked((int)Math.Round(preferredWidth * 20))); properties.AddRange(preferred);
                 }
                 // TC80 is optional. Boundaries preserve absolute widths where available.
-                byte[] operand = new byte[1 + (columns + 1) * 2]; operand[0] = (byte)columns;
+                bool merged = activeRow!.Any(c => c.Merge != VerticalMerge.None);
+                int definitions = 1 + (columns + 1) * 2;
+                byte[] operand = new byte[definitions + (merged ? columns * 20 : 0)]; operand[0] = (byte)columns;
                 double edge = 0;
+                int gridColumn = 0;
                 for (int c = 0; c < columns; c++)
                 {
-                    double width = activeRow![c].CellWidth ?? (c < activeTable!.ColumnWidths.Count ? activeTable.ColumnWidths[c] : (activeTable.Width ?? 450) / columns);
+                    TableCell cell = activeRow![c];
+                    double width = cell.CellWidth ?? (gridColumn + cell.ColumnSpan <= activeTable!.ColumnWidths.Count
+                        ? activeTable.ColumnWidths.Skip(gridColumn).Take(cell.ColumnSpan).Sum() : (activeTable.Width ?? 450) * cell.ColumnSpan / activeRow.Sum(item => item.ColumnSpan));
+                    gridColumn += cell.ColumnSpan;
                     edge += width * 20;
                     if (width <= 0 || edge > 31680) throw new NotSupportedException("Doc.TableWidth: Table boundaries exceed binary Word limits.");
                     W16(operand, 1 + (c + 1) * 2, checked((int)Math.Round(edge)));
+                    if (merged) W16(operand, definitions + c * 20, cell.Merge == VerticalMerge.Start ? 0x60 : cell.Merge == VerticalMerge.Continue ? 0x20 : 0);
                 }
                 properties.Add(0x08); properties.Add(0xd6);
                 properties.Add((byte)(operand.Length + 1)); properties.Add((byte)((operand.Length + 1) >> 8)); properties.AddRange(operand);

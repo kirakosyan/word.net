@@ -125,7 +125,7 @@ jobs:
           foreach ($report in $reports) {
             [xml]$trx = Get-Content -LiteralPath $report.FullName
             $counters = $trx.TestRun.ResultSummary.Counters
-            if ([int]$counters.total -lt 236 -or $counters.passed -ne $counters.total) {
+            if ([int]$counters.total -lt [int](Get-Content eng/required-tests.txt -Raw) -or $counters.passed -ne $counters.total) {
               throw "Missing, failed or skipped tests in $($report.Name)"
             }
           }

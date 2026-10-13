@@ -14,8 +14,11 @@ OpenMcdf handles the compound container; wordnet owns the format mapping.
   overrides, including the four MS-DOC toggle operands.
 - Absolute half-point font sizes, RGB and indexed colors; simple decimal/bullet lists
   with up to nine levels and supported start overrides.
-- Simple top-level editable tables, up to 63 cells per row, and the first repeating
-  header row. Absolute preferred widths, unequal cell widths and per-side padding are
+- Next-page sections, page dimensions/orientation/margins, paragraph spacing/indents,
+  page-break-before and keep controls.
+- Top-level editable tables, up to 63 physical cells per row, and contiguous repeating
+  header rows. Multiple cell paragraphs, horizontal/vertical spans and non-splitting row
+  flags are retained. Absolute preferred widths, unequal cell widths and per-side padding are
   retained; missing geometry uses an equal-width fallback.
 - Inline PNG/JPEG encoded bytes and physical dimensions through PICF/OfficeArt BLIPs.
   See the [image profile](document-fidelity.md) for bounds and unsupported transforms.
@@ -28,13 +31,14 @@ outside tables, as required by the format. Adjacent tables need a separating par
 
 ## Explicit limits
 
-DOC import still requires `FidelityMode.BestEffort`: original page geometry, arbitrary
-typography, borders, shading and advanced properties are outside the semantic model.
+DOC import still requires `FidelityMode.BestEffort`: arbitrary typography, borders,
+shading and advanced properties are outside the semantic model.
 `Doc.Formatting` reports this on every import. Unknown properties receive additional
 grouped diagnostics. Output reports loss of code semantics and interactive hyperlinks.
 
-Merged/nested tables fail explicitly. Multiple paragraphs in a cell become line breaks
-with a diagnostic. Hidden text is omitted with a diagnostic; field display text is
+Nested tables fail explicitly. Invalid merges or content in continuation cells fail
+instead of dropping content. Dense row formatting that exceeds a DOC formatting page
+fails explicitly. Hidden text is omitted with a diagnostic; field display text is
 retained while instructions are omitted. Headers, footers, notes, comments, OLE objects
 and revisions are not preserved. Encryption is rejected. Binary output currently
 diagnoses loss of image alternative text, custom label styling and unsupported effects.
@@ -46,7 +50,7 @@ leave destination streams untouched. Bounds do not constitute a process-memory s
 ## Independent verification
 
 The test corpus includes Word 97 table files from Apache POI, a file exercising indirect
-table properties, an unsupported merged table, and plain/styled documents independently
+table properties, a merged table, and plain/styled/layout documents independently
 written by Apache POI 5.4.1. Provenance and hashes are in the fixture READMEs.
 
 `eng/DocInteropCheck.java` checks exported heading style, bold/italic runs, three table
@@ -88,3 +92,11 @@ left, center and right alignment in that order. The mapping follows the publishe
 The fidelity checker expects the synthetic blue 18-point title, a 120/240-point table,
 a decimal list starting at three with a nested bullet, and the 80×40-pixel color-grid
 image displayed at 120×60 points. It independently reads these values and image bytes.
+
+`--generate-layout` adds original paragraph geometry and margins to the Apache template.
+`--check-layout-corpus` validates exported `layout-corpus.docx` converted to DOC: two
+portrait/landscape sections, paragraph spacing/indents, a wide cell with two editable
+paragraphs, and vertical start/continuation flags. Section records and merge flags follow
+the published [section properties](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/46c3ec54-53ff-4c0a-b0d6-07ad15d2546e),
+[PlcfSed](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/68a959a6-11e0-4f3e-9a99-76ca8cc4dddc)
+and [TCGRF](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/11bf5b1c-943f-421d-bbf3-39088cd1b8dd) definitions.

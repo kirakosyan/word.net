@@ -21,6 +21,7 @@ public sealed class MainActivity : Activity
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+        Window?.AddFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn);
         var view = new TextView(this) { Text = "Running wordnet conversions and English OCR…" };
         SetContentView(view);
         _ = Task.Run(async () =>
@@ -80,7 +81,7 @@ public sealed class MainActivity : Activity
             new XDocument(report).Save(path + ".tmp"); File.Move(path + ".tmp", path, true);
             string status = $"wordnet: {total - failed}/{total} passed, {failed} failed.";
             global::Android.Util.Log.Info("wordnet-tests", status);
-            RunOnUiThread(() => view.Text = status);
+            RunOnUiThread(() => { view.Text = status; Window?.ClearFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn); });
         }).ContinueWith(task =>
         {
             // Catch failures during async state-machine loading as well as inside the suite.
@@ -88,7 +89,7 @@ public sealed class MainActivity : Activity
             var failure = new XDocument(new XElement("testsuite", new XAttribute("tests", 1), new XAttribute("failures", 1), new XAttribute("skipped", 0),
                 new XElement("testcase", new XAttribute("name", "Harness startup"), new XElement("failure", task.Exception.ToString()))));
             failure.Save(Path.Combine(FilesDir!.AbsolutePath, "results.xml"));
-            RunOnUiThread(() => view.Text = "Validation app failed to start; see results.xml.");
+            RunOnUiThread(() => { view.Text = "Validation app failed to start; see results.xml."; Window?.ClearFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn); });
         }, TaskScheduler.Default);
     }
 

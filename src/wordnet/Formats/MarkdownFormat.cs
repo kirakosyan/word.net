@@ -165,13 +165,13 @@ internal static class MarkdownFormat
         foreach (MarkdownRow row in source.Cast<MarkdownRow>())
         {
             table.HasHeaderRow |= row.IsHeader;
-            var cells = new List<ModelParagraph>();
+            var cells = new List<TableCell>();
             foreach (MarkdownCell cell in row.Cast<MarkdownCell>())
             {
                 if (cell.Count != 1 || !(cell[0] is LeafBlock leaf))
                 {
                     context.Loss("Markdown.TableCell", "Complex Markdown table cells are not supported.");
-                    cells.Add(new ModelParagraph());
+                    cells.Add(new TableCell(new ModelParagraph()));
                     continue;
                 }
 
@@ -183,7 +183,7 @@ internal static class MarkdownFormat
                         TableColumnAlign.Right => ParagraphAlignment.Right,
                         _ => ParagraphAlignment.Left,
                     };
-                cells.Add(paragraph);
+                cells.Add(new TableCell(paragraph));
             }
 
             table.Rows.Add(cells);
@@ -313,18 +313,19 @@ internal static class MarkdownFormat
 
         int columns = table.Rows.Max(row => row.Count);
         var rows = new List<string>();
-        foreach (List<ModelParagraph> row in table.Rows)
+        foreach (List<TableCell> row in table.Rows)
         {
             var cells = new List<string>();
-            foreach (ModelParagraph cell in row)
+            foreach (TableCell cell in row)
             {
                 if (cell.Text.Contains('\n'))
                 {
                     context.Loss("Markdown.TableLineBreak", "Line breaks in table cells become spaces.");
                 }
 
-                string label = cell.List == null ? "" : counter.Label(cell.List) + " ";
-                cells.Add(EscapeTablePipes(label + WriteRuns(cell, context).Replace("  \n", " ").Replace('\n', ' ')));
+                if (cell.Paragraphs.Count > 1) context.Loss("Markdown.CellParagraphs", "Multiple cell paragraphs become spaces in pipe tables.");
+                cells.Add(EscapeTablePipes(string.Join(" ", cell.Paragraphs.Select(p => (p.List == null ? "" : counter.Label(p.List) + " ")
+                    + WriteRuns(p, context).Replace("  \n", " ").Replace('\n', ' ')))));
             }
 
             while (cells.Count < columns)
@@ -344,7 +345,7 @@ internal static class MarkdownFormat
         var separators = new List<string>();
         for (int column = 0; column < columns; column++)
         {
-            ParagraphAlignment[] alignments = table.Rows.Where(row => column < row.Count).Select(row => row[column].Alignment).Distinct().ToArray();
+            ParagraphAlignment[] alignments = table.Rows.Where(row => column < row.Count).SelectMany(row => row[column].Paragraphs).Select(p => p.Alignment).Distinct().ToArray();
             if (alignments.Length > 1)
                 context.Loss("Markdown.TableAlignment", "Different alignments within a table column become the first cell's alignment.");
             separators.Add(alignments[0] switch { ParagraphAlignment.Center => ":---:", ParagraphAlignment.Right => "---:", _ => "---" });

@@ -44,9 +44,53 @@ dotnet test tests/wordnet.Conversion.Tests -c Release -f net472 --no-build --no-
 Switch setup back to ARM64 before native modern tests. Framework tests run only on
 Windows. Agents prefix commands with `rtk` per AGENTS.md.
 
-## PR review regressions — 2026-10-13
+## Production candidate — alpha.10, 2026-10-13
 
-The suite now contains **236 cases**, including all 28 directions, the four original OCR
+The shared suite now has **301 active cases**, preserving all 28 directions and original
+scanned/mixed OCR cases. New assertions cover section geometry/empty final sections,
+paragraph spacing/indent inheritance, keep controls, merged multi-paragraph tables,
+repeating headers, long-row splitting, malformed-provider regressions and runtime asset
+identity. `eng/required-tests.txt` is the common minimum used by CI and device/Framework
+runners; missing cases and skips fail qualification.
+
+`LayoutCorpusTests` compares every output glyph baseline to an independently positioned
+ReportLab reference within 0.03 points. Apache POI independently reads exported DOC
+layout/table records. Two Poppler-rendered reference-corpus pages have been visually
+inspected. The [fixture manifest](../tests/wordnet.Conversion.Tests/Fixtures/README.md)
+records producers, fixed fonts, licenses, source revisions and hashes.
+
+Eight OCR scenarios run to both DOC and DOCX: clean, rotated 90/180 degrees, skewed,
+noisy, low-resolution, two-column and an independently supplied Tesseract test scan.
+The required normalized CER is ≤3%, WER ≤8%, plus editable text and column reading order.
+The local ARM64 run records CER/WER zero for all 16 outputs; desktop TRX contains
+`OCR_METRIC` lines. This is a bounded regression corpus, not a general OCR benchmark.
+
+The new qualification tool runs 1,024 deterministic mutations in separate processes,
+four-way concurrent conversions across all 28 directions and isolated OCR memory/deadline
+checks. See [hosting](hosting.md) for commands, thresholds and limitations.
+CI repeats the campaigns on native Windows/Linux x64 and uploads JSON measurements.
+
+`eng/test-package.ps1 -Version 0.1.0-alpha.10 -Commit <full-source-sha>` verifies one
+packed artifact and runs the complete .NET 8/10 suite against it. `-IncludeFramework`
+adds Windows Framework. It then extracts that archive's `netstandard2.0` DLL and runs
+both modern suites again, with a required runtime-identity assertion. CI performs this
+on four native desktop platforms using the same package artifact. API validation compares
+all four targets and the published alpha.9 baseline. These checks do not publish a package.
+
+Local final-source Windows ARM64 .NET 8/10 and x64 Framework each pass all 301 cases.
+Framework is installed 4.8 (release 533509), not actual 4.7.2. Final CI, exact-package
+and device evidence is being collected. The preceding 296-case revision passed both
+Linux ARM64 runtimes. Actual Framework 4.7.2 and Android API 21 remain open qualification
+gates; macOS is deferred. Source reports are under `artifacts/production-tests/`.
+
+`eng/run-framework-tests.ps1` can run the complete prebuilt x64 output on another Windows
+PC without an SDK and records assembly hashes and the Framework release key. Add
+`-RequireFramework472` to enforce the actual minimum-runtime gate. See the
+[API/support policy](api-compatibility.md) for copying the runner and prerequisites.
+
+## PR review regressions — alpha.9, 2026-10-13 (prior revision)
+
+That suite contains **236 cases**, including all 28 directions, the four original OCR
 acceptance cases, and 39 review regressions. The new tests check DOC image-store records
 and nested numbering against binary field definitions, zero starts and list restarts,
 linked numbering styles and cycles, style inheritance, moved text, table-header emphasis,
@@ -291,15 +335,16 @@ it is not an independent writer fixture.
 | MOBI / AZW3 | PalmDB/MOBI headers, actual XHTML and supplemental external unpacking |
 | OCR | Exact editable English text in expected reading order on scanned/mixed fixtures |
 
-Exact OCR ground-truth matches imply zero character/word errors on these small fixtures.
-They do not measure noise, columns, tables, rotation or real-world quality. Define
-corpus-based numerical thresholds before production claims.
+The original clean fixtures use exact matching. The alpha.10 corpus additionally measures
+noise, columns, skew and rotation against numerical CER/WER thresholds. Complex tables,
+forms and arbitrary real-world scan quality remain outside this qualification.
 
 ## Further qualification
 
 Current regressions cover ZIP limits/paths/duplicates, XML entities/depth, encryption,
 corrupt DOC/Kindle offsets, truncation, unsupported styling, resource limits, glyphs
-and cancellation. Native OCR checks cancellation before/after the uninterruptible call.
+and cancellation. Native recognition receives cancellation through Tesseract's progress
+monitor; initialization, rasterization and other provider calls can still require a host deadline.
 
 Expand the corpus for images/styles/sections/lists, metadata, Unicode/shaping, noisy OCR
 and independent ebook producers. Pin fonts/renderers and numerical tolerances.

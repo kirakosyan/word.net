@@ -101,11 +101,15 @@ public sealed class DocFormattingTests
     }
 
     [Fact]
-    public void RejectsMergedTablesExplicitly()
+    public void ImportsIndependentMergedTableContentAndHorizontalGeometry()
     {
         using var input = new MemoryStream(Fixture("apache-poi/table-merges.doc")); using var output = new MemoryStream();
-        Assert.Throws<NotSupportedException>(() => converter.Convert(input, output, DocumentFormat.Doc, DocumentFormat.Docx, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken));
-        Assert.Equal(0, output.Length);
+        converter.Convert(input, output, DocumentFormat.Doc, DocumentFormat.Docx, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+        using WordprocessingDocument document = Open(output.ToArray());
+        W.Table table = Assert.Single(document.MainDocumentPart!.Document!.Body!.Elements<W.Table>());
+        Assert.Equal("ABCDEFGHIJK", table.InnerText);
+        Assert.Equal(4, table.Elements<W.TableRow>().Count());
+        Assert.Equal(5, table.Elements<W.TableRow>().Last().Elements<W.TableCell>().Single().TableCellProperties!.GridSpan!.Val!.Value);
     }
 
     [Fact]

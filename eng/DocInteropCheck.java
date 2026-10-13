@@ -5,6 +5,57 @@ import org.apache.poi.hwpf.usermodel.*;
 /** Optional independent DOC validation with Apache POI 5.4.1; never a library dependency. */
 public class DocInteropCheck {
     public static void main(String[] args) throws Exception {
+        if (args.length == 2 && args[0].equals("--check-layout-corpus")) {
+            try (HWPFDocument doc = new HWPFDocument(new FileInputStream(args[1]))) {
+                Range range = doc.getRange();
+                require(range.numSections() == 2, "Two sections");
+                require(range.getSection(0).getPageWidth() == 12240 && range.getSection(0).getPageHeight() == 15840, "Portrait geometry");
+                require(range.getSection(1).getPageWidth() == 15840 && range.getSection(1).getPageHeight() == 12240, "Landscape geometry");
+                require(range.getParagraph(0).getSpacingBefore() == 200 && range.getParagraph(0).getSpacingAfter() == 160, "Title spacing");
+                require(range.getParagraph(1).getIndentFromLeft() == 480 && range.getParagraph(1).getFirstLineIndent() == 240, "Body indentation");
+                Table table = null;
+                for (int p = 0; p < range.numParagraphs(); p++)
+                    if (range.getParagraph(p).isInTable()) { table = range.getTable(range.getParagraph(p)); break; }
+                require(table != null && table.numRows() == 3, "Three table rows");
+                TableCell wide = table.getRow(0).getCell(0);
+                require(wide.getWidth() == 4800 && wide.numParagraphs() == 2, "Wide cell with two paragraphs");
+                require(wide.getParagraph(0).text().trim().equals("Wide cell") && wide.getParagraph(1).text().replace("\u0007", "").trim().equals("Second line"), "Editable paragraph text");
+                require(table.getRow(1).getCell(0).isVerticallyMerged() && table.getRow(1).getCell(0).isFirstVerticallyMerged(), "Vertical merge start");
+                require(table.getRow(2).getCell(0).isVerticallyMerged() && !table.getRow(2).getCell(0).isFirstVerticallyMerged(), "Vertical merge continuation");
+            }
+            System.out.println("PASS: independent DOC sections, spacing, indentation, multi-paragraph cells and vertical merges (Apache POI 5.4.1).");
+            return;
+        }
+        if (args.length == 3 && args[0].equals("--generate-layout")) {
+            try (HWPFDocument doc = new HWPFDocument(new FileInputStream(args[1]))) {
+                Range range = doc.getRange();
+                range.insertBefore("Independent layout heading.");
+                Section section = range.getSection(0);
+                section.setMarginLeft(1440); section.setMarginRight(1200);
+                section.setMarginTop(1080); section.setMarginBottom(900);
+                Paragraph first = range.getParagraph(0);
+                first.setKeepWithNext(true); first.setSpacingBefore(120); first.setSpacingAfter(240);
+                first.setIndentFromLeft(720); first.setIndentFromRight(360); first.setFirstLineIndent(-240); first.setKeepOnPage(true);
+                try (OutputStream output = new FileOutputStream(args[2])) { doc.write(output); }
+            }
+            return;
+        }
+        if (args.length == 2 && args[0].equals("--check-layout")) {
+            try (HWPFDocument doc = new HWPFDocument(new FileInputStream(args[1]))) {
+                Range range = doc.getRange();
+                require(range.numSections() == 2, "Two sections");
+                Section first = range.getSection(0), second = range.getSection(1);
+                require(first.getPageWidth() == 12240 && first.getPageHeight() == 15840, "Letter portrait");
+                require(second.getPageWidth() == 15840 && second.getPageHeight() == 12240, "Letter landscape");
+                require(first.getMarginLeft() == 1440 && second.getMarginLeft() == 720, "Section margins");
+                Paragraph heading = range.getParagraph(0);
+                require(heading.keepWithNext() && heading.keepOnPage(), "Keep flags");
+                require(heading.getSpacingBefore() == 200 && heading.getSpacingAfter() == 300, "Paragraph spacing");
+                require(heading.getIndentFromLeft() == 720 && heading.getIndentFromRight() == 360 && heading.getFirstLineIndent() == -240, "Paragraph indentation");
+            }
+            System.out.println("PASS: DOC section geometry, margins, paragraph spacing, indents and keep flags (Apache POI 5.4.1).");
+            return;
+        }
         if (args.length == 3 && args[0].equals("--generate-appearance")) {
             try (HWPFDocument doc = new HWPFDocument(new FileInputStream(args[1]))) {
                 CharacterRun run = doc.getRange().insertBefore("Independent blue text.");

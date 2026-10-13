@@ -5,11 +5,11 @@
     <AssemblyName>wordnet</AssemblyName>
     <IsPackable>true</IsPackable>
     <PackageId>wordnet</PackageId>
-    <Version>0.1.0-alpha.9</Version>
+    <Version>0.1.0-alpha.10</Version>
     <Authors>Armen Kirakosyan</Authors>
     <Description>A .NET Word conversion library in early development, with DOC/DOCX, PDF, Markdown, text, EPUB, MOBI, AZW3, XPS output and local English OCR.</Description>
     <PackageTags>word;docx;doc;pdf;markdown;epub;mobi;azw3;xps;converter;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
-    <PackageReleaseNotes>First public alpha. All 28 conversion directions and local English printed-text OCR have real tests. Includes formatting, tables, lists and inline PNG/JPEG improvements. Limited fidelity; not production-qualified. See https://github.com/kirakosyan/word.net/blob/main/docs/releases/0.1.0-alpha.9.md</PackageReleaseNotes>
+    <PackageReleaseNotes>Development candidate: section and paragraph layout, multi-paragraph merged tables, repeating headers, long-row pagination, optional OCR orientation correction and column reading order. Expanded independent corpus and isolated resource qualification. Limited fidelity; minimum-runtime and broader production qualification remain open.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -21,6 +21,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>0.1.0-alpha.9</PackageValidationBaselineVersion>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />

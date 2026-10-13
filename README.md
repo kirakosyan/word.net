@@ -9,7 +9,7 @@
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
 DOC / DOCX → XPS
 
-> **Early development — 0.1.0-alpha.9.** All 28 agreed directions have working
+> **Development candidate — 0.1.0-alpha.10 (not yet published).** All 28 agreed directions have working
 > converters and real acceptance tests. Scanned and mixed PDFs can produce editable
 > Word text using local English OCR. Production fidelity and full platform qualification
 > remain in progress; the profiles below are limited.
@@ -21,6 +21,10 @@ The public namespace is **`WordNet`**. The assembly and NuGet package ID are **w
 ```sh
 dotnet add package wordnet --version 0.1.0-alpha.9
 ```
+
+The command installs the published alpha.9. The expanded profiles on this branch describe
+the alpha.10 source candidate; build and pack locally to evaluate those changes. Follow
+the [production qualification checklist](docs/production-readiness.md) for remaining gates.
 
 This is an evaluation prerelease, not a production-readiness claim. Validate your own
 documents against the [implemented profiles](#implemented-profiles) and inspect diagnostics.
@@ -54,8 +58,8 @@ against the new package. Package references continue to use `wordnet`.
 Strict mode is the default: detected losses throw before output is copied.
 Best-effort mode converts supported content and returns warnings. DOC and PDF import
 always report formatting/reconstruction losses and therefore require best-effort mode.
-Ordinary Word-authored DOCX files also often need best effort: font families, paragraph
-spacing and section/page geometry are outside the current model. Harmless document
+Ordinary Word-authored DOCX files also often need best effort: arbitrary font families,
+headers/footers, advanced typography and unsupported section types require diagnostics. Harmless document
 properties and language/editor metadata produce informational diagnostics instead.
 `CanConvert` describes format pairs, not support for every feature in a particular file.
 
@@ -64,9 +68,11 @@ properties and language/editor metadata produce informational diagnostics instea
 ### DOCX to PDF with limits and cancellation
 
 The PDF writer retains supported font sizes, colors, table geometry and inline PNG/JPEG
-images. It uses its own A4 layout; inspect diagnostics for features it cannot preserve.
+images. The source candidate uses retained section geometry with an A4 fallback;
+inspect diagnostics for features it cannot preserve.
 The token below requests cancellation after 30 seconds. Cancellation is checked between
-operations; it cannot interrupt a parser or native OCR call already in progress.
+operations and through Tesseract's recognition monitor. Other native/provider calls may
+not cooperate promptly; hard deadlines require an isolated worker.
 
 ```csharp
 using System;
@@ -208,12 +214,16 @@ Current limitations:
 - DOC retains the [documented formatting/table subset](https://github.com/kirakosyan/word.net/blob/main/docs/doc-format.md). The shared
   [formatting/image profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) covers inline PNG/JPEG and simple
   decimal/bulleted lists. Floating/linked/vector images, cropping/effects, advanced list
-  labels, headers/footers, notes, original sections and merged/nested tables remain outside it.
-- PDF/XPS export uses basic A4 wrapping/pagination, embedded Noto Sans, headings,
+  labels, headers/footers, notes, continuous/parity section breaks and nested tables remain outside it.
+  The source candidate preserves next-page section geometry, paragraph spacing/indents,
+  multiple cell paragraphs and horizontal/vertical merges through Word and EPUB.
+- PDF/XPS export uses section-aware wrapping/pagination, embedded Noto Sans, headings,
   emphasis, run sizes/colors, paragraph/cell alignment, absolute table widths and padding.
   PDF also embeds inline PNG/JPEG at their requested dimensions; oversized content fails.
   Unsupported glyphs and complex shaping fail.
   Original Word pagination is not reproduced.
+  Long ordinary table rows split between lines and repeat contiguous headers. Oversized
+  non-splitting rows and vertically merged groups fail explicitly.
 - PDF import reconstructs editable paragraphs and simple embedded raster images in geometric
   reading order. It does not reconstruct original tables/styles or arbitrary clipping and
   transforms. OCR reconstructs English printed text; handwriting is deferred.
@@ -265,6 +275,10 @@ heuristic selects whole-page OCR. `Pdf.OcrImageLoss` reports discarded page imag
 `Pdf.OcrTextReplacement` reports replacement of an existing digital text layer.
 Confidence is the arithmetic mean of each OCR page's recognized-word confidence,
 including blank pages, with the page count reported. It is not an accuracy guarantee.
+The source candidate adds `new EnglishOcrOptions(dataDirectory, nativeLibraryPath,
+correctOrientation: true)` for optional right-angle rotation and bounded deskew. It costs
+additional OCR passes. Wide uninterrupted two-column gutters receive column-first reading
+order. Complex page layouts and reconstructed tables remain outside the OCR profile.
 The configured native library remains loaded for the process lifetime; each recognition
 engine and its image/text buffers are released after use.
 
@@ -278,9 +292,9 @@ The library retains **`net472;netstandard2.0;net8.0;net10.0`** with matching pub
 | Consumer | Qualification status / goal |
 | --- | --- |
 | .NET Framework 4.7.2+ | Local tests through installed Windows Framework and an x64 test host |
-| .NET 8 / .NET 10 | All 236 tests pass on native Windows/Linux x64 and ARM64 CI lanes |
+| .NET 8 / .NET 10 | Alpha.9: 236 tests on native Windows/Linux x64 and ARM64; alpha.10 expands the suite to 301 cases |
 | .NET Standard 2.0 | Portable fallback; explicit asset consumption checked on modern .NET |
-| .NET for Android | All 236 tests pass on a Samsung ARM64 device, including native English OCR and formatting/images |
+| .NET for Android | Alpha.9: 236 cases on Samsung ARM64/Android 16; expanded candidate device qualification is in progress |
 | macOS | Deferred; no current release qualification claim |
 
 Compilation and NuGet compatibility do not prove every platform works.
@@ -298,13 +312,15 @@ See [dependency and font notices](https://github.com/kirakosyan/word.net/blob/ma
 - Output is staged. Parsing, strict-loss and admission-limit failures leave caller output
   untouched. Cancellation/I/O failures during final copying can leave partial output.
 - Async methods use async stream I/O with cancellation checkpoints. Parser, renderer
-  and native OCR calls are synchronous and cannot be interrupted mid-call.
+  and native OCR calls are synchronous. Tesseract recognition receives cancellation through
+  its progress monitor; other provider operations still require external deadlines.
 - Defaults: 16 MiB input, 32 MiB output, 64 MiB container expansion, 1,024 ZIP entries,
   four million characters, nesting depth 64 and 1,000 pages. OCR defaults to 200 DPI
   and 16 million raster/aggregate OCR image pixels per page. Retained document images
   share a separate decoded-pixel budget of `MaximumExpandedBytes / 4` per conversion.
 - These checks are not a hard CPU/RSS sandbox. Provider/native allocations can exceed
   admitted data sizes. XML character limits apply per part; DOC byte limits per stream.
+  See [isolated hosting and resource campaigns](docs/hosting.md) and the [API policy](docs/api-compatibility.md).
 - XML entities/DTDs are prohibited. No scripts/macros or remote resources execute/load.
   Retained links use HTTP, HTTPS or mailto. Diagnostics contain feature descriptions,
   not document text, and group repeated warnings.
@@ -351,6 +367,7 @@ See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/
 | `src/wordnet/` | API, semantic model, format adapters, page layout and OCR |
 | `tests/wordnet.Conversion.Tests/` | 28 direction tests, four OCR cases and regressions |
 | `tests/wordnet.Android.Compatibility/` | Android device app running the shared conversion/OCR/regression suite |
+| `tools/wordnet.Qualification/` | Isolated malformed-input, concurrent conversion and OCR resource campaigns |
 | [Architecture](https://github.com/kirakosyan/word.net/blob/main/docs/architecture.md) | Engine boundaries and resource contracts |
 | [Formatting and images](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) | Supported appearance, tables, lists, image formats and explicit limits |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Remaining fidelity and qualification work |

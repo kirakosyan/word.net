@@ -35,9 +35,11 @@ internal static partial class DocFormat
         internal int Heading { get; set; }
         internal bool InTable { get; set; }
         internal ParagraphAlignment Alignment { get; set; }
+        internal ParagraphLayout Layout { get; set; } = new ParagraphLayout();
         internal bool RowEnd { get; set; }
         internal int Depth { get; set; }
         internal bool Header { get; set; }
+        internal bool CantSplit { get; set; }
         internal int? Columns { get; set; }
         internal double? FontSize { get; set; }
         internal string? Color { get; set; }
@@ -49,10 +51,12 @@ internal static partial class DocFormat
         internal bool BinaryData { get; set; }
         internal double[]? Widths { get; set; }
         internal CellPadding[]? Padding { get; set; }
+        internal int[]? CellFlags { get; set; }
         internal Properties Clone()
         {
             var copy = (Properties)MemberwiseClone();
             copy.Padding = Padding?.Select(p => p.Copy()).ToArray();
+            copy.Layout = Layout.Copy();
             return copy;
         }
     }
@@ -297,6 +301,21 @@ internal static partial class DocFormat
                         state.Alignment = operand[0] <= 2 ? (ParagraphAlignment)operand[0] : ParagraphAlignment.Left;
                         if (operand[0] > 2) context.Loss("Doc.Alignment", "Justified and distributed paragraphs become left aligned.");
                         break;
+                    case 0x2405: state.Layout.KeepTogether = operand[0] != 0; break;
+                    case 0x2406: state.Layout.KeepWithNext = operand[0] != 0; break;
+                    case 0x2407: state.Layout.PageBreakBefore = operand[0] != 0; break;
+                    case 0xa413: state.Layout.Before = U16(operand, 0) / 20.0; break;
+                    case 0xa414: state.Layout.After = U16(operand, 0) / 20.0; break;
+                    case 0x840f: case 0x845e: state.Layout.Left = unchecked((short)U16(operand, 0)) / 20.0; break;
+                    case 0x840e: case 0x845d: state.Layout.Right = unchecked((short)U16(operand, 0)) / 20.0; break;
+                    case 0x8411: case 0x8460: state.Layout.FirstLine = unchecked((short)U16(operand, 0)) / 20.0; break;
+                    case 0x6412:
+                        int spacing = unchecked((short)U16(operand, 0));
+                        int multiple = U16(operand, 2);
+                        if (multiple > 1 || multiple == 1 && spacing <= 0) throw new InvalidDataException("Doc.LineSpacing: Invalid line spacing.");
+                        state.Layout.MultipleLineSpacing = multiple == 1;
+                        state.Layout.ExactLineSpacing = multiple == 0 && spacing < 0;
+                        state.Layout.LineSpacing = spacing == 0 ? null : Math.Abs(spacing) / (multiple == 1 ? 240.0 : 20.0); break;
                     case 0x2640:
                         if (operand[0] > 9) throw new InvalidDataException("Doc.Heading: Invalid outline level.");
                         state.Heading = operand[0] < 6 ? operand[0] + 1 : 0;
@@ -311,6 +330,7 @@ internal static partial class DocFormat
                         if (operand[0] != 0) throw new NotSupportedException("Doc.NestedTable: Nested tables are not supported.");
                         break;
                     case 0x3404: state.Header = operand[0] != 0; break;
+                    case 0x3403: state.CantSplit = operand[0] != 0; break;
                     case 0xd608: ReadTableDefinition(state, operand, context); break;
                     case 0x7621: // TInsert: cell range followed by width.
                         if (operand[0] > 63 || operand[1] > 63 || operand[0] + operand[1] > 63) throw new InvalidDataException("Doc.Table: Invalid inserted cell range.");
@@ -391,6 +411,7 @@ internal static partial class DocFormat
         Bounds(bytes, 0, definitions);
         int previous = short.MinValue;
         state.Widths = new double[columns];
+        state.CellFlags = new int[columns];
         for (int i = 0; i <= columns; i++)
         {
             int edge = unchecked((short)U16(bytes, 1 + i * 2));
@@ -402,8 +423,8 @@ internal static partial class DocFormat
         for (int i = 0; i < Math.Min(columns, (bytes.Length - definitions) / 20); i++)
         {
             int flags = U16(bytes, definitions + i * 20);
-            if ((flags & 0x63) != 0) throw new NotSupportedException("Doc.MergedTable: Merged table cells are not supported.");
-            if (flags != 0 || Slice(bytes, definitions + i * 20 + 4, 16).Any(b => b != 0))
+            state.CellFlags[i] = flags;
+            if ((flags & ~0x63) != 0 || Slice(bytes, definitions + i * 20 + 4, 16).Any(b => b != 0))
                 context.Loss("Doc.TableAppearance", "Borders, shading and advanced table appearance are not retained.");
         }
         state.Columns = columns;

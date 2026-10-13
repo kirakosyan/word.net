@@ -1,6 +1,14 @@
 # wordnet implementation plan
 
-Updated 2026-10-13 for **0.1.0-alpha.8**.
+Updated 2026-10-13 for the unpublished **0.1.0-alpha.10** candidate.
+
+The six production workstreams are tracked in [production readiness](production-readiness.md).
+This candidate adds section/paragraph layout, merged multi-paragraph tables, repeating
+headers and long-row splitting, independent geometric and OCR corpora, isolated
+malformed-input/resource campaigns, and package/API qualification automation. The shared
+suite has 301 cases. Actual Framework 4.7.2 and Android API 21 execution remain required;
+keep all four targets and defer macOS. Do not relabel the candidate production-ready
+without completing those environment gates and reviewing its declared feature profile.
 
 Alpha.6 changes the public namespace to `WordNet`, with matching namespaces on every
 target. Consumers must update imports/qualified names and rebuild. Package and assembly
@@ -11,9 +19,9 @@ and migrates the shared test suite to xUnit v3. All four library targets are pre
 See [dependency maintenance](dependencies.md) for versions and the retained build-only
 .NET Standard reference dependency.
 
-Alpha.8 adds font sizes/colors, table widths/cell padding, editable decimal/bullet
-lists and bounded inline PNG/JPEG through Word/EPUB and PDF export/import. The suite
-now has 236 cases, including independent input, schema/geometry/pixel assertions and
+Alpha.8 added font sizes/colors, table widths/cell padding, editable decimal/bullet
+lists and bounded inline PNG/JPEG through Word/EPUB and PDF export/import. Alpha.9
+had 236 cases, including independent input, schema/geometry/pixel assertions and
 malformed-resource regressions. No runtime dependencies or target frameworks changed.
 
 All 28 agreed directions and local English OCR for scanned/mixed PDF input now have
@@ -59,14 +67,14 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
 1. **Independent corpora and interoperability:** rich DOC and KF8 fragment/index variants,
    multi-spine EPUB, real viewer checks, malformed compression and fuzzing. DOC formatting
    records and multi-story behavior need broader validation.
-2. **Document semantics:** sections, richer styles/numbering, notes and metadata.
+2. **Document semantics:** continuous/parity sections, richer styles/numbering, notes and metadata.
    Model each feature before adapters claim preservation.
 3. **DOC fidelity:** extend the implemented [formatting/table profile](doc-format.md)
-   with richer typography, sections, merged tables, image effects and supported objects from MS-DOC.
-4. **Layout:** shaping, font selection/fallback, advanced line breaking, sections,
-   keep rules and floating images. Pin fonts and approve visual references/tolerances.
-5. **PDF/OCR:** columns/tables, image transforms and precise positions; rotation/noise/skew/low-resolution
-   corpora; measured reading-order and confidence behavior.
+   with richer typography, image effects and supported objects from MS-DOC.
+4. **Layout:** shaping, font selection/fallback, advanced line breaking, continuous sections,
+   keep-with-table behavior and floating images. Extend the pinned reference corpus.
+5. **PDF/OCR:** complex columns/tables, image transforms and precise positions; broader
+   independently sourced scan corpora beyond the eight measured regression scenarios.
 6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
    Keep unsupported compression/DRM explicit.
 7. **Platforms:** maintain four Windows/Linux CI lanes and Android ARM64 device tests.
@@ -74,8 +82,9 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
    .NET 8/10 with default runtime settings; Windows x64 also passes Framework.
    Check native codecs, OCR, model provisioning, fonts, architecture, trimming/AOT and
    minimum OS/API requirements.
-8. **Resources:** fuzzing, throughput/RSS benchmarks and host-isolation guidance.
-   Admission bounds cannot enforce hard native CPU/RSS deadlines.
+8. **Resources:** expand deterministic mutation seeds and longer production-like workloads.
+   Isolated fuzzing, throughput/RSS campaigns and host guidance now exist; admission bounds
+   still cannot enforce hard native CPU/RSS deadlines within an application process.
 
 ## Release gates
 

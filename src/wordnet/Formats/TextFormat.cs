@@ -71,7 +71,8 @@ internal static class TextFormat
                         output.Append('\n');
                     }
 
-                    output.Append(string.Join("\t", table.Rows[row].Select(cell => Label(cell) + cell.Text)));
+                    foreach (ParagraphBlock p in table.Rows[row].SelectMany(c => c.Paragraphs)) CheckFormatting(p, context);
+                    output.Append(string.Join("\t", table.Rows[row].Select(cell => string.Join("\n", cell.Paragraphs.Select(p => Label(p) + p.Text)))));
                 }
             }
         }

@@ -1,6 +1,6 @@
 # Formatting and image profile
 
-Alpha.8 implements the following independently authored fidelity increment. It preserves
+The current implementation extends the alpha.8 appearance profile. It preserves
 all four library targets and introduces no new runtime dependencies or public provider types.
 
 | Feature | Supported behavior |
@@ -8,6 +8,8 @@ all four library targets and introduces no new runtime dependencies or public pr
 | Text appearance | Explicit font sizes and RGB colors through DOCX, DOC and EPUB; measured sizes/colors in PDF and XPS output |
 | Inheritance | DOCX document defaults, paragraph and character style chains, direct overrides and automatic-color reset |
 | Tables | Absolute preferred table width, grid/cell widths and top/right/bottom/left cell padding; unequal columns in fixed-page output |
+| Sections/paragraphs | Next-page sections, page dimensions/orientation/margins, before/after and line spacing, physical indents and supported pagination controls through Word |
+| Richer cells | Multiple editable paragraphs, horizontal/vertical spans through Word/EPUB; contiguous repeating headers and line-split long rows in PDF/XPS |
 | Lists | Editable decimal numbering and round bullets through DOCX, DOC and EPUB, including nesting up to nine levels and zero-based start values; linked DOCX numbering styles and editable Markdown list import |
 | Images | Bounded inline PNG/JPEG, encoded-byte preservation through DOCX/DOC/EPUB, physical point dimensions and image-aware line layout |
 | PDF illustrations | Real PNG/JPEG export; ordinary embedded raster images reconstructed alongside digital text in geometric reading order |
@@ -23,10 +25,12 @@ DOC pictures include explicit FBSE store entries containing the image BLIP. Tabl
 semantics do not imply direct bold formatting. EPUB package URLs are decoded once before
 canonical path validation; encoded traversal and separators cannot escape the package.
 
-Fixed pages use the pinned Noto Sans faces, A4 geometry and simple flow layout. Original
-font families, page/section geometry, advanced typography, hanging list indentation and
-original pagination remain outside this profile. Table cells contain one paragraph;
-additional paragraphs/complex lists flatten with a diagnostic. Fixed layout uses cell/grid
+Fixed pages use the pinned Noto Sans faces, section geometry (A4 fallback) and flow layout.
+Original font families, continuous/odd/even section breaks, advanced typography, hanging
+list indentation and exact original pagination remain outside this profile. Paragraph
+indents/spacing and keep controls are retained; keep-with-table is diagnosed. Line spacing
+smaller than content height reports loss and expands to avoid clipping. Table cells retain
+multiple paragraphs. Fixed layout uses cell/grid
 widths ahead of a preferred total width; it does not reproduce Word's autofit algorithm.
 
 Only inline raster pictures are preserved. Floating anchors, vector/animated formats,
@@ -52,7 +56,9 @@ effort; strict mode rejects that loss. Original encoded pixels are retained. PDF
 dimensions are checked before decoding and cross-checked against decoded data. ZIP/input/
 output bounds also apply. Native decoder allocations still require host-level resource
 isolation for hard CPU/RSS limits. Oversized fixed-page content fails instead of silently
-resizing images or clipping a line/table row.
+resizing images or clipping a line. Long ordinary rows split between lines; non-splitting
+rows and connected vertical merge groups larger than the page fail explicitly. Merges
+cannot cross from repeating headers to body rows. Nested tables remain unsupported.
 
 ## Evidence
 
@@ -64,6 +70,10 @@ dimensions, pagination, image limits, corrupt resources and destination preserva
 table widths, numbering and image bytes/dimensions. Poppler renders the composite PDF
 for visual review. These checks establish this subset, not arbitrary document fidelity.
 See [testing](testing.md) for runtime evidence and [fixture provenance](../tests/wordnet.Conversion.Tests/Fixtures/README.md).
+The two-page layout corpus has an independently positioned ReportLab reference. Tests
+compare every glyph baseline within 0.03 points through both DOCX and DOC inputs, in
+addition to Poppler-rendered inspection. This corpus is a specification-profile reference,
+not a rendering produced by Microsoft Word.
 
 ## Published format references
 

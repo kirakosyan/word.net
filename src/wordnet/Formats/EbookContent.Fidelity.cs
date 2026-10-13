@@ -13,15 +13,20 @@ namespace WordNet.Formats;
 internal static partial class EbookContent
 {
     private static string Points(double value) => value.ToString("0.###", CultureInfo.InvariantCulture) + "pt";
-    private static XElement TableCell(ParagraphBlock cell, bool header, Func<DocumentImage, string>? imageWriter, ListCounter counter, ConversionContext context)
+    private static XElement WriteTableCell(TableCell cell, bool header, Func<DocumentImage, string>? imageWriter, ListCounter counter, ConversionContext context)
     {
         var element = new XElement(Html + (header ? "th" : "td"), new XAttribute("style", (header ? "font-weight:normal;" : "") + CellStyle(cell)));
-        XElement paragraph = Paragraph(cell, imageWriter);
-        if (cell.List == null) element.Add(paragraph);
-        else AppendList(element, new List<(string, XElement)>(), cell.List, paragraph, counter.Label(cell.List), context);
+        var lists = new List<(string, XElement)>();
+        foreach (ParagraphBlock p in cell.Paragraphs)
+        {
+            XElement paragraph = Paragraph(p, imageWriter);
+            if (p.List == null) { lists.Clear(); element.Add(paragraph); }
+            else AppendList(element, lists, p.List, paragraph, counter.Label(p.List), context);
+        }
+        if (cell.ColumnSpan > 1) element.SetAttributeValue("colspan", cell.ColumnSpan);
         return element;
     }
-    private static string CellStyle(ParagraphBlock cell)
+    private static string CellStyle(TableCell cell)
     {
         string style = cell.CellWidth.HasValue ? "width:" + Points(cell.CellWidth.Value) + ";" : "";
         if (cell.Padding is CellPadding p) style += "padding-top:" + Points(p.Top) + ";padding-right:" + Points(p.Right)
