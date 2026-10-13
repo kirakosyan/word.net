@@ -99,9 +99,22 @@ attempts timed out while the activity was suspended. The harness now keeps its v
 screen awake and records per-test progress; unlocking/bringing it forward remains
 necessary if the device's keyguard suspends the app.
 
-Local Framework is installed 4.8 (release 533509), not actual 4.7.2. Actual Framework
+Local Framework is installed 4.8.1 (release 533509), not actual 4.7.2. Actual Framework
 4.7.2 and Android API 21 remain open gates; macOS is deferred. Evidence is under
 `artifacts/production-tests/`, including downloaded CI reports, package and assembly hashes.
+
+The returned standalone-bundle report from an additional Windows x64 PC passes all
+301 cases with no failures/skips in 15.08 seconds on 2026-10-13. Its test case names and
+both assembly hashes match the supplied bundle. The environment records Framework
+release `533509`, which is [Framework 4.8.1 on Windows 11](https://learn.microsoft.com/en-us/dotnet/framework/install/versions-and-dependencies#net-framework-481),
+and `exactFramework472: false`. This adds execution evidence for the installed newer
+runtime; it does not close the actual 4.7.2 gate. The retained reports and verification
+summary are under `artifacts/production-tests/returned-windows-x64-20261013/`:
+
+- TRX SHA-256: `d8be41134ce654fd1a593127876ad1d6cffd1f20360e15a01cb1a30baa4bf258`.
+- Environment SHA-256: `765230beeaaf687dcb08ee0949cb35df959229a68d33b89cd20761983e4d874f`.
+- Library SHA-256: `271c239235216397ffa92a061e7f21075e5dd1945f9dea6518f7f40ecea0006a`.
+- Test executable SHA-256: `782f9f67cdd971afe170d747f876dd0e6448abff4fec1d21796b5596a3ea1609`.
 
 `eng/run-framework-tests.ps1` can run the complete prebuilt x64 output on another Windows
 PC without an SDK and records assembly hashes and the Framework release key. Add

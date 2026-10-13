@@ -39,8 +39,10 @@ on all four platforms. Android 16 ARM64 passes all 301 source, locally packed an
 CI-package cases. See [testing](testing.md) for build-specific evidence and artifact hashes.
 An actual .NET Framework 4.7.2 environment and Android API 21 environment are requested
 to verify the existing declared minimums; newer runtime execution is not a substitute.
-For an additional Windows test PC, check its Framework release key: an installed 4.8
-runtime does not close the 4.7.2 gate. The standalone runner records this distinction.
+The returned standalone-bundle results from an additional Windows x64 PC pass all
+301 cases with no failures/skips in 15.08 seconds. Assembly hashes and case names match
+the supplied bundle. Its Framework release key is 533509 (4.8.1), so the actual 4.7.2
+gate remains open. Report hashes are recorded in [testing](testing.md).
 
 ## Measurements and limits
 
