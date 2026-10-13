@@ -92,7 +92,11 @@ Google's API 21 ARM64 r04 image and a pinned Windows x64 emulator 37.2.12 engine
 isolated directory. The normal launcher rejects the legacy ARM64 configuration;
 the provided headless aarch64 engine is invoked directly with software emulation.
 This is a qualification probe, not a vendor-supported Windows ARM development setup.
-Emulator startup and API/ABI identification have been observed locally; passing
+On the ARM64 development host, the probe completed Android boot, reported API 21 /
+`arm64-v8a`, and installed the test APK. The app then repeatedly exited with signal
+11 during startup, before a test progress/report file existed. No conversion case
+passed in that attempt. Its cause is not established; repeat on native x64 AK-PC to
+separate this host's emulation behavior from a runtime or application issue. Passing
 conversion/OCR results are still required before closing this gate.
 
 Provide the full path to an installed SDK `platform-tools/adb.exe`. The example is the
@@ -118,11 +122,18 @@ dotnet workload install android --skip-manifest-update
 ./eng/prepare-android-tests.ps1
 dotnet restore tests/wordnet.Android.Compatibility --locked-mode
 dotnet build tests/wordnet.Android.Compatibility -c Release --no-restore -t:SignAndroidPackage
-./eng/run-android-tests.ps1 -AdbPath $adb -Serial emulator-5580 -RequiredApiLevel 21 -TimeoutSeconds 1800 -ResultsPath artifacts/android-api21/results.xml
+try {
+    ./eng/run-android-tests.ps1 -AdbPath $adb -Serial emulator-5580 -RequiredApiLevel 21 -TimeoutSeconds 1800 -ResultsPath artifacts/android-api21/results.xml
+} finally {
+    & $adb -s emulator-5580 logcat -d | Set-Content artifacts/android-api21/logcat.txt
+}
 ```
 
-Return `artifacts/android-api21/environment.json`, `results.xml`, and both emulator
-logs. Every conversion and English OCR case must pass without skips. Stop this emulator:
+Return `artifacts/android-api21/environment.json`, `results.xml` if produced,
+`logcat.txt`, and both emulator logs. The runner reads complete report XML directly
+because API 21's shell lacks the executable file-check command available on newer
+devices. Missing reports remain failures/timeouts; shell error text cannot pass.
+Every conversion and English OCR case must pass without skips. Stop this emulator:
 
 ```powershell
 & $adb -s emulator-5580 emu kill

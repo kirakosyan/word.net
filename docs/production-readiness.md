@@ -46,6 +46,10 @@ gate remains open. Report hashes are recorded in [testing](testing.md).
 The [minimum-runtime runbook](minimum-runtime-qualification.md) provides a Windows
 Server 2019 Docker VM setup for an x64 test PC and an isolated API 21 ARM64 emulator
 probe. These setup tools preserve the gates until actual complete reports pass.
+The local API 21 ARM64 software-emulation probe boots and installs the test APK, but
+the app exits with signal 11 during startup before executing tests. This is an open
+qualification failure with an unestablished cause, not evidence that conversions pass
+on API 21. The runbook requests a comparison run on the native x64 test PC.
 
 ## Measurements and limits
 
