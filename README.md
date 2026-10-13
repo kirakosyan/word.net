@@ -2,7 +2,7 @@
 
 [![Build and tests](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml/badge.svg)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
 [![NuGet prerelease](https://img.shields.io/nuget/vpre/wordnet.svg)](https://www.nuget.org/packages/wordnet)
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
 
 **Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
 
@@ -25,7 +25,7 @@ dotnet add package wordnet --version 0.1.0-alpha.9
 This is an evaluation prerelease, not a production-readiness claim. Validate your own
 documents against the [implemented profiles](#implemented-profiles) and inspect diagnostics.
 Local packaging is also supported. Publication requires an explicit maintainer-run
-[release workflow](docs/releasing.md); ordinary pushes never publish packages.
+[release workflow](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md); ordinary pushes never publish packages.
 The examples below use C# top-level statements in a console application. Each example
 is self-contained; add a reference to the `wordnet` package or project first.
 
@@ -201,12 +201,12 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 All direction tests inspect real content. Generated DOCX is independently schema
 validated. PDF/ebook/XPS tests check content and containers. External DOC and Kindle
 readers also recovered generated content in local interoperability checks.
-See [test evidence and its limits](docs/testing.md).
+See [test evidence and its limits](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md).
 
 Current limitations:
 
-- DOC retains the [documented formatting/table subset](docs/doc-format.md). The shared
-  [formatting/image profile](docs/document-fidelity.md) covers inline PNG/JPEG and simple
+- DOC retains the [documented formatting/table subset](https://github.com/kirakosyan/word.net/blob/main/docs/doc-format.md). The shared
+  [formatting/image profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) covers inline PNG/JPEG and simple
   decimal/bulleted lists. Floating/linked/vector images, cropping/effects, advanced list
   labels, headers/footers, notes, original sections and merged/nested tables remain outside it.
 - PDF/XPS export uses basic A4 wrapping/pagination, embedded Noto Sans, headings,
@@ -268,7 +268,7 @@ including blank pages, with the page count reported. It is not an accuracy guara
 The configured native library remains loaded for the process lifetime; each recognition
 engine and its image/text buffers are released after use.
 
-[The test setup script](eng/prepare-ocr-tests.ps1) provisions pinned prerequisites.
+[The test setup script](https://github.com/kirakosyan/word.net/blob/main/eng/prepare-ocr-tests.ps1) provisions pinned prerequisites.
 Tesseract and language data are supplied by the host, not included in the wordnet NuGet.
 
 ## Frameworks and platforms
@@ -284,12 +284,12 @@ The library retains **`net472;netstandard2.0;net8.0;net10.0`** with matching pub
 | macOS | Deferred; no current release qualification claim |
 
 Compilation and NuGet compatibility do not prove every platform works.
-See [platform evidence](docs/testing.md) for exact runtime/architecture limits.
+See [platform evidence](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) for exact runtime/architecture limits.
 Oldest Framework/Android versions, additional native codecs, trimming/AOT and broader
 device coverage still need qualification.
 
 No installed Word, Office automation or remote service is required.
-See [dependency and font notices](THIRD_PARTY_NOTICES.md).
+See [dependency and font notices](https://github.com/kirakosyan/word.net/blob/main/THIRD_PARTY_NOTICES.md).
 
 ## Streams, limits and diagnostics
 
@@ -311,7 +311,7 @@ See [dependency and font notices](THIRD_PARTY_NOTICES.md).
 
 ## Build, test and pack
 
-Install the SDK in [global.json](global.json) and .NET 8/10 runtimes.
+Install the SDK in [global.json](https://github.com/kirakosyan/word.net/blob/main/global.json) and .NET 8/10 runtimes.
 Prepare OCR in the **same PowerShell process** used to launch tests:
 
 ```powershell
@@ -338,11 +338,11 @@ dotnet build tests/wordnet.Android.Compatibility -c Release --no-restore -t:Sign
 ./eng/run-android-tests.ps1 -AdbPath /absolute/path/to/adb
 ```
 
-Agents use `rtk` per [AGENTS.md](AGENTS.md); consumers and CI need not.
+Agents use `rtk` per [AGENTS.md](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md); consumers and CI need not.
 The package includes four assemblies, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
-See [release checks and publishing](docs/releasing.md) and the
-[alpha.9 release notes](docs/releases/0.1.0-alpha.9.md).
+See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) and the
+[alpha.9 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/0.1.0-alpha.9.md).
 
 ## Project guide
 
@@ -351,15 +351,15 @@ See [release checks and publishing](docs/releasing.md) and the
 | `src/wordnet/` | API, semantic model, format adapters, page layout and OCR |
 | `tests/wordnet.Conversion.Tests/` | 28 direction tests, four OCR cases and regressions |
 | `tests/wordnet.Android.Compatibility/` | Android device app running the shared conversion/OCR/regression suite |
-| [Architecture](docs/architecture.md) | Engine boundaries and resource contracts |
-| [Formatting and images](docs/document-fidelity.md) | Supported appearance, tables, lists, image formats and explicit limits |
-| [Implementation plan](docs/implementation-plan.md) | Remaining fidelity and qualification work |
-| [Testing](docs/testing.md) | Reproducible checks and evidence limits |
-| [Dependencies](docs/dependencies.md) | Package upgrades, audit commands and retained framework assets |
-| [Releasing](docs/releasing.md) | Production gates and manual NuGet Trusted Publishing |
-| [Contributing](AGENTS.md) | Quality rules |
+| [Architecture](https://github.com/kirakosyan/word.net/blob/main/docs/architecture.md) | Engine boundaries and resource contracts |
+| [Formatting and images](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) | Supported appearance, tables, lists, image formats and explicit limits |
+| [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Remaining fidelity and qualification work |
+| [Testing](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) | Reproducible checks and evidence limits |
+| [Dependencies](https://github.com/kirakosyan/word.net/blob/main/docs/dependencies.md) | Package upgrades, audit commands and retained framework assets |
+| [Releasing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) | Production gates and manual NuGet Trusted Publishing |
+| [Contributing](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md) | Quality rules |
 
 Implementation uses independently authored code, public specifications and appropriately
 licensed dependencies. Preserve notices and fixture provenance.
 
-[MIT](LICENSE) · Copyright © 2026 Armen Kirakosyan.
+[MIT](https://github.com/kirakosyan/word.net/blob/main/LICENSE) · Copyright © 2026 Armen Kirakosyan.
