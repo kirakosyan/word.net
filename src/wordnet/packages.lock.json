@@ -1,0 +1,663 @@
+{
+  "version": 2,
+  "dependencies": {
+    ".NETFramework,Version=v4.7.2": {
+      "AngleSharp": {
+        "type": "Direct",
+        "requested": "[1.8.4, )",
+        "resolved": "1.8.4",
+        "contentHash": "lbwt3oqjyxI6x01NT0kRqnudE+gxLqRAs/X49/iVWyguj6OtRfYCanV1mL+jYZgeeAqnGqWzqi7+s5gdtBF1Ag==",
+        "dependencies": {
+          "System.Text.Encoding.CodePages": "8.0.0"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[14.2.1.301, )",
+        "resolved": "14.2.1.301",
+        "contentHash": "z9+VeNETkwp+raqhEfS+6aAfDl1MLxZxmE9GE/edhTIIwkXhZbPn0JUfhpqqjNy1Q0rQrZCzaJ2VNgVbQR+2MQ=="
+      },
+      "Markdig": {
+        "type": "Direct",
+        "requested": "[1.4.0, )",
+        "resolved": "1.4.0",
+        "contentHash": "lLhaiI/mNDTNzgLqnmknhf4LjgTqOAyjx5+GNz0X3AxYMxUhmFppF2WVMdER+SDqwhE5wUF1pzs/cuLwFxs7xA==",
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        }
+      },
+      "Microsoft.NETFramework.ReferenceAssemblies": {
+        "type": "Direct",
+        "requested": "[1.0.3, )",
+        "resolved": "1.0.3",
+        "contentHash": "vUc9Npcs14QsyOD01tnv/m8sQUnGTGOw1BCmKcv77LBJY7OxhJ+zJF7UD/sCL3lYNFuqmQEVlkfS4Quif6FyYg==",
+        "dependencies": {
+          "Microsoft.NETFramework.ReferenceAssemblies.net472": "1.0.3"
+        }
+      },
+      "OpenMcdf": {
+        "type": "Direct",
+        "requested": "[3.3.0, )",
+        "resolved": "3.3.0",
+        "contentHash": "a7lcs+yTDzPRRS82KMmU/eVCMKbJrDStD1Yt+6RRZIsDxU006IdxEVkmMLvxt2hB5YS3Imfcxrdwywtv29ogjw==",
+        "dependencies": {
+          "Microsoft.Bcl.HashCode": "6.0.0",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "PdfPig": {
+        "type": "Direct",
+        "requested": "[0.1.16, )",
+        "resolved": "0.1.16",
+        "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA==",
+        "dependencies": {
+          "Microsoft.Bcl.HashCode": "6.0.0",
+          "System.Memory": "4.6.0"
+        }
+      },
+      "PdfPig.Rendering.Skia": {
+        "type": "Direct",
+        "requested": "[0.1.16.4, )",
+        "resolved": "0.1.16.4",
+        "contentHash": "pfxHKlDKG4oAAAomDDEv/rj9IAnLLCO9xBbvZ+KStxJy4/4MyasaunDr6hLbgjNuCDHS9d3+nywX91YVTTuc0g==",
+        "dependencies": {
+          "Microsoft.Bcl.HashCode": "6.0.0",
+          "PdfPig": "0.1.16",
+          "PdfPig.Filters.Dct.JpegLibrary": "0.1.16.1",
+          "PdfPig.Filters.Jbig2.PdfboxJbig2": "0.1.16.1",
+          "PdfPig.Filters.Jpx.OpenJpeg": "0.1.16",
+          "SkiaSharp": "3.119.4",
+          "SkiaSharp.HarfBuzz": "3.119.4"
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "DlBk91MARPfARK5kqd1K6+u6UuUQx+8Rsc+Pwi2dVO7X+S3LsLwqJq1gULLdpIgW2zmcqZ87O6TMfdWkwBXfkQ=="
+      },
+      "HarfBuzzSharp": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "FNlv2OCprGHp3EcaZ9Fc2O3ojl7sGHg418Ey+8g/UwKkPGgBUfdWuhdVOH8pB0wkVkMsFOZH7dr4iOFtVrB88Q==",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "14.2.1.301",
+          "HarfBuzzSharp.NativeAssets.macOS": "14.2.1.301",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "NHHoxkjGkU6BnWyksKjM7TrIReXzpgXuss+ahhUgby0oJuYR9/HaxkfezYe3abpmWDN1PYWM5SBZWob3TzpkKA=="
+      },
+      "HarfBuzzSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "mL1atDEKtJSqutOFjLP/hiA8rTGqOQCHBpfkG3rXnTFJCqN94oAKhR8a7+bhxxxvSgj4soJXUBICSYGte5odNA=="
+      },
+      "Microsoft.Bcl.HashCode": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "GI4jcoi6eC9ZhNOQylIBaWOQjyGaR8T6N3tC1u8p3EXfndLCVNNWa+Zp+ocjvvS3kNBN09Zma2HXL0ezO0dRfw=="
+      },
+      "Microsoft.NETFramework.ReferenceAssemblies.net472": {
+        "type": "Transitive",
+        "resolved": "1.0.3",
+        "contentHash": "0E7evZXHXaDYYiLRfpyXvCh+yzM2rNTyuZDI+ZO7UUqSc6GfjePiXTdqJGtgIKUwdI81tzQKmaWprnUiPj9hAw=="
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "Transitive",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "YTojWeWIhnpF7uC8vpMxB5wRONKkDB2t3r/nNPA3DL2pgj9fqMXRevA/rIanYazWnco4jo1ufgp3HkXuh1Tz8A=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "Yqg6rChTVh0BUE8QQxtOA3uUBnihfgID4yex/AvDa0+os2bVcBjmI3Qj9tnOB+R1hd/Jry1Gwl8qw5JI9HZG8Q=="
+      },
+      "System.Buffers": {
+        "type": "Transitive",
+        "resolved": "4.6.1",
+        "contentHash": "N8GXpmiLMtljq7gwvyS+1QvKT/W2J8sNAvx+HVg4NGmsG/H+2k/y9QI23auLJRterrzCiDH+IWAw4V/GPwsMlw=="
+      },
+      "System.Memory": {
+        "type": "Transitive",
+        "resolved": "4.6.3",
+        "contentHash": "qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A==",
+        "dependencies": {
+          "System.Buffers": "4.6.1",
+          "System.Numerics.Vectors": "4.6.1",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        }
+      },
+      "System.Numerics.Vectors": {
+        "type": "Transitive",
+        "resolved": "4.6.1",
+        "contentHash": "sQxefTnhagrhoq2ReR0D/6K0zJcr9Hrd6kikeXsA1I8kOCboTavcUC4r7TSfpKFeE163uMuxZcyfO1mGO3EN8Q=="
+      },
+      "System.Runtime.CompilerServices.Unsafe": {
+        "type": "Transitive",
+        "resolved": "6.1.2",
+        "contentHash": "2hBr6zdbIBTDE3EhK7NSVNdX58uTK6iHW/P/Axmm9sl1xoGSLqDvMtpecn226TNwHByFokYwJmt/aQQNlO5CRw=="
+      },
+      "System.ValueTuple": {
+        "type": "Transitive",
+        "resolved": "4.6.2",
+        "contentHash": "yQgmjfFximrNm9LIV3mL6T5MzjeC+epeE5rl4hXxAlYmxby7RM1dPSkIKXk9HNkl6G54h2JHOmLD46+Pey+IRg=="
+      },
+      "PdfPig.Filters.Jbig2.PdfboxJbig2": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.2, )",
+        "resolved": "0.1.16.2",
+        "contentHash": "14X7BepMrqbzT3Pj6P6GjhWkBILRWk8b2QIfjgIjiHE72pw16pQ1ReDWD6LLtOpJpIYVSr3l1nFVb8zO4UZMCw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "PdfPig.Filters.Jpx.OpenJpeg": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "xh2rTwiwHFpLnVf2exGsLCuG+LwleZImeYCyKXaYK3aU161t4z15kdYkHyZJRnsboJMkN7o/y1YQUmstnFcCdw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "SkiaSharp": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "TghYLOUaP3q6rTjQw7U9uQaaXh8lEs9rfA1U7/VtmyAptVDtj/SmjtcWzFWmcC/VMWxe3QgbV9uyvqDL7ySFtQ==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "4.153.1",
+          "SkiaSharp.NativeAssets.macOS": "4.153.1",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "SkiaSharp.HarfBuzz": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "57/8+VBQPSltb5MKYIlm0mn7BSoCci7Yq2ffIJSr5nK1fM0NAIIpO6SQVmUXTP9BpZBxa/oaje5odQHyjAJBlQ==",
+        "dependencies": {
+          "HarfBuzzSharp": "14.2.1.301",
+          "SkiaSharp": "4.153.1"
+        }
+      },
+      "System.Text.Encoding.CodePages": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
+        "dependencies": {
+          "System.Memory": "4.6.3",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2",
+          "System.ValueTuple": "4.6.2"
+        }
+      }
+    },
+    ".NETStandard,Version=v2.0": {
+      "AngleSharp": {
+        "type": "Direct",
+        "requested": "[1.8.4, )",
+        "resolved": "1.8.4",
+        "contentHash": "lbwt3oqjyxI6x01NT0kRqnudE+gxLqRAs/X49/iVWyguj6OtRfYCanV1mL+jYZgeeAqnGqWzqi7+s5gdtBF1Ag==",
+        "dependencies": {
+          "System.Text.Encoding.CodePages": "8.0.0"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[14.2.1.301, )",
+        "resolved": "14.2.1.301",
+        "contentHash": "z9+VeNETkwp+raqhEfS+6aAfDl1MLxZxmE9GE/edhTIIwkXhZbPn0JUfhpqqjNy1Q0rQrZCzaJ2VNgVbQR+2MQ=="
+      },
+      "Markdig": {
+        "type": "Direct",
+        "requested": "[1.4.0, )",
+        "resolved": "1.4.0",
+        "contentHash": "lLhaiI/mNDTNzgLqnmknhf4LjgTqOAyjx5+GNz0X3AxYMxUhmFppF2WVMdER+SDqwhE5wUF1pzs/cuLwFxs7xA==",
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        }
+      },
+      "NETStandard.Library": {
+        "type": "Direct",
+        "requested": "[2.0.3, )",
+        "resolved": "2.0.3",
+        "contentHash": "st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0"
+        }
+      },
+      "OpenMcdf": {
+        "type": "Direct",
+        "requested": "[3.3.0, )",
+        "resolved": "3.3.0",
+        "contentHash": "a7lcs+yTDzPRRS82KMmU/eVCMKbJrDStD1Yt+6RRZIsDxU006IdxEVkmMLvxt2hB5YS3Imfcxrdwywtv29ogjw==",
+        "dependencies": {
+          "Microsoft.Bcl.HashCode": "6.0.0",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "PdfPig": {
+        "type": "Direct",
+        "requested": "[0.1.16, )",
+        "resolved": "0.1.16",
+        "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA==",
+        "dependencies": {
+          "Microsoft.Bcl.HashCode": "6.0.0",
+          "System.Memory": "4.6.0"
+        }
+      },
+      "PdfPig.Rendering.Skia": {
+        "type": "Direct",
+        "requested": "[0.1.16.4, )",
+        "resolved": "0.1.16.4",
+        "contentHash": "pfxHKlDKG4oAAAomDDEv/rj9IAnLLCO9xBbvZ+KStxJy4/4MyasaunDr6hLbgjNuCDHS9d3+nywX91YVTTuc0g==",
+        "dependencies": {
+          "Microsoft.Bcl.HashCode": "6.0.0",
+          "PdfPig": "0.1.16",
+          "PdfPig.Filters.Dct.JpegLibrary": "0.1.16.1",
+          "PdfPig.Filters.Jbig2.PdfboxJbig2": "0.1.16.1",
+          "PdfPig.Filters.Jpx.OpenJpeg": "0.1.16",
+          "SkiaSharp": "3.119.4",
+          "SkiaSharp.HarfBuzz": "3.119.4"
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "DlBk91MARPfARK5kqd1K6+u6UuUQx+8Rsc+Pwi2dVO7X+S3LsLwqJq1gULLdpIgW2zmcqZ87O6TMfdWkwBXfkQ=="
+      },
+      "HarfBuzzSharp": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "FNlv2OCprGHp3EcaZ9Fc2O3ojl7sGHg418Ey+8g/UwKkPGgBUfdWuhdVOH8pB0wkVkMsFOZH7dr4iOFtVrB88Q==",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "14.2.1.301",
+          "HarfBuzzSharp.NativeAssets.macOS": "14.2.1.301",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "NHHoxkjGkU6BnWyksKjM7TrIReXzpgXuss+ahhUgby0oJuYR9/HaxkfezYe3abpmWDN1PYWM5SBZWob3TzpkKA=="
+      },
+      "HarfBuzzSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "mL1atDEKtJSqutOFjLP/hiA8rTGqOQCHBpfkG3rXnTFJCqN94oAKhR8a7+bhxxxvSgj4soJXUBICSYGte5odNA=="
+      },
+      "Microsoft.Bcl.HashCode": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "GI4jcoi6eC9ZhNOQylIBaWOQjyGaR8T6N3tC1u8p3EXfndLCVNNWa+Zp+ocjvvS3kNBN09Zma2HXL0ezO0dRfw=="
+      },
+      "Microsoft.NETCore.Platforms": {
+        "type": "Transitive",
+        "resolved": "1.1.0",
+        "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "Transitive",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "YTojWeWIhnpF7uC8vpMxB5wRONKkDB2t3r/nNPA3DL2pgj9fqMXRevA/rIanYazWnco4jo1ufgp3HkXuh1Tz8A=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "Yqg6rChTVh0BUE8QQxtOA3uUBnihfgID4yex/AvDa0+os2bVcBjmI3Qj9tnOB+R1hd/Jry1Gwl8qw5JI9HZG8Q=="
+      },
+      "System.Buffers": {
+        "type": "Transitive",
+        "resolved": "4.6.1",
+        "contentHash": "N8GXpmiLMtljq7gwvyS+1QvKT/W2J8sNAvx+HVg4NGmsG/H+2k/y9QI23auLJRterrzCiDH+IWAw4V/GPwsMlw=="
+      },
+      "System.Memory": {
+        "type": "Transitive",
+        "resolved": "4.6.3",
+        "contentHash": "qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A==",
+        "dependencies": {
+          "System.Buffers": "4.6.1",
+          "System.Numerics.Vectors": "4.6.1",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        }
+      },
+      "System.Numerics.Vectors": {
+        "type": "Transitive",
+        "resolved": "4.6.1",
+        "contentHash": "sQxefTnhagrhoq2ReR0D/6K0zJcr9Hrd6kikeXsA1I8kOCboTavcUC4r7TSfpKFeE163uMuxZcyfO1mGO3EN8Q=="
+      },
+      "System.Runtime.CompilerServices.Unsafe": {
+        "type": "Transitive",
+        "resolved": "6.1.2",
+        "contentHash": "2hBr6zdbIBTDE3EhK7NSVNdX58uTK6iHW/P/Axmm9sl1xoGSLqDvMtpecn226TNwHByFokYwJmt/aQQNlO5CRw=="
+      },
+      "PdfPig.Filters.Jbig2.PdfboxJbig2": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.2, )",
+        "resolved": "0.1.16.2",
+        "contentHash": "14X7BepMrqbzT3Pj6P6GjhWkBILRWk8b2QIfjgIjiHE72pw16pQ1ReDWD6LLtOpJpIYVSr3l1nFVb8zO4UZMCw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "PdfPig.Filters.Jpx.OpenJpeg": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "xh2rTwiwHFpLnVf2exGsLCuG+LwleZImeYCyKXaYK3aU161t4z15kdYkHyZJRnsboJMkN7o/y1YQUmstnFcCdw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "SkiaSharp": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "TghYLOUaP3q6rTjQw7U9uQaaXh8lEs9rfA1U7/VtmyAptVDtj/SmjtcWzFWmcC/VMWxe3QgbV9uyvqDL7ySFtQ==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "4.153.1",
+          "SkiaSharp.NativeAssets.macOS": "4.153.1",
+          "System.Memory": "4.6.3"
+        }
+      },
+      "SkiaSharp.HarfBuzz": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "57/8+VBQPSltb5MKYIlm0mn7BSoCci7Yq2ffIJSr5nK1fM0NAIIpO6SQVmUXTP9BpZBxa/oaje5odQHyjAJBlQ==",
+        "dependencies": {
+          "HarfBuzzSharp": "14.2.1.301",
+          "SkiaSharp": "4.153.1"
+        }
+      },
+      "System.Text.Encoding.CodePages": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
+        "dependencies": {
+          "System.Memory": "4.6.3",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        }
+      }
+    },
+    "net10.0": {
+      "AngleSharp": {
+        "type": "Direct",
+        "requested": "[1.8.4, )",
+        "resolved": "1.8.4",
+        "contentHash": "lbwt3oqjyxI6x01NT0kRqnudE+gxLqRAs/X49/iVWyguj6OtRfYCanV1mL+jYZgeeAqnGqWzqi7+s5gdtBF1Ag=="
+      },
+      "HarfBuzzSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[14.2.1.301, )",
+        "resolved": "14.2.1.301",
+        "contentHash": "z9+VeNETkwp+raqhEfS+6aAfDl1MLxZxmE9GE/edhTIIwkXhZbPn0JUfhpqqjNy1Q0rQrZCzaJ2VNgVbQR+2MQ=="
+      },
+      "Markdig": {
+        "type": "Direct",
+        "requested": "[1.4.0, )",
+        "resolved": "1.4.0",
+        "contentHash": "lLhaiI/mNDTNzgLqnmknhf4LjgTqOAyjx5+GNz0X3AxYMxUhmFppF2WVMdER+SDqwhE5wUF1pzs/cuLwFxs7xA=="
+      },
+      "OpenMcdf": {
+        "type": "Direct",
+        "requested": "[3.3.0, )",
+        "resolved": "3.3.0",
+        "contentHash": "a7lcs+yTDzPRRS82KMmU/eVCMKbJrDStD1Yt+6RRZIsDxU006IdxEVkmMLvxt2hB5YS3Imfcxrdwywtv29ogjw=="
+      },
+      "PdfPig": {
+        "type": "Direct",
+        "requested": "[0.1.16, )",
+        "resolved": "0.1.16",
+        "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA=="
+      },
+      "PdfPig.Rendering.Skia": {
+        "type": "Direct",
+        "requested": "[0.1.16.4, )",
+        "resolved": "0.1.16.4",
+        "contentHash": "pfxHKlDKG4oAAAomDDEv/rj9IAnLLCO9xBbvZ+KStxJy4/4MyasaunDr6hLbgjNuCDHS9d3+nywX91YVTTuc0g==",
+        "dependencies": {
+          "PdfPig": "0.1.16",
+          "PdfPig.Filters.Dct.JpegLibrary": "0.1.16.1",
+          "PdfPig.Filters.Jbig2.PdfboxJbig2": "0.1.16.1",
+          "PdfPig.Filters.Jpx.OpenJpeg": "0.1.16",
+          "SkiaSharp": "3.119.4",
+          "SkiaSharp.HarfBuzz": "3.119.4"
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "DlBk91MARPfARK5kqd1K6+u6UuUQx+8Rsc+Pwi2dVO7X+S3LsLwqJq1gULLdpIgW2zmcqZ87O6TMfdWkwBXfkQ=="
+      },
+      "HarfBuzzSharp": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "FNlv2OCprGHp3EcaZ9Fc2O3ojl7sGHg418Ey+8g/UwKkPGgBUfdWuhdVOH8pB0wkVkMsFOZH7dr4iOFtVrB88Q==",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "14.2.1.301",
+          "HarfBuzzSharp.NativeAssets.macOS": "14.2.1.301"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "NHHoxkjGkU6BnWyksKjM7TrIReXzpgXuss+ahhUgby0oJuYR9/HaxkfezYe3abpmWDN1PYWM5SBZWob3TzpkKA=="
+      },
+      "HarfBuzzSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "mL1atDEKtJSqutOFjLP/hiA8rTGqOQCHBpfkG3rXnTFJCqN94oAKhR8a7+bhxxxvSgj4soJXUBICSYGte5odNA=="
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "Transitive",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "YTojWeWIhnpF7uC8vpMxB5wRONKkDB2t3r/nNPA3DL2pgj9fqMXRevA/rIanYazWnco4jo1ufgp3HkXuh1Tz8A=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "Yqg6rChTVh0BUE8QQxtOA3uUBnihfgID4yex/AvDa0+os2bVcBjmI3Qj9tnOB+R1hd/Jry1Gwl8qw5JI9HZG8Q=="
+      },
+      "PdfPig.Filters.Jbig2.PdfboxJbig2": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.2, )",
+        "resolved": "0.1.16.2",
+        "contentHash": "14X7BepMrqbzT3Pj6P6GjhWkBILRWk8b2QIfjgIjiHE72pw16pQ1ReDWD6LLtOpJpIYVSr3l1nFVb8zO4UZMCw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "PdfPig.Filters.Jpx.OpenJpeg": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "xh2rTwiwHFpLnVf2exGsLCuG+LwleZImeYCyKXaYK3aU161t4z15kdYkHyZJRnsboJMkN7o/y1YQUmstnFcCdw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "SkiaSharp": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "TghYLOUaP3q6rTjQw7U9uQaaXh8lEs9rfA1U7/VtmyAptVDtj/SmjtcWzFWmcC/VMWxe3QgbV9uyvqDL7ySFtQ==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "4.153.1",
+          "SkiaSharp.NativeAssets.macOS": "4.153.1"
+        }
+      },
+      "SkiaSharp.HarfBuzz": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "57/8+VBQPSltb5MKYIlm0mn7BSoCci7Yq2ffIJSr5nK1fM0NAIIpO6SQVmUXTP9BpZBxa/oaje5odQHyjAJBlQ==",
+        "dependencies": {
+          "HarfBuzzSharp": "14.2.1.301",
+          "SkiaSharp": "4.153.1"
+        }
+      }
+    },
+    "net8.0": {
+      "AngleSharp": {
+        "type": "Direct",
+        "requested": "[1.8.4, )",
+        "resolved": "1.8.4",
+        "contentHash": "lbwt3oqjyxI6x01NT0kRqnudE+gxLqRAs/X49/iVWyguj6OtRfYCanV1mL+jYZgeeAqnGqWzqi7+s5gdtBF1Ag=="
+      },
+      "HarfBuzzSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[14.2.1.301, )",
+        "resolved": "14.2.1.301",
+        "contentHash": "z9+VeNETkwp+raqhEfS+6aAfDl1MLxZxmE9GE/edhTIIwkXhZbPn0JUfhpqqjNy1Q0rQrZCzaJ2VNgVbQR+2MQ=="
+      },
+      "Markdig": {
+        "type": "Direct",
+        "requested": "[1.4.0, )",
+        "resolved": "1.4.0",
+        "contentHash": "lLhaiI/mNDTNzgLqnmknhf4LjgTqOAyjx5+GNz0X3AxYMxUhmFppF2WVMdER+SDqwhE5wUF1pzs/cuLwFxs7xA=="
+      },
+      "OpenMcdf": {
+        "type": "Direct",
+        "requested": "[3.3.0, )",
+        "resolved": "3.3.0",
+        "contentHash": "a7lcs+yTDzPRRS82KMmU/eVCMKbJrDStD1Yt+6RRZIsDxU006IdxEVkmMLvxt2hB5YS3Imfcxrdwywtv29ogjw=="
+      },
+      "PdfPig": {
+        "type": "Direct",
+        "requested": "[0.1.16, )",
+        "resolved": "0.1.16",
+        "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA=="
+      },
+      "PdfPig.Rendering.Skia": {
+        "type": "Direct",
+        "requested": "[0.1.16.4, )",
+        "resolved": "0.1.16.4",
+        "contentHash": "pfxHKlDKG4oAAAomDDEv/rj9IAnLLCO9xBbvZ+KStxJy4/4MyasaunDr6hLbgjNuCDHS9d3+nywX91YVTTuc0g==",
+        "dependencies": {
+          "PdfPig": "0.1.16",
+          "PdfPig.Filters.Dct.JpegLibrary": "0.1.16.1",
+          "PdfPig.Filters.Jbig2.PdfboxJbig2": "0.1.16.1",
+          "PdfPig.Filters.Jpx.OpenJpeg": "0.1.16",
+          "SkiaSharp": "3.119.4",
+          "SkiaSharp.HarfBuzz": "3.119.4"
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux": {
+        "type": "Direct",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "DlBk91MARPfARK5kqd1K6+u6UuUQx+8Rsc+Pwi2dVO7X+S3LsLwqJq1gULLdpIgW2zmcqZ87O6TMfdWkwBXfkQ=="
+      },
+      "HarfBuzzSharp": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "FNlv2OCprGHp3EcaZ9Fc2O3ojl7sGHg418Ey+8g/UwKkPGgBUfdWuhdVOH8pB0wkVkMsFOZH7dr4iOFtVrB88Q==",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "14.2.1.301",
+          "HarfBuzzSharp.NativeAssets.macOS": "14.2.1.301"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "NHHoxkjGkU6BnWyksKjM7TrIReXzpgXuss+ahhUgby0oJuYR9/HaxkfezYe3abpmWDN1PYWM5SBZWob3TzpkKA=="
+      },
+      "HarfBuzzSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "mL1atDEKtJSqutOFjLP/hiA8rTGqOQCHBpfkG3rXnTFJCqN94oAKhR8a7+bhxxxvSgj4soJXUBICSYGte5odNA=="
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "Transitive",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "YTojWeWIhnpF7uC8vpMxB5wRONKkDB2t3r/nNPA3DL2pgj9fqMXRevA/rIanYazWnco4jo1ufgp3HkXuh1Tz8A=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "Yqg6rChTVh0BUE8QQxtOA3uUBnihfgID4yex/AvDa0+os2bVcBjmI3Qj9tnOB+R1hd/Jry1Gwl8qw5JI9HZG8Q=="
+      },
+      "PdfPig.Filters.Jbig2.PdfboxJbig2": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.2, )",
+        "resolved": "0.1.16.2",
+        "contentHash": "14X7BepMrqbzT3Pj6P6GjhWkBILRWk8b2QIfjgIjiHE72pw16pQ1ReDWD6LLtOpJpIYVSr3l1nFVb8zO4UZMCw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "PdfPig.Filters.Jpx.OpenJpeg": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "xh2rTwiwHFpLnVf2exGsLCuG+LwleZImeYCyKXaYK3aU161t4z15kdYkHyZJRnsboJMkN7o/y1YQUmstnFcCdw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "SkiaSharp": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "TghYLOUaP3q6rTjQw7U9uQaaXh8lEs9rfA1U7/VtmyAptVDtj/SmjtcWzFWmcC/VMWxe3QgbV9uyvqDL7ySFtQ==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "4.153.1",
+          "SkiaSharp.NativeAssets.macOS": "4.153.1"
+        }
+      },
+      "SkiaSharp.HarfBuzz": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "57/8+VBQPSltb5MKYIlm0mn7BSoCci7Yq2ffIJSr5nK1fM0NAIIpO6SQVmUXTP9BpZBxa/oaje5odQHyjAJBlQ==",
+        "dependencies": {
+          "HarfBuzzSharp": "14.2.1.301",
+          "SkiaSharp": "4.153.1"
+        }
+      }
+    }
+  }
+}

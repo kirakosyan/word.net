@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net472;netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>WordNet</RootNamespace>
+    <AssemblyName>wordnet</AssemblyName>
+    <IsPackable>true</IsPackable>
+    <PackageId>wordnet</PackageId>
+    <Version>0.1.0-alpha.8</Version>
+    <Authors>Armen Kirakosyan</Authors>
+    <Description>A .NET Word conversion library in early development, with DOC/DOCX, PDF, Markdown, text, EPUB, MOBI, AZW3, XPS output and local English OCR.</Description>
+    <PackageTags>word;docx;doc;pdf;markdown;epub;mobi;azw3;xps;converter</PackageTags>
+    <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnablePackageValidation>true</EnablePackageValidation>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Reference Include="System.IO.Compression" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Markdig" />
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="OpenMcdf" />
+    <PackageReference Include="PdfPig" />
+    <PackageReference Include="PdfPig.Rendering.Skia" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/Fonts/*.ttf" />
+    <None Remove="Resources/Fonts/OFL.txt;Resources/Fonts/README.md" />
+    <None Include="Resources/Fonts/OFL.txt" Pack="true" PackagePath="licenses/NotoSans-OFL.txt" />
+    <None Include="Resources/Fonts/README.md" Pack="true" PackagePath="licenses/NotoSans-Provenance.md" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../THIRD_PARTY_NOTICES.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

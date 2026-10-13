@@ -1,0 +1,249 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using WordNet.Internal;
+using WordNet.Model;
+
+namespace WordNet.Formats;
+
+internal sealed partial class DocxWriter
+{
+    private static readonly XNamespace W = DocxPackage.Word;
+    private readonly ConversionContext context;
+    private readonly List<XElement> relationships = new List<XElement>();
+    private readonly HashSet<string> usedStyles = new HashSet<string>(StringComparer.Ordinal);
+
+    private DocxWriter(ConversionContext context)
+    {
+        this.context = context;
+    }
+
+    internal static void Write(DocumentModel document, Stream output, ConversionContext context)
+    {
+        var writer = new DocxWriter(context);
+        var body = new XElement(W + "body");
+        foreach (DocumentBlock block in document.Blocks)
+        {
+            context.CheckCancellation();
+            if (block is ParagraphBlock paragraph)
+            {
+                body.Add(writer.Paragraph(paragraph));
+            }
+            else if (block is TableBlock table)
+            {
+                body.Add(writer.Table(table));
+            }
+        }
+
+        if (!body.HasElements)
+        {
+            body.Add(new XElement(W + "p"));
+        }
+
+        XNamespace contentTypes = DocxPackage.ContentTypes;
+        var types = new XElement(contentTypes + "Types",
+            new XElement(contentTypes + "Default", new XAttribute("Extension", "rels"),
+                new XAttribute("ContentType", "application/vnd.openxmlformats-package.relationships+xml")),
+            new XElement(contentTypes + "Default", new XAttribute("Extension", "xml"), new XAttribute("ContentType", "application/xml")),
+            new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/document.xml"),
+                new XAttribute("ContentType", DocxPackage.MainContentType)));
+
+        using var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true);
+        WritePart(archive, "_rels/.rels", new XElement(DocxPackage.Relationships + "Relationships",
+            Relationship("rDocument", "officeDocument", "word/document.xml")));
+        WritePart(archive, "word/document.xml", new XElement(W + "document",
+            new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
+            new XAttribute(XNamespace.Xmlns + "r", DocxPackage.DocumentRelationships.NamespaceName), body));
+
+        if (writer.usedStyles.Count > 0)
+        {
+            types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/styles.xml"),
+                new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml")));
+            writer.relationships.Add(Relationship("rStyles", "styles", "styles.xml"));
+            WritePart(archive, "word/styles.xml", writer.Styles());
+        }
+
+        writer.WriteResources(archive, types);
+        if (writer.relationships.Count > 0)
+        {
+            WritePart(archive, "word/_rels/document.xml.rels", new XElement(DocxPackage.Relationships + "Relationships", writer.relationships));
+        }
+
+        WritePart(archive, "[Content_Types].xml", types);
+        context.CheckCancellation();
+    }
+
+    private XElement Paragraph(ParagraphBlock paragraph)
+    {
+        var element = new XElement(W + "p");
+        var properties = new XElement(W + "pPr");
+        string? style = paragraph.IsCodeBlock ? "WordnetCodeBlock"
+            : paragraph.HeadingLevel > 0 ? "Heading" + paragraph.HeadingLevel.ToString(CultureInfo.InvariantCulture) : null;
+        if (style != null)
+        {
+            usedStyles.Add(style);
+            properties.Add(new XElement(W + "pStyle", new XAttribute(W + "val", style)));
+        }
+
+        if (paragraph.List != null) properties.Add(NumberingReference(paragraph.List));
+        if (paragraph.Alignment != ParagraphAlignment.Left)
+            properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment == ParagraphAlignment.Center ? "center" : "right")));
+        if (properties.HasElements) element.Add(properties);
+
+        foreach (TextRun run in paragraph.Runs)
+        {
+            context.CheckCancellation();
+            XElement runElement = Run(run);
+            if (run.Link == null)
+            {
+                element.Add(runElement);
+            }
+            else
+            {
+                string id = "rLink" + relationships.Count.ToString(CultureInfo.InvariantCulture);
+                XElement relationship = Relationship(id, "hyperlink", run.Link);
+                relationship.Add(new XAttribute("TargetMode", "External"));
+                relationships.Add(relationship);
+                element.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElement));
+            }
+        }
+
+        return element;
+    }
+
+    private XElement Run(TextRun run)
+    {
+        var element = new XElement(W + "r");
+        var properties = new XElement(W + "rPr");
+        if (run.Code)
+        {
+            usedStyles.Add("WordnetCode");
+            properties.Add(new XElement(W + "rStyle", new XAttribute(W + "val", "WordnetCode")));
+        }
+
+        if (run.Bold)
+        {
+            properties.Add(new XElement(W + "b"));
+        }
+
+        if (run.Italic)
+        {
+            properties.Add(new XElement(W + "i"));
+        }
+        if (run.Color != null) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color)));
+        if (run.FontSize.HasValue) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(run.FontSize.Value * 2)))));
+
+        if (properties.HasElements)
+        {
+            element.Add(properties);
+        }
+        if (run.Image != null) { element.Add(Drawing(run.Image)); return element; }
+
+        string text;
+        try
+        {
+            text = XmlConvert.VerifyXmlChars(run.Text);
+        }
+        catch (XmlException exception)
+        {
+            throw new InvalidDataException("Text.XmlCharacter: Input contains a character that WordprocessingML cannot represent.", exception);
+        }
+
+        int start = 0;
+        for (int index = 0; index <= text.Length; index++)
+        {
+            if (index == text.Length || text[index] == '\n' || text[index] == '\t')
+            {
+                if (index > start)
+                {
+                    element.Add(new XElement(W + "t", new XAttribute(XNamespace.Xml + "space", "preserve"), text.Substring(start, index - start)));
+                }
+
+                if (index < text.Length)
+                {
+                    element.Add(new XElement(W + (text[index] == '\t' ? "tab" : "br")));
+                }
+
+                start = index + 1;
+            }
+        }
+
+        return element;
+    }
+
+    private XElement Table(TableBlock table)
+    {
+        var element = new XElement(W + "tbl", new XElement(W + "tblPr",
+            new XElement(W + "tblW", new XAttribute(W + "w", table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.Width.HasValue ? "dxa" : "auto"))));
+        int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Count);
+        element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
+            c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));
+        for (int index = 0; index < table.Rows.Count; index++)
+        {
+            context.CheckCancellation();
+            var row = new XElement(W + "tr");
+            if (index == 0 && table.HasHeaderRow)
+            {
+                row.Add(new XElement(W + "trPr", new XElement(W + "tblHeader")));
+            }
+
+            foreach (ParagraphBlock cell in table.Rows[index])
+            {
+                var cellProperties = new XElement(W + "tcPr");
+                if (cell.CellWidth.HasValue) cellProperties.Add(new XElement(W + "tcW", new XAttribute(W + "type", "dxa"), new XAttribute(W + "w", Twips(cell.CellWidth.Value))));
+                if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
+                    Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
+                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Paragraph(cell)));
+            }
+
+            element.Add(row);
+        }
+
+        return element;
+    }
+
+    private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
+    private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));
+
+    private XElement Styles()
+    {
+        var styles = new XElement(W + "styles");
+        foreach (string id in usedStyles.OrderBy(value => value, StringComparer.Ordinal))
+        {
+            var style = new XElement(W + "style", new XAttribute(W + "type", id == "WordnetCode" ? "character" : "paragraph"),
+                new XAttribute(W + "styleId", id), new XElement(W + "name", new XAttribute(W + "val", id)));
+            if (id.StartsWith("Heading", StringComparison.Ordinal))
+            {
+                int level = id[id.Length - 1] - '0';
+                style.Add(new XElement(W + "pPr", new XElement(W + "outlineLvl", new XAttribute(W + "val", level - 1))));
+            }
+            else
+            {
+                style.Add(new XElement(W + "rPr", new XElement(W + "rFonts",
+                    new XAttribute(W + "ascii", "Consolas"), new XAttribute(W + "hAnsi", "Consolas"))));
+            }
+
+            styles.Add(style);
+        }
+
+        return styles;
+    }
+
+    private static XElement Relationship(string id, string type, string target) =>
+        new XElement(DocxPackage.Relationships + "Relationship", new XAttribute("Id", id),
+            new XAttribute("Type", DocxPackage.DocumentRelationships.NamespaceName + "/" + type), new XAttribute("Target", target));
+
+    private static void WritePart(ZipArchive archive, string name, XElement root)
+    {
+        ZipArchiveEntry entry = archive.CreateEntry(name, CompressionLevel.Optimal);
+        entry.LastWriteTime = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        using Stream stream = entry.Open();
+        using XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings { Encoding = TextFormat.Utf8, CloseOutput = false });
+        new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root).Save(writer);
+    }
+}

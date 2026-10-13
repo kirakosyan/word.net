@@ -1,0 +1,32 @@
+name: Android API compilation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - name: Install Android workload
+        run: dotnet workload install android --skip-manifest-update
+      - name: Restore Android API consumer
+        run: dotnet restore tests/wordnet.Android.Compatibility --locked-mode
+      - name: Provision pinned Android test assets
+        shell: pwsh
+        run: ./eng/prepare-android-tests.ps1
+      - name: Compile Android API consumer (not a device test)
+        run: dotnet build tests/wordnet.Android.Compatibility --configuration Release --no-restore

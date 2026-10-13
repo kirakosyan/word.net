@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net472;net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>WordNet.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+    <NuGetLockFilePath Condition="'$(WordnetPackageVersion)' != ''">obj/packaged/packages.lock.json</NuGetLockFilePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <!-- v3 tests are executables. Fix the Windows RID so locked restore also works on Linux. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
+    <PackageReference Include="wordnet" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
+    <PackageReference Include="DocumentFormat.OpenXml" PrivateAssets="all" />
+    <!-- Keep the existing VSTest/TRX commands on every desktop framework. -->
+    <PackageReference Include="xunit.v3.mtp-off" PrivateAssets="all" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Reference Include="System.IO.Compression" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Fixtures/**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
