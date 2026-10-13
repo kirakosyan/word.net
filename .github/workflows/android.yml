@@ -25,5 +25,8 @@ jobs:
         run: dotnet workload install android --skip-manifest-update
       - name: Restore Android API consumer
         run: dotnet restore tests/wordnet.Android.Compatibility --locked-mode
+      - name: Provision pinned Android test assets
+        shell: pwsh
+        run: ./eng/prepare-android-tests.ps1
       - name: Compile Android API consumer (not a device test)
         run: dotnet build tests/wordnet.Android.Compatibility --configuration Release --no-restore

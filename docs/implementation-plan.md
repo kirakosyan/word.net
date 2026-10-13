@@ -13,7 +13,7 @@ See [dependency maintenance](dependencies.md) for versions and the retained buil
 
 Alpha.8 adds font sizes/colors, table widths/cell padding, editable decimal/bullet
 lists and bounded inline PNG/JPEG through Word/EPUB and PDF export/import. The suite
-now has 197 cases, including independent input, schema/geometry/pixel assertions and
+now has 236 cases, including independent input, schema/geometry/pixel assertions and
 malformed-resource regressions. No runtime dependencies or target frameworks changed.
 
 All 28 agreed directions and local English OCR for scanned/mixed PDF input now have

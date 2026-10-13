@@ -27,11 +27,19 @@ internal static class EpubFormat
         XElement opf = archive.ReadXml(package).Root ?? throw new InvalidDataException("Epub.Package: Missing package.");
         if (opf.Name != Opf + "package") throw new InvalidDataException("Epub.Package: Invalid package namespace.");
         var manifest = new Dictionary<string, XElement>(StringComparer.Ordinal);
+        var resources = new Dictionary<string, XElement>(StringComparer.Ordinal);
         foreach (XElement item in opf.Element(Opf + "manifest")?.Elements(Opf + "item") ?? Enumerable.Empty<XElement>())
         {
             string id = (string?)item.Attribute("id") ?? throw new InvalidDataException("Epub.Manifest: Missing identifier.");
             if (manifest.ContainsKey(id)) throw new InvalidDataException("Epub.Manifest: Duplicate identifier.");
             manifest.Add(id, item);
+            string href = (string?)item.Attribute("href") ?? "";
+            if (!Uri.TryCreate(href, UriKind.Absolute, out _) && !href.StartsWith("//", StringComparison.Ordinal))
+            {
+                string resolved = PackageArchive.Resolve(package, href);
+                if (resources.ContainsKey(resolved)) throw new InvalidDataException("Epub.Manifest: Duplicate resource path.");
+                resources.Add(resolved, item);
+            }
         }
         var model = new DocumentModel();
         int characters = 0;
@@ -51,10 +59,7 @@ internal static class EpubFormat
                 if (Uri.TryCreate(target, UriKind.Absolute, out _) || target.StartsWith("//", StringComparison.Ordinal))
                 { context.Loss("Image.External", "Remote and data-URI ebook images are not fetched."); return null; }
                 string resource = PackageArchive.Resolve(path, target);
-                XElement? asset = manifest.Values.FirstOrDefault(m => !Uri.TryCreate((string?)m.Attribute("href"), UriKind.Absolute, out _)
-                    && !((string?)m.Attribute("href") ?? "").StartsWith("//", StringComparison.Ordinal)
-                    && PackageArchive.Resolve(package, (string?)m.Attribute("href") ?? "") == resource);
-                if (asset == null) throw new InvalidDataException("Epub.ImageManifest: Image is missing from the manifest.");
+                if (!resources.TryGetValue(resource, out XElement? asset)) throw new InvalidDataException("Epub.ImageManifest: Image is missing from the manifest.");
                 if ((string?)asset.Attribute("media-type") is not "image/png" and not "image/jpeg")
                 { context.Loss("Image.Format", "Only PNG and JPEG ebook images are supported."); return null; }
                 return DocumentImage.Read(archive.Read(resource), EbookContent.ImageDimension(image, "width", context), EbookContent.ImageDimension(image, "height", context), image.GetAttribute("alt") ?? "", context);

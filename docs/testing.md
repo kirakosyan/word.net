@@ -44,7 +44,22 @@ dotnet test tests/wordnet.Conversion.Tests -c Release -f net472 --no-build --no-
 Switch setup back to ARM64 before native modern tests. Framework tests run only on
 Windows. Agents prefix commands with `rtk` per AGENTS.md.
 
-## Formatting and images — alpha.8, 2026-10-13
+## PR review regressions — 2026-10-13
+
+The suite now contains **236 cases**, including all 28 directions, the four original OCR
+acceptance cases, and 39 review regressions. The new tests check DOC image-store records
+and nested numbering against binary field definitions, zero starts and list restarts,
+linked numbering styles and cycles, style inheritance, moved text, table-header emphasis,
+EPUB URL handling and image scaling, PDF text-matrix scaling, Kindle output budgets,
+multi-page confidence including blank scans, concurrent OCR and final-write cancellation.
+
+The complete suite passes without skips on Windows ARM64 .NET 8/10 and the Windows x64
+Framework host. Reports are under `artifacts/test-results/review/`. Updated Linux and
+Android qualification is recorded with the PR checks and device report when complete.
+The Android workflow now provisions its pinned native libraries and language data before
+building the shared test application; that CI job remains compilation-only.
+
+## Formatting and images — alpha.8, 2026-10-13 (prior revision)
 
 All **197 cases pass without failures or skips** on each of these eight runtime runs
 (1,576 passing cases total):

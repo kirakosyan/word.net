@@ -4,7 +4,10 @@ using System.IO;
 namespace WordNet;
 
 /// <summary>Local Tesseract 5 English printed-text recognition and rasterization settings.</summary>
-/// <remarks>Provision native Tesseract and eng.traineddata explicitly. No downloads or remote services are used.</remarks>
+/// <remarks>
+/// Provision native Tesseract and eng.traineddata explicitly. No downloads or remote services are used.
+/// A loaded native library is retained for the process lifetime; per-page engines and buffers are released.
+/// </remarks>
 public sealed class EnglishOcrOptions
 {
     /// <summary>Creates an English OCR configuration.</summary>

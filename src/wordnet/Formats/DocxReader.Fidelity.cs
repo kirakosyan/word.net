@@ -47,13 +47,11 @@ internal sealed partial class DocxReader
     private ListItem? ResolveList(TextStyle style)
     {
         if (style.ListId == 0) return null;
-        if (!numbers.TryGetValue(style.ListId, out XElement? num) || num.Element(W + "abstractNumId") is not XElement reference
-            || !abstracts.TryGetValue(Integer(reference, W + "val", 0, int.MaxValue), out XElement? definition))
-            throw new InvalidDataException("Docx.Numbering: Unresolved list definition.");
-        XElement[] overrides = num.Elements(W + "lvlOverride").Where(e => Integer(e, W + "ilvl", 0, 8) == style.ListLevel).ToArray();
+        var overrides = new List<XElement>();
+        XElement definition = ResolveNumbering(style.ListId, style.ListLevel, overrides);
         XElement[] levels = definition.Elements(W + "lvl").Where(e => Integer(e, W + "ilvl", 0, 8) == style.ListLevel).ToArray();
-        if (overrides.Length > 1 || levels.Length > 1) throw new InvalidDataException("Docx.Numbering: Duplicate list level.");
-        XElement? level = overrides.FirstOrDefault()?.Element(W + "lvl") ?? levels.FirstOrDefault();
+        if (levels.Length > 1) throw new InvalidDataException("Docx.Numbering: Duplicate list level.");
+        XElement? level = overrides.Select(e => e.Element(W + "lvl")).FirstOrDefault(e => e != null) ?? levels.FirstOrDefault();
         if (level == null) throw new InvalidDataException("Docx.Numbering: Missing list level.");
         string format = (string?)level.Element(W + "numFmt")?.Attribute(W + "val") ?? "decimal";
         if (format is not "decimal" and not "bullet") { context.Loss("Docx.ListFormat", "Unsupported number formats become decimal numbering."); format = "decimal"; }
@@ -66,14 +64,38 @@ internal sealed partial class DocxReader
             context.Loss("Docx.ListBehavior", "Custom list restart, suffix or legal numbering behavior is not retained.");
         if (level.Element(W + "pPr") != null || level.Element(W + "rPr") != null)
             context.Loss("Docx.ListAppearance", "List label styling and indentation use the standard list profile.");
-        XElement? start = overrides.FirstOrDefault()?.Element(W + "startOverride") ?? level.Element(W + "start");
+        XElement? start = overrides.Select(e => e.Element(W + "startOverride") ?? e.Element(W + "lvl")?.Element(W + "start"))
+            .FirstOrDefault(e => e != null) ?? level.Element(W + "start");
         return new ListItem
         {
             Id = "docx-" + style.ListId.ToString(CultureInfo.InvariantCulture),
             Level = style.ListLevel,
             Ordered = format == "decimal",
-            Start = start == null ? 1 : Integer(start, W + "val", 1, int.MaxValue - 1)
+            Start = start == null ? 1 : Integer(start, W + "val", 0, int.MaxValue - 1)
         };
+    }
+
+    private XElement ResolveNumbering(int id, int level, List<XElement> overrides)
+    {
+        var visited = new HashSet<int>();
+        while (true)
+        {
+            context.CheckCancellation();
+            if (!visited.Add(id) || visited.Count > context.Options.MaximumNestingDepth)
+                throw new InvalidDataException("Docx.NumberingCycle: Numbering style links cycle or exceed the nesting limit.");
+            if (!numbers.TryGetValue(id, out XElement? num) || num.Element(W + "abstractNumId") is not XElement reference
+                || !abstracts.TryGetValue(Integer(reference, W + "val", 0, int.MaxValue), out XElement? definition))
+                throw new InvalidDataException("Docx.Numbering: Unresolved list definition.");
+            XElement[] matching = num.Elements(W + "lvlOverride").Where(e => Integer(e, W + "ilvl", 0, 8) == level).ToArray();
+            if (matching.Length > 1) throw new InvalidDataException("Docx.Numbering: Duplicate list override.");
+            overrides.AddRange(matching); // Closest numbering instance takes precedence.
+            string? link = (string?)definition.Element(W + "numStyleLink")?.Attribute(W + "val");
+            if (link == null) return definition;
+            if (!styles.TryGetValue(link, out XElement? style) || (string?)style.Attribute(W + "type") != "numbering")
+                throw new InvalidDataException("Docx.Numbering: Unresolved numbering style.");
+            id = ResolveStyle(link, new HashSet<string>(StringComparer.Ordinal)).ListId;
+            if (id == 0) throw new InvalidDataException("Docx.Numbering: Numbering style has no numbering reference.");
+        }
     }
 
     private DocumentImage? ReadDrawing(XElement drawing)

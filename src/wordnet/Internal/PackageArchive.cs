@@ -76,6 +76,19 @@ internal sealed class PackageArchive : IDisposable
 
     internal static string Resolve(string owner, string target)
     {
+        // Decode URL path segments exactly once, before checking package boundaries.
+        // Never decode ZIP entry names: those already name the actual resource.
+        string[] segments = target.Split('/');
+        for (int i = 0; i < segments.Length; i++)
+        {
+            for (int j = 0; j < segments[i].Length; j++)
+                if (segments[i][j] == '%' && (j + 2 >= segments[i].Length || !Uri.IsHexDigit(segments[i][j + 1]) || !Uri.IsHexDigit(segments[i][j + 2])))
+                    throw new InvalidDataException("Package.Path: Invalid URL escape.");
+            segments[i] = Uri.UnescapeDataString(segments[i]);
+            if (segments[i].Contains('/') || segments[i].Any(char.IsControl))
+                throw new InvalidDataException("Package.Path: Encoded separators or controls are prohibited.");
+        }
+        target = string.Join("/", segments);
         if (target.Length == 0 || target.Any(c => c is '\\' or ':' or '%' or '?' or '#') || target[0] == '/')
             throw new InvalidDataException("Package.Path: External or noncanonical reference.");
         var parts = new List<string>(owner.Split('/').Take(owner.Split('/').Length - 1));

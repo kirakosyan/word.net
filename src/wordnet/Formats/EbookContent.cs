@@ -124,7 +124,7 @@ internal static partial class EbookContent
                 if (level > 8) throw new NotSupportedException("Ebook.ListDepth: Lists support up to nine levels.");
                 Attributes(e, context);
                 int start = 1;
-                if (e.HasAttribute("start") && (!int.TryParse(e.GetAttribute("start"), out start) || start < 1)) throw new InvalidDataException("Ebook.ListStart: Invalid list start.");
+                if (e.HasAttribute("start") && (!int.TryParse(e.GetAttribute("start"), out start) || start < 0)) throw new InvalidDataException("Ebook.ListStart: Invalid list start.");
                 if (e.HasAttribute("reversed") || e.HasAttribute("type")) context.Loss("Ebook.ListStyle", "Reversed and custom list styles use decimal numbering or bullets.");
                 ReadBlocks(e, model, context, imageReader, new ListItem { Id = "ebook-" + context.NextListId(), Level = level, Ordered = tag == "ol", Start = start }); continue;
             }
@@ -176,7 +176,9 @@ internal static partial class EbookContent
             }
             if (!(tag is "p" or "pre" or "span" or "b" or "strong" or "i" or "em" or "code" or "a" or "td" or "th" or "li" or "blockquote" or "h1" or "h2" or "h3" or "h4" or "h5" or "h6"))
                 context.Loss("Ebook.InlineFormatting", "Unsupported inline formatting is flattened.");
-            bold |= tag is "b" or "strong" or "th";
+            bold |= tag is "b" or "strong";
+            string? weight = Css(e, "font-weight");
+            if (weight != null) bold = weight is "bold" or "700";
             italic |= tag is "i" or "em";
             code |= tag is "code" or "pre";
             if (tag == "a") link = context.SafeLink(e.GetAttribute("href") ?? "");

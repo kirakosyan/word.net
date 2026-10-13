@@ -42,6 +42,9 @@ against the new package. Package references continue to use `wordnet`.
 Strict mode is the default: detected losses throw before output is copied.
 Best-effort mode converts supported content and returns warnings. DOC and PDF import
 always report formatting/reconstruction losses and therefore require best-effort mode.
+Ordinary Word-authored DOCX files also often need best effort: font families, paragraph
+spacing and section/page geometry are outside the current model. Harmless document
+properties and language/editor metadata produce informational diagnostics instead.
 `CanConvert` describes format pairs, not support for every feature in a particular file.
 
 ## C# examples
@@ -245,8 +248,13 @@ fallback. The validation container registers the repository's pinned Noto Sans f
 PdfPig/SkiaSharp rasterize pages. OCR runs locally and never downloads models during
 conversion. Pages identified as scans (large page images), and image-only pages, are
 recognized once as whole pages when OCR is configured, avoiding duplicated digital overlays.
-Ordinary illustrations alongside digital text are retained as images.
-Diagnostics report OCR use and confidence, which is not an accuracy guarantee.
+Ordinary illustrations alongside digital text are retained as images unless the large-image
+heuristic selects whole-page OCR. `Pdf.OcrImageLoss` reports discarded page images;
+`Pdf.OcrTextReplacement` reports replacement of an existing digital text layer.
+Confidence is the arithmetic mean of each OCR page's recognized-word confidence,
+including blank pages, with the page count reported. It is not an accuracy guarantee.
+The configured native library remains loaded for the process lifetime; each recognition
+engine and its image/text buffers are released after use.
 
 [The test setup script](eng/prepare-ocr-tests.ps1) provisions pinned prerequisites.
 Tesseract and language data are supplied by the host, not included in the wordnet NuGet.

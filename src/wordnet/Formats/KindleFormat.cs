@@ -16,6 +16,9 @@ internal static class KindleFormat
     internal static void Write(DocumentModel model, Stream output, bool kf8, ConversionContext context)
     {
         byte[] html = EbookContent.Write(model, context);
+        if (html.LongLength > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: Ebook text exceeds the output limit.");
+        if ((html.LongLength + 4095) / 4096 + (kf8 ? 7 : 4) > ushort.MaxValue)
+            throw new InvalidDataException("Kindle.RecordCount: Ebook exceeds the Palm database record count limit.");
         var records = new List<byte[]> { Array.Empty<byte>() };
         for (int offset = 0; offset < html.Length; offset += 4096) records.Add(html.Skip(offset).Take(Math.Min(4096, html.Length - offset)).ToArray());
         int textRecords = records.Count - 1;
@@ -44,11 +47,12 @@ internal static class KindleFormat
         Put32(header, 224, -1); Put32(header, 232, -1); Put32(header, 236, -1); Put32(header, 244, -1);
         if (kf8) { Put32(header, 248, -1); Put32(header, 252, skeleton); Put32(header, 256, -1); Put32(header, 260, -1); }
         Magic(header, 16 + mobiLength, "Document"); records[0] = header;
-        if (records.Count > ushort.MaxValue || records.Count > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.ArchiveEntries: Ebook record count exceeds the limit.");
+        if (records.Count > ushort.MaxValue) throw new InvalidDataException("Kindle.RecordCount: Ebook exceeds the Palm database record count limit.");
         byte[] pdb = new byte[78 + records.Count * 8 + 2];
         Magic(pdb, 0, "Document"); Put16(pdb, 34, 0); Magic(pdb, 60, "BOOKMOBI"); Put32(pdb, 68, records.Count + 1); Put16(pdb, 76, records.Count);
         int position = pdb.Length;
         for (int i = 0; i < records.Count; i++) { Put32(pdb, 78 + i * 8, position); Put32(pdb, 82 + i * 8, i * 2); position = checked(position + records[i].Length); }
+        if (position > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: Ebook exceeds the output limit.");
         output.Write(pdb, 0, pdb.Length);
         foreach (byte[] record in records) { context.CheckCancellation(); output.Write(record, 0, record.Length); }
     }

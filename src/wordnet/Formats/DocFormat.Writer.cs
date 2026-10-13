@@ -119,7 +119,7 @@ internal static partial class DocFormat
                 }
                 text.Append(run.Text.Replace('\n', '\v'));
                 if (text.Length != runStart) characters.Add(new WriteRun(runStart, text.Length,
-                    Join(Sprm(0x0835, run.Bold || header ? 1 : 0), Sprm(0x0836, run.Italic ? 1 : 0),
+                    Join(Sprm(0x0835, run.Bold ? 1 : 0), Sprm(0x0836, run.Italic ? 1 : 0),
                         run.FontSize.HasValue ? SprmValue(0x4a43, checked((int)Math.Round(run.FontSize.Value * 2)), 2) : Array.Empty<byte>(),
                         run.Color == null ? Array.Empty<byte>() : Join(new byte[] { 0x70, 0x68 }, Enumerable.Range(0, 3).Select(i => Convert.ToByte(run.Color.Substring(i * 2, 2), 16)).ToArray(), new byte[1]))));
             }

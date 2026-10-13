@@ -144,7 +144,7 @@ internal static class FixedLayout
                 }
                 if (run.Text.Any(c => c >= '\u0590' && c <= '\u0dff' || char.IsSurrogate(c)))
                     throw new NotSupportedException("Layout.Shaping: This page-layout profile does not support complex-script shaping or supplementary characters.");
-                int font = ((run.Bold || header || paragraph.HeadingLevel > 0) ? 1 : 0) + (run.Italic ? 2 : 0);
+                int font = ((run.Bold || paragraph.HeadingLevel > 0) ? 1 : 0) + (run.Italic ? 2 : 0);
                 double size = run.FontSize ?? baseSize;
                 foreach (char character in run.Text)
                     if (character is not '\n' and not '\t' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))

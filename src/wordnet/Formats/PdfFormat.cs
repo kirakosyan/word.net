@@ -62,6 +62,9 @@ internal static class PdfFormat
             bool scannedPage = embeddedImages.Any(i => i.BoundingBox.Width * i.BoundingBox.Height >= page.Width * page.Height * 0.5);
             if (images && context.Options.EnglishOcr != null && (scannedPage || string.IsNullOrWhiteSpace(text)))
             {
+                context.Loss("Pdf.OcrImageLoss", "OCR replaces the rendered page with editable text; embedded images are not retained.");
+                if (!string.IsNullOrWhiteSpace(text))
+                    context.Loss("Pdf.OcrTextReplacement", "A large image triggered whole-page OCR; existing digital text is replaced by recognition results.");
                 EnglishOcrOptions options = context.Options.EnglishOcr;
                 double scale = options.ResolutionDpi / 72.0;
                 double pixels = Math.Ceiling(page.Width * scale) * Math.Ceiling(page.Height * scale);
@@ -86,7 +89,7 @@ internal static class PdfFormat
                     double? previous = null;
                     foreach (var letter in line.OrderBy(l => l.StartBaseLine.X))
                     {
-                        if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.FontSize * 0.25) paragraph.Runs.Add(new TextRun(" "));
+                        if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.PointSize * 0.25) paragraph.Runs.Add(new TextRun(" "));
                         paragraph.Runs.Add(new TextRun(letter.Value)); previous = letter.EndBaseLine.X;
                     }
                     blocks.Add((line.Key, line.Min(l => l.StartBaseLine.X), paragraph));

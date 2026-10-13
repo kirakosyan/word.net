@@ -85,12 +85,13 @@ internal sealed class ListItem
 
 internal sealed class ListCounter
 {
-    private readonly Dictionary<string, int[]> counters = new Dictionary<string, int[]>();
+    private readonly Dictionary<string, int?[]> counters = new Dictionary<string, int?[]>();
     internal string Label(ListItem item)
     {
-        if (!counters.TryGetValue(item.Id, out int[]? values)) counters.Add(item.Id, values = new int[9]);
-        values[item.Level] = values[item.Level] == 0 ? item.Start : checked(values[item.Level] + 1);
-        for (int i = item.Level + 1; i < 9; i++) values[i] = 0;
-        return item.Ordered ? values[item.Level].ToString(System.Globalization.CultureInfo.InvariantCulture) + "." : "•";
+        if (!counters.TryGetValue(item.Id, out int?[]? values)) counters.Add(item.Id, values = new int?[9]);
+        int value = values[item.Level].HasValue ? checked(values[item.Level]!.Value + 1) : item.Start;
+        values[item.Level] = value;
+        for (int i = item.Level + 1; i < 9; i++) values[i] = null;
+        return item.Ordered ? value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "." : "•";
     }
 }

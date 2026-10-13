@@ -15,7 +15,7 @@ internal static partial class EbookContent
     private static string Points(double value) => value.ToString("0.###", CultureInfo.InvariantCulture) + "pt";
     private static XElement TableCell(ParagraphBlock cell, bool header, Func<DocumentImage, string>? imageWriter, ListCounter counter, ConversionContext context)
     {
-        var element = new XElement(Html + (header ? "th" : "td"), new XAttribute("style", CellStyle(cell)));
+        var element = new XElement(Html + (header ? "th" : "td"), new XAttribute("style", (header ? "font-weight:normal;" : "") + CellStyle(cell)));
         XElement paragraph = Paragraph(cell, imageWriter);
         if (cell.List == null) element.Add(paragraph);
         else AppendList(element, new List<(string, XElement)>(), cell.List, paragraph, counter.Label(cell.List), context);
@@ -53,15 +53,16 @@ internal static partial class EbookContent
         {
             "text-align" => IsAlignmentBlock(element),
             "font-size" => Length(value).HasValue,
+            "font-weight" => value is "normal" or "bold" or "400" or "700",
             "color" => IsRgb(value),
-            "width" => element.LocalName is "img" or "table" or "col" or "td" or "th" && Length(value).HasValue,
-            "height" => element.LocalName == "img" && Length(value).HasValue,
+            "width" => element.LocalName is "img" or "table" or "col" or "td" or "th" && Length(value, element.LocalName == "img").HasValue,
+            "height" => element.LocalName == "img" && Length(value, true).HasValue,
             "padding-top" or "padding-right" or "padding-bottom" or "padding-left" => element.LocalName is "td" or "th" && Length(value).HasValue,
             _ => false,
         };
     }
 
-    private static double? Length(string value)
+    private static double? Length(string value, bool image = false)
     {
         double scale;
         if (value.EndsWith("pt", StringComparison.OrdinalIgnoreCase)) scale = 1;
@@ -73,7 +74,7 @@ internal static partial class EbookContent
 #else
         if (!double.TryParse(value.Substring(0, value.Length - 2), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double points)
 #endif
-            || points < 0 || points * scale > 1638) return null;
+            || points < 0 || double.IsInfinity(points) || double.IsNaN(points) || !image && points * scale > 1638) return null;
         return points * scale;
     }
 
@@ -81,7 +82,7 @@ internal static partial class EbookContent
     {
         string? value = Css(element, name, name == "font-size");
         if (value == null) return null;
-        double? result = Length(value);
+        double? result = Length(value, element.LocalName == "img" && name is "width" or "height");
         if (!result.HasValue || result == 0 && (name == "font-size" || name is "width" or "height"))
         { context.Loss("Ebook.CssLength", "Only positive absolute point/pixel dimensions and nonnegative margins are supported."); return null; }
         return result;
@@ -125,7 +126,7 @@ internal static partial class EbookContent
         if (css.HasValue) return css;
         string? attribute = element.GetAttribute(name);
         if (attribute == null) return null;
-        if (!double.TryParse(attribute, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double value) || value <= 0 || value > 2112)
+        if (!double.TryParse(attribute, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double value) || value <= 0 || double.IsInfinity(value) || double.IsNaN(value))
             throw new InvalidDataException("Epub.ImageSize: Invalid image dimension.");
         return value * 0.75;
     }

@@ -58,7 +58,7 @@ internal static class MarkdownFormat
                 case ListBlock list:
                     if (listDepth > 8) throw new NotSupportedException("Markdown.ListDepth: Lists support up to nine levels.");
                     int number = int.TryParse(list.OrderedStart, NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) ? start : 1;
-                    if (number < 1) throw new NotSupportedException("Markdown.ListStart: List numbering must start at one or greater.");
+                    if (number < 0) throw new NotSupportedException("Markdown.ListStart: List numbering must start at zero or greater.");
                     string id = "markdown-" + context.NextListId();
                     foreach (ListItemBlock item in list.Cast<ListItemBlock>())
                     {

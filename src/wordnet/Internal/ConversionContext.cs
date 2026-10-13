@@ -12,6 +12,9 @@ internal sealed class ConversionContext
     private readonly HashSet<string> codes = new HashSet<string>(StringComparer.Ordinal);
     private long imagePixels;
     private int listId;
+    private long ocrConfidenceSum;
+    private int ocrPages;
+    internal void AddOcrConfidence(int confidence) { ocrConfidenceSum += confidence; ocrPages++; }
     internal string NextListId() => (++listId).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     internal void ReserveImagePixels(int width, int height)
@@ -58,7 +61,13 @@ internal sealed class ConversionContext
         }
     }
 
-    internal ConversionResult Result(long count) => new ConversionResult(count, diagnostics.AsReadOnly());
+    internal ConversionResult Result(long count)
+    {
+        if (ocrPages > 0) Report("Ocr.Confidence", "Mean of per-page recognized-word confidences: "
+            + ((double)ocrConfidenceSum / ocrPages).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)
+            + "/100 across " + ocrPages.ToString(System.Globalization.CultureInfo.InvariantCulture) + " OCR page(s).");
+        return new ConversionResult(count, diagnostics.AsReadOnly());
+    }
 
     internal string? SafeLink(string? link)
     {

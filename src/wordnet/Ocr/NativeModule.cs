@@ -1,15 +1,35 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace WordNet.Ocr;
 
-internal sealed class NativeModule : IDisposable
+internal sealed class NativeModule
 {
-    private IntPtr handle;
+    // OCR dependencies can retain worker threads and thread-local state after API deletion.
+    // Keep one loader reference per configured library for the process lifetime, as with
+    // ordinary P/Invoke. Per-page engines and image/text buffers are still released.
+    private static readonly Dictionary<string, NativeModule> modules = new Dictionary<string, NativeModule>(
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+    private readonly IntPtr handle;
 
-    internal NativeModule(string path)
+    internal static NativeModule Load(string path)
+    {
+        path = Path.GetFullPath(path);
+        lock (modules)
+        {
+            if (!modules.TryGetValue(path, out NativeModule? module))
+            {
+                module = new NativeModule(path);
+                modules.Add(path, module);
+            }
+            return module;
+        }
+    }
+
+    private NativeModule(string path)
     {
         if (!File.Exists(path)) throw new FileNotFoundException("Ocr.NativeLibrary: Provision Tesseract 5 for the process architecture.", path);
 #if NET8_0_OR_GREATER
@@ -36,19 +56,6 @@ internal sealed class NativeModule : IDisposable
 
     internal static byte[] Utf8(string value) => Encoding.UTF8.GetBytes(value + "\0");
 
-    public void Dispose()
-    {
-        if (handle == IntPtr.Zero) return;
-#if NET8_0_OR_GREATER
-        NativeLibrary.Free(handle);
-#else
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) _ = FreeLibrary(handle);
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) _ = MacClose(handle);
-        else _ = LinuxClose(handle);
-#endif
-        handle = IntPtr.Zero;
-    }
-
 #if !NET8_0_OR_GREATER
     [DllImport("kernel32.dll", EntryPoint = "LoadLibraryExW", CharSet = CharSet.Unicode, SetLastError = true)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
@@ -56,21 +63,13 @@ internal sealed class NativeModule : IDisposable
     [DllImport("kernel32.dll", ExactSpelling = true)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     private static extern IntPtr GetProcAddress(IntPtr module, byte[] name);
-    [DllImport("kernel32.dll", ExactSpelling = true)]
-    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool FreeLibrary(IntPtr module);
     [DllImport("libdl.so.2", EntryPoint = "dlopen")]
     private static extern IntPtr LinuxOpen(byte[] path, int flags);
     [DllImport("libdl.so.2", EntryPoint = "dlsym")]
     private static extern IntPtr LinuxSymbol(IntPtr handle, byte[] name);
-    [DllImport("libdl.so.2", EntryPoint = "dlclose")]
-    private static extern int LinuxClose(IntPtr handle);
     [DllImport("/usr/lib/libSystem.B.dylib", EntryPoint = "dlopen")]
     private static extern IntPtr MacOpen(byte[] path, int flags);
     [DllImport("/usr/lib/libSystem.B.dylib", EntryPoint = "dlsym")]
     private static extern IntPtr MacSymbol(IntPtr handle, byte[] name);
-    [DllImport("/usr/lib/libSystem.B.dylib", EntryPoint = "dlclose")]
-    private static extern int MacClose(IntPtr handle);
 #endif
 }

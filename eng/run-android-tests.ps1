@@ -32,7 +32,7 @@ while ($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
         [IO.File]::WriteAllText($path, $report, [Text.UTF8Encoding]::new($false))
         $suite = ([xml]$report).testsuite
         Write-Output "Android: $($suite.tests) tests, $($suite.failures) failures, $($suite.skipped) skipped. Report: $path"
-        if ([int]$suite.tests -lt 197 -or [int]$suite.failures -ne 0 -or [int]$suite.skipped -ne 0) { throw 'Android qualification failed; inspect the report.' }
+        if ([int]$suite.tests -lt 236 -or [int]$suite.failures -ne 0 -or [int]$suite.skipped -ne 0) { throw 'Android qualification failed; inspect the report.' }
         exit 0
     }
     Start-Sleep -Seconds 2

@@ -195,7 +195,5 @@ public sealed class WordConverter : IDocumentConverter
             destination.Write(buffer, 0, count);
             total += count;
         }
-
-        context.CheckCancellation();
     }
 }

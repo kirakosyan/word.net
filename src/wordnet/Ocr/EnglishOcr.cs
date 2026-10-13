@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using SkiaSharp;
@@ -15,7 +14,7 @@ internal static class EnglishOcr
     {
         if (!File.Exists(Path.Combine(options.DataDirectory, "eng.traineddata"))) throw new FileNotFoundException("Ocr.LanguageData: eng.traineddata must be provisioned locally.");
         if ((long)bitmap.Width * bitmap.Height > options.MaximumImagePixels) throw new InvalidDataException("Limit.ImagePixels: OCR image exceeds the pixel limit.");
-        using var module = new NativeModule(options.NativeLibraryPath);
+        NativeModule module = NativeModule.Load(options.NativeLibraryPath);
         Create create = module.Function<Create>("TessBaseAPICreate");
         Delete delete = module.Function<Delete>("TessBaseAPIDelete");
         Init init = module.Function<Init>("TessBaseAPIInit3");
@@ -50,7 +49,7 @@ internal static class EnglishOcr
                 }
                 string text = TextFormat.Decode(bytes.ToArray(), context);
                 context.Report("Ocr.English", "English printed-text OCR was used; recognition requires review.");
-                context.Report("Ocr.Confidence", "Mean recognized-word confidence: " + confidence(api).ToString(CultureInfo.InvariantCulture) + "/100.");
+                context.AddOcrConfidence(confidence(api));
                 return text.TrimEnd('\n', '\r');
             }
             finally { deleteText(pointer); }

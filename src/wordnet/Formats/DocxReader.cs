@@ -28,7 +28,8 @@ internal sealed partial class DocxReader
     internal static DocumentModel Read(Stream input, ConversionContext context)
     {
         using var package = new DocxPackage(input, context);
-        var mainRelations = package.ReadRelationships("").Values
+        var rootRelations = package.ReadRelationships("").Values;
+        var mainRelations = rootRelations
             .Where(relation => (string?)relation.Attribute("Type") == DocxPackage.DocumentRelationships.NamespaceName + "/officeDocument").ToArray();
         if (mainRelations.Length != 1)
         {
@@ -67,6 +68,8 @@ internal sealed partial class DocxReader
         reader.mainPart = main;
         reader.knownParts = knownParts;
         reader.ReadNumbering();
+        reader.ReadAuxiliaryParts("", rootRelations);
+        reader.ReadAuxiliaryParts(main, reader.relationships.Values);
 
         XDocument source = package.ReadXml(main);
         if (source.Root?.Name != W + "document")
@@ -83,8 +86,33 @@ internal sealed partial class DocxReader
         var document = new DocumentModel();
         reader.ReadBlocks(bodies[0], document.Blocks);
         if (package.PartNames.Any(name => !knownParts.Contains(name)))
-            context.Loss("Docx.AdditionalParts", "Additional parts such as metadata or headers are not preserved in this conversion profile.");
+            context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         return document;
+    }
+
+    private void ReadAuxiliaryParts(string owner, IEnumerable<XElement> relations)
+    {
+        foreach (XElement relation in relations)
+        {
+            string type = (string?)relation.Attribute("Type") ?? "";
+            bool metadata = type == "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"
+                || type == DocxPackage.DocumentRelationships.NamespaceName + "/extended-properties"
+                || type == DocxPackage.DocumentRelationships.NamespaceName + "/custom-properties";
+            bool catalog = type == DocxPackage.DocumentRelationships.NamespaceName + "/fontTable"
+                || type == DocxPackage.DocumentRelationships.NamespaceName + "/theme"
+                || type == DocxPackage.DocumentRelationships.NamespaceName + "/webSettings";
+            bool settings = type == DocxPackage.DocumentRelationships.NamespaceName + "/settings";
+            if (!metadata && !catalog && !settings) continue;
+            string path = DocxPackage.ResolvePart(owner, relation);
+            XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.AuxiliaryPart: Missing root.");
+            knownParts.Add(path);
+            if (settings && root.Elements().Any(e => e.Name != W + "proofState" && e.Name != W + "zoom"
+                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl"))
+                context.Loss("Docx.Settings", "Unsupported document settings may affect layout or editing behavior and are not retained.");
+            if (settings && root.Elements().Any(e => e.Name == W + "defaultTabStop" || e.Name == W + "characterSpacingControl"))
+                context.Loss("Docx.Settings", "Tab and character-spacing settings are not retained.");
+            context.Report("Docx.AuxiliaryMetadata", "Document properties, font/theme catalogs and editor metadata are not retained; unsupported content formatting is diagnosed separately.");
+        }
     }
 
     private void ReadStyles(XDocument source)
@@ -133,13 +161,13 @@ internal sealed partial class DocxReader
             {
                 if (element.HasElements)
                 {
-                    context.Loss("Docx.PageLayout", "Section geometry, headers and page layout are not preserved in text/Markdown.");
+                    context.Loss("Docx.PageLayout", "Section geometry, headers and page layout are not retained by the current document model.");
                 }
             }
             else
             {
                 context.Loss("Docx.Block", "Unsupported document block structure is flattened where supported content is available.");
-                if (element.Name != W + "del")
+                if (element.Name != W + "del" && element.Name != W + "moveFrom")
                 {
                     ReadBlocks(element, blocks);
                 }
@@ -222,7 +250,7 @@ internal sealed partial class DocxReader
             else
             {
                 context.Loss("Docx.Inline", "Unsupported inline content or annotations are flattened where text is available.");
-                if (child.Name != W + "del" && child.Name != W + "delText" && child.Name != W + "instrText")
+                if (child.Name != W + "del" && child.Name != W + "moveFrom" && child.Name != W + "delText" && child.Name != W + "instrText")
                 {
                     ReadInlines(child, runs, inherited, link);
                 }
@@ -388,7 +416,7 @@ internal sealed partial class DocxReader
             }
             else if (property.Name != W + "pStyle")
             {
-                context.Loss("Docx.ParagraphFormatting", "Paragraph formatting such as numbering, spacing or page controls is not retained.");
+                context.Loss("Docx.ParagraphFormatting", "Paragraph formatting such as spacing, paragraph-mark styling or page controls is not retained.");
             }
         }
     }
@@ -404,12 +432,12 @@ internal sealed partial class DocxReader
         {
             if (property.Name == W + "b")
             {
-                // Style-level emphasis is a toggle; direct run formatting is absolute.
-                style.Bold = visiting == null ? IsOn(property) : style.Bold ^ IsOn(property);
+                // Resolve each style's basedOn chain before combining paragraph and character styles.
+                style.Bold = IsOn(property);
             }
             else if (property.Name == W + "i")
             {
-                style.Italic = visiting == null ? IsOn(property) : style.Italic ^ IsOn(property);
+                style.Italic = IsOn(property);
             }
             else if (property.Name == W + "rStyle")
             {
@@ -430,9 +458,11 @@ internal sealed partial class DocxReader
                 style.HasColor = true;
                 if (property.Attributes().Any(a => a.Name != W + "val")) context.Loss("Docx.ThemeColor", "Theme color uses its stored RGB fallback.");
             }
+            else if (property.Name == W + "lang")
+                context.Report("Docx.LanguageMetadata", "Language/proofing metadata is not retained; Unicode text is preserved.");
             else if (!(knownCodeStyle && property.Name == W + "rFonts"))
             {
-                context.Loss("Docx.RunFormatting", "Run formatting beyond bold, italic and recognized code styles is not retained.");
+                context.Loss("Docx.RunFormatting", "Unsupported run properties such as font families and complex-script formatting are not retained.");
             }
         }
     }

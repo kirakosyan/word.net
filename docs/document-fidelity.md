@@ -8,17 +8,20 @@ all four library targets and introduces no new runtime dependencies or public pr
 | Text appearance | Explicit font sizes and RGB colors through DOCX, DOC and EPUB; measured sizes/colors in PDF and XPS output |
 | Inheritance | DOCX document defaults, paragraph and character style chains, direct overrides and automatic-color reset |
 | Tables | Absolute preferred table width, grid/cell widths and top/right/bottom/left cell padding; unequal columns in fixed-page output |
-| Lists | Editable decimal numbering and round bullets through DOCX, DOC and EPUB, including nesting up to nine levels and start values; editable Markdown list import |
+| Lists | Editable decimal numbering and round bullets through DOCX, DOC and EPUB, including nesting up to nine levels and zero-based start values; linked DOCX numbering styles and editable Markdown list import |
 | Images | Bounded inline PNG/JPEG, encoded-byte preservation through DOCX/DOC/EPUB, physical point dimensions and image-aware line layout |
 | PDF illustrations | Real PNG/JPEG export; ordinary embedded raster images reconstructed alongside digital text in geometric reading order |
 
 DOCX half-point sizes and binary Word twip dimensions have their format's precision.
-EPUB supports inline `font-size` in points/pixels, six-digit RGB `color`, absolute
+EPUB supports inline `font-size` in points/pixels, normal/bold `font-weight`, six-digit RGB `color`, absolute
 table/column/cell/image dimensions and individual cell padding sides. Percentage widths,
 named/theme color semantics, stylesheets and a general CSS cascade are not implemented.
 DOC uses MS-DOC font/color SPRMs, list records, cell boundaries and padding operands,
 and PICF/OfficeArt image records. The legacy OfficeArt image identifier follows RFC 1320;
 it is not used for security decisions.
+DOC pictures include explicit FBSE store entries containing the image BLIP. Table-header
+semantics do not imply direct bold formatting. EPUB package URLs are decoded once before
+canonical path validation; encoded traversal and separators cannot escape the package.
 
 Fixed pages use the pinned Noto Sans faces, A4 geometry and simple flow layout. Original
 font families, page/section geometry, advanced typography, hanging list indentation and
@@ -39,9 +42,13 @@ at least half the page as a scan candidate. With OCR configured, those pages and
 pages are recognized as a whole; otherwise ordinary illustrations can remain image objects.
 This heuristic is not a classifier for arbitrary page designs. English OCR still produces
 editable printed text, not reconstructed tables, fonts or arbitrary page layout.
+Whole-page OCR explicitly reports image loss and replacement of any digital text layer.
+The confidence diagnostic averages all OCR pages' mean confidences and reports their count.
 
-Images must decode completely, have positive bounded dimensions (at most 22 inches),
-and fit the aggregate decoded-pixel allowance (`MaximumExpandedBytes / 4`). PDF raster
+Images must decode completely, have positive finite dimensions,
+and fit the aggregate decoded-pixel allowance (`MaximumExpandedBytes / 4`). Images exceeding
+the 22-inch dimension profile scale proportionally with an `Image.Scaled` loss in best
+effort; strict mode rejects that loss. Original encoded pixels are retained. PDF raster
 dimensions are checked before decoding and cross-checked against decoded data. ZIP/input/
 output bounds also apply. Native decoder allocations still require host-level resource
 isolation for hard CPU/RSS limits. Oversized fixed-page content fails instead of silently

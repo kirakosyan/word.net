@@ -49,7 +49,7 @@ internal static partial class DocFormat
                 }
                 else if ((flags & 16) != 0)
                 {
-                    if (start < 1 || start > 32767) throw new NotSupportedException("Doc.ListStart: Numbering must start between 1 and 32767.");
+                    if (start < 0 || start > 32767) throw new NotSupportedException("Doc.ListStart: Numbering must start between 0 and 32767.");
                     levels[level].Start = start;
                 }
             }
@@ -70,7 +70,7 @@ internal static partial class DocFormat
             context.Loss("Doc.ListLabel", "Custom list labels become decimal numbers or round bullets.");
         if ((table[record + 5] & 15) != 0 || table[record + 15] != 0 || chpx != 0 || papx != 0)
             context.Loss("Doc.ListAppearance", "List styling, suffixes and custom restart behavior use the standard list profile.");
-        if (format != 23 && (start < 1 || start > 32767)) throw new NotSupportedException("Doc.ListStart: Numbering must start between 1 and 32767.");
+        if (format != 23 && (start < 0 || start > 32767)) throw new NotSupportedException("Doc.ListStart: Numbering must start between 0 and 32767.");
         return new ListItem { Level = level, Start = format == 23 ? 1 : start, Ordered = format != 23 };
     }
 
@@ -87,9 +87,9 @@ internal static partial class DocFormat
             for (int level = 0; level < 9; level++)
             {
                 ListItem item = list.FirstOrDefault(l => l.Level == level) ?? new ListItem { Level = level, Ordered = true };
-                if (item.Start < 1 || item.Start > 32767) throw new NotSupportedException("Doc.ListStart: Numbering must start between 1 and 32767.");
+                if (item.Start < 0 || item.Start > 32767) throw new NotSupportedException("Doc.ListStart: Numbering must start between 0 and 32767.");
                 byte[] value = new byte[28]; W32(value, 0, item.Start); value[4] = item.Ordered ? (byte)0 : (byte)23;
-                if (item.Ordered) value[6 + level] = 1;
+                if (item.Ordered) value[6] = 1; // First placeholder is at the first character, at every nesting level.
                 stream.Write(value, 0, value.Length);
                 string text = item.Ordered ? ((char)level).ToString() + "." : "•";
                 stream.WriteByte((byte)text.Length); stream.WriteByte(0); byte[] encoded = Unicode.GetBytes(text); stream.Write(encoded, 0, encoded.Length);

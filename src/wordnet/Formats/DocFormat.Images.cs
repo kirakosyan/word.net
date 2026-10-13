@@ -81,10 +81,17 @@ internal static partial class DocFormat
         byte[] container = Art(0x000f, 0xf004, Join(Art((75 << 4) | 2, 0xf00a, shape), Art(0x13, 0xf00b, property)));
         byte[] uid = ImageIdentifier.Compute(image.Bytes);
         byte[] blip = Art(image.Extension == "png" ? 0x6e00 : 0x46a0, image.Extension == "png" ? 0xf01e : 0xf01d, Join(uid, new byte[] { 255 }, image.Bytes));
-        byte[] header = new byte[68]; W32(header, 0, checked(68 + container.Length + blip.Length)); W16(header, 4, 68); W16(header, 6, 100);
+        // Inline rgfb permits bare BLIPs as well as FBSE records. Use an explicit store
+        // entry so readers can also inspect the image type, identity and reference count.
+        int type = image.Extension == "png" ? 6 : 5;
+        byte[] entry = new byte[36]; entry[0] = entry[1] = (byte)type;
+        Array.Copy(uid, 0, entry, 2, uid.Length); W16(entry, 18, 255);
+        W32(entry, 20, blip.Length); W32(entry, 24, 1);
+        byte[] store = Art((type << 4) | 2, 0xf007, Join(entry, blip));
+        byte[] header = new byte[68]; W32(header, 0, checked(68 + container.Length + store.Length)); W16(header, 4, 68); W16(header, 6, 100);
         W16(header, 28, checked((int)Math.Round(image.Width * 20))); W16(header, 30, checked((int)Math.Round(image.Height * 20)));
         W16(header, 32, 1000); W16(header, 34, 1000);
-        return Join(header, container, blip);
+        return Join(header, container, store);
     }
 
     private static byte[] Art(int options, int type, byte[] payload)

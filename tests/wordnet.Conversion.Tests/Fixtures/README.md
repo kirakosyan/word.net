@@ -94,3 +94,20 @@ in `apache-poi/`; inserted text is MIT. This independent producer is not shipped
 | color-grid-alpha.png | `3248f4deb843e3cdcae500bacb5025df1a08518919bf3b19622f8c88eaa6968e` |
 | illustrated.pdf | `09bf82db2122a06ed76f04a773d3574feb0315bf801858c4d49761e88ccdd836` |
 | poi-appearance.doc | `4785e1b5d8dc060e42d9025f19e168f2809a0b1f6c5bfccccb6fd0c3e993ee05` |
+
+## Review regression fixtures — 2026-10-13
+
+`generate_review_fixtures.py` uses Pillow and ReportLab for original MIT synthetic inputs:
+`large-cover.png` is a 1600×2560 solid-color cover; `matrix-scaled.pdf` uses a one-unit
+font with a 12× text matrix, small character gaps, a real word gap and an illustration.
+`multipage-ocr.pdf` contains the clean scan, the scan plus digital footer, and a blank
+image page. `blank-scan.pdf` provides the independent single-page confidence baseline.
+The OCR images use the pinned Noto Sans face. PDF invariant metadata is enabled.
+No external document contents or images were copied.
+
+| File | SHA-256 |
+| --- | --- |
+| large-cover.png | `847d7f4cf488fe09a1b5ae368230a3750dcb82c44e20ea74af2733ad10e0f12d` |
+| matrix-scaled.pdf | `18bfa983322d41957b0272dedd581fc540a0b4b3a1927ed7e598f6dff4e547e5` |
+| multipage-ocr.pdf | `a4529a38c87f80cb214a4dd5d91824fe056bce169e33f54939625e24333f8307` |
+| blank-scan.pdf | `13df1b38aa6981a2a1380684a9716ecc480fac1a4df48e3159df1efc34cb6d85` |

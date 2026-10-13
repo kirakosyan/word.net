@@ -71,10 +71,15 @@ Ordinary illustrations are retained alongside text in geometric reading order. L
 image-only scans require OCR; simple smaller standalone images can be retained directly.
 Image placement/clipping reconstruction has explicit diagnostics.
 
-The OCR wrapper loads a caller-specified absolute Tesseract 5 C API library. Each call
-owns its engine. Local English data/native dependencies are explicitly provisioned.
+The OCR wrapper loads a caller-specified absolute Tesseract 5 C API library. A synchronized
+cache keeps one native loader reference per canonical configured path for the process
+lifetime, preventing unload while native dependencies retain workers or thread-local state.
+Each call owns and releases its engine and image/text buffers. Local English data/native
+dependencies are explicitly provisioned.
 Recognition returns English printed paragraphs, not handwriting or reconstructed tables.
-Confidence diagnostics are information, not an accuracy guarantee.
+Confidence diagnostics average the per-page mean confidences across all OCR pages and
+include the page count; they are information, not an accuracy guarantee. Whole-page OCR
+reports image loss and replacement of existing digital text separately from reconstruction.
 
 ## Fidelity and resources
 
