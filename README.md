@@ -1,21 +1,33 @@
 # wordnet
 
+[![Build and tests](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml/badge.svg)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
+[![NuGet prerelease](https://img.shields.io/nuget/vpre/wordnet.svg)](https://www.nuget.org/packages/wordnet)
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
 
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
 DOC / DOCX → XPS
 
-> **Early development — 0.1.0-alpha.8.** All 28 agreed directions have working
+> **Early development — 0.1.0-alpha.9.** All 28 agreed directions have working
 > converters and real acceptance tests. Scanned and mixed PDFs can produce editable
 > Word text using local English OCR. Production fidelity and full platform qualification
 > remain in progress; the profiles below are limited.
 
 ## Convert a document
 
-The public namespace is **`WordNet`**. The assembly and provisional NuGet package ID are **wordnet**.
-Build the local prerelease package; nothing is published automatically.
+The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
+
+```sh
+dotnet add package wordnet --version 0.1.0-alpha.9
+```
+
+This is an evaluation prerelease, not a production-readiness claim. Validate your own
+documents against the [implemented profiles](#implemented-profiles) and inspect diagnostics.
+Local packaging is also supported. Publication requires an explicit maintainer-run
+[release workflow](docs/releasing.md); ordinary pushes never publish packages.
 The examples below use C# top-level statements in a console application. Each example
-is self-contained; add a reference to the local `wordnet` package or project first.
+is self-contained; add a reference to the `wordnet` package or project first.
 
 ```csharp
 using System;
@@ -329,7 +341,8 @@ dotnet build tests/wordnet.Android.Compatibility -c Release --no-restore -t:Sign
 Agents use `rtk` per [AGENTS.md](AGENTS.md); consumers and CI need not.
 The package includes four assemblies, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
-The provisional ID is not a claim to reserve a NuGet name.
+See [release checks and publishing](docs/releasing.md) and the
+[alpha.9 release notes](docs/releases/0.1.0-alpha.9.md).
 
 ## Project guide
 
@@ -343,6 +356,7 @@ The provisional ID is not a claim to reserve a NuGet name.
 | [Implementation plan](docs/implementation-plan.md) | Remaining fidelity and qualification work |
 | [Testing](docs/testing.md) | Reproducible checks and evidence limits |
 | [Dependencies](docs/dependencies.md) | Package upgrades, audit commands and retained framework assets |
+| [Releasing](docs/releasing.md) | Production gates and manual NuGet Trusted Publishing |
 | [Contributing](AGENTS.md) | Quality rules |
 
 Implementation uses independently authored code, public specifications and appropriately

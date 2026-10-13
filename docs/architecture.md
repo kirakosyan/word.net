@@ -114,10 +114,9 @@ they cannot interrupt native recognition mid-call. Hard deadlines require host i
 
 Tesseract and language data are separately provisioned. Skia and PDF raster codecs bring
 native dependencies whose assets must match the host. No Office automation/service is
-required. Windows and Linux ARM64 modern runtimes, Windows x64 Framework/.NET 10, Linux
-x64 under QEMU and an Android ARM64 device execute real conversion/OCR tests. The QEMU
-run needs a validation-only executable-memory override; native x64 Linux with runtime
-defaults still needs CI qualification. Linux uses fontconfig-enabled
+required. Native Windows/Linux x64 and ARM64 CI lanes execute the complete conversion/OCR
+suite on .NET 8 and .NET 10; Windows x64 also runs Framework. An Android ARM64 device
+executes the same shared cases. Native Linux runs use default runtime settings. Linux uses fontconfig-enabled
 Skia assets and installed fonts for unembedded PDF text. macOS is deferred; broader
 OS/device coverage and trimming/AOT remain outstanding. See [testing](testing.md),
 the [DOC profile](doc-format.md) and the [implementation plan](implementation-plan.md).
