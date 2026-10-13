@@ -53,11 +53,33 @@ linked numbering styles and cycles, style inheritance, moved text, table-header 
 EPUB URL handling and image scaling, PDF text-matrix scaling, Kindle output budgets,
 multi-page confidence including blank scans, concurrent OCR and final-write cancellation.
 
-The complete suite passes without skips on Windows ARM64 .NET 8/10 and the Windows x64
-Framework host. Reports are under `artifacts/test-results/review/`. Updated Linux and
-Android qualification is recorded with the PR checks and device report when complete.
+All 236 cases pass without failures or skips on each of these runtime lanes:
+
+| Runtime | Evidence |
+| --- | --- |
+| Windows x64 | Hosted Windows Server 2022: .NET 8, .NET 10 and Framework |
+| Windows ARM64 | Hosted Windows 11 and local ARM64: .NET 8 and .NET 10 |
+| Linux x64 | Native hosted Ubuntu 24.04: .NET 8 and .NET 10, default runtime settings |
+| Linux ARM64 | Native hosted Ubuntu 24.04: .NET 8 and .NET 10, default runtime settings |
+| Android ARM64 | Samsung SM-S926B, Android 16, .NET 10.0.12; 236 shared cases including OCR |
+
+The [desktop CI run](https://github.com/kirakosyan/word.net/actions/runs/38442966251)
+tests implementation commit `b39d3ff`; its nine reports contain 2,124 passing cases.
+Local Windows reports and the device report are under `artifacts/test-results/review/`,
+with downloaded CI reports in its `ci/` directory. The local x64 Framework host also
+passes all 236 cases. This closes the earlier native Linux x64 qualification gap for
+the documented profile; broader fidelity, minimum OS versions and macOS remain deferred.
+The updated OCR loader retains native libraries for process lifetime, and the prior
+Linux x64 exit-139 crash did not recur in these complete native runs.
+
+Locked restore, all four library targets, formatting, package API compatibility and
+packing pass. Apache POI independently validates the revised DOC image records and
+formatting. The Android incremental build initially failed at activity startup; a clean
+`dotnet build tests/wordnet.Android.Compatibility -c Release --no-restore -t:Rebuild`,
+followed by `-t:SignAndroidPackage`, regenerated the app and all 236 device cases passed.
 The Android workflow now provisions its pinned native libraries and language data before
-building the shared test application; that CI job remains compilation-only.
+building the shared test application; its [successful CI job](https://github.com/kirakosyan/word.net/actions/runs/38442966308)
+remains compilation-only.
 
 ## Formatting and images — alpha.8, 2026-10-13 (prior revision)
 

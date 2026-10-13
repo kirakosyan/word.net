@@ -266,9 +266,9 @@ The library retains **`net472;netstandard2.0;net8.0;net10.0`** with matching pub
 | Consumer | Qualification status / goal |
 | --- | --- |
 | .NET Framework 4.7.2+ | Local tests through installed Windows Framework and an x64 test host |
-| .NET 8 / .NET 10 | Full suite passes on Windows ARM64 and Linux ARM64; Windows/Linux x64 and ARM64 CI lanes configured |
+| .NET 8 / .NET 10 | All 236 tests pass on native Windows/Linux x64 and ARM64 CI lanes |
 | .NET Standard 2.0 | Portable fallback; explicit asset consumption checked on modern .NET |
-| .NET for Android | All 197 tests pass on a Samsung ARM64 device, including native English OCR and formatting/images |
+| .NET for Android | All 236 tests pass on a Samsung ARM64 device, including native English OCR and formatting/images |
 | macOS | Deferred; no current release qualification claim |
 
 Compilation and NuGet compatibility do not prove every platform works.
