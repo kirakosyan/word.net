@@ -64,7 +64,12 @@ jobs:
           }
       - name: Isolated malformed-input campaign
         if: runner.arch == 'X64'
-        run: dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll fuzz tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 128
+        shell: pwsh
+        run: |
+          dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll self-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll fuzz tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 128
+          exit $LASTEXITCODE
       - name: Concurrent conversion and OCR resource qualification
         if: runner.arch == 'X64'
         shell: pwsh

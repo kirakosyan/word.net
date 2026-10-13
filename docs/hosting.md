@@ -32,6 +32,7 @@ as the inner exception for local investigation.
 Build the solution first, then run the tool without rebuilding it while workers are active:
 
 ```powershell
+dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll self-test
 dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll fuzz tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 128
 dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll benchmark tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 100
 ./eng/prepare-ocr-tests.ps1
@@ -44,6 +45,9 @@ values, zeroed headers, missing prefixes and trailing data. Each runs in a fresh
 with a 10-second cooperative deadline and an external 30-second/512-MiB guard. Unexpected
 managed exceptions, native exits, guard violations or destination changes fail the campaign.
 This is a reproducible mutation campaign, not coverage-guided fuzzing or proof of security.
+The supervisor self-test covers short-lived successful workers, nonzero exits, external
+deadlines and memory-guard termination. An observed Windows exit/memory-sampling race is handled without
+masking the worker's final exit code or unrelated monitoring errors.
 The regular test suite separately covers entities, ZIP expansion/traversal, nesting,
 malformed offsets, image limits, cancellation and strict-loss destination preservation.
 

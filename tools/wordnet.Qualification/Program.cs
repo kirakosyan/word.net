@@ -19,10 +19,24 @@ namespace WordNet.Qualification;
 internal static class Program
 {
     private static readonly JsonSerializerOptions Json = new JsonSerializerOptions { WriteIndented = true };
+    private static readonly string[] SuccessfulProbe = { "probe", "ok" };
+    private static readonly string[] FailedProbe = { "probe", "fail" };
+    private static readonly string[] WaitingProbe = { "probe", "wait" };
 
     private static async Task<int> Main(string[] args)
     {
         if (args.Length > 0 && args[0] == "worker") return Worker(args);
+        if (args.Length == 1 && args[0] == "self-test")
+        {
+            for (int i = 0; i < 32; i++)
+                if ((await RunWorker(SuccessfulProbe, 10, 512)).Status != "completed") return 1;
+            RunResult failed = await RunWorker(FailedProbe, 10, 512);
+            RunResult timedOut = await RunWorker(WaitingProbe, 1, 512);
+            RunResult memoryLimited = await RunWorker(WaitingProbe, 10, 1);
+            if (failed.Status != "worker-failed" || failed.ExitCode != 7 || timedOut.Status != "timeout" || memoryLimited.Status != "memory-limit") return 1;
+            Console.WriteLine("Supervisor: 32 short-lived workers, nonzero exit, external deadline and memory-guard checks passed.");
+            return 0;
+        }
         if (args.Length != 4 || args[0] is not ("fuzz" or "benchmark" or "ocr"))
         {
             Console.Error.WriteLine("Usage: wordnet.Qualification fuzz|benchmark|ocr <fixture-directory> <output-directory> <cases-per-format|iterations>");
@@ -93,6 +107,11 @@ internal static class Program
     {
         try
         {
+            if (args[1] == "probe")
+            {
+                if (args[2] == "wait") Thread.Sleep(5000);
+                return args[2] == "fail" ? 7 : 0;
+            }
             if (args[1] == "benchmark") { Benchmark(args[2], int.Parse(args[4], CultureInfo.InvariantCulture)); return 0; }
             if (args[1] == "ocr")
             {
@@ -147,11 +166,17 @@ internal static class Program
         string status = "completed";
         while (!process.HasExited)
         {
-            process.Refresh(); peak = Math.Max(peak, process.WorkingSet64);
+            // A short-lived worker can exit after HasExited but before the OS memory query.
+            // Its final exit code/output still determines success; an ordinary exit is not
+            // a supervisor failure. Keep unrelated process-query errors visible.
+            try { process.Refresh(); peak = Math.Max(peak, process.WorkingSet64); }
+            catch (InvalidOperationException) when (process.HasExited) { break; }
             if (clock.Elapsed.TotalSeconds > seconds || peak > memoryMiB * 1048576L)
             {
                 status = clock.Elapsed.TotalSeconds > seconds ? "timeout" : "memory-limit";
-                process.Kill(entireProcessTree: true); break;
+                try { process.Kill(entireProcessTree: true); }
+                catch (InvalidOperationException) when (process.HasExited) { }
+                break;
             }
             await Task.Delay(50);
         }
