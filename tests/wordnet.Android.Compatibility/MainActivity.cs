@@ -55,6 +55,7 @@ public sealed class MainActivity : Activity
                         {
                             var test = new XElement("testcase", new XAttribute("name", type.Name + "." + method.Name + "(" + string.Join(",", arguments) + ")"));
                             report.Add(test);
+                            File.WriteAllText(Path.Combine(root, "progress.txt"), "Running " + type.Name + "." + method.Name + "; completed=" + (report.Elements("testcase").Count() - 1));
                             try
                             {
                                 if (fact.Skip != null) throw new InvalidOperationException("Pending test: " + fact.Skip);
@@ -80,6 +81,7 @@ public sealed class MainActivity : Activity
             string path = Path.Combine(root, "results.xml");
             new XDocument(report).Save(path + ".tmp"); File.Move(path + ".tmp", path, true);
             string status = $"wordnet: {total - failed}/{total} passed, {failed} failed.";
+            File.WriteAllText(Path.Combine(root, "progress.txt"), status);
             global::Android.Util.Log.Info("wordnet-tests", status);
             RunOnUiThread(() => { view.Text = status; Window?.ClearFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn); });
         }).ContinueWith(task =>

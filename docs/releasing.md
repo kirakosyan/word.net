@@ -25,8 +25,10 @@ and release scripts through normal repository review.
 ## Prepare and publish an alpha
 
 1. Choose a new prerelease version in `src/wordnet/wordnet.csproj`. Update the README,
-   package release notes and `docs/releases/<version>.md`. Never reuse a version after
-   changing its contents, even for local consumer validation.
+   package release notes and `docs/releases/<version>.md`. Never overwrite a published
+   version. Local candidate builds must be identified by full source SHA and package hash;
+   use a new version or isolated package cache and lock-file path when testing a different
+   unpublished artifact. Preserve earlier evidence and verify the intended artifact's hash.
 2. Run locked restore, Release build, the real conversion/OCR suites, formatting,
    dependency audit and pack. Review package contents, licenses, API compatibility
    and remaining limitations. For converter/native changes, run the Android device
@@ -63,8 +65,9 @@ step instead of blindly rerunning or rebuilding an already published version.
 
 ## Production readiness
 
-The alpha has 28 working directions and real English printed OCR. Before a stable
-production claim, establish independent corpus fidelity/OCR thresholds, malformed-input
-fuzzing, performance/memory limits, minimum supported OS/device coverage and packed
-consumer qualification. Current resource limits do not provide a hard process sandbox.
-macOS remains deferred. See [test evidence and boundaries](testing.md).
+The alpha has 28 working directions and real English printed OCR. The candidate adds
+independent corpus thresholds, mutation/resource campaigns and packed consumer checks.
+Actual Framework 4.7.2 and Android API 21 evidence remains required before a stable claim;
+review the supported profile against representative deployment documents too. Current
+resource limits do not provide a hard process sandbox. macOS remains deferred. See
+[production gates](production-readiness.md) and [test evidence and boundaries](testing.md).

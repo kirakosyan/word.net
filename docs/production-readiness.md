@@ -32,11 +32,11 @@ cell paragraphs retain their editable structure in Word and EPUB.
 
 ## Environment evidence
 
-The active implementation is not yet release-qualified. The expanded 301-case suite
-passes on local Windows ARM64 .NET 8/10 and the installed x64 Framework 4.8 host.
-Linux ARM64 passed the preceding 296-case revision on both runtimes. Native CI and
-Android device execution are being repeated for the completed candidate; see
-[testing](testing.md) for final build-specific evidence.
+The expanded 301-case suite passes on all nine native desktop runtime lanes: Windows/Linux
+x64 and ARM64 .NET 8/10, plus the installed Windows x64 Framework. The same CI package
+passes 17 desktop runs, including its explicit Standard asset on both modern runtimes
+on all four platforms. Android 16 ARM64 passes all 301 source, locally packed and downloaded
+CI-package cases. See [testing](testing.md) for build-specific evidence and artifact hashes.
 An actual .NET Framework 4.7.2 environment and Android API 21 environment are requested
 to verify the existing declared minimums; newer runtime execution is not a substitute.
 For an additional Windows test PC, check its Framework release key: an installed 4.8
@@ -44,13 +44,19 @@ runtime does not close the 4.7.2 gate. The standalone runner records this distin
 
 ## Measurements and limits
 
-The local ARM64 corpus run recorded zero normalized character/word errors in all 16 OCR
-outputs. Isolated OCR processes completed in 0.69–2.36 seconds and stayed below 185 MiB
-sampled working set. The 2,800-conversion, four-worker run completed in 18.01 seconds
-with approximately 181 MiB peak working set. These measurements describe small fixed
-fixtures on this machine, not production throughput or broad OCR accuracy. Machine-readable
+The local and native desktop corpus runs recorded zero normalized character/word errors
+in all 16 OCR outputs. Isolated native x64 OCR processes stayed below 232 MiB and 2.7 seconds
+per case. The latest local 2,800-conversion, four-worker run completed in 16.28 seconds
+with approximately 217 MiB peak working set. These measurements describe small fixed
+fixtures on the tested machines, not production throughput or broad OCR accuracy. Machine-readable
 reports under ignored `artifacts/qualification/windows-arm64/` record library hashes,
-runtime, seeds and outcomes. CI uploads equivalent reports for native x64 platforms.
+runtime, seeds and outcomes. CI uploads equivalent reports for native x64 platforms:
+
+| Native x64 campaign | Windows Server 2022 | Ubuntu 24.04 |
+| --- | --- | --- |
+| 1,024 isolated mutations | Pass; maximum sampled process 59.2 MiB | Pass; maximum 99.9 MiB |
+| 896 measured conversions, concurrency 4 | Pass; 11.06 s / 189.2 MiB peak | Pass; 8.23 s / 346.6 MiB peak |
+| 16 isolated OCR conversions | Pass; maximum 2.25 s / 180.1 MiB | Pass; maximum 2.65 s / 231.1 MiB |
 
 The mutation campaign found malformed DOC/PDF container exceptions and corrupt PDF font
 resources that previously escaped the public input-error contract. Regression tests now

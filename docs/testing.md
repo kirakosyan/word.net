@@ -77,11 +77,31 @@ both modern suites again, with a required runtime-identity assertion. CI perform
 on four native desktop platforms using the same package artifact. API validation compares
 all four targets and the published alpha.9 baseline. These checks do not publish a package.
 
-Local final-source Windows ARM64 .NET 8/10 and x64 Framework each pass all 301 cases.
-Framework is installed 4.8 (release 533509), not actual 4.7.2. Final CI, exact-package
-and device evidence is being collected. The preceding 296-case revision passed both
-Linux ARM64 runtimes. Actual Framework 4.7.2 and Android API 21 remain open qualification
-gates; macOS is deferred. Source reports are under `artifacts/production-tests/`.
+Implementation commit `264a29c40ddc74b6c97f198fcb2e6b934527faf9` passes
+[native desktop CI](https://github.com/kirakosyan/word.net/actions/runs/38466027553):
+all nine source runtime lanes and 17 exact-package lanes pass 301 cases each, with no
+failures/skips (7,826 cases total). The package lanes include explicit Standard-asset
+execution on both .NET 8 and 10 for every native Windows/Linux architecture. CI also
+passes 1,024 isolated mutations, 896 concurrent measured conversions and 16 isolated OCR
+cases on each native x64 OS. JSON reports include library hashes, runtime, duration and
+sampled memory; see [production measurements](production-readiness.md#measurements-and-limits).
+
+The CI package's SHA-256 is
+`5037daf3f5a770c443dcd143b56f701cb9ec37c2135b69a21c4f8115892a3f5d`.
+Local Windows source and packed suites also pass. The Samsung SM-S926B/Android 16 ARM64
+device passes all 301 source and locally packed cases on .NET 10.0.12. It also passes
+all 301 cases against the downloaded CI artifact with the SHA-256 above, using a separate
+package cache and candidate lock file. That makes 8,127 passing desktop/device cases for
+the CI artifact/source qualification set. Two initial
+device failures were test-data integer-to-byte binding differences in the reflection
+runner; typed byte constants now execute those malformed-PDF tests. Earlier device
+attempts timed out while the activity was suspended. The harness now keeps its visible
+screen awake and records per-test progress; unlocking/bringing it forward remains
+necessary if the device's keyguard suspends the app.
+
+Local Framework is installed 4.8 (release 533509), not actual 4.7.2. Actual Framework
+4.7.2 and Android API 21 remain open gates; macOS is deferred. Evidence is under
+`artifacts/production-tests/`, including downloaded CI reports, package and assembly hashes.
 
 `eng/run-framework-tests.ps1` can run the complete prebuilt x64 output on another Windows
 PC without an SDK and records assembly hashes and the Framework release key. Add

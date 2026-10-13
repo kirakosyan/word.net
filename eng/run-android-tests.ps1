@@ -21,6 +21,7 @@ Invoke-Adb @('install', '--no-incremental', '-r', $apk)
 Invoke-Adb @('shell', 'am', 'force-stop', 'org.wordnet.validation')
 # Remove only this harness's previous report so a stale pass cannot satisfy a new run.
 Invoke-Adb @('shell', 'run-as', 'org.wordnet.validation', 'rm', '-f', 'files/results.xml')
+Invoke-Adb @('shell', 'run-as', 'org.wordnet.validation', 'rm', '-f', 'files/progress.txt')
 Invoke-Adb @('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP')
 Invoke-Adb @('shell', 'am', 'start', '-W', '-n', 'org.wordnet.validation/org.wordnet.validation.MainActivity')
 $timer = [Diagnostics.Stopwatch]::StartNew()
@@ -39,4 +40,5 @@ while ($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
     }
     Start-Sleep -Seconds 2
 }
-throw 'Android test app did not produce a report before the deadline; inspect its process log.'
+$progress = (& $AdbPath -s $Serial shell run-as org.wordnet.validation cat files/progress.txt 2>&1) -join "`n"
+throw "Android test app did not produce a report before the deadline. Last progress: $progress"

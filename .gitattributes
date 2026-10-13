@@ -5,6 +5,7 @@
 *.json text eol=lf
 *.yml text eol=lf
 *.md text eol=lf
+*.txt text eol=lf
 *.sh text eol=lf
 *.Dockerfile text eol=lf
 *.sln text eol=crlf

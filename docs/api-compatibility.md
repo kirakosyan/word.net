@@ -35,3 +35,10 @@ records the actual Framework release key. `-RequireFramework472` accepts only Mi
 runner, `prepare-ocr-tests.ps1` and `required-tests.txt` to an isolated test machine;
 use `-TestDirectory` and `-ResultsDirectory` explicitly. Do not downgrade a shared PC.
 The mapping follows [Microsoft's Framework version table](https://learn.microsoft.com/dotnet/framework/install/versions-and-dependencies).
+
+Alternatively, create a portable ZIP from the complete built test output with
+`eng/create-framework-bundle.ps1 -OutputPath artifacts/windows-x64-tests.zip`.
+Extract it on the target PC and run `./run.ps1` (or add `-RequireFramework472`).
+The bundle includes fixtures and notices and provisions pinned OCR prerequisites into
+its own directory. Return `results/net472.trx` and `results/environment.json`; no SDK,
+remote service, publishing credential or repository checkout is required there.
