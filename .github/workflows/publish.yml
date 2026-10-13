@@ -1,0 +1,176 @@
+name: Publish NuGet prerelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: Successful main-branch Build, test, and pack run for this commit
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nuget-publication
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'kirakosyan/word.net' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+      artifact_id: ${{ steps.verify.outputs.artifact_id }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Require successful CI for this exact main commit
+        id: verify
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_RUN_ID: ${{ inputs.ci_run_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:CI_RUN_ID -notmatch '^\d+$') { throw 'Expected a numeric CI run ID.' }
+          function Get-GitHubJson([string]$Path) {
+            $result = gh api $Path
+            if ($LASTEXITCODE -ne 0) { throw "GitHub query failed: $Path" }
+            return $result | ConvertFrom-Json
+          }
+          $repo = $env:GITHUB_REPOSITORY
+          $run = Get-GitHubJson "repos/$repo/actions/runs/$env:CI_RUN_ID"
+          if ($run.path -ne '.github/workflows/ci.yml' -or $run.event -ne 'push' -or
+              $run.head_branch -ne 'main' -or $run.head_sha -cne $env:GITHUB_SHA -or
+              $run.head_repository.full_name -ne $repo -or
+              $run.status -ne 'completed' -or $run.conclusion -ne 'success') {
+            throw 'The package must come from successful push CI for this exact main commit.'
+          }
+          $android = Get-GitHubJson "repos/$repo/actions/workflows/android.yml/runs?head_sha=$env:GITHUB_SHA&event=push&status=success"
+          if (@($android.workflow_runs | Where-Object { $_.head_branch -eq 'main' }).Count -eq 0) {
+            throw 'Successful Android compilation is required for the same main commit.'
+          }
+          [xml]$project = Get-Content src/wordnet/wordnet.csproj
+          $version = [string]$project.Project.PropertyGroup.Version
+          if ($version -notmatch '^\d+\.\d+\.\d+-[0-9A-Za-z.-]+$') { throw 'Prereleases only.' }
+          if (!(Test-Path -LiteralPath "docs/releases/$version.md")) { throw 'Release notes are missing.' }
+          $artifacts = Get-GitHubJson "repos/$repo/actions/runs/$env:CI_RUN_ID/artifacts"
+          $package = @($artifacts.artifacts | Where-Object { $_.name -eq 'nuget-packages' -and !$_.expired })
+          if ($package.Count -ne 1) { throw 'Expected one unexpired CI package artifact.' }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "artifact_id=$($package[0].id)" >> $env:GITHUB_OUTPUT
+
+  test-package:
+    needs: prepare
+    name: Packaged tests / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-11-arm, ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+    env:
+      PACKAGE_VERSION: ${{ needs.prepare.outputs.version }}
+      NUGET_PACKAGES: ${{ github.workspace }}/artifacts/nuget-cache
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+          dotnet-version: 8.0.x
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.artifact_id }}
+          merge-multiple: true
+          path: artifacts/packages
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.ci_run_id }}
+      - name: Verify package identity, source commit, frameworks and notices
+        shell: pwsh
+        run: ./eng/verify-release-package.ps1 -Version $env:PACKAGE_VERSION -Commit $env:GITHUB_SHA
+      - name: Install Linux OCR prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y libtesseract5 libfontconfig1 fontconfig
+          mkdir -p ~/.local/share/fonts/wordnet
+          cp src/wordnet/Resources/Fonts/*.ttf ~/.local/share/fonts/wordnet/
+          fc-cache -f
+      - name: Provision pinned English OCR data and test library
+        shell: pwsh
+        run: ./eng/prepare-ocr-tests.ps1 -Architecture ('${{ runner.arch }}'.ToLowerInvariant())
+      - name: Restore and build tests against the downloaded NuGet
+        shell: pwsh
+        run: |
+          dotnet restore tests/wordnet.Conversion.Tests -p:WordnetPackageVersion=$env:PACKAGE_VERSION --configfile eng/NuGet.Packages.Config
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build tests/wordnet.Conversion.Tests -c Release --no-restore -p:WordnetPackageVersion=$env:PACKAGE_VERSION
+          exit $LASTEXITCODE
+      - name: Run complete conversion and OCR suite against the package
+        shell: pwsh
+        run: |
+          $frameworks = @('net8.0', 'net10.0')
+          if ('${{ runner.os }}' -eq 'Windows' -and '${{ runner.arch }}' -eq 'X64') { $frameworks += 'net472' }
+          foreach ($framework in $frameworks) {
+            dotnet test tests/wordnet.Conversion.Tests -c Release -f $framework --no-build --no-restore -p:WordnetPackageVersion=$env:PACKAGE_VERSION --logger "trx;LogFileName=$framework.trx" --results-directory artifacts/release-tests
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          $reports = @(Get-ChildItem artifacts/release-tests/*.trx)
+          if ($reports.Count -ne $frameworks.Count) { throw 'Missing test reports.' }
+          foreach ($report in $reports) {
+            [xml]$trx = Get-Content -LiteralPath $report.FullName
+            $counters = $trx.TestRun.ResultSummary.Counters
+            if ([int]$counters.total -lt 236 -or $counters.passed -ne $counters.total) {
+              throw "Missing, failed or skipped tests in $($report.Name)"
+            }
+          }
+      - name: Upload package test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-tests-${{ matrix.os }}
+          path: artifacts/release-tests/*.trx
+          if-no-files-found: error
+
+  publish:
+    needs: [prepare, test-package]
+    runs-on: ubuntu-24.04
+    environment: nuget
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    env:
+      PACKAGE_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.artifact_id }}
+          merge-multiple: true
+          path: artifacts/packages
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.ci_run_id }}
+      - name: Verify the same immutable CI artifact immediately before publication
+        shell: pwsh
+        run: ./eng/verify-release-package.ps1 -Version $env:PACKAGE_VERSION -Commit $env:GITHUB_SHA
+      - name: Get a short-lived NuGet credential
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        id: login
+        with:
+          user: ${{ vars.NUGET_USER }}
+      - name: Publish package and symbols
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        shell: pwsh
+        run: |
+          dotnet nuget push "artifacts/packages/wordnet.$env:PACKAGE_VERSION.nupkg" --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+          exit $LASTEXITCODE

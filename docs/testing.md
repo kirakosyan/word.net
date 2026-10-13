@@ -259,10 +259,10 @@ locks are generated under ignored `obj/packaged/`. The validation configuration 
 `wordnet` exclusively to `artifacts/packages` and other dependencies to nuget.org.
 
 ```powershell
-dotnet restore tests/wordnet.Conversion.Tests -p:WordnetPackageVersion=0.1.0-alpha.8 --configfile eng/NuGet.Packages.Config
-dotnet build tests/wordnet.Conversion.Tests -c Release --no-restore -p:WordnetPackageVersion=0.1.0-alpha.8
+dotnet restore tests/wordnet.Conversion.Tests -p:WordnetPackageVersion=0.1.0-alpha.9 --configfile eng/NuGet.Packages.Config
+dotnet build tests/wordnet.Conversion.Tests -c Release --no-restore -p:WordnetPackageVersion=0.1.0-alpha.9
 ./eng/prepare-ocr-tests.ps1
-dotnet test tests/wordnet.Conversion.Tests -c Release -f net10.0 --no-build --no-restore -p:WordnetPackageVersion=0.1.0-alpha.8
+dotnet test tests/wordnet.Conversion.Tests -c Release -f net10.0 --no-build --no-restore -p:WordnetPackageVersion=0.1.0-alpha.9
 ```
 
 Repeat for .NET 8 and Windows Framework with the appropriate OCR architecture. For

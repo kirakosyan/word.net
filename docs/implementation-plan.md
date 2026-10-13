@@ -70,8 +70,8 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
 6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
    Keep unsupported compression/DRM explicit.
 7. **Platforms:** maintain four Windows/Linux CI lanes and Android ARM64 device tests.
-   Local Linux x64 conversion/OCR execution is complete under QEMU with a scoped runtime
-   workaround; qualify native x64 on default runtime settings in CI before broader claims.
+   Native Windows/Linux x64 and ARM64 CI now passes all 236 conversion/OCR tests on
+   .NET 8/10 with default runtime settings; Windows x64 also passes Framework.
    Check native codecs, OCR, model provisioning, fonts, architecture, trimming/AOT and
    minimum OS/API requirements.
 8. **Resources:** fuzzing, throughput/RSS benchmarks and host-isolation guidance.
