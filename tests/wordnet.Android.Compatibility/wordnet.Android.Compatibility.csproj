@@ -15,10 +15,14 @@
     <!-- Reflection discovers the desktop tests; this harness does not qualify trimming/AOT. -->
     <PublishTrimmed>false</PublishTrimmed>
     <RunAOTCompilation>false</RunAOTCompilation>
+    <UseInterpreter Condition="'$(UseInterpreter)' == ''">false</UseInterpreter>
+    <WordnetExecutionMode Condition="'$(UseInterpreter)' == 'true'">interpreter</WordnetExecutionMode>
+    <WordnetExecutionMode Condition="'$(UseInterpreter)' != 'true'">jit</WordnetExecutionMode>
     <NuGetLockFilePath Condition="'$(WordnetPackageVersion)' != ''">obj/packaged/packages.lock.json</NuGetLockFilePath>
     <!-- Kept outside the default solution so desktop builds do not need mobile workloads. -->
   </PropertyGroup>
   <ItemGroup>
+    <AssemblyMetadata Include="Wordnet.ExecutionMode" Value="$(WordnetExecutionMode)" />
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
     <PackageReference Include="wordnet" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
     <PackageReference Include="DocumentFormat.OpenXml" PrivateAssets="all" Publish="true" />

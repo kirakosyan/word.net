@@ -34,11 +34,31 @@ internal static partial class EbookContent
             {
                 lists.Clear();
                 var element = new XElement(Html + "table");
+                if (table.LeftIndent != 0) context.Loss("Ebook.TableIndent", "Table indentation is not retained in ebook output.");
                 if (table.Width.HasValue) element.SetAttributeValue("style", "width:" + Points(table.Width.Value));
                 if (table.ColumnWidths.Count > 0) element.Add(new XElement(Html + "colgroup", table.ColumnWidths.Select(w => new XElement(Html + "col", new XAttribute("style", "width:" + Points(w))))));
-                foreach (ParagraphBlock cell in table.Rows.SelectMany(r => r)) CheckWhitespace(cell, context);
+                foreach (ParagraphBlock cell in table.Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs)) CheckWhitespace(cell, context);
                 for (int r = 0; r < table.Rows.Count; r++)
-                    element.Add(new XElement(Html + "tr", table.Rows[r].Select(cell => TableCell(cell, r == 0 && table.HasHeaderRow, imageWriter, listCounter, context))));
+                {
+                    var row = new XElement(Html + "tr");
+                    int column = 0;
+                    foreach (TableCell cell in table.Rows[r])
+                    {
+                        if (cell.Merge != VerticalMerge.Continue)
+                        {
+                            XElement output = WriteTableCell(cell, r < table.HeaderRowCount, imageWriter, listCounter, context);
+                            if (cell.Merge == VerticalMerge.Start)
+                            {
+                                int span = 1;
+                                for (int next = r + 1; next < table.Rows.Count && CellAt(table.Rows[next], column)?.Merge == VerticalMerge.Continue; next++) span++;
+                                if (span > 1) output.SetAttributeValue("rowspan", span);
+                            }
+                            row.Add(output);
+                        }
+                        column += cell.ColumnSpan;
+                    }
+                    element.Add(row);
+                }
                 body.Add(element);
             }
         }
@@ -88,35 +108,92 @@ internal static partial class EbookContent
                 Attributes(e, context);
                 var table = new TableBlock();
                 table.Width = CssLength(e, "width", context);
-                foreach (IElement col in e.QuerySelectorAll("colgroup > col"))
-                    if (CssLength(col, "width", context) is double colWidth) table.ColumnWidths.Add(colWidth);
-                foreach (IElement row in e.QuerySelectorAll("tr").Where(r => r.ParentElement == e || r.ParentElement?.ParentElement == e))
+                foreach (IElement col in e.QuerySelectorAll("colgroup > col").Where(c => c.ParentElement?.ParentElement == e))
                 {
-                    var cells = new System.Collections.Generic.List<ParagraphBlock>();
-                    foreach (IElement cell in row.Children.Where(c => c.LocalName is "td" or "th"))
+                    int count = Span(col, "span", context);
+                    if (table.ColumnWidths.Count + count > 1024) throw new InvalidDataException("Limit.TableCells: Too many ebook grid columns.");
+                    double width = CssLength(col, "width", context) ?? 0;
+                    for (int c = 0; c < count; c++) table.ColumnWidths.Add(width);
+                }
+                var spans = new Dictionary<int, (int Remaining, int Columns)>();
+                IElement[] sourceRows = e.QuerySelectorAll("tr").Where(r => r.ParentElement == e || r.ParentElement?.ParentElement == e).ToArray();
+                if (sourceRows.Length > 100000) throw new InvalidDataException("Limit.TableCells: Too many ebook table rows.");
+                int cellCount = 0;
+                var groupEnds = new Dictionary<IElement, int>();
+                for (int r = 0; r < sourceRows.Length; r++) groupEnds[sourceRows[r].ParentElement!] = r;
+                for (int r = 0; r < sourceRows.Length; r++)
+                {
+                    context.CheckCancellation();
+                    IElement row = sourceRows[r];
+                    var cells = new List<TableCell>();
+                    IElement[] sourceCells = row.Children.Where(c => c.LocalName is "td" or "th").ToArray();
+                    int column = 0;
+                    foreach (IElement cell in sourceCells)
                     {
-                        if (cell.HasAttribute("rowspan") || cell.HasAttribute("colspan")) context.Loss("Ebook.MergedCells", "Merged cells become individual cells.");
-                        var p = new ParagraphBlock { Alignment = Alignment(cell, context), CellWidth = CssLength(cell, "width", context), Padding = CssPadding(cell, context) };
-                        if (cell.QuerySelector("ul,ol") != null)
+                        Attributes(cell, context);
+                        ContinueSpans();
+                        int columnSpan = Span(cell, "colspan", context), rowSpan = Span(cell, "rowspan", context);
+                        int remainingRows = groupEnds[row.ParentElement!] - r + 1;
+                        if (rowSpan == 0) rowSpan = remainingRows;
+                        else if (rowSpan > remainingRows)
+                        {
+                            context.Loss("Ebook.MergedCells", "Row spans beyond their row group are clipped to the available rows.");
+                            rowSpan = remainingRows;
+                        }
+                        if (column + columnSpan > 1024) throw new InvalidDataException("Limit.TableCells: Too many ebook table columns.");
+                        for (int c = column; c < column + columnSpan; c++)
+                            if (spans.ContainsKey(c)) throw new InvalidDataException("Ebook.TableMerge: Overlapping cell spans.");
+                        var target = new TableCell { CellWidth = CssLength(cell, "width", context), Padding = CssPadding(cell, context), ColumnSpan = columnSpan, Merge = rowSpan > 1 ? VerticalMerge.Start : VerticalMerge.None };
+                        if (cell.QuerySelector("p,div,ul,ol,table,h1,h2,h3,h4,h5,h6,pre") != null)
                         {
                             var content = new DocumentModel();
                             ReadBlocks(cell, content, context, imageReader);
-                            ParagraphBlock[] paragraphs = content.Blocks.SelectMany(b => b is ParagraphBlock paragraph ? new[] { paragraph } : ((TableBlock)b).Rows.SelectMany(r => r)).ToArray();
                             if (content.Blocks.Any(b => b is TableBlock)) context.Loss("Ebook.NestedTable", "Nested tables are flattened.");
-                            for (int i = 0; i < paragraphs.Length; i++)
-                            {
-                                if (i == 0) { p.List = paragraphs[i].List?.Copy(); p.Alignment = paragraphs[i].Alignment; }
-                                else { p.Runs.Add(new TextRun("\n")); context.Loss("Ebook.CellParagraphs", "Multiple cell paragraphs and lists are flattened into one cell paragraph."); }
-                                p.Runs.AddRange(paragraphs[i].Runs);
-                            }
+                            target.Paragraphs.AddRange(content.Paragraphs);
                         }
-                        else Inline(cell, p, context, false, false, false, null, false, imageReader);
-                        Trim(p); cells.Add(p);
+                        else
+                        {
+                            var p = new ParagraphBlock { Alignment = Alignment(cell, context) };
+                            Inline(cell, p, context, false, false, false, null, false, imageReader); Trim(p); target.Paragraphs.Add(p);
+                        }
+                        if (target.Paragraphs.Count == 0) target.Paragraphs.Add(new ParagraphBlock());
+                        cells.Add(target);
+                        if (rowSpan > 1) spans.Add(column, (rowSpan - 1, columnSpan));
+                        column += columnSpan;
                     }
-                    if (table.Rows.Count == 0) table.HasHeaderRow = row.Children.Any(c => c.LocalName == "th");
+                    ContinueSpans();
+                    while (spans.Keys.Any(c => c > column))
+                    {
+                        int next = spans.Keys.Where(c => c > column).Min();
+                        context.Loss("Ebook.MergedCells", "Missing cells before a row span are represented by empty cells.");
+                        cells.Add(new TableCell(new ParagraphBlock()) { ColumnSpan = next - column, Padding = new CellPadding() });
+                        column = next; ContinueSpans();
+                    }
+                    if (cells.Count == 0)
+                    {
+                        context.Loss("Ebook.EmptyTable", "An empty table row is represented by an empty cell.");
+                        cells.Add(new TableCell(new ParagraphBlock()));
+                    }
+                    bool header = row.ParentElement?.LocalName == "thead" || (sourceCells.Length > 0 && sourceCells.All(c => c.LocalName == "th"
+                        && !string.Equals(c.GetAttribute("scope"), "row", StringComparison.OrdinalIgnoreCase)
+                        && !string.Equals(c.GetAttribute("scope"), "rowgroup", StringComparison.OrdinalIgnoreCase)));
+                    if (header && table.Rows.Count == table.HeaderRowCount) table.HeaderRowCount++;
+                    cellCount += cells.Count;
+                    if (cellCount > 100000) throw new InvalidDataException("Limit.TableCells: Too many ebook table cells.");
                     table.Rows.Add(cells);
+                    void ContinueSpans()
+                    {
+                        while (spans.TryGetValue(column, out var span))
+                        {
+                            cells.Add(new TableCell(new ParagraphBlock()) { ColumnSpan = span.Columns, Merge = VerticalMerge.Continue });
+                            if (span.Remaining == 1) spans.Remove(column); else spans[column] = (span.Remaining - 1, span.Columns);
+                            column += span.Columns;
+                        }
+                    }
                 }
-                model.Blocks.Add(table); continue;
+                if (table.Rows.Count == 0) context.Loss("Ebook.EmptyTable", "An empty table without rows is omitted.");
+                else model.Blocks.Add(table);
+                continue;
             }
             if (tag is "ul" or "ol")
             {
@@ -141,6 +218,23 @@ internal static partial class EbookContent
             if (tag == "li") foreach (IElement nested in e.Children.Where(c => c.LocalName is "ul" or "ol"))
                 ReadBlocks(e, model, context, imageReader, list, new[] { nested });
         }
+    }
+
+    private static int Span(IElement cell, string name, ConversionContext context)
+    {
+        if (!cell.HasAttribute(name)) return 1;
+        if (!int.TryParse(cell.GetAttribute(name), out int value) || value < 0) throw new InvalidDataException("Ebook.TableMerge: Invalid cell span.");
+        int maximum = name == "rowspan" ? 65534 : 1000;
+        if (value > maximum) { context.Loss("Ebook.MergedCells", "An oversized HTML span is clamped to its format limit."); value = maximum; }
+        if (value == 0 && name != "rowspan") { context.Loss("Ebook.MergedCells", "A zero column span is interpreted as one column."); return 1; }
+        return value;
+    }
+
+    private static TableCell? CellAt(List<TableCell> row, int column)
+    {
+        int current = 0;
+        foreach (TableCell cell in row) { if (current == column) return cell; current += cell.ColumnSpan; }
+        return null;
     }
 
     private static void Inline(INode node, ParagraphBlock paragraph, ConversionContext context, bool bold, bool italic, bool code, string? link, bool preserve,

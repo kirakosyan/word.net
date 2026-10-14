@@ -14,11 +14,12 @@ internal static class EpubFormat
     private static readonly XNamespace Container = "urn:oasis:names:tc:opendocument:xmlns:container";
     private static readonly XNamespace Opf = "http://www.idpf.org/2007/opf";
     private static readonly XNamespace Dc = "http://purl.org/dc/elements/1.1/";
+    private static readonly byte[] MimeType = TextFormat.Utf8.GetBytes("application/epub+zip");
 
     internal static DocumentModel Read(Stream input, ConversionContext context)
     {
         using var archive = new PackageArchive(input, context);
-        if (TextFormat.Utf8.GetString(archive.Read("mimetype")) != "application/epub+zip") throw new InvalidDataException("Epub.Mimetype: Invalid EPUB media type.");
+        if (!archive.Read("mimetype").SequenceEqual(MimeType)) throw new InvalidDataException("Epub.Mimetype: Invalid EPUB media type.");
         if (archive.Contains("META-INF/encryption.xml")) throw new NotSupportedException("Epub.Encryption: Encrypted or obfuscated EPUB resources are unsupported.");
         XElement root = archive.ReadXml("META-INF/container.xml").Root ?? throw new InvalidDataException("Epub.Container: Missing container.");
         string package = (string?)root.Element(Container + "rootfiles")?.Elements(Container + "rootfile").FirstOrDefault(e => (string?)e.Attribute("media-type") == "application/oebps-package+xml")?.Attribute("full-path")

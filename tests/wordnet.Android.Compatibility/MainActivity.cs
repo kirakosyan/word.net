@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +22,7 @@ public sealed class MainActivity : Activity
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+        Window?.AddFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn);
         var view = new TextView(this) { Text = "Running wordnet conversions and English OCR…" };
         SetContentView(view);
         _ = Task.Run(async () =>
@@ -52,8 +54,11 @@ public sealed class MainActivity : Activity
                         if (cases.Count == 0) throw new InvalidOperationException("No data for " + method.Name);
                         foreach (object?[] arguments in cases)
                         {
-                            var test = new XElement("testcase", new XAttribute("name", type.Name + "." + method.Name + "(" + string.Join(",", arguments) + ")"));
+                            string caseName = type.Name + "." + method.Name + "(" + string.Join(",", arguments) + ")";
+                            var test = new XElement("testcase", new XAttribute("name", caseName));
                             report.Add(test);
+                            File.WriteAllText(Path.Combine(root, "progress.txt"), "Running " + caseName + "; completed=" + (report.Elements("testcase").Count() - 1));
+                            var timer = System.Diagnostics.Stopwatch.StartNew();
                             try
                             {
                                 if (fact.Skip != null) throw new InvalidOperationException("Pending test: " + fact.Skip);
@@ -66,6 +71,7 @@ public sealed class MainActivity : Activity
                                 if (error is TargetInvocationException { InnerException: not null } invocation) error = invocation.InnerException!;
                                 test.Add(new XElement("failure", error.ToString()));
                             }
+                            finally { test.SetAttributeValue("time", timer.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)); }
                         }
                     }
                 }
@@ -76,11 +82,14 @@ public sealed class MainActivity : Activity
             report.SetAttributeValue("runtime", System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
             report.SetAttributeValue("architecture", System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture);
             report.SetAttributeValue("android", Build.VERSION.Release);
+            report.SetAttributeValue("api", (int)Build.VERSION.SdkInt);
+            report.SetAttributeValue("executionMode", typeof(MainActivity).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "Wordnet.ExecutionMode").Value);
             string path = Path.Combine(root, "results.xml");
             new XDocument(report).Save(path + ".tmp"); File.Move(path + ".tmp", path, true);
             string status = $"wordnet: {total - failed}/{total} passed, {failed} failed.";
+            File.WriteAllText(Path.Combine(root, "progress.txt"), status);
             global::Android.Util.Log.Info("wordnet-tests", status);
-            RunOnUiThread(() => view.Text = status);
+            RunOnUiThread(() => { view.Text = status; Window?.ClearFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn); });
         }).ContinueWith(task =>
         {
             // Catch failures during async state-machine loading as well as inside the suite.
@@ -88,7 +97,7 @@ public sealed class MainActivity : Activity
             var failure = new XDocument(new XElement("testsuite", new XAttribute("tests", 1), new XAttribute("failures", 1), new XAttribute("skipped", 0),
                 new XElement("testcase", new XAttribute("name", "Harness startup"), new XElement("failure", task.Exception.ToString()))));
             failure.Save(Path.Combine(FilesDir!.AbsolutePath, "results.xml"));
-            RunOnUiThread(() => view.Text = "Validation app failed to start; see results.xml.");
+            RunOnUiThread(() => { view.Text = "Validation app failed to start; see results.xml."; Window?.ClearFlags(global::Android.Views.WindowManagerFlags.KeepScreenOn); });
         }, TaskScheduler.Default);
     }
 

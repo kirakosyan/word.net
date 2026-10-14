@@ -111,3 +111,54 @@ No external document contents or images were copied.
 | matrix-scaled.pdf | `18bfa983322d41957b0272dedd581fc540a0b4b3a1927ed7e598f6dff4e547e5` |
 | multipage-ocr.pdf | `a4529a38c87f80cb214a4dd5d91824fe056bce169e33f54939625e24333f8307` |
 | blank-scan.pdf | `13df1b38aa6981a2a1380684a9716ecc480fac1a4df48e3159df1efc34cb6d85` |
+
+## Section, table and OCR qualification corpus — 2026-10-13
+
+`generate_layout_corpus.py` authors an original MIT DOCX directly as XML and independently
+places its expected PDF text using ReportLab 4.4.9 and the pinned Noto Sans faces.
+The two pages contain portrait/landscape sections, margins, spacing/indents, styled
+text, multi-paragraph cells and horizontal/vertical merges. `LayoutCorpusTests` compares
+every glyph baseline against the independent reference within 0.03 points, for both
+DOCX and a DOC intermediate. This supplements Open XML schema checks and the separate
+pagination/long-row assertions. `layout-corpus.json` records both file hashes.
+The PDF output was also rendered with Poppler 26.07.0 at 96 DPI and both pages inspected
+for clipping, overlap, baseline alignment and table boundaries. This is a small pinned
+corpus, not a general comparison with Word's pagination engine.
+
+`poi-layout.doc` is independently generated with Apache POI 5.4.1, `--generate-layout`
+in `eng/DocInteropCheck.java`, and `apache-poi/empty.doc`. It contains one original
+paragraph with spacing, indents and keep controls, plus section margins. Its SHA-256 is
+`5b00d0217602d370adf605052722dea0cf26410df0ec4d495f56ec25e767f41e`.
+The Apache template/derivative retains the notices in `apache-poi/`. The verifier's
+`--check-layout-corpus` independently reads exported DOC section geometry, paragraph
+spacing/indents, multiple cell paragraphs and vertical merge flags.
+
+`generate_ocr_corpus.py` uses Pillow 12.3.0 and ReportLab 4.4.9. Seven original MIT scans
+cover clean text, 90/180-degree rotation, 3-degree skew, seeded noise, reduced resolution
+and two columns. Each PDF contains a raster only; there is no hidden digital answer.
+Text ground truth is adjacent to each PDF. The eighth scan, `ocr-phototest.pdf`, wraps
+the unmodified pixels from the independently supplied Tesseract `phototest.tif` and
+uses its supplied ground truth. Its Apache-2.0 license, pinned revision and source hashes
+are preserved in [tesseract/](tesseract/README.md). No recognition implementation is copied.
+
+`ocr-corpus.json` records PDF hashes, producers and thresholds. `OcrCorpusTests` requires
+character error rate ≤3% and word error rate ≤8%, using Levenshtein distance after
+whitespace normalization. Both Word targets must contain editable recognized text;
+column cases also check left-column-before-right-column order. Metrics are written to
+desktop TRX output. Synthetic pages use 200-DPI rasterization, the upstream scan 300 DPI.
+These eight cases define a regression corpus, not an accuracy guarantee for arbitrary
+scans, forms, tables or handwriting. Fixtures and generating/validation tools do not ship
+in the NuGet package.
+
+## PR #3 review cases — 2026-10-14
+
+`ProductionReviewTests.cs` independently authors synthetic DOCX/EPUB markup in memory,
+under MIT. The DOC regression cases modify section sprm operands and absolute
+`rgdxaCenter` edges in a generated compound file, then assert the specification values
+directly or inspect output with independent PDF/Open XML readers. The orientation tests
+use [MS-DOC SBOrientationOperand](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/f35a0396-e4d0-4d8e-8b7f-6114d01b864a),
+where `0x01` is portrait and `0x02` is landscape. They do not rely on a matching WordNet
+reader/writer round trip to determine those values. Apache POI's separate verifier also
+checks the original section operands. Synthetic TSV coordinates check paragraph boundaries
+inside opt-in OCR columns; the existing independent raster corpus checks default native
+line order versus explicitly requested column order. No additional binary fixture is needed.

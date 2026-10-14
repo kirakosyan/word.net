@@ -32,7 +32,7 @@ internal static class XpsFormat
         {
             context.CheckCancellation();
             string name = (p + 1).ToString(CultureInfo.InvariantCulture);
-            Xml("Documents/1/Pages/" + name + ".fpage", new XElement(xps + "FixedPage", new XAttribute("Width", Number(FixedLayout.Width)), new XAttribute("Height", Number(FixedLayout.Height)), new XAttribute(XNamespace.Xml + "lang", "en-US"),
+            Xml("Documents/1/Pages/" + name + ".fpage", new XElement(xps + "FixedPage", new XAttribute("Width", Number(pages[p].Settings.Width)), new XAttribute("Height", Number(pages[p].Settings.Height)), new XAttribute(XNamespace.Xml + "lang", "en-US"),
                 pages[p].Text.Where(t => t.Text.Length != 0).Select(t => new XElement(xps + "Glyphs", new XAttribute("FontUri", "/Resources/Fonts/" + FixedLayout.FontNames[t.Font]),
                     new XAttribute("FontRenderingEmSize", Number(t.Size)), new XAttribute("OriginX", Number(t.X)), new XAttribute("OriginY", Number(t.Y)), new XAttribute("Fill", "#FF" + (t.Color ?? "000000")),
                     new XAttribute("UnicodeString", t.Text[0] == '{' ? "{}" + t.Text : t.Text)))));

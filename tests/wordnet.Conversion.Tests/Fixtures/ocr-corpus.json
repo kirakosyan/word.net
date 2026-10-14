@@ -1,0 +1,66 @@
+[
+  {
+    "file": "ocr-clean.pdf",
+    "sha256": "6aa4d41141b43fcd123e8224175e520720e8ec8555113229d3e54d179f0acfbd",
+    "expected": "ocr-clean.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-rotated90.pdf",
+    "sha256": "7aa255c6cfba6673eef3b127994dd97a5cb175757bc16e0078a1722c41695ecd",
+    "expected": "ocr-rotated90.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-rotated180.pdf",
+    "sha256": "092fe62a6c08d33a2ab7d17a89fdb2bdb2d94d8c14931b0f52bf3972f8e98732",
+    "expected": "ocr-rotated180.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-skewed.pdf",
+    "sha256": "e13a070cace036f8b6f8208937adae02b1270128d1b78b69acbb6e1d5624110d",
+    "expected": "ocr-skewed.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-low-resolution.pdf",
+    "sha256": "c10dc2f06685a5076a653df545ee28a63e3a930ae53297a21f3af6b98de55d69",
+    "expected": "ocr-low-resolution.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-noisy.pdf",
+    "sha256": "dbe9cdaaa0d674fb7e24832fc1fa723e92fe14c6eaa9453ccd83d60e2562d0bf",
+    "expected": "ocr-noisy.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-columns.pdf",
+    "sha256": "dcb8e6deebc8dd297219bfe35f2b291d82e51529781580e9ae0a2f3ec9fce4ff",
+    "expected": "ocr-columns.txt",
+    "producer": "Pillow/ReportLab",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  },
+  {
+    "file": "ocr-phototest.pdf",
+    "sha256": "72a59901ab3ddabfe41e0bccfb3bd86b431c788d67331bc7f23614cc57d74ec6",
+    "expected": "ocr-phototest.txt",
+    "producer": "Tesseract test scan / ReportLab wrapper",
+    "maximumCharacterErrorRate": 0.03,
+    "maximumWordErrorRate": 0.08
+  }
+]

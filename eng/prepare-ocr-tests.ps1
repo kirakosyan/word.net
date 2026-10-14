@@ -17,7 +17,7 @@ $root = [IO.Path]::GetFullPath($OutputDirectory)
 $data = Join-Path $root 'tessdata'
 [IO.Directory]::CreateDirectory($data) | Out-Null
 function Get-VerifiedFile([string]$Url, [string]$Path, [string]$ExpectedHash) {
-    if (-not (Test-Path -LiteralPath $Path)) { Invoke-WebRequest -Uri $Url -OutFile $Path }
+    if (-not (Test-Path -LiteralPath $Path)) { Invoke-WebRequest -Uri $Url -OutFile $Path -UseBasicParsing }
     $algorithm = [Security.Cryptography.SHA256]::Create()
     $stream = [IO.File]::OpenRead($Path)
     try { $actual = ([BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace('-', '').ToLowerInvariant() }

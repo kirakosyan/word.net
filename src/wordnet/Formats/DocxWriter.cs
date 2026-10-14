@@ -27,9 +27,16 @@ internal sealed partial class DocxWriter
     {
         var writer = new DocxWriter(context);
         var body = new XElement(W + "body");
+        PageSettings? previousSection = null;
         foreach (DocumentBlock block in document.Blocks)
         {
             context.CheckCancellation();
+            PageSettings? section = block.Section;
+            if (body.HasElements && !ReferenceEquals(previousSection, section))
+            {
+                AttachSection(body, previousSection ?? new PageSettings());
+            }
+            previousSection = section;
             if (block is ParagraphBlock paragraph)
             {
                 body.Add(writer.Paragraph(paragraph));
@@ -44,6 +51,12 @@ internal sealed partial class DocxWriter
         {
             body.Add(new XElement(W + "p"));
         }
+        if (document.FinalSection != null && previousSection != null && !ReferenceEquals(previousSection, document.FinalSection))
+        {
+            AttachSection(body, previousSection);
+        }
+        if (previousSection != null || document.FinalSection != null)
+            body.Add(Section(document.FinalSection ?? previousSection!));
 
         XNamespace contentTypes = DocxPackage.ContentTypes;
         var types = new XElement(contentTypes + "Types",
@@ -78,6 +91,15 @@ internal sealed partial class DocxWriter
         context.CheckCancellation();
     }
 
+    private static void AttachSection(XElement body, PageSettings settings)
+    {
+        XElement? last = body.Elements().LastOrDefault();
+        if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
+        XElement? properties = last.Element(W + "pPr");
+        if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
+        properties.Add(Section(settings));
+    }
+
     private XElement Paragraph(ParagraphBlock paragraph)
     {
         var element = new XElement(W + "p");
@@ -90,7 +112,13 @@ internal sealed partial class DocxWriter
             properties.Add(new XElement(W + "pStyle", new XAttribute(W + "val", style)));
         }
 
-        if (paragraph.List != null) properties.Add(NumberingReference(paragraph.List));
+        ParagraphLayoutProperties(properties, paragraph.Layout);
+        if (paragraph.List != null)
+        {
+            XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "spacing" || e.Name == W + "ind");
+            if (spacing == null) properties.Add(NumberingReference(paragraph.List));
+            else spacing.AddBeforeSelf(NumberingReference(paragraph.List));
+        }
         if (paragraph.Alignment != ParagraphAlignment.Left)
             properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment == ParagraphAlignment.Center ? "center" : "right")));
         if (properties.HasElements) element.Add(properties);
@@ -180,25 +208,29 @@ internal sealed partial class DocxWriter
     {
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
             new XElement(W + "tblW", new XAttribute(W + "w", table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.Width.HasValue ? "dxa" : "auto"))));
-        int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Count);
+        if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
+        int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));
         for (int index = 0; index < table.Rows.Count; index++)
         {
             context.CheckCancellation();
             var row = new XElement(W + "tr");
-            if (index == 0 && table.HasHeaderRow)
+            if (index < table.HeaderRowCount || table.NonSplittingRows.Contains(index))
             {
-                row.Add(new XElement(W + "trPr", new XElement(W + "tblHeader")));
+                row.Add(new XElement(W + "trPr", table.NonSplittingRows.Contains(index) ? new XElement(W + "cantSplit") : null,
+                    index < table.HeaderRowCount ? new XElement(W + "tblHeader") : null));
             }
 
-            foreach (ParagraphBlock cell in table.Rows[index])
+            foreach (TableCell cell in table.Rows[index])
             {
                 var cellProperties = new XElement(W + "tcPr");
                 if (cell.CellWidth.HasValue) cellProperties.Add(new XElement(W + "tcW", new XAttribute(W + "type", "dxa"), new XAttribute(W + "w", Twips(cell.CellWidth.Value))));
+                if (cell.ColumnSpan > 1) cellProperties.Add(new XElement(W + "gridSpan", new XAttribute(W + "val", cell.ColumnSpan)));
+                if (cell.Merge != VerticalMerge.None) cellProperties.Add(new XElement(W + "vMerge", new XAttribute(W + "val", cell.Merge == VerticalMerge.Start ? "restart" : "continue")));
                 if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
                     Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
-                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Paragraph(cell)));
+                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, cell.Paragraphs.Select(Paragraph)));
             }
 
             element.Add(row);

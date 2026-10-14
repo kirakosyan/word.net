@@ -102,8 +102,9 @@ public sealed class ParagraphAlignmentTests
             Assert.All(lines, line => Assert.Equal("Align", string.Concat(line.Select(l => l.Value))));
             double left = lines[0].Min(l => l.StartBaseLine.X), width = lines[0].Max(l => l.EndBaseLine.X) - left;
             Assert.Equal(48, left, 2);
-            Assert.Equal(595.276 / 2, lines[1].Min(l => l.StartBaseLine.X) + width / 2, 2);
-            Assert.Equal(595.276 - 48, lines[2].Max(l => l.EndBaseLine.X), 2);
+            Assert.InRange(Math.Abs(pdf.GetPage(1).Width - 595.276), 0, 0.025); // DOC stores whole twips.
+            Assert.Equal(pdf.GetPage(1).Width / 2, lines[1].Min(l => l.StartBaseLine.X) + width / 2, 2);
+            Assert.Equal(pdf.GetPage(1).Width - 48, lines[2].Max(l => l.EndBaseLine.X), 2);
         }
         else
         {

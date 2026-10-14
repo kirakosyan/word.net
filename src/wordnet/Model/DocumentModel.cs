@@ -6,10 +6,15 @@ namespace WordNet.Model;
 internal sealed class DocumentModel
 {
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
-    internal int CharacterCount => Blocks.Sum(block => block is ParagraphBlock p ? p.Text.Length : ((TableBlock)block).Rows.Sum(row => row.Sum(cell => cell.Text.Length)));
+    internal PageSettings? FinalSection { get; set; }
+    internal IEnumerable<ParagraphBlock> Paragraphs => Blocks.SelectMany(block => block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(row => row).SelectMany(cell => cell.Paragraphs));
+    internal int CharacterCount => Paragraphs.Sum(p => p.Text.Length);
 }
 
-internal abstract class DocumentBlock;
+internal abstract class DocumentBlock
+{
+    internal PageSettings? Section { get; set; }
+}
 
 internal enum ParagraphAlignment { Left, Center, Right }
 
@@ -23,20 +28,43 @@ internal sealed class ParagraphBlock : DocumentBlock
 
     internal ParagraphAlignment Alignment { get; set; }
     internal ListItem? List { get; set; }
-    // Cells currently contain one paragraph; geometry applies only inside a table.
-    internal double? CellWidth { get; set; }
-    internal CellPadding? Padding { get; set; }
+    internal ParagraphLayout Layout { get; set; } = new ParagraphLayout();
 
     internal string Text => string.Concat(Runs.ConvertAll(run => run.Text));
 }
 
 internal sealed class TableBlock : DocumentBlock
 {
-    internal bool HasHeaderRow { get; set; }
+    internal int HeaderRowCount { get; set; }
+    internal bool HasHeaderRow { get => HeaderRowCount > 0; set => HeaderRowCount = value ? System.Math.Max(1, HeaderRowCount) : 0; }
     internal double? Width { get; set; }
+    internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
+    internal Dictionary<int, double> RowLefts { get; } = new Dictionary<int, double>();
 
-    internal List<List<ParagraphBlock>> Rows { get; } = new List<List<ParagraphBlock>>();
+    internal double[] ColumnEdges()
+    {
+        var edges = new double[ColumnWidths.Count + 1];
+        for (int i = 0; i < ColumnWidths.Count; i++) edges[i + 1] = edges[i] + ColumnWidths[i];
+        return edges;
+    }
+
+    internal List<List<TableCell>> Rows { get; } = new List<List<TableCell>>();
+    internal HashSet<int> NonSplittingRows { get; } = new HashSet<int>();
+}
+
+internal enum VerticalMerge { None, Start, Continue }
+
+internal sealed class TableCell
+{
+    internal TableCell() { }
+    internal TableCell(ParagraphBlock paragraph) => Paragraphs.Add(paragraph);
+    internal List<ParagraphBlock> Paragraphs { get; } = new List<ParagraphBlock>();
+    internal double? CellWidth { get; set; }
+    internal CellPadding? Padding { get; set; }
+    internal int ColumnSpan { get; set; } = 1;
+    internal VerticalMerge Merge { get; set; }
+    internal string Text => string.Join("\n", Paragraphs.Select(p => p.Text));
 }
 
 internal sealed class TextRun

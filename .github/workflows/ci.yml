@@ -29,6 +29,9 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore pinned dependencies
         run: dotnet restore wordnet.sln --locked-mode
+      - name: Verify release version identities
+        shell: pwsh
+        run: ./eng/test-release-version.ps1
       - name: Install Linux OCR prerequisites
         if: runner.os == 'Linux'
         run: |
@@ -48,9 +51,43 @@ jobs:
       - name: Run .NET Framework conversion and robustness tests
         if: runner.os == 'Windows' && runner.arch == 'X64'
         run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net472 --no-build --no-restore --logger "trx;LogFileName=net472.trx" --results-directory artifacts/test-results
+      - name: Verify Framework runner deadlines and stale-report rejection
+        if: runner.os == 'Windows' && runner.arch == 'X64'
+        shell: pwsh
+        run: ./eng/test-framework-runner.ps1
+      - name: Verify Android report decoding
+        shell: pwsh
+        run: ./eng/test-android-report.ps1
       - name: Check formatting
         if: matrix.os == 'ubuntu-24.04'
         run: dotnet format wordnet.sln --verify-no-changes --no-restore
+      - name: Require the complete suite with no skips
+        shell: pwsh
+        run: |
+          $required = [int](Get-Content eng/required-tests.txt -Raw)
+          foreach ($report in Get-ChildItem artifacts/test-results/*.trx) {
+            [xml]$trx = Get-Content -LiteralPath $report.FullName
+            $counters = $trx.TestRun.ResultSummary.Counters
+            if ([int]$counters.total -lt $required -or $counters.passed -ne $counters.total) {
+              throw "Missing, failed or skipped tests in $($report.Name)"
+            }
+          }
+      - name: Isolated malformed-input campaign
+        if: runner.arch == 'X64'
+        shell: pwsh
+        run: |
+          dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll self-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll fuzz tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 128
+          exit $LASTEXITCODE
+      - name: Concurrent conversion and OCR resource qualification
+        if: runner.arch == 'X64'
+        shell: pwsh
+        run: |
+          dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll benchmark tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll ocr tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Pack and validate framework API compatibility
         if: matrix.os == 'ubuntu-24.04'
         run: dotnet pack src/wordnet/wordnet.csproj --configuration Release --no-build --no-restore --output artifacts/packages
@@ -61,10 +98,59 @@ jobs:
           name: tests-${{ matrix.os }}
           path: artifacts/test-results/*.trx
           if-no-files-found: warn
-      - name: Upload local prerelease packages
+      - name: Upload validated packages
         if: matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: nuget-packages
           path: artifacts/packages/*.*nupkg
+          if-no-files-found: error
+      - name: Upload qualification measurements
+        if: always() && runner.arch == 'X64'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qualification-${{ matrix.os }}
+          path: artifacts/qualification/*.json
+          if-no-files-found: error
+
+  package:
+    needs: desktop
+    name: Packed assets / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-11-arm, ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/artifacts/package-cache
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+          dotnet-version: 8.0.x
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: nuget-packages
+          path: artifacts/packages
+      - name: Install Linux OCR prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y libtesseract5 libfontconfig1 fontconfig
+          mkdir -p ~/.local/share/fonts/wordnet
+          cp src/wordnet/Resources/Fonts/*.ttf ~/.local/share/fonts/wordnet/
+          fc-cache -f
+      - name: Exercise the exact NuGet and explicit .NET Standard fallback
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content src/wordnet/wordnet.csproj
+          $framework = '${{ runner.os }}' -eq 'Windows' -and '${{ runner.arch }}' -eq 'X64'
+          ./eng/test-package.ps1 -Version $project.Project.PropertyGroup.Version -Commit $env:GITHUB_SHA -IncludeFramework:$framework
+      - name: Upload package execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: packaged-tests-${{ matrix.os }}
+          path: artifacts/package-tests/*.trx
           if-no-files-found: error

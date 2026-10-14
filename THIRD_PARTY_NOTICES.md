@@ -97,6 +97,10 @@ package. Source revision and file hashes are in the font directory's README.
   formatting/tables. Its binary fixtures and full upstream LICENSE/NOTICE are under
   `tests/wordnet.Conversion.Tests/Fixtures/apache-poi/`. Generated template derivatives
   retain those notices. Neither the Java tools nor fixtures ship in the wordnet NuGet.
+- The Tesseract test repository's `phototest.tif` and supplied text ground truth are
+  Apache-2.0 test fixtures. Their full license, pinned source revision and hashes are in
+  `tests/wordnet.Conversion.Tests/Fixtures/tesseract/`. A raster-only PDF derivative is
+  used for OCR regression tests; neither it nor the source fixtures ship in NuGet.
 - Android test setup extracts ARM64 native assets from
   [Tesseract4Android 4.9.0](https://github.com/adaptech-cz/Tesseract4Android/tree/4.9.0):
   Apache-2.0 wrapper/Tesseract 5.5.1, Leptonica 1.85.0 (BSD-2-Clause), libjpeg 9f

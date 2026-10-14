@@ -5,9 +5,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-if ($Version -notmatch '^\d+\.\d+\.\d+-[0-9A-Za-z.-]+$') {
-    throw 'Only prereleases are authorized by the current release policy.'
-}
+. (Join-Path $PSScriptRoot 'release-version.ps1')
+Assert-ReleaseVersion -Version $Version
 if ($Commit -notmatch '^[0-9a-f]{40}$') { throw 'Expected a full Git commit SHA.' }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem

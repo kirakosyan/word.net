@@ -133,21 +133,34 @@ internal sealed partial class DocxReader
     {
         XElement? properties = element.Element(W + "tblPr");
         table.Width = ReadWidth(properties?.Element(W + "tblW"));
-        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout") == true)
+        if (properties?.Element(W + "tblInd") is XElement indent)
+        {
+            if ((string?)indent.Attribute(W + "type") == "dxa") table.LeftIndent = Integer(indent, W + "w", -31680, 31680) / 20.0;
+            else context.Loss("Docx.TableIndent", "Nonabsolute table indentation is not retained.");
+        }
+        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd") == true)
             context.Loss("Docx.TableFormatting", "Table borders, shading and styles are not retained.");
         if (element.Element(W + "tblGrid")?.Elements().Any(e => e.Name != W + "gridCol") == true)
             context.Loss("Docx.TableGrid", "Table grid revisions are not retained.");
         foreach (XElement column in element.Element(W + "tblGrid")?.Elements(W + "gridCol") ?? Enumerable.Empty<XElement>())
-            if (column.Attribute(W + "w") != null) table.ColumnWidths.Add(Integer(column, W + "w", 1, 31680) / 20.0);
+            table.ColumnWidths.Add(column.Attribute(W + "w") != null ? Integer(column, W + "w", 1, 31680) / 20.0 : 0);
     }
 
-    private void ReadCellGeometry(XElement? defaults, XElement? properties, ParagraphBlock cell)
+    private void ReadCellGeometry(XElement? defaults, XElement? properties, TableCell cell)
     {
         cell.CellWidth = ReadWidth(properties?.Element(W + "tcW"));
         CellPadding? padding = ReadPadding(defaults, null);
         cell.Padding = ReadPadding(properties?.Element(W + "tcMar"), padding);
-        if (properties?.Elements().Any(e => e.Name != W + "tcW" && e.Name != W + "tcMar") == true)
-            context.Loss("Docx.TableCell", "Cell merges, borders, shading and vertical alignment are not retained.");
+        if (properties?.Element(W + "gridSpan") is XElement span) cell.ColumnSpan = Integer(span, W + "val", 1, 1024);
+        if (properties?.Element(W + "vMerge") is XElement merge)
+            cell.Merge = ((string?)merge.Attribute(W + "val") ?? "continue") switch
+            {
+                "restart" => VerticalMerge.Start,
+                "continue" => VerticalMerge.Continue,
+                _ => throw new InvalidDataException("Docx.TableMerge: Invalid merge value.")
+            };
+        if (properties?.Elements().Any(e => e.Name != W + "tcW" && e.Name != W + "tcMar" && e.Name != W + "gridSpan" && e.Name != W + "vMerge") == true)
+            context.Loss("Docx.TableCell", "Cell borders, shading and vertical alignment are not retained.");
     }
 
     private CellPadding? ReadPadding(XElement? source, CellPadding? inherited)

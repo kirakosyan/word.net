@@ -1,6 +1,17 @@
 # wordnet implementation plan
 
-Updated 2026-10-13 for **0.1.0-alpha.8**.
+Updated 2026-10-14 for the **1.0.0 desktop release**.
+
+The six production workstreams are tracked in [production readiness](production-readiness.md).
+This release adds section/paragraph layout, merged multi-paragraph tables, repeating
+headers and long-row splitting, independent geometric and OCR corpora, isolated
+malformed-input/resource campaigns, and package/API qualification automation. The shared
+suite has 348 cases after PR review regressions. Native Windows/Linux x64 and ARM64 CI
+passes all nine source and 17 package runtime lanes. Actual Framework 4.7.2 qualification
+uses the explicit legacy x64 JIT configuration. Android API 21 remains unresolved;
+the maintainer has deferred Android and macOS from the 1.0 release scope. Keep all four
+targets, preserve portability and tie release claims to the documented feature profile
+and build-specific evidence.
 
 Alpha.6 changes the public namespace to `WordNet`, with matching namespaces on every
 target. Consumers must update imports/qualified names and rebuild. Package and assembly
@@ -11,14 +22,14 @@ and migrates the shared test suite to xUnit v3. All four library targets are pre
 See [dependency maintenance](dependencies.md) for versions and the retained build-only
 .NET Standard reference dependency.
 
-Alpha.8 adds font sizes/colors, table widths/cell padding, editable decimal/bullet
-lists and bounded inline PNG/JPEG through Word/EPUB and PDF export/import. The suite
-now has 236 cases, including independent input, schema/geometry/pixel assertions and
+Alpha.8 added font sizes/colors, table widths/cell padding, editable decimal/bullet
+lists and bounded inline PNG/JPEG through Word/EPUB and PDF export/import. Alpha.9
+had 236 cases, including independent input, schema/geometry/pixel assertions and
 malformed-resource regressions. No runtime dependencies or target frameworks changed.
 
 All 28 agreed directions and local English OCR for scanned/mixed PDF input now have
-working implementations and real tests. This is a functional baseline. High document
-fidelity and all-platform qualification remain unfinished.
+working implementations and real tests. Broader rich-document fidelity and additional
+platforms remain future work outside the documented 1.0 desktop profile.
 
 Use independently authored code, public specifications and appropriately licensed
 dependencies. Preserve fixture provenance and notices; exclude proprietary resources.
@@ -32,8 +43,8 @@ dependencies. Preserve fixture provenance and notices; exclude proprietary resou
 - Core content first; explicit diagnostics for unsupported features. Password protection,
   revisions/comments and editable charts/equations remain deferred.
 - Preserve `net472;netstandard2.0;net8.0;net10.0` and matching APIs.
-- Qualify Windows/Linux x64/ARM64 and Android ARM64; Framework remains Windows.
-  macOS is deferred by the user.
+- Qualify Windows/Linux x64/ARM64; Framework remains Windows x64.
+  Android and macOS are deferred by the user for 1.0.
 
 ## Completed baseline
 
@@ -59,23 +70,24 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
 1. **Independent corpora and interoperability:** rich DOC and KF8 fragment/index variants,
    multi-spine EPUB, real viewer checks, malformed compression and fuzzing. DOC formatting
    records and multi-story behavior need broader validation.
-2. **Document semantics:** sections, richer styles/numbering, notes and metadata.
+2. **Document semantics:** continuous/parity sections, richer styles/numbering, notes and metadata.
    Model each feature before adapters claim preservation.
 3. **DOC fidelity:** extend the implemented [formatting/table profile](doc-format.md)
-   with richer typography, sections, merged tables, image effects and supported objects from MS-DOC.
-4. **Layout:** shaping, font selection/fallback, advanced line breaking, sections,
-   keep rules and floating images. Pin fonts and approve visual references/tolerances.
-5. **PDF/OCR:** columns/tables, image transforms and precise positions; rotation/noise/skew/low-resolution
-   corpora; measured reading-order and confidence behavior.
+   with richer typography, image effects and supported objects from MS-DOC.
+4. **Layout:** shaping, font selection/fallback, advanced line breaking, continuous sections,
+   keep-with-table behavior and floating images. Extend the pinned reference corpus.
+5. **PDF/OCR:** complex columns/tables, image transforms and precise positions; broader
+   independently sourced scan corpora beyond the eight measured regression scenarios.
 6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
    Keep unsupported compression/DRM explicit.
-7. **Platforms:** maintain four Windows/Linux CI lanes and Android ARM64 device tests.
-   Native Windows/Linux x64 and ARM64 CI now passes all 236 conversion/OCR tests on
-   .NET 8/10 with default runtime settings; Windows x64 also passes Framework.
-   Check native codecs, OCR, model provisioning, fonts, architecture, trimming/AOT and
-   minimum OS/API requirements.
-8. **Resources:** fuzzing, throughput/RSS benchmarks and host-isolation guidance.
-   Admission bounds cannot enforce hard native CPU/RSS deadlines.
+7. **Platforms:** maintain four native Windows/Linux CI lanes. The current 348-case
+   suite passes source, package and explicit Standard-asset runs on .NET 8/10; Windows
+   x64 also passes Framework. Preserve the actual-4.7.2 legacy JIT qualification gate.
+   Android/macOS and trimming/AOT require fresh qualification before adding support.
+   Check native codecs, OCR, model provisioning, fonts, architecture and minimum OS requirements.
+8. **Resources:** expand deterministic mutation seeds and longer production-like workloads.
+   Isolated fuzzing, throughput/RSS campaigns and host guidance now exist; admission bounds
+   still cannot enforce hard native CPU/RSS deadlines within an application process.
 
 ## Release gates
 

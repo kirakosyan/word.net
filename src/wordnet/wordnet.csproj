@@ -5,11 +5,11 @@
     <AssemblyName>wordnet</AssemblyName>
     <IsPackable>true</IsPackable>
     <PackageId>wordnet</PackageId>
-    <Version>0.1.0-alpha.9</Version>
+    <Version>1.0.0</Version>
     <Authors>Armen Kirakosyan</Authors>
-    <Description>A .NET Word conversion library in early development, with DOC/DOCX, PDF, Markdown, text, EPUB, MOBI, AZW3, XPS output and local English OCR.</Description>
+    <Description>Word conversion for .NET: DOC/DOCX exchanges with PDF, Markdown, text, EPUB, MOBI and AZW3, plus XPS output and local English OCR. Explicit fidelity diagnostics and bounded document processing.</Description>
     <PackageTags>word;docx;doc;pdf;markdown;epub;mobi;azw3;xps;converter;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
-    <PackageReleaseNotes>First public alpha. All 28 conversion directions and local English printed-text OCR have real tests. Includes formatting, tables, lists and inline PNG/JPEG improvements. Limited fidelity; not production-qualified. See https://github.com/kirakosyan/word.net/blob/main/docs/releases/0.1.0-alpha.9.md</PackageReleaseNotes>
+    <PackageReleaseNotes>First stable release for the documented Windows/Linux desktop profile. All 28 conversion directions and English printed-text OCR; section and paragraph layout, merged tables, repeating headers, long-row pagination and opt-in OCR orientation/column processing. See README for fidelity limits, native prerequisites and the required legacy JIT configuration on actual .NET Framework 4.7.2 x64. Android and macOS are outside this release's qualified scope.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -21,6 +21,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>0.1.0-alpha.9</PackageValidationBaselineVersion>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />

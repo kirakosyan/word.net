@@ -25,6 +25,13 @@ internal static partial class DocFormat
 
     internal static DocumentModel Read(Stream input, ConversionContext context)
     {
+        try { return ReadCore(input, context); }
+        catch (Exception error) when (error is FileFormatException or EndOfStreamException or FileNotFoundException)
+        { throw new InvalidDataException("Doc.Container: Invalid compound document or missing required stream.", error); }
+    }
+
+    private static DocumentModel ReadCore(Stream input, ConversionContext context)
+    {
         using var root = RootStorage.Open(input, StorageModeFlags.LeaveOpen | StorageModeFlags.StrictValidation);
         byte[] word = ReadStream(root, "WordDocument", context);
         if (word.Length < 898 || U16(word, 0) != 0xa5ec || U16(word, 2) < 0xc1) throw new InvalidDataException("Doc.Header: Unsupported or invalid Word binary header.");
@@ -37,20 +44,25 @@ internal static partial class DocFormat
         List<PropertyRun> characterRuns = ReadFkps(word, table, 12, false, context);
         var properties = new PropertyReader(ReadStyles(word, table), context, () => ReadStream(root, "Data", context));
         Dictionary<int, ListItem[]> lists = ReadLists(word, table, context);
-        // The semantic subset does not retain original page layout or arbitrary Word properties.
-        context.Loss("Doc.Formatting", "DOC import retains supported headings, emphasis and simple tables; original page layout and other formatting are not retained.");
+        List<(int End, PageSettings Settings)> sections = ReadSections(word, table, text, context);
+        int sectionIndex = 0;
+        // Unsupported Word properties still require an explicit reconstruction diagnostic.
+        context.Loss("Doc.Formatting", "DOC import retains the documented text, section and table profile; unsupported Word formatting is not retained.");
         if (Enumerable.Range(1, 7).Any(i => I32(word, 76 + i * 4) != 0)) context.Loss("Doc.OtherStories", "Headers, notes, comments and textboxes are not imported.");
         var model = new DocumentModel();
         TableBlock? currentTable = null;
-        var row = new List<ParagraphBlock>();
-        ParagraphBlock? pendingCell = null;
+        var row = new List<TableCell>();
+        TableCell? pendingCell = null;
         var fields = new List<bool>();
         int position = 0;
         while (position < text.Length)
         {
             context.CheckCancellation();
+            while (sectionIndex < sections.Count - 1 && position >= sections[sectionIndex].End) sectionIndex++;
+            PageSettings? section = sections.Count == 0 ? null : sections[sectionIndex].Settings;
             int end = position;
-            while (end < text.Length && text[end] is not '\r' and not '\u0007') end++;
+            while (end < text.Length && text[end] is not '\r' and not '\u0007'
+                && !(text[end] == '\f' && sectionIndex < sections.Count - 1 && end + 1 == sections[sectionIndex].End)) end++;
             int mark = Math.Min(end, text.Length - 1);
             TextPiece markPiece = FindPiece(pieces, mark);
             PropertyRun? papx = FindRun(paragraphRuns, markPiece.FileOffset(mark));
@@ -59,7 +71,7 @@ internal static partial class DocFormat
             Properties paragraphProperties = style.Clone();
             properties.Apply(paragraphProperties, papx?.Data ?? Array.Empty<byte>(), style);
             properties.Apply(paragraphProperties, markPiece.Properties, style);
-            var paragraph = new ParagraphBlock { HeadingLevel = paragraphProperties.Heading, Alignment = paragraphProperties.Alignment };
+            var paragraph = new ParagraphBlock { HeadingLevel = paragraphProperties.Heading, Alignment = paragraphProperties.Alignment, Layout = paragraphProperties.Layout.Copy(), Section = section };
             if (paragraphProperties.ListId != 0)
             {
                 if (!lists.TryGetValue(paragraphProperties.ListId, out ListItem[]? levels) || paragraphProperties.ListLevel >= levels.Length)
@@ -70,35 +82,54 @@ internal static partial class DocFormat
             char terminator = end < text.Length ? text[end] : '\r';
             if (paragraphProperties.InTable)
             {
-                if (currentTable == null) { currentTable = new TableBlock(); model.Blocks.Add(currentTable); }
+                if (currentTable == null) { currentTable = new TableBlock { Section = section }; model.Blocks.Add(currentTable); }
                 if (paragraphProperties.RowEnd)
                 {
                     if (terminator != '\u0007' || paragraph.Text.Length != 0 || pendingCell != null || row.Count == 0)
                         throw new InvalidDataException("Doc.Table: Invalid table row terminator.");
                     if (paragraphProperties.Columns.HasValue && paragraphProperties.Columns != row.Count)
                         throw new InvalidDataException("Doc.Table: Cell definitions do not match the row content.");
-                    if (currentTable.Rows.Count == 0) currentTable.HasHeaderRow = paragraphProperties.Header;
-                    else if (paragraphProperties.Header) context.Loss("Doc.TableHeaders", "Only the first repeating header row is retained as a table header.");
+                    if (paragraphProperties.Header)
+                    {
+                        if (currentTable.HeaderRowCount == currentTable.Rows.Count) currentTable.HeaderRowCount++;
+                        else context.Loss("Doc.TableHeaders", "Noncontiguous header rows are not retained.");
+                    }
+                    if (paragraphProperties.CantSplit) currentTable.NonSplittingRows.Add(currentTable.Rows.Count);
                     for (int c = 0; c < row.Count; c++)
                     {
                         if (paragraphProperties.Widths != null && paragraphProperties.Widths[c] > 0) row[c].CellWidth = paragraphProperties.Widths[c];
                         if (paragraphProperties.Padding != null) row[c].Padding = paragraphProperties.Padding[c].Copy();
+                        int cellFlags = paragraphProperties.CellFlags?[c] ?? 0;
+                        if ((cellFlags & 0x60) == 0x40) throw new InvalidDataException("Doc.TableMerge: Invalid vertical merge flag.");
+                        row[c].Merge = (cellFlags & 0x60) == 0x60 ? VerticalMerge.Start : (cellFlags & 0x20) != 0 ? VerticalMerge.Continue : VerticalMerge.None;
                     }
                     if (currentTable.Rows.Count == 0 && paragraphProperties.Widths != null)
                     {
                         currentTable.ColumnWidths.AddRange(paragraphProperties.Widths);
                         currentTable.Width = paragraphProperties.TableWidth ?? paragraphProperties.Widths.Sum();
                     }
-                    currentTable.Rows.Add(row); row = new List<ParagraphBlock>();
+                    var merged = new List<TableCell>();
+                    bool horizontalStart = false;
+                    for (int c = 0; c < row.Count; c++)
+                    {
+                        int horizontal = (paragraphProperties.CellFlags?[c] ?? 0) & 3;
+                        if (horizontal == 1)
+                        {
+                            if (!horizontalStart || merged.Count == 0) throw new InvalidDataException("Doc.TableMerge: Horizontal continuation has no preceding start.");
+                            if (row[c].Paragraphs.Any(p => p.Runs.Any(run => run.Image != null || run.Text.Length != 0)))
+                                throw new NotSupportedException("Doc.TableMergeContent: Content in a horizontal continuation cell cannot be discarded.");
+                            TableCell first = merged[merged.Count - 1];
+                            first.CellWidth = (first.CellWidth ?? 0) + (row[c].CellWidth ?? 0);
+                        }
+                        else { merged.Add(row[c]); horizontalStart = horizontal >= 2; }
+                    }
+                    currentTable.RowLefts.Add(currentTable.Rows.Count, paragraphProperties.TableLeft);
+                    currentTable.Rows.Add(merged); row = new List<TableCell>();
                 }
                 else
                 {
-                    if (pendingCell == null) pendingCell = paragraph;
-                    else
-                    {
-                        context.Loss("Doc.CellParagraphs", "Multiple cell paragraphs are represented by line breaks.");
-                        pendingCell.Runs.Add(new TextRun("\n")); pendingCell.Runs.AddRange(paragraph.Runs);
-                    }
+                    pendingCell ??= new TableCell();
+                    pendingCell.Paragraphs.Add(paragraph);
                     if (terminator == '\u0007')
                     {
                         row.Add(pendingCell); pendingCell = null;
@@ -116,6 +147,8 @@ internal static partial class DocFormat
         }
         if (fields.Count > 0) throw new InvalidDataException("Doc.Fields: Unterminated field.");
         if (pendingCell != null || row.Count != 0) throw new InvalidDataException("Doc.Table: Incomplete table row.");
+        model.FinalSection = sections.LastOrDefault().Settings;
+        foreach (TableBlock tableBlock in model.Blocks.OfType<TableBlock>()) InferTableGrid(tableBlock, context);
         return model;
 
         void AddRuns(ParagraphBlock paragraph, int start, int end, Properties paragraphStyle)
