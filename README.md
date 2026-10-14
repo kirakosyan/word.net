@@ -277,8 +277,12 @@ Confidence is the arithmetic mean of each OCR page's recognized-word confidence,
 including blank pages, with the page count reported. It is not an accuracy guarantee.
 The source candidate adds `new EnglishOcrOptions(dataDirectory, nativeLibraryPath,
 correctOrientation: true)` for optional right-angle rotation and bounded deskew. It costs
-additional OCR passes. Wide uninterrupted two-column gutters receive column-first reading
-order. Complex page layouts and reconstructed tables remain outside the OCR profile.
+additional OCR passes, reusing one engine per page. Column-first reading order is a
+separate opt-in: `new EnglishOcrOptions(dataDirectory, nativeLibraryPath,
+correctOrientation: false, readTextColumns: true)`. Use it only for known two-column
+prose; it can separate labels from values in forms and tables. The default preserves
+Tesseract's line and paragraph order. Complex page layouts and reconstructed tables
+remain outside the OCR profile.
 The configured native library remains loaded for the process lifetime; each recognition
 engine and its image/text buffers are released after use.
 
@@ -291,10 +295,10 @@ The library retains **`net472;netstandard2.0;net8.0;net10.0`** with matching pub
 
 | Consumer | Qualification status / goal |
 | --- | --- |
-| .NET Framework 4.7.2+ | Local tests through installed Windows Framework and an x64 test host |
-| .NET 8 / .NET 10 | Candidate: all 301 cases pass on native Windows/Linux x64 and ARM64, including packed assets |
+| .NET Framework 4.7.2+ | Current local tests use Windows Framework 4.8.1; earlier actual 4.7.2 evidence requires the legacy JIT setting below |
+| .NET 8 / .NET 10 | Current review suite is tested on Windows x64; the earlier 301-case profile also passed native Windows/Linux x64 and ARM64 package lanes |
 | .NET Standard 2.0 | Portable fallback; explicit asset consumption checked on modern .NET |
-| .NET for Android | Candidate: all 301 cases pass on Samsung ARM64/Android 16, including English OCR |
+| .NET for Android | Earlier 301-case profile passed Samsung ARM64/Android 16; current review changes require fresh device qualification |
 | macOS | Deferred; no current release qualification claim |
 
 Compilation and NuGet compatibility do not prove every platform works.
@@ -304,7 +308,8 @@ device coverage still need qualification.
 
 The current Framework minimum-runtime compatibility configuration is explicit: actual
 Framework 4.7.2 x64 requires `<useLegacyJit enabled="1" />` under the application's
-`<runtime>` configuration; all 301 source and packaged tests pass in that mode.
+`<runtime>` configuration; the earlier 301-case source and packaged baseline passed
+in that mode. The current review fixes require a fresh actual-4.7.2 qualification run.
 Default JIT operation on 4.7.2 remains unqualified. Android API 21 qualification remains
 unresolved; investigation is deferred at the user's request. See the
 [configuration and evidence](docs/minimum-runtime-qualification.md) before deploying

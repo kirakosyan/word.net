@@ -1,5 +1,6 @@
 param([string]$WorkDirectory)
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'framework-process.ps1')
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'These checks require the Windows x64 Framework runner.' }
 if (-not $WorkDirectory) { $WorkDirectory = Join-Path $PSScriptRoot '../artifacts/framework-runner-self-test' }
 $work = [IO.Path]::GetFullPath($WorkDirectory)
@@ -18,6 +19,28 @@ try {
     # The fixture never uses OCR. Avoid downloading prerequisites for runner checks.
     $env:WORDNET_TESSDATA = $fixture
     $env:WORDNET_TESSERACT_LIBRARY = $fixture
+    $env:WORDNET_RUNNER_PROBE_EXIT = 'delayed'
+    $start = [Diagnostics.ProcessStartInfo]::new()
+    $start.FileName = Join-Path $fixture 'wordnet.Conversion.Tests.exe'
+    $start.UseShellExecute = $false
+    $start.CreateNoWindow = $true
+    $child = [Diagnostics.Process]::Start($start)
+    $moduleTimer = [Diagnostics.Stopwatch]::StartNew()
+    $probe = @{ attempts = 0 }
+    try {
+        # Simulate loader initialization failure followed by a JIT module that
+        # appears after one second. This is a runner check, not runtime evidence.
+        $observed = @(Wait-FrameworkJitModule -Process $child -Timer $moduleTimer -TimeoutMilliseconds 5000 -ExpectedModule 'compatjit.dll' -ReadModules {
+            param($IgnoredChild)
+            $probe.attempts++
+            if ($probe.attempts -eq 1) { throw [ComponentModel.Win32Exception]::new(299) }
+            if ($moduleTimer.ElapsedMilliseconds -ge 1200) { @{ name = 'compatjit.dll'; version = 'simulated' } }
+        })
+        if ($moduleTimer.ElapsedMilliseconds -lt 1200 -or $probe.attempts -lt 2 -or $observed.Count -ne 1) { throw 'A delayed JIT module was not observed after retrying the loader error.' }
+    } finally {
+        if (-not $child.HasExited) { $child.Kill(); $child.WaitForExit() }
+        $child.Dispose()
+    }
     $env:WORDNET_RUNNER_PROBE_EXIT = $null
     $configuration = Join-Path $fixture 'wordnet.Conversion.Tests.exe.config'
     '<configuration><runtime><useLegacyJit enabled="1" /></runtime></configuration>' | Set-Content -LiteralPath $configuration
@@ -48,7 +71,7 @@ try {
     catch { $staleRejected = $_.Exception.Message -like '*net472.trx*' }
     if (-not $staleRejected -or (Test-Path -LiteralPath $report)) { throw 'Stale evidence satisfied a run that produced no report.' }
     if (@(Get-ChildItem -LiteralPath $results -Filter 'net472.previous-*.trx').Count -lt 1) { throw 'The prior report was not preserved.' }
-    $evidence = [ordered]@{ jitModeMismatchRejected=$true; deadlineRejected=$true; workerTerminated=$true; exitCodePreserved=$true; staleReportRejected=$true; previousReportPreserved=$true }
+    $evidence = [ordered]@{ delayedJitModuleObserved=$true; transientLoaderErrorRetried=$true; jitModeMismatchRejected=$true; deadlineRejected=$true; workerTerminated=$true; exitCodePreserved=$true; staleReportRejected=$true; previousReportPreserved=$true }
     $evidence | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $work 'self-test.json') -Encoding UTF8
     Write-Output 'Framework runner negative checks passed: deadline, worker termination, exit code, stale-report rejection and report preservation.'
 } finally {

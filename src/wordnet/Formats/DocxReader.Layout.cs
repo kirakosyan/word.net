@@ -32,7 +32,12 @@ internal sealed partial class DocxReader
                 settings.Left = Margin("left"); settings.Right = Margin("right"); settings.Top = Margin("top"); settings.Bottom = Margin("bottom");
                 if (property.Attribute(W + "gutter") != null && Integer(property, W + "gutter", 0, 31680) != 0)
                     context.Loss("Docx.Gutter", "Binding gutters are not retained.");
-                double Margin(string name) => Integer(property, W + name, 0, 31680) / 20.0;
+                double Margin(string name)
+                {
+                    int value = Integer(property, W + name, name is "top" or "bottom" ? -31680 : 0, 31680);
+                    if (value < 0) context.Loss("Docx.FixedMargin", "Fixed negative vertical margins use their absolute distance; header overlap behavior is not retained.");
+                    return System.Math.Abs(value) / 20.0;
+                }
             }
             else if (property.Name == W + "type")
             {

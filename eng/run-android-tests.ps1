@@ -77,7 +77,8 @@ while ($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
         exit 0
     }
     if ($timer.Elapsed.TotalSeconds -ge $StartupGraceSeconds) {
-        $processes = (& $AdbPath -s $Serial shell ps) -join "`n"
+        $processArguments = Get-AndroidProcessArguments ([int]$api)
+        $processes = (& $AdbPath -s $Serial @processArguments) -join "`n"
         if ($LASTEXITCODE -ne 0 -or $processes -notmatch '(?m)^USER\s+PID\s') { throw 'Could not inspect the Android test process after startup.' }
         if ($processes -notmatch '(?m)\sorg\.wordnet\.validation\s*$') { throw 'The Android test process exited without producing a complete report. Collect logcat; no qualification pass is established.' }
     }

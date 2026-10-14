@@ -149,3 +149,16 @@ desktop TRX output. Synthetic pages use 200-DPI rasterization, the upstream scan
 These eight cases define a regression corpus, not an accuracy guarantee for arbitrary
 scans, forms, tables or handwriting. Fixtures and generating/validation tools do not ship
 in the NuGet package.
+
+## PR #3 review cases — 2026-10-14
+
+`ProductionReviewTests.cs` independently authors synthetic DOCX/EPUB markup in memory,
+under MIT. The DOC regression cases modify section sprm operands and absolute
+`rgdxaCenter` edges in a generated compound file, then assert the specification values
+directly or inspect output with independent PDF/Open XML readers. The orientation tests
+use [MS-DOC SBOrientationOperand](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/f35a0396-e4d0-4d8e-8b7f-6114d01b864a),
+where `0x01` is portrait and `0x02` is landscape. They do not rely on a matching WordNet
+reader/writer round trip to determine those values. Apache POI's separate verifier also
+checks the original section operands. Synthetic TSV coordinates check paragraph boundaries
+inside opt-in OCR columns; the existing independent raster corpus checks default native
+line order versus explicitly requested column order. No additional binary fixture is needed.

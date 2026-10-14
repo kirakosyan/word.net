@@ -38,7 +38,16 @@ internal sealed class TableBlock : DocumentBlock
     internal int HeaderRowCount { get; set; }
     internal bool HasHeaderRow { get => HeaderRowCount > 0; set => HeaderRowCount = value ? System.Math.Max(1, HeaderRowCount) : 0; }
     internal double? Width { get; set; }
+    internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
+    internal Dictionary<int, double> RowLefts { get; } = new Dictionary<int, double>();
+
+    internal double[] ColumnEdges()
+    {
+        var edges = new double[ColumnWidths.Count + 1];
+        for (int i = 0; i < ColumnWidths.Count; i++) edges[i + 1] = edges[i] + ColumnWidths[i];
+        return edges;
+    }
 
     internal List<List<TableCell>> Rows { get; } = new List<List<TableCell>>();
     internal HashSet<int> NonSplittingRows { get; } = new HashSet<int>();

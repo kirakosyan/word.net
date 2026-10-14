@@ -44,6 +44,7 @@ internal static partial class DocFormat
         internal double? FontSize { get; set; }
         internal string? Color { get; set; }
         internal double? TableWidth { get; set; }
+        internal double TableLeft { get; set; }
         internal int ListId { get; set; }
         internal int ListLevel { get; set; }
         internal int? PictureOffset { get; set; }
@@ -415,6 +416,7 @@ internal static partial class DocFormat
         for (int i = 0; i <= columns; i++)
         {
             int edge = unchecked((short)U16(bytes, 1 + i * 2));
+            if (i == 0) state.TableLeft = edge / 20.0;
             if (edge < previous) throw new InvalidDataException("Doc.Table: Cell boundaries are not ordered.");
             if (i > 0) state.Widths[i - 1] = (edge - previous) / 20.0;
             previous = edge;

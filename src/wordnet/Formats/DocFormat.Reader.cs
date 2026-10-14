@@ -123,6 +123,7 @@ internal static partial class DocFormat
                         }
                         else { merged.Add(row[c]); horizontalStart = horizontal >= 2; }
                     }
+                    currentTable.RowLefts.Add(currentTable.Rows.Count, paragraphProperties.TableLeft);
                     currentTable.Rows.Add(merged); row = new List<TableCell>();
                 }
                 else
@@ -147,7 +148,7 @@ internal static partial class DocFormat
         if (fields.Count > 0) throw new InvalidDataException("Doc.Fields: Unterminated field.");
         if (pendingCell != null || row.Count != 0) throw new InvalidDataException("Doc.Table: Incomplete table row.");
         model.FinalSection = sections.LastOrDefault().Settings;
-        foreach (TableBlock tableBlock in model.Blocks.OfType<TableBlock>()) InferTableGrid(tableBlock);
+        foreach (TableBlock tableBlock in model.Blocks.OfType<TableBlock>()) InferTableGrid(tableBlock, context);
         return model;
 
         void AddRuns(ParagraphBlock paragraph, int start, int end, Properties paragraphStyle)

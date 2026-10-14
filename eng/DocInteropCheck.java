@@ -1,6 +1,8 @@
 import java.io.*;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.*;
+import org.apache.poi.hwpf.sprm.SprmIterator;
+import org.apache.poi.hwpf.sprm.SprmOperation;
 
 /** Optional independent DOC validation with Apache POI 5.4.1; never a library dependency. */
 public class DocInteropCheck {
@@ -11,6 +13,8 @@ public class DocInteropCheck {
                 require(range.numSections() == 2, "Two sections");
                 require(range.getSection(0).getPageWidth() == 12240 && range.getSection(0).getPageHeight() == 15840, "Portrait geometry");
                 require(range.getSection(1).getPageWidth() == 15840 && range.getSection(1).getPageHeight() == 12240, "Landscape geometry");
+                require(orientation(doc, 0) == 1, "Portrait orientation operand");
+                require(orientation(doc, 1) == 2, "Landscape orientation operand");
                 require(range.getParagraph(0).getSpacingBefore() == 200 && range.getParagraph(0).getSpacingAfter() == 160, "Title spacing");
                 require(range.getParagraph(1).getIndentFromLeft() == 480 && range.getParagraph(1).getFirstLineIndent() == 240, "Body indentation");
                 Table table = null;
@@ -47,6 +51,8 @@ public class DocInteropCheck {
                 Section first = range.getSection(0), second = range.getSection(1);
                 require(first.getPageWidth() == 12240 && first.getPageHeight() == 15840, "Letter portrait");
                 require(second.getPageWidth() == 15840 && second.getPageHeight() == 12240, "Letter landscape");
+                require(orientation(doc, 0) == 1, "Portrait orientation operand");
+                require(orientation(doc, 1) == 2, "Landscape orientation operand");
                 require(first.getMarginLeft() == 1440 && second.getMarginLeft() == 720, "Section margins");
                 Paragraph heading = range.getParagraph(0);
                 require(heading.keepWithNext() && heading.keepOnPage(), "Keep flags");
@@ -161,6 +167,21 @@ public class DocInteropCheck {
             System.out.println("PASS: DOC heading, bold, italic, table rows/cells and repeating header (Apache POI 5.4.1).");
         }
     }
+    private static int orientation(HWPFDocument doc, int section) throws IOException {
+        // POI 5.4.1 exposes dmOrientPage as boolean. Read the original operand
+        // using its section index and sprm parser so 0x01 and 0x02 stay distinct.
+        int offset = doc.getSectionTable().getSections().get(section).getSectionDescriptor().getFc();
+        byte[] main = doc.getMainStream();
+        int size = (main[offset] & 255) | ((main[offset + 1] & 255) << 8);
+        byte[] properties = java.util.Arrays.copyOfRange(main, offset + 2, offset + 2 + size);
+        SprmIterator iterator = new SprmIterator(properties, 0);
+        while (iterator.hasNext()) {
+            SprmOperation operation = iterator.next();
+            if (operation.getType() == SprmOperation.TYPE_SEP && operation.getOperation() == 0x1d) return operation.getOperand();
+        }
+        throw new IOException("Missing explicit orientation operand");
+    }
+
     private static void require(boolean condition, String message) {
         if (!condition) throw new AssertionError(message);
     }

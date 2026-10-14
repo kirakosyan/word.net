@@ -27,7 +27,7 @@ internal static class FidelityChecks
         {
             if (paragraphs.Any(p => p.Runs.Any(r => r.FontSize.HasValue || r.Color != null)))
                 context.Loss(format == DocumentFormat.Text ? "Text.Formatting" : "Markdown.RunAppearance", "Font sizes and colors are not represented in this text format.");
-            if (model.Blocks.OfType<TableBlock>().Any(t => t.Width.HasValue || t.ColumnWidths.Count > 0 || t.Rows.SelectMany(r => r).Any(p => p.CellWidth.HasValue || p.Padding != null)))
+            if (model.Blocks.OfType<TableBlock>().Any(t => t.LeftIndent != 0 || t.Width.HasValue || t.ColumnWidths.Any(w => w > 0) || t.Rows.SelectMany(r => r).Any(p => p.CellWidth.HasValue || p.Padding != null)))
                 context.Loss("Table.Geometry", "This text format cannot retain table widths and cell padding.");
             if (paragraphs.Any(p => p.List != null)) context.Loss("List.Structure", "Editable list numbering becomes literal labels in this text profile.");
         }

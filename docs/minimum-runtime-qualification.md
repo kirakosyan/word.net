@@ -2,8 +2,9 @@
 
 This runbook preserves `net472;netstandard2.0;net8.0;net10.0` and the `WordNet` API.
 macOS remains deferred. Minimum-runtime qualification covers **actual Framework 4.7.2**
-and **Android API 21 ARM64** execution of every shared test. Framework passes with the
-explicit legacy x64 JIT configuration below; default JIT remains unqualified. Android
+and **Android API 21 ARM64** execution of every shared test. The earlier 301-case
+Framework baseline passes with the explicit legacy x64 JIT configuration below;
+the current review fixes require fresh minimum-runtime execution. Default JIT remains unqualified. Android
 remains unresolved and further investigation is deferred at the user's request.
 A VM/emulator starting is not a passing qualification report.
 

@@ -50,8 +50,9 @@ internal static class OcrReadingOrder
         return text;
 
         static bool Number(string value, out int number) => int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out number);
-        static string Read(IEnumerable<Word> column) => string.Join("\n", column.GroupBy(w => w.Line).OrderBy(line => line.Min(w => w.Y))
-            .Select(line => string.Join(" ", line.OrderBy(w => w.X).Select(w => w.Text))));
+        static string Read(IEnumerable<Word> column) => string.Join("\n\n", column.GroupBy(w => w.Paragraph).OrderBy(paragraph => paragraph.Min(w => w.Y))
+            .Select(paragraph => string.Join("\n", paragraph.GroupBy(w => w.Line).OrderBy(line => line.Min(w => w.Y))
+                .Select(line => string.Join(" ", line.OrderBy(w => w.X).Select(w => w.Text))))));
     }
 
     private sealed class Word
@@ -59,6 +60,7 @@ internal static class OcrReadingOrder
         internal Word(string line, string text, int x, int y, int width, int height)
         { Line = line; Text = text; X = x; Y = y; Width = width; Height = height; }
         internal string Line { get; }
+        internal string Paragraph => Line.Substring(0, Line.LastIndexOf(':'));
         internal string Text { get; }
         internal int X { get; }
         internal int Y { get; }

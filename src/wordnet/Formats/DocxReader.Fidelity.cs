@@ -133,12 +133,17 @@ internal sealed partial class DocxReader
     {
         XElement? properties = element.Element(W + "tblPr");
         table.Width = ReadWidth(properties?.Element(W + "tblW"));
-        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout") == true)
+        if (properties?.Element(W + "tblInd") is XElement indent)
+        {
+            if ((string?)indent.Attribute(W + "type") == "dxa") table.LeftIndent = Integer(indent, W + "w", -31680, 31680) / 20.0;
+            else context.Loss("Docx.TableIndent", "Nonabsolute table indentation is not retained.");
+        }
+        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd") == true)
             context.Loss("Docx.TableFormatting", "Table borders, shading and styles are not retained.");
         if (element.Element(W + "tblGrid")?.Elements().Any(e => e.Name != W + "gridCol") == true)
             context.Loss("Docx.TableGrid", "Table grid revisions are not retained.");
         foreach (XElement column in element.Element(W + "tblGrid")?.Elements(W + "gridCol") ?? Enumerable.Empty<XElement>())
-            if (column.Attribute(W + "w") != null) table.ColumnWidths.Add(Integer(column, W + "w", 1, 31680) / 20.0);
+            table.ColumnWidths.Add(column.Attribute(W + "w") != null ? Integer(column, W + "w", 1, 31680) / 20.0 : 0);
     }
 
     private void ReadCellGeometry(XElement? defaults, XElement? properties, TableCell cell)

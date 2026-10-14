@@ -27,6 +27,18 @@ public sealed class EnglishOcrOptions
     /// <param name="resolutionDpi">PDF rasterization resolution, from 72 through 600 DPI.</param>
     /// <param name="maximumImagePixels">Maximum raster pixels per page, including corrected rasters.</param>
     public EnglishOcrOptions(string dataDirectory, string nativeLibraryPath, bool correctOrientation, int resolutionDpi = 200, int maximumImagePixels = 16 * 1024 * 1024)
+        : this(dataDirectory, nativeLibraryPath, correctOrientation, false, resolutionDpi, maximumImagePixels)
+    {
+    }
+
+    /// <summary>Creates an English OCR configuration with independent orientation and text-column options.</summary>
+    /// <param name="dataDirectory">Directory containing eng.traineddata.</param>
+    /// <param name="nativeLibraryPath">Absolute path of a Tesseract 5 C-API library for the process architecture.</param>
+    /// <param name="correctOrientation">Try right-angle orientations and bounded deskew using recognition confidence.</param>
+    /// <param name="readTextColumns">Opt in to reading two text columns down the left then right column. Use only for known prose layouts; forms and tables can be reordered incorrectly.</param>
+    /// <param name="resolutionDpi">PDF rasterization resolution, from 72 through 600 DPI.</param>
+    /// <param name="maximumImagePixels">Maximum raster pixels per page, including corrected rasters.</param>
+    public EnglishOcrOptions(string dataDirectory, string nativeLibraryPath, bool correctOrientation, bool readTextColumns, int resolutionDpi = 200, int maximumImagePixels = 16 * 1024 * 1024)
     {
         if (string.IsNullOrWhiteSpace(dataDirectory)) throw new ArgumentException("A local data directory is required.", nameof(dataDirectory));
         if (string.IsNullOrWhiteSpace(nativeLibraryPath)) throw new ArgumentException("A native library path is required.", nameof(nativeLibraryPath));
@@ -41,6 +53,7 @@ public sealed class EnglishOcrOptions
         ResolutionDpi = resolutionDpi;
         MaximumImagePixels = maximumImagePixels;
         CorrectOrientation = correctOrientation;
+        ReadTextColumns = readTextColumns;
     }
 
     /// <summary>Gets the local directory containing the English model.</summary>
@@ -53,4 +66,6 @@ public sealed class EnglishOcrOptions
     public int MaximumImagePixels { get; }
     /// <summary>Gets whether OCR tries right-angle orientation and bounded skew correction.</summary>
     public bool CorrectOrientation { get; }
+    /// <summary>Gets whether OCR may reorder two text columns. Disabled by default to preserve native line and paragraph order.</summary>
+    public bool ReadTextColumns { get; }
 }

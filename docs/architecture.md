@@ -80,10 +80,13 @@ lifetime, preventing unload while native dependencies retain workers or thread-l
 Each call owns and releases its engine and image/text buffers. Local English data/native
 dependencies are explicitly provisioned.
 Recognition returns English printed paragraphs, not handwriting or reconstructed tables.
-Wide uninterrupted gutters can reorder two columns down the left column then the right.
+The separate `ReadTextColumns` option can reorder two known prose columns down the
+left column then the right, preserving paragraph boundaries within each column.
+It is disabled by default because forms and tables can have the same gutter geometry.
 The optional `CorrectOrientation` overload tries right-angle rotation and up to five degrees
 of skew correction using bounded dark-pixel projection scoring. Selection compares OCR
-confidence, so preprocessing remains opt-in and requires output review. Existing constructor
+confidence, reusing one engine across candidates and avoiding zero-degree raster copies.
+Preprocessing remains opt-in and requires output review. Existing constructor
 signatures and default correction-disabled behavior are preserved.
 Confidence diagnostics average the per-page mean confidences across all OCR pages and
 include the page count; they are information, not an accuracy guarantee. Whole-page OCR

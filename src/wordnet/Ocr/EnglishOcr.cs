@@ -10,19 +10,21 @@ namespace WordNet.Ocr;
 
 internal static class EnglishOcr
 {
-    internal static string Recognize(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context)
+    private static string RecognizeCandidates(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context,
+        Func<SKBitmap, (string Text, int Confidence, bool Columns)> recognize)
     {
-        (string Text, int Confidence, bool Columns) best = RecognizeSingle(bitmap, options, context);
+        (string Text, int Confidence, bool Columns) best = recognize(bitmap);
         double bestScore = Score(best), correction = 0;
         if (options.CorrectOrientation)
         {
             for (int angle = 0; angle < 360; angle += 90)
             {
-                using SKBitmap rotated = OcrImage.Rotate(bitmap, angle, options, context);
-                double skew = OcrImage.Skew(rotated, context);
+                using SKBitmap? rotated = angle == 0 ? null : OcrImage.Rotate(bitmap, angle, options, context);
+                SKBitmap oriented = rotated ?? bitmap;
+                double skew = OcrImage.Skew(oriented, context);
                 if (angle == 0 && skew == 0) continue;
-                using SKBitmap corrected = OcrImage.Rotate(rotated, skew, options, context);
-                var candidate = RecognizeSingle(corrected, options, context);
+                using SKBitmap? corrected = skew == 0 ? null : OcrImage.Rotate(oriented, skew, options, context);
+                var candidate = recognize(corrected ?? oriented);
                 double score = Score(candidate);
                 if (score > bestScore) { best = candidate; bestScore = score; correction = angle + skew; }
             }
@@ -36,7 +38,7 @@ internal static class EnglishOcr
         static double Score((string Text, int Confidence, bool Columns) result) => result.Confidence * Math.Min(1, result.Text.Count(char.IsLetterOrDigit) / 20.0);
     }
 
-    private static (string Text, int Confidence, bool Columns) RecognizeSingle(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context)
+    internal static string Recognize(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context)
     {
         if (!File.Exists(Path.Combine(options.DataDirectory, "eng.traineddata"))) throw new FileNotFoundException("Ocr.LanguageData: eng.traineddata must be provisioned locally.");
         if ((long)bitmap.Width * bitmap.Height > options.MaximumImagePixels) throw new InvalidDataException("Limit.ImagePixels: OCR image exceeds the pixel limit.");
@@ -60,23 +62,30 @@ internal static class EnglishOcr
         {
             context.CheckCancellation();
             if (init(api, NativeModule.Utf8(options.DataDirectory), NativeModule.Utf8("eng")) != 0) throw new InvalidOperationException("Ocr.Initialize: English model could not be loaded.");
-            using SKBitmap gray = bitmap.Copy(SKColorType.Gray8) ?? throw new InvalidOperationException("Ocr.Image: Could not convert raster to grayscale.");
-            image(api, gray.GetPixels(), gray.Width, gray.Height, 1, gray.RowBytes);
-            resolution(api, options.ResolutionDpi);
-            context.CheckCancellation();
-            IntPtr monitor = createMonitor();
-            if (monitor == IntPtr.Zero) throw new InvalidOperationException("Ocr.Initialize: Could not allocate OCR progress monitor.");
-            Cancel callback = (_, _) => context.CancellationToken.IsCancellationRequested;
-            int status;
-            try { setCancel(monitor, callback); status = recognize(api, monitor); }
-            finally { GC.KeepAlive(callback); deleteMonitor(monitor); }
-            context.CheckCancellation();
-            if (status != 0) throw new InvalidOperationException("Ocr.Recognition: Tesseract recognition failed.");
-            string text = ReadText(getText(api), Math.Min(int.MaxValue - 1L, (long)context.Options.MaximumCharacters * 4));
-            context.CheckCharacters(text.Length);
-            string tsv = ReadText(getTsv(api, 0), context.Options.MaximumExpandedBytes);
-            string? columns = OcrReadingOrder.Columns(tsv, bitmap.Width, bitmap.Height, context);
-            return (columns ?? text.TrimEnd('\n', '\r'), confidence(api), columns != null);
+            return RecognizeCandidates(bitmap, options, context, RecognizeSingle);
+
+            (string Text, int Confidence, bool Columns) RecognizeSingle(SKBitmap candidate)
+            {
+                if ((long)candidate.Width * candidate.Height > options.MaximumImagePixels) throw new InvalidDataException("Limit.ImagePixels: OCR image exceeds the pixel limit.");
+                using SKBitmap gray = candidate.Copy(SKColorType.Gray8) ?? throw new InvalidOperationException("Ocr.Image: Could not convert raster to grayscale.");
+                image(api, gray.GetPixels(), gray.Width, gray.Height, 1, gray.RowBytes);
+                resolution(api, options.ResolutionDpi);
+                context.CheckCancellation();
+                IntPtr monitor = createMonitor();
+                if (monitor == IntPtr.Zero) throw new InvalidOperationException("Ocr.Initialize: Could not allocate OCR progress monitor.");
+                Cancel callback = (_, _) => context.CancellationToken.IsCancellationRequested;
+                int status;
+                try { setCancel(monitor, callback); status = recognize(api, monitor); }
+                finally { GC.KeepAlive(callback); deleteMonitor(monitor); }
+                context.CheckCancellation();
+                if (status != 0) throw new InvalidOperationException("Ocr.Recognition: Tesseract recognition failed.");
+                string text = ReadText(getText(api), Math.Min(int.MaxValue - 1L, (long)context.Options.MaximumCharacters * 4));
+                context.CheckCharacters(text.Length);
+                string? columns = options.ReadTextColumns
+                    ? OcrReadingOrder.Columns(ReadText(getTsv(api, 0), context.Options.MaximumExpandedBytes), candidate.Width, candidate.Height, context)
+                    : null;
+                return (columns ?? text.TrimEnd('\n', '\r'), confidence(api), columns != null);
+            }
 
             string ReadText(IntPtr pointer, long maximum)
             {

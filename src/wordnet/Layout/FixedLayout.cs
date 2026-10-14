@@ -142,19 +142,20 @@ internal static partial class FixedLayout
         void RenderTable(TableBlock table)
         {
             var rows = new List<RowLayout>();
+            double[] edges = table.ColumnEdges();
             for (int r = 0; r < table.Rows.Count; r++)
             {
                 context.CheckCancellation();
                 List<TableCell> source = table.Rows[r];
                 var row = new RowLayout(); rows.Add(row);
                 int columns = source.Sum(c => c.ColumnSpan), column = 0;
-                double left = settings.Left, total = table.Width ?? (table.ColumnWidths.Count > 0 ? table.ColumnWidths.Sum() : settings.Width - settings.Left - settings.Right);
+                double left = settings.Left + table.LeftIndent, total = table.Width ?? (table.ColumnWidths.Count > 0 ? edges[edges.Length - 1] : settings.Width - settings.Left - settings.Right);
                 foreach (TableCell cell in source)
                 {
                     double width = cell.CellWidth ?? (column + cell.ColumnSpan <= table.ColumnWidths.Count
-                        ? table.ColumnWidths.Skip(column).Take(cell.ColumnSpan).Sum() : total * cell.ColumnSpan / columns);
+                        ? edges[column + cell.ColumnSpan] - edges[column] : total * cell.ColumnSpan / columns);
                     CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
-                    if (left + width > settings.Width - settings.Right + 0.1 || width <= padding.Left + padding.Right)
+                    if (left < -0.1 || left + width > settings.Width + 0.1 || width <= padding.Left + padding.Right)
                         throw new NotSupportedException("Layout.TableWidth: Table cells do not fit the page or their margins.");
                     var preparedCell = new CellLayout { Padding = padding, Column = column, Merge = cell.Merge };
                     if (cell.Merge != VerticalMerge.Continue)

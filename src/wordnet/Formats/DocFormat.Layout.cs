@@ -9,26 +9,32 @@ namespace WordNet.Formats;
 
 internal static partial class DocFormat
 {
-    private static void InferTableGrid(TableBlock table)
+    private static void InferTableGrid(TableBlock table, ConversionContext context)
     {
         if (table.Rows.SelectMany(r => r).Any(c => !c.CellWidth.HasValue || c.CellWidth.Value <= 0)) return;
-        var edges = new SortedSet<int> { 0 };
-        foreach (List<TableCell> row in table.Rows)
+        var edges = new SortedSet<int>();
+        for (int r = 0; r < table.Rows.Count; r++)
         {
-            int position = 0;
-            foreach (TableCell cell in row) { position += checked((int)Math.Round(cell.CellWidth!.Value * 20)); edges.Add(position); }
+            context.CheckCancellation();
+            int position = checked((int)Math.Round(table.RowLefts[r] * 20)); edges.Add(position);
+            foreach (TableCell cell in table.Rows[r]) { position += checked((int)Math.Round(cell.CellWidth!.Value * 20)); edges.Add(position); }
+            if (edges.Count > 1025) throw new InvalidDataException("Limit.TableCells: Too many inferred DOC grid columns.");
         }
         int[] grid = edges.ToArray();
+        table.LeftIndent = grid[0] / 20.0;
         table.ColumnWidths.Clear();
         for (int i = 1; i < grid.Length; i++) table.ColumnWidths.Add((grid[i] - grid[i - 1]) / 20.0);
-        foreach (List<TableCell> row in table.Rows)
+        for (int r = 0; r < table.Rows.Count; r++)
         {
-            int position = 0, start = 0;
+            List<TableCell> row = table.Rows[r];
+            int position = checked((int)Math.Round(table.RowLefts[r] * 20)), start = Array.BinarySearch(grid, position);
+            int before = start;
             foreach (TableCell cell in row)
             {
                 position += checked((int)Math.Round(cell.CellWidth!.Value * 20));
                 int end = Array.BinarySearch(grid, position); cell.ColumnSpan = end - start; start = end;
             }
+            if (before > 0) { context.Loss("Doc.TableGrid", "Omitted leading DOC grid columns are represented by empty cells."); row.Insert(0, new TableCell(new ParagraphBlock()) { ColumnSpan = before, Padding = new CellPadding() }); }
         }
     }
 
@@ -63,11 +69,11 @@ internal static partial class DocFormat
                         case 0xb020: settings.Height = U16(operand, 0) / 20.0; break;
                         case 0xb021: settings.Left = U16(operand, 0) / 20.0; break;
                         case 0xb022: settings.Right = U16(operand, 0) / 20.0; break;
-                        case 0x9023: settings.Top = unchecked((short)U16(operand, 0)) / 20.0; break;
-                        case 0x9024: settings.Bottom = unchecked((short)U16(operand, 0)) / 20.0; break;
+                        case 0x9023: settings.Top = VerticalMargin(operand); break;
+                        case 0x9024: settings.Bottom = VerticalMargin(operand); break;
                         case 0x301d:
-                            if (operand[0] > 1) throw new InvalidDataException("Doc.PageOrientation: Invalid orientation.");
-                            settings.Landscape = operand[0] == 1; break;
+                            if (operand[0] > 2) throw new InvalidDataException("Doc.PageOrientation: Invalid orientation.");
+                            settings.Landscape = operand[0] == 2; break;
                         case 0x3009:
                             if (operand[0] != 2) context.Loss("Doc.SectionBreak", "Section breaks other than next-page become next-page breaks.");
                             break;
@@ -83,12 +89,19 @@ internal static partial class DocFormat
             settings.Validate(); result.Add((end, settings));
         }
         return result;
+
+        double VerticalMargin(byte[] operand)
+        {
+            int value = unchecked((short)U16(operand, 0));
+            if (value < 0) context.Loss("Doc.FixedMargin", "Fixed negative vertical margins use their absolute distance; header overlap behavior is not retained.");
+            return Math.Abs(value) / 20.0;
+        }
     }
 
     private static byte[] SectionProperties(PageSettings settings)
     {
         settings.Validate();
-        return Join(Sprm(0x3009, 2), Sprm(0x301d, settings.Landscape ? 1 : 0),
+        return Join(Sprm(0x3009, 2), Sprm(0x301d, settings.Landscape ? 2 : 1),
             Dimension(0xb01f, settings.Width), Dimension(0xb020, settings.Height),
             Dimension(0xb021, settings.Left), Dimension(0xb022, settings.Right),
             Dimension(0x9023, settings.Top), Dimension(0x9024, settings.Bottom));

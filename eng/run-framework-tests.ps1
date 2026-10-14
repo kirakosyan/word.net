@@ -7,6 +7,7 @@ param(
     [ValidateRange(1, 7200)][int]$TimeoutSeconds = 1800
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'framework-process.ps1')
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Framework qualification requires Windows.' }
 $registry = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, [Microsoft.Win32.RegistryView]::Registry64)
 try {
@@ -115,17 +116,7 @@ $timer = [Diagnostics.Stopwatch]::StartNew()
 try {
     Write-Output "Framework tests running with a $TimeoutSeconds-second external deadline. Logs: $results"
     $expectedJit = $(if ($JitMode -eq 'legacy') { 'compatjit.dll' } else { 'clrjit.dll' })
-    while (-not $process.HasExited -and $timer.ElapsedMilliseconds -lt [Math]::Min(1000, $TimeoutSeconds * 1000)) {
-        $process.Refresh()
-        try {
-            $evidence.loadedJitModules = @($process.Modules | Where-Object ModuleName -in @('clrjit.dll', 'compatjit.dll') | ForEach-Object {
-                [ordered]@{ name = $_.ModuleName; version = $_.FileVersionInfo.FileVersion }
-            })
-        } catch [InvalidOperationException] { if (-not $process.HasExited) { throw } }
-        catch [ComponentModel.Win32Exception] { if (-not $process.HasExited) { throw } }
-        if (@($evidence.loadedJitModules | Where-Object { $_.name -eq $expectedJit }).Count) { break }
-        Start-Sleep -Milliseconds 20
-    }
+    $evidence.loadedJitModules = @(Wait-FrameworkJitModule -Process $process -Timer $timer -TimeoutMilliseconds ($TimeoutSeconds * 1000) -ExpectedModule $expectedJit)
     $remaining = [Math]::Max(0, $TimeoutSeconds * 1000 - [int]$timer.ElapsedMilliseconds)
     if (-not $process.WaitForExit($remaining)) {
         Stop-TestRunner $process

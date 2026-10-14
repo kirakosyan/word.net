@@ -32,6 +32,8 @@ internal static partial class DocFormat
         if (lists.Count > 2046) throw new NotSupportedException("Doc.ListCount: Too many numbering instances.");
         TableBlock? activeTable = null;
         List<TableCell>? activeRow = null;
+        double[] activeEdges = Array.Empty<double>();
+        int activeColumns = 0;
         bool cantSplit = false;
         int imageId = 1024;
         bool previousTable = false;
@@ -57,6 +59,7 @@ internal static partial class DocFormat
             else if (block is TableBlock table)
             {
                 activeTable = table;
+                activeEdges = table.ColumnEdges();
                 if (previousTable)
                 {
                     context.Loss("Doc.AdjacentTables", "An empty paragraph separates adjacent tables in binary Word output.");
@@ -66,6 +69,7 @@ internal static partial class DocFormat
                 {
                     List<TableCell> row = table.Rows[r];
                     activeRow = row;
+                    activeColumns = row.Sum(cell => cell.ColumnSpan);
                     cantSplit = table.NonSplittingRows.Contains(r);
                     if (row.Count is < 1 or > 63) throw new NotSupportedException("Doc.TableColumns: DOC rows require between one and 63 cells.");
                     bool header = r < table.HeaderRowCount;
@@ -185,13 +189,15 @@ internal static partial class DocFormat
                 bool merged = activeRow!.Any(c => c.Merge != VerticalMerge.None);
                 int definitions = 1 + (columns + 1) * 2;
                 byte[] operand = new byte[definitions + (merged ? columns * 20 : 0)]; operand[0] = (byte)columns;
-                double edge = 0;
+                double edge = activeTable.LeftIndent * 20;
+                if (edge < -31680 || edge > 31680) throw new NotSupportedException("Doc.TableWidth: Table boundaries exceed binary Word limits.");
+                W16(operand, 1, checked((int)Math.Round(edge)));
                 int gridColumn = 0;
                 for (int c = 0; c < columns; c++)
                 {
                     TableCell cell = activeRow![c];
                     double width = cell.CellWidth ?? (gridColumn + cell.ColumnSpan <= activeTable!.ColumnWidths.Count
-                        ? activeTable.ColumnWidths.Skip(gridColumn).Take(cell.ColumnSpan).Sum() : (activeTable.Width ?? 450) * cell.ColumnSpan / activeRow.Sum(item => item.ColumnSpan));
+                        ? activeEdges[gridColumn + cell.ColumnSpan] - activeEdges[gridColumn] : (activeTable.Width ?? 450) * cell.ColumnSpan / activeColumns);
                     gridColumn += cell.ColumnSpan;
                     edge += width * 20;
                     if (width <= 0 || edge > 31680) throw new NotSupportedException("Doc.TableWidth: Table boundaries exceed binary Word limits.");

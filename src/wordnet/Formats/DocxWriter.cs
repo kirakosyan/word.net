@@ -34,11 +34,7 @@ internal sealed partial class DocxWriter
             PageSettings? section = block.Section;
             if (body.HasElements && !ReferenceEquals(previousSection, section))
             {
-                XElement last = body.Elements().Last();
-                if (last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
-                XElement? properties = last.Element(W + "pPr");
-                if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
-                properties.Add(Section(previousSection ?? new PageSettings()));
+                AttachSection(body, previousSection ?? new PageSettings());
             }
             previousSection = section;
             if (block is ParagraphBlock paragraph)
@@ -57,11 +53,7 @@ internal sealed partial class DocxWriter
         }
         if (document.FinalSection != null && previousSection != null && !ReferenceEquals(previousSection, document.FinalSection))
         {
-            XElement last = body.Elements().Last();
-            if (last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
-            XElement? properties = last.Element(W + "pPr");
-            if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
-            properties.Add(Section(previousSection));
+            AttachSection(body, previousSection);
         }
         if (previousSection != null || document.FinalSection != null)
             body.Add(Section(document.FinalSection ?? previousSection!));
@@ -97,6 +89,15 @@ internal sealed partial class DocxWriter
 
         WritePart(archive, "[Content_Types].xml", types);
         context.CheckCancellation();
+    }
+
+    private static void AttachSection(XElement body, PageSettings settings)
+    {
+        XElement? last = body.Elements().LastOrDefault();
+        if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
+        XElement? properties = last.Element(W + "pPr");
+        if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
+        properties.Add(Section(settings));
     }
 
     private XElement Paragraph(ParagraphBlock paragraph)
@@ -207,6 +208,7 @@ internal sealed partial class DocxWriter
     {
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
             new XElement(W + "tblW", new XAttribute(W + "w", table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.Width.HasValue ? "dxa" : "auto"))));
+        if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));

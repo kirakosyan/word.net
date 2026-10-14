@@ -12,6 +12,9 @@ Four more cases cover **scanned and mixed PDF → DOC and DOCX**.
 They assert editable text and reading order. Embedding the page image cannot pass.
 Missing OCR prerequisites fail with guidance, rather than silently skipping.
 
+The current PR-review suite contains **348 active cases**. The dated 301-case platform
+reports below describe the earlier converter revision, not the current review fixes.
+
 The suite also covers Unicode, structural formatting, long ebook records, independent
 DOCX validation, PDF wrapping/pagination/glyph bounds, XPS resources, strict loss,
 streams, cancellation, limits and malformed/hostile input.
@@ -44,7 +47,37 @@ dotnet test tests/wordnet.Conversion.Tests -c Release -f net472 --no-build --no-
 Switch setup back to ARM64 before native modern tests. Framework tests run only on
 Windows. Agents prefix commands with `rtk` per AGENTS.md.
 
-## Production candidate — alpha.10, 2026-10-13
+## PR #3 review regressions — 2026-10-14
+
+Forty-seven new cases cover Word-default tables that overhang text margins, physical-page
+rejection, negative table indentation, omitted grid columns, wrapped cells, unspecified
+grid widths, absolute DOC row edges, raw DOC orientation operands, signed vertical
+margins, HTML span/empty-table compatibility, row headers, and default versus opt-in OCR
+column order with paragraph boundaries. Test DOCX/EPUB markup is authored independently
+in `ProductionReviewTests`; DOC operands/row boundaries are inspected or modified
+according to published binary fields, independently of the production reader.
+
+All **348 cases pass**, without failures/skips, on AK-PC Windows x64 .NET 8, .NET 10
+and the installed Framework **4.8.1** host targeting `net472`. Locked solution restore,
+warning-free Release builds of all four library targets, and formatting checks pass.
+Reports are retained under ignored `artifacts/pr-review/test-results/`.
+Actual Framework 4.7.2 and Android device execution were not repeated for these converter
+changes. The earlier 301-case minimum-runtime results below do not qualify the new revision.
+Android API 21 remains unresolved and further device/emulator work is deferred by the user.
+
+Apache POI 5.4.1 passes both `--check-layout` and `--check-layout-corpus`, including new
+assertions for the actual portrait `0x01` and landscape `0x02` operands. Its high-level
+`getDmOrientPage()` exposes a Boolean, so the verifier uses POI's section index and sprm
+parser on the original section bytes to distinguish the published values. The managed
+suite also checks emitted bytes directly and imports explicit `0`, `1`, and `2` operands.
+
+Framework runner checks pass on Windows PowerShell 5.1 and PowerShell 7, including a
+simulated transient loader-enumeration error followed by a module appearing after one
+second. The polling uses the existing overall deadline. Android process-command checks
+cover plain toolbox `ps` on API 21/25 and toybox `ps -A` on API 26/36 without device execution.
+These are harness checks, not platform conversion qualification.
+
+## Production candidate — initial alpha.10, 2026-10-13
 
 The shared suite now has **301 active cases**, preserving all 28 directions and original
 scanned/mixed OCR cases. New assertions cover section geometry/empty final sections,

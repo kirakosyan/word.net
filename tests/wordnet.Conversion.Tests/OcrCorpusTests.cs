@@ -28,7 +28,7 @@ public sealed class OcrCorpusTests
     [InlineData("phototest", DocumentFormat.Doc)]
     public void DegradedEnglishScansMeetDeclaredAccuracyAndReadingOrder(string scenario, DocumentFormat target)
     {
-        var options = new ConversionOptions(FidelityMode.BestEffort, englishOcr: Options(correctOrientation: scenario != "columns", dpi: scenario == "phototest" ? 300 : 200));
+        var options = new ConversionOptions(FidelityMode.BestEffort, englishOcr: Options(correctOrientation: scenario != "columns", readTextColumns: scenario == "columns", dpi: scenario == "phototest" ? 300 : 200));
         using var input = new MemoryStream(ConversionAcceptanceTests.Fixture("ocr-" + scenario + ".pdf"));
         using var output = new MemoryStream();
         ConversionResult result = new WordConverter().Convert(input, output, DocumentFormat.Pdf, target, options, TestContext.Current.CancellationToken);
@@ -48,11 +48,11 @@ public sealed class OcrCorpusTests
         }
     }
 
-    private static EnglishOcrOptions Options(bool correctOrientation, int dpi)
+    private static EnglishOcrOptions Options(bool correctOrientation, bool readTextColumns, int dpi)
     {
         string? data = Environment.GetEnvironmentVariable("WORDNET_TESSDATA"), native = Environment.GetEnvironmentVariable("WORDNET_TESSERACT_LIBRARY");
         Assert.False(string.IsNullOrEmpty(data) || string.IsNullOrEmpty(native), "Run eng/prepare-ocr-tests.ps1 in the process that launches the tests.");
-        return new EnglishOcrOptions(data!, native!, correctOrientation, resolutionDpi: dpi);
+        return new EnglishOcrOptions(data!, native!, correctOrientation, readTextColumns, resolutionDpi: dpi);
     }
 
     private static int Distance(string[] expected, string[] actual)

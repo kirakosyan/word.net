@@ -7,3 +7,10 @@ function Get-CompleteAndroidReport([string]$Text) {
     if ($document.DocumentElement.Name -ne 'testsuite') { return $null }
     return $text
 }
+
+function Get-AndroidProcessArguments([int]$ApiLevel) {
+    # Toolbox ps on API 21 interprets -A as a name filter; modern toybox ps
+    # needs -A to include processes belonging to application UIDs.
+    if ($ApiLevel -ge 26) { return @('shell', 'ps', '-A') }
+    return @('shell', 'ps')
+}

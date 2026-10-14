@@ -6,8 +6,9 @@ The six production workstreams are tracked in [production readiness](production-
 This candidate adds section/paragraph layout, merged multi-paragraph tables, repeating
 headers and long-row splitting, independent geometric and OCR corpora, isolated
 malformed-input/resource campaigns, and package/API qualification automation. The shared
-suite has 301 cases. Actual Framework 4.7.2 source and packaged suites pass with the
-explicit legacy x64 JIT configuration. Android API 21 qualification remains unresolved
+suite has 348 cases after PR review regressions. The earlier 301-case actual Framework
+4.7.2 source and packaged baseline passed with the explicit legacy x64 JIT configuration;
+the revised converter requires fresh minimum-runtime qualification. Android API 21 qualification remains unresolved
 and further investigation is deferred at the user's request. Keep all four
 targets and defer macOS. Do not relabel the candidate production-ready without completing
 those environment gates and reviewing its declared feature profile.

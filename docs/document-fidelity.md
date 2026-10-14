@@ -32,6 +32,14 @@ indents/spacing and keep controls are retained; keep-with-table is diagnosed. Li
 smaller than content height reports loss and expands to avoid clipping. Table cells retain
 multiple paragraphs. Fixed layout uses cell/grid
 widths ahead of a preferred total width; it does not reproduce Word's autofit algorithm.
+DOCX absolute table indentation and DOC absolute row edges are retained through Word.
+Tables may overhang text margins while remaining inside the physical page. Omitted grid
+columns become empty cells with a loss diagnostic; mixed unspecified grid widths are
+approximated with a diagnostic. Content-control/custom XML wrappers retain available
+table cells. HTML row headers do not imply repeating column headers. Zero row spans
+extend to the row-group end, and overlong spans are clipped with a loss diagnostic.
+Negative vertical Word margins use their absolute distance with a loss diagnostic for
+the unretained header-overlap behavior.
 
 Only inline raster pictures are preserved. Floating anchors, vector/animated formats,
 cropping, mirroring, rotation, filters and other effects require diagnostics or failure.
@@ -80,6 +88,10 @@ not a rendering produced by Microsoft Word.
 - [MS-DOC character properties](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/7022285b-9621-42e9-ad4d-4e02c115ef18),
   [table properties](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/b39a6648-501c-4361-8366-4f042f579469)
   and [preferred table width](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/4cc72316-1fe7-4c67-89ff-83762f162b8f).
+- [MS-DOC orientation operands](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/f35a0396-e4d0-4d8e-8b7f-6114d01b864a)
+  define portrait as `0x01` and landscape as `0x02`.
+- [HTML table model](https://html.spec.whatwg.org/multipage/tables.html#table-processing-model)
+  defines zero row spans and row groups.
 - [MS-DOC list definition](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/6682e74f-365f-45e6-8b06-0e898bbf69a1)
   and [picture data](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/dedb7505-8cc4-4053-aa2d-431b18d4bd97).
 - [MS-ODRAW inline shape container](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-odraw/d634b55c-9916-4d93-a270-c109f14ed794)

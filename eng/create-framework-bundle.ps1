@@ -12,7 +12,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 [IO.Compression.ZipFile]::CreateFromDirectory($tests, $output, [IO.Compression.CompressionLevel]::Optimal, $false)
 $zip = [IO.Compression.ZipFile]::Open($output, [IO.Compression.ZipArchiveMode]::Update)
 try {
-    foreach ($script in @('run-framework-tests.ps1', 'prepare-ocr-tests.ps1', 'required-tests.txt')) {
+    foreach ($script in @('run-framework-tests.ps1', 'framework-process.ps1', 'prepare-ocr-tests.ps1', 'required-tests.txt')) {
         [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, (Join-Path $PSScriptRoot $script), $script) | Out-Null
     }
     foreach ($notice in @('LICENSE', 'THIRD_PARTY_NOTICES.md')) {

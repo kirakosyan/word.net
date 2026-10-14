@@ -265,7 +265,7 @@ internal sealed partial class DocxReader
     {
         var table = new TableBlock();
         ReadTableGeometry(element, table);
-        foreach (XElement child in element.Elements())
+        foreach (XElement child in TableContents(element))
         {
             context.CheckCancellation();
             if (child.Name == W + "tblPr" || child.Name == W + "tblGrid")
@@ -280,7 +280,7 @@ internal sealed partial class DocxReader
             }
 
             var cells = new List<TableCell>();
-            foreach (XElement rowChild in child.Elements())
+            foreach (XElement rowChild in TableContents(child))
             {
                 if (rowChild.Name == W + "trPr")
                 {
@@ -291,7 +291,7 @@ internal sealed partial class DocxReader
                         else context.Loss("Docx.TableHeaders", "Noncontiguous repeating header rows are not retained.");
                     }
                     if (rowChild.Element(W + "cantSplit") is XElement cantSplit && IsOn(cantSplit)) table.NonSplittingRows.Add(table.Rows.Count);
-                    if (rowChild.Elements().Any(property => property.Name != W + "tblHeader" && property.Name != W + "cantSplit"))
+                    if (rowChild.Elements().Any(property => property.Name != W + "tblHeader" && property.Name != W + "cantSplit" && property.Name != W + "gridBefore" && property.Name != W + "gridAfter"))
                     {
                         context.Loss("Docx.TableFormatting", "Table row formatting is not retained.");
                     }
@@ -307,7 +307,7 @@ internal sealed partial class DocxReader
 
                 var cell = new TableCell();
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
-                foreach (XElement content in rowChild.Elements())
+                foreach (XElement content in TableContents(rowChild))
                 {
                     if (content.Name == W + "tcPr") continue;
                     if (content.Name != W + "p")
@@ -322,10 +322,35 @@ internal sealed partial class DocxReader
                 cells.Add(cell);
             }
 
+            XElement? rowProperties = child.Element(W + "trPr");
+            Omitted("gridBefore", true); Omitted("gridAfter", false);
             table.Rows.Add(cells);
+            void Omitted(string name, bool before)
+            {
+                if (rowProperties?.Element(W + name) is not XElement omitted) return;
+                int count = Integer(omitted, W + "val", 0, 1024);
+                if (count == 0) return;
+                context.Loss("Docx.TableGrid", "Omitted grid columns are represented by empty cells.");
+                var gap = new TableCell(new ParagraphBlock()) { ColumnSpan = count, Padding = new CellPadding() };
+                if (before) cells.Insert(0, gap); else cells.Add(gap);
+            }
         }
 
         return table;
+    }
+
+    private IEnumerable<XElement> TableContents(XElement container)
+    {
+        foreach (XElement child in container.Elements())
+        {
+            if (child.Name == W + "sdt" || child.Name == W + "sdtContent" || child.Name == W + "customXml")
+            {
+                context.Loss("Docx.TableStructure", "Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs.");
+                XElement? content = child.Name == W + "sdt" ? child.Element(W + "sdtContent") : child;
+                if (content != null) foreach (XElement nested in TableContents(content)) yield return nested;
+            }
+            else yield return child;
+        }
     }
 
     private TextStyle ResolveStyle(string? id, HashSet<string> visiting, bool characterStyle = false)

@@ -32,7 +32,13 @@ cell paragraphs retain their editable structure in Word and EPUB.
 
 ## Environment evidence
 
-The expanded 301-case suite passes on all nine native desktop runtime lanes: Windows/Linux
+The current PR-review suite has 348 cases, passing locally on Windows x64 .NET 8,
+.NET 10 and installed Framework 4.8.1. The revised converter needs fresh minimum-runtime
+and device qualification; the dated 301-case reports below cover the earlier revision.
+OCR column reordering now requires the separate `ReadTextColumns` opt-in; ordinary OCR
+retains native line and paragraph order. See [review regression evidence](testing.md#pr-3-review-regressions--2026-10-14).
+
+The earlier 301-case suite passed on all nine native desktop runtime lanes: Windows/Linux
 x64 and ARM64 .NET 8/10, plus the installed Windows x64 Framework. The same CI package
 passes 17 desktop runs, including its explicit Standard asset on both modern runtimes
 on all four platforms. Android 16 ARM64 passes all 301 source, locally packed and downloaded
