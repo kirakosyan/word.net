@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -53,9 +54,11 @@ public sealed class MainActivity : Activity
                         if (cases.Count == 0) throw new InvalidOperationException("No data for " + method.Name);
                         foreach (object?[] arguments in cases)
                         {
-                            var test = new XElement("testcase", new XAttribute("name", type.Name + "." + method.Name + "(" + string.Join(",", arguments) + ")"));
+                            string caseName = type.Name + "." + method.Name + "(" + string.Join(",", arguments) + ")";
+                            var test = new XElement("testcase", new XAttribute("name", caseName));
                             report.Add(test);
-                            File.WriteAllText(Path.Combine(root, "progress.txt"), "Running " + type.Name + "." + method.Name + "; completed=" + (report.Elements("testcase").Count() - 1));
+                            File.WriteAllText(Path.Combine(root, "progress.txt"), "Running " + caseName + "; completed=" + (report.Elements("testcase").Count() - 1));
+                            var timer = System.Diagnostics.Stopwatch.StartNew();
                             try
                             {
                                 if (fact.Skip != null) throw new InvalidOperationException("Pending test: " + fact.Skip);
@@ -68,6 +71,7 @@ public sealed class MainActivity : Activity
                                 if (error is TargetInvocationException { InnerException: not null } invocation) error = invocation.InnerException!;
                                 test.Add(new XElement("failure", error.ToString()));
                             }
+                            finally { test.SetAttributeValue("time", timer.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)); }
                         }
                     }
                 }
@@ -78,6 +82,8 @@ public sealed class MainActivity : Activity
             report.SetAttributeValue("runtime", System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
             report.SetAttributeValue("architecture", System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture);
             report.SetAttributeValue("android", Build.VERSION.Release);
+            report.SetAttributeValue("api", (int)Build.VERSION.SdkInt);
+            report.SetAttributeValue("executionMode", typeof(MainActivity).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(a => a.Key == "Wordnet.ExecutionMode").Value);
             string path = Path.Combine(root, "results.xml");
             new XDocument(report).Save(path + ".tmp"); File.Move(path + ".tmp", path, true);
             string status = $"wordnet: {total - failed}/{total} passed, {failed} failed.";

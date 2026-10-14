@@ -6,9 +6,11 @@ The six production workstreams are tracked in [production readiness](production-
 This candidate adds section/paragraph layout, merged multi-paragraph tables, repeating
 headers and long-row splitting, independent geometric and OCR corpora, isolated
 malformed-input/resource campaigns, and package/API qualification automation. The shared
-suite has 301 cases. Actual Framework 4.7.2 and Android API 21 execution remain required;
-keep all four targets and defer macOS. Do not relabel the candidate production-ready
-without completing those environment gates and reviewing its declared feature profile.
+suite has 301 cases. Actual Framework 4.7.2 source and packaged suites pass with the
+explicit legacy x64 JIT configuration. Android API 21 qualification remains unresolved
+and further investigation is deferred at the user's request. Keep all four
+targets and defer macOS. Do not relabel the candidate production-ready without completing
+those environment gates and reviewing its declared feature profile.
 
 Alpha.6 changes the public namespace to `WordNet`, with matching namespaces on every
 target. Consumers must update imports/qualified names and rebuild. Package and assembly
@@ -78,7 +80,7 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
 6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
    Keep unsupported compression/DRM explicit.
 7. **Platforms:** maintain four Windows/Linux CI lanes and Android ARM64 device tests.
-   Native Windows/Linux x64 and ARM64 CI now passes all 236 conversion/OCR tests on
+   Native Windows/Linux x64 and ARM64 CI now passes all 301 conversion/OCR tests on
    .NET 8/10 with default runtime settings; Windows x64 also passes Framework.
    Check native codecs, OCR, model provisioning, fonts, architecture, trimming/AOT and
    minimum OS/API requirements.

@@ -46,10 +46,28 @@ gate remains open. Report hashes are recorded in [testing](testing.md).
 The [minimum-runtime runbook](minimum-runtime-qualification.md) provides a Windows
 Server 2019 Docker VM setup for an x64 test PC and an isolated API 21 ARM64 emulator
 probe. These setup tools preserve the gates until actual complete reports pass.
-The local API 21 ARM64 software-emulation probe boots and installs the test APK, but
-the app exits with signal 11 during startup before executing tests. This is an open
-qualification failure with an unestablished cause, not evidence that conversions pass
-on API 21. The runbook requests a comparison run on the native x64 test PC.
+On 2026-10-14 AK-PC passed all 301 source cases directly on installed Framework 4.8.1,
+.NET 8 and .NET 10. Actual Framework 4.7.2 executed 301 cases with 33 failures under
+both software emulation and hardware-accelerated Hyper-V. The same binaries pass on
+4.8.1. Inspecting generated code confirmed repeated span accesses incorrectly reuse
+one indexed byte. Selecting Microsoft's legacy x64 JIT application setting resolves
+all 33 failures: both source and locally packaged assets pass all 301 cases on actual
+4.7.2 with no skips. The final runner confirms `compatjit.dll` in the child process
+and records the requested mode and configuration hash. Default-JIT 4.7.2 operation
+remains unqualified; the explicit compatibility setting is required for this baseline.
+
+The API 21 ARM64 probe reproduces the default JIT startup signal 11 on x64 AK-PC,
+including in a minimal .NET Android app without WordNet dependencies. An interpreter
+build completes all 301 source conversion/OCR cases with no failures/skips in the
+software emulator. Its initial host runner timed out; the eventual report was collected
+separately after verifying the installed APK hash. Interpreter evidence does not
+qualify the default JIT or a physical API 21 device. The minimum gate remains open.
+Subsequent interpreter runs with Android workloads 36.1.69 and 36.1.2 crashed in native
+graphics after 141 and 106 completed cases, respectively. The earlier complete report
+does not establish a repeatable baseline. Further Android investigation stopped at
+the user's request; experimental runtime pins and default-mode changes were removed.
+Temporary VMs and downloaded system images are removed after preserving reports;
+their setup scripts remain reproducible.
 
 ## Measurements and limits
 

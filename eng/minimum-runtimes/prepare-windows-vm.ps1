@@ -20,7 +20,7 @@ try {
     finally { $stream.Dispose(); $algorithm.Dispose() }
     $commit = (& git rev-parse HEAD) -join ''
     if ($LASTEXITCODE -ne 0) { throw 'Cannot record source revision.' }
-    $manifest = [ordered]@{ testsSha256 = $hash; sourceCommit = $commit; requiredCases = [int](Get-Content eng/required-tests.txt -Raw) }
+    $manifest = [ordered]@{ testsSha256 = $hash; sourceCommit = $commit; requiredCases = [int](Get-Content eng/required-tests.txt -Raw); jitMode = 'legacy' }
     [IO.File]::WriteAllText((Join-Path $output 'bundle.json'), ($manifest | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
     Write-Output "Prepared $output . Run its start.ps1 on the Windows x64 test PC."
 } finally { Pop-Location }

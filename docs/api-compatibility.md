@@ -38,7 +38,12 @@ The mapping follows [Microsoft's Framework version table](https://learn.microsof
 
 Alternatively, create a portable ZIP from the complete built test output with
 `eng/create-framework-bundle.ps1 -OutputPath artifacts/windows-x64-tests.zip`.
-Extract it on the target PC and run `./run.ps1` (or add `-RequireFramework472`).
+Extract it on the target PC and run `./run.ps1`. For actual 4.7.2 x64, run
+`./run.ps1 -RequireFramework472 -JitMode legacy`; this compatibility configuration
+passes the complete source and packaged suites. Default-JIT 4.7.2 operation remains
+unqualified. Consumers must select the corresponding documented application setting;
+the library does not change host JIT settings. See the
+[minimum-runtime runbook](minimum-runtime-qualification.md).
 The bundle includes fixtures and notices and provisions pinned OCR prerequisites into
 its own directory. Return `results/net472.trx` and `results/environment.json`; no SDK,
 remote service, publishing credential or repository checkout is required there.

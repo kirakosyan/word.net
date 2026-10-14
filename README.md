@@ -302,6 +302,14 @@ See [platform evidence](https://github.com/kirakosyan/word.net/blob/main/docs/te
 Oldest Framework/Android versions, additional native codecs, trimming/AOT and broader
 device coverage still need qualification.
 
+The current Framework minimum-runtime compatibility configuration is explicit: actual
+Framework 4.7.2 x64 requires `<useLegacyJit enabled="1" />` under the application's
+`<runtime>` configuration; all 301 source and packaged tests pass in that mode.
+Default JIT operation on 4.7.2 remains unqualified. Android API 21 qualification remains
+unresolved; investigation is deferred at the user's request. See the
+[configuration and evidence](docs/minimum-runtime-qualification.md) before deploying
+to either minimum; the library cannot configure its host runtime.
+
 No installed Word, Office automation or remote service is required.
 See [dependency and font notices](https://github.com/kirakosyan/word.net/blob/main/THIRD_PARTY_NOTICES.md).
 

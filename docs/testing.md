@@ -121,6 +121,85 @@ PC without an SDK and records assembly hashes and the Framework release key. Add
 `-RequireFramework472` to enforce the actual minimum-runtime gate. See the
 [API/support policy](api-compatibility.md) for copying the runner and prerequisites.
 
+## AK-PC runtime investigation — 2026-10-14
+
+Library and conversion test sources remain at `70bfc5585d4544bac89e7246d88cb5fc0a31c5e0`.
+The conversion implementation is unchanged. Compatibility harnesses now select
+explicit runtime configurations and record them in qualification evidence.
+
+| Environment | Executed result |
+| --- | --- |
+| Native AK-PC .NET 8 / .NET 10 | 301 passing cases each, no failures/skips |
+| Native AK-PC Framework 4.8.1, release 533509 | 301 passing cases, no failures/skips; final standalone runner: 42.477 seconds |
+| Actual Framework 4.7.2, release 461814 | 301 executed, 268 passed, 33 failed, no skips; reproduced under Hyper-V with CLR/JIT 4.7.4150.0 and default JIT settings |
+| Actual Framework 4.7.2, explicit legacy x64 JIT | 301 passed, no failures/skips; source run 21.193 seconds, packaged asset run 19.395 seconds on CLR/compatjit 4.7.3460.0 |
+| API 21 ARM64 software emulator, .NET 10.0.12 interpreter | 301 passing source cases, no failures/skips; eventual report collected after the original runner timed out |
+| API 21 ARM64 default JIT | Startup signal 11 before tests, also reproduced by a minimal app without WordNet/provider references |
+| API 21 ARM64 interpreter repeat runs | Native graphics crashes after 141 cases (workload 36.1.69) and 106 cases (36.1.2); no complete report |
+
+The Framework runs use library SHA-256
+`b00a533397bc7bc250353f56e6a3644cb722f48b46f4c27d02b63f6eac43ae04`
+and test executable SHA-256
+`a6805040c166b22a2b4a04ec371948d34e4754f0b01d23bfc3d3f3bd64bb8f79`.
+The interpreter APK SHA-256 is
+`906aa507d2a0c42f63a1920c2ee8233d5f75e820b54a7353ad6b40a6739cc9e7`.
+That APK predates the new harness metadata and timings; its execution mode was
+recorded at build time and matched against the installed APK before report collection.
+The packaged 4.7.2 run used archive SHA-256
+`5e12d8a77c93797f23a081834a4002e8954cc967dcedd31dae6152420ce20b75`.
+Its environment report confirms `compatjit.dll` loaded, records the child-only legacy
+setting and hashes the unmodified application configuration. The archive's Framework
+asset and the restored consumer's library are byte-identical. Default-JIT 4.7.2
+operation is still unqualified; consumers must select the documented application setting.
+API 21 source results add no exact-package or physical-device qualification. See the
+[runbook](minimum-runtime-qualification.md) for reproduction and limits.
+The later native graphics crashes prevent treating the earlier interpreter pass as
+a repeatable baseline. Further Android investigation stopped at the user's request;
+the API 21 failure remains unresolved.
+
+Reports are retained under ignored `artifacts/runtime-diagnosis/`, including
+`host-tests/`, `ak-pc-native-final/`, `framework472-hyperv/` and the Android baseline
+XML/status/build manifest. The original software-emulated failures remain in
+`artifacts/ak-pc-qualification/`. VM disks/system images are disposable after reports
+are archived; they are not release artifacts.
+
+The Framework runner now records CLR/JIT file versions and known diagnostic overrides,
+rejects those overrides for the actual-minimum gate, enforces an external process
+deadline, preserves previous reports and captures both output streams. Direct process
+ownership fixes a missing exit code observed with Windows PowerShell 5.1 redirection.
+`eng/test-framework-runner.ps1` verifies timeout rejection, termination of the exact
+worker, fast failure exit-code preservation and stale-report rejection on Windows
+PowerShell 5.1 and PowerShell 7 locally. CI is configured to repeat the checks on
+Windows x64. Its negative fixtures are not conversion results.
+
+The Android runner handles a UTF-8 BOM transported by ADB, records the APK hash and
+requested execution mode before startup, checks the report's actual mode/API/architecture,
+and detects process exit without waiting for the full suite deadline. The app records
+case arguments, durations, API and execution mode. `eng/test-android-report.ps1` checks
+BOM/plain XML and rejection of incomplete or non-report output; CI includes those
+parser checks without requiring an Android workload. The rebuilt JIT app reproduced
+the API 21 crash, and the updated runner detected its exit without a complete report.
+Removing `am start -W` lets the host own the startup wait; that legacy Android command
+had remained blocked after the native crash.
+
+The evidence archive is `artifacts/runtime-diagnosis/qualification-evidence-20261014.zip`,
+SHA-256 `b3a969f0ed9d242f5bd4db340edd9f72960eede61523e9cf21b64024cd7e1fbe`.
+After verification, both Windows VM disks, the Hyper-V registration, Docker qualification
+container/image and isolated Android system images were removed at the user's request,
+reclaiming 31.29 GiB on the host. Docker Desktop and unrelated caches remain installed.
+`artifacts/runtime-diagnosis/cleanup-status.json` records the completed cleanup.
+
+The final repair evidence is retained in
+`artifacts/runtime-repair/qualification-evidence-20261014-final.zip`, SHA-256
+`b4aeaf076fbe98cdd72777fe2f0bb2cd06823180027105bb772fb6d5965bd119`.
+Its 41 entries include a hash manifest, source/package Framework reports, runner
+negative checks, and both later Android native-crash reports. The exact tested NuGet
+archive is preserved separately as
+`artifacts/runtime-repair/wordnet.0.1.0-alpha.10.tested.nupkg`.
+The repair VM and its installation media (38.37 GiB of file lengths), temporary Docker
+debugger container, and isolated API 21 emulator directory were removed after preserving
+evidence. Shared Android SDKs, Docker Desktop and unrelated caches were retained.
+
 ## PR review regressions — alpha.9, 2026-10-13 (prior revision)
 
 That suite contains **236 cases**, including all 28 directions, the four original OCR

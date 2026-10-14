@@ -25,7 +25,8 @@ try {
     if ($installer.ExitCode -notin @(0, 1638)) { throw "C++ runtime installation returned $($installer.ExitCode). Resolve any required reboot before running the suite." }
     & (Join-Path $tests 'prepare-ocr-tests.ps1') -Architecture x64 -OutputDirectory 'C:\wordnet-prerequisites'
     $status.stage = 'tests'
-    & (Join-Path $tests 'run-framework-tests.ps1') -TestDirectory $tests -ResultsDirectory $results -RequireFramework472 -UseProvisionedOcr
+    & (Join-Path $tests 'run-framework-tests.ps1') -TestDirectory $tests -ResultsDirectory $results -RequireFramework472 -UseProvisionedOcr -JitMode legacy
+    $status.jitMode = 'legacy'
     $status.passed = $true
     $status.stage = 'complete'
     $exitCode = 0
