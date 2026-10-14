@@ -77,6 +77,21 @@ second. The polling uses the existing overall deadline. Android process-command 
 cover plain toolbox `ps` on API 21/25 and toybox `ps -A` on API 26/36 without device execution.
 These are harness checks, not platform conversion qualification.
 
+The standalone Framework runner also passes all 348 cases on installed Framework 4.8.1,
+with actual JIT-module evidence. Its generated ZIP includes the new polling helper and
+the current required-case count. Android locked restore and Release APK compilation pass;
+the updated harness was not executed on a device.
+
+The locally packed validation version `0.1.0-alpha.10.review.1`, built from converter
+commit `0f039b3`, passes all 348 cases on each of five asset/runtime lanes: `net8.0`,
+`net10.0`, `net472` on installed Framework 4.8.1, and explicit `netstandard2.0` loading
+on .NET 8 and .NET 10. Restore uses an isolated cache and a distinct validation version
+to avoid reusing an earlier unpublished alpha.10 package or its lock-file hash.
+The preserved archive is `artifacts/pr-review/wordnet.0.1.0-alpha.10.review.1.tested.nupkg`,
+SHA-256 `e06105dac7fe8277a3c9f38e2d1cae1a0f2a0c698226984d1cddf8e68a06d63b`.
+Package structure, notices and framework/API checks pass; nothing was published.
+Reports are under `artifacts/pr-review/package-results/`.
+
 ## Production candidate — initial alpha.10, 2026-10-13
 
 The shared suite now has **301 active cases**, preserving all 28 directions and original

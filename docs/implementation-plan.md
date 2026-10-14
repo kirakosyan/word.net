@@ -81,8 +81,10 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
 6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
    Keep unsupported compression/DRM explicit.
 7. **Platforms:** maintain four Windows/Linux CI lanes and Android ARM64 device tests.
-   Native Windows/Linux x64 and ARM64 CI now passes all 301 conversion/OCR tests on
-   .NET 8/10 with default runtime settings; Windows x64 also passes Framework.
+   The earlier 301-case profile passed native Windows/Linux x64 and ARM64 CI on
+   .NET 8/10 with default runtime settings; Windows x64 also passed Framework.
+   The current 348-case review suite passes locally on Windows x64; refresh the other
+   platform reports for this revision before extending its qualification claims.
    Check native codecs, OCR, model provisioning, fonts, architecture, trimming/AOT and
    minimum OS/API requirements.
 8. **Resources:** expand deterministic mutation seeds and longer production-like workloads.
