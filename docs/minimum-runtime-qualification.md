@@ -8,7 +8,7 @@ the current review fixes require fresh minimum-runtime execution. Default JIT re
 remains unresolved and further investigation is deferred at the user's request.
 A VM/emulator starting is not a passing qualification report.
 
-AK-PC's installed Framework is **4.8.1** (release `533509`). All 301 cases pass
+AK-PC's installed Framework is **4.8.1** (release `533509`). All 348 cases pass
 directly on this PC, including English OCR. Framework 4.x releases replace earlier
 versions in place, so targeting `net472` here does not execute 4.7.2 itself. See
 [Microsoft's runtime rules](https://learn.microsoft.com/en-us/dotnet/framework/install/versions-and-dependencies#remarks-for-version-45-and-later).
@@ -98,7 +98,7 @@ C:\wordnet-framework472-vm\shared\results\setup.log
 ```
 
 Required outcome: `status.json` has `passed: true` and `exactFramework472: true`, and
-the TRX has at least the count in `eng/required-tests.txt` (currently 301), all passing,
+the TRX has at least the count in `eng/required-tests.txt` (currently 348), all passing,
 with no skipped cases. Return these four files. A setup failure is useful evidence;
 return its status/log instead of treating the VM as validated. If export fails, the
 same reports remain inside the guest at `C:\wordnet-results`.
@@ -144,7 +144,26 @@ settings or the caller's configuration file. See Microsoft's
 The VM's automated qualification script explicitly uses this compatibility mode.
 Reports are retained before removing disposable test disks.
 
-## 5. Android API 21 ARM64
+## Current 1.0 desktop qualification — 2026-10-14
+
+The revised 348-case source and locally packed 1.0.0 suites pass on actual Framework 4.7.2 x64, release
+`461814`, Windows Server 2019 build 17763, with no failures or skips. The environment
+report confirms `compatjit.dll` version `4.7.3460.0` loaded in the test child with the
+explicit legacy setting; the application configuration was not modified. Source
+library SHA-256 is `81a0fc88eeae225511f9e1bda1e63bd2d0c3fa8f63f4c525e07f323ad552b43b`;
+the package's Framework asset matches it. The local candidate archive SHA-256 is
+`b620978157e2c44504e801b30033ae3820d727e231ed56ba12d8e915c411d931`.
+This local candidate is not the final main-branch CI archive used for publication.
+Reports are retained under `artifacts/stable-release/results/`. Release publication also
+requires an exact-package rerun from the successful main CI artifact, as described in
+[releasing](releasing.md). Default-JIT 4.7.2 is unsupported in the 1.0 profile.
+
+The temporary Hyper-V guest has no network adapter. On this Windows 11 host, a Server
+2019 Windows Docker container would also require Hyper-V isolation; Linux Docker/Mono
+cannot substitute for Microsoft's actual Framework runtime. All owned guest disks and
+installation media are removed after preserving release evidence.
+
+## 5. Android API 21 ARM64 — deferred from 1.0
 
 Run the emulator directly on the host, separately from the Windows guest. It uses
 Google's API 21 ARM64 r04 image and a pinned Windows x64 emulator 37.2.12 engine in an

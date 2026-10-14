@@ -1,7 +1,7 @@
 # wordnet
 
 [![Build and tests](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml/badge.svg)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
-[![NuGet prerelease](https://img.shields.io/nuget/vpre/wordnet.svg)](https://www.nuget.org/packages/wordnet)
+[![NuGet](https://img.shields.io/nuget/v/wordnet.svg)](https://www.nuget.org/packages/wordnet)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
 
 **Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
@@ -9,25 +9,22 @@
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
 DOC / DOCX → XPS
 
-> **Development candidate — 0.1.0-alpha.10 (not yet published).** All 28 agreed directions have working
-> converters and real acceptance tests. Scanned and mixed PDFs can produce editable
-> Word text using local English OCR. Production fidelity and full platform qualification
-> remain in progress; the profiles below are limited.
+> **1.0.0 — desktop release profile.** All 28 conversion directions and local English
+> printed-text OCR have real acceptance tests. The supported feature subset and fidelity
+> diagnostics are described below. Windows/Linux x64 and ARM64 are the release platforms;
+> Android and macOS are outside this release's qualified scope.
 
 ## Convert a document
 
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-dotnet add package wordnet --version 0.1.0-alpha.9
+dotnet add package wordnet --version 1.0.0
 ```
 
-The command installs the published alpha.9. The expanded profiles on this branch describe
-the alpha.10 source candidate; build and pack locally to evaluate those changes. Follow
-the [production qualification checklist](docs/production-readiness.md) for remaining gates.
-
-This is an evaluation prerelease, not a production-readiness claim. Validate your own
-documents against the [implemented profiles](#implemented-profiles) and inspect diagnostics.
+Validate representative deployment documents against the
+[implemented profiles](#implemented-profiles) and inspect diagnostics. Stable versioning
+covers this documented subset; it does not promise complete Microsoft Word fidelity.
 Local packaging is also supported. Publication requires an explicit maintainer-run
 [release workflow](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md); ordinary pushes never publish packages.
 The examples below use C# top-level statements in a console application. Each example
@@ -68,7 +65,7 @@ properties and language/editor metadata produce informational diagnostics instea
 ### DOCX to PDF with limits and cancellation
 
 The PDF writer retains supported font sizes, colors, table geometry and inline PNG/JPEG
-images. The source candidate uses retained section geometry with an A4 fallback;
+images. The renderer uses retained section geometry with an A4 fallback;
 inspect diagnostics for features it cannot preserve.
 The token below requests cancellation after 30 seconds. Cancellation is checked between
 operations and through Tesseract's recognition monitor. Other native/provider calls may
@@ -215,7 +212,7 @@ Current limitations:
   [formatting/image profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) covers inline PNG/JPEG and simple
   decimal/bulleted lists. Floating/linked/vector images, cropping/effects, advanced list
   labels, headers/footers, notes, continuous/parity section breaks and nested tables remain outside it.
-  The source candidate preserves next-page section geometry, paragraph spacing/indents,
+  Conversion preserves next-page section geometry, paragraph spacing/indents,
   multiple cell paragraphs and horizontal/vertical merges through Word and EPUB.
 - PDF/XPS export uses section-aware wrapping/pagination, embedded Noto Sans, headings,
   emphasis, run sizes/colors, paragraph/cell alignment, absolute table widths and padding.
@@ -263,8 +260,7 @@ foreach (ConversionDiagnostic diagnostic in result.Diagnostics)
     Console.WriteLine($"{diagnostic.Code}: {diagnostic.Message}");
 ```
 
-On Windows supply the absolute DLL path. On Android package native ARM64 libraries
-and copy English data into app-private storage; use the extracted native-library path.
+On Windows supply the absolute DLL path.
 Linux OCR requires `libtesseract5`, `libfontconfig1` and usable system fonts for PDF
 fallback. The validation container registers the repository's pinned Noto Sans fonts.
 PdfPig/SkiaSharp rasterize pages. OCR runs locally and never downloads models during
@@ -275,7 +271,7 @@ heuristic selects whole-page OCR. `Pdf.OcrImageLoss` reports discarded page imag
 `Pdf.OcrTextReplacement` reports replacement of an existing digital text layer.
 Confidence is the arithmetic mean of each OCR page's recognized-word confidence,
 including blank pages, with the page count reported. It is not an accuracy guarantee.
-The source candidate adds `new EnglishOcrOptions(dataDirectory, nativeLibraryPath,
+Use `new EnglishOcrOptions(dataDirectory, nativeLibraryPath,
 correctOrientation: true)` for optional right-angle rotation and bounded deskew. It costs
 additional OCR passes, reusing one engine per page. Column-first reading order is a
 separate opt-in: `new EnglishOcrOptions(dataDirectory, nativeLibraryPath,
@@ -293,27 +289,36 @@ Tesseract and language data are supplied by the host, not included in the wordne
 
 The library retains **`net472;netstandard2.0;net8.0;net10.0`** with matching public APIs.
 
-| Consumer | Qualification status / goal |
+| Consumer | Release profile |
 | --- | --- |
-| .NET Framework 4.7.2+ | Current local tests use Windows Framework 4.8.1; earlier actual 4.7.2 evidence requires the legacy JIT setting below |
-| .NET 8 / .NET 10 | Current review suite is tested on Windows x64; the earlier 301-case profile also passed native Windows/Linux x64 and ARM64 package lanes |
+| .NET Framework 4.7.2+ | Windows x64; actual 4.7.2 requires the legacy JIT setting below. Framework 4.8.1 is tested with default settings |
+| .NET 8 / .NET 10 | Native Windows/Linux x64 and ARM64, complete source and exact-package conversion/OCR suites |
 | .NET Standard 2.0 | Portable fallback; explicit asset consumption checked on modern .NET |
-| .NET for Android | Earlier 301-case profile passed Samsung ARM64/Android 16; current review changes require fresh device qualification |
-| macOS | Deferred; no current release qualification claim |
+| .NET for Android | Deferred; no support claim in 1.0.0 |
+| macOS | Deferred; no support claim in 1.0.0 |
 
 Compilation and NuGet compatibility do not prove every platform works.
 See [platform evidence](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) for exact runtime/architecture limits.
-Oldest Framework/Android versions, additional native codecs, trimming/AOT and broader
-device coverage still need qualification.
+The tested desktop operating systems are Windows Server 2019 (minimum-Framework profile),
+Windows Server 2022, Windows 11 and Ubuntu 24.04. Other OS versions, additional native
+codecs and trimming/AOT need separate qualification.
 
 The current Framework minimum-runtime compatibility configuration is explicit: actual
 Framework 4.7.2 x64 requires `<useLegacyJit enabled="1" />` under the application's
-`<runtime>` configuration; the earlier 301-case source and packaged baseline passed
-in that mode. The current review fixes require a fresh actual-4.7.2 qualification run.
-Default JIT operation on 4.7.2 remains unqualified. Android API 21 qualification remains
-unresolved; investigation is deferred at the user's request. See the
-[configuration and evidence](docs/minimum-runtime-qualification.md) before deploying
-to either minimum; the library cannot configure its host runtime.
+`<runtime>` configuration. Default JIT operation on actual 4.7.2 is unsupported for this
+release because of the reproduced runtime code-generation defect. Preserve existing
+assembly binding redirects when adding the setting:
+
+```xml
+<configuration>
+  <runtime>
+    <useLegacyJit enabled="1" />
+  </runtime>
+</configuration>
+```
+
+See the [configuration and evidence](docs/minimum-runtime-qualification.md). The library
+cannot configure its host runtime. Android API 21 remains unresolved and outside this release.
 
 No installed Word, Office automation or remote service is required.
 See [dependency and font notices](https://github.com/kirakosyan/word.net/blob/main/THIRD_PARTY_NOTICES.md).
@@ -358,7 +363,8 @@ Run `net472` tests on Windows with a compatible host. On Windows ARM64, provisio
 `-Architecture x64` and add `-- RunConfiguration.TargetPlatform=x64` to the test command.
 OCR tests fail with setup guidance when prerequisites are missing; none are skipped.
 
-The separate Android device app requires the Android workload and an authorized device:
+The deferred Android device harness remains available for development; it requires the
+Android workload and an authorized device:
 
 ```powershell
 ./eng/prepare-android-tests.ps1
@@ -371,7 +377,7 @@ Agents use `rtk` per [AGENTS.md](https://github.com/kirakosyan/word.net/blob/mai
 The package includes four assemblies, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
 See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) and the
-[alpha.9 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/0.1.0-alpha.9.md).
+[1.0.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.0.0.md).
 
 ## Project guide
 

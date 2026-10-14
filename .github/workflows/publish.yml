@@ -1,4 +1,4 @@
-name: Publish NuGet prerelease
+name: Publish NuGet
 
 on:
   workflow_dispatch:
@@ -49,13 +49,10 @@ jobs:
               $run.status -ne 'completed' -or $run.conclusion -ne 'success') {
             throw 'The package must come from successful push CI for this exact main commit.'
           }
-          $android = Get-GitHubJson "repos/$repo/actions/workflows/android.yml/runs?head_sha=$env:GITHUB_SHA&event=push&status=success"
-          if (@($android.workflow_runs | Where-Object { $_.head_branch -eq 'main' }).Count -eq 0) {
-            throw 'Successful Android compilation is required for the same main commit.'
-          }
           [xml]$project = Get-Content src/wordnet/wordnet.csproj
           $version = [string]$project.Project.PropertyGroup.Version
-          if ($version -notmatch '^\d+\.\d+\.\d+-[0-9A-Za-z.-]+$') { throw 'Prereleases only.' }
+          . ./eng/release-version.ps1
+          Assert-ReleaseVersion -Version $version
           if (!(Test-Path -LiteralPath "docs/releases/$version.md")) { throw 'Release notes are missing.' }
           $artifacts = Get-GitHubJson "repos/$repo/actions/runs/$env:CI_RUN_ID/artifacts"
           $package = @($artifacts.artifacts | Where-Object { $_.name -eq 'nuget-packages' -and !$_.expired })

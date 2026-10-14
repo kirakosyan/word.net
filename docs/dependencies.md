@@ -1,5 +1,10 @@
 # Dependency maintenance
 
+The 1.0.0 desktop release retains these runtime dependencies. On 2026-10-14, locked
+restore and the solution's transitive vulnerability/deprecation reports complete with
+no warnings or reported vulnerable/deprecated packages. Package/API validation passes
+for all four targets. The detailed dependency selection below is the dated alpha.7 review.
+
 Reviewed against nuget.org on **2026-10-13** for **0.1.0-alpha.7**. Use stable
 releases that retain all four library targets: `net472`, `netstandard2.0`, `net8.0`
 and `net10.0`. Versions are centralized in `Directory.Packages.props`; each project

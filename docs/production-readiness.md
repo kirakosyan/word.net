@@ -1,8 +1,9 @@
 # Production qualification work
 
 This work preserves `net472;netstandard2.0;net8.0;net10.0`, the `WordNet` API namespace,
-independent MIT implementation, and Windows/Linux x64/ARM64 plus Android ARM64 goals.
-macOS is deferred. This checklist is evidence tracking, not a production-readiness claim.
+independent MIT implementation, and Windows/Linux x64/ARM64 desktop scope.
+Android and macOS are deferred by the maintainer for 1.0. This checklist records the
+release profile and evidence; it does not imply unrestricted Word fidelity.
 
 ## Release gates
 
@@ -13,7 +14,7 @@ macOS is deferred. This checklist is evidence tracking, not a production-readine
 | Independent corpus | Reproducible, licensed producer fixtures; independent output readers and visual comparisons with fixed fonts/tolerances | Apache POI input/export checks, schema validation, two-page ReportLab reference with 0.03-point glyph tolerance, Poppler visual inspection and independently supplied OCR scan |
 | Security/resources | Deterministic malformed-input campaigns, process deadlines, concurrency/soak checks and recorded memory/throughput budgets | 1,024 isolated mutations and 2,800 concurrent measured conversions pass locally; provider error regressions added; native x64 CI repeats the campaigns |
 | English OCR | Character/word-error and reading-order measurements on rotation, skew, noise and columns; regression fixtures for improvements | Eight scenarios × two Word targets pass CER ≤3% / WER ≤8%; optional orientation/deskew, conservative column order, cancellation monitor and isolated resource checks implemented |
-| Deployment/API | Exact-package tests on claimed platforms; oldest Framework and Android APIs; native dependency setup; compatibility policy | Four targets retained; alpha.9 API baseline enabled; CI tests one immutable NuGet plus explicit Standard fallback; minimum-runtime gates remain open |
+| Deployment/API | Exact-package tests on claimed desktop platforms; actual Framework 4.7.2 with its explicit compatibility configuration; native setup and API policy | Four targets retained; alpha.9 API baseline enabled; all nine source and 17 exact-package/Standard lanes pass the 348-case suite; actual minimum-runtime evidence is recorded below |
 
 ## Scope boundaries
 
@@ -32,23 +33,33 @@ cell paragraphs retain their editable structure in Word and EPUB.
 
 ## Environment evidence
 
-The current PR-review suite has 348 cases, passing locally on Windows x64 .NET 8,
-.NET 10 and installed Framework 4.8.1. The revised converter needs fresh minimum-runtime
-and device qualification; the dated 301-case reports below cover the earlier revision.
+The current suite has 348 cases. [PR CI run 38629510750](https://github.com/kirakosyan/word.net/actions/runs/38629510750)
+passes all nine native source and 17 exact-package runtime lanes: 9,048 passing cases,
+zero failed or skipped. Platforms are Windows Server 2022 x64, Windows 11 ARM64 and
+Ubuntu 24.04 x64/ARM64, on .NET 8/10 plus Windows x64 Framework. Explicit Standard-asset
+runs verify runtime identity on both modern runtimes. The dated 301-case reports below
+are historical and do not substitute for current-build minimum-runtime evidence.
 OCR column reordering now requires the separate `ReadTextColumns` opt-in; ordinary OCR
 retains native line and paragraph order. See [review regression evidence](testing.md#pr-3-review-regressions--2026-10-14).
+
+The current 348-case source and locally packed 1.0.0 suites also pass on actual Framework 4.7.2 x64, release
+461814, with the explicit legacy JIT configuration and observed `compatjit.dll` version
+4.7.3460.0. No cases fail or skip. The release process additionally requires the exact
+main CI package to pass there before publishing. Default-JIT 4.7.2 is unsupported;
+Android and macOS are outside the 1.0 release scope. See the
+[current minimum-runtime evidence](minimum-runtime-qualification.md#current-10-desktop-qualification--2026-10-14).
 
 The earlier 301-case suite passed on all nine native desktop runtime lanes: Windows/Linux
 x64 and ARM64 .NET 8/10, plus the installed Windows x64 Framework. The same CI package
 passes 17 desktop runs, including its explicit Standard asset on both modern runtimes
 on all four platforms. Android 16 ARM64 passes all 301 source, locally packed and downloaded
 CI-package cases. See [testing](testing.md) for build-specific evidence and artifact hashes.
-An actual .NET Framework 4.7.2 environment and Android API 21 environment are requested
-to verify the existing declared minimums; newer runtime execution is not a substitute.
+The following historical 301-case investigation explains the runtime compatibility
+configuration. Newer runtime execution never substitutes for actual-minimum evidence.
 The returned standalone-bundle results from an additional Windows x64 PC pass all
 301 cases with no failures/skips in 15.08 seconds. Assembly hashes and case names match
 the supplied bundle. Its Framework release key is 533509 (4.8.1), so the actual 4.7.2
-gate remains open. Report hashes are recorded in [testing](testing.md).
+gate was still open for that report. Report hashes are recorded in [testing](testing.md).
 The [minimum-runtime runbook](minimum-runtime-qualification.md) provides a Windows
 Server 2019 Docker VM setup for an x64 test PC and an isolated API 21 ARM64 emulator
 probe. These setup tools preserve the gates until actual complete reports pass.
@@ -76,6 +87,17 @@ Temporary VMs and downloaded system images are removed after preserving reports;
 their setup scripts remain reproducible.
 
 ## Measurements and limits
+
+The current 348-case PR CI run above passes these isolated campaigns on .NET 10.0.13:
+
+| Native x64 campaign | Windows Server 2022 | Ubuntu 24.04 |
+| --- | --- | --- |
+| 1,024 deterministic mutations | Pass; maximum sampled process 59.5 MiB | Pass; maximum 84.3 MiB |
+| 896 conversions, concurrency 4 | Pass; 13.82 s / 180.5 MiB | Pass; 9.68 s / 253.8 MiB |
+| 16 isolated OCR conversions | Pass; maximum 2.13 s / 181.2 MiB | Pass; maximum 2.45 s / 222.9 MiB |
+
+These are fixed-fixture measurements, not production throughput guarantees. The earlier
+301-case campaign results are retained below for comparison.
 
 The local and native desktop corpus runs recorded zero normalized character/word errors
 in all 16 OCR outputs. Isolated native x64 OCR processes stayed below 232 MiB and 2.7 seconds

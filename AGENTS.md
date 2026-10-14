@@ -18,8 +18,8 @@ package ID are `wordnet`. Keep namespace spelling consistent across all targets 
   source, tests, tools, or packages. Preserve dependency notices and fixture provenance.
 - Preserve the MIT license and existing user changes.
 - Preserve `net472;netstandard2.0;net8.0;net10.0` unless the user changes support policy.
-- Treat Windows/Linux x64 and ARM64 plus Android ARM64 as current qualification goals.
-  macOS is deferred by the user; preserve portability without making release claims.
+- The 1.0 release scope is Windows/Linux x64 and ARM64. Android ARM64 and macOS are
+  deferred by the user; preserve portability without making release claims for them.
   Do not introduce a Windows-only dependency into the portable core.
 - Word means DOC and DOCX. PDF/MD/TXT/AZW3/EPUB/MOBI are bidirectional with Word.
   XPS is output-only. Scanned-PDF OCR is required for the first converter release.

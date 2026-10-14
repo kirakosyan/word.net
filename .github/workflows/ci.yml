@@ -29,6 +29,9 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore pinned dependencies
         run: dotnet restore wordnet.sln --locked-mode
+      - name: Verify release version identities
+        shell: pwsh
+        run: ./eng/test-release-version.ps1
       - name: Install Linux OCR prerequisites
         if: runner.os == 'Linux'
         run: |
@@ -95,7 +98,7 @@ jobs:
           name: tests-${{ matrix.os }}
           path: artifacts/test-results/*.trx
           if-no-files-found: warn
-      - name: Upload local prerelease packages
+      - name: Upload validated packages
         if: matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

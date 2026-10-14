@@ -1,9 +1,10 @@
 # Releasing wordnet
 
-The current release channel is **alpha**, for evaluation with the documented profiles.
-Publishing a package does not establish production readiness. Stable releases remain
-blocked on the corpus, security/resource, performance and platform gates in the
-[implementation plan](implementation-plan.md#release-gates).
+The first stable release is **1.0.0**, for the documented Windows/Linux x64 and ARM64
+desktop profile. Android and macOS are deferred by the maintainer for this release.
+Publishing alone does not establish quality: retain the corpus, resource, API and
+exact-package evidence in [production qualification](production-readiness.md).
+Actual Framework 4.7.2 x64 requires the documented legacy JIT configuration.
 
 ## One-time setup
 
@@ -22,28 +23,32 @@ Only the final publishing job has `id-token: write`; validation jobs cannot requ
 NuGet credential. Actions are pinned to commit SHAs. Protect changes to the workflow
 and release scripts through normal repository review.
 
-## Prepare and publish an alpha
+## Prepare and publish
 
-1. Choose a new prerelease version in `src/wordnet/wordnet.csproj`. Update the README,
+1. Choose a new SemVer in `src/wordnet/wordnet.csproj`. Update the README,
    package release notes and `docs/releases/<version>.md`. Never overwrite a published
    version. Local candidate builds must be identified by full source SHA and package hash;
    use a new version or isolated package cache and lock-file path when testing a different
    unpublished artifact. Preserve earlier evidence and verify the intended artifact's hash.
 2. Run locked restore, Release build, the real conversion/OCR suites, formatting,
    dependency audit and pack. Review package contents, licenses, API compatibility
-   and remaining limitations. For converter/native changes, run the Android device
-   suite too; hosted Android compilation alone is insufficient.
-3. Merge the reviewed change to `main`. Wait for **Build, test, and pack** and
-   **Android API compilation** to succeed on the exact main commit. Record the former
-   run's numeric ID from its URL.
-4. Run **Publish NuGet prerelease** from `main`, passing `ci_run_id`. CLI equivalent:
+   and remaining limitations. Execute the complete suite on actual Framework 4.7.2
+   with `-RequireFramework472 -JitMode legacy` when changing the converter, dependencies
+   or test profile. Record the release key, observed JIT and library/test hashes. Android
+   compilation remains a portability check; it is outside the desktop publication gate.
+3. Merge the reviewed change to `main`. Wait for **Build, test, and pack** to succeed
+   on that exact main commit. Record the run's numeric ID. Download its immutable NuGet,
+   restore a fresh Framework consumer, and repeat the actual-4.7.2 suite against that
+   package before publication. Preserve the package hash and reports for the release.
+4. Run **Publish NuGet** from `main`, passing `ci_run_id`. CLI equivalent:
 
    ```sh
    gh workflow run publish.yml --ref main -f ci_run_id=<successful-main-CI-run-id>
    ```
 
 5. The workflow rejects other repositories/branches, unsuccessful or mismatched CI,
-   missing notes, stable versions and expired artifacts. It downloads the immutable
+   missing notes, ambiguous version spellings and expired artifacts. Stable and
+   prerelease SemVer identities are accepted. It downloads the immutable
    CI package artifact and verifies its ID, version, repository commit, all four
    framework assets, symbols and notices.
 6. The complete suite runs against that downloaded NuGet on native Windows/Linux
@@ -54,8 +59,10 @@ and release scripts through normal repository review.
    short-lived NuGet key and pushes the same `.nupkg` and companion `.snupkg`.
    It does not rebuild or increment the version at publishing time.
 8. Verify NuGet processing completes and restore the public package into a clean
-   consumer. Create Git tag `v<version>` and a GitHub **prerelease** at the tested commit,
-   using the committed release notes, package files and links to both CI/release runs.
+   consumer. Verify the public archive's DLLs match the tested package (NuGet signing
+   can change the archive hash). Create Git tag `v<version>` and a GitHub release at the
+   tested commit, using committed notes, package files, minimum-runtime evidence and
+   links to CI/publication runs. Set the GitHub prerelease flag only for prerelease versions.
 
 Ordinary commits, PRs and tags do not publish. An explicit workflow dispatch is required.
 If `main` changes before dispatch, use the new commit's successful CI run; do not reuse
@@ -65,9 +72,10 @@ step instead of blindly rerunning or rebuilding an already published version.
 
 ## Production readiness
 
-The alpha has 28 working directions and real English printed OCR. The candidate adds
-independent corpus thresholds, mutation/resource campaigns and packed consumer checks.
-Actual Framework 4.7.2 and Android API 21 evidence remains required before a stable claim;
-review the supported profile against representative deployment documents too. Current
-resource limits do not provide a hard process sandbox. macOS remains deferred. See
+The desktop profile has 28 working directions and real English printed OCR, independent
+corpus thresholds, mutation/resource campaigns and packed consumer checks. Actual
+Framework 4.7.2 evidence is required for its explicit compatibility configuration;
+default-JIT 4.7.2 operation is unsupported. Android API 21 remains unresolved, outside
+the release scope alongside macOS. Review representative deployment documents too.
+Current resource limits do not provide a hard process sandbox. See
 [production gates](production-readiness.md) and [test evidence and boundaries](testing.md).

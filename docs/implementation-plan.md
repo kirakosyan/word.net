@@ -1,17 +1,17 @@
 # wordnet implementation plan
 
-Updated 2026-10-13 for the unpublished **0.1.0-alpha.10** candidate.
+Updated 2026-10-14 for the **1.0.0 desktop release**.
 
 The six production workstreams are tracked in [production readiness](production-readiness.md).
-This candidate adds section/paragraph layout, merged multi-paragraph tables, repeating
+This release adds section/paragraph layout, merged multi-paragraph tables, repeating
 headers and long-row splitting, independent geometric and OCR corpora, isolated
 malformed-input/resource campaigns, and package/API qualification automation. The shared
-suite has 348 cases after PR review regressions. The earlier 301-case actual Framework
-4.7.2 source and packaged baseline passed with the explicit legacy x64 JIT configuration;
-the revised converter requires fresh minimum-runtime qualification. Android API 21 qualification remains unresolved
-and further investigation is deferred at the user's request. Keep all four
-targets and defer macOS. Do not relabel the candidate production-ready without completing
-those environment gates and reviewing its declared feature profile.
+suite has 348 cases after PR review regressions. Native Windows/Linux x64 and ARM64 CI
+passes all nine source and 17 package runtime lanes. Actual Framework 4.7.2 qualification
+uses the explicit legacy x64 JIT configuration. Android API 21 remains unresolved;
+the maintainer has deferred Android and macOS from the 1.0 release scope. Keep all four
+targets, preserve portability and tie release claims to the documented feature profile
+and build-specific evidence.
 
 Alpha.6 changes the public namespace to `WordNet`, with matching namespaces on every
 target. Consumers must update imports/qualified names and rebuild. Package and assembly
@@ -28,8 +28,8 @@ had 236 cases, including independent input, schema/geometry/pixel assertions and
 malformed-resource regressions. No runtime dependencies or target frameworks changed.
 
 All 28 agreed directions and local English OCR for scanned/mixed PDF input now have
-working implementations and real tests. This is a functional baseline. High document
-fidelity and all-platform qualification remain unfinished.
+working implementations and real tests. Broader rich-document fidelity and additional
+platforms remain future work outside the documented 1.0 desktop profile.
 
 Use independently authored code, public specifications and appropriately licensed
 dependencies. Preserve fixture provenance and notices; exclude proprietary resources.
@@ -43,8 +43,8 @@ dependencies. Preserve fixture provenance and notices; exclude proprietary resou
 - Core content first; explicit diagnostics for unsupported features. Password protection,
   revisions/comments and editable charts/equations remain deferred.
 - Preserve `net472;netstandard2.0;net8.0;net10.0` and matching APIs.
-- Qualify Windows/Linux x64/ARM64 and Android ARM64; Framework remains Windows.
-  macOS is deferred by the user.
+- Qualify Windows/Linux x64/ARM64; Framework remains Windows x64.
+  Android and macOS are deferred by the user for 1.0.
 
 ## Completed baseline
 
@@ -80,13 +80,11 @@ reading order, rich page fidelity, real-world OCR accuracy or every platform.
    independently sourced scan corpora beyond the eight measured regression scenarios.
 6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
    Keep unsupported compression/DRM explicit.
-7. **Platforms:** maintain four Windows/Linux CI lanes and Android ARM64 device tests.
-   The earlier 301-case profile passed native Windows/Linux x64 and ARM64 CI on
-   .NET 8/10 with default runtime settings; Windows x64 also passed Framework.
-   The current 348-case review suite passes locally on Windows x64; refresh the other
-   platform reports for this revision before extending its qualification claims.
-   Check native codecs, OCR, model provisioning, fonts, architecture, trimming/AOT and
-   minimum OS/API requirements.
+7. **Platforms:** maintain four native Windows/Linux CI lanes. The current 348-case
+   suite passes source, package and explicit Standard-asset runs on .NET 8/10; Windows
+   x64 also passes Framework. Preserve the actual-4.7.2 legacy JIT qualification gate.
+   Android/macOS and trimming/AOT require fresh qualification before adding support.
+   Check native codecs, OCR, model provisioning, fonts, architecture and minimum OS requirements.
 8. **Resources:** expand deterministic mutation seeds and longer production-like workloads.
    Isolated fuzzing, throughput/RSS campaigns and host guidance now exist; admission bounds
    still cannot enforce hard native CPU/RSS deadlines within an application process.

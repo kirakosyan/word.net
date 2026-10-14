@@ -12,8 +12,20 @@ Four more cases cover **scanned and mixed PDF → DOC and DOCX**.
 They assert editable text and reading order. Embedding the page image cannot pass.
 Missing OCR prerequisites fail with guidance, rather than silently skipping.
 
-The current PR-review suite contains **348 active cases**. The dated 301-case platform
-reports below describe the earlier converter revision, not the current review fixes.
+The current suite contains **348 active cases**. [CI run 38629510750](https://github.com/kirakosyan/word.net/actions/runs/38629510750)
+passes all nine native source and 17 exact-package runtime lanes: **9,048 passing cases,
+zero failures/skips**. These include native Windows/Linux x64 and ARM64 .NET 8/10,
+Windows x64 Framework, and explicit Standard-asset execution on both modern runtimes.
+All Windows/Linux x64 mutation, concurrent conversion and OCR resource campaigns pass.
+The dated 301-case reports below describe the earlier converter revision.
+
+The 1.0 release scope excludes Android and macOS at the maintainer's request. Historical
+Android results remain evidence for those earlier builds; they are not current support claims.
+
+Current 1.0 source and local package qualification also execute all 348 cases on actual Framework 4.7.2
+x64 (release 461814), using the explicit legacy JIT application configuration. Every
+case passes with no skips. The environment records `compatjit.dll` 4.7.3460.0 and the
+unmodified configuration hash. See [minimum-runtime evidence](minimum-runtime-qualification.md#current-10-desktop-qualification--2026-10-14).
 
 The suite also covers Unicode, structural formatting, long ebook records, independent
 DOCX validation, PDF wrapping/pagination/glyph bounds, XPS resources, strict loss,

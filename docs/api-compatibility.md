@@ -6,12 +6,13 @@ Every library build retains matching public APIs for
 signatures. Framework targets and runtime qualification are separate: a build for
 4.7.2 executed on 4.8 does not prove execution on 4.7.2 itself.
 
-The project remains a prerelease. Before a stable release, every public API change must
+Starting with 1.0.0, every public API change must
 identify source/binary compatibility, update XML documentation and examples, and pass
 package validation across all four targets. Add optional behavior through a new overload
 while preserving an existing constructor's metadata signature. The OCR correction
 overload follows this rule; existing calls and binaries retain correction-disabled behavior.
-Automatic wide-gutter column ordering improves OCR output without changing API signatures.
+Column ordering requires the separate `ReadTextColumns` opt-in and preserves the default
+native line/paragraph order. Its additional overload preserves earlier constructor signatures.
 Packing validates both the four target APIs and binary compatibility against the
 published `0.1.0-alpha.9` package. CI then runs the full suite against one packed artifact
 on all four desktop platforms, including explicitly loading its .NET Standard 2.0
@@ -25,8 +26,8 @@ of malformed input. Do not depend on exact diagnostic prose, output ZIP bytes, P
 ordering, timestamps or exception inner types. Diagnostic codes and documented stream,
 cancellation and fidelity contracts are the supported integration points.
 
-Windows/Linux x64 and ARM64 and Android ARM64 remain qualification goals. macOS is
-deferred. Native dependency architecture, fonts, English language data, minimum OS/API
+The 1.0 release scope is Windows/Linux x64 and ARM64. Android and macOS are deferred.
+Native dependency architecture, fonts, English language data, minimum OS/API
 versions and deployment mode must be tested independently. Trimming/AOT are not qualified.
 
 `eng/run-framework-tests.ps1` runs prebuilt x64 tests without an SDK on the target PC and
@@ -40,9 +41,9 @@ Alternatively, create a portable ZIP from the complete built test output with
 `eng/create-framework-bundle.ps1 -OutputPath artifacts/windows-x64-tests.zip`.
 Extract it on the target PC and run `./run.ps1`. For actual 4.7.2 x64, run
 `./run.ps1 -RequireFramework472 -JitMode legacy`; this compatibility configuration
-passed the earlier 301-case source and packaged suites. The current review fixes need
-fresh actual-4.7.2 qualification. Default-JIT 4.7.2 operation remains
-unqualified. Consumers must select the corresponding documented application setting;
+passes the current 348-case source and locally packed 1.0.0 suites on actual release
+461814. Package/library hashes are recorded with the release evidence. Default-JIT 4.7.2 operation is unsupported for
+1.0. Consumers must select the corresponding documented application setting;
 the library does not change host JIT settings. See the
 [minimum-runtime runbook](minimum-runtime-qualification.md).
 The bundle includes fixtures and notices and provisions pinned OCR prerequisites into

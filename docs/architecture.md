@@ -1,7 +1,7 @@
 # Architecture and implementation status
 
 All 28 Word-related directions have implementations and real acceptance tests.
-They implement limited development profiles, not complete document fidelity.
+They implement the documented desktop feature profile, with explicit fidelity limits.
 The public namespace is `WordNet`; the assembly and package ID are `wordnet`.
 All targets retain matching APIs:
 `net472;netstandard2.0;net8.0;net10.0`.
@@ -127,8 +127,9 @@ not cooperate promptly. Hard deadlines require [host isolation](hosting.md).
 Tesseract and language data are separately provisioned. Skia and PDF raster codecs bring
 native dependencies whose assets must match the host. No Office automation/service is
 required. Native Windows/Linux x64 and ARM64 CI lanes execute the complete conversion/OCR
-suite on .NET 8 and .NET 10; Windows x64 also runs Framework. An Android ARM64 device
-executes the same shared cases. Native Linux runs use default runtime settings. Linux uses fontconfig-enabled
+suite on .NET 8 and .NET 10; Windows x64 also runs Framework. The Android harness shares
+the cases but Android is outside the 1.0 release scope. Native Linux runs use default runtime settings. Linux uses fontconfig-enabled
 Skia assets and installed fonts for unembedded PDF text. macOS is deferred; broader
-OS/device coverage and trimming/AOT remain outstanding. See [testing](testing.md),
+OS coverage and trimming/AOT remain outstanding. Actual Framework 4.7.2 x64 requires
+the documented legacy JIT application configuration. See [testing](testing.md),
 the [DOC profile](doc-format.md) and the [implementation plan](implementation-plan.md).
