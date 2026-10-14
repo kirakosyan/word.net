@@ -317,7 +317,7 @@ assembly binding redirects when adding the setting:
 </configuration>
 ```
 
-See the [configuration and evidence](docs/minimum-runtime-qualification.md). The library
+See the [configuration and evidence](https://github.com/kirakosyan/word.net/blob/main/docs/minimum-runtime-qualification.md). The library
 cannot configure its host runtime. Android API 21 remains unresolved and outside this release.
 
 No installed Word, Office automation or remote service is required.
@@ -338,7 +338,7 @@ See [dependency and font notices](https://github.com/kirakosyan/word.net/blob/ma
   share a separate decoded-pixel budget of `MaximumExpandedBytes / 4` per conversion.
 - These checks are not a hard CPU/RSS sandbox. Provider/native allocations can exceed
   admitted data sizes. XML character limits apply per part; DOC byte limits per stream.
-  See [isolated hosting and resource campaigns](docs/hosting.md) and the [API policy](docs/api-compatibility.md).
+  See [isolated hosting and resource campaigns](https://github.com/kirakosyan/word.net/blob/main/docs/hosting.md) and the [API policy](https://github.com/kirakosyan/word.net/blob/main/docs/api-compatibility.md).
 - XML entities/DTDs are prohibited. No scripts/macros or remote resources execute/load.
   Retained links use HTTP, HTTPS or mailto. Diagnostics contain feature descriptions,
   not document text, and group repeated warnings.
