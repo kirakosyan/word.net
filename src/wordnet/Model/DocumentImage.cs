@@ -40,7 +40,7 @@ internal sealed class DocumentImage
             extension = "png";
         }
         // Admission happens before provider allocation; decode completely with managed providers.
-        ManagedRaster.Validate(bytes, extension);
+        ManagedRaster.Validate(bytes, extension, context);
         double w = width ?? (height.HasValue ? height.Value * info.Width / info.Height : info.Width * 0.75);
         double h = height ?? w * info.Height / info.Width;
         if (!ValidDimension(w) || !ValidDimension(h)) throw new InvalidDataException("Image.Dimensions: Image dimensions must be positive finite points.");

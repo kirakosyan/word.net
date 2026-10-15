@@ -191,7 +191,7 @@ installed fonts or customer invoice is in the repository.
 - A 64-worker × 200 mixed run must produce 12,800 byte-identical PDF/HTML pairs
   under fixed Clock with no native providers. The CI gate repeats this with a
   4 GiB stress-process heap cap; this is distinct from the per-document 100 MB test.
-- Locked restore, five-target Release build and 449-case source/package gates cover
+- Locked restore, five-target Release build and 451-case source/package gates cover
   .NET 8/10 and Framework, plus explicit netstandard2.0 assets. Package validation
   compares the public API against 1.0.0. Final reports and package hashes are recorded
   alongside the build evidence; startup/compilation alone never qualifies a runtime.

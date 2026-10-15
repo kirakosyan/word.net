@@ -2,7 +2,7 @@
 
 ## Enterprise acceptance profile — 2026-10-16
 
-The source suite now has **449 cases**, including the original 28 directions and
+The source suite now has **451 cases**, including the original 28 directions and
 English OCR, two HTML directions, the 40-document authored enterprise corpus, font
 catalog/TTC/CFF/GPOS and image pixel/alpha checks, header/footer/field pagination, aligned
 tabs, HTML safety/decoration, Lenient geometry and three raster regression baselines.
@@ -14,9 +14,9 @@ runs on Framework 4.8.1; this does not qualify an actual 4.6.2 installation.
 `eng/test-package.ps1` exercises the exact three-package preview on net8/net10/net472,
 then explicitly substitutes the core netstandard2.0 DLL on both modern runtimes.
 It checks suite completeness, framework identity, package manifests and font notices.
-The package gate requires all **449 cases in each of those five lanes** with
-zero failures/skips (2,245 package cases). Source verification separately requires all
-449 cases in each of the three desktop lanes (1,347 source cases).
+The package gate requires all **451 cases in each of those five lanes** with
+zero failures/skips (2,255 package cases). Source verification separately requires all
+451 cases in each of the three desktop lanes (1,353 source cases).
 API validation compares against 1.0.0; its old provider references are resolved for
 comparison without adding native dependencies back to core. No GAC/single-DLL or
 strong-name gate applies under the consumer's NuGet-only deployment decision.
@@ -77,6 +77,14 @@ outlines, then validates each with veraPDF 1.30.2, pinned by image digest. **38/
 CI repeats this independent check and uploads its XML. Tests also assert metadata
 uniqueness, embedded/selectable text, compression controls, actual-page hierarchical
 outlines, PNG prediction/alpha and link flags. Tagged PDF remains optional/unimplemented.
+PNG admission bounds chunk lengths and zlib expansion to the declared scanline
+geometry (including Adam7) before provider allocations, verifies Adler32 and checks
+cancellation. Regressions reject excessive IDAT expansion and absent chunk payloads.
+
+Native Ubuntu 24.04 x64 CI also passed the comparable single-core gate: 28.559 ms
+median versus 53.861 ms baseline, ratio 0.5302, conservative managed bound 38,258,104
+bytes. Run 38820196850 retains the measurements; its separate desktop jobs failed
+at the probe RID restore and were corrected independently.
 
 The Android ARM64 test app builds with the installed workload and locked dependency
 graph. No new device execution, actual 4.6.2 runtime run,

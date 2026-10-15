@@ -52,12 +52,13 @@ internal static class ManagedRaster
         throw new InvalidDataException("Image.Invalid: Missing or truncated JPEG frame header.");
     }
 
-    internal static void Validate(byte[] bytes, string extension)
+    internal static void Validate(byte[] bytes, string extension, ConversionContext context)
     {
         try
         {
             if (extension == "png")
             {
+                PngAdmission.Validate(bytes, context);
                 using var validator = new PdfDocumentBuilder();
                 // AddPng inflates and unfilters the complete image using PdfPig's managed reader.
                 validator.AddPage(1, 1).AddPng(bytes, new PdfRectangle(0, 0, 1, 1));
