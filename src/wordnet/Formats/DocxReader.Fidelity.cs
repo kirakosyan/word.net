@@ -101,7 +101,12 @@ internal sealed partial class DocxReader
     private DocumentImage? ReadDrawing(XElement drawing)
     {
         XElement? inline = drawing.Element(Wp + "inline");
-        if (inline == null) { context.Loss("Docx.FloatingImage", "Floating drawings are not imported by the inline image profile."); return null; }
+        if (inline == null)
+        {
+            inline = drawing.Element(Wp + "anchor");
+            if (inline == null) { context.Loss("Docx.Drawing", "Unsupported drawings are omitted."); return null; }
+            context.Loss("Image.AnchorApproximated", "An anchored image is placed inline in reading order; wrapping and positioning are approximated.");
+        }
         XElement? picture = inline.Element(A + "graphic")?.Element(A + "graphicData")?.Element(Pic + "pic");
         XElement? blip = picture?.Element(Pic + "blipFill")?.Element(A + "blip");
         string? id = (string?)blip?.Attribute(DocxPackage.DocumentRelationships + "embed");
@@ -113,13 +118,25 @@ internal sealed partial class DocxReader
         double width = Integer(extent, "cx", 1, 20116800) / 12700.0;
         double height = Integer(extent, "cy", 1, 20116800) / 12700.0;
         XElement? shape = picture!.Element(Pic + "spPr");
-        if (picture.Element(Pic + "blipFill")?.Element(A + "srcRect") != null || shape?.Element(A + "xfrm")?.HasAttributes == true
+        if (picture.Element(Pic + "blipFill")?.Element(A + "srcRect") != null || shape?.Element(A + "xfrm")?.Attributes().Any(a => !a.IsNamespaceDeclaration) == true
             || shape?.Elements().Any(e => e.Name != A + "xfrm" && e.Name != A + "prstGeom") == true
             || (string?)shape?.Element(A + "prstGeom")?.Attribute("prst") is string geometry && geometry != "rect"
             || blip!.HasElements || inline.Element(Wp + "effectExtent")?.Attributes().Any(a => a.Value != "0") == true)
             context.Loss("Docx.ImageEffects", "Image cropping, transforms and effects are not retained.");
         string path = DocxPackage.ResolvePart(mainPart, relation); knownParts.Add(path);
-        return DocumentImage.Read(package.ReadBytes(path), width, height, (string?)inline.Element(Wp + "docPr")?.Attribute("descr") ?? "", context);
+        byte[] bytes = package.ReadBytes(path);
+        string alt = (string?)inline.Element(Wp + "docPr")?.Attribute("descr") ?? "";
+        if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".emf", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".wmf", StringComparison.OrdinalIgnoreCase))
+        {
+            context.Loss("Image.UnsupportedFormat", "An unsupported vector image uses a visible placeholder at its declared size.");
+            return DocumentImage.Placeholder(width, height, alt, context);
+        }
+        try { return DocumentImage.Read(bytes, width, height, alt, context); }
+        catch (NotSupportedException)
+        {
+            context.Loss("Image.UnsupportedFormat", "An unsupported image format uses a visible placeholder at its declared size.");
+            return DocumentImage.Placeholder(width, height, alt, context);
+        }
     }
 
     private double? ReadWidth(XElement? element)
@@ -151,6 +168,35 @@ internal sealed partial class DocxReader
         cell.CellWidth = ReadWidth(properties?.Element(W + "tcW"));
         CellPadding? padding = ReadPadding(defaults, null);
         cell.Padding = ReadPadding(properties?.Element(W + "tcMar"), padding);
+        if (properties?.Element(W + "shd") is XElement shading)
+        {
+            cell.Background = ReadRgb((string?)shading.Attribute(W + "fill"));
+            if ((string?)shading.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
+                context.Loss("Table.ShadingApproximated", "Patterned cell shading uses its solid background color.");
+        }
+        if (properties?.Element(W + "vAlign") is XElement vertical)
+        {
+            string value = (string?)vertical.Attribute(W + "val") ?? "top";
+            if (value is not "top" and not "center" and not "bottom") throw new InvalidDataException("Docx.TableCell: Invalid vertical alignment.");
+            cell.VerticalAlignment = value;
+        }
+        foreach (XElement border in properties?.Element(W + "tcBorders")?.Elements() ?? Enumerable.Empty<XElement>())
+        {
+            string side = border.Name.LocalName;
+            if (side is "start") side = "left";
+            if (side is "end") side = "right";
+            if (side is not "left" and not "right" and not "top" and not "bottom") { context.Loss("Table.BorderApproximated", "Diagonal or direction-dependent borders are omitted."); continue; }
+            string style = (string?)border.Attribute(W + "val") ?? "single";
+            if (style is "nil" or "none") { cell.Borders[side] = new CellBorder { Width = 0 }; continue; }
+            if (style is not "single" and not "double" and not "dashed" and not "dotted")
+            { context.Loss("Table.BorderApproximated", "An unsupported border style uses a single line."); style = "single"; }
+            cell.Borders[side] = new CellBorder
+            {
+                Style = style,
+                Color = ReadRgb((string?)border.Attribute(W + "color")) ?? "000000",
+                Width = border.Attribute(W + "sz") == null ? 0.5 : Integer(border, W + "sz", 0, 255) / 8.0
+            };
+        }
         if (properties?.Element(W + "gridSpan") is XElement span) cell.ColumnSpan = Integer(span, W + "val", 1, 1024);
         if (properties?.Element(W + "vMerge") is XElement merge)
             cell.Merge = ((string?)merge.Attribute(W + "val") ?? "continue") switch
@@ -159,8 +205,17 @@ internal sealed partial class DocxReader
                 "continue" => VerticalMerge.Continue,
                 _ => throw new InvalidDataException("Docx.TableMerge: Invalid merge value.")
             };
-        if (properties?.Elements().Any(e => e.Name != W + "tcW" && e.Name != W + "tcMar" && e.Name != W + "gridSpan" && e.Name != W + "vMerge") == true)
-            context.Loss("Docx.TableCell", "Cell borders, shading and vertical alignment are not retained.");
+        if (properties?.Elements().Any(e => e.Name != W + "tcW" && e.Name != W + "tcMar" && e.Name != W + "gridSpan" && e.Name != W + "vMerge"
+            && e.Name != W + "shd" && e.Name != W + "vAlign" && e.Name != W + "tcBorders") == true)
+            context.Loss("Docx.TableCell", "Unsupported cell properties are not retained.");
+    }
+
+    private static string? ReadRgb(string? value)
+    {
+        if (value is null or "auto") return null;
+        if (value.Length != 6 || !uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _))
+            throw new InvalidDataException("Docx.Color: Invalid RGB color.");
+        return value.ToUpperInvariant();
     }
 
     private CellPadding? ReadPadding(XElement? source, CellPadding? inherited)

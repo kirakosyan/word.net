@@ -1,0 +1,11 @@
+{
+  "source": "Liberation Sans 2.1.5, renamed OFL derivatives; fontTools 4.61.1",
+  "license": "SIL OFL 1.1; see src/wordnet.Fonts/Resources/Liberation-OFL.txt",
+  "sha256": {
+    "caller-cff.otf": "140fc612c900f2266e42414a48f5b1f590d796d151c07873ff38470e6492c412",
+    "caller-fonts.ttc": "3e86e30543a441230d94bf75cdff1ac21d99fe72604f1c85b6984881a1f0db60",
+    "gpos-class.ttf": "ef158cfc8864fc755636bb733a075891ae4a30913d2e8884dbd2d3fb5eceb1e2",
+    "gpos-extension.ttf": "59cb7ba9bb37a42b2317b5fb7d55fce9937d12363695d4909eb4d1e0346d6c57",
+    "gpos-pair.ttf": "0d2b8b5f1b0a3e69ffd24a64e1915c208e7b137d9f1bfe46e55970bf8569872f"
+  }
+}

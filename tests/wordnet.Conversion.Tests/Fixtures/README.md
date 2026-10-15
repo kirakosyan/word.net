@@ -116,6 +116,10 @@ No external document contents or images were copied.
 
 `generate_layout_corpus.py` authors an original MIT DOCX directly as XML and independently
 places its expected PDF text using ReportLab 4.4.9 and the pinned Noto Sans faces.
+Pair positioning is independently calculated through HarfBuzz's C API, using the
+native tool from HarfBuzzSharp.NativeAssets.Win32 14.2.1.301 (test generation only).
+Set `WORDNET_HARFBUZZ_LIBRARY` to that explicitly pinned library; the helper disables
+ligatures/contextual substitutions while retaining kerning and verifies clusters.
 The two pages contain portrait/landscape sections, margins, spacing/indents, styled
 text, multi-paragraph cells and horizontal/vertical merges. `LayoutCorpusTests` compares
 every glyph baseline against the independent reference within 0.03 points, for both

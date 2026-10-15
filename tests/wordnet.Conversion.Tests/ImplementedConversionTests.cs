@@ -86,6 +86,8 @@ public sealed class ImplementedConversionTests
             foreach (DocumentFormat format in new[] { DocumentFormat.Pdf, DocumentFormat.Markdown, DocumentFormat.Text, DocumentFormat.Epub, DocumentFormat.Mobi, DocumentFormat.Azw3 })
             { supported.Add((word, format)); supported.Add((format, word)); }
         Assert.Equal(28, supported.Count);
+        supported.Add((DocumentFormat.Doc, DocumentFormat.Html));
+        supported.Add((DocumentFormat.Docx, DocumentFormat.Html));
 #if NET8_0_OR_GREATER
         DocumentFormat[] formats = Enum.GetValues<DocumentFormat>();
 #else

@@ -25,6 +25,7 @@ internal static partial class DocFormat
         var characters = new List<WriteRun>();
         var paragraphs = new List<WriteRun>();
         var sections = new List<(int Start, PageSettings Settings)>();
+        var fieldMarks = new List<(int Position, byte Mark, byte Type)>();
         PageSettings? previousSection = null;
         using var data = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
         var lists = model.Paragraphs
@@ -90,6 +91,54 @@ internal static partial class DocFormat
             sections.Add((text.Length, model.FinalSection));
             AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
         }
+        int mainLength = text.Length;
+        byte[] finalMainParagraph = paragraphs[paragraphs.Count - 1].Properties;
+        var headerPositions = new List<int>();
+        bool hasStories = sections.Any(s => s.Settings.Stories.Count > 0);
+        if (hasStories)
+        {
+            for (int i = 0; i < 6; i++) headerPositions.Add(0);
+            foreach (var section in sections)
+                foreach (string kind in HeaderKinds)
+                {
+                    headerPositions.Add(text.Length - mainLength);
+                    if (!section.Settings.Stories.TryGetValue(kind, out List<DocumentBlock>? story)) continue;
+                    foreach (DocumentBlock block in story)
+                    {
+                        if (block is ParagraphBlock paragraph) AddParagraph(paragraph, '\r', false, false, 0, false);
+                        else if (block is TableBlock table)
+                        {
+                            activeTable = table; activeEdges = table.ColumnEdges();
+                            for (int r = 0; r < table.Rows.Count; r++)
+                            {
+                                activeRow = table.Rows[r]; activeColumns = activeRow.Sum(c => c.ColumnSpan); cantSplit = table.NonSplittingRows.Contains(r);
+                                if (activeRow.Count is < 1 or > 63) throw new NotSupportedException("Doc.TableColumns: DOC rows require between one and 63 cells.");
+                                foreach (TableCell cell in activeRow)
+                                    for (int p = 0; p < cell.Paragraphs.Count; p++) AddParagraph(cell.Paragraphs[p], p == cell.Paragraphs.Count - 1 ? '\u0007' : '\r', true, false, 0, r < table.HeaderRowCount);
+                                AddParagraph(new ParagraphBlock(), '\u0007', true, true, activeRow.Count, r < table.HeaderRowCount);
+                            }
+                            AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+                        }
+                    }
+                    if (story.Count == 0) AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+                    AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+                }
+            headerPositions.Add(text.Length - mainLength);
+            AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+            // The terminal CP has no story meaning, but keep the PLC monotonically ordered.
+            headerPositions.Add(text.Length - mainLength + 2);
+        }
+        int headerLength = text.Length - mainLength;
+        // MS-DOC 2.3 requires a final, non-editable paragraph outside all document
+        // parts whenever a non-main part exists. It must not be counted in ccpHdd.
+        if (hasStories)
+        {
+            int finalStart = text.Length;
+            AddParagraph(new ParagraphBlock(), '\r', false, false, 0, false);
+            // The special main-story terminal paragraph is formatted via this
+            // document-wide guard when other document parts exist (MS-DOC 2.4.2).
+            paragraphs[paragraphs.Count - 1] = new WriteRun(finalStart, text.Length, finalMainParagraph);
+        }
         context.CheckCharacters(text.Length);
         byte[] encoded = Unicode.GetBytes(text.ToString());
         int textEnd = checked(TextOffset + encoded.Length);
@@ -101,7 +150,7 @@ internal static partial class DocFormat
         byte[] word = new byte[checked(sectionOffset + sectionProperties.Sum(p => p.Length + 2))];
         W16(word, 0, 0xa5ec); W16(word, 2, 0xc1); W16(word, 6, 0x409); W16(word, 10, 0x1200); W16(word, 12, 0xbf);
         W32(word, 24, TextOffset); W32(word, 28, textEnd); W16(word, 32, 14); W16(word, 62, 22);
-        W32(word, 64, word.Length); W32(word, 76, text.Length); W16(word, 152, 93);
+        W32(word, 64, word.Length); W32(word, 76, mainLength); W32(word, 84, headerLength); W16(word, 152, 93);
         Array.Copy(encoded, 0, word, TextOffset, encoded.Length);
         for (int p = 0; p < chpx.Count; p++) Array.Copy(chpx[p], 0, word, (firstPage + p) * 512, 512);
         for (int p = 0; p < papx.Count; p++) Array.Copy(papx[p], 0, word, (firstPage + chpx.Count + p) * 512, 512);
@@ -118,13 +167,21 @@ internal static partial class DocFormat
             Array.Copy(sectionProperties[i], 0, word, sectionOffset + 2, sectionProperties[i].Length);
             sectionOffset += sectionProperties[i].Length + 2;
         }
-        W32(sed, sections.Count * 4, text.Length); Add(6, sed);
+        W32(sed, sections.Count * 4, mainLength); Add(6, sed);
+        if (hasStories)
+        {
+            byte[] positions = new byte[headerPositions.Count * 4];
+            for (int i = 0; i < headerPositions.Count; i++) W32(positions, i * 4, headerPositions[i]);
+            Add(11, positions);
+        }
         Add(12, WritePageIndex(chpx, firstPage));
         Add(13, WritePageIndex(papx, firstPage + chpx.Count));
         byte[] fontName = Unicode.GetBytes("Noto Sans\0"); byte[] fonts = new byte[44 + fontName.Length];
         W16(fonts, 0, 1); fonts[4] = (byte)(39 + fontName.Length); fonts[5] = 0x26; W16(fonts, 6, 400);
         Array.Copy(fontName, 0, fonts, 44, fontName.Length); Add(15, fonts);
-        Add(31, new byte[500]);
+        byte[] dop = new byte[500]; if (sections.Any(s => s.Settings.EvenAndOdd)) dop[0] = 1; Add(31, dop);
+        WriteFields(16, fieldMarks.Where(f => f.Position < mainLength).ToArray(), 0, mainLength);
+        WriteFields(17, fieldMarks.Where(f => f.Position >= mainLength).ToArray(), mainLength, headerLength);
         byte[] clx = new byte[21]; clx[0] = 2; W32(clx, 1, 16); W32(clx, 9, text.Length); W32(clx, 15, TextOffset); Add(33, clx);
         if (lists.Count > 0)
         {
@@ -134,12 +191,31 @@ internal static partial class DocFormat
         using var root = RootStorage.Create(output, OpenMcdf.Version.V3, StorageModeFlags.LeaveOpen);
         WriteStream(root, "WordDocument", word); WriteStream(root, "1Table", tableStream.ToArray());
         if (data.Length > 0) WriteStream(root, "Data", data.ToArray());
+        WriteMetadata(root, model, context);
         root.Flush();
 
         void Add(int index, byte[] bytes)
         {
             W32(word, 154 + index * 8, checked((int)tableStream.Position)); W32(word, 158 + index * 8, bytes.Length);
             tableStream.Write(bytes, 0, bytes.Length);
+        }
+
+        void WriteFields(int index, (int Position, byte Mark, byte Type)[] marks, int cpBase, int length)
+        {
+            if (marks.Length == 0) return;
+            byte[] plc = new byte[(marks.Length + 1) * 4 + marks.Length * 2];
+            for (int i = 0; i < marks.Length; i++)
+            {
+                W32(plc, i * 4, marks[i].Position - cpBase);
+                plc[(marks.Length + 1) * 4 + i * 2] = marks[i].Mark; plc[(marks.Length + 1) * 4 + i * 2 + 1] = marks[i].Type;
+            }
+            W32(plc, marks.Length * 4, length); Add(index, plc);
+        }
+
+        void FieldMark(char mark, byte type)
+        {
+            int start = text.Length; fieldMarks.Add((start, (byte)mark, type)); text.Append(mark);
+            characters.Add(new WriteRun(start, text.Length, Sprm(0x0855, 1)));
         }
 
         void AddParagraph(ParagraphBlock paragraph, char terminator, bool inTable, bool rowEnd, int columns, bool header)
@@ -149,19 +225,33 @@ internal static partial class DocFormat
             foreach (TextRun run in paragraph.Runs)
             {
                 if (run.Code) context.Loss("Doc.Code", "Inline code semantics are not retained in binary Word output.");
-                if (run.Link != null) context.Loss("Doc.Hyperlink", "Hyperlink text is retained without an interactive target in binary Word output.");
                 if (run.Text.Any(c => char.IsControl(c) && c is not '\n' and not '\t')) throw new InvalidDataException("Doc.Text: Text contains reserved DOC control characters.");
+                string? instruction = run.FieldInstruction;
+                if (run.Link != null && context.SafeLink(run.Link) is string link)
+                    instruction = "HYPERLINK \"" + new Uri(link, UriKind.Absolute).AbsoluteUri + "\"";
+                if (instruction != null)
+                {
+                    byte type = DocumentFields.Kind(instruction) switch
+                    { "PAGE" => 33, "NUMPAGES" => 26, "SECTIONPAGES" => 66, "DATE" => 31, "TIME" => 32, "TITLE" => 15, "AUTHOR" => 17, "HYPERLINK" => 88, _ => 0 };
+                    FieldMark('\u0013', type);
+                    int instructionStart = text.Length; text.Append(instruction);
+                    if (text.Length > instructionStart) characters.Add(new WriteRun(instructionStart, text.Length, Array.Empty<byte>()));
+                    FieldMark('\u0014', 0);
+                }
                 int runStart = text.Length;
                 if (run.Image != null)
                 {
                     byte[] picture = WritePicture(run.Image, imageId++, context); int offset = checked((int)data.Position); data.Write(picture, 0, picture.Length);
-                    text.Append('\u0001'); characters.Add(new WriteRun(runStart, text.Length, Join(Sprm(0x0855, 1), SprmValue(0x6a03, offset, 4)))); continue;
+                    text.Append('\u0001'); characters.Add(new WriteRun(runStart, text.Length, Join(Sprm(0x0855, 1), SprmValue(0x6a03, offset, 4))));
+                    if (instruction != null) FieldMark('\u0015', 0x80);
+                    continue;
                 }
                 text.Append(run.Text.Replace('\n', '\v'));
                 if (text.Length != runStart) characters.Add(new WriteRun(runStart, text.Length,
                     Join(Sprm(0x0835, run.Bold ? 1 : 0), Sprm(0x0836, run.Italic ? 1 : 0),
                         run.FontSize.HasValue ? SprmValue(0x4a43, checked((int)Math.Round(run.FontSize.Value * 2)), 2) : Array.Empty<byte>(),
                         run.Color == null ? Array.Empty<byte>() : Join(new byte[] { 0x70, 0x68 }, Enumerable.Range(0, 3).Select(i => Convert.ToByte(run.Color.Substring(i * 2, 2), 16)).ToArray(), new byte[1]))));
+                if (instruction != null) FieldMark('\u0015', 0x80); // grffldEnd.fHasSep
             }
             int mark = text.Length; text.Append(terminator);
             characters.Add(new WriteRun(mark, text.Length, Array.Empty<byte>()));

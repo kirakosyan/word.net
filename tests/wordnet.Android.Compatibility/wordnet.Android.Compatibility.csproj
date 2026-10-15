@@ -24,7 +24,9 @@
   <ItemGroup>
     <AssemblyMetadata Include="Wordnet.ExecutionMode" Value="$(WordnetExecutionMode)" />
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
+    <ProjectReference Include="../../src/wordnet.Ocr/wordnet.Ocr.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
     <PackageReference Include="wordnet" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
+    <PackageReference Include="wordnet.Ocr" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
     <PackageReference Include="DocumentFormat.OpenXml" PrivateAssets="all" Publish="true" />
     <!-- This app supplies its own runner/entry point; use v3 attributes and assertions. -->
     <PackageReference Include="xunit.v3.extensibility.core" PrivateAssets="all" Publish="true" />

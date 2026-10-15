@@ -1,5 +1,11 @@
 # Finish minimum-runtime qualification on AK-PC
 
+The 1.1.0-alpha.1 preview adds a net462 asset. It builds using reference assemblies
+and its managed export probe runs on installed Framework 4.8.1. This is not actual
+Framework 4.6.2 qualification. Keep the minimum-4.7.2 legacy-JIT requirement below
+until a fresh runtime qualification removes it. See the enterprise audit for the
+isolated span-indexing reproduction and the new package boundary.
+
 This runbook preserves `net472;netstandard2.0;net8.0;net10.0` and the `WordNet` API.
 macOS remains deferred. Minimum-runtime qualification covers **actual Framework 4.7.2**
 and **Android API 21 ARM64** execution of every shared test. The earlier 301-case

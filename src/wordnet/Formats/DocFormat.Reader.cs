@@ -39,21 +39,32 @@ internal static partial class DocFormat
         if ((flags & 0x8100) != 0) throw new NotSupportedException("Doc.Encryption: Password-protected DOC files are unsupported.");
         if (U16(word, 32) != 14 || U16(word, 62) != 22 || U16(word, 152) < 34) throw new InvalidDataException("Doc.Header: Invalid FIB lengths.");
         byte[] table = ReadStream(root, (flags & 0x200) != 0 ? "1Table" : "0Table", context);
-        string text = ReadText(word, table, context, out List<TextPiece> pieces);
+        string allText = ReadText(word, table, context, out List<TextPiece> pieces, out int terminalParagraph);
+        string text = allText.Substring(0, I32(word, 76));
         List<PropertyRun> paragraphRuns = ReadFkps(word, table, 13, true, context);
         List<PropertyRun> characterRuns = ReadFkps(word, table, 12, false, context);
         var properties = new PropertyReader(ReadStyles(word, table), context, () => ReadStream(root, "Data", context));
         Dictionary<int, ListItem[]> lists = ReadLists(word, table, context);
         List<(int End, PageSettings Settings)> sections = ReadSections(word, table, text, context);
-        int sectionIndex = 0;
-        // Unsupported Word properties still require an explicit reconstruction diagnostic.
         context.Loss("Doc.Formatting", "DOC import retains the documented text, section and table profile; unsupported Word formatting is not retained.");
-        if (Enumerable.Range(1, 7).Any(i => I32(word, 76 + i * 4) != 0)) context.Loss("Doc.OtherStories", "Headers, notes, comments and textboxes are not imported.");
+        DocumentModel model = ReadContent(text, 0, pieces, paragraphRuns, characterRuns, properties, lists, sections, context, terminalParagraph);
+        ReadHeaders(allText, word, table, pieces, paragraphRuns, characterRuns, properties, lists, sections, context);
+        ReadMetadata(root, model, context);
+        if (Enumerable.Range(1, 7).Any(i => i != 2 && I32(word, 76 + i * 4) != 0))
+            context.Loss("Doc.OtherStories", "Notes, comments and textboxes outside the header/footer profile are not imported.");
+        return model;
+    }
+
+    private static DocumentModel ReadContent(string text, int cpBase, List<TextPiece> pieces,
+        List<PropertyRun> paragraphRuns, List<PropertyRun> characterRuns, PropertyReader properties,
+        Dictionary<int, ListItem[]> lists, List<(int End, PageSettings Settings)> sections, ConversionContext context, int? terminalParagraph = null)
+    {
+        int sectionIndex = 0;
         var model = new DocumentModel();
         TableBlock? currentTable = null;
         var row = new List<TableCell>();
         TableCell? pendingCell = null;
-        var fields = new List<bool>();
+        var fields = new BinaryFields(context);
         int position = 0;
         while (position < text.Length)
         {
@@ -64,8 +75,9 @@ internal static partial class DocFormat
             while (end < text.Length && text[end] is not '\r' and not '\u0007'
                 && !(text[end] == '\f' && sectionIndex < sections.Count - 1 && end + 1 == sections[sectionIndex].End)) end++;
             int mark = Math.Min(end, text.Length - 1);
-            TextPiece markPiece = FindPiece(pieces, mark);
-            PropertyRun? papx = FindRun(paragraphRuns, markPiece.FileOffset(mark));
+            int formattingCp = terminalParagraph.HasValue && mark == text.Length - 1 ? terminalParagraph.Value : mark + cpBase;
+            TextPiece markPiece = FindPiece(pieces, formattingCp);
+            PropertyRun? papx = FindRun(paragraphRuns, markPiece.FileOffset(formattingCp));
             if (papx == null && paragraphRuns.Count > 0) throw new InvalidDataException("Doc.Fkp: Paragraph mark has no formatting range.");
             Properties style = properties.Style(papx?.Style ?? 0);
             Properties paragraphProperties = style.Clone();
@@ -157,10 +169,10 @@ internal static partial class DocFormat
             while (cp < end)
             {
                 context.CheckCancellation();
-                TextPiece piece = FindPiece(pieces, cp); int offset = piece.FileOffset(cp);
+                TextPiece piece = FindPiece(pieces, cp + cpBase); int offset = piece.FileOffset(cp + cpBase);
                 PropertyRun? chpx = FindRun(characterRuns, offset);
                 if (chpx == null && characterRuns.Count > 0) throw new InvalidDataException("Doc.Fkp: Character has no formatting range.");
-                int next = Math.Min(end, piece.End);
+                int next = Math.Min(end, piece.End - cpBase);
                 if (chpx != null)
                 {
                     int characters = (chpx.End - offset) / piece.Width;
@@ -169,50 +181,36 @@ internal static partial class DocFormat
                 }
                 Properties character = properties.Character(paragraphStyle, chpx?.Data ?? Array.Empty<byte>(), piece.Properties);
                 string raw = text.Substring(cp, next - cp);
-                if (raw.Contains('\u0001') && character.Special && character.PictureOffset.HasValue && !character.BinaryData && !character.Hidden && !fields.Any(f => !f))
+                if (raw.Contains('\u0001') && character.Special && character.PictureOffset.HasValue && !character.BinaryData && !character.Hidden && !fields.InInstruction)
                 {
                     foreach (string part in raw.Split('\u0001').Select((s, i) => (i == 0 ? "" : "\u0001") + s))
                     {
                         string value = part;
-                        if (value.Length > 0 && value[0] == '\u0001') { paragraph.Runs.Add(new TextRun("", image: properties.Image(character.PictureOffset.Value))); value = value.Substring(1); }
-                        value = VisibleText(value, fields, context);
-                        if (value.Length != 0) paragraph.Runs.Add(new TextRun(value, character.Bold, character.Italic, fontSize: character.FontSize, color: character.Color));
+                        if (value.Length > 0 && value[0] == '\u0001') { fields.AddRun(paragraph, new TextRun("", image: properties.Image(character.PictureOffset.Value))); value = value.Substring(1); }
+                        fields.Text(paragraph, value, character);
                     }
                 }
                 else
                 {
-                    string value = VisibleText(raw, fields, context);
-                    if (!character.Hidden && value.Length != 0) paragraph.Runs.Add(new TextRun(value, character.Bold, character.Italic, fontSize: character.FontSize, color: character.Color));
+                    fields.Text(paragraph, raw, character);
                 }
                 cp = next;
             }
         }
     }
 
-    private static string VisibleText(string value, List<bool> fields, ConversionContext context)
+    private static string ReadText(byte[] word, byte[] table, ConversionContext context, out List<TextPiece> pieces, out int terminalParagraph)
     {
-        var output = new StringBuilder();
-        foreach (char c in value)
+        long total = 0;
+        for (int part = 0; part < 8; part++)
         {
-            if (c == '\u0013')
-            {
-                if (fields.Count >= context.Options.MaximumNestingDepth) throw new InvalidDataException("Doc.Fields: Excessive field nesting.");
-                fields.Add(false); context.Loss("Doc.Fields", "Field instructions are omitted; display text is retained."); continue;
-            }
-            if (c == '\u0014') { if (fields.Count == 0) throw new InvalidDataException("Doc.Fields: Unexpected field separator."); fields[fields.Count - 1] = true; continue; }
-            if (c == '\u0015') { if (fields.Count == 0) throw new InvalidDataException("Doc.Fields: Unexpected field end."); fields.RemoveAt(fields.Count - 1); continue; }
-            if (fields.Any(result => !result)) continue;
-            if (c is '\v' or '\f') { output.Append('\n'); if (c == '\f') context.Loss("Doc.PageBreak", "Explicit page breaks become line breaks."); }
-            else if (!char.IsControl(c) || c is '\n' or '\t') output.Append(c);
-            else context.Loss("Doc.SpecialContent", "Unsupported object and special-content markers are omitted.");
+            int partLength = I32(word, 76 + part * 4);
+            if (partLength < 0) throw new InvalidDataException("Doc.Characters: Invalid story length.");
+            total += partLength;
         }
-        return output.ToString();
-    }
-
-    private static string ReadText(byte[] word, byte[] table, ConversionContext context, out List<TextPiece> pieces)
-    {
-        int characters = I32(word, 76);
-        if (characters < 0) throw new InvalidDataException("Doc.Characters: Invalid character count.");
+        if (total > int.MaxValue - 1) throw new InvalidDataException("Doc.Characters: Invalid aggregate character count.");
+        int characters = (int)total;
+        bool otherParts = characters > I32(word, 76);
         context.CheckCharacters(characters);
         int clx = I32(word, 418), length = I32(word, 422); Bounds(table, clx, length);
         int limit = checked(clx + length); var modifiers = new List<byte[]>();
@@ -232,13 +230,13 @@ internal static partial class DocFormat
             context.CheckCancellation();
             int cp = I32(table, start + i * 4), next = I32(table, start + (i + 1) * 4);
             if (cp != previous || next <= cp) throw new InvalidDataException("Doc.PieceTable: Invalid character positions."); previous = next;
-            if (cp >= characters) continue;
-            int size = Math.Min(next, characters) - cp;
+            if (next > characters + (otherParts ? 1 : 0)) throw new InvalidDataException("Doc.PieceTable: Text pieces exceed the declared document parts.");
+            int size = Math.Max(0, Math.Min(next, characters) - cp);
             int pcd = start + 4 * (count + 1) + 8 * i;
             uint encoded = unchecked((uint)I32(table, pcd + 2));
             bool compressed = (encoded & 0x40000000) != 0;
             int offset = checked((int)(encoded & 0x3fffffff)); if (compressed) offset /= 2;
-            Bounds(word, offset, checked(size * (compressed ? 1 : 2)));
+            Bounds(word, offset, checked((next - cp) * (compressed ? 1 : 2)));
             if (compressed) for (int c = 0; c < size; c++) { byte b = word[offset + c]; text.Append(b >= 0x80 && b <= 0x9f ? Windows1252[b - 0x80] : (char)b); }
             else text.Append(Unicode.GetString(word, offset, size * 2));
             int prm = U16(table, pcd + 6); byte[] properties;
@@ -248,9 +246,11 @@ internal static partial class DocFormat
                 properties = modifiers[prm >> 1];
             }
             else properties = SimpleModifier(prm, context);
-            pieces.Add(new TextPiece(cp, cp + size, offset, compressed ? 1 : 2, properties));
+            pieces.Add(new TextPiece(cp, next, offset, compressed ? 1 : 2, properties));
         }
         if (text.Length != characters) throw new InvalidDataException("Doc.PieceTable: Main story is incomplete.");
+        if (previous != characters + (otherParts ? 1 : 0)) throw new InvalidDataException("Doc.PieceTable: The terminal paragraph is missing.");
+        terminalParagraph = previous - 1;
         return text.ToString();
     }
 

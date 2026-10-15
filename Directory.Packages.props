@@ -2,17 +2,20 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <WordnetSkiaVersion>4.153.1</WordnetSkiaVersion>
+    <WordnetPdfRendererVersion>0.1.16.4</WordnetPdfRendererVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Markdig" Version="1.4.0" />
     <PackageVersion Include="AngleSharp" Version="1.8.4" />
     <PackageVersion Include="OpenMcdf" Version="3.3.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
-    <PackageVersion Include="PdfPig.Rendering.Skia" Version="0.1.16.4" />
+    <PackageVersion Include="PdfPig.Rendering.Skia" Version="$(WordnetPdfRendererVersion)" />
+    <PackageVersion Include="PdfPig.Filters.Dct.JpegLibrary" Version="0.1.16.1" />
     <!-- Keep managed graphics bindings and native assets on matching releases. -->
-    <PackageVersion Include="SkiaSharp" Version="4.153.1" />
-    <PackageVersion Include="SkiaSharp.HarfBuzz" Version="4.153.1" />
-    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.153.1" />
+    <PackageVersion Include="SkiaSharp" Version="$(WordnetSkiaVersion)" />
+    <PackageVersion Include="SkiaSharp.HarfBuzz" Version="$(WordnetSkiaVersion)" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="$(WordnetSkiaVersion)" />
     <PackageVersion Include="HarfBuzzSharp.NativeAssets.Linux" Version="14.2.1.301" />
     <!-- Update dependencies whose upstream packages specify older minimums. -->
     <PackageVersion Include="PdfPig.Filters.Jbig2.PdfboxJbig2" Version="0.1.16.2" />
@@ -31,5 +34,6 @@
     <PackageVersion Include="xunit.v3.extensibility.core" Version="4.0.2" />
     <PackageVersion Include="xunit.v3.assert" Version="4.0.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
   </ItemGroup>
 </Project>

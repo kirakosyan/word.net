@@ -98,15 +98,6 @@
           "System.Security.Principal.Windows": "5.0.0"
         }
       },
-      "PdfPig.Filters.Dct.JpegLibrary": {
-        "type": "Transitive",
-        "resolved": "0.1.16.1",
-        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
-        "dependencies": {
-          "PdfPig": "0.1.16",
-          "System.Memory": "4.6.3"
-        }
-      },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
         "resolved": "4.153.1",
@@ -205,12 +196,23 @@
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.8.4, )",
-          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "Markdig": "[1.4.0, )",
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
+          "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+        }
+      },
+      "wordnet.fonts": {
+        "type": "Project"
+      },
+      "wordnet.ocr": {
+        "type": "Project",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "PdfPig.Rendering.Skia": "[0.1.16.4, )",
-          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )"
+          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )",
+          "wordnet": "[1.1.0-alpha.1, )"
         }
       },
       "AngleSharp": {
@@ -275,6 +277,16 @@
         "dependencies": {
           "Microsoft.Bcl.HashCode": "6.0.0",
           "System.Memory": "4.6.0"
+        }
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16",
+          "System.Memory": "4.6.3"
         }
       },
       "PdfPig.Filters.Jbig2.PdfboxJbig2": {
@@ -534,14 +546,6 @@
         "resolved": "5.0.0",
         "contentHash": "dDoKi0PnDz31yAyETfRntsLArTlVAVzUzCIvvEDsDsucrl33Dl8pIJG06ePTJTI3tGpeyHS9Cq7Foc/s4EeKcg=="
       },
-      "PdfPig.Filters.Dct.JpegLibrary": {
-        "type": "Transitive",
-        "resolved": "0.1.16.1",
-        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
-        "dependencies": {
-          "PdfPig": "0.1.16"
-        }
-      },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
         "resolved": "4.153.1",
@@ -602,12 +606,23 @@
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.8.4, )",
-          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "Markdig": "[1.4.0, )",
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
+          "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+        }
+      },
+      "wordnet.fonts": {
+        "type": "Project"
+      },
+      "wordnet.ocr": {
+        "type": "Project",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "PdfPig.Rendering.Skia": "[0.1.16.4, )",
-          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )"
+          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )",
+          "wordnet": "[1.1.0-alpha.1, )"
         }
       },
       "AngleSharp": {
@@ -651,6 +666,15 @@
         "requested": "[0.1.16, )",
         "resolved": "0.1.16",
         "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA=="
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
       },
       "PdfPig.Filters.Jbig2.PdfboxJbig2": {
         "type": "CentralTransitive",
@@ -858,14 +882,6 @@
         "resolved": "5.0.0",
         "contentHash": "dDoKi0PnDz31yAyETfRntsLArTlVAVzUzCIvvEDsDsucrl33Dl8pIJG06ePTJTI3tGpeyHS9Cq7Foc/s4EeKcg=="
       },
-      "PdfPig.Filters.Dct.JpegLibrary": {
-        "type": "Transitive",
-        "resolved": "0.1.16.1",
-        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
-        "dependencies": {
-          "PdfPig": "0.1.16"
-        }
-      },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
         "resolved": "4.153.1",
@@ -926,12 +942,23 @@
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.8.4, )",
-          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "Markdig": "[1.4.0, )",
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
+          "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+        }
+      },
+      "wordnet.fonts": {
+        "type": "Project"
+      },
+      "wordnet.ocr": {
+        "type": "Project",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "PdfPig.Rendering.Skia": "[0.1.16.4, )",
-          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )"
+          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )",
+          "wordnet": "[1.1.0-alpha.1, )"
         }
       },
       "AngleSharp": {
@@ -975,6 +1002,15 @@
         "requested": "[0.1.16, )",
         "resolved": "0.1.16",
         "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA=="
+      },
+      "PdfPig.Filters.Dct.JpegLibrary": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "hrRFum/uUkc0hTSy2NR/R8GgER1wu/b70/7CqsQ6S7DXpNVEJHZP1xBhNfobY6jkX3Y8NOhHfjx2oAQOAoZ6nQ==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
       },
       "PdfPig.Filters.Jbig2.PdfboxJbig2": {
         "type": "CentralTransitive",

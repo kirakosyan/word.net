@@ -1,6 +1,90 @@
 # Conversion tests and qualification
 
-## Active matrix
+## Enterprise acceptance profile — 2026-10-16
+
+The source suite now has **449 cases**, including the original 28 directions and
+English OCR, two HTML directions, the 40-document authored enterprise corpus, font
+catalog/TTC/CFF/GPOS and image pixel/alpha checks, header/footer/field pagination, aligned
+tabs, HTML safety/decoration, Lenient geometry and three raster regression baselines.
+The complete source suite runs on Windows 11 x64 .NET 8, .NET 10.0.12 and installed
+Framework 4.8.1 (the net472 test asset), with no failures/skips. All five library
+targets build with warnings-as-errors. The net462 managed-export executable also
+runs on Framework 4.8.1; this does not qualify an actual 4.6.2 installation.
+
+`eng/test-package.ps1` exercises the exact three-package preview on net8/net10/net472,
+then explicitly substitutes the core netstandard2.0 DLL on both modern runtimes.
+It checks suite completeness, framework identity, package manifests and font notices.
+The package gate requires all **449 cases in each of those five lanes** with
+zero failures/skips (2,245 package cases). Source verification separately requires all
+449 cases in each of the three desktop lanes (1,347 source cases).
+API validation compares against 1.0.0; its old provider references are resolved for
+comparison without adding native dependencies back to core. No GAC/single-DLL or
+strong-name gate applies under the consumer's NuGet-only deployment decision.
+
+The 40 authored files and manifest are described in
+[enterprise provenance](../tests/wordnet.Conversion.Tests/Fixtures/Enterprise/README.md).
+`word-pages.csv` records independent Microsoft Word 16.0 / build 16.0.20430 counts
+and hashes for all 38 valid inputs. **36/36 business cases match exactly**, including
+1/5/25-page variants and ten-page text/table and text/table/image benchmarks. The two hostile-size stress inputs
+are categorized separately before measurement; they are not business parity cases.
+This meets the page-count tolerance on this authored set, not arbitrary template or
+line-break parity. `eng/measure-word-reference.ps1` regenerates the Word measurements
+with an isolated, read-only Word instance. Office is not a production dependency.
+`eng/update-enterprise-goldens.ps1` regenerates
+the embedded-font, 72-DPI PDF regression PNGs for review; the tests compare pixels
+with a documented antialiasing tolerance. Native rendering remains test-only.
+
+`tools/wordnet.ManagedExport.Probe` exports eight mixed text/story/nested-table/raster
+fixtures using one converter. With a fixed Clock, **64 workers × 200 iterations**
+produce 12,800 byte-identical PDF/HTML pairs and load no Skia/HarfBuzz/OCR provider.
+Run from an isolated copy of the probe output so Windows file locks cannot interfere
+with subsequent builds. A 4 GiB GC heap cap bounds the stress process; this is not a
+per-document memory guarantee. The probe reports elapsed time and sampled memory.
+
+The BenchmarkDotNet 0.15.8 project supports the authored ten-page text/table/image fixture:
+
+```powershell
+$env:WORDNET_BENCHMARK_INPUT = (Resolve-Path tests/wordnet.Conversion.Tests/Fixtures/Enterprise/benchmark-10-pages-images.docx).Path
+dotnet run --project tools/wordnet.Benchmarks -c Release -- --filter '*' --job short --warmupCount 3 --iterationCount 5 --artifacts artifacts/enterprise-audit/benchmarks
+```
+
+The same project contains a qualification harness using the common 1.0 stream API.
+`eng/run-performance-gate.ps1 -ReferenceRevision <commit>` archives the reference,
+builds the identical current harness against both revisions, and alternates two warm
+workers per variant on the same runner with a verified single-processor affinity.
+Each worker warms 20 conversions and measures 31; output must contain ten pages,
+ten tables and two images. The comparison pools 62 measured samples per variant.
+
+On Core Ultra 9 185H / Windows 11 x64 / .NET 10.0.12, candidate median was **75.796 ms**
+versus **141.330 ms** for 1.0.0 (ratio **0.5363**), on affinity `0000000000000001`.
+Maximum sampled managed heap was **25,058,640 bytes**. The more conservative upper
+bound, collected heap before conversion plus all managed bytes allocated during it,
+was **40,122,840 bytes**. Both are below 100,000,000 bytes. This bound includes
+temporary allocations even when collected; it is distinct from process RSS.
+Fixture SHA-256: `258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11`.
+Raw local reports are under ignored `artifacts/performance-completion1/measurements`.
+These measurements identify the exact assembly hash, including an uncommitted build.
+
+CI runs the same comparison against the PR base (or previous pushed revision), on
+the same hardware/runtime/input, and rejects median ≥300 ms, managed upper bound or
+observed peak ≥100 MB, or a regression >25%. Seven guard regressions in
+`eng/test-performance-gate.ps1` reject incomplete, mismatched and failing evidence.
+Historical BDN text/table-only measurements were 60.887 ms PDF / 1.300 ms HTML;
+they had no image or affinity restriction and are not the acceptance measurements.
+
+`eng/validate-pdfa.ps1` exports all 38 valid authored fixtures with PDF/A-2b and
+outlines, then validates each with veraPDF 1.30.2, pinned by image digest. **38/38 pass**.
+CI repeats this independent check and uploads its XML. Tests also assert metadata
+uniqueness, embedded/selectable text, compression controls, actual-page hierarchical
+outlines, PNG prediction/alpha and link flags. Tagged PDF remains optional/unimplemented.
+
+The Android ARM64 test app builds with the installed workload and locked dependency
+graph. No new device execution, actual 4.6.2 runtime run,
+macOS or AOT qualification is claimed here. The historical 1.0 evidence below does
+not automatically qualify this candidate. Current runtime/CI evidence is recorded in
+the enterprise audit; compilation or VM startup is never a runtime qualification.
+
+## Historical 1.0 matrix
 
 All **28 directions** run real acceptance tests:
 
@@ -12,7 +96,7 @@ Four more cases cover **scanned and mixed PDF → DOC and DOCX**.
 They assert editable text and reading order. Embedding the page image cannot pass.
 Missing OCR prerequisites fail with guidance, rather than silently skipping.
 
-The current suite contains **348 active cases**. [CI run 38629510750](https://github.com/kirakosyan/word.net/actions/runs/38629510750)
+The 1.0 suite contained **348 active cases**. [CI run 38629510750](https://github.com/kirakosyan/word.net/actions/runs/38629510750)
 passes all nine native source and 17 exact-package runtime lanes: **9,048 passing cases,
 zero failures/skips**. These include native Windows/Linux x64 and ARM64 .NET 8/10,
 Windows x64 Framework, and explicit Standard-asset execution on both modern runtimes.

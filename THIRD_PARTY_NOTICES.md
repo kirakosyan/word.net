@@ -76,6 +76,15 @@ They are distributed unmodified under SIL Open Font License 1.1. The complete li
 is in `src/wordnet/Resources/Fonts/OFL.txt` and `licenses/NotoSans-OFL.txt` in the NuGet
 package. Source revision and file hashes are in the font directory's README.
 
+The managed `wordnet.Fonts` resource package additionally distributes unmodified
+Liberation Sans/Serif/Mono 2.1.5, Carlito and Caladea (regular/bold/italic/bold italic),
+under SIL Open Font License 1.1. Full notices and exact download URLs/revisions/hashes
+are in `src/wordnet.Fonts/Resources/*-OFL.txt` and `provenance.json`, and are included
+in that NuGet package. Reserved font names are preserved. The Liberation authors
+describe compatibility with Arial/Times New Roman/Courier New; Carlito is the Calibri
+fallback and Caladea the Cambria fallback. Fallbacks are diagnosed and do not establish
+Word pagination parity. No proprietary Microsoft font is redistributed.
+
 ## Optional local OCR and test prerequisites
 
 - [Tesseract](https://github.com/tesseract-ocr/tesseract): Apache-2.0; loaded through its

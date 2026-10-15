@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" />
+    <ProjectReference Include="../../src/wordnet.Ocr/wordnet.Ocr.csproj" />
   </ItemGroup>
 </Project>

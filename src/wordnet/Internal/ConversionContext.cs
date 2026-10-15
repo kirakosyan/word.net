@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,7 +10,21 @@ namespace WordNet.Internal;
 internal sealed class ConversionContext
 {
     private readonly List<ConversionDiagnostic> diagnostics = new List<ConversionDiagnostic>();
-    private readonly HashSet<string> codes = new HashSet<string>(StringComparer.Ordinal);
+    private readonly Dictionary<string, ConversionDiagnostic> codes = new Dictionary<string, ConversionDiagnostic>(StringComparer.Ordinal);
+    private readonly Dictionary<string, FontUsage> fontUsage = new Dictionary<string, FontUsage>(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> substitutedFamilies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    internal bool RecordSubstitution(string family) => substitutedFamilies.Add(family);
+    private readonly Stopwatch elapsed = Stopwatch.StartNew();
+    internal byte[][] FontData { get; set; } = Array.Empty<byte[]>();
+    internal int? PageCount { get; set; }
+    internal DocumentFormat Destination { get; set; }
+    private DateTimeOffset? fieldTime;
+    internal DateTimeOffset FieldTime => fieldTime ??= (Options.Clock ?? throw new ArgumentException("Conversion clock must not be null."))();
+    internal void RecordFont(string requested, string resolved)
+    {
+        string key = requested + "\0" + resolved;
+        if (!fontUsage.ContainsKey(key)) fontUsage.Add(key, new FontUsage(requested, resolved));
+    }
     private long imagePixels;
     private int listId;
     private long ocrConfidenceSum;
@@ -50,15 +65,18 @@ internal sealed class ConversionContext
             throw new NotSupportedException(code + ": " + message);
         }
 
-        Report(code, message);
+        Report(code, message, DiagnosticSeverity.Warning);
     }
 
-    internal void Report(string code, string message)
+    internal void Report(string code, string message, DiagnosticSeverity severity = DiagnosticSeverity.Info)
     {
-        if (codes.Add(code))
+        if (!codes.TryGetValue(code, out ConversionDiagnostic? existing))
         {
-            diagnostics.Add(new ConversionDiagnostic(code, message));
+            var diagnostic = new ConversionDiagnostic(code, message, severity);
+            codes.Add(code, diagnostic);
+            diagnostics.Add(diagnostic);
         }
+        else existing.Count = checked(existing.Count + 1);
     }
 
     internal ConversionResult Result(long count)
@@ -66,7 +84,11 @@ internal sealed class ConversionContext
         if (ocrPages > 0) Report("Ocr.Confidence", "Mean of per-page recognized-word confidences: "
             + ((double)ocrConfidenceSum / ocrPages).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)
             + "/100 across " + ocrPages.ToString(System.Globalization.CultureInfo.InvariantCulture) + " OCR page(s).");
-        return new ConversionResult(count, diagnostics.AsReadOnly());
+        elapsed.Stop();
+        var fonts = fontUsage.Values.ToList().AsReadOnly();
+        return new ConversionResult(count, diagnostics.AsReadOnly(), new ConversionMetrics(PageCount, count, elapsed.Elapsed,
+            fonts, fonts.Where(f => !f.RequestedFamily.Equals(f.ResolvedFamily, StringComparison.OrdinalIgnoreCase))
+                .Select(f => f.RequestedFamily).Distinct(StringComparer.OrdinalIgnoreCase).Count()));
     }
 
     internal string? SafeLink(string? link)

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;net472;netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>WordNet.Ocr</RootNamespace>
+    <AssemblyName>wordnet.Ocr</AssemblyName>
+    <PackageId>wordnet.Ocr</PackageId>
+    <Version>1.1.0-alpha.1</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Description>Optional native PDF import and local English OCR providers for wordnet. Managed DOCX export does not require this package.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../wordnet/wordnet.csproj" />
+    <PackageReference Include="PdfPig.Rendering.Skia" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../THIRD_PARTY_NOTICES.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" />
+  </ItemGroup>
+  <Target Name="GetProviderReferencesForBaseline" DependsOnTargets="ResolveReferences;FindReferenceAssembliesForReferences" Returns="@(ReferencePathWithRefAssemblies)" />
+</Project>

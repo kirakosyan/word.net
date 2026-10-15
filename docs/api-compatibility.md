@@ -2,22 +2,30 @@
 
 The public namespace is `WordNet`; package and assembly names are `wordnet`.
 Every library build retains matching public APIs for
-`net472;netstandard2.0;net8.0;net10.0`. Platform/provider objects never appear in public
+`net462;net472;netstandard2.0;net8.0;net10.0`. Platform/provider objects never appear in public
 signatures. Framework targets and runtime qualification are separate: a build for
 4.7.2 executed on 4.8 does not prove execution on 4.7.2 itself.
 
 Starting with 1.0.0, every public API change must
 identify source/binary compatibility, update XML documentation and examples, and pass
-package validation across all four targets. Add optional behavior through a new overload
+package validation across all five targets. Add optional behavior through a new overload
 while preserving an existing constructor's metadata signature. The OCR correction
 overload follows this rule; existing calls and binaries retain correction-disabled behavior.
 Column ordering requires the separate `ReadTextColumns` opt-in and preserves the default
 native line/paragraph order. Its additional overload preserves earlier constructor signatures.
-Packing validates both the four target APIs and binary compatibility against the
-published `0.1.0-alpha.9` package. CI then runs the full suite against one packed artifact
+Packing validates all target APIs and binary compatibility against the
+published `1.0.0` package. CI then runs the full suite against the packed artifacts
 on all four desktop platforms, including explicitly loading its .NET Standard 2.0
 assembly on both modern runtimes. A runtime-identity assertion prevents a fallback test
 from accidentally exercising a framework-specific asset instead.
+
+The enterprise preview preserves constructor metadata and existing enum values;
+Html and Lenient are appended enum members. New HTML/font/clock settings are settable
+properties configured before concurrent calls. Results add diagnostic severity/count
+and metrics. AssemblyVersion remains 1.0.0.0; packages/assemblies remain unsigned.
+PDF input now requires an explicit `wordnet.Ocr` package reference at the same version.
+This is a deployment migration despite preserving public method signatures. Add the
+package when upgrading applications that import PDF or use OCR.
 
 After 1.0, incompatible public signatures or removed target frameworks require a major
 version and migration notes. Feature additions use minor versions; compatible fixes use

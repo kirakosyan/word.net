@@ -10,11 +10,26 @@ public enum FidelityMode
 
     /// <summary>Convert supported content and return diagnostics for detected losses.</summary>
     BestEffort = 1,
+
+    /// <summary>Degrade content-level layout problems deterministically; malformed input, limits and I/O still fail.</summary>
+    Lenient = 2,
 }
 
-/// <summary>Immutable policy and resource bounds for one conversion.</summary>
+/// <summary>Conversion policy and immutable resource bounds. Configure export settings before concurrent use.</summary>
 public sealed class ConversionOptions
 {
+    /// <summary>Gets or sets HTML output options. Configure before sharing options across conversions.</summary>
+    public HtmlOptions Html { get; set; } = new HtmlOptions();
+
+    /// <summary>Gets or sets PDF output options. Configure before sharing options across conversions.</summary>
+    public PdfOptions Pdf { get; set; } = new PdfOptions();
+
+    /// <summary>Gets or sets caller fonts and substitution policy. Configure before concurrent use.</summary>
+    public FontOptions Fonts { get; set; } = new FontOptions();
+
+    /// <summary>Gets or sets the per-conversion field clock. Defaults to UTC now and is sampled once.</summary>
+    public Func<DateTimeOffset> Clock { get; set; } = () => DateTimeOffset.UtcNow;
+
     /// <summary>Creates a conversion policy with finite input, output and parsing bounds.</summary>
     /// <param name="fidelityMode">Whether detected losses fail or become diagnostics.</param>
     /// <param name="maximumInputBytes">Maximum buffered input bytes; one extra byte may be read to detect overflow.</param>
@@ -36,7 +51,7 @@ public sealed class ConversionOptions
         int maximumPages = 1000,
         EnglishOcrOptions? englishOcr = null)
     {
-        if (fidelityMode != FidelityMode.Strict && fidelityMode != FidelityMode.BestEffort)
+        if (fidelityMode != FidelityMode.Strict && fidelityMode != FidelityMode.BestEffort && fidelityMode != FidelityMode.Lenient)
         {
             throw new ArgumentOutOfRangeException(nameof(fidelityMode));
         }

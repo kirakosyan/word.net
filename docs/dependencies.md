@@ -1,5 +1,44 @@
 # Dependency maintenance
 
+## Enterprise preview package boundary (2026-10-15)
+
+NuGet deployment is the consumer requirement; GAC, merging and strong-name signing
+were explicitly waived. Existing public signatures and unsigned identity remain;
+AssemblyVersion is pinned to 1.0.0.0. Core API compatibility is checked against 1.0.0.
+
+```text
+wordnet (net462/net472/netstandard2.0/net8/net10)
+  + wordnet.Fonts (managed OFL resources, netstandard2.0)
+  + PdfPig 0.1.16 (managed font metrics/subsetting/PDF writer)
+  + PdfPig.Filters.Dct.JpegLibrary 0.1.16.1 (managed JPEG decoder, MIT/Apache-2.0 notices)
+  + Markdig / AngleSharp / OpenMcdf (managed format adapters)
+  + Framework/portable compatibility packages (see committed lock files)
+
+wordnet.Ocr (optional, same five targets)
+  + wordnet
+  + PdfPig.Rendering.Skia / SkiaSharp / HarfBuzz and explicit native assets
+  + caller-provisioned Tesseract 5 and English traineddata
+```
+
+Referencing core does not restore Skia/HarfBuzz or an OCR provider. PNG admission and
+validation use managed PdfPig; JPEG uses the already-reviewed JpegLibrary decoder;
+GIF/BMP decoding and PNG re-encoding are independently authored. Only explicit
+FontSource file/directory helpers read disk; ordinary byte/stream exports use embedded
+resources and do not discover OS fonts, fetch URLs or write temporary files.
+
+`wordnet.Fonts` embeds 20 unmodified Liberation 2.1.5, Carlito and Caladea faces with
+their complete OFL notices and pinned source hashes. Original Noto faces stay in core.
+See `THIRD_PARTY_NOTICES.md` and `src/wordnet.Fonts/Resources/provenance.json`.
+
+BenchmarkDotNet 0.15.8 is MIT-licensed, supports .NET 10 and is confined to the
+non-packable benchmark tool. Its dependencies do not enter converter packages.
+[Upstream changelog](https://benchmarkdotnet.org/changelog/full.html) and
+[license](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md).
+
+The historical review below describes the 1.0.0 graph; native bindings now belong to
+the optional import package. New runtime/native qualification must be reported by
+platform rather than inferred from these historical results.
+
 The 1.0.0 desktop release retains these runtime dependencies. On 2026-10-14, locked
 restore and the solution's transitive vulnerability/deprecation reports complete with
 no warnings or reported vulnerable/deprecated packages. Package/API validation passes

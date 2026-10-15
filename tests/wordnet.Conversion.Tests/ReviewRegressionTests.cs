@@ -92,8 +92,10 @@ public sealed partial class ReviewRegressionTests
         byte[] input = TestDocuments.Docx(TestDocuments.Body(block ? revisions : "<w:p>" + revisions + "</w:p>"));
         byte[] result = Convert(input, DocumentFormat.Docx, DocumentFormat.Text, out ConversionResult report);
         Assert.Equal("Moved", Encoding.UTF8.GetString(result));
-        Assert.Contains(report.Diagnostics, d => d.Code == (block ? "Docx.Block" : "Docx.Inline"));
-        AssertStrictFailure(input, DocumentFormat.Docx, DocumentFormat.Text);
+        Assert.Contains(report.Diagnostics, d => d.Code == "Revisions.Accepted" && d.Severity == DiagnosticSeverity.Info);
+        using var strictSource = new MemoryStream(input); using var strictOutput = new MemoryStream();
+        new WordConverter().Convert(strictSource, strictOutput, DocumentFormat.Docx, DocumentFormat.Text, new ConversionOptions(), TestContext.Current.CancellationToken);
+        Assert.Equal("Moved", Encoding.UTF8.GetString(strictOutput.ToArray()));
     }
 
     [Theory]
@@ -129,7 +131,7 @@ public sealed partial class ReviewRegressionTests
     }
 
     [Fact]
-    public void StrictDocxImportAcceptsMetadataAndGeometryButRejectsHeaderLoss()
+    public void StrictDocxImportAcceptsMetadataGeometryAndFirstPagePolicy()
     {
         string roots = "<Relationships xmlns='" + TestDocuments.PackageR + "'><Relationship Id='main' Type='" + TestDocuments.R + "/officeDocument' Target='word/document.xml'/>"
             + "<Relationship Id='core' Type='http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties' Target='docProps/core.xml'/></Relationships>";
@@ -144,7 +146,8 @@ public sealed partial class ReviewRegressionTests
             Assert.Equal(612, pdf.GetPage(1).Height);
         }
         byte[] header = TestDocuments.Docx(TestDocuments.Body(TestDocuments.TextParagraph("Content") + "<w:sectPr><w:titlePg/></w:sectPr>"));
-        AssertStrictFailure(header, DocumentFormat.Docx, DocumentFormat.Pdf);
+        using var firstPage = UglyToad.PdfPig.PdfDocument.Open(Convert(header, DocumentFormat.Docx, DocumentFormat.Pdf, out _, new ConversionOptions()));
+        Assert.Equal("Content", firstPage.GetPage(1).Text);
     }
 
     [Theory]

@@ -5,9 +5,13 @@ namespace WordNet.Model;
 
 internal sealed class DocumentModel
 {
+    internal string Title { get; set; } = "";
+    internal string Author { get; set; } = "";
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
     internal PageSettings? FinalSection { get; set; }
-    internal IEnumerable<ParagraphBlock> Paragraphs => Blocks.SelectMany(block => block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(row => row).SelectMany(cell => cell.Paragraphs));
+    internal IEnumerable<ParagraphBlock> Paragraphs => AllBlocks.SelectMany(block => block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(row => row).SelectMany(cell => cell.Paragraphs));
+    internal IEnumerable<DocumentBlock> AllBlocks => Blocks.Concat(Blocks.Select(b => b.Section).Concat(new[] { FinalSection }).Where(s => s != null).Distinct()
+        .SelectMany(s => s!.Stories.Values).Distinct().SelectMany(story => story));
     internal int CharacterCount => Paragraphs.Sum(p => p.Text.Length);
 }
 
@@ -16,7 +20,7 @@ internal abstract class DocumentBlock
     internal PageSettings? Section { get; set; }
 }
 
-internal enum ParagraphAlignment { Left, Center, Right }
+internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
@@ -57,6 +61,8 @@ internal enum VerticalMerge { None, Start, Continue }
 
 internal sealed class TableCell
 {
+    internal List<DocumentBlock> Content { get; } = new List<DocumentBlock>();
+    internal IEnumerable<DocumentBlock> Blocks => Content.Count > 0 ? Content : Paragraphs;
     internal TableCell() { }
     internal TableCell(ParagraphBlock paragraph) => Paragraphs.Add(paragraph);
     internal List<ParagraphBlock> Paragraphs { get; } = new List<ParagraphBlock>();
@@ -64,13 +70,23 @@ internal sealed class TableCell
     internal CellPadding? Padding { get; set; }
     internal int ColumnSpan { get; set; } = 1;
     internal VerticalMerge Merge { get; set; }
+    internal string VerticalAlignment { get; set; } = "top";
+    internal string? Background { get; set; }
+    internal Dictionary<string, CellBorder> Borders { get; } = new Dictionary<string, CellBorder>();
     internal string Text => string.Join("\n", Paragraphs.Select(p => p.Text));
+}
+
+internal sealed class CellBorder
+{
+    internal string Style { get; set; } = "single";
+    internal string Color { get; set; } = "000000";
+    internal double Width { get; set; } = 0.5;
 }
 
 internal sealed class TextRun
 {
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
-        double? fontSize = null, string? color = null, DocumentImage? image = null)
+        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null)
     {
         Text = text;
         Bold = bold;
@@ -80,6 +96,8 @@ internal sealed class TextRun
         FontSize = fontSize;
         Color = color;
         Image = image;
+        Appearance = appearance ?? new RunAppearance();
+        FieldInstruction = fieldInstruction;
     }
 
     internal string Text { get; }
@@ -90,7 +108,20 @@ internal sealed class TextRun
     internal double? FontSize { get; }
     internal string? Color { get; }
     internal DocumentImage? Image { get; }
-    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image);
+    internal RunAppearance Appearance { get; }
+    internal string? FieldInstruction { get; }
+    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction);
+}
+
+internal sealed class RunAppearance
+{
+    internal string? FontFamily { get; set; }
+    internal bool Underline { get; set; }
+    internal bool Strike { get; set; }
+    internal string? Background { get; set; }
+    internal string? VerticalAlignment { get; set; }
+    internal bool HasValues => FontFamily != null || Underline || Strike || Background != null || VerticalAlignment != null;
+    internal RunAppearance Copy() => (RunAppearance)MemberwiseClone();
 }
 
 internal sealed class CellPadding

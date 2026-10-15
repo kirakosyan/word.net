@@ -169,5 +169,8 @@ jobs:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         shell: pwsh
         run: |
-          dotnet nuget push "artifacts/packages/wordnet.$env:PACKAGE_VERSION.nupkg" --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+          foreach ($id in @('wordnet.Fonts', 'wordnet', 'wordnet.Ocr')) {
+            dotnet nuget push "artifacts/packages/$id.$env:PACKAGE_VERSION.nupkg" --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
           exit $LASTEXITCODE

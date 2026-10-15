@@ -33,4 +33,7 @@ public enum DocumentFormat
 
     /// <summary>XML Paper Specification (.xps); output only.</summary>
     Xps = 9,
+
+    /// <summary>Self-contained UTF-8 HTML5 for e-mail; output only from DOC or DOCX.</summary>
+    Html = 10,
 }

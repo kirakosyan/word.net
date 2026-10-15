@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472;netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net462;net472;netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <RootNamespace>WordNet</RootNamespace>
     <AssemblyName>wordnet</AssemblyName>
     <IsPackable>true</IsPackable>
     <PackageId>wordnet</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0-alpha.1</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>Armen Kirakosyan</Authors>
     <Description>Word conversion for .NET: DOC/DOCX exchanges with PDF, Markdown, text, EPUB, MOBI and AZW3, plus XPS output and local English OCR. Explicit fidelity diagnostics and bounded document processing.</Description>
     <PackageTags>word;docx;doc;pdf;markdown;epub;mobi;azw3;xps;converter;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
-    <PackageReleaseNotes>First stable release for the documented Windows/Linux desktop profile. All 28 conversion directions and English printed-text OCR; section and paragraph layout, merged tables, repeating headers, long-row pagination and opt-in OCR orientation/column processing. See README for fidelity limits, native prerequisites and the required legacy JIT configuration on actual .NET Framework 4.7.2 x64. Android and macOS are outside this release's qualified scope.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enterprise export preview: managed DOC/DOCX to PDF and self-contained HTML, header/footer stories and fields, configurable fonts, deterministic diagnostics and Lenient degradation. Adds net462 assets. PDF import/OCR now requires the optional wordnet.Ocr package. See the enterprise audit for remaining fidelity and runtime qualification limits.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -21,20 +22,19 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>0.1.0-alpha.9</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>1.0.0</PackageValidationBaselineVersion>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472' or '$(TargetFramework)' == 'net462'">
     <Reference Include="System.IO.Compression" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../wordnet.Fonts/wordnet.Fonts.csproj" />
     <PackageReference Include="Markdig" />
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="OpenMcdf" />
     <PackageReference Include="PdfPig" />
-    <PackageReference Include="PdfPig.Rendering.Skia" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
-    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" />
+    <PackageReference Include="PdfPig.Filters.Dct.JpegLibrary" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources/Fonts/*.ttf" />
@@ -45,4 +45,18 @@
     <None Include="../../LICENSE" Pack="true" PackagePath="/" />
     <None Include="../../THIRD_PARTY_NOTICES.md" Pack="true" PackagePath="/" />
   </ItemGroup>
+  <!-- Resolve the previous release's internal native-provider references for API
+       comparison only. They are restored by the OCR/test projects, never core deps. -->
+  <Target Name="BaselineProviderReferences" AfterTargets="_GetReferencePathFromInnerProjects">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)../wordnet.Ocr/wordnet.Ocr.csproj"
+             Targets="GetProviderReferencesForBaseline"
+             Properties="TargetFramework=netstandard2.0;Configuration=$(Configuration);BuildProjectReferences=false">
+      <Output ItemName="_BaselineProviderReferencePaths" TaskParameter="TargetOutputs" />
+    </MSBuild>
+    <ItemGroup>
+      <PackageValidationReferencePath Update="@(PackageValidationReferencePath)">
+        <ReferencePath>%(PackageValidationReferencePath.ReferencePath),@(_BaselineProviderReferencePaths, ',')</ReferencePath>
+      </PackageValidationReferencePath>
+    </ItemGroup>
+  </Target>
 </Project>

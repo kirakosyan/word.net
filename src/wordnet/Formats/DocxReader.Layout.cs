@@ -15,6 +15,9 @@ internal sealed partial class DocxReader
     private void EndSection(XElement element, List<DocumentBlock> blocks, bool paragraphBoundary = false)
     {
         var settings = new PageSettings();
+        settings.EvenAndOdd = evenAndOdd;
+        if (finalSection != null)
+            foreach (var story in finalSection.Stories) settings.Stories.Add(story.Key, story.Value);
         foreach (XElement property in element.Elements())
         {
             if (property.Name == W + "pgSz")
@@ -29,6 +32,8 @@ internal sealed partial class DocxReader
             }
             else if (property.Name == W + "pgMar")
             {
+                if (property.Attribute(W + "header") != null) settings.HeaderDistance = Integer(property, W + "header", 0, 31680) / 20.0;
+                if (property.Attribute(W + "footer") != null) settings.FooterDistance = Integer(property, W + "footer", 0, 31680) / 20.0;
                 settings.Left = Margin("left"); settings.Right = Margin("right"); settings.Top = Margin("top"); settings.Bottom = Margin("bottom");
                 if (property.Attribute(W + "gutter") != null && Integer(property, W + "gutter", 0, 31680) != 0)
                     context.Loss("Docx.Gutter", "Binding gutters are not retained.");
@@ -45,6 +50,13 @@ internal sealed partial class DocxReader
                 if (kind != "nextPage") context.Loss("Docx.SectionBreak", "Continuous, column and parity section breaks become next-page section breaks.");
             }
             else if (property.Name == W + "cols" && !property.HasElements && ((string?)property.Attribute(W + "num") is null or "1")) { }
+            else if (property.Name == W + "titlePg") settings.DifferentFirstPage = IsOn(property);
+            else if (property.Name == W + "headerReference" || property.Name == W + "footerReference")
+            {
+                string type = (string?)property.Attribute(W + "type") ?? "default";
+                if (type is not "default" and not "first" and not "even") throw new InvalidDataException("Docx.HeaderFooter: Invalid story type.");
+                settings.Stories[(property.Name == W + "headerReference" ? "header-" : "footer-") + type] = ReadStory(property);
+            }
             else context.Loss("Docx.PageLayout", "Section features such as headers, footers, columns and page numbering are not retained.");
         }
         settings.Validate();
@@ -84,6 +96,23 @@ internal sealed partial class DocxReader
             if (property.Attribute(W + "hanging") != null) layout.FirstLine = -Integer(property, W + "hanging", 0, 31680) / 20.0;
             if (property.Attributes().Any(a => a.Name != W + "left" && a.Name != W + "right" && a.Name != W + "firstLine" && a.Name != W + "hanging"))
                 context.Loss("Docx.ParagraphIndent", "Character-unit and direction-dependent indentation is not retained.");
+        }
+        else if (property.Name == W + "tabs")
+        {
+            foreach (XElement tab in property.Elements(W + "tab"))
+            {
+                double position = Integer(tab, W + "pos", -31680, 31680) / 20.0;
+                string alignment = (string?)tab.Attribute(W + "val") ?? "left";
+                layout.Tabs.RemoveAll(t => t.Position == position);
+                if (alignment == "clear") continue;
+                if (alignment is not "left" and not "center" and not "right" and not "decimal")
+                { context.Loss("Layout.TabAlignment", "Unsupported tab alignment uses a left tab stop."); alignment = "left"; }
+                string leader = (string?)tab.Attribute(W + "leader") ?? "none";
+                if (leader is not "none" and not "dot" and not "hyphen" and not "underscore")
+                { context.Loss("Layout.TabLeader", "Unsupported tab leaders are omitted."); leader = "none"; }
+                layout.Tabs.Add(new TabStop { Position = position, Alignment = alignment, Leader = leader });
+            }
+            layout.Tabs.Sort((a, b) => a.Position.CompareTo(b.Position));
         }
         else if (property.Name == W + "pageBreakBefore") layout.PageBreakBefore = IsOn(property);
         else if (property.Name == W + "keepNext") layout.KeepWithNext = IsOn(property);

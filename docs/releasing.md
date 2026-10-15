@@ -1,5 +1,13 @@
 # Releasing wordnet
 
+The enterprise preview is **1.1.0-alpha.1**, for local validation only. Pack and verify
+`wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
+one package version. The workflow publishes fonts before core and the optional
+provider. New companion package IDs need their own authorized NuGet ownership/
+Trusted Publishing configuration before any release. This implementation neither
+creates those policies nor changes release credentials. Publishing remains a
+separate maintainer decision, with the existing exact-commit CI gates preserved.
+
 The first stable release is **1.0.0**, for the documented Windows/Linux x64 and ARM64
 desktop profile. Android and macOS are deferred by the maintainer for this release.
 Publishing alone does not establish quality: retain the corpus, resource, API and

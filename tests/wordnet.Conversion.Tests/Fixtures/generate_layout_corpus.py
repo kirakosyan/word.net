@@ -9,11 +9,13 @@ import json
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reference_kerning import ReferenceShaper
 
 root = Path(__file__).parent
 fonts = root.parents[2] / 'src/wordnet/Resources/Fonts'
 pdfmetrics.registerFont(TTFont('Noto', str(fonts / 'NotoSans-Regular.ttf')))
 pdfmetrics.registerFont(TTFont('NotoBold', str(fonts / 'NotoSans-Bold.ttf')))
+shaper = ReferenceShaper({'Noto': fonts / 'NotoSans-Regular.ttf', 'NotoBold': fonts / 'NotoSans-Bold.ttf'})
 w = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 def p(text, properties='', run=''):
     return f'<w:p><w:pPr>{properties}</w:pPr><w:r><w:rPr>{run}</w:rPr><w:t>{text}</w:t></w:r></w:p>'
@@ -38,10 +40,12 @@ with ZipFile(root / 'layout-corpus.docx', 'w') as package:
         info = ZipInfo(name, (2000, 1, 1, 0, 0, 0)); info.compress_type = ZIP_DEFLATED
         package.writestr(info, content.encode('utf-8'))
 pdf = Canvas(str(root / 'layout-reference.pdf'), pagesize=(612, 792), invariant=1)
-def text(value, x, top, size=11, font='Noto'):
-    pdf.setFont(font, size); pdf.drawString(x, 792 - top, value)
+def text(value, x, top, size=11, font='Noto', height=792):
+    pdf.setFont(font, size)
+    for character, dx, dy in shaper.shape(value, font, size)[0]:
+        pdf.drawString(x + dx, height - top + dy, character)
 pdf.setFillColorRGB(0x33 / 255, 0x66 / 255, 0x99 / 255)
-title_width = pdfmetrics.stringWidth('Quarterly report', 'NotoBold', 18)
+title_width = shaper.shape('Quarterly report', 'NotoBold', 18)[1]
 text('Quarterly report', 72 + (480 - title_width) / 2, 100, 18, 'NotoBold')
 pdf.setFillColorRGB(0, 0, 0)
 text('Indented body.', 108, 135, 12)
@@ -50,6 +54,7 @@ text('Vertical', 72, 203); text('Group', 72, 225.5); text('A', 192, 203); text('
 text('C', 192, 225.5); text('D', 312, 225.5)
 text('End first section', 72, 255, 12)
 pdf.showPage(); pdf.setPageSize((792, 612)); pdf.setFont('Noto', 12)
-pdf.drawString(36, 564, 'Landscape section'); pdf.save()
+text('Landscape section', 36, 48, 12, height=612); pdf.save()
+shaper.close()
 manifest = {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in ['layout-corpus.docx', 'layout-reference.pdf']}
 (root / 'layout-corpus.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

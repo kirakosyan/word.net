@@ -61,6 +61,10 @@ jobs:
       - name: Check formatting
         if: matrix.os == 'ubuntu-24.04'
         run: dotnet format wordnet.sln --verify-no-changes --no-restore
+      - name: Independently validate the PDF/A-2b corpus
+        if: matrix.os == 'ubuntu-24.04'
+        shell: pwsh
+        run: ./eng/validate-pdfa.ps1
       - name: Require the complete suite with no skips
         shell: pwsh
         run: |
@@ -88,9 +92,20 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet tools/wordnet.Qualification/bin/Release/net10.0/wordnet.Qualification.dll ocr tests/wordnet.Conversion.Tests/Fixtures artifacts/qualification 1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Enterprise fixed-clock 64 by 200 concurrency gate
+        if: matrix.os == 'ubuntu-24.04'
+        shell: pwsh
+        env:
+          DOTNET_GCHeapHardLimit: '100000000'
+        run: |
+          dotnet tools/wordnet.ManagedExport.Probe/bin/Release/net10.0/wordnet.ManagedExport.Probe.dll tests/wordnet.Conversion.Tests/Fixtures/Enterprise 200 | Tee-Object artifacts/qualification/enterprise-concurrency.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Pack and validate framework API compatibility
         if: matrix.os == 'ubuntu-24.04'
-        run: dotnet pack src/wordnet/wordnet.csproj --configuration Release --no-build --no-restore --output artifacts/packages
+        run: |
+          dotnet pack src/wordnet.Fonts/wordnet.Fonts.csproj --configuration Release --no-build --no-restore --output artifacts/packages
+          dotnet pack src/wordnet/wordnet.csproj --configuration Release --no-build --no-restore --output artifacts/packages
+          dotnet pack src/wordnet.Ocr/wordnet.Ocr.csproj --configuration Release --no-build --no-restore --output artifacts/packages
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -110,7 +125,50 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: qualification-${{ matrix.os }}
-          path: artifacts/qualification/*.json
+          path: |
+            artifacts/qualification/*.json
+            artifacts/qualification/enterprise-concurrency.txt
+          if-no-files-found: error
+      - name: Upload independent PDF/A evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdfa-validation
+          path: artifacts/pdfa-validation/verapdf.*
+          if-no-files-found: error
+
+  performance:
+    name: Single-core PDF performance and memory
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - name: Install baseline graphics prerequisites
+        run: sudo apt-get update && sudo apt-get install -y libfontconfig1
+      - name: Verify comparison guards
+        shell: pwsh
+        run: ./eng/test-performance-gate.ps1
+      - name: Compare both revisions on this runner
+        shell: pwsh
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          $reference = if ($env:PR_BASE) { $env:PR_BASE } elseif ($env:PUSH_BASE -and $env:PUSH_BASE -notmatch '^0+$') { $env:PUSH_BASE } else { 'origin/main' }
+          ./eng/run-performance-gate.ps1 -ReferenceRevision $reference
+      - name: Upload comparable measurements
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: performance-gate
+          path: |
+            artifacts/performance-gate/comparison.json
+            artifacts/performance-gate/measurements/*.json
           if-no-files-found: error
 
   package:
