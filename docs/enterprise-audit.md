@@ -1,8 +1,8 @@
 # Enterprise conversion audit (issue #4)
 
 Audited 2026-10-15 at `8f20158ff9d1a4da0fbc267e1d17d35cee03bbd5`.
-This is the M0 audit for [issue #4](https://github.com/kirakosyan/word.net/issues/4),
-not a qualification of the requested enterprise feature set.
+The baseline M0 audit for [issue #4](https://github.com/kirakosyan/word.net/issues/4)
+is followed below by the implemented acceptance profile and final qualification.
 
 ## Deployment decision
 
@@ -188,18 +188,39 @@ installed fonts or customer invoice is in the repository.
   **25,058,640 bytes**, conservative heap-plus-allocation upper bound **40,122,840 bytes**.
   CI compares both revisions on the same runner and enforces <300 ms, <100 MB and
   ≤25% regression. Guard tests reject mismatched/incomplete evidence. See [testing](testing.md).
-- A 64-worker × 200 mixed run must produce 12,800 byte-identical PDF/HTML pairs
-  under fixed Clock with no native providers. The CI gate repeats this with a
+- A 64-worker × 200 mixed run produced 12,800 byte-identical PDF/HTML pairs
+  under fixed Clock with no native providers. The CI gate also passes this with a
   4 GiB stress-process heap cap; this is distinct from the per-document 100 MB test.
 - Locked restore, five-target Release build and 451-case source/package gates cover
   .NET 8/10 and Framework, plus explicit netstandard2.0 assets. Package validation
   compares the public API against 1.0.0. Final reports and package hashes are recorded
   alongside the build evidence; startup/compilation alone never qualifies a runtime.
+- [CI 38822484354](https://github.com/kirakosyan/word.net/actions/runs/38822484354)
+  passes all Windows/Linux x64/ARM64 source and exact-package lanes: 26 × 451 cases
+  (11,726 passes, no skips), plus PDF/A, concurrency, fuzz/resource and performance
+  gates. The duplicate push performance lane passed on rerun; its first comparison
+  exceeded the 25% limit despite identical conversion sources. The threshold remains
+  enforced; hosted-runner variance is preserved in the run history.
+- Actual Framework 4.7.2 x64, release **461814**, passed **451/451** cases including
+  OCR, with `compatjit.dll` observed and no inherited diagnostic overrides. It took
+  1479.881 seconds under software emulation. Exact net472 package DLL SHA-256:
+  `1e01756d5b600288cc0acbe844af519da39dc8f1f53027e8e00b242b477abf0a`.
+  The exact net462 NuGet asset also passed managed-only mixed PDF/HTML probes on
+  that runtime, with no native providers loaded; its SHA-256 is
+  `49af679d9a79c19e365ce29a77ef823e930ac88b3b8874960baad0bef4bbf7e5`.
+  Evidence is preserved under ignored `artifacts/enterprise-audit/minimum472-final451`
+  and the external dedicated VM directory. The earlier run using network-hosted OCR
+  prerequisites terminated with access violation; it is retained as failed evidence.
+  The passing run used verified prerequisites copied onto the guest's local disk.
 - Actual Framework 4.6.2 remains unqualified (preferred, rather than required minimum).
-  The fresh 4.7.2 run and native Windows/Linux x64/ARM64 CI must be recorded before
-  claiming those candidate platform lanes. The documented legacy-JIT requirement
-  remains: the method-level defect is reproduced outside wordnet and the issue
-  explicitly allows retaining it with evidence. Android/macOS remain deferred.
+  The documented 4.7.2 legacy-JIT requirement remains: the method-level default-JIT
+  defect is reproduced outside wordnet and the issue explicitly allows retaining
+  it with evidence. Android/macOS execution remains deferred; Android compilation passes.
+
+Final local core/Fonts/Ocr NuGet sizes are **6,454,249 / 3,768,035 / 92,673 bytes**,
+about 10.3 MB combined. API comparison against 1.0.0, locked restore, five-target
+Release build, formatting and package-content checks pass. The source suite passes
+on .NET 8/10 and Framework 4.8.1; the exact local packages pass all five package lanes.
 
 GAC/single-DLL/strong naming were waived by the user. PDF tagging is optional.
 No package publication or release-credential change is part of this implementation.

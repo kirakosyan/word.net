@@ -86,11 +86,21 @@ median versus 53.861 ms baseline, ratio 0.5302, conservative managed bound 38,25
 bytes. Run 38820196850 retains the measurements; its separate desktop jobs failed
 at the probe RID restore and were corrected independently.
 
-The Android ARM64 test app builds with the installed workload and locked dependency
-graph. No new device execution, actual 4.6.2 runtime run,
-macOS or AOT qualification is claimed here. The historical 1.0 evidence below does
-not automatically qualify this candidate. Current runtime/CI evidence is recorded in
-the enterprise audit; compilation or VM startup is never a runtime qualification.
+The [final implementation CI](https://github.com/kirakosyan/word.net/actions/runs/38822484354)
+passes all 26 Windows/Linux x64/ARM64 source/package lanes: 11,726 cases, no skips,
+plus the independent PDF/A, performance, concurrency and resource gates. The older
+qualification benchmark now preserves the original 28 directions and DOM-validates
+both new output-only HTML directions instead of trying to read HTML back as Word.
+
+Actual Framework 4.7.2 x64 (release 461814) separately passes **451/451**, including
+OCR, with the documented legacy JIT (`compatjit.dll` observed). The software-emulated
+run took 1479.881 seconds; native prerequisites were copied to the guest's local disk.
+The exact net462 package asset also passes managed-only mixed PDF/HTML probes there.
+The audit records package hashes, the retained earlier failure and evidence locations.
+
+The Android ARM64 test app compiles in CI. No new Android device execution, actual
+4.6.2 runtime, macOS or AOT qualification is claimed. Compilation or VM startup is
+never treated as runtime qualification.
 
 ## Historical 1.0 matrix
 
