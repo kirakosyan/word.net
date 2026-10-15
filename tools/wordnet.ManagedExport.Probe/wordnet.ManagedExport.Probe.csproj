@@ -5,6 +5,10 @@
     <IsPackable>false</IsPackable>
     <NuGetLockFilePath Condition="'$(WordnetPackageVersion)' != ''">obj/packaged/packages.lock.json</NuGetLockFilePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+    <!-- Pin the Framework executable RID so its lock is identical on Linux/Windows. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
     <PackageReference Include="wordnet" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
