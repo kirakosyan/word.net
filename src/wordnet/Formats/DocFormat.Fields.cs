@@ -18,7 +18,7 @@ internal static partial class DocFormat
         private sealed class BinaryField
         {
             internal StringBuilder Instruction { get; } = new StringBuilder();
-            internal List<TextRun> Runs { get; } = new List<TextRun>();
+            internal List<(ParagraphBlock Target, TextRun Run)> Runs { get; } = new List<(ParagraphBlock, TextRun)>();
             internal bool Separated { get; set; }
         }
         internal BinaryFields(ConversionContext context) => this.context = context;
@@ -28,7 +28,7 @@ internal static partial class DocFormat
         internal void AddRun(ParagraphBlock paragraph, TextRun run)
         {
             if (stack.Count == 0) paragraph.Runs.Add(run);
-            else if (!InInstruction) stack.Peek().Runs.Add(run);
+            else if (!InInstruction) stack.Peek().Runs.Add((paragraph, run));
         }
 
         internal void Text(ParagraphBlock paragraph, string value, Properties properties)
@@ -54,20 +54,29 @@ internal static partial class DocFormat
                     if (!DocumentFields.Supported(instruction))
                     {
                         context.Report("Field.UnsupportedUsedCachedResult", "An unsupported binary Word field uses its cached result.");
-                        foreach (TextRun cached in field.Runs) AddRun(paragraph, cached);
+                        foreach (var cached in field.Runs) AddRun(cached.Target, cached.Run);
                         continue;
                     }
-                    TextRun first = field.Runs.FirstOrDefault() ?? new TextRun("");
-                    string result = string.Concat(field.Runs.Select(r => r.Text));
+                    TextRun first = field.Runs.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
+                    string result = string.Concat(field.Runs.Select(r => r.Run.Text));
                     if (DocumentFields.Kind(instruction) == "HYPERLINK")
                     {
                         Match match = Regex.Match(instruction, "^\\s*HYPERLINK\\s+(?:\"([^\"]*)\"|(\\S+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
                         string? link = match.Success ? context.SafeLink(match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value) : null;
-                        foreach (TextRun cached in field.Runs)
-                            AddRun(paragraph, new TextRun(cached.Text, cached.Bold, cached.Italic, cached.Code, link,
-                                cached.FontSize, cached.Color, cached.Image, cached.Appearance));
+                        foreach (var cached in field.Runs)
+                        {
+                            TextRun run = cached.Run;
+                            AddRun(cached.Target, new TextRun(run.Text, run.Bold, run.Italic, run.Code, link,
+                                run.FontSize, run.Color, run.Image, run.Appearance));
+                        }
                     }
-                    else AddRun(paragraph, new TextRun(result, first.Bold, first.Italic, fontSize: first.FontSize, color: first.Color, fieldInstruction: instruction));
+                    else if (field.Runs.Select(r => r.Target).Distinct().Skip(1).Any())
+                    {
+                        context.Report("Field.UnsupportedUsedCachedResult", "A binary Word field spanning paragraphs retains its cached result in place.");
+                        foreach (var cached in field.Runs) AddRun(cached.Target, cached.Run);
+                    }
+                    else AddRun(field.Runs.Count == 0 ? paragraph : field.Runs[0].Target,
+                        new TextRun(result, first.Bold, first.Italic, fontSize: first.FontSize, color: first.Color, fieldInstruction: instruction));
                 }
                 else if (InInstruction) stack.Peek().Instruction.Append(c);
                 else if (!properties.Hidden)

@@ -117,7 +117,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+          "wordnet.Fonts": "[1.1.0-alpha.2, )"
         }
       },
       "wordnet.fonts": {
@@ -338,7 +338,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+          "wordnet.Fonts": "[1.1.0-alpha.2, )"
         }
       },
       "wordnet.fonts": {
@@ -553,7 +553,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+          "wordnet.Fonts": "[1.1.0-alpha.2, )"
         }
       },
       "wordnet.fonts": {
@@ -721,7 +721,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+          "wordnet.Fonts": "[1.1.0-alpha.2, )"
         }
       },
       "wordnet.fonts": {
@@ -863,7 +863,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.1.0-alpha.1, )"
+          "wordnet.Fonts": "[1.1.0-alpha.2, )"
         }
       },
       "wordnet.fonts": {

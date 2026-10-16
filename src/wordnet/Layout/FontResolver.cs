@@ -39,7 +39,7 @@ internal sealed class FontResolver
         if (sources.Length > 128 || sources.Any(s => s == null)) throw new ArgumentException("Configure at most 128 non-null caller font faces.");
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
-            if (paragraph.List != null) _ = Resolve(new TextRun(""), false);
+            if (paragraph.List != null) _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
             foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
         }
         recording = true;
@@ -91,7 +91,8 @@ internal sealed class FontResolver
         if (recording) context.RecordFont(family, resolved);
         return index;
 
-        FontSource? Find(string name) => sources.FirstOrDefault(s => s.FamilyName.Equals(name, StringComparison.OrdinalIgnoreCase) && s.Bold == bold && s.Italic == italic);
+        FontSource? Find(string name) => sources.Where(s => s.FamilyName.Equals(name, StringComparison.OrdinalIgnoreCase) && s.Bold == bold && s.Italic == italic)
+            .OrderBy(s => Math.Abs(s.Weight - (bold ? 700 : 400))).FirstOrDefault();
         FontSource? Bundled(string name)
         {
             var bundled = BundledFonts.Read(name, bold, italic);

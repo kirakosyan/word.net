@@ -140,7 +140,7 @@ public sealed class EnterpriseConversionTests
         ConversionOptions included = Options; included.Html.IncludeHeadersAndFooters = true;
         using var html = new HtmlParser().ParseDocument(Encoding.UTF8.GetString(converter.ConvertToHtml(input, included)));
         Assert.Contains("FIRST HEADER", html.Body!.TextContent, StringComparison.Ordinal);
-        Assert.Contains("EVEN HEADER", html.Body.TextContent, StringComparison.Ordinal);
+        Assert.DoesNotContain("EVEN HEADER", html.Body.TextContent, StringComparison.Ordinal);
     }
 
     [Fact]

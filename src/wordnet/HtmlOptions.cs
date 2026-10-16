@@ -8,7 +8,7 @@ public sealed class HtmlOptions
     /// <summary>Gets or sets the maximum content width in CSS pixels. The default is 700.</summary>
     public int MaxContentWidthPx { get; set; } = 700;
 
-    /// <summary>Gets or sets whether header/footer stories are included as first/last blocks.</summary>
+    /// <summary>Gets or sets whether the first page's applicable header/footer are included as first/last blocks.</summary>
     public bool IncludeHeadersAndFooters { get; set; }
 
     /// <summary>Gets or sets whether images are embedded as data URIs. False retains alternative text.</summary>

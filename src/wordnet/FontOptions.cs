@@ -30,7 +30,7 @@ public sealed partial class FontSource
             buffer.Write(chunk, 0, count);
         }
         if (buffer.Length < 12) throw new InvalidDataException("Font.Invalid: Font header is missing.");
-        data = buffer.ToArray(); FamilyName = familyName; Bold = bold; Italic = italic;
+        data = buffer.ToArray(); FamilyName = familyName; Bold = bold; Italic = italic; Weight = bold ? 700 : 400;
     }
 
     /// <summary>Gets the requested family name associated with this face.</summary>
@@ -53,6 +53,7 @@ public sealed partial class FontSource
     }
 
     internal byte[] Bytes => data;
+    internal int Weight { get; private set; }
 }
 
 /// <summary>Configures font resolution without consulting installed fonts. Configure before conversion.</summary>

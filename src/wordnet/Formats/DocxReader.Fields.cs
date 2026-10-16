@@ -15,36 +15,45 @@ internal sealed partial class DocxReader
     private sealed class FieldCapture
     {
         internal StringBuilder Instruction { get; } = new StringBuilder();
-        internal List<TextRun> Result { get; } = new List<TextRun>();
+        internal List<(List<TextRun> Target, TextRun Run)> Result { get; } = new List<(List<TextRun>, TextRun)>();
         internal bool Separated { get; set; }
     }
 
     private void Emit(List<TextRun> runs, TextRun run)
     {
         if (fields.Count == 0) runs.Add(run);
-        else if (fields.Peek().Separated) fields.Peek().Result.Add(run);
+        else if (fields.All(f => f.Separated)) fields.Peek().Result.Add((runs, run));
     }
 
-    private void EmitField(List<TextRun> runs, string instruction, List<TextRun> result)
+    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result)
     {
         if (!DocumentFields.Supported(instruction))
         {
             context.Report("Field.UnsupportedUsedCachedResult", "An unsupported field uses its cached result text.");
             // Retain every cached run, including pictures and run formatting. A single
             // flattened field would silently discard pictures in cached TOC/IF results.
-            foreach (TextRun run in result) Emit(runs, run);
+            foreach (var cached in result) Emit(cached.Target, cached.Run);
             return;
         }
         if (DocumentFields.Kind(instruction) == "HYPERLINK")
         {
             Match match = Regex.Match(instruction, "^\\s*HYPERLINK\\s+(?:\"([^\"]*)\"|(\\S+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
             string? link = match.Success ? context.SafeLink(match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value) : null;
-            foreach (TextRun run in result)
-                Emit(runs, new TextRun(run.Text, run.Bold, run.Italic, run.Code, link, run.FontSize, run.Color, run.Image, run.Appearance));
+            foreach (var cached in result)
+            {
+                TextRun run = cached.Run;
+                Emit(cached.Target, new TextRun(run.Text, run.Bold, run.Italic, run.Code, link, run.FontSize, run.Color, run.Image, run.Appearance));
+            }
             return;
         }
-        TextRun first = result.FirstOrDefault() ?? new TextRun("");
-        Emit(runs, new TextRun(string.Concat(result.Select(r => r.Text)), first.Bold, first.Italic, first.Code, first.Link,
+        if (result.Select(r => r.Target).Distinct().Skip(1).Any())
+        {
+            context.Report("Field.UnsupportedUsedCachedResult", "A field spanning paragraphs retains its cached result in its original structure.");
+            foreach (var cached in result) Emit(cached.Target, cached.Run);
+            return;
+        }
+        TextRun first = result.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
+        Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(string.Concat(result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
             first.FontSize, first.Color, appearance: first.Appearance, fieldInstruction: instruction));
     }
 

@@ -256,7 +256,7 @@ internal sealed partial class DocxReader
             }
             else if (child.Name == W + "tab")
             {
-                Emit(runs, new TextRun("\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color));
+                Emit(runs, new TextRun("\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "br" || child.Name == W + "cr")
             {
@@ -266,7 +266,7 @@ internal sealed partial class DocxReader
                     context.Loss("Docx.Break", "Page and column breaks become line breaks.");
                 }
 
-                Emit(runs, new TextRun("\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color));
+                Emit(runs, new TextRun("\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "drawing")
             {
@@ -537,7 +537,7 @@ internal sealed partial class DocxReader
             else if (property.Name == W + "sz") style.FontSize = Integer(property, W + "val", 2, 3276) / 2.0;
             else if (property.Name == W + "rFonts" && !knownCodeStyle)
             {
-                style.Appearance.FontFamily = (string?)property.Attribute(W + "ascii") ?? (string?)property.Attribute(W + "hAnsi");
+                style.Appearance.FontFamily = (string?)property.Attribute(W + "ascii") ?? (string?)property.Attribute(W + "hAnsi") ?? style.Appearance.FontFamily;
                 if (property.Attributes().Any(a => a.Name.LocalName.EndsWith("Theme", StringComparison.Ordinal)))
                     context.Loss("Docx.ThemeFont", "Theme fonts without a resolved family use the explicit family or output fallback.");
             }

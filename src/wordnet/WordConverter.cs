@@ -32,15 +32,31 @@ public sealed class WordConverter : IDocumentConverter
     /// <param name="docx">The complete DOCX package.</param>
     /// <param name="options">Conversion policy, or null for the strict defaults.</param>
     /// <returns>The generated PDF bytes.</returns>
-    public byte[] ConvertToPdf(byte[] docx, ConversionOptions? options = null) => ConvertBytes(docx, DocumentFormat.Pdf, options);
+    /// <remarks>Use the overload with a result parameter to inspect diagnostics and metrics, particularly with BestEffort or Lenient policy.</remarks>
+    public byte[] ConvertToPdf(byte[] docx, ConversionOptions? options = null) => ConvertToPdf(docx, out _, options);
+
+    /// <summary>Converts DOCX bytes to PDF and reports diagnostics and output metrics.</summary>
+    /// <param name="docx">The complete DOCX package.</param>
+    /// <param name="result">The completed conversion's diagnostics and metrics.</param>
+    /// <param name="options">Conversion policy, or null for the strict defaults.</param>
+    /// <returns>The generated PDF bytes.</returns>
+    public byte[] ConvertToPdf(byte[] docx, out ConversionResult result, ConversionOptions? options = null) => ConvertBytes(docx, DocumentFormat.Pdf, options, out result);
 
     /// <summary>Converts DOCX bytes to a self-contained UTF-8 HTML5 document.</summary>
     /// <param name="docx">The complete DOCX package.</param>
     /// <param name="options">Conversion policy, or null for the strict defaults.</param>
     /// <returns>The generated UTF-8 HTML bytes.</returns>
-    public byte[] ConvertToHtml(byte[] docx, ConversionOptions? options = null) => ConvertBytes(docx, DocumentFormat.Html, options);
+    /// <remarks>Use the overload with a result parameter to inspect diagnostics and metrics, particularly with BestEffort or Lenient policy.</remarks>
+    public byte[] ConvertToHtml(byte[] docx, ConversionOptions? options = null) => ConvertToHtml(docx, out _, options);
 
-    private byte[] ConvertBytes(byte[] docx, DocumentFormat destination, ConversionOptions? options)
+    /// <summary>Converts DOCX bytes to self-contained HTML and reports diagnostics and output metrics.</summary>
+    /// <param name="docx">The complete DOCX package.</param>
+    /// <param name="result">The completed conversion's diagnostics and metrics.</param>
+    /// <param name="options">Conversion policy, or null for the strict defaults.</param>
+    /// <returns>The generated UTF-8 HTML bytes.</returns>
+    public byte[] ConvertToHtml(byte[] docx, out ConversionResult result, ConversionOptions? options = null) => ConvertBytes(docx, DocumentFormat.Html, options, out result);
+
+    private byte[] ConvertBytes(byte[] docx, DocumentFormat destination, ConversionOptions? options, out ConversionResult result)
     {
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(docx);
@@ -49,7 +65,7 @@ public sealed class WordConverter : IDocumentConverter
 #endif
         using var source = new MemoryStream(docx, writable: false);
         using var output = new MemoryStream();
-        Convert(source, output, DocumentFormat.Docx, destination, options ?? new ConversionOptions());
+        result = Convert(source, output, DocumentFormat.Docx, destination, options ?? new ConversionOptions());
         return output.ToArray();
     }
     private static bool IsReadable(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Epub or DocumentFormat.Pdf or DocumentFormat.Mobi or DocumentFormat.Azw3;

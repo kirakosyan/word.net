@@ -7,7 +7,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using WordNet.Internal;
-using WordNet.Layout;
 using WordNet.Model;
 
 namespace WordNet.Formats;
@@ -18,14 +17,12 @@ internal sealed class HtmlFormat
     private readonly HtmlOptions options;
     private readonly ListCounter counter = new ListCounter();
     private readonly DocumentModel model;
-    private readonly int pages;
 
     private HtmlFormat(DocumentModel model, ConversionContext context)
     {
         this.model = model;
         this.context = context;
         options = (context.Options.Html ?? throw new ArgumentException("HTML options must not be null.")).Snapshot();
-        pages = DocumentFields.NeedsPages(model) ? FixedLayout.Create(model, context).Count : 1;
         context.PageCount = null;
     }
 
@@ -98,12 +95,10 @@ internal sealed class HtmlFormat
 
     private void Stories(XElement parent, DocumentModel document, string prefix)
     {
-        foreach (var story in document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }).Where(s => s != null).Distinct()
-            .SelectMany(s => s!.Stories.Where(p => p.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(p => p.Value)).Distinct())
-        {
-            var block = new XElement("div", new XAttribute("style", "margin:0;padding:0;"));
-            Blocks(block, story); parent.Add(block);
-        }
+        PageSettings? section = document.Blocks.FirstOrDefault()?.Section ?? document.FinalSection;
+        if (section == null || !section.Stories.TryGetValue(prefix + (section.DifferentFirstPage ? "first" : "default"), out List<DocumentBlock>? story)) return;
+        var block = new XElement("div", new XAttribute("style", "margin:0;padding:0;"));
+        Blocks(block, story); parent.Add(block);
     }
 
     private XElement Paragraph(ParagraphBlock paragraph)
@@ -147,7 +142,14 @@ internal sealed class HtmlFormat
                 if (appearance.Background != null) style += "background-color:#" + appearance.Background + ";";
                 if (appearance.VerticalAlignment != null) style += "vertical-align:" + (appearance.VerticalAlignment == "superscript" ? "super" : "sub") + ";";
                 span = new XElement("span", new XAttribute("style", style));
-                string[] lines = DocumentFields.Render(run, model, 1, pages, pages, context).Split('\n');
+                string text;
+                if (run.FieldInstruction != null && DocumentFields.Kind(run.FieldInstruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES")
+                {
+                    context.Report("Html.PageFieldsUsedCachedResult", "Page fields retain their cached text because HTML has no fixed pagination.");
+                    text = run.Text;
+                }
+                else text = DocumentFields.Render(run, model, 1, 1, 1, context);
+                string[] lines = text.Split('\n');
                 for (int i = 0; i < lines.Length; i++)
                 {
                     if (i > 0) span.Add(new XElement("br"));

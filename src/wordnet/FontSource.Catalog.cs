@@ -32,10 +32,19 @@ public sealed partial class FontSource
             string family = Name(face, name, nameLength, 16) ?? Name(face, name, nameLength, 1)
                 ?? throw new InvalidDataException("Font.Invalid: Missing font family name.");
             string style = Name(face, name, nameLength, 17) ?? Name(face, name, nameLength, 2) ?? "Regular";
-            bool bold = StyleContains(style, "Bold");
+            int os2 = Table(face, 0x4f532f32, out int os2Length);
+            int weight = os2Length >= 6 ? Read16(face, os2 + 4) : 0;
+            if (weight is < 1 or > 1000)
+                weight = StyleContains(style, "Black") || StyleContains(style, "Heavy") ? 900
+                    : StyleContains(style, "ExtraBold") || StyleContains(style, "UltraBold") ? 800
+                    : StyleContains(style, "SemiBold") || StyleContains(style, "DemiBold") ? 600
+                    : StyleContains(style, "Bold") ? 700 : StyleContains(style, "Thin") ? 100
+                    : StyleContains(style, "ExtraLight") || StyleContains(style, "UltraLight") ? 200
+                    : StyleContains(style, "Light") ? 300 : StyleContains(style, "Medium") ? 500 : 400;
+            bool bold = weight >= 600;
             bool italic = StyleContains(style, "Italic") || StyleContains(style, "Oblique");
             using var stream = new MemoryStream(face, writable: false);
-            faces.Add(new FontSource(family, stream, bold, italic));
+            faces.Add(new FontSource(family, stream, bold, italic) { Weight = weight });
         }
         return faces.AsReadOnly();
     }

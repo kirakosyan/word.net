@@ -16,13 +16,13 @@ internal static class FidelityChecks
         if (format is not DocumentFormat.Html and not DocumentFormat.Docx && model.AllBlocks.OfType<TableBlock>().SelectMany(t => t.Rows).SelectMany(r => r)
             .Any(c => c.Background != null || c.Borders.Count > 0 || c.VerticalAlignment != "top"))
             context.Loss("Table.Decoration", "This output profile omits cell shading, borders and vertical alignment while retaining cell content.");
-        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Html)
+        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Html and not DocumentFormat.Xps)
         {
             if (model.AllBlocks.Count() != model.Blocks.Count) context.Loss("HeaderFooter.Output", "This output profile does not preserve header/footer stories.");
             if (paragraphs.Any(p => p.Runs.Any(r => r.FieldInstruction != null))) context.Loss("Field.Output", "Fields use cached result text in this output profile.");
         }
         if (format is not DocumentFormat.Html and not DocumentFormat.Docx && paragraphs.Any(p => p.Runs.Any(r => r.Appearance.HasValues
-            && (format != DocumentFormat.Pdf || r.Appearance.Underline || r.Appearance.Strike || r.Appearance.Background != null || r.Appearance.VerticalAlignment != null))))
+            && (format is not DocumentFormat.Pdf and not DocumentFormat.Xps || r.Appearance.Underline || r.Appearance.Strike || r.Appearance.Background != null || r.Appearance.VerticalAlignment != null))))
             context.Loss("Formatting.RunAppearance", "This output profile does not retain requested font families or additional text decoration.");
         if (format is DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Mobi or DocumentFormat.Azw3)
         {

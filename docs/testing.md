@@ -1,5 +1,31 @@
 # Conversion tests and qualification
 
+## PR #5 review candidate — 1.1.0-alpha.2
+
+The required suite now has **487 cases**, including **36 new review regressions**.
+They check multi-paragraph/cell and nested fields in DOC/DOCX, numbered-heading
+font registration, independent HTML reflow, Strict revision rejection, byte-array
+result reporting, JPEG termination/trailing data, unsupported-image placeholders,
+font weights/inheritance, DOCX schema ordering, cell tab origins, decorated tabs,
+XPS retained features, first-page HTML stories and Lenient cell scaling.
+
+All five library targets compile with warnings-as-errors. Locked restore, formatting,
+release-version checks and the transitive dependency vulnerability audit pass.
+The Linux x64 source suites pass **487/487** on each of .NET 8.0.32 and .NET 10.0.12
+with zero failures/skips. Independent veraPDF 1.30.2 validation also passes
+**38/38** archival corpus files; reports are under `artifacts/pr5-review/pdfa-final`.
+The final Linux x64 source reports are retained under ignored
+`artifacts/pr5-review/source-final`; exact-package reports are retained under
+`artifacts/pr5-review/package-tests`. Each full run must execute all 487 cases
+without failures or skips. `OMP_THREAD_LIMIT=1` caps native OCR worker threads on
+this five-CPU host without changing OCR assertions or runtime security settings.
+
+The alpha.1 results below qualify the earlier revision. Publication of alpha.2
+requires successful exact-main CI, current actual-Framework-4.7.2 legacy-JIT
+source/package evidence, and authorization for all three NuGet package IDs.
+Windows/ARM64/Android runtime and minimum-Framework execution are not claimed for
+this Linux review task.
+
 ## Enterprise acceptance profile — 2026-10-16
 
 The source suite now has **451 cases**, including the original 28 directions and

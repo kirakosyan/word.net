@@ -52,7 +52,8 @@ The model carries absolute font sizes/RGB colors, decimal/bullet lists, inline P
 with physical dimensions, section geometry, paragraph spacing/indentation/pagination,
 multi-paragraph cells, spans, repeating headers and row controls. It has no advanced
 numbering or editable charts/equations yet. DOCX revisions render their accepted state
-with an informational diagnostic. Detected
+with an explicit fidelity warning in BestEffort/Lenient; Strict rejects revision
+and comment loss before output is copied. Detected
 losses are diagnosed. See the [fidelity profile](document-fidelity.md).
 DOCX bold/italic style inheritance follows published toggle semantics; direct values
 are absolute. Sources include [WordprocessingML properties](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.bold),
@@ -81,12 +82,17 @@ metric-compatible OFL fallbacks, subset PDF embedding and legacy horizontal `ker
 pairs and GPOS pair/class/extension positioning. Static CFF outlines are converted
 to bounded quadratic glyph subsets with a sub-unit outline error bound. Variable/
 color outlines, advanced ligatures and complex shaping remain outside the profile.
-Only used font faces are parsed; layout/font state is per-call. Fixed-clock metadata
+Catalog resolution ranks OS/2 weights against regular (400) or bold (700),
+preserving the requested italic style. Only used font faces are parsed;
+layout/font state is per-call. Fixed-clock metadata
 and normalized trailer identity make PDF output deterministic. PAGE/NUMPAGES layout
 runs two passes (a third if the count changes); stories select first/even/default
 per section, reserve vertical space and have independent numbering state. Body PAGE
 fields are evaluated during paragraph preparation; paragraphs that subsequently
-move/split require further qualification.
+move/split require further qualification. Cached DOC/DOCX field results retain
+their original paragraph/table-cell destinations, including nested fields. HTML
+retains cached pagination fields and never invokes fixed-page layout. Its optional
+header/footer blocks use only the first page's applicable story variants.
 
 Nested tables preserve structure through DOCX/HTML; other writers diagnose and
 flatten cell paragraphs. Cell borders/shading/vertical alignment reach DOCX/HTML and

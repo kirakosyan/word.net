@@ -9,11 +9,11 @@
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
 DOC / DOCX → XPS · HTML
 
-> **1.1.0-alpha.1 — enterprise export preview (source/local packages).** Adds managed
+> **1.1.0-alpha.2 — enterprise export preview.** Adds managed
 > PDF export, self-contained HTML, header/footer stories and fields, caller fonts and
 > metric-compatible bundled fallbacks. PDF import/OCR now requires `wordnet.Ocr`.
 > The previously published desktop release is 1.0.0. See the
-> [enterprise audit](docs/enterprise-audit.md) for the issue #4 acceptance profile;
+> [enterprise audit](https://github.com/kirakosyan/word.net/blob/main/docs/enterprise-audit.md) for the issue #4 acceptance profile;
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
 
@@ -22,12 +22,13 @@ DOC / DOCX → XPS · HTML
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-dotnet add package wordnet --version 1.1.0-alpha.1
+dotnet add package wordnet --version 1.1.0-alpha.2
 ```
 
-Configure a local feed containing the preview packages produced by `eng/pack.ps1`;
-this preview has not been published. For the published 1.0.0 feature set use version
-1.0.0 and its release notes. Validate representative deployment documents against the
+The three preview packages share one version: `wordnet.Fonts`, `wordnet`, and
+optional `wordnet.Ocr`. Local packages are produced by `eng/pack.ps1`; public releases
+use the explicit publishing workflow. For the stable 1.0.0 feature set, use its
+version and release notes. Validate representative deployment documents against the
 [implemented profiles](#implemented-profiles) and inspect diagnostics. Stable versioning
 covers this documented subset; it does not promise complete Microsoft Word fidelity.
 Local packaging is also supported. Publication requires an explicit maintainer-run
@@ -84,8 +85,14 @@ var options = new ConversionOptions(FidelityMode.Lenient)
     Clock = () => DateTimeOffset.UtcNow,
     Html = new HtmlOptions { MaxContentWidthPx = 700, IncludeHeadersAndFooters = false }
 };
-byte[] pdf = converter.ConvertToPdf(inputDocx, options);
-byte[] html = converter.ConvertToHtml(inputDocx, options); // UTF-8, inline CSS/data images.
+byte[] pdf = converter.ConvertToPdf(inputDocx, out ConversionResult pdfResult, options);
+byte[] html = converter.ConvertToHtml(inputDocx, out ConversionResult htmlResult, options);
+foreach (ConversionResult result in new[] { pdfResult, htmlResult })
+{
+    foreach (ConversionDiagnostic diagnostic in result.Diagnostics)
+        Console.WriteLine($"{diagnostic.Code} ({diagnostic.Count}): {diagnostic.Message}");
+    Console.WriteLine($"Wrote {result.BytesWritten} bytes; pages: {result.Metrics.PageCount}");
+}
 ```
 
 `FontSource.FromStream` reads named static TrueType/CFF OpenType faces and TTC collections;
@@ -93,7 +100,15 @@ byte[] html = converter.ConvertToHtml(inputDocx, options); // UTF-8, inline CSS/
 faces to `options.Fonts.Sources`. Legacy kern and GPOS pair adjustments are supported.
 Variable/color fonts, advanced ligatures and complex shaping remain outside the profile.
 Configure options before sharing them between calls.
-Use the stream API to inspect grouped diagnostics and conversion metrics.
+Use the `out ConversionResult` overloads or the stream API to inspect grouped
+diagnostics and conversion metrics. The byte-only overloads intentionally return
+only the output bytes. Catalog fonts select the closest regular (400) or bold (700)
+weight, so filename ordering does not let Light/Black variants replace Regular.
+
+HTML is reflowable: page fields retain cached text with
+`Html.PageFieldsUsedCachedResult`, without running PDF pagination or font resolution.
+When headers/footers are enabled, only the variants applicable to the first page
+of the first section appear; even/default/later-section stories are not stacked.
 
 `options.Pdf` controls content/font stream compression, optional heading outlines and
 `PdfConformance.PdfA2b` (default: ordinary PDF 1.7). Archival corpus outputs are checked
@@ -273,7 +288,8 @@ Current limitations:
   TXT/Markdown/MOBI/AZW3/XPS output diagnoses image loss and retains available alternative
   text in best-effort mode. No remote resources load.
 - Password protection and editable charts/equations are deferred. DOCX revisions render
-  their accepted state with `Revisions.Accepted`; comment markers are ignored explicitly.
+  their accepted state with a `Revisions.Accepted` warning in BestEffort/Lenient;
+  comments produce `Comments.Ignored`. Strict rejects both losses before output is copied.
 - Fixed-page export supports justified/distributed alignment and aligned tab stops.
   Direction-dependent paragraph alignment remains outside the profile. Markdown prose and plain text report alignment loss; Markdown tables retain
   one alignment per column and diagnose conflicting cell alignments.

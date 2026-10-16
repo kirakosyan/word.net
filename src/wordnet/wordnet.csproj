@@ -5,12 +5,12 @@
     <AssemblyName>wordnet</AssemblyName>
     <IsPackable>true</IsPackable>
     <PackageId>wordnet</PackageId>
-    <Version>1.1.0-alpha.1</Version>
+    <Version>1.1.0-alpha.2</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>Armen Kirakosyan</Authors>
     <Description>Word conversion for .NET: DOC/DOCX exchanges with PDF, Markdown, text, EPUB, MOBI and AZW3, plus XPS output and local English OCR. Explicit fidelity diagnostics and bounded document processing.</Description>
     <PackageTags>word;docx;doc;pdf;markdown;epub;mobi;azw3;xps;converter;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
-    <PackageReleaseNotes>Enterprise export preview: managed DOC/DOCX to PDF and self-contained HTML, header/footer stories and fields, configurable fonts, deterministic diagnostics and Lenient degradation. Adds net462 assets. PDF import/OCR now requires the optional wordnet.Ocr package. See the enterprise audit for remaining fidelity and runtime qualification limits.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enterprise export review fixes: preserve cached field structure, restore Strict revision/comment rejection, expose byte-array conversion diagnostics, and correct HTML page fields/stories, font selection, JPEG admission, tab positioning and Lenient cell scaling. PDF import/OCR requires the optional wordnet.Ocr package at the same version. See the 1.1.0-alpha.2 release notes for migration and qualification limits.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

@@ -55,6 +55,7 @@ internal static partial class FixedLayout
     private sealed class Line
     {
         internal List<PositionedText> Items { get; } = new List<PositionedText>();
+        internal double Origin { get; set; }
         internal double Ascent { get; set; }
         internal double Descent { get; set; }
         internal double Height => Ascent + Descent;
@@ -487,9 +488,9 @@ internal static partial class FixedLayout
 
         Line ScaleLine(Line line, double factor)
         {
-            var scaled = new Line { Ascent = line.Ascent * factor, Descent = line.Descent * factor };
+            var scaled = new Line { Origin = line.Origin, Ascent = line.Ascent * factor, Descent = line.Descent * factor };
             foreach (PositionedText item in line.Items)
-                scaled.Items.Add(new PositionedText(item.Text, settings.Left + (item.X - settings.Left) * factor, item.Y * factor,
+                scaled.Items.Add(new PositionedText(item.Text, line.Origin + (item.X - line.Origin) * factor, item.Y * factor,
                     item.Size * factor, item.Font, item.Color, item.Image?.Scaled(factor), item.Link, item.Field));
             return scaled;
         }
@@ -510,6 +511,7 @@ internal static partial class FixedLayout
         List<Line> Lines(ParagraphBlock paragraph, double left, double width, double baseSize, bool header)
         {
             var result = new List<Line>();
+            double tabOrigin = left;
             left += paragraph.Layout.Left;
             width -= paragraph.Layout.Left + paragraph.Layout.Right;
             List<TextRun> runs = RunCoalescer.Combine(paragraph.Runs);
@@ -581,8 +583,8 @@ internal static partial class FixedLayout
                     {
                         Flush();
                         string following = tabText.Count > 0 ? tabText.Dequeue() : "";
-                        TabStop? stop = paragraph.Layout.Tabs.FirstOrDefault(t => settings.Left + t.Position > x + 0.01);
-                        double position = stop == null ? settings.Left + (Math.Floor((x - settings.Left) / 36) + 1) * 36 : settings.Left + stop.Position;
+                        TabStop? stop = paragraph.Layout.Tabs.FirstOrDefault(t => tabOrigin + t.Position > x + 0.01);
+                        double position = stop == null ? tabOrigin + (Math.Floor((x - tabOrigin) / 36) + 1) * 36 : tabOrigin + stop.Position;
                         double advance = Measure(following, font, size);
                         if (stop?.Alignment == "center") position -= advance / 2;
                         else if (stop?.Alignment == "right") position -= advance;
@@ -636,7 +638,7 @@ internal static partial class FixedLayout
             Finish();
             return result;
 
-            Line NewLine() => new Line { Ascent = baseSize, Descent = baseSize * 0.5 };
+            Line NewLine() => new Line { Origin = left, Ascent = baseSize, Descent = baseSize * 0.5 };
             void Finish(bool lastLine = true)
             {
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)

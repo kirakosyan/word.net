@@ -126,7 +126,7 @@ internal sealed partial class DocxWriter
         ParagraphLayoutProperties(properties, paragraph.Layout);
         if (paragraph.List != null)
         {
-            XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "spacing" || e.Name == W + "ind");
+            XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "tabs" || e.Name == W + "spacing" || e.Name == W + "ind");
             if (spacing == null) properties.Add(NumberingReference(paragraph.List));
             else spacing.AddBeforeSelf(NumberingReference(paragraph.List));
         }

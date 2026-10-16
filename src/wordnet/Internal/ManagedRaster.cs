@@ -29,7 +29,7 @@ internal static class ManagedRaster
             return ("png", Big32(bytes, 16), Big32(bytes, 20));
         }
         if (bytes.Length < 4 || bytes[0] != 255 || bytes[1] != 216)
-            throw new InvalidDataException("Image.Invalid: Expected an embedded PNG or JPEG image.");
+            throw new NotSupportedException("Image.UnsupportedFormat: Expected an embedded PNG, JPEG, GIF or BMP image.");
         int offset = 2;
         while (offset < bytes.Length)
         {
@@ -65,7 +65,7 @@ internal static class ManagedRaster
             }
             else
             {
-                if (bytes.Length < 2 || bytes[bytes.Length - 2] != 255 || bytes[bytes.Length - 1] != 217)
+                if (!HasJpegEnd(bytes))
                     throw new InvalidDataException("Image.Decode: Truncated JPEG data.");
                 var filter = new JpegLibraryDctDecodeFilter();
                 _ = filter.Decode(bytes, new DictionaryToken(new Dictionary<NameToken, IToken>()), DefaultFilterProvider.Instance, 0);
@@ -75,6 +75,31 @@ internal static class ManagedRaster
         {
             throw new InvalidDataException("Image.Decode: Incomplete or invalid raster data.", error);
         }
+    }
+
+    private static bool HasJpegEnd(byte[] bytes)
+    {
+        // Skip length-delimited metadata and byte-stuffed entropy data. An EOI byte
+        // pattern inside an EXIF thumbnail must not validate a truncated main image.
+        if (bytes.Length < 4 || bytes[0] != 255 || bytes[1] != 216) return false;
+        int offset = 2; bool entropy = false;
+        while (offset < bytes.Length)
+        {
+            if (bytes[offset++] != 255) { if (entropy) continue; return false; }
+            while (offset < bytes.Length && bytes[offset] == 255) offset++;
+            if (offset == bytes.Length) return false;
+            int marker = bytes[offset++];
+            if (entropy && (marker == 0 || marker is >= 0xd0 and <= 0xd7)) continue;
+            if (marker == 0xd9) return entropy;
+            if (marker == 0x01) continue;
+            if (offset > bytes.Length - 2) return false;
+            int length = (bytes[offset] << 8) | bytes[offset + 1];
+            if (length < 2 || length > bytes.Length - offset) return false;
+            offset += length;
+            // Progressive JPEGs can have multiple scans, with tables between them.
+            entropy = marker == 0xda;
+        }
+        return false;
     }
 
     private static int Big32(byte[] bytes, int offset)

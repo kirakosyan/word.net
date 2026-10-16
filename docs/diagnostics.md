@@ -28,7 +28,7 @@ conversion diagnostics.
 
 | Code | Policy | Meaning |
 | --- | --- | --- |
-| `Comments.Ignored` | Report | Comments are omitted from the rendered document. |
+| `Comments.Ignored` | Loss | Comments are omitted from the rendered document. |
 | `Doc.AdjacentTables` | Loss | An empty paragraph separates adjacent tables in binary Word output. |
 | `Doc.Alignment` | Loss | Unsupported paragraph alignment becomes left aligned. |
 | `Doc.Code` | Loss | Inline code semantics are not retained in binary Word output. |
@@ -90,9 +90,9 @@ conversion diagnostics.
 | `Docx.SectionBreak` | Loss | Continuous, column and parity section breaks become next-page section breaks. |
 | `Docx.Settings` | Loss | Tab and character-spacing settings are not retained. |
 | `Docx.Shading` | Loss | Patterned shading uses the solid background color. |
-| `Docx.TableCell` | Loss | Unsupported cell properties are not retained. |
-| `Docx.TableFormatting` | Loss | Table borders, shading and styles are not retained. |
-| `Docx.TableGrid` | Loss | Table grid revisions are not retained. |
+| `Docx.TableCell` | Loss | Nested tables and unsupported cell content are not retained. |
+| `Docx.TableFormatting` | Loss | Table row formatting is not retained. |
+| `Docx.TableGrid` | Loss | Omitted grid columns are represented by empty cells. |
 | `Docx.TableHeaders` | Loss | Noncontiguous repeating header rows are not retained. |
 | `Docx.TableIndent` | Loss | Nonabsolute table indentation is not retained. |
 | `Docx.TableStructure` | Loss | Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs. |
@@ -127,6 +127,7 @@ conversion diagnostics.
 | `HeaderFooter.Output` | Loss | This output profile does not preserve header/footer stories. |
 | `Html.HeadersFootersOmitted` | Report | Headers and footers are omitted by the HTML output policy. |
 | `Html.ImageOmitted` | Loss | Image embedding is disabled; alternative text is retained. |
+| `Html.PageFieldsUsedCachedResult` | Report | Page fields retain their cached text because HTML has no fixed pagination. |
 | `Html.PageGeometryIgnored` | Report | Page geometry and section breaks are ignored by the reflowable HTML policy. |
 | `Html.PaginationIgnored` | Report | Pagination controls are omitted from the reflowable HTML document. |
 | `Html.TabStopsApproximated` | Report | HTML uses non-breaking spaces for tabs; fixed tab alignment and leaders are approximated. |
@@ -188,7 +189,7 @@ conversion diagnostics.
 | `Pdf.OcrImageLoss` | Loss | OCR replaces the rendered page with editable text; embedded images are not retained. |
 | `Pdf.OcrTextReplacement` | Loss | A large image triggered whole-page OCR; existing digital text is replaced by recognition results. |
 | `Pdf.Reconstruction` | Loss | PDF reading order is reconstructed into editable paragraphs; original page layout and vector graphics are not retained. |
-| `Revisions.Accepted` | Report | Revision markup is rendered in its accepted state. |
+| `Revisions.Accepted` | Loss | Revision markup is rendered in its accepted state; revision history is not retained. |
 | `Shape.TextBoxFlattened` | Loss | Text-box text is retained inline; its position, fill and outline are approximated. |
 | `Table.AutomaticGrid` | Report | Automatic table columns use equal widths when fixed geometry is required. |
 | `Table.BorderApproximated` | Loss | An unsupported border style uses a single line. |

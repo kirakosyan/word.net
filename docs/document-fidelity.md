@@ -131,3 +131,23 @@ not a rendering produced by Microsoft Word.
   and [PNG BLIP](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-odraw/7af7d17e-6ae1-4c43-a3d6-691e6b3b4a45).
 - [RFC 1320 identifier test vectors](https://www.rfc-editor.org/rfc/rfc1320),
   [EPUB 3.3](https://www.w3.org/TR/epub-33/).
+
+## PR #5 compatibility corrections
+
+Cached DOC/DOCX fields retain paragraph and table-cell boundaries; nested fields
+do not move their surrounding cached content. Strict rejects tracked revisions
+and comments, while BestEffort/Lenient keep the accepted text with warnings.
+
+Run font hints for East Asian/complex scripts do not erase inherited Latin faces;
+underlined tabs and line breaks retain run appearance. Numbered paragraphs with
+custom tabs serialize in schema order. PDF/XPS tab positions are measured from
+the current body or cell text area, and Lenient line scaling preserves that area's
+origin. XPS retains stories, evaluated fields and supported font families without
+reporting those retained features as losses.
+
+HTML keeps cached PAGE/NUMPAGES/SECTIONPAGES text with an informational diagnostic.
+Its reflowable content never inherits fixed-page size or font-substitution failures.
+Optional headers/footers select the first page's variants in the first section.
+Unsupported image formats use explicit placeholders in BestEffort/Lenient; malformed
+supported raster data still fails. JPEG data after its real EOI marker is accepted,
+while an EOI pattern inside metadata cannot validate truncated image data.

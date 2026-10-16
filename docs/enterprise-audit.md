@@ -4,6 +4,14 @@ Audited 2026-10-15 at `8f20158ff9d1a4da0fbc267e1d17d35cee03bbd5`.
 The baseline M0 audit for [issue #4](https://github.com/kirakosyan/word.net/issues/4)
 is followed below by the implemented acceptance profile and final qualification.
 
+The current PR #5 release candidate is **1.1.0-alpha.2**. Its
+[review corrections](releases/1.1.0-alpha.2.md) preserve field containers, restore
+Strict revision/comment loss handling, expose convenience-call diagnostics, and
+correct HTML policies, font selection, image admission and cell layout. The alpha.1
+CI, minimum-runtime, performance and PDF/A measurements below are historical
+evidence for that revision. Current checks and outstanding release gates are
+recorded in [testing](testing.md).
+
 ## Deployment decision
 
 The maintainer clarified on 2026-10-15 that consumers use NuGet and do not install
@@ -130,7 +138,7 @@ the starting baseline only; they do not qualify the isolated net462 probe, actua
 
 ## Acceptance implementation after the baseline audit
 
-The candidate is `1.1.0-alpha.1`, with the original public API retained and stable
+The initial candidate was `1.1.0-alpha.1`, with the original public API retained and stable
 AssemblyVersion 1.0.0.0. It adds net462 and remains unsigned under the NuGet-only
 deployment waiver. `wordnet` references only managed dependencies and `wordnet.Fonts`;
 PDF input/native rasterization/OCR live in the optional `wordnet.Ocr` package.

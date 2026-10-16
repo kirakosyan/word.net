@@ -92,10 +92,11 @@ public sealed partial class ReviewRegressionTests
         byte[] input = TestDocuments.Docx(TestDocuments.Body(block ? revisions : "<w:p>" + revisions + "</w:p>"));
         byte[] result = Convert(input, DocumentFormat.Docx, DocumentFormat.Text, out ConversionResult report);
         Assert.Equal("Moved", Encoding.UTF8.GetString(result));
-        Assert.Contains(report.Diagnostics, d => d.Code == "Revisions.Accepted" && d.Severity == DiagnosticSeverity.Info);
+        Assert.Contains(report.Diagnostics, d => d.Code == "Revisions.Accepted" && d.Severity == DiagnosticSeverity.Warning);
         using var strictSource = new MemoryStream(input); using var strictOutput = new MemoryStream();
-        new WordConverter().Convert(strictSource, strictOutput, DocumentFormat.Docx, DocumentFormat.Text, new ConversionOptions(), TestContext.Current.CancellationToken);
-        Assert.Equal("Moved", Encoding.UTF8.GetString(strictOutput.ToArray()));
+        Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(strictSource, strictOutput, DocumentFormat.Docx, DocumentFormat.Text,
+            new ConversionOptions(), TestContext.Current.CancellationToken));
+        Assert.Empty(strictOutput.ToArray());
     }
 
     [Theory]

@@ -132,15 +132,14 @@ public sealed class EnterpriseFidelityTests
     }
 
     [Fact]
-    public void AcceptedRevisionsAndCurrentControlsRetainTextWithoutMarkupLoss()
+    public void AcceptedRevisionsAndCurrentControlsRetainTextWithExplicitRevisionLoss()
     {
         string markup = "<w:sdt><w:sdtPr/><w:sdtContent><w:p><w:ins><w:r><w:t>Accepted content</w:t></w:r></w:ins>"
             + "<w:del><w:r><w:delText>Deleted content</w:delText></w:r></w:del><w:sdt><w:sdtContent><w:r><w:t>Current value</w:t></w:r></w:sdtContent></w:sdt></w:p></w:sdtContent></w:sdt>";
         using var source = new MemoryStream(TestDocuments.Docx(TestDocuments.Body(markup))); using var output = new MemoryStream();
-        ConversionResult result = new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Html, new ConversionOptions(), TestContext.Current.CancellationToken);
+        ConversionResult result = new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Html, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
         using var html = new HtmlParser().ParseDocument(Encoding.UTF8.GetString(output.ToArray()));
         Assert.Equal("Accepted contentCurrent value", html.Body!.TextContent);
-        Assert.Contains(result.Diagnostics, d => d.Code == "Revisions.Accepted" && d.Severity == DiagnosticSeverity.Info);
-        Assert.DoesNotContain(result.Diagnostics, d => d.Severity == DiagnosticSeverity.Warning);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Revisions.Accepted" && d.Severity == DiagnosticSeverity.Warning);
     }
 }
