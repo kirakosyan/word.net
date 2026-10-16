@@ -45,19 +45,7 @@ public sealed partial class WordConverter
         var context = new ConversionContext(options, cancellationToken) { Inspecting = true, Destination = destinationFormat };
         context.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
-        byte[] buffer = new byte[81920];
-        while (true)
-        {
-            int requested = (int)Math.Min(buffer.Length, (long)options.MaximumInputBytes - input.Length + 1);
-#if NET8_0_OR_GREATER
-            int count = await source.ReadAsync(buffer.AsMemory(0, requested), cancellationToken).ConfigureAwait(false);
-#else
-            int count = await source.ReadAsync(buffer, 0, requested, cancellationToken).ConfigureAwait(false);
-#endif
-            context.CheckCancellation();
-            if (count == 0) break;
-            input.Write(buffer, 0, count);
-        }
+        await ReadInputAsync(source, input, context).ConfigureAwait(false);
         return InspectCore(input, sourceFormat, destinationFormat, context, includeLayout);
     }
 
@@ -89,19 +77,10 @@ public sealed partial class WordConverter
         {
             context.Phase = DiagnosticPhase.Layout;
             if (layout) _ = FixedLayout.Create(model, context);
-            else
-            {
-                var resolver = new FontResolver(model, context);
-                foreach (ParagraphBlock paragraph in paragraphs)
-                {
-                    context.CheckCancellation();
-                    using var location = context.At(paragraph.Location);
-                    foreach (TextRun run in paragraph.Runs) _ = resolver.Resolve(run, paragraph.HeadingLevel > 0);
-                }
-            }
+            else _ = new FontResolver(model, context, recordUsage: true);
         }
         context.CheckCancellation();
-        return new DocumentInspection(input.Length, characters, features, context.Result(0), layout, context.HasLoss,
+        return new DocumentInspection(input.Length, characters, features, context.Result(0), layout, context.HasStrictRejection,
             context.ArchiveEntryCount, context.DeclaredExpandedBytes, context.ImagePixels);
 
         static System.Collections.Generic.IEnumerable<DocumentBlock> Expand(DocumentBlock block)

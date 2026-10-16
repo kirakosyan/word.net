@@ -24,6 +24,12 @@
           "knownLosses": { "type": "array", "items": { "type": "string" } },
           "status": { "enum": ["measured", "failed"] },
           "measurement": { "$ref": "#/$defs/measurement" },
+          "knownLossChecks": {
+            "type": "object", "required": ["passed", "missing", "unexpected"],
+            "properties": { "passed": { "type": "boolean" },
+              "missing": { "type": "array", "items": { "type": "string" } },
+              "unexpected": { "type": "array", "items": { "type": "string" } } }
+          },
           "authoredChecks": { "type": "object" },
           "referenceChecks": { "type": "array" },
           "error": { "type": "string" }
@@ -32,7 +38,9 @@
           { "if": { "properties": { "status": { "const": "measured" } } },
             "then": { "required": ["measurement", "authoredChecks", "referenceChecks"] } },
           { "if": { "properties": { "status": { "const": "failed" } } },
-            "then": { "required": ["error"] } }
+            "then": { "required": ["error"] } },
+          { "if": { "properties": { "status": { "const": "measured" }, "engine": { "const": "wordnet" } }, "required": ["status", "engine"] },
+            "then": { "required": ["knownLossChecks"] } }
         ]
       }
     }

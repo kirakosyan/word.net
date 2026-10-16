@@ -2,9 +2,12 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using OpenMcdf;
@@ -48,6 +51,11 @@ public sealed class DocumentInspectionTests
         Assert.Equal(conversion.Diagnostics.SelectMany(d => d.Occurrences).Select(o => (o.Location.ToString(), o.Phase)),
             inspection.Diagnostics.SelectMany(d => d.Occurrences).Select(o => (o.Location.ToString(), o.Phase)));
         Assert.All(inspection.Diagnostics, d => Assert.NotEmpty(d.Occurrences));
+        using var json = JsonReaderWriterFactory.CreateJsonReader(File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Comparison", "manifest.json")), XmlDictionaryReaderQuotas.Max);
+        XElement manifest = XDocument.Load(json).Root!;
+        string[] expectedLosses = manifest.Element("documents")!.Elements("item").Single(d => d.Element("id")!.Value == name)
+            .Element("knownLosses")!.Elements("item").Select(e => e.Value).OrderBy(code => code, StringComparer.Ordinal).ToArray();
+        Assert.Equal(expectedLosses, conversion.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Select(d => d.Code).OrderBy(code => code, StringComparer.Ordinal));
     }
 
     [Fact]

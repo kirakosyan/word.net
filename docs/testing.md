@@ -20,6 +20,28 @@ Word/Aspose reference execution and Windows/ARM64/Framework runtime qualificatio
 were not performed here.
 
 
+## PR #33 review corrections
+
+The review adds fifteen regression cases for Strict inspection through full layout,
+model-only fixed-page losses without pagination, caller-font glyph fallback and list
+mappings, Lenient rejection prediction, and row/cell/numbering/note source locations.
+The complete **525-case** suite passes on Linux x64 .NET 8.0.32 and 10.0.12 with no
+failures or skips. Locked restore, all five library targets, formatting and package
+API compatibility checks pass. The corpus now requires its exact expected warning
+set, in addition to text, page and independent editable-DOC checks.
+
+Five Python controls cover text/displacement/page regressions, stale rasters,
+missing/unexpected loss diagnostics, portable manifest hashes and CRLF/LF renderer
+identities. PowerShell 7.5.3 locally passes the native-stderr/failure checks and
+captures the actual Poppler banner identically to Python. CI additionally executes
+the same helper tests under Windows PowerShell 5.1. Desktop Word and licensed Aspose
+were not provisioned locally; their reference availability remains explicit.
+
+Raw review reports are under ignored `artifacts/pr33-review`. Location paths are
+materialized only for diagnostic observations, with bounded hash-based deduplication.
+The single-core ten-page export smoke check remains subject to the existing latency
+and memory caps; it is not a replacement for the alternating-revision CI gate.
+
 ## Stable 1.1.0 release qualification
 
 The maintainer requested a stable release after the review corrections below.

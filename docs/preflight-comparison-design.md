@@ -6,7 +6,8 @@ Preflight is an additive `WordConverter.Inspect/InspectAsync` API, not an additi
 to `IDocumentConverter` (which would break implementers). It consumes bounded input
 from the current stream position, leaves the stream open, parses with the same
 adapters and runs destination fidelity checks. Inspection collects Strict losses
-instead of throwing on the first loss. Corruption, unsupported formats/providers,
+instead of throwing on the first loss, following the BestEffort fallback path.
+The Strict-rejection flag also tracks glyph and geometry fallback conditions. Corruption, unsupported formats/providers,
 limits and cancellation still fail. Optional fixed-page layout uses the same layout
 engine without serializing output. Parse-only inspection cannot predict writer,
 provider or layout findings; a clean report never proves lossless conversion.
@@ -16,7 +17,8 @@ occurrences with phase and source location. DOCX locations use part and indexed
 element paths, without text, attribute values or caller file paths. Blocks carry
 these locations into destination checks and layout. Other adapters use document-level parsing findings and explicitly identified logical
 model paragraph/table-cell/story paths for destination and layout findings. Locations identify an
-unchanged input, not an identity across edits. Location storage is capped per code;
+unchanged input, not an identity across edits. Paths materialize on observation, and a bounded hash set deduplicates locations.
+Location storage is capped per code;
 Count remains the total observation count, including multi-pass layout.
 
 The comparison tool stays in the non-packable benchmark project. A deterministic,

@@ -3,10 +3,10 @@
   "kind": "comparison-baseline-summary",
   "rawResultsSchema": "eng/comparison-result.schema.json",
   "date": "2026-10-16",
-  "sourceRevision": "bc6ada467dd4626dd23dfbee5f848b21e9f67dc5",
+  "sourceRevision": "b39e839deec60324916e78ff2463ae2b1df70161",
   "sourceDirty": true,
-  "manifestSha256": "a21449c9ebcd321c0209bd0070ed8e6bb47a60fbdfae51605c7591ccdeaabb6f",
-  "rawResultsSha256": "45f083a401c7f7ad27918fecfeec5cfa415269c1523cb5f5f62ae698431e6c9c",
+  "manifestSha256": "3599d9ad87ba9346edb87e47365f25c0097ac3c9054ed28ba3d904d0c1813fb2",
+  "rawResultsSha256": "851171ab71ffc9d40c6297746f37ba1d0a4ad1fceb62c573fd12ddd6b85dee8c",
   "environment": {
     "runtime": ".NET 10.0.12",
     "architecture": "X64",
@@ -199,17 +199,17 @@
     {
       "name": "wordnet",
       "version": "1.0.0.0",
-      "sha256": "0d0e7593db85b86bd00c3c64c8045afbae791a8c25fba6fe9e68820662493d48"
+      "sha256": "24758a1089003a8d9b5995a543d0bcaf7c793fdfed2cdf2e5b8c337724ca3dc6"
     },
     {
       "name": "wordnet.Benchmarks",
       "version": "1.0.0.0",
-      "sha256": "0835586ae77d08b7fbfbdacfd8fbf593ab22b15bcdb7b780c80e9beca9228012"
+      "sha256": "ecc7afd2d0f582d6994cbb627cca855e253c53cfc337f9f555435c4840526e42"
     },
     {
       "name": "wordnet.Fonts",
       "version": "1.0.0.0",
-      "sha256": "cbd14fa475afcbf5b3a3f69f9c46fae33cf01547537ce1951fe88098245e056f"
+      "sha256": "61d48b6993f7a334d34b406bdc4a6cad1530b379ba22ed936874a3584905f571"
     }
   ],
   "fonts": [
@@ -253,11 +253,16 @@
       "category": "invoice",
       "inputSha256": "23c75540a2d3d5bc691d00bb55eff3a1617674f5b8af80c53d3e6f4511312bb4",
       "outputSha256": "18b9e845a5bca33939cc22f25e4df673dd0a689c793367735bfa3120b29724c2",
-      "editableSha256": "388c14d87fa3740809021aab7c8cb3cee2f8e31201c613f55cdfa57fa1cf5394",
+      "editableSha256": "2717ccaeca38e4545a298789f00f86d2763bf3f6e61c8426bb57ae527af7c16a",
       "status": "measured",
       "fidelityStatus": "no-detected-losses",
       "knownLosses": [],
       "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -309,50 +314,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 381.5376,
-          "allocatedBytes": 41732416,
-          "rssBytes": 96632832,
-          "processPeakRssBytes": 96632832,
+          "milliseconds": 495.786,
+          "allocatedBytes": 41697368,
+          "rssBytes": 97173504,
+          "processPeakRssBytes": 97173504,
           "outputBytes": 17242
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 169.4887,
-          "allocatedBytes": 35245328,
-          "rssBytes": 97529856,
-          "processPeakRssBytes": 97529856,
+          "milliseconds": 197.2354,
+          "allocatedBytes": 35229032,
+          "rssBytes": 99094528,
+          "processPeakRssBytes": 99094528,
           "outputBytes": 17242
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 149.2239,
-          "allocatedBytes": 35249584,
-          "rssBytes": 97509376,
-          "processPeakRssBytes": 97509376,
+          "milliseconds": 87.4724,
+          "allocatedBytes": 35211552,
+          "rssBytes": 97406976,
+          "processPeakRssBytes": 98689024,
           "outputBytes": 17242
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 67.1664,
-          "allocatedBytes": 35237776,
-          "rssBytes": 98918400,
-          "processPeakRssBytes": 100409344,
+          "milliseconds": 96.7061,
+          "allocatedBytes": 35218968,
+          "rssBytes": 99323904,
+          "processPeakRssBytes": 99323904,
           "outputBytes": 17242
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 62.7519,
-          "allocatedBytes": 35237688,
-          "rssBytes": 97648640,
-          "processPeakRssBytes": 100409344,
+          "milliseconds": 99.7053,
+          "allocatedBytes": 35215472,
+          "rssBytes": 98426880,
+          "processPeakRssBytes": 99254272,
           "outputBytes": 17242
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 63.6448,
-          "allocatedBytes": 35237808,
-          "rssBytes": 98652160,
-          "processPeakRssBytes": 100409344,
+          "milliseconds": 84.9437,
+          "allocatedBytes": 35207520,
+          "rssBytes": 101060608,
+          "processPeakRssBytes": 101060608,
           "outputBytes": 17242
         }
       ]
@@ -362,7 +367,7 @@
       "category": "invoice",
       "inputSha256": "7889299fb8b6ee11c16ac7d0af9591411740b96e13b7f7783d29a0261c971360",
       "outputSha256": "bdddf435e7774cd20f73bf365dfa8b6fe447cdcbbdb27484174a6013ad9d4f30",
-      "editableSha256": "58d0f03089607b07ba543ea5991d652c70c9cc1e965f8c777c2a974fc12c80ca",
+      "editableSha256": "20c02c81e1fe1f4ec1cd0bbeba158a31df2e041b709edbe0bdc78bdcb3f105a5",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -373,6 +378,11 @@
         "Table.Decoration",
         "Table.NestedFlattened"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -449,50 +459,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 273.8377,
-          "allocatedBytes": 22389032,
-          "rssBytes": 94769152,
-          "processPeakRssBytes": 94769152,
+          "milliseconds": 286.7422,
+          "allocatedBytes": 22348600,
+          "rssBytes": 95576064,
+          "processPeakRssBytes": 95576064,
           "outputBytes": 10138
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 99.8186,
-          "allocatedBytes": 20092096,
-          "rssBytes": 95203328,
-          "processPeakRssBytes": 95203328,
+          "milliseconds": 95.3678,
+          "allocatedBytes": 20052848,
+          "rssBytes": 96088064,
+          "processPeakRssBytes": 96088064,
           "outputBytes": 10138
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 82.4485,
-          "allocatedBytes": 17990424,
-          "rssBytes": 95236096,
-          "processPeakRssBytes": 95236096,
+          "milliseconds": 83.1975,
+          "allocatedBytes": 17951512,
+          "rssBytes": 96116736,
+          "processPeakRssBytes": 96116736,
           "outputBytes": 10138
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 93.9228,
-          "allocatedBytes": 17995144,
-          "rssBytes": 95264768,
-          "processPeakRssBytes": 95264768,
+          "milliseconds": 82.9546,
+          "allocatedBytes": 17953624,
+          "rssBytes": 96145408,
+          "processPeakRssBytes": 96145408,
           "outputBytes": 10138
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 52.8222,
-          "allocatedBytes": 17177384,
-          "rssBytes": 96821248,
-          "processPeakRssBytes": 96821248,
+          "milliseconds": 58.6834,
+          "allocatedBytes": 17951536,
+          "rssBytes": 97280000,
+          "processPeakRssBytes": 97280000,
           "outputBytes": 10138
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 33.3025,
-          "allocatedBytes": 16364304,
-          "rssBytes": 96948224,
-          "processPeakRssBytes": 96948224,
+          "milliseconds": 46.9067,
+          "allocatedBytes": 17954984,
+          "rssBytes": 97652736,
+          "processPeakRssBytes": 97652736,
           "outputBytes": 10138
         }
       ]
@@ -502,7 +512,7 @@
       "category": "invoice",
       "inputSha256": "f15faaed30fdf0c95a363a2e609c6cdc5e81aa0a75b45b8026aaedc2273c0b30",
       "outputSha256": "da406096ac8efef5d84ae0057c9e329add22fac5b738ea328d87e59cdc2bfd7d",
-      "editableSha256": "370d9f9975d97bd050e4c54b3549651d9b9de0d7ab6d0b864feba790357794de",
+      "editableSha256": "2efc1868c81719cee7072b9a960a81c66d2b700329cd505b70e91087d1eb5ddf",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -511,6 +521,11 @@
       "observedKnownLosses": [
         "Docx.RelativeWidth"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -575,50 +590,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 289.0874,
-          "allocatedBytes": 22348568,
-          "rssBytes": 95174656,
-          "processPeakRssBytes": 95174656,
+          "milliseconds": 274.2858,
+          "allocatedBytes": 22330768,
+          "rssBytes": 98910208,
+          "processPeakRssBytes": 98910208,
           "outputBytes": 9626
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 107.0045,
-          "allocatedBytes": 20051792,
-          "rssBytes": 95715328,
-          "processPeakRssBytes": 95715328,
+          "milliseconds": 100.1568,
+          "allocatedBytes": 20014496,
+          "rssBytes": 96358400,
+          "processPeakRssBytes": 100216832,
           "outputBytes": 9626
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 86.5216,
-          "allocatedBytes": 17972656,
-          "rssBytes": 95744000,
-          "processPeakRssBytes": 95744000,
+          "milliseconds": 81.8646,
+          "allocatedBytes": 17928624,
+          "rssBytes": 96423936,
+          "processPeakRssBytes": 100216832,
           "outputBytes": 9626
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 85.5441,
-          "allocatedBytes": 17965032,
-          "rssBytes": 96268288,
-          "processPeakRssBytes": 96268288,
+          "milliseconds": 81.1841,
+          "allocatedBytes": 17928952,
+          "rssBytes": 96452608,
+          "processPeakRssBytes": 100216832,
           "outputBytes": 9626
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 36.6697,
-          "allocatedBytes": 17960376,
-          "rssBytes": 97521664,
-          "processPeakRssBytes": 97521664,
+          "milliseconds": 77.324,
+          "allocatedBytes": 17928648,
+          "rssBytes": 97329152,
+          "processPeakRssBytes": 100216832,
           "outputBytes": 9626
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 35.3903,
-          "allocatedBytes": 17962528,
-          "rssBytes": 97906688,
-          "processPeakRssBytes": 97906688,
+          "milliseconds": 55.5167,
+          "allocatedBytes": 17928656,
+          "rssBytes": 97726464,
+          "processPeakRssBytes": 100216832,
           "outputBytes": 9626
         }
       ]
@@ -628,11 +643,16 @@
       "category": "contract",
       "inputSha256": "3cba27f301e28538d109d234677c3f772143a8866c2975064e3bce663a172500",
       "outputSha256": "f90da782d9f9cc00a33d38c9b1cdfba75bbbbb9382ffe6d16f54f7496ad790de",
-      "editableSha256": "cff7c66615255006da4df912fb465509b8c903e3cd9249be6b69fa11031b8055",
+      "editableSha256": "b1efce4d7a5b246daef9dd0f7e460dc911df6af386513fedb6cca27925cdb90a",
       "status": "measured",
       "fidelityStatus": "no-detected-losses",
       "knownLosses": [],
       "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -684,50 +704,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 377.9513,
-          "allocatedBytes": 41814832,
-          "rssBytes": 91766784,
-          "processPeakRssBytes": 91766784,
+          "milliseconds": 402.2524,
+          "allocatedBytes": 41807312,
+          "rssBytes": 97058816,
+          "processPeakRssBytes": 97058816,
           "outputBytes": 17575
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 178.9013,
-          "allocatedBytes": 35348360,
-          "rssBytes": 96714752,
-          "processPeakRssBytes": 96960512,
+          "milliseconds": 186.9797,
+          "allocatedBytes": 35314736,
+          "rssBytes": 98983936,
+          "processPeakRssBytes": 98983936,
           "outputBytes": 17575
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 138.9492,
-          "allocatedBytes": 35342800,
-          "rssBytes": 98107392,
-          "processPeakRssBytes": 98107392,
+          "milliseconds": 113.4604,
+          "allocatedBytes": 35311648,
+          "rssBytes": 97333248,
+          "processPeakRssBytes": 98328576,
           "outputBytes": 17575
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 64.9304,
-          "allocatedBytes": 35339608,
-          "rssBytes": 98033664,
-          "processPeakRssBytes": 98033664,
+          "milliseconds": 107.0291,
+          "allocatedBytes": 35310048,
+          "rssBytes": 100052992,
+          "processPeakRssBytes": 100052992,
           "outputBytes": 17575
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 72.0349,
-          "allocatedBytes": 35341768,
-          "rssBytes": 98082816,
-          "processPeakRssBytes": 98082816,
+          "milliseconds": 71.8306,
+          "allocatedBytes": 35307544,
+          "rssBytes": 100401152,
+          "processPeakRssBytes": 100401152,
           "outputBytes": 17575
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 60.5727,
-          "allocatedBytes": 35333632,
-          "rssBytes": 98779136,
-          "processPeakRssBytes": 99311616,
+          "milliseconds": 82.1422,
+          "allocatedBytes": 35306936,
+          "rssBytes": 102105088,
+          "processPeakRssBytes": 102105088,
           "outputBytes": 17575
         }
       ]
@@ -737,7 +757,7 @@
       "category": "contract",
       "inputSha256": "a425eb9b3fdce76d240bf6e369f075dafab90b108f4c79f3e48ceda3992b1458",
       "outputSha256": "004a691415623409a7c578667176757fc80b19ddcc5c38239f037a3b810dbf65",
-      "editableSha256": "d4668ff9d251ae1dea26749e20222e1075787b1110dc85681701fd8ed990f7ae",
+      "editableSha256": "980acbc30155bb52743c5b823112c402b4f2ccf6e81145e6a613d7c656570616",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -748,6 +768,11 @@
         "Docx.ListFormat",
         "Docx.ListLabel"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -834,50 +859,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 293.5258,
-          "allocatedBytes": 22524272,
-          "rssBytes": 94474240,
-          "processPeakRssBytes": 94474240,
+          "milliseconds": 265.7268,
+          "allocatedBytes": 22514224,
+          "rssBytes": 94699520,
+          "processPeakRssBytes": 94699520,
           "outputBytes": 10736
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 102.6015,
-          "allocatedBytes": 20220824,
-          "rssBytes": 94859264,
-          "processPeakRssBytes": 94859264,
+          "milliseconds": 96.1337,
+          "allocatedBytes": 20204584,
+          "rssBytes": 95100928,
+          "processPeakRssBytes": 95100928,
           "outputBytes": 10736
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 85.4285,
-          "allocatedBytes": 18130064,
-          "rssBytes": 94924800,
-          "processPeakRssBytes": 94924800,
+          "milliseconds": 82.3747,
+          "allocatedBytes": 18110120,
+          "rssBytes": 95170560,
+          "processPeakRssBytes": 95170560,
           "outputBytes": 10736
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 81.6293,
-          "allocatedBytes": 18130416,
-          "rssBytes": 95461376,
-          "processPeakRssBytes": 95461376,
+          "milliseconds": 83.3053,
+          "allocatedBytes": 18110432,
+          "rssBytes": 95199232,
+          "processPeakRssBytes": 95199232,
           "outputBytes": 10736
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 35.4611,
-          "allocatedBytes": 18134208,
-          "rssBytes": 95686656,
-          "processPeakRssBytes": 95686656,
+          "milliseconds": 67.0351,
+          "allocatedBytes": 18110104,
+          "rssBytes": 95924224,
+          "processPeakRssBytes": 95924224,
           "outputBytes": 10736
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 37.5307,
-          "allocatedBytes": 18134464,
-          "rssBytes": 95735808,
-          "processPeakRssBytes": 95735808,
+          "milliseconds": 35.5003,
+          "allocatedBytes": 18110784,
+          "rssBytes": 96100352,
+          "processPeakRssBytes": 96100352,
           "outputBytes": 10736
         }
       ]
@@ -887,7 +912,7 @@
       "category": "contract",
       "inputSha256": "e79dce2bee7f87071f5b89cc25145a38a7988dbd97266f03fdfc8e1b4f0090a0",
       "outputSha256": "809f74966f89869b0100210dca9dcb34ac524d172ff04aa7c2fb1eb470f3596b",
-      "editableSha256": "7c7adede31e047421c26998016e773c03444036f5a5b4ecd28a29d66045c43c7",
+      "editableSha256": "b91231b0d11155e081040c8b4a7b3f2f182ffcf13a4c2cc3a1f2d21c81deb3aa",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -896,6 +921,11 @@
       "observedKnownLosses": [
         "Revisions.Accepted"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -965,50 +995,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 252.9322,
-          "allocatedBytes": 22369352,
-          "rssBytes": 93696000,
-          "processPeakRssBytes": 93696000,
+          "milliseconds": 264.9054,
+          "allocatedBytes": 22369176,
+          "rssBytes": 91332608,
+          "processPeakRssBytes": 91332608,
           "outputBytes": 10500
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 96.6696,
-          "allocatedBytes": 20074544,
-          "rssBytes": 94146560,
-          "processPeakRssBytes": 94146560,
+          "milliseconds": 94.1139,
+          "allocatedBytes": 20050888,
+          "rssBytes": 92856320,
+          "processPeakRssBytes": 92856320,
           "outputBytes": 10500
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 79.7702,
-          "allocatedBytes": 17985544,
-          "rssBytes": 94171136,
-          "processPeakRssBytes": 94171136,
+          "milliseconds": 81.0329,
+          "allocatedBytes": 17966296,
+          "rssBytes": 93274112,
+          "processPeakRssBytes": 93274112,
           "outputBytes": 10500
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 58.6795,
-          "allocatedBytes": 17987328,
-          "rssBytes": 94887936,
-          "processPeakRssBytes": 94887936,
+          "milliseconds": 82.8363,
+          "allocatedBytes": 17966624,
+          "rssBytes": 92442624,
+          "processPeakRssBytes": 92868608,
           "outputBytes": 10500
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 33.017,
-          "allocatedBytes": 17985504,
-          "rssBytes": 95473664,
-          "processPeakRssBytes": 95473664,
+          "milliseconds": 57.9319,
+          "allocatedBytes": 17966352,
+          "rssBytes": 93634560,
+          "processPeakRssBytes": 93634560,
           "outputBytes": 10500
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 34.314,
-          "allocatedBytes": 17986504,
-          "rssBytes": 95870976,
-          "processPeakRssBytes": 95870976,
+          "milliseconds": 33.5601,
+          "allocatedBytes": 17966360,
+          "rssBytes": 94044160,
+          "processPeakRssBytes": 94044160,
           "outputBytes": 10500
         }
       ]
@@ -1018,11 +1048,16 @@
       "category": "report",
       "inputSha256": "eb436d049fe672a6e182de68171b398ef11a019dfe8c860d64664619134588fc",
       "outputSha256": "4592e6e30b7c5485de33b772e73b09c1628c7b5846ca233cad6a7739fe3a3110",
-      "editableSha256": "64a4b53f18aa80ec1bfbc4cfde850ac8624085e29dcc81cc92e49644fc64d741",
+      "editableSha256": "649a6a8ae3861605ffcab8f8afa68f8dfd7c109e026b1a63c7a40cd075bcb4ff",
       "status": "measured",
       "fidelityStatus": "no-detected-losses",
       "knownLosses": [],
       "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -1074,50 +1109,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 396.446,
-          "allocatedBytes": 41751160,
-          "rssBytes": 97013760,
-          "processPeakRssBytes": 97013760,
+          "milliseconds": 388.8955,
+          "allocatedBytes": 41711944,
+          "rssBytes": 101130240,
+          "processPeakRssBytes": 101130240,
           "outputBytes": 17367
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 174.8857,
-          "allocatedBytes": 35255592,
-          "rssBytes": 98459648,
-          "processPeakRssBytes": 98459648,
+          "milliseconds": 172.8755,
+          "allocatedBytes": 35242408,
+          "rssBytes": 102449152,
+          "processPeakRssBytes": 102449152,
           "outputBytes": 17367
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 78.9839,
-          "allocatedBytes": 35252632,
-          "rssBytes": 96813056,
-          "processPeakRssBytes": 98390016,
+          "milliseconds": 184.9978,
+          "allocatedBytes": 35231968,
+          "rssBytes": 103763968,
+          "processPeakRssBytes": 103763968,
           "outputBytes": 17367
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 72.2342,
-          "allocatedBytes": 35249616,
-          "rssBytes": 99987456,
-          "processPeakRssBytes": 99987456,
+          "milliseconds": 181.4998,
+          "allocatedBytes": 35221896,
+          "rssBytes": 101244928,
+          "processPeakRssBytes": 103411712,
           "outputBytes": 17367
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 72.0666,
-          "allocatedBytes": 35247832,
-          "rssBytes": 100028416,
-          "processPeakRssBytes": 100028416,
+          "milliseconds": 202.4916,
+          "allocatedBytes": 35224256,
+          "rssBytes": 102731776,
+          "processPeakRssBytes": 103411712,
           "outputBytes": 17367
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 81.1982,
-          "allocatedBytes": 35247904,
-          "rssBytes": 100990976,
-          "processPeakRssBytes": 101449728,
+          "milliseconds": 241.4351,
+          "allocatedBytes": 35229152,
+          "rssBytes": 104914944,
+          "processPeakRssBytes": 104914944,
           "outputBytes": 17367
         }
       ]
@@ -1127,7 +1162,7 @@
       "category": "report",
       "inputSha256": "5ee233cc3bbcc85f6b26cd2d128e926c623f5b31b5d4d97b357db4ef53a385c7",
       "outputSha256": "3057cb3f026c4eb983c4e689f3f51b6c3ec45e8177d51815909c73a0cdba18a5",
-      "editableSha256": "5324609474bc37ac55b80edba7ee1b2ffe3dbf85e072751aae66a77aa507dba2",
+      "editableSha256": "cc8477b0ec99e861ec0b3e10bb230456bab41a106531b1dad48d2a835409e6a1",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -1136,6 +1171,11 @@
       "observedKnownLosses": [
         "Docx.PageLayout"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -1200,50 +1240,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 267.6275,
-          "allocatedBytes": 22376704,
-          "rssBytes": 94355456,
-          "processPeakRssBytes": 94355456,
+          "milliseconds": 253.1361,
+          "allocatedBytes": 22347080,
+          "rssBytes": 94937088,
+          "processPeakRssBytes": 94937088,
           "outputBytes": 10070
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 99.8973,
-          "allocatedBytes": 20067504,
-          "rssBytes": 94928896,
-          "processPeakRssBytes": 94928896,
+          "milliseconds": 93.1028,
+          "allocatedBytes": 20061768,
+          "rssBytes": 95424512,
+          "processPeakRssBytes": 95424512,
           "outputBytes": 10070
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 85.737,
-          "allocatedBytes": 17976024,
-          "rssBytes": 94969856,
-          "processPeakRssBytes": 94969856,
+          "milliseconds": 80.2281,
+          "allocatedBytes": 17960416,
+          "rssBytes": 95457280,
+          "processPeakRssBytes": 95457280,
           "outputBytes": 10070
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 86.8358,
-          "allocatedBytes": 17980744,
-          "rssBytes": 94986240,
-          "processPeakRssBytes": 94986240,
+          "milliseconds": 57.6271,
+          "allocatedBytes": 17965160,
+          "rssBytes": 96157696,
+          "processPeakRssBytes": 96157696,
           "outputBytes": 10070
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 53.9488,
-          "allocatedBytes": 17976056,
-          "rssBytes": 96272384,
-          "processPeakRssBytes": 96272384,
+          "milliseconds": 32.8024,
+          "allocatedBytes": 17960408,
+          "rssBytes": 96673792,
+          "processPeakRssBytes": 96673792,
           "outputBytes": 10070
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 33.1857,
-          "allocatedBytes": 17980152,
-          "rssBytes": 96677888,
-          "processPeakRssBytes": 96677888,
+          "milliseconds": 33.967,
+          "allocatedBytes": 17960392,
+          "rssBytes": 97058816,
+          "processPeakRssBytes": 97058816,
           "outputBytes": 10070
         }
       ]
@@ -1253,11 +1293,16 @@
       "category": "report",
       "inputSha256": "a19b83640c3d3edd6191af35693e8f282242da3b7efcc45c3dbf0f5ca722a178",
       "outputSha256": "d3bb07d1bc6325ae448b04fff63547f2f42e0fd0380fc6443da4fe3903997272",
-      "editableSha256": "1b7878a2848925830f853996806f5a04d6a67474d577e3187668f98507705c21",
+      "editableSha256": "27148cc90dfbf007f01cfa4eef7e112c61212bd00fd40c814bd7467478a403b6",
       "status": "measured",
       "fidelityStatus": "no-detected-losses",
       "knownLosses": [],
       "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -1309,50 +1354,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 304.1026,
-          "allocatedBytes": 22359464,
-          "rssBytes": 90664960,
-          "processPeakRssBytes": 90664960,
+          "milliseconds": 253.838,
+          "allocatedBytes": 22338952,
+          "rssBytes": 91004928,
+          "processPeakRssBytes": 91004928,
           "outputBytes": 10664
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 120.2651,
-          "allocatedBytes": 20067664,
-          "rssBytes": 91975680,
-          "processPeakRssBytes": 91975680,
+          "milliseconds": 96.6496,
+          "allocatedBytes": 20045440,
+          "rssBytes": 92315648,
+          "processPeakRssBytes": 92315648,
           "outputBytes": 10664
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 93.9375,
-          "allocatedBytes": 17970768,
-          "rssBytes": 92397568,
-          "processPeakRssBytes": 92397568,
+          "milliseconds": 81.2404,
+          "allocatedBytes": 17948552,
+          "rssBytes": 92733440,
+          "processPeakRssBytes": 92733440,
           "outputBytes": 10664
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 70.0442,
-          "allocatedBytes": 17971096,
-          "rssBytes": 92188672,
-          "processPeakRssBytes": 92188672,
+          "milliseconds": 55.4062,
+          "allocatedBytes": 17948856,
+          "rssBytes": 92557312,
+          "processPeakRssBytes": 92557312,
           "outputBytes": 10664
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 47.8447,
-          "allocatedBytes": 17970768,
-          "rssBytes": 96309248,
-          "processPeakRssBytes": 96309248,
+          "milliseconds": 33.6907,
+          "allocatedBytes": 17948560,
+          "rssBytes": 93421568,
+          "processPeakRssBytes": 93421568,
           "outputBytes": 10664
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 57.5491,
-          "allocatedBytes": 17970736,
-          "rssBytes": 99840000,
-          "processPeakRssBytes": 100073472,
+          "milliseconds": 34.3899,
+          "allocatedBytes": 17952704,
+          "rssBytes": 93822976,
+          "processPeakRssBytes": 93822976,
           "outputBytes": 10664
         }
       ]
@@ -1362,11 +1407,16 @@
       "category": "letterhead",
       "inputSha256": "af70f5436db5b56dd2afaded60a446032d3dc88c45c193b12fe5c5c3192555cb",
       "outputSha256": "b2a6d97a2be664d305cc115b210167fc464879eb21adc5bb3dc3fe0f2d92e336",
-      "editableSha256": "f86935cee1d887ac4089ea12d468f3b6cab25d913f6ab36b8bfa9443c6a58528",
+      "editableSha256": "0998c22ee2e40641aed7f04ff6fb47700070cf3908d4558d11e9faae69bfd853",
       "status": "measured",
       "fidelityStatus": "no-detected-losses",
       "knownLosses": [],
       "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -1418,50 +1468,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 272.7221,
-          "allocatedBytes": 22593576,
-          "rssBytes": 94183424,
-          "processPeakRssBytes": 94183424,
+          "milliseconds": 279.5793,
+          "allocatedBytes": 22568128,
+          "rssBytes": 94932992,
+          "processPeakRssBytes": 94932992,
           "outputBytes": 11482
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 102.2115,
-          "allocatedBytes": 20318016,
-          "rssBytes": 94539776,
-          "processPeakRssBytes": 94539776,
+          "milliseconds": 100.5976,
+          "allocatedBytes": 20285512,
+          "rssBytes": 95109120,
+          "processPeakRssBytes": 95109120,
           "outputBytes": 11482
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 86.7811,
-          "allocatedBytes": 18208720,
-          "rssBytes": 94597120,
-          "processPeakRssBytes": 94597120,
+          "milliseconds": 96.2423,
+          "allocatedBytes": 18181552,
+          "rssBytes": 95174656,
+          "processPeakRssBytes": 95174656,
           "outputBytes": 11482
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 87.1251,
-          "allocatedBytes": 18209064,
-          "rssBytes": 94646272,
-          "processPeakRssBytes": 94646272,
+          "milliseconds": 94.6479,
+          "allocatedBytes": 18182664,
+          "rssBytes": 95739904,
+          "processPeakRssBytes": 95739904,
           "outputBytes": 11482
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 49.6508,
-          "allocatedBytes": 18213112,
-          "rssBytes": 95457280,
-          "processPeakRssBytes": 95457280,
+          "milliseconds": 38.1687,
+          "allocatedBytes": 18181592,
+          "rssBytes": 95961088,
+          "processPeakRssBytes": 95961088,
           "outputBytes": 11482
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 32.8686,
-          "allocatedBytes": 18208736,
-          "rssBytes": 95596544,
-          "processPeakRssBytes": 95596544,
+          "milliseconds": 36.0299,
+          "allocatedBytes": 18181576,
+          "rssBytes": 95981568,
+          "processPeakRssBytes": 95981568,
           "outputBytes": 11482
         }
       ]
@@ -1471,7 +1521,7 @@
       "category": "letterhead",
       "inputSha256": "65c917e37416768ed8ee6f4a4c095e8a94d0c694affb28d3fac9e368f61251c2",
       "outputSha256": "e8796f4114bd9c14cc5bef30f3c3a7bad48355ee50a3aaec86ea83e699d20a91",
-      "editableSha256": "c6ada58bae3a07d602d9e2ce9866c6f39f76e0f40b6292a6784275a908f4205b",
+      "editableSha256": "6d2a4a6b1c487f438d24e3b0ca4714c8309359c5e9d0f5d7ea339407b95f13bf",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -1480,6 +1530,11 @@
       "observedKnownLosses": [
         "Font.Substituted"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -1546,50 +1601,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 262.2687,
-          "allocatedBytes": 22349784,
-          "rssBytes": 90980352,
-          "processPeakRssBytes": 90980352,
+          "milliseconds": 327.8325,
+          "allocatedBytes": 22331016,
+          "rssBytes": 100073472,
+          "processPeakRssBytes": 100073472,
           "outputBytes": 10391
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 98.7003,
-          "allocatedBytes": 20045928,
-          "rssBytes": 92491776,
-          "processPeakRssBytes": 92491776,
+          "milliseconds": 110.2656,
+          "allocatedBytes": 20042816,
+          "rssBytes": 103428096,
+          "processPeakRssBytes": 103428096,
           "outputBytes": 10391
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 82.1652,
-          "allocatedBytes": 17961360,
-          "rssBytes": 93097984,
-          "processPeakRssBytes": 93097984,
+          "milliseconds": 97.5289,
+          "allocatedBytes": 17945896,
+          "rssBytes": 97251328,
+          "processPeakRssBytes": 103137280,
           "outputBytes": 10391
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 53.514,
-          "allocatedBytes": 17973984,
-          "rssBytes": 93188096,
-          "processPeakRssBytes": 93396992,
+          "milliseconds": 85.4219,
+          "allocatedBytes": 17953536,
+          "rssBytes": 98066432,
+          "processPeakRssBytes": 103137280,
           "outputBytes": 10391
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 39.8561,
-          "allocatedBytes": 17961352,
-          "rssBytes": 97837056,
-          "processPeakRssBytes": 97837056,
+          "milliseconds": 44.572,
+          "allocatedBytes": 17945912,
+          "rssBytes": 98082816,
+          "processPeakRssBytes": 103137280,
           "outputBytes": 10391
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 32.4771,
-          "allocatedBytes": 17961392,
-          "rssBytes": 101761024,
-          "processPeakRssBytes": 102199296,
+          "milliseconds": 45.7667,
+          "allocatedBytes": 17948176,
+          "rssBytes": 98476032,
+          "processPeakRssBytes": 103137280,
           "outputBytes": 10391
         }
       ]
@@ -1599,7 +1654,7 @@
       "category": "letterhead",
       "inputSha256": "6fe20890103d76470ebc44eb442fb7a9cef4854bd9a66f9b2d957d15d0fd339e",
       "outputSha256": "18ae259ba1380014dfe60fa20c1f3f18a7f40086874de756e331c2dd51136640",
-      "editableSha256": "b7bb7fb9c8bd67c040cc1b35a7dd98c367241f123d90ab5a7c30e7c6e02c4937",
+      "editableSha256": "3c22d8ad65bbdcacb955f96ebf649081f31763d2cd96403b15e8449f8287c9b9",
       "status": "measured",
       "fidelityStatus": "detected-losses",
       "knownLosses": [
@@ -1608,6 +1663,11 @@
       "observedKnownLosses": [
         "Docx.Inline"
       ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -1692,50 +1752,50 @@
       "samples": [
         {
           "kind": "cold-conversion",
-          "milliseconds": 272.5494,
-          "allocatedBytes": 22397952,
-          "rssBytes": 87859200,
-          "processPeakRssBytes": 87859200,
+          "milliseconds": 280.9246,
+          "allocatedBytes": 22379088,
+          "rssBytes": 94810112,
+          "processPeakRssBytes": 94810112,
           "outputBytes": 10533
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 100.5979,
-          "allocatedBytes": 20113496,
-          "rssBytes": 89272320,
-          "processPeakRssBytes": 89272320,
+          "milliseconds": 106.5552,
+          "allocatedBytes": 20081104,
+          "rssBytes": 95272960,
+          "processPeakRssBytes": 95272960,
           "outputBytes": 10533
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 83.9964,
-          "allocatedBytes": 18011784,
-          "rssBytes": 90267648,
-          "processPeakRssBytes": 90267648,
+          "milliseconds": 99.3719,
+          "allocatedBytes": 17996408,
+          "rssBytes": 95330304,
+          "processPeakRssBytes": 95330304,
           "outputBytes": 10533
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 84.8355,
-          "allocatedBytes": 18016104,
-          "rssBytes": 89047040,
-          "processPeakRssBytes": 89833472,
+          "milliseconds": 108.7448,
+          "allocatedBytes": 17997184,
+          "rssBytes": 96120832,
+          "processPeakRssBytes": 96120832,
           "outputBytes": 10533
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 49.5701,
-          "allocatedBytes": 18011848,
-          "rssBytes": 92987392,
-          "processPeakRssBytes": 92987392,
+          "milliseconds": 124.0826,
+          "allocatedBytes": 17989616,
+          "rssBytes": 96137216,
+          "processPeakRssBytes": 96137216,
           "outputBytes": 10533
         },
         {
           "kind": "warm-conversion",
-          "milliseconds": 31.5036,
-          "allocatedBytes": 18016232,
-          "rssBytes": 94109696,
-          "processPeakRssBytes": 94109696,
+          "milliseconds": 99.4736,
+          "allocatedBytes": 17989752,
+          "rssBytes": 96595968,
+          "processPeakRssBytes": 96595968,
           "outputBytes": 10533
         }
       ]

@@ -16,6 +16,7 @@ public enum DiagnosticSeverity
 public sealed class ConversionDiagnostic
 {
     private readonly List<DiagnosticOccurrence> occurrences = new List<DiagnosticOccurrence>();
+    private readonly HashSet<(string Part, string Path, DiagnosticPhase Phase)> locations = new HashSet<(string, string, DiagnosticPhase)>();
     internal ConversionDiagnostic(string code, string message, DiagnosticSeverity severity = DiagnosticSeverity.Warning)
     {
         Code = code;
@@ -43,10 +44,12 @@ public sealed class ConversionDiagnostic
 
     internal void Observe(SourceLocation location, DiagnosticPhase phase)
     {
-        foreach (DiagnosticOccurrence item in occurrences)
-            if (item.Phase == phase && item.Location.Part == location.Part && item.Location.Path == location.Path) return;
+        if (LocationsTruncated) return;
+        var key = (location.Part, location.Path, phase);
+        if (locations.Contains(key)) return;
         if (occurrences.Count == 128) { LocationsTruncated = true; return; }
-        occurrences.Add(new DiagnosticOccurrence(location, phase));
+        locations.Add(key);
+        occurrences.Add(new DiagnosticOccurrence(new SourceLocation(key.Part, key.Path), phase));
     }
 }
 

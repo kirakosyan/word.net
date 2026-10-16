@@ -69,9 +69,28 @@ class ComparisonTests(unittest.TestCase):
         snapshot = dict(pages=[dict(text='Second term. First term.')])
         self.assertFalse(comparison.content_check(snapshot, ['First term.', 'Second term.'])['passed'])
 
+    def test_loss_expectations_reject_silent_and_unexpected_losses(self):
+        expected = ['Table.NestedFlattened', 'Table.Decoration']
+        warnings = [dict(code=code, severity='Warning') for code in expected]
+        self.assertTrue(comparison.loss_check(expected, warnings)['passed'])
+        self.assertFalse(comparison.loss_check(expected, warnings[:1])['passed'])
+        self.assertEqual(['Table.Decoration'], comparison.loss_check(expected, warnings[:1])['missing'])
+        self.assertFalse(comparison.loss_check([], warnings)['passed'])
+        self.assertTrue(comparison.loss_check([], [dict(code='Docx.AuxiliaryMetadata', severity='Info')])['passed'])
+
+    def test_renderer_identity_matches_windows_and_unix_captures(self):
+        windows = 'pdftoppm version 25.06.0\r\nCopyright vendor\r\n'
+        unix = 'pdftoppm version 25.06.0\nCopyright vendor\n'
+        self.assertEqual(comparison.renderer_identity(windows), comparison.renderer_identity(unix))
+        self.assertNotEqual(comparison.renderer_identity(unix), comparison.renderer_identity(unix.replace('25.06.0', '25.07.0')))
+
     def test_manifest_hashes_categories_and_independence(self):
         manifest_path = comparison.ROOT / 'tests/wordnet.Conversion.Tests/Fixtures/Comparison/manifest.json'
-        manifest = json.loads(manifest_path.read_text())
+        manifest_bytes = manifest_path.read_bytes()
+        self.assertNotIn(b'\r', manifest_bytes)
+        manifest = json.loads(manifest_bytes)
+        self.assertEqual(manifest['generatorSha256'], comparison.digest(comparison.ROOT / manifest['generator']))
+        self.assertTrue(all('\\' not in f['path'] for f in manifest['fonts']))
         self.assertEqual(12, len(manifest['documents']))
         self.assertEqual(12, len({d['sha256'] for d in manifest['documents']}))
         self.assertEqual({'invoice', 'contract', 'report', 'letterhead'}, {d['category'] for d in manifest['documents']})

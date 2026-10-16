@@ -7,27 +7,31 @@ namespace WordNet.Internal;
 
 internal sealed class XmlSourceLocation
 {
-    private XmlSourceLocation(int index) => Index = index;
-    private int Index { get; }
-
-    internal static SourceLocation Create(XElement element, string part)
+    private readonly Dictionary<XElement, int> indices = new Dictionary<XElement, int>();
+    private XmlSourceLocation(XElement parent)
     {
-        XElement root = element.AncestorsAndSelf().Last();
-        if (root.Annotation<XmlSourceLocation>() == null)
+        var counts = new Dictionary<XName, int>();
+        foreach (XElement child in parent.Elements())
         {
-            root.AddAnnotation(new XmlSourceLocation(1));
-            foreach (XElement parent in root.DescendantsAndSelf())
-            {
-                var counts = new Dictionary<XName, int>();
-                foreach (XElement child in parent.Elements())
-                {
-                    counts.TryGetValue(child.Name, out int count);
-                    counts[child.Name] = ++count;
-                    child.AddAnnotation(new XmlSourceLocation(count));
-                }
-            }
+            counts.TryGetValue(child.Name, out int index);
+            counts[child.Name] = ++index;
+            indices.Add(child, index);
         }
-        return new SourceLocation(part, "/" + string.Join("/", element.AncestorsAndSelf().Reverse().Select(e =>
-            e.Name.LocalName + "[" + e.Annotation<XmlSourceLocation>()!.Index.ToString(CultureInfo.InvariantCulture) + "]")));
+    }
+
+    internal static SourceLocation Create(XElement element, string part) => new SourceLocation(part, element);
+
+    // Paths and sibling indices are built only for observed diagnostics. Cache one
+    // index per observed parent, rather than annotating every node in a whole part.
+    internal static string Path(XElement element) => "/" + string.Join("/", element.AncestorsAndSelf().Reverse().Select(e =>
+        e.Name.LocalName + "[" + Index(e).ToString(CultureInfo.InvariantCulture) + "]"));
+
+    private static int Index(XElement element)
+    {
+        XElement? parent = element.Parent;
+        if (parent == null) return 1;
+        var index = parent.Annotation<XmlSourceLocation>();
+        if (index == null) { index = new XmlSourceLocation(parent); parent.AddAnnotation(index); }
+        return index.indices[element];
     }
 }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using WordNet.Internal;
 using WordNet.Model;
 
 namespace WordNet.Formats;
@@ -33,9 +34,11 @@ internal sealed partial class DocxReader
         if (links.Length == 0) return;
         string path = DocxPackage.ResolvePart(mainPart, links[0]); knownParts.Add(path);
         XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.Numbering: Missing root.");
+        using var partLocation = context.At(XmlSourceLocation.Create(root, path));
         if (root.Name != W + "numbering") throw new InvalidDataException("Docx.Numbering: Invalid root.");
         foreach (XElement item in root.Elements())
         {
+            using var location = context.At(XmlSourceLocation.Create(item, path));
             Dictionary<int, XElement>? dictionary = item.Name == W + "num" ? numbers : item.Name == W + "abstractNum" ? abstracts : null;
             if (dictionary == null) { context.Loss("Docx.NumberingFeature", "Picture bullets and auxiliary numbering metadata are not retained."); continue; }
             int id = Integer(item, W + (item.Name == W + "num" ? "numId" : "abstractNumId"), 0, int.MaxValue);

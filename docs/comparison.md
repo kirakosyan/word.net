@@ -8,12 +8,16 @@ manifest, independently of wordnet serialization. No customer documents, commerc
 binaries, license keys or proprietary fonts belong in Git. Inputs are independently
 Open XML schema validated by the mandatory conversion suite.
 
-The manifest records input hashes, pinned Noto Sans font hashes/versions, authored
+The generator writes portable POSIX paths and UTF-8/LF JSON; `.gitattributes` keeps
+its source and JSON hashes stable across Windows and Unix checkouts. The manifest
+records input hashes, pinned Noto Sans font hashes/versions, authored
 text in reading order, explicit page breaks and known losses. Its page counts are
 **authored expectations**, not measurements by Word. Nested tables/decoration,
 percentage widths, Roman numbering, columns, revision acceptance, missing fonts and
 positioned VML text remain visible baseline limitations. Detected losses are recorded
-separately from text, page and raster verdicts. Existing Enterprise PNGs remain
+separately from text, page and raster verdicts. Both the runner and conversion suite
+require the exact warning-code set in `knownLosses`: a missing expected warning or
+a new unlisted loss fails the corpus gate; informational diagnostics remain advisory. Existing Enterprise PNGs remain
 reviewed **wordnet regression goldens**, not Word or Aspose references.
 
 ## Reproduce the free baseline
@@ -94,6 +98,9 @@ the pinned Noto Sans faces, then run the test-only capture script:
 python eng/run-comparison.py --references artifacts/word-comparison/references.json
 ```
 
+Renderer capture reads native stdout/stderr directly, including on Windows
+PowerShell 5.1, and normalizes CRLF/LF banners on both capture and comparison.
+`eng/test-comparison-renderer.ps1` checks the stderr and failure paths without Word.
 Capture defaults to `evaluation`; select `licensed` only for a legitimately licensed
 desktop installation. The script opens authored inputs read-only, disables macros, records Word version/
 build and input/font/PDF hashes, closes its own Word instance and saves references

@@ -8,8 +8,8 @@ for path in sorted((root / 'src').rglob('*.cs')):
     if {'obj', 'bin'} & set(path.parts):
         continue
     text = path.read_text(encoding='utf-8-sig')
-    for match in re.finditer(r'(Loss|Report)\(\s*"([\w.]+)"\s*,\s*"((?:[^"\\]|\\.)*)"', text):
-        entries[match[2]] = (match[1], match[3])
+    for match in re.finditer(r'(Loss|Report|ReportStrictRejection)\(\s*"([\w.]+)"\s*,\s*"((?:[^"\\]|\\.)*)"', text):
+        entries[match[2]] = ('Report' if match[1] == 'ReportStrictRejection' else match[1], match[3])
     for match in re.finditer(r'LossAt\([^;]*?"([\w.]+)"\s*,\s*"((?:[^"\\]|\\.)*)"', text):
         entries[match[1]] = ('Loss', match[2])
 entries.update({

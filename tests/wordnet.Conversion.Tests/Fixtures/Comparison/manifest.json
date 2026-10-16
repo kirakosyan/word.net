@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Independently authored synthetic examples, MIT; no customer data or proprietary resources.",
   "generator": "eng/generate-comparison-corpus.py",
-  "generatorSha256": "872a86f963254fe92ad8ce0b2b5cbcfbea4e7ebeb9d7f66fb1b633de2147f6fa",
+  "generatorSha256": "cdded33e218c9dc6a44c48f4e5c947f529b8b281cf95be6ad630749837acc25b",
   "fonts": [
     {
       "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",

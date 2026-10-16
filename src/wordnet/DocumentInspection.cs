@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
+using WordNet.Internal;
 
 namespace WordNet;
 
@@ -21,11 +23,15 @@ public enum DiagnosticPhase
 /// <summary>A source identifier containing no document text or attribute values.</summary>
 public sealed class SourceLocation
 {
-    internal SourceLocation(string part, string path) { Part = part; Path = path; }
+    private readonly string? path;
+    private readonly Lazy<string>? deferredPath;
+    internal SourceLocation(string part, string path) { Part = part; this.path = path; }
+    internal SourceLocation(string part, XElement element)
+    { Part = part; deferredPath = new Lazy<string>(() => XmlSourceLocation.Path(element)); }
     /// <summary>Gets the source package part, or a format-level identifier.</summary>
     public string Part { get; }
     /// <summary>Gets an indexed element path, or / for document-level findings.</summary>
-    public string Path { get; }
+    public string Path => path ?? deferredPath!.Value;
     /// <summary>Returns the part and indexed path.</summary>
     public override string ToString() => Part + ":" + Path;
 }
@@ -88,6 +94,6 @@ public sealed class DocumentInspection
     public int? PageCount { get; }
     /// <summary>Gets whether full fixed-page layout was performed.</summary>
     public bool LayoutPerformed { get; }
-    /// <summary>Gets whether a detected fidelity loss would reject Strict conversion.</summary>
+    /// <summary>Gets whether an observed loss or rejected glyph/geometry condition would reject Strict conversion.</summary>
     public bool WouldRejectStrict { get; }
 }

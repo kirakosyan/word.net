@@ -105,24 +105,9 @@ public sealed partial class WordConverter : IDocumentConverter
         var context = new ConversionContext(options, cancellationToken);
         context.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
+        await ReadInputAsync(source, input, context).ConfigureAwait(false);
         byte[] buffer = new byte[81920];
         int count;
-        while (true)
-        {
-            int requested = (int)Math.Min(buffer.Length, (long)options.MaximumInputBytes - input.Length + 1);
-#if NET8_0_OR_GREATER
-            count = await source.ReadAsync(buffer.AsMemory(0, requested), cancellationToken).ConfigureAwait(false);
-#else
-            count = await source.ReadAsync(buffer, 0, requested, cancellationToken).ConfigureAwait(false);
-#endif
-            context.CheckCancellation();
-            if (count == 0)
-            {
-                break;
-            }
-
-            input.Write(buffer, 0, count);
-        }
 
         using var output = new BoundedMemoryStream(options.MaximumOutputBytes);
         Execute(input, output, sourceFormat, destinationFormat, context);
@@ -188,11 +173,7 @@ public sealed partial class WordConverter : IDocumentConverter
     {
         context.Destination = to;
         context.CheckCancellation();
-        input.Position = 0;
         DocumentModel document = ReadDocument(input, from, context);
-
-        context.CheckCancellation();
-        context.CheckCharacters(document.CharacterCount);
         context.Phase = DiagnosticPhase.Destination;
         FidelityChecks.Destination(document, to, context);
         context.Phase = DiagnosticPhase.Write;
@@ -240,6 +221,23 @@ public sealed partial class WordConverter : IDocumentConverter
         context.CheckCharacters(document.CharacterCount);
         ModelSourceLocations.Assign(document, from, context);
         return document;
+    }
+
+    private static async Task ReadInputAsync(Stream source, MemoryStream input, ConversionContext context)
+    {
+        byte[] buffer = new byte[81920];
+        while (true)
+        {
+            int requested = (int)Math.Min(buffer.Length, (long)context.Options.MaximumInputBytes - input.Length + 1);
+#if NET8_0_OR_GREATER
+            int count = await source.ReadAsync(buffer.AsMemory(0, requested), context.CancellationToken).ConfigureAwait(false);
+#else
+            int count = await source.ReadAsync(buffer, 0, requested, context.CancellationToken).ConfigureAwait(false);
+#endif
+            context.CheckCancellation();
+            if (count == 0) break;
+            input.Write(buffer, 0, count);
+        }
     }
 
     private static void Copy(Stream source, Stream destination, ConversionContext context, long maximumReadBytes = int.MaxValue)

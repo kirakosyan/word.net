@@ -69,6 +69,6 @@ for name, category, text, losses, body, extras, relation, section in cases:
             info = ZipInfo(key, (2000, 1, 1, 0, 0, 0)); info.compress_type = ZIP_DEFLATED
             archive.writestr(info, value.encode())
     rows.append(dict(id=name, category=category, path=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest(), requiredText=text, knownLosses=losses, expectedPages=2 if name == 'report-pages' else 1, references=[]))
-fonts = [dict(path=str(p.relative_to(ROOT)), sha256=hashlib.sha256(p.read_bytes()).hexdigest(), version='Noto Sans 2.008; SIL OFL 1.1') for p in sorted((ROOT / 'src/wordnet/Resources/Fonts').glob('*.ttf'))]
+fonts = [dict(path=p.relative_to(ROOT).as_posix(), sha256=hashlib.sha256(p.read_bytes()).hexdigest(), version='Noto Sans 2.008; SIL OFL 1.1') for p in sorted((ROOT / 'src/wordnet/Resources/Fonts').glob('*.ttf'))]
 manifest = dict(schemaVersion=1, provenance='Independently authored synthetic examples, MIT; no customer data or proprietary resources.', generator='eng/generate-comparison-corpus.py', generatorSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), fonts=fonts, documents=rows)
-(DEST / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+(DEST / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')

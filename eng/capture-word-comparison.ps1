@@ -18,8 +18,8 @@ foreach ($font in $corpus.fonts) {
         throw 'Install the corpus Noto Sans faces matching the manifest before capturing Word references.'
     }
 }
-$rendererVersion = (& $Renderer -v 2>&1 | Out-String).Trim()
-if ($LASTEXITCODE -ne 0) { throw 'Poppler version check failed.' }
+. (Join-Path $PSScriptRoot 'comparison-renderer.ps1')
+$rendererVersion = Get-ComparisonRendererVersion -Renderer $Renderer
 $word = $null
 $references = [Collections.Generic.List[object]]::new()
 try {

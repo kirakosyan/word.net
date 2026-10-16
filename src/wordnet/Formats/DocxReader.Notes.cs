@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using WordNet.Internal;
 using WordNet.Model;
 
 namespace WordNet.Formats;
@@ -21,10 +22,12 @@ internal sealed partial class DocxReader
             if (links.Length == 0) continue;
             string path = DocxPackage.ResolvePart(mainPart, links[0]); knownParts.Add(path); knownParts.Add(DocxPackage.RelationshipPartName(path));
             XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.Notes: Missing note root.");
+            using var partLocation = context.At(XmlSourceLocation.Create(root, path));
             if (root.Name != W + kind) throw new InvalidDataException("Docx.Notes: Invalid note root.");
             string singular = kind.Substring(0, kind.Length - 1);
             foreach (XElement note in root.Elements(W + singular))
             {
+                using var noteLocation = context.At(XmlSourceLocation.Create(note, path));
                 int id = Integer(note, W + "id", int.MinValue, int.MaxValue);
                 if (id < 0 || (string?)note.Attribute(W + "type") is "separator" or "continuationSeparator") continue;
                 string label = id.ToString(System.Globalization.CultureInfo.InvariantCulture);

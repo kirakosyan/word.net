@@ -169,7 +169,7 @@ internal sealed partial class DocxReader
         foreach (XElement element in container.Elements())
         {
             context.CheckCancellation();
-            using var location = context.At(XmlSourceLocation.Create(element, mainPart));
+            using var location = element.Name == W + "p" || element.Name == W + "tbl" ? null : context.At(XmlSourceLocation.Create(element, mainPart));
             if (Container(element, out XElement? content))
             {
                 if (content != null) ReadBlocks(content, blocks);
@@ -341,6 +341,7 @@ internal sealed partial class DocxReader
                 continue;
             }
 
+            using var rowLocation = context.At(XmlSourceLocation.Create(child, mainPart));
             var cells = new List<TableCell>();
             foreach (XElement rowChild in TableContents(child))
             {

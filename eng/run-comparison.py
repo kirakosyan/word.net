@@ -23,6 +23,17 @@ def normalized(text):
     return ' '.join(text.split())
 
 
+def renderer_identity(banner):
+    return '\n'.join(banner.strip().splitlines())
+
+
+def loss_check(expected, diagnostics):
+    # Information is advisory; every warning requires an explicit corpus expectation.
+    expected = set(expected)
+    observed = {d['code'] for d in diagnostics if d['severity'] == 'Warning'}
+    return dict(passed=observed == expected, missing=sorted(expected - observed), unexpected=sorted(observed - expected))
+
+
 def content_check(snapshot, expected):
     """Require every authored text fragment in reading order; no content-loss allowance."""
     text = normalized(' '.join(p['text'] for p in snapshot['pages']))
@@ -130,7 +141,8 @@ def main():
         if digest(path) != font['sha256']:
             parser.error('Pinned font hash mismatch: ' + font['path'])
         shutil.copyfile(path, font_dir / path.name)
-    renderer_version = subprocess.run([args.renderer, '-v'], capture_output=True, text=True, check=True).stderr.strip()
+    renderer_process = subprocess.run([args.renderer, '-v'], capture_output=True, text=True, check=True)
+    renderer_version = renderer_identity(renderer_process.stderr or renderer_process.stdout)
     references = [(r, args.references.parent) for r in json.loads(args.references.read_text(encoding='utf-8-sig'))['references']] if args.references else []
     references.extend((r, args.manifest.parent) for d in manifest['documents'] for r in d.get('references', []))
     report = dict(schemaVersion=1, manifestSha256=digest(args.manifest), sourceRevision=invoke(['git', '-C', str(ROOT), 'rev-parse', 'HEAD']).stdout.strip(),
@@ -163,7 +175,8 @@ def main():
                 if engine == 'wordnet':
                     observed = {d['code'] for d in measured['diagnostics']}
                     result['observedKnownLosses'] = sorted(observed.intersection(document['knownLosses']))
-                    result['fidelityStatus'] = 'detected-losses' if observed else 'no-detected-losses'
+                    result['knownLossChecks'] = loss_check(document['knownLosses'], measured['diagnostics'])
+                    result['fidelityStatus'] = 'detected-losses' if any(d['severity'] == 'Warning' for d in measured['diagnostics']) else 'no-detected-losses'
                 if engine == 'aspose':
                     captured.append(dict(documentId=document['id'], kind='aspose', version=next(a['version'] for a in measured['assemblies'] if a['name'] == 'Aspose.Words'),
                                          artifactMode=measured['artifactMode'], inputSha256=document['sha256'], pdf=os.path.relpath(pdf.resolve(), args.capture_aspose_reference.parent.resolve()) if args.capture_aspose_reference else pdf.name,
@@ -205,7 +218,7 @@ def main():
                     snapshot_path = prefix.with_name(prefix.name + '-reference.json')
                     invoke([args.dotnet, str(args.worker), '--comparison', 'snapshot', str(reference_pdf), str(snapshot_path)])
                     check.update(snapshot_check(measured['snapshot'], json.loads(snapshot_path.read_text())))
-                    if reference['renderer'] != renderer_version:
+                    if renderer_identity(reference['renderer']) != renderer_version:
                         check['visualStatus'] = 'incomparable-renderer-version'
                     else:
                         reference_images = render(reference_pdf, prefix.with_name(prefix.name + '-reference'), args.renderer)
@@ -226,7 +239,7 @@ def main():
                 check['textAndGeometryPassed'] = all(check.get(k, False) for k in ('pageCountMatches', 'pageGeometryMatches', 'textAndOrderMatches', 'glyphPlacementPasses'))
                 check['visualPassed'] = all(p['passed'] for p in check['visual']) if 'visual' in check else None
     (args.output / 'results.json').write_text(json.dumps(report, indent=2) + '\n')
-    failures = [r for r in report['results'] if r['status'] == 'failed' or r.get('authoredChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('pageCountMatches') is False or r.get('editableContent', {}).get('passed') is False or any(c.get('textAndGeometryPassed') is False or c.get('visualPassed') is False for c in r.get('referenceChecks', []))]
+    failures = [r for r in report['results'] if r['status'] == 'failed' or r.get('knownLossChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('pageCountMatches') is False or r.get('editableContent', {}).get('passed') is False or any(c.get('textAndGeometryPassed') is False or c.get('visualPassed') is False for c in r.get('referenceChecks', []))]
     print(f"{len(report['results'])} results; {len(failures)} failures retained in {args.output / 'results.json'}")
     return 1 if failures else 0
 

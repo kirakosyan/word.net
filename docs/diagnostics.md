@@ -8,7 +8,8 @@ not a count of unique document objects.
 
 Each group also exposes `Occurrences`: up to 128 distinct `(Location, Phase)`
 findings. `LocationsTruncated` marks additional locations; `Count` still includes
-all observations and multi-pass layout. DOCX locations contain a package part and
+all observations and multi-pass layout. Location paths are materialized only when
+a finding is observed; bounded hash-based deduplication keeps repeated losses cheap. DOCX locations contain a package part and
 indexed element path, such as `word/document.xml:/document[1]/body[1]/tbl[1]/tr[1]/tc[2]/p[1]`.
 Headers/footers identify their own part. Paths contain no document text, attribute
 values, bookmark names or caller filesystem paths. They remain stable for unchanged
@@ -26,8 +27,11 @@ checks, which can expose several locations under one existing code.
 `WordConverter.Inspect` and `InspectAsync` consume input from the current position,
 leave the caller stream open and never serialize conversion output. They share the
 same bounded readers and destination checks. Strict inspection collects losses
-instead of stopping at the first one; `WouldRejectStrict` records observed Loss
-findings. Unsupported pairs/encryption/providers, corrupt input, limits and
+instead of stopping at the first one; `WouldRejectStrict` records observed losses
+and glyph/geometry conditions that Strict would reject, including fallbacks reported
+as warnings in BestEffort/Lenient. Advisory story repositioning/scaling alone does not
+set this flag. Strict inspection follows the BestEffort fallback path when collecting
+losses, while actual Strict conversion still rejects them before copying output. Unsupported pairs/encryption/providers, corrupt input, limits and
 nonrecoverable geometry still throw. Async inspection uses async input I/O; parsing,
 provider calls and layout remain synchronous with cooperative cancellation.
 
@@ -51,7 +55,11 @@ foreach (var diagnostic in report.Diagnostics)
 shared feature-policy checks, `Layout` covers font resolution and pagination,
 `Provider` covers optional PDF import/OCR and `Write` identifies serialization.
 Default inspection fully parses the input and resolves fixed-page fonts using the
-same caller/bundled font policy. It does not paginate. `includeLayout: true` runs
+same caller/bundled font policy. It also checks code fonts, unsupported shaping, XPS
+hyperlinks, keep-with-table and cell page controls directly from the model, without
+pagination. These findings use the Destination phase in both inspection and conversion.
+Font-only inspection records coalesced runs and list-label mappings in one pass. It
+does not paginate. `includeLayout: true` runs
 full PDF/XPS layout without writing a PDF/XPS; it is invalid for reflowable outputs.
 PDF import invokes the same optional provider and configured OCR as conversion,
 including their costs and prerequisites. Managed DOCX export inspection needs no
