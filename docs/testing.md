@@ -1,5 +1,24 @@
 # Conversion tests and qualification
 
+## Stable 1.1.0 release qualification
+
+The maintainer requested a stable release after the review corrections below.
+The stable candidate keeps the same converter implementation and all **487 cases**;
+the PDF producer assertion now expects version 1.1.0. Local source runs pass
+487/487 without failures/skips on .NET 8, .NET 10 and the installed Framework 4.8.1.
+Locked restore, warning-free Release builds of all five assets, API validation
+against 1.0.0 and formatting verification pass. Reports are retained under ignored
+`artifacts/release-1.1.0`.
+The local three-package set also passes all 487 cases on each of five lanes:
+.NET 8, .NET 10, Framework 4.8.1, and the explicit netstandard2.0 asset on .NET 8/10.
+The transitive dependency audit reports no known vulnerabilities.
+
+Stable publication still requires the complete native desktop CI matrix on the
+final main commit, fresh source and exact-main-package execution on actual
+Framework 4.7.2 with the documented legacy JIT, and authorization for all three
+package IDs. Earlier alpha qualification is historical evidence. Preserve the
+final immutable package hashes and runtime reports with the release.
+
 ## PR #5 review candidate — 1.1.0-alpha.2
 
 The required suite now has **487 cases**, including **36 new review regressions**.

@@ -4,7 +4,7 @@ Audited 2026-10-15 at `8f20158ff9d1a4da0fbc267e1d17d35cee03bbd5`.
 The baseline M0 audit for [issue #4](https://github.com/kirakosyan/word.net/issues/4)
 is followed below by the implemented acceptance profile and final qualification.
 
-The current PR #5 release candidate is **1.1.0-alpha.2**. Its
+The current PR #5 stable release candidate is **1.1.0**. Its
 [review corrections](releases/1.1.0-alpha.2.md) preserve field containers, restore
 Strict revision/comment loss handling, expose convenience-call diagnostics, and
 correct HTML policies, font selection, image admission and cell layout. The alpha.1

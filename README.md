@@ -9,10 +9,10 @@
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
 DOC / DOCX → XPS · HTML
 
-> **1.1.0-alpha.2 — enterprise export preview.** Adds managed
+> **1.1.0 — enterprise export desktop release.** Adds managed
 > PDF export, self-contained HTML, header/footer stories and fields, caller fonts and
 > metric-compatible bundled fallbacks. PDF import/OCR now requires `wordnet.Ocr`.
-> The previously published desktop release is 1.0.0. See the
+> See the
 > [enterprise audit](https://github.com/kirakosyan/word.net/blob/main/docs/enterprise-audit.md) for the issue #4 acceptance profile;
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
@@ -22,13 +22,13 @@ DOC / DOCX → XPS · HTML
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-dotnet add package wordnet --version 1.1.0-alpha.2
+dotnet add package wordnet --version 1.1.0
 ```
 
-The three preview packages share one version: `wordnet.Fonts`, `wordnet`, and
+The three release packages share one version: `wordnet.Fonts`, `wordnet`, and
 optional `wordnet.Ocr`. Local packages are produced by `eng/pack.ps1`; public releases
-use the explicit publishing workflow. For the stable 1.0.0 feature set, use its
-version and release notes. Validate representative deployment documents against the
+use the explicit publishing workflow. Upgrading from 1.0.0 requires adding
+`wordnet.Ocr` for PDF input and OCR. Validate representative deployment documents against the
 [implemented profiles](#implemented-profiles) and inspect diagnostics. Stable versioning
 covers this documented subset; it does not promise complete Microsoft Word fidelity.
 Local packaging is also supported. Publication requires an explicit maintainer-run
@@ -444,7 +444,7 @@ Agents use `rtk` per [AGENTS.md](https://github.com/kirakosyan/word.net/blob/mai
 The core package includes five framework assets, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
 See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) and the
-[1.0.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.0.0.md).
+[1.1.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.1.0.md).
 
 ## Project guide
 

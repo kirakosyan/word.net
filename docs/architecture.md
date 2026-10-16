@@ -77,7 +77,7 @@ lines and repeat headers. Non-splitting rows and vertically merged groups must f
 Keep chains have bounded lookahead; unsupported keep-with-table controls report loss.
 Faithful original pagination and richer typography remain unfinished.
 
-The enterprise preview adds caller-selected faces, bounded TTC extraction/catalogs,
+The enterprise export profile adds caller-selected faces, bounded TTC extraction/catalogs,
 metric-compatible OFL fallbacks, subset PDF embedding and legacy horizontal `kern`
 pairs and GPOS pair/class/extension positioning. Static CFF outlines are converted
 to bounded quadratic glyph subsets with a sub-unit outline error bound. Variable/

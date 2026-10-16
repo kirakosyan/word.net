@@ -1,11 +1,11 @@
 # Releasing wordnet
 
-The enterprise release candidate is **1.1.0-alpha.2**. Pack and verify
+The enterprise desktop release is **1.1.0**. Pack and verify
 `wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
 one package version. The workflow publishes fonts before core and the optional
 provider. New companion package IDs need their own authorized NuGet ownership/
-Trusted Publishing configuration before any release. This implementation neither
-creates those policies nor changes release credentials. The maintainer has requested publication after the PR #5 fixes; the existing
+Trusted Publishing configuration before any release. The maintainer has requested
+stable publication after the PR #5 fixes; the existing
 exact-commit CI and minimum-runtime gates still apply.
 
 The first stable release is **1.0.0**, for the documented Windows/Linux x64 and ARM64
