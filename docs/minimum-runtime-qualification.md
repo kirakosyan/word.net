@@ -1,6 +1,15 @@
 # Minimum-runtime qualification on AK-PC
 
-## Enterprise 1.1 candidate — 2026-10-16
+## Stable 1.1.0 release gate
+
+The stable release requires **487/487** cases on actual Framework 4.7.2 x64 with
+the documented legacy JIT, both from current source and from the immutable final
+main-CI package. The final qualification JSON and runtime reports accompany the
+GitHub release. The earlier 451-case alpha.1 results below do not qualify changes
+made during PR #5 review; targeting net472 on a newer installed runtime is also
+insufficient. See [releasing](releasing.md) for the exact-artifact gate.
+
+## Enterprise alpha.1 candidate — 2026-10-16
 
 Actual Framework 4.7.2 x64, release 461814, passed **451/451** conversion/OCR cases
 with `compatjit.dll` observed, zero inherited diagnostic overrides, and the documented

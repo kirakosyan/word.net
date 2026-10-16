@@ -87,9 +87,9 @@ preserving the requested italic style. Only used font faces are parsed;
 layout/font state is per-call. Fixed-clock metadata
 and normalized trailer identity make PDF output deterministic. PAGE/NUMPAGES layout
 runs two passes (a third if the count changes); stories select first/even/default
-per section, reserve vertical space and have independent numbering state. Body PAGE
-fields are evaluated during paragraph preparation; paragraphs that subsequently
-move/split require further qualification. Cached DOC/DOCX field results retain
+per section, reserve vertical space and have independent numbering state. Body page
+fields retain their field tokens in prepared lines and evaluate when the line is
+placed, so page breaks and paragraph movement use the destination page. Cached DOC/DOCX field results retain
 their original paragraph/table-cell destinations, including nested fields. HTML
 retains cached pagination fields and never invokes fixed-page layout. Its optional
 header/footer blocks use only the first page's applicable story variants.
