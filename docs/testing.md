@@ -11,14 +11,19 @@ XPS retained features, first-page HTML stories and Lenient cell scaling.
 
 All five library targets compile with warnings-as-errors. Locked restore, formatting,
 release-version checks and the transitive dependency vulnerability audit pass.
-The Linux x64 source suites pass **487/487** on each of .NET 8.0.32 and .NET 10.0.12
+The initial review build (`636621d`) passes **487/487** on each of .NET 8.0.32 and .NET 10.0.12
 with zero failures/skips. Independent veraPDF 1.30.2 validation also passes
 **38/38** archival corpus files; reports are under `artifacts/pr5-review/pdfa-final`.
-The final Linux x64 source reports are retained under ignored
+The initial Linux x64 source reports are retained under ignored
 `artifacts/pr5-review/source-final`; exact-package reports are retained under
 `artifacts/pr5-review/package-tests`. Each full run must execute all 487 cases
 without failures or skips. `OMP_THREAD_LIMIT=1` caps native OCR worker threads on
 this five-CPU host without changing OCR assertions or runtime security settings.
+
+The follow-up scaling correction anchors indented continuation lines to the cell's
+text area and scaled header-table rows to the page margin. The existing regression
+covers both cases; the 40 focused review/pagination/raster cases pass on .NET 8/10.
+The refreshed final-candidate evidence is retained under `artifacts/pr5-final`.
 
 The alpha.1 results below qualify the earlier revision. Publication of alpha.2
 requires successful exact-main CI, current actual-Framework-4.7.2 legacy-JIT

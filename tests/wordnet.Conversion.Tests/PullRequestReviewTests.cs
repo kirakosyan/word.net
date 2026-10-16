@@ -286,12 +286,19 @@ public sealed class PullRequestReviewTests
     {
         var model = new DocumentModel(); var section = new PageSettings { Width = 500, Height = 200, Left = 30, Right = 30, Top = 20, Bottom = 20 }; model.FinalSection = section;
         var table = new TableBlock { Section = section }; table.ColumnWidths.Add(220); table.ColumnWidths.Add(220);
-        var right = Paragraph("Right"); right.Layout.LineSpacing = 600; right.Layout.MultipleLineSpacing = false;
+        var right = Paragraph("First\nRight"); right.Layout.LineSpacing = 600; right.Layout.MultipleLineSpacing = false; right.Layout.FirstLine = 30;
         table.Rows.Add(new System.Collections.Generic.List<TableCell> { new TableCell(Paragraph("Left")), new TableCell(right) }); model.Blocks.Add(table);
         var context = Context(); context.Destination = DocumentFormat.Pdf;
-        PositionedText item = Assert.Single(FixedLayout.Create(model, context).SelectMany(p => p.Text), t => t.Text == "Right");
+        PositionedText[] items = FixedLayout.Create(model, context).SelectMany(p => p.Text).ToArray();
+        PositionedText item = Assert.Single(items, t => t.Text == "Right");
         Assert.InRange(item.X, 249.99, 250.01);
+        Assert.InRange(items.First(t => t.Text.Length > 0 && t.Text[0] == 'F').X, 257.99, 258.01);
         Assert.Contains(context.Result(0).Diagnostics, d => d.Code == "Table.LineScaledToFit");
+
+        model.Blocks.Clear();
+        section.Stories.Add("header-default", new System.Collections.Generic.List<DocumentBlock> { table });
+        PositionedText left = FixedLayout.Create(model, Context()).SelectMany(p => p.Text).First(t => t.Text.Length > 0 && t.Text[0] == 'L');
+        Assert.InRange(left.X, 29.99, 30.01);
     }
 
     private static int FontTable(byte[] bytes, string tag)

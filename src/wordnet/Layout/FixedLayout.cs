@@ -279,7 +279,7 @@ internal static partial class FixedLayout
                         int count = cells.Count == 0 ? 0 : cells.Max(c => c.Count);
                         for (int i = 0; i < count; i++)
                         {
-                            var line = new Line();
+                            var line = new Line { Origin = settings.Left };
                             foreach (var cell in cells.Where(c => c.Count > i))
                             { line.Items.AddRange(cell[i].Items); line.Ascent = Math.Max(line.Ascent, cell[i].Ascent); line.Descent = Math.Max(line.Descent, cell[i].Descent); }
                             result.Add(line);
@@ -638,7 +638,7 @@ internal static partial class FixedLayout
             Finish();
             return result;
 
-            Line NewLine() => new Line { Origin = left, Ascent = baseSize, Descent = baseSize * 0.5 };
+            Line NewLine() => new Line { Origin = tabOrigin, Ascent = baseSize, Descent = baseSize * 0.5 };
             void Finish(bool lastLine = true)
             {
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)
