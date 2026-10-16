@@ -119,3 +119,15 @@ Word pagination parity. No proprietary Microsoft font is redistributed.
 - Linux rasterization uses the fontconfig-enabled Skia native package. Hosts must
   provide `libfontconfig1` and usable fonts for PDF font fallback; tests register the
   repository's pinned Noto Sans fonts. This does not change the font license above.
+
+## Optional comparison tooling
+
+- The comparison scripts pin test-only Pillow 12.3.0 (HPND) and Apache POI 5.4.1
+  (Apache-2.0). `eng/comparison-poi.json` records hashes of POI and its Apache-2.0
+  Commons Codec/Collections/Math/IO, SparseBitSet and Log4j API dependencies. Their
+  upstream LICENSE/NOTICE remain inside the downloaded jars, outside Git and NuGet.
+- Poppler (`pdftoppm`, GPL-2.0-or-later) and an optional antiword installation
+  (GPL-2.0-or-later) run as caller-installed test tools; they are not linked or shipped.
+- Aspose.Words and Microsoft Word are optional caller-provisioned, legitimately
+  licensed reference tools. No commercial binaries, fonts or license keys are
+  included in this repository or the shipped packages.

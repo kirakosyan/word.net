@@ -94,6 +94,8 @@ internal static partial class FixedLayout
 
     internal static List<FixedPage> Create(DocumentModel model, ConversionContext context)
     {
+        DiagnosticPhase previousPhase = context.Phase;
+        context.Phase = DiagnosticPhase.Layout;
         List<FixedPage> pages = CreateCore(model, context, 1, null);
         if (DocumentFields.NeedsPages(model))
         {
@@ -104,6 +106,7 @@ internal static partial class FixedLayout
             if (pages.Count != expected || current.Count != sections.Count || current.Any(p => !sections.TryGetValue(p.Key, out int count) || count != p.Value))
                 pages = CreateCore(model, context, pages.Count, current);
         }
+        context.Phase = previousPhase;
         return pages;
 
         static Dictionary<PageSettings, int> Counts(List<FixedPage> result) => result.GroupBy(p => p.SourceSettings).ToDictionary(g => g.Key, g => g.Count());
@@ -135,6 +138,7 @@ internal static partial class FixedLayout
         for (int blockIndex = 0; blockIndex < model.Blocks.Count; blockIndex++)
         {
             DocumentBlock block = model.Blocks[blockIndex];
+            using var location = context.At(block.Location);
             context.CheckCancellation();
             if (!ReferenceEquals(previousSection, block.Section))
             {
@@ -302,6 +306,7 @@ internal static partial class FixedLayout
 
         void AddParagraph(ParagraphBlock paragraph, double left, double width, List<Line> target)
         {
+            using var location = context.At(paragraph.Location);
             List<Line> lines = Lines(paragraph, left, width, 12, false);
             if (lines.Count > 0) { lines[0].Ascent += paragraph.Layout.Before ?? 0; lines[lines.Count - 1].Descent += paragraph.Layout.After ?? 6; }
             target.AddRange(lines);
@@ -458,6 +463,7 @@ internal static partial class FixedLayout
 
         List<Line> Prepare(ParagraphBlock paragraph)
         {
+            using var location = context.At(paragraph.Location);
             if (!prepared.TryGetValue(paragraph, out List<Line>? lines))
             {
                 lines = Lines(paragraph, settings.Left, settings.Width - settings.Left - settings.Right,

@@ -1,5 +1,25 @@
 # Conversion tests and qualification
 
+## Comparison corpus and preflight
+
+The additive preflight API and twelve-document comparison corpus are described in
+[diagnostics](diagnostics.md) and [comparison reproduction](comparison.md). New tests
+independently schema-check the authored invoices/contracts/reports/letterheads,
+assert identical parse/destination/layout findings against real conversion, check
+stable cell/story locations, bounded grouping, privacy, cancellation, stream ownership,
+encryption and resource failures, and distinguish provider/writer-only findings.
+The optional commercial runner does not change existing required CI gates.
+Local Linux x64 evidence: locked restore and warning-free Release builds of all
+five assets, **510/510** conversion/OCR tests on each of .NET 8.0.32 and 10.0.12,
+format verification and package/API validation pass. All twelve free comparison
+cases pass exact text/page checks and independent POI editable DOC reading order;
+three Python control tests pass, including actual displaced/missing-text/extra-page
+PDFs and stale-raster rejection. The historical performance harness also builds
+against the earlier core API. Raw reports are under ignored `artifacts/comparison*`.
+Word/Aspose reference execution and Windows/ARM64/Framework runtime qualification
+were not performed here.
+
+
 ## Stable 1.1.0 release qualification
 
 The maintainer requested a stable release after the review corrections below.

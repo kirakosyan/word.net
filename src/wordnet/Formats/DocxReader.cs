@@ -49,7 +49,7 @@ internal sealed partial class DocxReader
             throw new InvalidDataException("Docx.ContentType: A non-macro DOCX main document content type is required.");
         }
 
-        var reader = new DocxReader(context, package.ReadRelationships(main));
+        var reader = new DocxReader(context, package.ReadRelationships(main)) { mainPart = main };
         var knownParts = new HashSet<string>(StringComparer.Ordinal)
         {
             "[Content_Types].xml", "_rels/.rels", main, DocxPackage.RelationshipPartName(main),
@@ -64,7 +64,7 @@ internal sealed partial class DocxReader
         if (styleRelations.Length == 1)
         {
             string stylePart = DocxPackage.ResolvePart(main, styleRelations[0]);
-            reader.ReadStyles(package.ReadXml(stylePart));
+            using (context.At(new SourceLocation(stylePart, "/"))) reader.ReadStyles(package.ReadXml(stylePart));
             knownParts.Add(stylePart);
         }
 
@@ -116,6 +116,7 @@ internal sealed partial class DocxReader
             if (!metadata && !catalog && !settings) continue;
             string path = DocxPackage.ResolvePart(owner, relation);
             XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.AuxiliaryPart: Missing root.");
+            using var location = context.At(XmlSourceLocation.Create(root, path));
             knownParts.Add(path);
             if (metadata)
             {
@@ -168,6 +169,7 @@ internal sealed partial class DocxReader
         foreach (XElement element in container.Elements())
         {
             context.CheckCancellation();
+            using var location = context.At(XmlSourceLocation.Create(element, mainPart));
             if (Container(element, out XElement? content))
             {
                 if (content != null) ReadBlocks(content, blocks);
@@ -199,6 +201,7 @@ internal sealed partial class DocxReader
 
     private ParagraphBlock ReadParagraph(XElement element)
     {
+        using var location = context.At(XmlSourceLocation.Create(element, mainPart));
         var style = ResolveStyle(defaultStyle, new HashSet<string>(StringComparer.Ordinal));
         XElement? properties = element.Element(W + "pPr");
         string? styleId = (string?)properties?.Element(W + "pStyle")?.Attribute(W + "val");
@@ -208,7 +211,7 @@ internal sealed partial class DocxReader
         }
 
         ReadParagraphProperties(properties, style);
-        var paragraph = new ParagraphBlock { HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = ResolveList(style), Layout = style.Layout.Copy() };
+        var paragraph = new ParagraphBlock { Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = ResolveList(style), Layout = style.Layout.Copy() };
         ReadInlines(element, paragraph.Runs, style, null);
         return paragraph;
     }
@@ -218,6 +221,7 @@ internal sealed partial class DocxReader
         foreach (XElement child in element.Elements())
         {
             context.CheckCancellation();
+            using var location = context.At(XmlSourceLocation.Create(child, mainPart));
             if (Container(child, out XElement? content))
             {
                 if (content != null) ReadInlines(content, runs, inherited, link);
@@ -320,7 +324,8 @@ internal sealed partial class DocxReader
 
     private TableBlock ReadTable(XElement element)
     {
-        var table = new TableBlock();
+        using var location = context.At(XmlSourceLocation.Create(element, mainPart));
+        var table = new TableBlock { Location = context.Location };
         ReadTableGeometry(element, table);
         foreach (XElement child in TableContents(element))
         {
@@ -362,6 +367,7 @@ internal sealed partial class DocxReader
                     continue;
                 }
 
+                using var cellLocation = context.At(XmlSourceLocation.Create(rowChild, mainPart));
                 var cell = new TableCell();
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
                 foreach (XElement content in TableContents(rowChild))

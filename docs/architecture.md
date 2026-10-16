@@ -28,6 +28,13 @@ flowchart LR
 have per-call snapshots for mutable HTML/font settings; callers configure those
 collections before concurrent use. Provider types stay outside the public API.
 
+`WordConverter.Inspect/InspectAsync` reuse source parsing and destination fidelity
+checks, with optional fixed-page layout and no output serialization. Diagnostics
+retain grouping and add bounded stage/source occurrences. DOCX block locations
+flow from indexed source XML into feature checks and layout; adapters without
+precise mapping explicitly use document-level identifiers. See
+[the design decision](preflight-comparison-design.md) and [diagnostics](diagnostics.md).
+
 Core export is managed. `wordnet.Fonts` supplies embedded OFL resources. Optional
 `wordnet.Ocr` contains PDF input, Skia and Tesseract integration; a per-call managed
 delegate bridge loads it only for PDF input. Missing that package yields a setup

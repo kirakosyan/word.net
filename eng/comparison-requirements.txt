@@ -1,0 +1,2 @@
+# Test-only raster metric implementation, never a runtime/package dependency.
+Pillow==12.3.0

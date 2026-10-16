@@ -39,6 +39,8 @@ internal sealed class FontResolver
         if (sources.Length > 128 || sources.Any(s => s == null)) throw new ArgumentException("Configure at most 128 non-null caller font faces.");
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
+            context.CheckCancellation();
+            using var location = context.At(paragraph.Location);
             if (paragraph.List != null) _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
             foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
         }

@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Independently authored synthetic examples, MIT; no customer data or proprietary resources.",
+  "generator": "eng/generate-comparison-corpus.py",
+  "generatorSha256": "872a86f963254fe92ad8ce0b2b5cbcfbea4e7ebeb9d7f66fb1b633de2147f6fa",
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    }
+  ],
+  "documents": [
+    {
+      "id": "invoice-services",
+      "category": "invoice",
+      "path": "invoice-services.docx",
+      "sha256": "23c75540a2d3d5bc691d00bb55eff3a1617674f5b8af80c53d3e6f4511312bb4",
+      "requiredText": [
+        "INVOICE S-101",
+        "Consulting services",
+        "Discovery workshop",
+        "1200 EUR",
+        "Payment due in 30 days"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "invoice-nested",
+      "category": "invoice",
+      "path": "invoice-nested.docx",
+      "sha256": "7889299fb8b6ee11c16ac7d0af9591411740b96e13b7f7783d29a0261c971360",
+      "requiredText": [
+        "INVOICE N-202",
+        "Hardware bundle",
+        "Adapter",
+        "80 EUR",
+        "Total 480 EUR"
+      ],
+      "knownLosses": [
+        "Table.NestedFlattened",
+        "Table.Decoration"
+      ],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "invoice-relative",
+      "category": "invoice",
+      "path": "invoice-relative.docx",
+      "sha256": "f15faaed30fdf0c95a363a2e609c6cdc5e81aa0a75b45b8026aaedc2273c0b30",
+      "requiredText": [
+        "INVOICE P-303",
+        "Delivery",
+        "250 EUR",
+        "Tax 50 EUR",
+        "Total 300 EUR"
+      ],
+      "knownLosses": [
+        "Docx.RelativeWidth"
+      ],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "contract-services",
+      "category": "contract",
+      "path": "contract-services.docx",
+      "sha256": "3cba27f301e28538d109d234677c3f772143a8866c2975064e3bce663a172500",
+      "requiredText": [
+        "SERVICE AGREEMENT",
+        "Parties: Example North and Example South",
+        "Scope of work",
+        "Deliver the reviewed prototype.",
+        "Signature: Authorised representative"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "contract-legal",
+      "category": "contract",
+      "path": "contract-legal.docx",
+      "sha256": "a425eb9b3fdce76d240bf6e369f075dafab90b108f4c79f3e48ceda3992b1458",
+      "requiredText": [
+        "SUPPLY CONTRACT",
+        "Delivery obligations",
+        "Acceptance criteria",
+        "Liability cap is 5000 EUR."
+      ],
+      "knownLosses": [
+        "Docx.ListFormat",
+        "Docx.ListLabel"
+      ],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "contract-revisions",
+      "category": "contract",
+      "path": "contract-revisions.docx",
+      "sha256": "e79dce2bee7f87071f5b89cc25145a38a7988dbd97266f03fdfc8e1b4f0090a0",
+      "requiredText": [
+        "LEASE ADDENDUM",
+        "Monthly rent 900 EUR",
+        "Accepted term: twelve months",
+        "End of addendum"
+      ],
+      "knownLosses": [
+        "Revisions.Accepted"
+      ],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "report-quarterly",
+      "category": "report",
+      "path": "report-quarterly.docx",
+      "sha256": "eb436d049fe672a6e182de68171b398ef11a019dfe8c860d64664619134588fc",
+      "requiredText": [
+        "QUARTERLY OPERATIONS",
+        "Revenue 24000 EUR",
+        "Completed projects 18",
+        "Next quarter: expand support."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "report-columns",
+      "category": "report",
+      "path": "report-columns.docx",
+      "sha256": "5ee233cc3bbcc85f6b26cd2d128e926c623f5b31b5d4d97b357db4ef53a385c7",
+      "requiredText": [
+        "RESEARCH SUMMARY",
+        "Observation one: response improved.",
+        "Observation two: review remains open."
+      ],
+      "knownLosses": [
+        "Docx.PageLayout"
+      ],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "report-pages",
+      "category": "report",
+      "path": "report-pages.docx",
+      "sha256": "a19b83640c3d3edd6191af35693e8f282242da3b7efcc45c3dbf0f5ca722a178",
+      "requiredText": [
+        "ANNUAL REVIEW",
+        "Results for the year",
+        "APPENDIX",
+        "Independent audit completed"
+      ],
+      "knownLosses": [],
+      "expectedPages": 2,
+      "references": []
+    },
+    {
+      "id": "letterhead-offer",
+      "category": "letterhead",
+      "path": "letterhead-offer.docx",
+      "sha256": "af70f5436db5b56dd2afaded60a446032d3dc88c45c193b12fe5c5c3192555cb",
+      "requiredText": [
+        "OFFER OF SERVICES",
+        "Dear procurement team,",
+        "We offer scheduled maintenance.",
+        "Sincerely, Example Engineering"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "letterhead-brand",
+      "category": "letterhead",
+      "path": "letterhead-brand.docx",
+      "sha256": "65c917e37416768ed8ee6f4a4c095e8a94d0c694affb28d3fac9e368f61251c2",
+      "requiredText": [
+        "BRAND NOTICE",
+        "Our service address has changed.",
+        "Please update your records."
+      ],
+      "knownLosses": [
+        "Font.Substituted"
+      ],
+      "expectedPages": 1,
+      "references": []
+    },
+    {
+      "id": "letterhead-textbox",
+      "category": "letterhead",
+      "path": "letterhead-textbox.docx",
+      "sha256": "6fe20890103d76470ebc44eb442fb7a9cef4854bd9a66f9b2d957d15d0fd339e",
+      "requiredText": [
+        "DELIVERY NOTICE",
+        "Routing label",
+        "Dispatch reference SYN-404",
+        "Retain this notice."
+      ],
+      "knownLosses": [
+        "Docx.Inline"
+      ],
+      "expectedPages": 1,
+      "references": []
+    }
+  ]
+}
