@@ -15,6 +15,8 @@ internal sealed partial class DocxWriter
 {
     private static readonly XNamespace W = DocxPackage.Word;
     private readonly ConversionContext context;
+    private DocumentModel model = null!;
+    private readonly Dictionary<string, int> bookmarkIds = new Dictionary<string, int>(StringComparer.Ordinal);
     private readonly List<XElement> relationships = new List<XElement>();
     private readonly HashSet<string> usedStyles = new HashSet<string>(StringComparer.Ordinal);
 
@@ -25,7 +27,8 @@ internal sealed partial class DocxWriter
 
     internal static void Write(DocumentModel document, Stream output, ConversionContext context)
     {
-        var writer = new DocxWriter(context);
+        var writer = new DocxWriter(context) { model = document };
+        if (DocumentReferences.HasFields(document)) _ = WordNet.Layout.FixedLayout.Create(document, context);
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
         PageSettings? previousSection = null;
@@ -92,6 +95,7 @@ internal sealed partial class DocxWriter
             WritePart(archive, "word/styles.xml", writer.Styles());
         }
 
+        writer.WriteNotes(document, archive, types);
         writer.WriteResources(archive, types);
         if (writer.relationships.Count > 0)
         {
@@ -143,6 +147,7 @@ internal sealed partial class DocxWriter
             {
                 element.Add(runElement);
             }
+            else if ((run.Link.Length > 0 && run.Link[0] == '#')) element.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElement));
             else
             {
                 string id = "rLink" + relationships.Count.ToString(CultureInfo.InvariantCulture);
@@ -158,9 +163,29 @@ internal sealed partial class DocxWriter
 
     private XElement Run(TextRun run)
     {
+        if (run.Bookmark != null)
+        {
+            bool end = (run.Bookmark.Length > 0 && run.Bookmark[0] == '/'); string name = end ? run.Bookmark.Substring(1) : run.Bookmark;
+            if (!bookmarkIds.TryGetValue(name, out int id)) bookmarkIds.Add(name, id = bookmarkIds.Count);
+            return new XElement(W + (end ? "bookmarkEnd" : "bookmarkStart"), new XAttribute(W + "id", id), end ? null : new XAttribute(W + "name", name));
+        }
         if (run.FieldInstruction != null)
-            return new XElement(W + "fldSimple", new XAttribute(W + "instr", run.FieldInstruction),
-                Run(new TextRun(run.Text, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, run.Image, run.Appearance)));
+        {
+            string result = model.FieldResults.TryGetValue(run, out string? calculated) ? calculated : run.Text;
+            var field = new XElement(W + "fldSimple", new XAttribute(W + "instr", run.FieldInstruction));
+            if (model.TocTargets.TryGetValue(run, out List<string>? targets))
+            {
+                string[] lines = result.Split('\n');
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (i > 0) field.Add(new XElement(W + "r", new XElement(W + "br")));
+                    XElement content = Run(new TextRun(lines[i], run.Bold, run.Italic, run.Code, fontSize: run.FontSize, color: run.Color, appearance: run.Appearance));
+                    field.Add(i < targets.Count ? new XElement(W + "hyperlink", new XAttribute(W + "anchor", targets[i]), content) : content);
+                }
+            }
+            else field.Add(Run(new TextRun(result, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, run.Image, run.Appearance)));
+            return field;
+        }
         var element = new XElement(W + "r");
         var properties = new XElement(W + "rPr");
         RunAppearance appearance = run.Appearance;
@@ -191,12 +216,18 @@ internal sealed partial class DocxWriter
         {
             element.Add(properties);
         }
+        if (run.Box != null) { element.Add(BoxDrawing(run.Box)); return element; }
+        if (run.Note != null)
+        {
+            element.Add(new XElement(W + (run.Note.Endnote ? "endnoteReference" : "footnoteReference"), new XAttribute(W + "id", run.Note.PartId))); return element;
+        }
         if (run.Image != null) { element.Add(Drawing(run.Image)); return element; }
 
         string text;
         try
         {
-            text = XmlConvert.VerifyXmlChars(run.Text);
+            _ = XmlConvert.VerifyXmlChars(run.Text.Replace("\f", "\n").Replace("\v", "\n"));
+            text = run.Text;
         }
         catch (XmlException exception)
         {
@@ -206,7 +237,7 @@ internal sealed partial class DocxWriter
         int start = 0;
         for (int index = 0; index <= text.Length; index++)
         {
-            if (index == text.Length || text[index] == '\n' || text[index] == '\t')
+            if (index == text.Length || text[index] == '\n' || text[index] == '\t' || text[index] == '\f' || text[index] == '\v')
             {
                 if (index > start)
                 {
@@ -215,7 +246,7 @@ internal sealed partial class DocxWriter
 
                 if (index < text.Length)
                 {
-                    element.Add(new XElement(W + (text[index] == '\t' ? "tab" : "br")));
+                    element.Add(new XElement(W + (text[index] == '\t' ? "tab" : "br"), text[index] is '\f' or '\v' ? new XAttribute(W + "type", text[index] == '\f' ? "page" : "column") : null));
                 }
 
                 start = index + 1;
@@ -228,8 +259,9 @@ internal sealed partial class DocxWriter
     private XElement Table(TableBlock table)
     {
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
-            new XElement(W + "tblW", new XAttribute(W + "w", table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.Width.HasValue ? "dxa" : "auto"))));
+            new XElement(W + "tblW", new XAttribute(W + "w", table.WidthPercent.HasValue ? Math.Round(table.WidthPercent.Value * 50).ToString(CultureInfo.InvariantCulture) : table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.WidthPercent.HasValue ? "pct" : table.Width.HasValue ? "dxa" : "auto"))));
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
+        element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));
@@ -237,16 +269,18 @@ internal sealed partial class DocxWriter
         {
             context.CheckCancellation();
             var row = new XElement(W + "tr");
-            if (index < table.HeaderRowCount || table.NonSplittingRows.Contains(index))
+            if (index < table.HeaderRowCount || table.NonSplittingRows.Contains(index) || table.RowHeights.ContainsKey(index))
             {
                 row.Add(new XElement(W + "trPr", table.NonSplittingRows.Contains(index) ? new XElement(W + "cantSplit") : null,
+                    table.RowHeights.TryGetValue(index, out var height) ? new XElement(W + "trHeight", new XAttribute(W + "val", Twips(height.Height)), new XAttribute(W + "hRule", height.Exact ? "exact" : "atLeast")) : null,
                     index < table.HeaderRowCount ? new XElement(W + "tblHeader") : null));
             }
 
             foreach (TableCell cell in table.Rows[index])
             {
                 var cellProperties = new XElement(W + "tcPr");
-                if (cell.CellWidth.HasValue) cellProperties.Add(new XElement(W + "tcW", new XAttribute(W + "type", "dxa"), new XAttribute(W + "w", Twips(cell.CellWidth.Value))));
+                if (cell.WidthPercent.HasValue) cellProperties.Add(new XElement(W + "tcW", new XAttribute(W + "type", "pct"), new XAttribute(W + "w", Math.Round(cell.WidthPercent.Value * 50))));
+                else if (cell.CellWidth.HasValue) cellProperties.Add(new XElement(W + "tcW", new XAttribute(W + "type", "dxa"), new XAttribute(W + "w", Twips(cell.CellWidth.Value))));
                 if (cell.ColumnSpan > 1) cellProperties.Add(new XElement(W + "gridSpan", new XAttribute(W + "val", cell.ColumnSpan)));
                 if (cell.Merge != VerticalMerge.None) cellProperties.Add(new XElement(W + "vMerge", new XAttribute(W + "val", cell.Merge == VerticalMerge.Start ? "restart" : "continue")));
                 if (cell.Borders.Count > 0) cellProperties.Add(new XElement(W + "tcBorders", cell.Borders.Select(b => new XElement(W + b.Key,

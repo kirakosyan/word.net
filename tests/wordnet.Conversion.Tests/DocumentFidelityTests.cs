@@ -165,7 +165,6 @@ public sealed partial class DocumentFidelityTests
     [InlineData(DocumentFormat.Markdown)]
     [InlineData(DocumentFormat.Mobi)]
     [InlineData(DocumentFormat.Azw3)]
-    [InlineData(DocumentFormat.Xps)]
     public void UnsupportedImageOutputsAreExplicitAndPreserveStrictDestination(DocumentFormat target)
     {
         byte[] input = FidelityDocuments.Docx("color-grid.png", FidelityDocuments.ImageParagraph());

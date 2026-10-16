@@ -19,7 +19,7 @@ internal sealed partial class DocxReader
             if (element.Name == W + "del" || element.Name == W + "moveFrom") content = null;
             return true;
         }
-        if (element.Name == W + "bookmarkStart" || element.Name == W + "bookmarkEnd" || element.Name == W + "proofErr"
+        if (element.Name == W + "proofErr"
             || element.Name == W + "permStart" || element.Name == W + "permEnd") { content = null; return true; }
         if (element.Name == W + "commentRangeStart" || element.Name == W + "commentRangeEnd" || element.Name == W + "commentReference")
         { context.Loss("Comments.Ignored", "Comments are omitted from the rendered document."); content = null; return true; }
@@ -29,7 +29,7 @@ internal sealed partial class DocxReader
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).All(prefix =>
             {
                 XNamespace? ns = choice.GetNamespaceOfPrefix(prefix);
-                return ns == W || ns == A || ns == Wp || ns == Pic;
+                return ns == W || ns == A || ns == Wp || ns == Pic || ns == "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
             })) ?? element.Element(Mc + "Fallback");
         if (content == null) context.Loss("Docx.AlternateContent", "Alternate content without an understood choice or fallback is omitted.");
         return true;

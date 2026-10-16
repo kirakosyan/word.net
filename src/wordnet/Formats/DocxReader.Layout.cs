@@ -47,9 +47,40 @@ internal sealed partial class DocxReader
             else if (property.Name == W + "type")
             {
                 string kind = (string?)property.Attribute(W + "val") ?? "nextPage";
-                if (kind != "nextPage") context.Loss("Docx.SectionBreak", "Continuous, column and parity section breaks become next-page section breaks.");
+                if (kind is not "nextPage" and not "continuous" and not "oddPage" and not "evenPage")
+                    context.Loss("Docx.SectionBreak", "An unsupported section transition becomes a next-page break.");
+                else settings.BreakType = kind;
             }
-            else if (property.Name == W + "cols" && !property.HasElements && ((string?)property.Attribute(W + "num") is null or "1")) { }
+            else if (property.Name == W + "cols")
+            {
+                int count = property.Attribute(W + "num") == null ? 1 : Integer(property, W + "num", 1, 64);
+                if (property.HasElements || (string?)property.Attribute(W + "equalWidth") is "0" or "false" || count > 3)
+                    context.Loss("Docx.Columns", "Only one to three equal-width body columns are supported.");
+                else settings.Columns = count;
+                if (property.Attribute(W + "space") != null) settings.ColumnGap = Integer(property, W + "space", 0, 31680) / 20.0;
+            }
+            else if (property.Name == W + "pgNumType")
+            {
+                if (property.Attribute(W + "start") != null) settings.PageNumberStart = Integer(property, W + "start", 1, int.MaxValue - 1);
+                string format = (string?)property.Attribute(W + "fmt") ?? "decimal";
+                if (format is "decimal" or "lowerRoman" or "upperRoman" or "lowerLetter" or "upperLetter") settings.PageNumberFormat = format;
+                else context.Loss("Docx.PageNumberFormat", "An unsupported page-number format uses decimal labels.");
+                if (property.Attributes().Any(a => a.Name != W + "start" && a.Name != W + "fmt")) context.Loss("Docx.PageNumberFormat", "Chapter-based page-number prefixes are not retained.");
+            }
+            else if (property.Name == W + "footnotePr" || property.Name == W + "endnotePr")
+            {
+                var policy = new NotePolicy();
+                if (property.Element(W + "numStart") is XElement start) policy.Start = Integer(start, W + "val", 1, int.MaxValue - 1);
+                string format = (string?)property.Element(W + "numFmt")?.Attribute(W + "val") ?? "decimal";
+                if (format is "decimal" or "upperRoman" or "lowerRoman" or "upperLetter" or "lowerLetter") policy.Format = format;
+                else context.Loss("Notes.Numbering", "An unsupported note number format uses decimal labels.");
+                string restart = (string?)property.Element(W + "numRestart")?.Attribute(W + "val") ?? "continuous";
+                if (restart is not "continuous" and not "eachSect" and not "eachPage") throw new InvalidDataException("Docx.NoteRestart: Invalid note restart policy.");
+                policy.Restart = restart;
+                if (property.Elements().Any(e => e.Name != W + "numStart" && e.Name != W + "numFmt" && e.Name != W + "numRestart"))
+                    context.Loss("Notes.Properties", "Custom note placement and separator properties use the standard page-bottom profile.");
+                if (property.Name == W + "footnotePr") settings.Footnotes = policy; else settings.Endnotes = policy;
+            }
             else if (property.Name == W + "titlePg") settings.DifferentFirstPage = IsOn(property);
             else if (property.Name == W + "headerReference" || property.Name == W + "footerReference")
             {

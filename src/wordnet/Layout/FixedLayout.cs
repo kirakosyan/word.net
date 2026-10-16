@@ -18,6 +18,13 @@ internal sealed class FixedPage
     internal PageSettings Settings { get; set; } = new PageSettings();
     internal PageSettings SourceSettings { get; set; } = new PageSettings();
     internal List<PositionedText> Text { get; } = new List<PositionedText>();
+    internal List<FixedShape> Shapes { get; } = new List<FixedShape>();
+    internal List<(double X, double Y, double Width, double Height, string Wrap)> Exclusions { get; } = new List<(double, double, double, double, string)>();
+    internal HashSet<PageSettings> Sections { get; } = new HashSet<PageSettings>();
+    internal int PageNumber { get; set; } = 1;
+    internal bool ParityBlank { get; set; }
+    internal double BodyBottom { get; set; }
+    internal int NoteCount { get; set; }
     internal List<FixedHeading> Headings { get; } = new List<FixedHeading>();
 }
 
@@ -32,8 +39,8 @@ internal sealed class FixedHeading
 
 internal sealed class PositionedText
 {
-    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null)
-    { Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
+    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null)
+    { Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
     internal string Text { get; }
     internal double X { get; }
     internal double Y { get; }
@@ -43,8 +50,9 @@ internal sealed class PositionedText
     internal DocumentImage? Image { get; }
     internal string? Link { get; }
     internal TextRun? Field { get; }
-    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field);
-    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field);
+    internal PositionedBox? Box { get; }
+    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box);
+    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box);
 }
 
 internal static partial class FixedLayout
@@ -55,7 +63,10 @@ internal static partial class FixedLayout
     private sealed class Line
     {
         internal List<PositionedText> Items { get; } = new List<PositionedText>();
+        internal List<FixedShape> Shapes { get; } = new List<FixedShape>();
         internal double Origin { get; set; }
+        internal double PageLeft { get; set; }
+        internal char BreakAfter { get; set; }
         internal double Ascent { get; set; }
         internal double Descent { get; set; }
         internal double Height => Ascent + Descent;
@@ -66,6 +77,10 @@ internal static partial class FixedLayout
         internal List<Line> Lines { get; } = new List<Line>();
         internal CellPadding Padding { get; set; } = new CellPadding();
         internal int Column { get; set; }
+        internal double Left { get; set; }
+        internal double Width { get; set; }
+        internal double Extent { get; set; }
+        internal TableCell Source { get; set; } = null!;
         internal int RowSpan { get; set; } = 1;
         internal VerticalMerge Merge { get; set; }
         internal double Height => Padding.Top + Lines.Sum(l => l.Height) + Padding.Bottom;
@@ -75,6 +90,7 @@ internal static partial class FixedLayout
     {
         internal List<CellLayout> Cells { get; } = new List<CellLayout>();
         internal double Height { get; set; }
+        internal bool NonSplitting { get; set; }
     }
 
     private sealed class MeasuredText
@@ -96,6 +112,8 @@ internal static partial class FixedLayout
     {
         DiagnosticPhase previousPhase = context.Phase;
         context.Phase = DiagnosticPhase.Layout;
+        bool references = DocumentReferences.HasFields(model);
+        if (references) _ = DocumentReferences.Refresh(model, context);
         List<FixedPage> pages = CreateCore(model, context, 1, null);
         if (DocumentFields.NeedsPages(model))
         {
@@ -106,10 +124,21 @@ internal static partial class FixedLayout
             if (pages.Count != expected || current.Count != sections.Count || current.Any(p => !sections.TryGetValue(p.Key, out int count) || count != p.Value))
                 pages = CreateCore(model, context, pages.Count, current);
         }
+        if (references)
+        {
+            bool stable = false;
+            for (int pass = 0; pass < 4; pass++)
+            {
+                if (!DocumentReferences.Refresh(model, context)) { stable = true; break; }
+                pages = CreateCore(model, context, pages.Count, Counts(pages));
+            }
+            if (!stable && DocumentReferences.Refresh(model, context))
+                context.Loss("Field.LayoutDidNotConverge", "Calculated references did not stabilize within four layout passes.");
+        }
         context.Phase = previousPhase;
         return pages;
 
-        static Dictionary<PageSettings, int> Counts(List<FixedPage> result) => result.GroupBy(p => p.SourceSettings).ToDictionary(g => g.Key, g => g.Count());
+        static Dictionary<PageSettings, int> Counts(List<FixedPage> result) => result.SelectMany(p => p.Sections).Distinct().ToDictionary(s => s, s => result.Count(p => p.Sections.Contains(s)));
     }
 
     private static List<FixedPage> CreateCore(DocumentModel model, ConversionContext context, int totalPages, Dictionary<PageSettings, int>? sectionTotals)
@@ -131,10 +160,18 @@ internal static partial class FixedLayout
         var pages = new List<FixedPage> { new FixedPage { Settings = settings, SourceSettings = sourceSettings } };
         var counter = new ListCounter();
         int renderPage = 0, renderSectionPages = totalPages;
+        double y = 0;
         settings = ReserveStories(sourceSettings); pages[0].Settings = settings;
-        double y = settings.Top;
+        pages[0].Sections.Add(sourceSettings); pages[0].PageNumber = sourceSettings.PageNumberStart ?? 1;
+        int columnIndex = 0;
+        double columnTop = settings.Top;
+        ApplyColumn();
+        y = settings.Top;
         PageSettings? previousSection = model.Blocks.FirstOrDefault()?.Section;
         var prepared = new Dictionary<ParagraphBlock, List<Line>>();
+        var pageNotes = new Dictionary<FixedPage, List<Line>>();
+        var assignedNotes = new HashSet<DocumentNote>();
+        var pendingNotes = new Queue<Line>();
         for (int blockIndex = 0; blockIndex < model.Blocks.Count; blockIndex++)
         {
             DocumentBlock block = model.Blocks[blockIndex];
@@ -143,14 +180,25 @@ internal static partial class FixedLayout
             if (!ReferenceEquals(previousSection, block.Section))
             {
                 previousSection = block.Section;
-                sourceSettings = block.Section ?? new PageSettings(); sourceSettings.Validate();
-                settings = ReserveStories(sourceSettings);
-                AddPage();
+                PageSettings next = block.Section ?? new PageSettings(); next.Validate();
+                bool continuous = next.BreakType == "continuous";
+                if (continuous && (next.Width != sourceSettings.Width || next.Height != sourceSettings.Height || next.Left != sourceSettings.Left || next.Right != sourceSettings.Right || next.Top != sourceSettings.Top || next.Bottom != sourceSettings.Bottom))
+                { context.Loss("Layout.ContinuousGeometry", "A continuous section with incompatible physical geometry begins a new page."); continuous = false; }
+                if (!continuous && next.BreakType is "oddPage" or "evenPage" && (pages.Count + 1) % 2 != (next.BreakType == "oddPage" ? 1 : 0))
+                { AddPage(); pages[pages.Count - 1].ParityBlank = true; }
+                sourceSettings = next; settings = ReserveStories(sourceSettings);
+                if (continuous)
+                {
+                    if (next.PageNumberStart.HasValue) context.Loss("Layout.ContinuousPageRestart", "A page-number restart on a shared physical page takes effect on the following page.");
+                    pages[pages.Count - 1].Sections.Add(next);
+                    columnTop = Math.Max(y, pages[pages.Count - 1].BodyBottom); y = columnTop; columnIndex = 0; ApplyColumn();
+                }
+                else AddPage();
             }
             if (block is ParagraphBlock paragraph)
             {
-                List<Line> lines = Prepare(paragraph);
                 if (paragraph.Layout.PageBreakBefore && y > settings.Top) AddPage();
+                List<Line> lines = Prepare(paragraph);
                 double before = paragraph.Layout.Before ?? 0;
                 double totalHeight = before + lines.Sum(l => l.Height);
                 if (paragraph.Layout.KeepWithNext)
@@ -177,6 +225,7 @@ internal static partial class FixedLayout
                 foreach (Line original in lines)
                 {
                     Line line = FitLine(original, settings.Height - settings.Top - settings.Bottom);
+                    ReserveNotes(line);
                     NewPageIfNeeded(line.Height);
                     if (firstLine && paragraph.HeadingLevel > 0)
                     {
@@ -185,6 +234,7 @@ internal static partial class FixedLayout
                     }
                     firstLine = false;
                     Place(line, y); y += line.Height;
+                    if (line.BreakAfter == '\f') AddPage(); else if (line.BreakAfter == '\v') AdvanceColumn();
                 }
                 y += paragraph.Layout.After ?? 6;
             }
@@ -194,18 +244,23 @@ internal static partial class FixedLayout
                 y += 6;
             }
         }
+        foreach (DocumentNote note in model.Notes.Where(n => n.Endnote))
+            foreach (Line line in NoteLines(note)) { NewPageIfNeeded(line.Height); Place(line, y); y += line.Height; }
+        while (pendingNotes.Count > 0) AddPage();
         if (model.FinalSection != null && !ReferenceEquals(previousSection, model.FinalSection) && model.Blocks.Count > 0)
         {
             sourceSettings = model.FinalSection; sourceSettings.Validate(); settings = ReserveStories(sourceSettings); AddPage();
         }
-        var sectionPages = pages.GroupBy(p => p.SourceSettings).ToDictionary(g => g.Key, g => g.Count());
+        var sectionPages = pages.SelectMany(p => p.Sections).Distinct().ToDictionary(s => s, s => pages.Count(p => p.Sections.Contains(s)));
         var sectionIndices = new Dictionary<PageSettings, int>();
         for (int pageIndex = 0; pageIndex < pages.Count; pageIndex++)
         {
             FixedPage page = pages[pageIndex]; sourceSettings = page.SourceSettings; settings = page.Settings;
+            if (page.ParityBlank) continue;
+            context.PageNumberFormat = sourceSettings.PageNumberFormat;
             int sectionIndex = sectionIndices.TryGetValue(sourceSettings, out int previous) ? previous + 1 : 1;
             sectionIndices[sourceSettings] = sectionIndex;
-            renderPage = pageIndex + 1; renderSectionPages = sectionPages[sourceSettings];
+            renderPage = page.PageNumber; renderSectionPages = sectionPages[sourceSettings];
             AddStory("header-", sourceSettings.HeaderDistance, atEnd: false);
             AddStory("footer-", sourceSettings.Height - sourceSettings.FooterDistance, atEnd: true);
             void AddStory(string prefix, double position, bool atEnd)
@@ -224,10 +279,23 @@ internal static partial class FixedLayout
                 var items = new List<PositionedText>();
                 foreach (Line line in lines)
                 {
-                    foreach (PositionedText item in line.Items) items.Add(item.At(item.X, top + line.Ascent + item.Y));
+                    int start = page.Text.Count;
+                    PlaceOn(page, line, top);
+                    items.AddRange(page.Text.Skip(start)); page.Text.RemoveRange(start, page.Text.Count - start);
                     top += line.Height;
                 }
                 if (atEnd) page.Text.AddRange(items); else page.Text.InsertRange(0, items);
+            }
+        }
+        foreach (var pair in pageNotes)
+        {
+            FixedPage page = pair.Key;
+            double top = page.Settings.Height - page.Settings.Bottom - pair.Value.Sum(l => l.Height);
+            page.Shapes.Add(new FixedShape(page.SourceSettings.Left, top - 6, Math.Min(72, page.Settings.Width - page.SourceSettings.Left - page.SourceSettings.Right), 0, "000000", 0.5));
+            foreach (Line line in pair.Value)
+            {
+                foreach (PositionedText item in line.Items) page.Text.Add(item.At(item.X, top + line.Ascent + item.Y));
+                top += line.Height;
             }
         }
         context.PageCount = pages.Count;
@@ -264,29 +332,7 @@ internal static partial class FixedLayout
                 if (block is ParagraphBlock paragraph) AddParagraph(paragraph, settings.Left, settings.Width - settings.Left - settings.Right, result);
                 else if (block is TableBlock table)
                 {
-                    foreach (List<TableCell> row in table.Rows)
-                    {
-                        var cells = new List<List<Line>>(); double left = settings.Left + table.LeftIndent;
-                        int columns = row.Sum(c => c.ColumnSpan), column = 0;
-                        foreach (TableCell cell in row)
-                        {
-                            double width = cell.CellWidth ?? (column < table.ColumnWidths.Count ? table.ColumnWidths.Skip(column).Take(cell.ColumnSpan).Sum()
-                                : (table.Width ?? settings.Width - settings.Left - settings.Right) * cell.ColumnSpan / columns);
-                            CellPadding padding = cell.Padding ?? new CellPadding();
-                            var lines = new List<Line>();
-                            foreach (ParagraphBlock p in cell.Paragraphs) AddParagraph(p, left + padding.Left, width - padding.Left - padding.Right, lines);
-                            if (lines.Count > 0) { lines[0].Ascent += padding.Top; lines[lines.Count - 1].Descent += padding.Bottom; }
-                            cells.Add(lines); left += width; column += cell.ColumnSpan;
-                        }
-                        int count = cells.Count == 0 ? 0 : cells.Max(c => c.Count);
-                        for (int i = 0; i < count; i++)
-                        {
-                            var line = new Line { Origin = settings.Left };
-                            foreach (var cell in cells.Where(c => c.Count > i))
-                            { line.Items.AddRange(cell[i].Items); line.Ascent = Math.Max(line.Ascent, cell[i].Ascent); line.Descent = Math.Max(line.Descent, cell[i].Descent); }
-                            result.Add(line);
-                        }
-                    }
+                    result.AddRange(NestedLines(BuildRows(table, settings.Left, settings.Width - settings.Left - settings.Right, 0)));
                 }
             }
             if (context.EffectiveMode == FidelityMode.Lenient)
@@ -312,59 +358,8 @@ internal static partial class FixedLayout
 
         void RenderTable(TableBlock table)
         {
-            var rows = new List<RowLayout>();
-            double[] edges = table.ColumnEdges();
-            for (int r = 0; r < table.Rows.Count; r++)
-            {
-                context.CheckCancellation();
-                List<TableCell> source = table.Rows[r];
-                var row = new RowLayout(); rows.Add(row);
-                int columns = source.Sum(c => c.ColumnSpan), column = 0;
-                double left = settings.Left + table.LeftIndent, total = table.Width ?? (table.ColumnWidths.Count > 0 ? edges[edges.Length - 1] : settings.Width - settings.Left - settings.Right);
-                foreach (TableCell cell in source)
-                {
-                    double width = cell.CellWidth ?? (column + cell.ColumnSpan <= table.ColumnWidths.Count
-                        ? edges[column + cell.ColumnSpan] - edges[column] : total * cell.ColumnSpan / columns);
-                    CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
-                    if (left < -0.1 || left + width > settings.Width + 0.1 || width <= padding.Left + padding.Right)
-                    {
-                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableWidth: Table cells do not fit the page or their margins.");
-                        context.ReportStrictRejection("Table.WidthApproximated", "Cell width and padding are constrained to printable space.");
-                        left = Math.Max(settings.Left, Math.Min(left, settings.Width - settings.Right - 1));
-                        width = Math.Max(1, Math.Min(width, settings.Width - settings.Right - left));
-                        padding = new CellPadding();
-                    }
-                    var preparedCell = new CellLayout { Padding = padding, Column = column, Merge = cell.Merge };
-                    if (cell.Merge != VerticalMerge.Continue)
-                    {
-                        for (int p = 0; p < cell.Paragraphs.Count; p++)
-                        {
-                            ParagraphBlock paragraph = cell.Paragraphs[p];
-                            using var cellLocation = context.At(paragraph.Location);
-                            if (paragraph.Layout.Before is double before && before > 0) preparedCell.Lines.Add(new Line { Descent = before });
-                            preparedCell.Lines.AddRange(Lines(paragraph, left + padding.Left, width - padding.Left - padding.Right,
-                                paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 11, false));
-                            double after = paragraph.Layout.After ?? (p + 1 < cell.Paragraphs.Count ? 6 : 0);
-                            if (after > 0) preparedCell.Lines.Add(new Line { Descent = after });
-                        }
-                    }
-                    row.Cells.Add(preparedCell);
-                    left += width; column += cell.ColumnSpan;
-                }
-            }
-            for (int r = 0; r < rows.Count; r++)
-            {
-                foreach (CellLayout cell in rows[r].Cells)
-                    if (cell.Merge == VerticalMerge.Start)
-                        while (r + cell.RowSpan < rows.Count && rows[r + cell.RowSpan].Cells.Any(c => c.Column == cell.Column && c.Merge == VerticalMerge.Continue)) cell.RowSpan++;
-                rows[r].Height = rows[r].Cells.Where(c => c.RowSpan == 1).Select(c => c.Height).DefaultIfEmpty(0).Max();
-            }
-            for (int r = 0; r < rows.Count; r++)
-                foreach (CellLayout cell in rows[r].Cells.Where(c => c.RowSpan > 1))
-                {
-                    double available = rows.Skip(r).Take(cell.RowSpan).Sum(row => row.Height + 6) - 6;
-                    rows[r + cell.RowSpan - 1].Height += Math.Max(0, cell.Height - available);
-                }
+            double tablePageLeft = settings.Left;
+            List<RowLayout> rows = BuildRows(table, settings.Left, settings.Width - settings.Left - settings.Right, 0);
             double headerHeight = rows.Take(table.HeaderRowCount).Sum(row => row.Height + 6);
             double pageHeight = settings.Height - settings.Top - settings.Bottom;
             if (headerHeight >= pageHeight)
@@ -390,7 +385,9 @@ internal static partial class FixedLayout
                 for (int member = r; member < end; member++)
                     foreach (CellLayout cell in rows[member].Cells) end = Math.Max(end, member + cell.RowSpan);
                 double height = rows.Skip(r).Take(end - r).Sum(row => row.Height + 6) - 6;
-                double capacity = pageHeight - (r >= table.HeaderRowCount ? headerHeight : 0);
+                double capacity = settings.Height - settings.Top - settings.Bottom - (r >= table.HeaderRowCount ? headerHeight : 0);
+                if (height <= capacity)
+                    foreach (Line noteLine in rows.Skip(r).Take(end - r).SelectMany(row => row.Cells).SelectMany(c => c.Lines)) ReserveNotes(noteLine, height, () => TablePage(r >= table.HeaderRowCount));
                 if (height > capacity)
                 {
                     if (end - r > 1 || table.NonSplittingRows.Contains(r) || r < table.HeaderRowCount)
@@ -414,7 +411,9 @@ internal static partial class FixedLayout
             {
                 foreach (CellLayout cell in row.Cells)
                 {
-                    double top = y + cell.Padding.Top;
+                    if (cell.Merge == VerticalMerge.Continue) continue;
+                    pages[pages.Count - 1].Shapes.AddRange(CellShapes(cell, y, cell.Extent).Select(s => s.At(s.X + settings.Left - tablePageLeft, s.Y)));
+                    double top = y + CellOffset(cell);
                     foreach (Line line in cell.Lines) { Place(line, top); top += line.Height; }
                 }
                 y += row.Height + 6;
@@ -422,12 +421,25 @@ internal static partial class FixedLayout
 
             void TablePage(bool repeat)
             {
-                AddPage();
+                AdvanceColumn();
                 if (repeat) foreach (RowLayout header in rows.Take(table.HeaderRowCount)) PlaceRow(header);
             }
 
             void SplitRow(RowLayout row, bool repeat)
             {
+                if (row.Cells.All(c => c.RowSpan == 1) && row.Cells.SelectMany(c => c.Lines).SelectMany(l => l.Items).Any(i => i.Field?.Note != null))
+                {
+                    bool nonSplitting = row.NonSplitting; row.NonSplitting = false;
+                    List<Line> bands = NestedLines(new List<RowLayout> { row }); row.NonSplitting = nonSplitting;
+                    foreach (Line band in bands)
+                    {
+                        ReserveNotes(band, band.Height, () => TablePage(repeat));
+                        if (y + band.Height > settings.Height - settings.Bottom) TablePage(repeat);
+                        if (band.Height > settings.Height - settings.Bottom - y) throw new NotSupportedException("Layout.TableNoteHeight: A row band with notes does not fit the page.");
+                        Place(band, y); y += band.Height;
+                    }
+                    return;
+                }
                 int[] offsets = new int[row.Cells.Count];
                 while (row.Cells.Where((cell, index) => offsets[index] < cell.Lines.Count).Any())
                 {
@@ -452,10 +464,245 @@ internal static partial class FixedLayout
                         for (int c = 0; c < row.Cells.Count; c++)
                             if (offsets[c] < row.Cells[c].Lines.Count) Place(FitLine(row.Cells[c].Lines[offsets[c]++], used), y);
                     }
+                    foreach (CellLayout cell in row.Cells.Where(c => c.Merge != VerticalMerge.Continue))
+                        pages[pages.Count - 1].Shapes.AddRange(CellShapes(cell, y, used).Select(s => s.At(s.X + settings.Left - tablePageLeft, s.Y)));
                     y += used + 6;
                     if (row.Cells.Where((cell, index) => offsets[index] < cell.Lines.Count).Any()) TablePage(repeat);
                 }
             }
+        }
+
+        List<RowLayout> BuildRows(TableBlock table, double origin, double availableWidth, int depth)
+        {
+            var rows = new List<RowLayout>();
+            if (depth > 0 && table.HeaderRowCount > 0) context.Loss("Table.NestedHeaders", "Nested-table headers are rendered once; repetition inside a split parent row is not supported.");
+            if (depth > context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Nested table exceeds the depth limit.");
+            double[] widths = TableSizing.Columns(table, availableWidth, ContentWidths, context);
+            bool fixedGrid = !table.AutoFit && !table.WidthPercent.HasValue && !table.Rows.SelectMany(c => c).Any(c => c.WidthPercent.HasValue);
+            double[] edges = new double[widths.Length + 1];
+            for (int i = 0; i < widths.Length; i++) edges[i + 1] = edges[i] + widths[i];
+            for (int r = 0; r < table.Rows.Count; r++)
+            {
+                context.CheckCancellation();
+                List<TableCell> source = table.Rows[r];
+                var row = new RowLayout { NonSplitting = table.NonSplittingRows.Contains(r) }; rows.Add(row);
+                int columns = source.Sum(c => c.ColumnSpan), column = 0;
+                double left = origin + table.LeftIndent, total = edges[edges.Length - 1];
+                foreach (TableCell cell in source)
+                {
+                    double width = fixedGrid && cell.CellWidth.HasValue
+                        ? cell.CellWidth.Value : edges[column + cell.ColumnSpan] - edges[column];
+                    CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
+                    if (left < -0.1 || left + width > settings.Width + 0.1 || width <= padding.Left + padding.Right)
+                    {
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableWidth: Table cells do not fit the page or their margins.");
+                        context.ReportStrictRejection("Table.WidthApproximated", "Cell width and padding are constrained to printable space.");
+                        left = Math.Max(settings.Left, Math.Min(left, settings.Width - settings.Right - 1));
+                        width = Math.Max(1, Math.Min(width, settings.Width - settings.Right - left));
+                        padding = new CellPadding();
+                    }
+                    var preparedCell = new CellLayout { Source = cell, Left = left, Width = width, Padding = padding, Column = column, Merge = cell.Merge };
+                    if (cell.Merge != VerticalMerge.Continue)
+                    {
+                        DocumentBlock[] blocks = cell.Blocks.ToArray();
+                        for (int p = 0; p < blocks.Length; p++)
+                        {
+                            if (blocks[p] is TableBlock nested)
+                            {
+                                preparedCell.Lines.AddRange(NestedLines(BuildRows(nested, left + padding.Left, width - padding.Left - padding.Right, depth + 1)));
+                                continue;
+                            }
+                            var paragraph = (ParagraphBlock)blocks[p];
+                            using var cellLocation = context.At(paragraph.Location);
+                            if (paragraph.Layout.Before is double before && before > 0) preparedCell.Lines.Add(new Line { Descent = before });
+                            preparedCell.Lines.AddRange(Lines(paragraph, left + padding.Left, width - padding.Left - padding.Right,
+                                paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 11, false));
+                            double after = paragraph.Layout.After ?? (p + 1 < blocks.Length ? 6 : 0);
+                            if (after > 0) preparedCell.Lines.Add(new Line { Descent = after });
+                        }
+                    }
+                    row.Cells.Add(preparedCell);
+                    left += width; column += cell.ColumnSpan;
+                }
+            }
+            for (int r = 0; r < rows.Count; r++)
+            {
+                foreach (CellLayout cell in rows[r].Cells)
+                    if (cell.Merge == VerticalMerge.Start)
+                        while (r + cell.RowSpan < rows.Count && rows[r + cell.RowSpan].Cells.Any(c => c.Column == cell.Column && c.Merge == VerticalMerge.Continue)) cell.RowSpan++;
+                rows[r].Height = rows[r].Cells.Where(c => c.RowSpan == 1).Select(c => c.Height).DefaultIfEmpty(0).Max();
+            }
+            for (int r = 0; r < rows.Count; r++)
+                foreach (CellLayout cell in rows[r].Cells.Where(c => c.RowSpan > 1))
+                {
+                    double available = rows.Skip(r).Take(cell.RowSpan).Sum(row => row.Height + 6) - 6;
+                    rows[r + cell.RowSpan - 1].Height += Math.Max(0, cell.Height - available);
+                }
+            foreach (var height in table.RowHeights)
+            {
+                if (height.Value.Exact && height.Value.Height < rows[height.Key].Height) throw new NotSupportedException("Layout.TableRowHeight: An exact row height cannot contain its content.");
+                rows[height.Key].Height = Math.Max(rows[height.Key].Height, height.Value.Height);
+            }
+            for (int r = 0; r < rows.Count; r++)
+                foreach (CellLayout cell in rows[r].Cells) cell.Extent = rows.Skip(r).Take(cell.RowSpan).Sum(row => row.Height + 6) - 6;
+            return rows;
+        }
+
+        (double Minimum, double Preferred) ContentWidths(TableCell cell)
+        {
+            double minimum = 1, preferred = 1;
+            foreach (ParagraphBlock paragraph in cell.Paragraphs)
+            {
+                double line = 0;
+                foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs))
+                {
+                    if (run.Image != null) { minimum = Math.Max(minimum, run.Image.Width); line += run.Image.Width; continue; }
+                    int font = resolver.Resolve(run, paragraph.HeadingLevel > 0); double size = run.FontSize ?? 11;
+                    foreach (string word in run.Text.Split(' ', '\n', '\t'))
+                    {
+                        double width = Measure(word, font, size); minimum = Math.Max(minimum, word.Length == 0 ? 0 : word.Max(c => Measure(c.ToString(), font, size)));
+                        line += width + Measure(" ", font, size);
+                    }
+                }
+                preferred = Math.Max(preferred, line + paragraph.Layout.Left + paragraph.Layout.Right);
+            }
+            CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
+            return (minimum + padding.Left + padding.Right, preferred + padding.Left + padding.Right);
+        }
+
+        double CellOffset(CellLayout cell)
+        {
+            double slack = Math.Max(0, cell.Extent - cell.Height);
+            return cell.Padding.Top + (cell.Source.VerticalAlignment == "bottom" ? slack : cell.Source.VerticalAlignment == "center" ? slack / 2 : 0);
+        }
+
+        IEnumerable<FixedShape> CellShapes(CellLayout cell, double top, double height)
+        {
+            if (cell.Source.Background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, cell.Source.Background);
+            foreach (var border in cell.Source.Borders.Where(b => b.Value.Width > 0))
+            {
+                bool vertical = border.Key is "left" or "right";
+                yield return new FixedShape(cell.Left + (border.Key == "right" ? cell.Width : 0), top + (border.Key == "bottom" ? height : 0),
+                    vertical ? 0 : cell.Width, vertical ? height : 0, border.Value.Color, border.Value.Width, border.Value.Style);
+            }
+        }
+
+        List<Line> NestedLines(List<RowLayout> rows)
+        {
+            var result = new List<Line>();
+            for (int r = 0; r < rows.Count;)
+            {
+                context.CheckCancellation();
+                int endRow = r + 1;
+                for (int member = r; member < endRow; member++)
+                    foreach (CellLayout cell in rows[member].Cells) endRow = Math.Max(endRow, member + cell.RowSpan);
+                var content = new List<(Line Line, double Top)>();
+                var shapes = new List<FixedShape>();
+                double rowTop = 0;
+                for (int member = r; member < endRow; member++)
+                {
+                    foreach (CellLayout cell in rows[member].Cells.Where(c => c.Merge != VerticalMerge.Continue))
+                    {
+                        shapes.AddRange(CellShapes(cell, rowTop, cell.Extent));
+                        double top = rowTop + CellOffset(cell);
+                        foreach (Line line in cell.Lines) { content.Add((line, top)); top += line.Height; }
+                    }
+                    rowTop += rows[member].Height + 6;
+                }
+                var intervals = content.OrderBy(c => c.Top).ToArray();
+                var cuts = new List<double>();
+                double boundary = 0;
+                foreach (var item in intervals)
+                {
+                    if (item.Top >= boundary - 0.001 && boundary > 0) cuts.Add(boundary);
+                    boundary = Math.Max(boundary, item.Top + item.Line.Height);
+                }
+                cuts.Add(Math.Max(boundary, rowTop));
+                if (endRow > r + 1 || rows[r].NonSplitting)
+                {
+                    if (rowTop > settings.Height - settings.Top - settings.Bottom) throw new NotSupportedException("Layout.NestedTableGroupHeight: A nested non-splitting row or merged group exceeds one page.");
+                    cuts.Clear(); cuts.Add(rowTop);
+                }
+                int offset = 0;
+                double start = 0;
+                foreach (double end in cuts.Distinct())
+                {
+                    if (end <= start) continue;
+                    var band = new Line { Origin = rows[r].Cells[0].Left, PageLeft = settings.Left, Descent = end - start };
+                    while (offset < intervals.Length && intervals[offset].Top < end - 0.001)
+                    {
+                        var item = intervals[offset++];
+                        band.Items.AddRange(item.Line.Items.Select(t => t.At(t.X, item.Top - start + item.Line.Ascent + t.Y)));
+                        band.Shapes.AddRange(item.Line.Shapes.Select(t => t.At(t.X, t.Y + item.Top - start)));
+                    }
+                    foreach (FixedShape shape in shapes)
+                    {
+                        if (shape.Height == 0)
+                        { if (shape.Y >= start - 0.001 && (shape.Y < end - 0.001 || end == cuts[cuts.Count - 1] && shape.Y <= end)) band.Shapes.Add(shape.At(shape.X, shape.Y - start)); }
+                        else
+                        {
+                            double top = Math.Max(start, shape.Y), bottom = Math.Min(end, shape.Y + shape.Height);
+                            if (bottom > top) band.Shapes.Add(new FixedShape(shape.X, top - start, shape.Width, bottom - top, shape.Color, shape.Stroke, shape.Style));
+                        }
+                    }
+                    result.Add(band); start = end;
+                }
+                r = endRow;
+            }
+            return result;
+        }
+
+        List<Line> NoteLines(DocumentNote note)
+        {
+            var lines = new List<Line>();
+            int labelFont = resolver.Resolve(new TextRun(""), false);
+            double labelWidth = Measure(note.Label + " ", labelFont, 9);
+            ListCounter bodyCounter = counter; counter = new ListCounter();
+            foreach (DocumentBlock block in note.Blocks)
+            {
+                if (block is not ParagraphBlock paragraph) { context.Loss("Notes.TableLayout", "Tables inside notes use flattened paragraphs."); }
+                IEnumerable<ParagraphBlock> content = block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs);
+                foreach (ParagraphBlock noteParagraph in content) lines.AddRange(Lines(noteParagraph, sourceSettings.Left + labelWidth, sourceSettings.Width - sourceSettings.Left - sourceSettings.Right - labelWidth, 9, false));
+            }
+            if (lines.Count == 0) lines.Add(new Line { PageLeft = settings.Left, Ascent = 9, Descent = 4.5 });
+            Line first = lines[0];
+            first.Items.Insert(0, new PositionedText(note.Label + " ", sourceSettings.Left, 0, 9, labelFont));
+            counter = bodyCounter; return lines;
+        }
+
+        double ReservedNoteHeight() => pageNotes.TryGetValue(pages[pages.Count - 1], out List<Line>? lines) ? lines.Sum(l => l.Height) + 12 : 0;
+
+        void DrainNotes()
+        {
+            FixedPage page = pages[pages.Count - 1];
+            double maximum = (page.Settings.Height - page.Settings.Top - page.Settings.Bottom) * 0.4;
+            if (!pageNotes.TryGetValue(page, out List<Line>? lines)) { lines = new List<Line>(); pageNotes.Add(page, lines); }
+            double height = lines.Sum(l => l.Height);
+            while (pendingNotes.Count > 0 && (height + pendingNotes.Peek().Height <= maximum || lines.Count == 0))
+            {
+                Line line = pendingNotes.Dequeue();
+                if (line.Height > maximum) throw new NotSupportedException("Layout.NoteHeight: A note line exceeds the bounded note area.");
+                lines.Add(line); height += line.Height;
+            }
+            if (lines.Count == 0) pageNotes.Remove(page);
+            settings.Bottom = page.Settings.Bottom + ReservedNoteHeight();
+        }
+
+        void ReserveNotes(Line line, double requiredHeight = 0, Action? advance = null)
+        {
+            DocumentNote[] notes = line.Items.Where(i => i.Field?.Note != null && !i.Field.Note.Endnote).Select(i => i.Field!.Note!).Distinct().Where(n => !assignedNotes.Contains(n)).ToArray();
+            if (notes.Length == 0) return;
+            var additional = notes.SelectMany(NoteLines).ToList();
+            double maximum = (pages[pages.Count - 1].Settings.Height - settings.Top - pages[pages.Count - 1].Settings.Bottom) * 0.4;
+            double reserve = Math.Min(maximum, additional.Sum(l => l.Height)) + (ReservedNoteHeight() == 0 ? 12 : 0);
+            if (Math.Max(y + Math.Max(line.Height, requiredHeight), pages[pages.Count - 1].BodyBottom) + reserve > settings.Height - settings.Bottom && y > settings.Top) (advance ?? AddPage)();
+            int pageNoteCount = pages[pages.Count - 1].NoteCount;
+            foreach (DocumentNote note in notes.Where(n => n.Policy.Restart == "eachPage")) note.Number = note.Policy.Start + pageNoteCount++;
+            additional = notes.SelectMany(NoteLines).ToList();
+            pages[pages.Count - 1].NoteCount += notes.Length;
+            foreach (DocumentNote note in notes) assignedNotes.Add(note);
+            foreach (Line noteLine in additional) pendingNotes.Enqueue(noteLine);
+            DrainNotes();
         }
 
         List<Line> Prepare(ParagraphBlock paragraph)
@@ -470,15 +717,80 @@ internal static partial class FixedLayout
             return lines;
         }
 
+        (double X, double Y, double Width, double Height, string Wrap) DrawingBounds(DrawingAnchor anchor, double width, double height, double paragraphTop)
+        {
+            double left = anchor.HorizontalOrigin == "page" ? 0 : anchor.HorizontalOrigin == "column" ? settings.Left : sourceSettings.Left;
+            double top = anchor.VerticalOrigin == "page" ? 0 : anchor.VerticalOrigin == "paragraph" ? paragraphTop : sourceSettings.Top;
+            double areaWidth = anchor.HorizontalOrigin == "page" ? settings.Width : anchor.HorizontalOrigin == "column" ? settings.Width - settings.Left - settings.Right : settings.Width - sourceSettings.Left - sourceSettings.Right;
+            double areaHeight = anchor.VerticalOrigin == "page" ? settings.Height : settings.Height - sourceSettings.Top - sourceSettings.Bottom;
+            double x = left + anchor.X + (anchor.HorizontalAlignment == "center" ? (areaWidth - width) / 2 : anchor.HorizontalAlignment == "right" ? areaWidth - width : 0);
+            double topY = top + anchor.Y + (anchor.VerticalAlignment == "center" ? (areaHeight - height) / 2 : anchor.VerticalAlignment == "bottom" ? areaHeight - height : 0);
+            if (x < 0 || topY < 0 || x + width > settings.Width || topY + height > settings.Height)
+                throw new NotSupportedException("Layout.AnchorBounds: A positioned drawing extends outside the physical page.");
+            return (x, topY, width, height, anchor.Wrap);
+        }
+
+        void RememberExclusion(DrawingAnchor anchor, (double X, double Y, double Width, double Height, string Wrap) bounds)
+        {
+            if (anchor.Wrap != "none") pages[pages.Count - 1].Exclusions.Add((bounds.X - anchor.Distance.Left, bounds.Y - anchor.Distance.Top,
+                bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
+        }
+
         void Place(Line line, double top)
         {
+            pages[pages.Count - 1].BodyBottom = Math.Max(pages[pages.Count - 1].BodyBottom, top + line.Height);
+            PlaceOn(pages[pages.Count - 1], line, top);
+        }
+
+        void PlaceOn(FixedPage destination, Line line, double top)
+        {
+            context.PageNumberFormat = sourceSettings.PageNumberFormat;
+            destination.Shapes.AddRange(line.Shapes.Select(s => s.At(s.X + settings.Left - line.PageLeft, s.Y + top)));
             foreach (PositionedText item in line.Items)
             {
-                PositionedText placed = item.At(item.X, top + line.Ascent + item.Y);
+                if (item.Field?.Bookmark is string bookmark)
+                {
+                    if ((bookmark.Length == 0 || bookmark[0] != '/')) model.BookmarkPages[bookmark] = (pages.IndexOf(destination) + 1, ListCounter.Number(destination.PageNumber, sourceSettings.PageNumberFormat), item.X + settings.Left - line.PageLeft, settings.Height - top);
+                    continue;
+                }
+                if (item.Box != null)
+                {
+                    PositionedBox box = item.Box;
+                    var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
+                    var cell = new CellLayout
+                    {
+                        Left = bounds.X,
+                        Width = box.Width,
+                        Extent = box.Height,
+                        Padding = box.Padding,
+                        Source = new TableCell { Background = box.Fill }
+                    };
+                    if (box.Border != null) foreach (string side in new[] { "left", "top", "right", "bottom" }) cell.Source.Borders.Add(side, box.Border);
+                    destination.Shapes.AddRange(CellShapes(cell, bounds.Y, box.Height));
+                    double boxTop = bounds.Y + box.Padding.Top;
+                    foreach (DocumentBlock boxBlock in box.Blocks)
+                    {
+                        if (boxBlock is not ParagraphBlock boxParagraph) throw new NotSupportedException("Layout.TextBoxContent: Positioned text boxes support paragraphs only.");
+                        var boxLines = new List<Line>(); AddParagraph(boxParagraph, bounds.X + box.Padding.Left, box.Width - box.Padding.Left - box.Padding.Right, boxLines);
+                        foreach (Line boxLine in boxLines)
+                        {
+                            if (boxTop + boxLine.Height > bounds.Y + box.Height - box.Padding.Bottom) throw new NotSupportedException("Layout.TextBoxOverflow: Text does not fit inside the positioned box.");
+                            foreach (PositionedText boxItem in boxLine.Items) destination.Text.Add(boxItem.At(boxItem.X, boxTop + boxLine.Ascent + boxItem.Y));
+                            boxTop += boxLine.Height;
+                        }
+                    }
+                    RememberExclusion(box.Anchor, bounds); continue;
+                }
+                PositionedText placed = item.At(item.X + settings.Left - line.PageLeft, top + line.Ascent + item.Y);
+                if (item.Image?.Anchor is DrawingAnchor anchor)
+                {
+                    var bounds = DrawingBounds(anchor, item.Image.Width, item.Image.Height, top + item.Y);
+                    placed = item.At(bounds.X, bounds.Y + item.Image.Height); RememberExclusion(anchor, bounds);
+                }
                 if (item.Field != null)
-                    placed = placed.WithText(DocumentFields.Render(item.Field, model, pages.Count, totalPages,
+                    placed = placed.WithText(DocumentFields.Render(item.Field, model, destination.PageNumber, totalPages,
                         sectionTotals != null && sectionTotals.TryGetValue(sourceSettings, out int count) ? count : totalPages, context));
-                pages[pages.Count - 1].Text.Add(placed);
+                destination.Text.Add(placed);
             }
         }
 
@@ -491,7 +803,8 @@ internal static partial class FixedLayout
 
         Line ScaleLine(Line line, double factor)
         {
-            var scaled = new Line { Origin = line.Origin, Ascent = line.Ascent * factor, Descent = line.Descent * factor };
+            var scaled = new Line { PageLeft = line.PageLeft, BreakAfter = line.BreakAfter, Origin = line.Origin, Ascent = line.Ascent * factor, Descent = line.Descent * factor };
+            scaled.Shapes.AddRange(line.Shapes.Select(s => new FixedShape(line.Origin + (s.X - line.Origin) * factor, s.Y * factor, s.Width * factor, s.Height * factor, s.Color, s.Stroke * factor, s.Style)));
             foreach (PositionedText item in line.Items)
                 scaled.Items.Add(new PositionedText(item.Text, line.Origin + (item.X - line.Origin) * factor, item.Y * factor,
                     item.Size * factor, item.Font, item.Color, item.Image?.Scaled(factor), item.Link, item.Field));
@@ -502,17 +815,35 @@ internal static partial class FixedLayout
         {
             if (lineHeight > settings.Height - settings.Top - settings.Bottom) throw new NotSupportedException("Layout.ItemHeight: An image, line or table row exceeds one page.");
             if (y + lineHeight <= settings.Height - settings.Bottom) return;
-            AddPage();
+            AdvanceColumn();
+        }
+
+        void ApplyColumn()
+        {
+            double width = (settings.Width - sourceSettings.Left - sourceSettings.Right - (sourceSettings.Columns - 1) * sourceSettings.ColumnGap) / sourceSettings.Columns;
+            settings = settings.Copy(); settings.Left = sourceSettings.Left + columnIndex * (width + sourceSettings.ColumnGap); settings.Right = settings.Width - settings.Left - width;
+        }
+
+        void AdvanceColumn()
+        {
+            if (columnIndex + 1 >= sourceSettings.Columns) { AddPage(); return; }
+            columnIndex++; ApplyColumn(); y = columnTop;
         }
 
         void AddPage()
         {
             if (pages.Count >= context.Options.MaximumPages) throw new InvalidDataException("Limit.Pages: Output exceeds the page limit.");
-            pages.Add(new FixedPage { Settings = settings, SourceSettings = sourceSettings }); y = settings.Top;
+            bool first = !pages.Any(p => p.Sections.Contains(sourceSettings));
+            int number = first && sourceSettings.PageNumberStart.HasValue ? sourceSettings.PageNumberStart.Value : checked(pages[pages.Count - 1].PageNumber + 1);
+            settings = ReserveStories(sourceSettings);
+            var page = new FixedPage { Settings = settings, SourceSettings = sourceSettings, PageNumber = number }; page.Sections.Add(sourceSettings);
+            pages.Add(page); columnIndex = 0; columnTop = settings.Top; ApplyColumn(); y = settings.Top;
+            if (pendingNotes.Count > 0) DrainNotes();
         }
 
         List<Line> Lines(ParagraphBlock paragraph, double left, double width, double baseSize, bool header)
         {
+            context.PageNumberFormat = sourceSettings.PageNumberFormat;
             var result = new List<Line>();
             double tabOrigin = left;
             left += paragraph.Layout.Left;
@@ -520,9 +851,11 @@ internal static partial class FixedLayout
             List<TextRun> runs = RunCoalescer.Combine(paragraph.Runs);
             if (paragraph.List != null)
             {
-                double indent = 18 * paragraph.List.Level; left += indent; width -= indent;
+                ListLevel? level = paragraph.List.Definition?[paragraph.List.Level];
+                double indent = level?.LayoutProperties.Contains("ind") == true ? 0 : 18 * paragraph.List.Level; left += indent; width -= indent;
                 List<TextRun> content = runs;
-                runs = new List<TextRun> { new TextRun(counter.Label(paragraph.List) + " ") }; runs.AddRange(content);
+                string suffix = level == null ? " " : level.Suffix == "tab" ? " \t" : level.Suffix == "space" ? " " : "";
+                runs = new List<TextRun> { (level?.Appearance ?? new TextRun("")).WithText(counter.Label(paragraph.List) + suffix) }; runs.AddRange(content);
             }
             double continuationLeft = left, continuationWidth = width;
             left += paragraph.Layout.FirstLine;
@@ -536,12 +869,25 @@ internal static partial class FixedLayout
             }
             if (width <= 0) throw new NotSupportedException("Layout.ColumnWidth: No space remains for paragraph content.");
             var tabText = new Queue<string>(string.Concat(runs.Select(r => DocumentFields.Render(r, model,
-                renderPage == 0 ? pages.Count : renderPage, totalPages, renderSectionPages, context))).Split('\t').Skip(1).Select(t => t.Split('\n')[0]));
+                renderPage == 0 ? pages[pages.Count - 1].PageNumber : renderPage, totalPages, renderSectionPages, context))).Split('\t').Skip(1).Select(t => t.Split('\n')[0]));
+            double consumedHeight = 0;
+            var exclusions = renderPage == 0 ? new List<(double X, double Y, double Width, double Height, string Wrap)>(pages[pages.Count - 1].Exclusions) : new List<(double X, double Y, double Width, double Height, string Wrap)>();
+            foreach (TextRun drawing in runs.Where(r => r.Image?.Anchor != null || r.Box != null))
+            {
+                DrawingAnchor anchor = drawing.Image?.Anchor ?? drawing.Box!.Anchor;
+                var bounds = DrawingBounds(anchor, drawing.Image?.Width ?? drawing.Box!.Width, drawing.Image?.Height ?? drawing.Box!.Height, renderPage == 0 ? y : 0);
+                if (anchor.Wrap != "none") exclusions.Add((bounds.X - anchor.Distance.Left, bounds.Y - anchor.Distance.Top, bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
+            }
             double x = left;
-            Line line = NewLine();
+            Line line = NewLine(); x = left;
             foreach (TextRun run in runs)
             {
                 context.CheckCancellation();
+                if (run.Bookmark != null) { line.Items.Add(new PositionedText("", x, 0, 0, 0, field: run)); continue; }
+                if (run.Box != null || run.Image?.Anchor != null)
+                {
+                    line.Items.Add(new PositionedText("", left, -consumedHeight, 0, 0, image: run.Image, box: run.Box)); continue;
+                }
                 if (run.Image is DocumentImage image)
                 {
                     if (context.EffectiveMode == FidelityMode.Lenient)
@@ -561,20 +907,28 @@ internal static partial class FixedLayout
                     size = (settings.Height - settings.Top - settings.Bottom) / 1.5;
                     context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                 }
-                string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages.Count : renderPage, totalPages, renderSectionPages, context);
+                string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages[pages.Count - 1].PageNumber : renderPage, totalPages, renderSectionPages, context);
                 if (context.EffectiveMode != FidelityMode.Strict)
                 {
                     var safe = new StringBuilder(runText.Length);
                     foreach (char c in runText)
                     {
-                        if (c is '\n' or '\t' || !(c >= '\u0590' && c <= '\u0dff') && !char.IsSurrogate(c) && maps[font] != null && maps[font]!.TryGetGlyphIndex(c, out int glyph) && glyph != 0) safe.Append(c);
+                        if (c is '\n' or '\t' or '\f' or '\v' || !(c >= '\u0590' && c <= '\u0dff') && !char.IsSurrogate(c) && maps[font] != null && maps[font]!.TryGetGlyphIndex(c, out int glyph) && glyph != 0) safe.Append(c);
                         else { safe.Append('?'); context.ReportStrictRejection("Font.MissingGlyph", "An unsupported glyph or shaping requirement uses a visible fallback character."); }
                     }
                     runText = safe.ToString();
                 }
                 foreach (char character in runText)
-                    if (character is not '\n' and not '\t' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
+                    if (character is not '\n' and not '\t' and not '\f' and not '\v' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
                         throw new NotSupportedException("Layout.Glyph: The embedded font cannot represent a character.");
+                int tocLine = 0;
+                string? activeLink = run.Link;
+                if (run.FieldInstruction != null && DocumentFields.Kind(run.FieldInstruction) is "REF" or "PAGEREF")
+                {
+                    var parts = run.FieldInstruction.Trim().Split(' ');
+                    if (parts.Length > 1 && parts.Contains("\\h")) activeLink = "#" + parts[1].Trim('"');
+                }
+                if (model.TocTargets.TryGetValue(run, out List<string>? targets) && targets.Count > 0) activeLink = "#" + targets[0];
                 var token = new StringBuilder();
                 foreach (char c in runText)
                 {
@@ -598,7 +952,7 @@ internal static partial class FixedLayout
                         }
                         x = position;
                     }
-                    else if (c == '\n') { Flush(); Finish(); }
+                    else if (c is '\n' or '\f' or '\v') { Flush(); line.BreakAfter = c == '\n' ? '\0' : c; Finish(); tocLine++; if (targets != null && tocLine < targets.Count) activeLink = "#" + targets[tocLine]; }
                     else { token.Append(c); if (c == ' ') Flush(); }
                 }
                 Flush();
@@ -625,19 +979,37 @@ internal static partial class FixedLayout
                     {
                         if (Math.Abs((shaped.X[i] - shaped.OriginalX[i]) - (shaped.X[begin] - shaped.OriginalX[begin])) < 0.000001
                             && Math.Abs(shaped.Y[i] - shaped.Y[begin]) < 0.000001) continue;
-                        line.Items.Add(new PositionedText(value.Substring(begin, i - begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: run.Link));
+                        line.Items.Add(new PositionedText(value.Substring(begin, i - begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink));
                         begin = i;
                     }
                     string kind = run.FieldInstruction == null ? "" : DocumentFields.Kind(run.FieldInstruction);
-                    TextRun? pageField = begin == 0 && value == runText && kind is "PAGE" or "NUMPAGES" or "SECTIONPAGES" ? run : null;
-                    line.Items.Add(new PositionedText(value.Substring(begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: run.Link, field: pageField)); x += advance;
+                    TextRun? pageField = run.Note != null || begin == 0 && value == runText && kind is "PAGE" or "NUMPAGES" or "SECTIONPAGES" ? run : null;
+                    line.Items.Add(new PositionedText(value.Substring(begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, field: pageField)); x += advance;
                     line.Ascent = Math.Max(line.Ascent, size); line.Descent = Math.Max(line.Descent, size * 0.5);
                 }
             }
             Finish();
             return result;
 
-            Line NewLine() => new Line { Origin = tabOrigin, Ascent = baseSize, Descent = baseSize * 0.5 };
+            Line NewLine()
+            {
+                double top = (renderPage == 0 ? y : 0) + consumedHeight;
+                foreach (var area in exclusions.Where(e => e.Y < top + baseSize * 1.5 && e.Y + e.Height > top && (e.Wrap == "topAndBottom" || e.X < left + width && e.X + e.Width > left)))
+                {
+                    if (area.Wrap == "topAndBottom" || area.X <= left && area.X + area.Width >= left + width)
+                    {
+                        double skip = area.Y + area.Height - top;
+                        if (skip > 0) { result.Add(new Line { PageLeft = settings.Left, Descent = skip }); consumedHeight += skip; top += skip; }
+                    }
+                    else
+                    {
+                        double end = left + width;
+                        if (area.X - left >= end - area.X - area.Width) width = Math.Max(1, area.X - left);
+                        else { left = Math.Max(left, area.X + area.Width); width = Math.Max(1, end - left); }
+                    }
+                }
+                return new Line { PageLeft = settings.Left, Origin = tabOrigin, Ascent = baseSize, Descent = baseSize * 0.5 };
+            }
             void Finish(bool lastLine = true)
             {
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)
@@ -686,7 +1058,7 @@ internal static partial class FixedLayout
                         context.Loss("Layout.LineSpacing", "Line spacing smaller than content height is expanded to avoid clipping or overlap.");
                     line.Descent += Math.Max(0, requested - line.Height);
                 }
-                result.Add(line); line = NewLine(); left = continuationLeft; width = continuationWidth; x = left;
+                result.Add(line); consumedHeight += line.Height; left = continuationLeft; width = continuationWidth; line = NewLine(); x = left;
             }
         }
 

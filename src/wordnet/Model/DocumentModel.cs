@@ -9,9 +9,27 @@ internal sealed class DocumentModel
     internal string Author { get; set; } = "";
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
     internal PageSettings? FinalSection { get; set; }
-    internal IEnumerable<ParagraphBlock> Paragraphs => AllBlocks.SelectMany(block => block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(row => row).SelectMany(cell => cell.Paragraphs));
-    internal IEnumerable<DocumentBlock> AllBlocks => Blocks.Concat(Blocks.Select(b => b.Section).Concat(new[] { FinalSection }).Where(s => s != null).Distinct()
+    internal List<DocumentNote> Notes { get; } = new List<DocumentNote>();
+    internal Dictionary<TextRun, string> FieldResults { get; } = new Dictionary<TextRun, string>();
+    internal Dictionary<string, (int Page, string Label, double X, double Y)> BookmarkPages { get; } = new Dictionary<string, (int, string, double, double)>(System.StringComparer.Ordinal);
+    internal Dictionary<TextRun, List<string>> TocTargets { get; } = new Dictionary<TextRun, List<string>>();
+    internal bool ReferencesPrepared { get; set; }
+    internal IEnumerable<TableBlock> Tables => Expand(AllBlocks).OfType<TableBlock>().Distinct();
+    internal IEnumerable<ParagraphBlock> BodyParagraphs => Expand(Blocks).OfType<ParagraphBlock>().Distinct();
+    internal IEnumerable<ParagraphBlock> Paragraphs => Expand(AllBlocks).OfType<ParagraphBlock>().Distinct();
+    internal IEnumerable<DocumentBlock> AllBlocks => Blocks.Concat(Notes.SelectMany(n => n.Blocks)).Concat(Blocks.Select(b => b.Section).Concat(new[] { FinalSection }).Where(s => s != null).Distinct()
         .SelectMany(s => s!.Stories.Values).Distinct().SelectMany(story => story));
+    private static IEnumerable<DocumentBlock> Expand(IEnumerable<DocumentBlock> blocks)
+    {
+        foreach (DocumentBlock block in blocks)
+        {
+            yield return block;
+            if (block is TableBlock table)
+                foreach (DocumentBlock child in Expand(table.Rows.SelectMany(r => r).SelectMany(c => c.Blocks))) yield return child;
+            if (block is ParagraphBlock paragraph)
+                foreach (DocumentBlock child in Expand(paragraph.Runs.Where(r => r.Box != null).SelectMany(r => r.Box!.Blocks))) yield return child;
+        }
+    }
     internal int CharacterCount => Paragraphs.Sum(p => p.Text.Length);
 }
 
@@ -43,6 +61,8 @@ internal sealed class TableBlock : DocumentBlock
     internal int HeaderRowCount { get; set; }
     internal bool HasHeaderRow { get => HeaderRowCount > 0; set => HeaderRowCount = value ? System.Math.Max(1, HeaderRowCount) : 0; }
     internal double? Width { get; set; }
+    internal double? WidthPercent { get; set; }
+    internal bool AutoFit { get; set; }
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal Dictionary<int, double> RowLefts { get; } = new Dictionary<int, double>();
@@ -56,6 +76,7 @@ internal sealed class TableBlock : DocumentBlock
 
     internal List<List<TableCell>> Rows { get; } = new List<List<TableCell>>();
     internal HashSet<int> NonSplittingRows { get; } = new HashSet<int>();
+    internal Dictionary<int, (double Height, bool Exact)> RowHeights { get; } = new Dictionary<int, (double, bool)>();
 }
 
 internal enum VerticalMerge { None, Start, Continue }
@@ -68,6 +89,7 @@ internal sealed class TableCell
     internal TableCell(ParagraphBlock paragraph) => Paragraphs.Add(paragraph);
     internal List<ParagraphBlock> Paragraphs { get; } = new List<ParagraphBlock>();
     internal double? CellWidth { get; set; }
+    internal double? WidthPercent { get; set; }
     internal CellPadding? Padding { get; set; }
     internal int ColumnSpan { get; set; } = 1;
     internal VerticalMerge Merge { get; set; }
@@ -87,7 +109,7 @@ internal sealed class CellBorder
 internal sealed class TextRun
 {
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
-        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null)
+        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null)
     {
         Text = text;
         Bold = bold;
@@ -98,7 +120,7 @@ internal sealed class TextRun
         Color = color;
         Image = image;
         Appearance = appearance ?? new RunAppearance();
-        FieldInstruction = fieldInstruction;
+        FieldInstruction = fieldInstruction; Note = note; Box = box; Bookmark = bookmark;
     }
 
     internal string Text { get; }
@@ -111,7 +133,10 @@ internal sealed class TextRun
     internal DocumentImage? Image { get; }
     internal RunAppearance Appearance { get; }
     internal string? FieldInstruction { get; }
-    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction);
+    internal DocumentNote? Note { get; }
+    internal PositionedBox? Box { get; }
+    internal string? Bookmark { get; }
+    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark);
 }
 
 internal sealed class RunAppearance
@@ -134,24 +159,90 @@ internal sealed class CellPadding
     internal CellPadding Copy() => (CellPadding)MemberwiseClone();
 }
 
+internal sealed class DocumentNote
+{
+    internal string Id { get; set; } = "";
+    internal bool Endnote { get; set; }
+    internal int PartId { get; set; }
+    internal NotePolicy Policy { get; set; } = new NotePolicy();
+    internal int Number { get; set; }
+    internal string Format { get; set; } = "decimal";
+    internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
+    internal string Label => ListCounter.Number(Number, Format);
+}
+
 internal sealed class ListItem
 {
     internal string Id { get; set; } = "";
     internal int Level { get; set; }
     internal int Start { get; set; } = 1;
     internal bool Ordered { get; set; }
+    internal ListLevel[]? Definition { get; set; }
     internal ListItem Copy() => (ListItem)MemberwiseClone();
+}
+
+internal sealed class ListLevel
+{
+    internal string Format { get; set; } = "decimal";
+    internal string Pattern { get; set; } = "";
+    internal int Start { get; set; } = 1;
+    internal int RestartAfter { get; set; }
+    internal bool Legal { get; set; }
+    internal string Suffix { get; set; } = "tab";
+    internal ParagraphLayout Layout { get; set; } = new ParagraphLayout();
+    internal TextRun Appearance { get; set; } = new TextRun("");
+    internal HashSet<string> LayoutProperties { get; } = new HashSet<string>();
+    internal void ApplyLayout(ParagraphLayout target)
+    {
+        if (LayoutProperties.Contains("ind")) { target.Left = Layout.Left; target.Right = Layout.Right; target.FirstLine = Layout.FirstLine; }
+        if (Layout.Before.HasValue) target.Before = Layout.Before;
+        if (Layout.After.HasValue) target.After = Layout.After;
+        if (Layout.LineSpacing.HasValue) { target.LineSpacing = Layout.LineSpacing; target.MultipleLineSpacing = Layout.MultipleLineSpacing; target.ExactLineSpacing = Layout.ExactLineSpacing; }
+        if (LayoutProperties.Contains("tabs")) { target.Tabs.Clear(); target.Tabs.AddRange(Layout.Tabs); }
+        if (LayoutProperties.Contains("keepNext")) target.KeepWithNext = Layout.KeepWithNext;
+        if (LayoutProperties.Contains("keepLines")) target.KeepTogether = Layout.KeepTogether;
+        if (LayoutProperties.Contains("pageBreakBefore")) target.PageBreakBefore = Layout.PageBreakBefore;
+    }
 }
 
 internal sealed class ListCounter
 {
     private readonly Dictionary<string, int?[]> counters = new Dictionary<string, int?[]>();
+    internal int CurrentValue { get; private set; }
     internal string Label(ListItem item)
     {
         if (!counters.TryGetValue(item.Id, out int?[]? values)) counters.Add(item.Id, values = new int?[9]);
         int value = values[item.Level].HasValue ? checked(values[item.Level]!.Value + 1) : item.Start;
-        values[item.Level] = value;
-        for (int i = item.Level + 1; i < 9; i++) values[i] = null;
-        return item.Ordered ? value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "." : "•";
+        values[item.Level] = value; CurrentValue = value;
+        for (int i = item.Level + 1; i < 9; i++)
+            if (item.Definition == null || item.Definition[i].RestartAfter >= item.Level) values[i] = null;
+        if (item.Definition == null) return item.Ordered ? Number(value, "decimal") + "." : "•";
+        ListLevel level = item.Definition[item.Level];
+        string pattern = level.Pattern;
+        for (int i = 0; i < 9; i++)
+            pattern = pattern.Replace("%" + (i + 1).ToString(System.Globalization.CultureInfo.InvariantCulture),
+                Number(values[i] ?? item.Definition[i].Start, level.Legal ? "decimal" : item.Definition[i].Format));
+        return pattern;
+    }
+
+    internal static string Number(int value, string format)
+    {
+        if (value <= 0) return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        if (format is "lowerLetter" or "upperLetter")
+        {
+            string result = "";
+            while (value > 0) { value--; result = (char)('A' + value % 26) + result; value /= 26; }
+            return format == "lowerLetter" ? result.ToLowerInvariant() : result;
+        }
+        if (format is "lowerRoman" or "upperRoman" && value > 3999) throw new System.NotSupportedException("Numbering.RomanRange: Roman labels are bounded to 3999.");
+        if (format is "lowerRoman" or "upperRoman")
+        {
+            int[] amounts = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+            string[] digits = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+            var result = new System.Text.StringBuilder();
+            for (int i = 0; i < amounts.Length; i++) while (value >= amounts[i]) { result.Append(digits[i]); value -= amounts[i]; }
+            return format == "lowerRoman" ? result.ToString().ToLowerInvariant() : result.ToString();
+        }
+        return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 }

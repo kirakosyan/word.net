@@ -99,6 +99,7 @@ conversion diagnostics.
 
 | Code | Policy | Meaning |
 | --- | --- | --- |
+| `Bookmark.Output` | Loss | Binary DOC output retains bookmark text without named bookmark ranges. |
 | `Comments.Ignored` | Loss | Comments are omitted from the rendered document. |
 | `Doc.AdjacentTables` | Loss | An empty paragraph separates adjacent tables in binary Word output. |
 | `Doc.Alignment` | Loss | Unsupported paragraph alignment becomes left aligned. |
@@ -135,30 +136,31 @@ conversion diagnostics.
 | `Docx.AlternateContent` | Loss | Alternate content without an understood choice or fallback is omitted. |
 | `Docx.AuxiliaryMetadata` | Report | Document properties, font/theme catalogs and editor metadata are not retained; unsupported content formatting is diagnosed separately. |
 | `Docx.Block` | Loss | Unsupported document block structure is flattened where supported content is available. |
-| `Docx.Break` | Loss | Page and column breaks become line breaks. |
 | `Docx.CellPadding` | Loss | Unknown cell margin side is omitted. |
+| `Docx.Columns` | Loss | Only one to three equal-width body columns are supported. |
 | `Docx.Drawing` | Loss | Unsupported or linked drawings are omitted; remote images are never fetched. |
 | `Docx.FixedMargin` | Loss | Fixed negative vertical margins use their absolute distance; header overlap behavior is not retained. |
 | `Docx.Gutter` | Loss | Binding gutters are not retained. |
 | `Docx.HeadingLevel` | Loss | Heading levels greater than six are not supported in Markdown. |
 | `Docx.Hyperlink` | Loss | An internal or unresolved hyperlink becomes plain text. |
-| `Docx.ImageEffects` | Loss | Image cropping, transforms and effects are not retained. |
+| `Docx.ImageEffects` | Loss | Arbitrary-angle image rotation is not retained. |
 | `Docx.Inline` | Loss | Unsupported inline content or annotations are flattened where text is available. |
 | `Docx.LanguageMetadata` | Report | Language/proofing metadata is not retained; Unicode text is preserved. |
-| `Docx.ListAppearance` | Loss | List label styling and indentation use the standard list profile. |
-| `Docx.ListBehavior` | Loss | Custom list restart, suffix or legal numbering behavior is not retained. |
-| `Docx.ListFormat` | Loss | Unsupported number formats become decimal numbering. |
-| `Docx.ListLabel` | Loss | Custom list labels become decimal numbers or round bullets. |
+| `Docx.ListAppearance` | Loss | Centered/right-aligned list labels use left label alignment. |
+| `Docx.ListBehavior` | Loss | Unsupported auxiliary numbering behavior is not retained. |
+| `Docx.ListFormat` | Loss | An unsupported number format uses decimal numbering. |
+| `Docx.ListLabel` | Loss | A private-use bullet without portable glyph semantics uses a round bullet. |
 | `Docx.ListRevision` | Loss | Numbering revisions are not retained. |
 | `Docx.MissingStyle` | Loss | A referenced style is missing; default text formatting is used. |
 | `Docx.NumberingFeature` | Loss | Picture bullets and auxiliary numbering metadata are not retained. |
 | `Docx.PageLayout` | Loss | Section features such as headers, footers, columns and page numbering are not retained. |
+| `Docx.PageNumberFormat` | Loss | Chapter-based page-number prefixes are not retained. |
 | `Docx.ParagraphFormatting` | Loss | Paragraph formatting such as spacing, paragraph-mark styling or page controls is not retained. |
 | `Docx.ParagraphIndent` | Loss | Character-unit and direction-dependent indentation is not retained. |
 | `Docx.ParagraphSpacing` | Loss | Automatic and character-unit paragraph spacing is not retained. |
 | `Docx.RelativeWidth` | Loss | Percentage table widths become automatic widths. |
 | `Docx.RunFormatting` | Loss | Unsupported run properties such as font families and complex-script formatting are not retained. |
-| `Docx.SectionBreak` | Loss | Continuous, column and parity section breaks become next-page section breaks. |
+| `Docx.SectionBreak` | Loss | An unsupported section transition becomes a next-page break. |
 | `Docx.Settings` | Loss | Tab and character-spacing settings are not retained. |
 | `Docx.Shading` | Loss | Patterned shading uses the solid background color. |
 | `Docx.TableCell` | Loss | Nested tables and unsupported cell content are not retained. |
@@ -188,33 +190,40 @@ conversion diagnostics.
 | `Ebook.TableIndent` | Loss | Table indentation is not retained in ebook output. |
 | `Ebook.Whitespace` | Loss | Reflowable ebook content collapses repeated spaces, tabs and paragraph-edge spaces. |
 | `Epub.ContentType` | Loss | Non-XHTML spine content is unsupported. |
+| `Field.LayoutDidNotConverge` | Loss | Calculated references did not stabilize within four layout passes. |
 | `Field.OrphanInstruction` | Report | An orphan field instruction is omitted. |
 | `Field.Output` | Loss | Fields use cached result text in this output profile. |
-| `Field.UnsupportedUsedCachedResult` | Report | An unsupported date/time format uses the cached result. |
+| `Field.UnsupportedUsedCachedResult` | Report | An unsupported, cyclic or unresolved reference retains its cached result. |
 | `Font.CffOutlinesConverted` | Report | Static CFF outlines use embedded TrueType subsets with at most one font unit of curve/coordinate approximation. |
 | `Font.MissingGlyph` | Report | A face without a usable replacement glyph uses the bundled glyph font for the affected run. |
 | `Font.Substituted` | Loss | A requested font family uses a fallback; inspect font resolution metrics for family names. |
 | `Formatting.RunAppearance` | Loss | This output profile does not retain requested font families or additional text decoration. |
 | `HeaderFooter.Output` | Loss | This output profile does not preserve header/footer stories. |
+| `Html.DrawingPosition` | Loss | Positioned drawings use inline frames in reflowable HTML. |
 | `Html.HeadersFootersOmitted` | Report | Headers and footers are omitted by the HTML output policy. |
 | `Html.ImageOmitted` | Loss | Image embedding is disabled; alternative text is retained. |
 | `Html.PageFieldsUsedCachedResult` | Report | Page fields retain their cached text because HTML has no fixed pagination. |
 | `Html.PageGeometryIgnored` | Report | Page geometry and section breaks are ignored by the reflowable HTML policy. |
 | `Html.PaginationIgnored` | Report | Pagination controls are omitted from the reflowable HTML document. |
 | `Html.TabStopsApproximated` | Report | HTML uses non-breaking spaces for tabs; fixed tab alignment and leaders are approximated. |
-| `Image.AnchorApproximated` | Loss | An anchored image is placed inline in reading order; wrapping and positioning are approximated. |
+| `Image.AnchorApproximated` | Loss | This destination uses inline placement for anchored images. |
 | `Image.External` | Loss | Remote and data-URI ebook images are not fetched. |
 | `Image.Format` | Loss | Only PNG and JPEG ebook images are supported. |
 | `Image.Output` | Loss | This output profile cannot embed images; alternative text is retained where available. |
 | `Image.Reencoded` | Report | A GIF/BMP raster is re-encoded as PNG; GIF output uses the first frame. |
 | `Image.Scaled` | Loss | Image dimensions exceed the 1584-point profile and are scaled proportionally; encoded pixels are retained. |
 | `Image.ScaledToFit` | Report | An oversized image is proportionally scaled to fit printable space. |
+| `Image.TransformOutput` | Loss | This destination retains original image pixels without crop, rotation or mirroring. |
 | `Image.Unsupported` | Loss | Images are not imported yet; their alternative text is retained without fetching resources. |
 | `Image.UnsupportedFormat` | Loss | An unsupported image format uses a visible placeholder at its declared size. |
+| `Image.WrapApproximated` | Loss | Tight/through wrapping uses the rectangular square-wrap profile. |
 | `Kindle.Flows` | Loss | Additional CSS, SVG and resource flows are not retained. |
 | `Kindle.ListLayout` | Loss | Kindle list indentation depends on the reading application's reflow layout. |
 | `Layout.CellPageControls` | Loss | Paragraph page controls inside table cells use the table row's pagination policy. |
 | `Layout.CodeFont` | Loss | Code content uses the embedded proportional font. |
+| `Layout.ContinuousGeometry` | Loss | A continuous section with incompatible physical geometry begins a new page. |
+| `Layout.ContinuousPageRestart` | Loss | A page-number restart on a shared physical page takes effect on the following page. |
+| `Layout.DocSections` | Loss | Binary DOC output retains next-page sections without columns or displayed-page-number restarts. |
 | `Layout.DocTabStops` | Loss | Binary DOC retains tab characters with default stops; custom tab definitions are not retained. |
 | `Layout.Hyperlink` | Loss | This XPS profile retains hyperlink text without an interactive target. |
 | `Layout.IndentApproximated` | Report | Unusable indentation is constrained to printable space. |
@@ -230,6 +239,7 @@ conversion diagnostics.
 | `Layout.TabLeader` | Loss | Unsupported tab leaders are omitted. |
 | `Layout.TextScaledToFit` | Report | Oversized text is reduced to fit printable space. |
 | `Link.UnsupportedTarget` | Loss | Only absolute HTTP, HTTPS and mailto hyperlinks are retained; other targets become text. |
+| `List.AdvancedOutput` | Loss | This destination uses decimal/round-bullet list definitions without the richer label profile. |
 | `List.Structure` | Loss | Editable list numbering becomes literal labels in this text profile. |
 | `Markdown.Alignment` | Loss | Markdown prose cannot preserve paragraph alignment. |
 | `Markdown.BlockStructure` | Loss | An unsupported container, such as a block quote, is flattened into its content. |
@@ -249,7 +259,11 @@ conversion diagnostics.
 | `Markdown.TableLineBreak` | Loss | Line breaks in table cells become spaces. |
 | `Markdown.UnsupportedBlock` | Loss | Unsupported Markdown block structure could not be preserved. |
 | `Markdown.UnsupportedInline` | Loss | Unsupported inline formatting is flattened where text is available. |
-| `Notes.PlacedAtEnd` | Loss | Note text is retained at the document end; original page placement and numbering styles are approximated. |
+| `Notes.Numbering` | Loss | An unsupported note number format uses decimal labels. |
+| `Notes.PlacedAtEnd` | Loss | This destination retains notes as numbered end text without editable note semantics. |
+| `Notes.Properties` | Loss | Custom note placement and separator properties use the standard page-bottom profile. |
+| `Notes.Separator` | Loss | Custom note separator content and appearance use a standard horizontal rule. |
+| `Notes.TableLayout` | Loss | Tables inside notes use flattened paragraphs. |
 | `Ocr.Columns` | Report | OCR read two text columns down the left column, then down the right column, using a wide uninterrupted gutter. |
 | `Ocr.Confidence` | Report | Mean of per-page recognized-word confidences:  |
 | `Ocr.English` | Report | English printed-text OCR was used; recognition requires review. |
@@ -261,7 +275,10 @@ conversion diagnostics.
 | `Pdf.OcrTextReplacement` | Loss | A large image triggered whole-page OCR; existing digital text is replaced by recognition results. |
 | `Pdf.Reconstruction` | Loss | PDF reading order is reconstructed into editable paragraphs; original page layout and vector graphics are not retained. |
 | `Revisions.Accepted` | Loss | Revision markup is rendered in its accepted state; revision history is not retained. |
-| `Shape.TextBoxFlattened` | Loss | Text-box text is retained inline; its position, fill and outline are approximated. |
+| `Shape.Appearance` | Loss | Unsupported text-box effects, theme fills and drawing appearance are not retained. |
+| `Shape.GeometryApproximated` | Loss | Only unrotated rectangular text boxes are supported. |
+| `Shape.TextBoxFlattened` | Loss | This destination retains text-box paragraphs as inline text. |
+| `Shape.TextBoxLayout` | Loss | Text-box autofit and vertical text are not supported. |
 | `Table.AutomaticGrid` | Report | Automatic table columns use equal widths when fixed geometry is required. |
 | `Table.BorderApproximated` | Loss | An unsupported border style uses a single line. |
 | `Table.Decoration` | Loss | This output profile omits cell shading, borders and vertical alignment while retaining cell content. |
@@ -273,7 +290,9 @@ conversion diagnostics.
 | `Table.MergedGroupSplit` | Report | An oversized vertically merged group is split at line boundaries. |
 | `Table.Merges` | Loss | Merged-cell geometry is not preserved by this output profile. |
 | `Table.NestedFlattened` | Loss | Nested tables retain their text in reading order as cell paragraphs in this output profile. |
+| `Table.NestedHeaders` | Loss | Nested-table headers are rendered once; repetition inside a split parent row is not supported. |
 | `Table.Pagination` | Loss | Non-splitting table-row controls are not preserved by this reflowable output profile. |
+| `Table.RelativeWidthOutput` | Loss | Binary DOC retains the absolute table profile; percentage widths and autofit are not retained. |
 | `Table.RowForcedSplit` | Report | An oversized non-splitting row is split at line boundaries. |
 | `Table.ShadingApproximated` | Loss | Patterned cell shading uses its solid background color. |
 | `Table.WidthApproximated` | Report | Cell width and padding are constrained to printable space. |

@@ -121,7 +121,7 @@ public sealed class PreflightReviewTests
     [Fact]
     public void RowAndNumberingFindingsIdentifyTheirOriginalElements()
     {
-        string table = "<w:tbl><w:tr><w:trPr><w:trHeight w:val='200'/></w:trPr><w:tc>" + TestDocuments.TextParagraph("Cell") + "</w:tc></w:tr></w:tbl>";
+        string table = "<w:tbl><w:tr><w:trPr><w:cnfStyle w:val='100000000000'/></w:trPr><w:tc>" + TestDocuments.TextParagraph("Cell") + "</w:tc></w:tr></w:tbl>";
         string numbering = "<w:numbering xmlns:w='" + TestDocuments.W + "'><w:numIdMacAtCleanup w:val='4'/></w:numbering>";
         using var source = new MemoryStream(TestDocuments.Docx(TestDocuments.Body(table),
             "<Relationship Id='numbering' Type='" + TestDocuments.R + "/numbering' Target='numbering.xml'/>",
@@ -134,10 +134,10 @@ public sealed class PreflightReviewTests
     }
 
     [Fact]
-    public void NoteLossIdentifiesTheNotePartAndElement()
+    public void NoteFallbackLossIdentifiesTheNotePartAndElement()
     {
         using var source = File.OpenRead(Path.Combine(TestDocuments.FixtureDirectory, "Enterprise", "contract-notes.docx"));
-        DocumentInspection report = new WordConverter().Inspect(source, DocumentFormat.Docx, DocumentFormat.Pdf, cancellationToken: TestContext.Current.CancellationToken);
+        DocumentInspection report = new WordConverter().Inspect(source, DocumentFormat.Docx, DocumentFormat.Doc, cancellationToken: TestContext.Current.CancellationToken);
         DiagnosticOccurrence note = Assert.Single(Assert.Single(report.Diagnostics, d => d.Code == "Notes.PlacedAtEnd").Occurrences);
         Assert.Equal("word/footnotes.xml", note.Location.Part); Assert.StartsWith("/footnotes[1]/footnote[", note.Location.Path, StringComparison.Ordinal);
     }

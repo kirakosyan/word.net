@@ -8,10 +8,10 @@ into `wordnet.Ocr` and adds managed OFL resources in `wordnet.Fonts`.
 | --- | --- |
 | Text appearance | Explicit font sizes and RGB colors through DOCX, DOC and EPUB; measured sizes/colors in PDF and XPS output |
 | Inheritance | DOCX document defaults, paragraph and character style chains, direct overrides and automatic-color reset |
-| Tables | Absolute preferred table width, grid/cell widths and top/right/bottom/left cell padding; unequal columns in fixed-page output |
-| Sections/paragraphs | Next-page sections, page dimensions/orientation/margins, before/after and line spacing, physical indents and supported pagination controls through Word |
+| Tables | Fixed/autofit and absolute/percentage widths, nested cells, spans, padding, RGB borders/shading and vertical alignment in the bounded DOCX/PDF/XPS/HTML profiles |
+| Sections/paragraphs | DOCX section transitions, equal-width columns and page labels/restarts; page geometry, paragraph spacing/indents and pagination controls in fixed pages |
 | Richer cells | Multiple editable paragraphs, horizontal/vertical spans through Word/EPUB; contiguous repeating headers and line-split long rows in PDF/XPS |
-| Lists | Editable decimal numbering and round bullets through DOCX, DOC and EPUB, including nesting up to nine levels and zero-based start values; linked DOCX numbering styles and editable Markdown list import |
+| Lists | Nine-level decimal/letter/Roman/compound numbering through DOCX/PDF/XPS/HTML; DOC/EPUB retain decimal/bullet subsets with diagnostics |
 | Images | Bounded PNG/JPEG; GIF/BMP become PNG; encoded-byte preservation for PNG/JPEG through DOCX/DOC/EPUB, physical point dimensions and image-aware line layout |
 | Enterprise stories/fields | Default/first/even headers and footers, inherited by section; PAGE/NUMPAGES/SECTIONPAGES/DATE/TIME/TITLE/AUTHOR and safe hyperlink fields; unknown cached results retained |
 | HTML output | Inline CSS, nested tables/lists, merged cells, cell borders/shading/vertical alignment, text decoration, safe links and data images |
@@ -30,31 +30,68 @@ semantics do not imply direct bold formatting. EPUB package URLs are decoded onc
 canonical path validation; encoded traversal and separators cannot escape the package.
 
 Fixed pages use resolved font faces, section geometry (A4 fallback) and flow layout.
-Continuous/odd/even section breaks, advanced typography, hanging
-list indentation and exact original pagination remain outside this profile. Paragraph
-indents/spacing and keep controls are retained; keep-with-table is diagnosed. Line spacing
-smaller than content height reports loss and expands to avoid clipping. Table cells retain
-multiple paragraphs. Fixed layout uses cell/grid
-widths ahead of a preferred total width; it does not reproduce Word's autofit algorithm.
-DOCX absolute table indentation and DOC absolute row edges are retained through Word.
-Tables may overhang text margins while remaining inside the physical page. Omitted grid
-columns become empty cells with a loss diagnostic; mixed unspecified grid widths are
-approximated with a diagnostic. Content-control/custom XML wrappers retain available
-table cells. HTML row headers do not imply repeating column headers. Zero row spans
-extend to the row-group end, and overlong spans are clipped with a loss diagnostic.
-Negative vertical Word margins use their absolute distance with a loss diagnostic for
-the unretained header-overlap behavior.
+The business-document profiles added for roadmap #32 are described in
+[business fidelity decisions](business-fidelity-design.md):
 
-Anchored raster pictures degrade to inline placement with `Image.AnchorApproximated`.
-Unsupported SVG/EMF/WMF use a visible placeholder at their declared extent outside Strict.
-Animated GIF uses its first frame. Cropping, mirroring, rotation, filters and other
-effects require diagnostics or failure. DrawingML text boxes flatten their current text
-with a placement/appearance warning; arbitrary positioned shapes/watermarks are not reproduced.
-Remote resources are never fetched. Binary Word output diagnoses loss of alternative
-text; PDF is not tagged with accessible alternative text. PNG transparency survives
-Word/EPUB exchange; PDF transparency and soft-mask reconstruction need broader qualification.
-TXT/Markdown/MOBI/AZW3/XPS output reports image loss and retains available alternative text
-in best-effort mode. Strict mode rejects detected loss before touching the destination.
+- Nested tables retain cell content order, padding, solid shading, top/center/bottom
+  alignment and single/double/dashed/dotted RGB borders in PDF/XPS. Shared border
+  segments choose width, then style, then source order. Minimum row heights are
+  retained; exact heights fail if their content would overflow. Ordinary nested rows
+  split at complete line bands. Non-splitting nested rows and merged groups must fit
+  one body area. Parent table headers repeat across pages/columns. Nested repeating
+  headers and arbitrary floating tables remain outside the profile.
+- Explicit fixed/autofit layout and percentage table/cell widths survive DOCX.
+  Percentages resolve against the containing body, column or cell. Autofit uses one
+  content-constraint pass, including spans, and wraps long words at glyph boundaries.
+  Absolute fixed grids keep their previous precedence. Implicit layout retains the
+  legacy fixed-grid policy; historical Word autofit quirks are not reproduced.
+- PNG/JPEG crops, flips and clockwise 0/90/180/270-degree rotation preserve source
+  bytes through DOCX. PDF uses clipping and affine transforms; XPS uses image brushes
+  and transformed frames. HTML uses cropped CSS frames with embedded data images.
+  Crops must remain inside the source and leave positive area. Arbitrary rotations,
+  vector pictures and artistic effects still require explicit diagnostics.
+- Raster anchors retain page/margin/column horizontal origins and page/margin/paragraph
+  vertical origins, offsets, alignment and wrapping distances. Square and top/bottom
+  wrapping use rectangular exclusions. Behind/in-front images have deterministic
+  paint order and may overlap stories when explicitly positioned there. Out-of-page
+  frames fail before destination copying. Tight/through wrapping reports its square
+  approximation. Keep chains, table anchors and wrapping across page transitions are
+  bounded approximations rather than a claim of complete Word drawing layout.
+- Positioned rectangular text boxes retain paragraph content, inset padding, RGB fill
+  and outline through DOCX/PDF/XPS. Content must fit the declared frame. Rotated boxes,
+  vertical text, arbitrary geometry, autofit and nested table content are outside the
+  fixed-page text-box profile. Reflowable HTML reports inline-frame placement.
+- Continuous, next/odd/even-page sections retain physical page geometry. Equal-width
+  one-to-three-column bodies fill sequentially, with explicit column/page breaks.
+  Final columns are not balanced. Incompatible continuous geometry reports a new-page
+  approximation; a page-number restart on a shared page is diagnosed. Decimal, Roman
+  and alphabetic labels/restarts are separate from physical page counts. Blank parity
+  pages count physically and suppress stories. Unequal columns remain diagnosed.
+- Nine-level lists retain decimal/alphabetic/Roman formats, compound labels, legal
+  numbering (Roman values through 3999), start overrides, supported restarts, label appearance and suffix/tab/
+  hanging-indent settings through DOCX/PDF/XPS/HTML. Centered/right-aligned labels report left alignment. Private-use bullets without
+  portable glyph meaning and picture bullets remain explicit losses.
+- Footnotes reserve a bounded page-bottom area with a separator before body placement.
+  Long notes continue at complete line boundaries, with at most 40% of each body area
+  reserved for notes. Oversized single note lines fail. Number formats, starts and
+  continuous/section/page restarts are retained. DOCX has editable note parts and HTML
+  has linked end matter. Tables inside notes report flattened layout. Custom note
+  separators/placement and arbitrary nested note stories remain outside the profile.
+- REF, PAGEREF, SEQ and heading-based TOC fields refresh text from bookmarks, counters
+  and final pagination. TOC supports heading ranges and hyperlinks; REF supports text,
+  numbering and hyperlinks; SEQ supports start/current/next and supported number
+  formats. Calculation is bounded to four additional layout passes. Unsupported
+  switches, missing/cyclic references and fields spanning paragraphs retain caches
+  with diagnostics. DOCX retains supported field tokens and refreshed caches. HTML
+  retains pagination-field caches because it has no physical pagination.
+
+DOC retains its existing absolute-table, inline-image, decimal/bullet and next-page
+section subset. Destinations that cannot preserve richer features report the relevant
+losses. No remote resources are fetched. Strict rejects detected losses and invalid or
+oversized geometry before copying staged output; Lenient retains its documented scaling
+and splitting behavior for the older profile. Resource limits apply in every mode.
+PDF is not tagged with accessible image alternative text. XPS now embeds raster images;
+TXT/Markdown/MOBI/AZW3 retain available alternative text with an image-loss diagnostic.
 
 PDF import always diagnoses reconstruction. Scan detection treats an image covering
 at least half the page as a scan candidate. With OCR configured, those pages and image-only
@@ -74,18 +111,16 @@ isolation for hard CPU/RSS limits. Strict/BestEffort reject oversized fixed-page
 Lenient scales oversized images/text/stories, constrains unusable indentation/cell
 widths and force-splits oversized rows/merged groups with warnings. Resource limits,
 malformed input, invalid caller configuration, cancellation and I/O still fail.
-Merges cannot cross repeating headers to body rows. Nested structure survives DOCX/HTML;
-other outputs retain flattened cell text with `Table.NestedFlattened`. Cell decoration
-survives DOCX/HTML and produces `Table.Decoration` elsewhere. Notes retain numbered text
-at the document end with `Notes.PlacedAtEnd`, rather than original page-bottom placement.
+Merges cannot cross repeating headers to body rows. Nested structure and cell decoration
+reach DOCX/HTML/PDF/XPS. Other destinations retain flattened text with explicit losses.
 
 Fixed-page justified paragraphs expand word spaces; distributed paragraphs expand
 character gaps on wrapped lines. Custom left/center/right/decimal tab stops and simple
 leaders are measured in fixed layout. HTML uses non-breaking spaces with an explicit
 tab approximation report. Binary DOC custom tab definitions are diagnosed as lost.
 Advanced ligatures, variable/color fonts, theme/conditional table styles,
-complex sections/columns, page numbering restarts and exact Word line breaks remain
-outside the profile. Unsupported cached field results retain their runs and pictures;
+unequal columns, advanced typography and exact Word line breaks remain outside the
+profile. Unsupported cached field results retain their runs and pictures;
 cross-paragraph complex fields can flatten block placement. Review diagnostics.
 
 Static caller CFF faces are converted to quadratic outlines for PDF embedding;

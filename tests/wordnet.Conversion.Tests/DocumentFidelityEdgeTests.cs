@@ -123,7 +123,7 @@ public sealed partial class DocumentFidelityTests
         Fails<NotSupportedException>(input, DocumentFormat.Docx, new ConversionOptions());
         using var source = new MemoryStream(input); using var destination = new MemoryStream();
         ConversionResult result = new WordConverter().Convert(source, destination, DocumentFormat.Docx, DocumentFormat.Epub, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
-        Assert.Contains(result.Diagnostics, d => d.Code == "Docx.ImageEffects");
+        Assert.Contains(result.Diagnostics, d => d.Code == "Image.TransformOutput");
     }
 
     [Fact]

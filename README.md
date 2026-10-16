@@ -247,7 +247,7 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 
 | Format | Current implementation |
 | --- | --- |
-| DOCX | Editable paragraphs/headings, bold/italic, font sizes/RGB colors, alignment, safe links, decimal/bulleted lists, absolute table widths/cell padding and inline PNG/JPEG |
+| DOCX | Editable paragraphs/headings, bold/italic, font sizes/RGB colors, alignment, safe links, richer editable lists, nested/decorated tables, notes, section/column settings and supported raster drawings |
 | DOC | Word 97 binary output and Word 97+ input; text/styles/alignment, font sizes/colors, editable lists/tables, absolute widths/padding and inline PNG/JPEG |
 | TXT ↔ Word | UTF-8, Unicode, paragraphs, tabs and line breaks; explicit formatting-loss diagnostics |
 | Markdown ↔ Word | CommonMark text, editable list import, headings/emphasis/code/links and aligned pipe tables; explicit losses for richer Word appearance |
@@ -255,7 +255,7 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 | MOBI ↔ Word | Unencrypted UTF-8 MOBI 6; uncompressed/PalmDOC input and uncompressed output |
 | AZW3 ↔ Word | Standalone unencrypted KF8; skeleton/fragment input and single-flow output |
 | PDF ↔ Word | Selectable-text/color/image export, digital text and simple raster-image import, optional English OCR for scanned/mixed pages |
-| XPS ← Word | XPS 2005 packages with positioned text and embedded fonts |
+| XPS ← Word | XPS 2005 packages with positioned text, embedded fonts/raster images and the shared fixed-page table/section profile |
 | HTML ← Word | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks |
 
 All direction tests inspect real content. Generated DOCX is independently schema
@@ -267,15 +267,16 @@ Current limitations:
 
 - DOC retains the [documented formatting/table subset](https://github.com/kirakosyan/word.net/blob/main/docs/doc-format.md). The shared
   [formatting/image profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) covers inline PNG/JPEG and simple
-  decimal/bulleted lists. Floating/linked/vector images, cropping/effects, advanced list
-  labels and continuous/parity section breaks remain outside it. Header/footer stories
-  and fields survive DOCX/DOC exchange. Notes degrade to end text with a warning.
-  Nested tables survive DOCX/HTML; other outputs flatten their text with a warning.
+  decimal/bulleted lists. Linked/vector images, arbitrary drawing effects, unequal columns and complete
+  Word pagination parity remain outside it. Header/footer stories
+  and fields survive DOCX/DOC exchange. DOCX preserves editable notes, richer numbering and drawings; PDF/XPS render the
+  bounded business profiles described in the fidelity guide. DOC retains its existing
+  subset with explicit losses.
   Conversion preserves next-page section geometry, paragraph spacing/indents,
   multiple cell paragraphs and horizontal/vertical merges through Word and EPUB.
 - PDF/XPS export uses section-aware wrapping/pagination, selected embedded font subsets, headings,
   emphasis, run sizes/colors, paragraph/cell alignment, absolute table widths and padding.
-  PDF also embeds PNG/JPEG; GIF/BMP become PNG. Anchors use inline placement with a warning.
+  PDF also embeds PNG/JPEG; GIF/BMP become PNG. Supported anchors use rectangular wrapping and positioned frames.
   Strict mode rejects missing glyphs; other modes use visible fallback characters.
   The authored business corpus meets the recorded Word page-count tolerance;
   exact line breaks and arbitrary template parity are not guaranteed.
@@ -289,7 +290,7 @@ Current limitations:
   transforms. OCR reconstructs English printed text; handwriting is deferred.
 - EPUB accepts supported absolute inline CSS and embedded PNG/JPEG. Broader CSS/media,
   HUFF/CDIC compression, hybrid Kindle containers and DRM remain outside the profile.
-  TXT/Markdown/MOBI/AZW3/XPS output diagnoses image loss and retains available alternative
+  TXT/Markdown/MOBI/AZW3 output diagnoses image loss and retains available alternative
   text in best-effort mode. No remote resources load.
 - Password protection and editable charts/equations are deferred. DOCX revisions render
   their accepted state with a `Revisions.Accepted` warning in BestEffort/Lenient;
