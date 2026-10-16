@@ -1,5 +1,47 @@
 # Conversion tests and qualification
 
+## Comparison corpus and preflight
+
+The additive preflight API and twelve-document comparison corpus are described in
+[diagnostics](diagnostics.md) and [comparison reproduction](comparison.md). New tests
+independently schema-check the authored invoices/contracts/reports/letterheads,
+assert identical parse/destination/layout findings against real conversion, check
+stable cell/story locations, bounded grouping, privacy, cancellation, stream ownership,
+encryption and resource failures, and distinguish provider/writer-only findings.
+The optional commercial runner does not change existing required CI gates.
+Local Linux x64 evidence: locked restore and warning-free Release builds of all
+five assets, **510/510** conversion/OCR tests on each of .NET 8.0.32 and 10.0.12,
+format verification and package/API validation pass. All twelve free comparison
+cases pass exact text/page checks and independent POI editable DOC reading order;
+three Python control tests pass, including actual displaced/missing-text/extra-page
+PDFs and stale-raster rejection. The historical performance harness also builds
+against the earlier core API. Raw reports are under ignored `artifacts/comparison*`.
+Word/Aspose reference execution and Windows/ARM64/Framework runtime qualification
+were not performed here.
+
+
+## PR #33 review corrections
+
+The review adds fifteen regression cases for Strict inspection through full layout,
+model-only fixed-page losses without pagination, caller-font glyph fallback and list
+mappings, Lenient rejection prediction, and row/cell/numbering/note source locations.
+The complete **525-case** suite passes on Linux x64 .NET 8.0.32 and 10.0.12 with no
+failures or skips. Locked restore, all five library targets, formatting and package
+API compatibility checks pass. The corpus now requires its exact expected warning
+set, in addition to text, page and independent editable-DOC checks.
+
+Five Python controls cover text/displacement/page regressions, stale rasters,
+missing/unexpected loss diagnostics, portable manifest hashes and CRLF/LF renderer
+identities. PowerShell 7.5.3 locally passes the native-stderr/failure checks and
+captures the actual Poppler banner identically to Python. CI additionally executes
+the same helper tests under Windows PowerShell 5.1. Desktop Word and licensed Aspose
+were not provisioned locally; their reference availability remains explicit.
+
+Raw review reports are under ignored `artifacts/pr33-review`. Location paths are
+materialized only for diagnostic observations, with bounded hash-based deduplication.
+The single-core ten-page export smoke check remains subject to the existing latency
+and memory caps; it is not a replacement for the alternating-revision CI gate.
+
 ## Stable 1.1.0 release qualification
 
 The maintainer requested a stable release after the review corrections below.

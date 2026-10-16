@@ -1,0 +1,1804 @@
+{
+  "schemaVersion": 1,
+  "kind": "comparison-baseline-summary",
+  "rawResultsSchema": "eng/comparison-result.schema.json",
+  "date": "2026-10-16",
+  "sourceRevision": "b39e839deec60324916e78ff2463ae2b1df70161",
+  "sourceDirty": true,
+  "manifestSha256": "3599d9ad87ba9346edb87e47365f25c0097ac3c9054ed28ba3d904d0c1813fb2",
+  "rawResultsSha256": "851171ab71ffc9d40c6297746f37ba1d0a4ad1fceb62c573fd12ddd6b85dee8c",
+  "environment": {
+    "runtime": ".NET 10.0.12",
+    "architecture": "X64",
+    "os": "Debian GNU/Linux 13 (trixie)",
+    "processor": "model name\t: AMD EPYC 9V74 80-Core Processor",
+    "logicalProcessors": 4,
+    "affinity": "1F"
+  },
+  "assemblies": [
+    {
+      "name": "BenchmarkDotNet",
+      "version": "0.15.8.0",
+      "sha256": "d460626b2e1a9fa2f786e09e6c85cdf4d7b73deca636450a0e23892c8ce6192b"
+    },
+    {
+      "name": "Microsoft.CSharp",
+      "version": "10.0.0.0",
+      "sha256": "97a53bfcb115cc6d1e21113834d3aa19367bc65b38e5e5035f101348693afcf5"
+    },
+    {
+      "name": "Microsoft.Win32.Primitives",
+      "version": "10.0.0.0",
+      "sha256": "5cbfa551ec9f3fe950c5cd56f7e4fe5ece9059b069e5fc8a8c8a4f0f496107ef"
+    },
+    {
+      "name": "OpenMcdf",
+      "version": "3.3.0.0",
+      "sha256": "c55ecaa14a52695d43f1d523309499bf13fb85f558c32b461bb8c36100d0219b"
+    },
+    {
+      "name": "System.Collections",
+      "version": "10.0.0.0",
+      "sha256": "ff0b05dd9578d11089c52e0ab8a35765e9be49dce9bc849b4e0574815f3fac8e"
+    },
+    {
+      "name": "System.Collections.Concurrent",
+      "version": "10.0.0.0",
+      "sha256": "d5b3117fe23618b0b366724c63a9faf558b5f7d1d4e5f8c933f920c4038ed31e"
+    },
+    {
+      "name": "System.Collections.Immutable",
+      "version": "10.0.0.0",
+      "sha256": "8c8ddc0f0de5b22cd4b11ae86b3b5791754d61868f76c64b05e5a3cfdafcd3ce"
+    },
+    {
+      "name": "System.ComponentModel.Primitives",
+      "version": "10.0.0.0",
+      "sha256": "9e5973eaa2671813a50c40e7d99e10e6f4f5bd927ee591d506dc40729c0b2d62"
+    },
+    {
+      "name": "System.Console",
+      "version": "10.0.0.0",
+      "sha256": "30c185a09e4fd99069af832f40dc087bd3569f5497af8baf921aa4dbbba56984"
+    },
+    {
+      "name": "System.Diagnostics.Process",
+      "version": "10.0.0.0",
+      "sha256": "973c1bc1159c04ac215517c95d24e2790ffea186e384cb3ed3d5e0d22979f1b4"
+    },
+    {
+      "name": "System.IO.Compression",
+      "version": "10.0.0.0",
+      "sha256": "00fc0309e170f7fa5b14e6a9be4ffb3dc1d1c2c492bdc7fcf4236e998013c5e4"
+    },
+    {
+      "name": "System.Linq",
+      "version": "10.0.0.0",
+      "sha256": "a0c910f6b9eb2468e9a8dfa07dd59c7fd609b3098e57d96fb8c74e89fe1aeee0"
+    },
+    {
+      "name": "System.Linq.Expressions",
+      "version": "10.0.0.0",
+      "sha256": "d8345995a8f5af5cb11cf39aa318ac98e21ce258d54d2acb6b4bda73693b3c1e"
+    },
+    {
+      "name": "System.Memory",
+      "version": "10.0.0.0",
+      "sha256": "c1ec113101642ec2e3b2421115d14de02897049eac7307490c5c9ab70af0f36a"
+    },
+    {
+      "name": "System.Numerics.Vectors",
+      "version": "10.0.0.0",
+      "sha256": "a530b7505c54e6bd48d8ba6f4d4828ab9821e6748e4728ee09b620e3518a912a"
+    },
+    {
+      "name": "System.Private.CoreLib",
+      "version": "10.0.0.0",
+      "sha256": "26304a2985357b9ee277f273667fcd9c892edae3ee6eba76f739033e95eb39b3"
+    },
+    {
+      "name": "System.Private.Uri",
+      "version": "10.0.0.0",
+      "sha256": "dce56b911dec93cfaeaa759fb069714d397663ead3a8cac855f66bd72098aff1"
+    },
+    {
+      "name": "System.Private.Xml",
+      "version": "10.0.0.0",
+      "sha256": "61702d155227bfd6317170cce55dcdbfea69ba129e9b173ee2cadd1f5b5cde74"
+    },
+    {
+      "name": "System.Private.Xml.Linq",
+      "version": "10.0.0.0",
+      "sha256": "dc9fe6577572f71bad36520652fa7a185f36040dc8b4c3f471711c6a76cbc1a2"
+    },
+    {
+      "name": "System.Runtime",
+      "version": "10.0.0.0",
+      "sha256": "417e7882e2a2689aafbf86bd6256db906357afa775f58e3c86a94a9f119cc3ef"
+    },
+    {
+      "name": "System.Runtime.InteropServices",
+      "version": "10.0.0.0",
+      "sha256": "82286a808b40f176a758a1ad0faeadcf170d92a90043aca046160c90e5d54c74"
+    },
+    {
+      "name": "System.Runtime.Loader",
+      "version": "10.0.0.0",
+      "sha256": "20bb43ccadc7d94801a150a8d5caaf74584f5c4709a02eb0c618a426b04e0f6c"
+    },
+    {
+      "name": "System.Security.Cryptography",
+      "version": "10.0.0.0",
+      "sha256": "49c7a0f1657dc1da331fbe5dcca5fd13700c692514528380eaff4cf15ddc64a1"
+    },
+    {
+      "name": "System.Text.Encoding.CodePages",
+      "version": "10.0.0.0",
+      "sha256": "37d1f9d9bbd47222623e9671dec54093c21b8da3f9307f88fd0c05b0e81ad75a"
+    },
+    {
+      "name": "System.Text.Encoding.Extensions",
+      "version": "10.0.0.0",
+      "sha256": "695cdbbd45618531ba86378263bd9494afa05c61609a2892b2d9f89fb17a5d32"
+    },
+    {
+      "name": "System.Text.RegularExpressions",
+      "version": "10.0.0.0",
+      "sha256": "258c27c22aeace5c0f6ba236c848bde98f891f1ef403f05da0f3f7dfdf9fa4d4"
+    },
+    {
+      "name": "System.Threading",
+      "version": "10.0.0.0",
+      "sha256": "477cd5447cef676bf036307029196287ca58b6ee95dc64e3c759926cdd6f59c3"
+    },
+    {
+      "name": "System.Threading.Thread",
+      "version": "10.0.0.0",
+      "sha256": "62ce305385b7ddf6ad3925780435785c2a05d666d4ad325fa4aaf411a091bf2b"
+    },
+    {
+      "name": "System.Xml.ReaderWriter",
+      "version": "10.0.0.0",
+      "sha256": "6e296482fd53d1e298162b05ae04c9d98b1f4bb39c825790e0784647a5a49ee0"
+    },
+    {
+      "name": "System.Xml.XDocument",
+      "version": "10.0.0.0",
+      "sha256": "4cfeadbc2d6938ce25080b52558003d92d81242e0e9866495d8bd49a12968b71"
+    },
+    {
+      "name": "UglyToad.PdfPig",
+      "version": "0.1.16.0",
+      "sha256": "c47abebdffebb6e48a1d40f4c22ce5f673c57558ecdb3187841b728112dea279"
+    },
+    {
+      "name": "UglyToad.PdfPig.Core",
+      "version": "0.1.16.0",
+      "sha256": "cbdd1809ee0f4ba617900845d182e5e67183377fe5848a8d9d1222b3c395116b"
+    },
+    {
+      "name": "UglyToad.PdfPig.Fonts",
+      "version": "0.1.16.0",
+      "sha256": "30521d2aa02252c0097cd3a9b12832368d5c925e1ccb4bc3a5735671bd3d2e1e"
+    },
+    {
+      "name": "UglyToad.PdfPig.Tokenization",
+      "version": "0.1.16.0",
+      "sha256": "539d0ca2c7981b9eaf8541e17434911042f7cc73d3abc24962994bb99472ed3c"
+    },
+    {
+      "name": "UglyToad.PdfPig.Tokens",
+      "version": "0.1.16.0",
+      "sha256": "d6fbd73a520bb961ffcc98030ab686f43c88b03f5b059ba11e3781e0f091433d"
+    },
+    {
+      "name": "netstandard",
+      "version": "2.1.0.0",
+      "sha256": "ff49fd22c96d383744a104b03249befc1f27a9912dbc891c96fc8e7cc3bf10c2"
+    },
+    {
+      "name": "wordnet",
+      "version": "1.0.0.0",
+      "sha256": "24758a1089003a8d9b5995a543d0bcaf7c793fdfed2cdf2e5b8c337724ca3dc6"
+    },
+    {
+      "name": "wordnet.Benchmarks",
+      "version": "1.0.0.0",
+      "sha256": "ecc7afd2d0f582d6994cbb627cca855e253c53cfc337f9f555435c4840526e42"
+    },
+    {
+      "name": "wordnet.Fonts",
+      "version": "1.0.0.0",
+      "sha256": "61d48b6993f7a334d34b406bdc4a6cad1530b379ba22ed936874a3584905f571"
+    }
+  ],
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    }
+  ],
+  "renderer": "pdftoppm version 26.05.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+  "rendererSha256": "de772e88ab9977ccde25def9b403bf42675d75f5dd82b19fbd7d8123ad183159",
+  "tolerances": {
+    "glyphPoints": 0.25,
+    "significantPixelChannelSum": 96,
+    "changedPixelFraction": 0.002,
+    "meanChannelError": 0.25
+  },
+  "referenceAvailability": {
+    "word": "not-provided",
+    "aspose": "not-provided",
+    "rasterGoldens": "not-provided"
+  },
+  "results": [
+    {
+      "documentId": "invoice-services",
+      "category": "invoice",
+      "inputSha256": "23c75540a2d3d5bc691d00bb55eff3a1617674f5b8af80c53d3e6f4511312bb4",
+      "outputSha256": "18b9e845a5bca33939cc22f25e4df673dd0a689c793367735bfa3120b29724c2",
+      "editableSha256": "2717ccaeca38e4545a298789f00f86d2763bf3f6e61c8426bb57ae527af7c16a",
+      "status": "measured",
+      "fidelityStatus": "no-detected-losses",
+      "knownLosses": [],
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 495.786,
+          "allocatedBytes": 41697368,
+          "rssBytes": 97173504,
+          "processPeakRssBytes": 97173504,
+          "outputBytes": 17242
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 197.2354,
+          "allocatedBytes": 35229032,
+          "rssBytes": 99094528,
+          "processPeakRssBytes": 99094528,
+          "outputBytes": 17242
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 87.4724,
+          "allocatedBytes": 35211552,
+          "rssBytes": 97406976,
+          "processPeakRssBytes": 98689024,
+          "outputBytes": 17242
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 96.7061,
+          "allocatedBytes": 35218968,
+          "rssBytes": 99323904,
+          "processPeakRssBytes": 99323904,
+          "outputBytes": 17242
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 99.7053,
+          "allocatedBytes": 35215472,
+          "rssBytes": 98426880,
+          "processPeakRssBytes": 99254272,
+          "outputBytes": 17242
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 84.9437,
+          "allocatedBytes": 35207520,
+          "rssBytes": 101060608,
+          "processPeakRssBytes": 101060608,
+          "outputBytes": 17242
+        }
+      ]
+    },
+    {
+      "documentId": "invoice-nested",
+      "category": "invoice",
+      "inputSha256": "7889299fb8b6ee11c16ac7d0af9591411740b96e13b7f7783d29a0261c971360",
+      "outputSha256": "bdddf435e7774cd20f73bf365dfa8b6fe447cdcbbdb27484174a6013ad9d4f30",
+      "editableSha256": "20c02c81e1fe1f4ec1cd0bbeba158a31df2e041b709edbe0bdc78bdcb3f105a5",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Table.NestedFlattened",
+        "Table.Decoration"
+      ],
+      "observedKnownLosses": [
+        "Table.Decoration",
+        "Table.NestedFlattened"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [
+        {
+          "code": "Table.NestedFlattened",
+          "count": 1,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/tbl[1]",
+              "phase": "Destination"
+            }
+          ]
+        },
+        {
+          "code": "Table.Decoration",
+          "count": 1,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/tbl[1]",
+              "phase": "Destination"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 286.7422,
+          "allocatedBytes": 22348600,
+          "rssBytes": 95576064,
+          "processPeakRssBytes": 95576064,
+          "outputBytes": 10138
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 95.3678,
+          "allocatedBytes": 20052848,
+          "rssBytes": 96088064,
+          "processPeakRssBytes": 96088064,
+          "outputBytes": 10138
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 83.1975,
+          "allocatedBytes": 17951512,
+          "rssBytes": 96116736,
+          "processPeakRssBytes": 96116736,
+          "outputBytes": 10138
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 82.9546,
+          "allocatedBytes": 17953624,
+          "rssBytes": 96145408,
+          "processPeakRssBytes": 96145408,
+          "outputBytes": 10138
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 58.6834,
+          "allocatedBytes": 17951536,
+          "rssBytes": 97280000,
+          "processPeakRssBytes": 97280000,
+          "outputBytes": 10138
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 46.9067,
+          "allocatedBytes": 17954984,
+          "rssBytes": 97652736,
+          "processPeakRssBytes": 97652736,
+          "outputBytes": 10138
+        }
+      ]
+    },
+    {
+      "documentId": "invoice-relative",
+      "category": "invoice",
+      "inputSha256": "f15faaed30fdf0c95a363a2e609c6cdc5e81aa0a75b45b8026aaedc2273c0b30",
+      "outputSha256": "da406096ac8efef5d84ae0057c9e329add22fac5b738ea328d87e59cdc2bfd7d",
+      "editableSha256": "2efc1868c81719cee7072b9a960a81c66d2b700329cd505b70e91087d1eb5ddf",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Docx.RelativeWidth"
+      ],
+      "observedKnownLosses": [
+        "Docx.RelativeWidth"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [
+        {
+          "code": "Docx.RelativeWidth",
+          "count": 1,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/tbl[1]",
+              "phase": "Parse"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 274.2858,
+          "allocatedBytes": 22330768,
+          "rssBytes": 98910208,
+          "processPeakRssBytes": 98910208,
+          "outputBytes": 9626
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 100.1568,
+          "allocatedBytes": 20014496,
+          "rssBytes": 96358400,
+          "processPeakRssBytes": 100216832,
+          "outputBytes": 9626
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 81.8646,
+          "allocatedBytes": 17928624,
+          "rssBytes": 96423936,
+          "processPeakRssBytes": 100216832,
+          "outputBytes": 9626
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 81.1841,
+          "allocatedBytes": 17928952,
+          "rssBytes": 96452608,
+          "processPeakRssBytes": 100216832,
+          "outputBytes": 9626
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 77.324,
+          "allocatedBytes": 17928648,
+          "rssBytes": 97329152,
+          "processPeakRssBytes": 100216832,
+          "outputBytes": 9626
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 55.5167,
+          "allocatedBytes": 17928656,
+          "rssBytes": 97726464,
+          "processPeakRssBytes": 100216832,
+          "outputBytes": 9626
+        }
+      ]
+    },
+    {
+      "documentId": "contract-services",
+      "category": "contract",
+      "inputSha256": "3cba27f301e28538d109d234677c3f772143a8866c2975064e3bce663a172500",
+      "outputSha256": "f90da782d9f9cc00a33d38c9b1cdfba75bbbbb9382ffe6d16f54f7496ad790de",
+      "editableSha256": "b1efce4d7a5b246daef9dd0f7e460dc911df6af386513fedb6cca27925cdb90a",
+      "status": "measured",
+      "fidelityStatus": "no-detected-losses",
+      "knownLosses": [],
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 402.2524,
+          "allocatedBytes": 41807312,
+          "rssBytes": 97058816,
+          "processPeakRssBytes": 97058816,
+          "outputBytes": 17575
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 186.9797,
+          "allocatedBytes": 35314736,
+          "rssBytes": 98983936,
+          "processPeakRssBytes": 98983936,
+          "outputBytes": 17575
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 113.4604,
+          "allocatedBytes": 35311648,
+          "rssBytes": 97333248,
+          "processPeakRssBytes": 98328576,
+          "outputBytes": 17575
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 107.0291,
+          "allocatedBytes": 35310048,
+          "rssBytes": 100052992,
+          "processPeakRssBytes": 100052992,
+          "outputBytes": 17575
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 71.8306,
+          "allocatedBytes": 35307544,
+          "rssBytes": 100401152,
+          "processPeakRssBytes": 100401152,
+          "outputBytes": 17575
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 82.1422,
+          "allocatedBytes": 35306936,
+          "rssBytes": 102105088,
+          "processPeakRssBytes": 102105088,
+          "outputBytes": 17575
+        }
+      ]
+    },
+    {
+      "documentId": "contract-legal",
+      "category": "contract",
+      "inputSha256": "a425eb9b3fdce76d240bf6e369f075dafab90b108f4c79f3e48ceda3992b1458",
+      "outputSha256": "004a691415623409a7c578667176757fc80b19ddcc5c38239f037a3b810dbf65",
+      "editableSha256": "980acbc30155bb52743c5b823112c402b4f2ccf6e81145e6a613d7c656570616",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Docx.ListFormat",
+        "Docx.ListLabel"
+      ],
+      "observedKnownLosses": [
+        "Docx.ListFormat",
+        "Docx.ListLabel"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [
+        {
+          "code": "Docx.ListFormat",
+          "count": 2,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[3]",
+              "phase": "Parse"
+            }
+          ]
+        },
+        {
+          "code": "Docx.ListLabel",
+          "count": 2,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[3]",
+              "phase": "Parse"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 265.7268,
+          "allocatedBytes": 22514224,
+          "rssBytes": 94699520,
+          "processPeakRssBytes": 94699520,
+          "outputBytes": 10736
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 96.1337,
+          "allocatedBytes": 20204584,
+          "rssBytes": 95100928,
+          "processPeakRssBytes": 95100928,
+          "outputBytes": 10736
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 82.3747,
+          "allocatedBytes": 18110120,
+          "rssBytes": 95170560,
+          "processPeakRssBytes": 95170560,
+          "outputBytes": 10736
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 83.3053,
+          "allocatedBytes": 18110432,
+          "rssBytes": 95199232,
+          "processPeakRssBytes": 95199232,
+          "outputBytes": 10736
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 67.0351,
+          "allocatedBytes": 18110104,
+          "rssBytes": 95924224,
+          "processPeakRssBytes": 95924224,
+          "outputBytes": 10736
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 35.5003,
+          "allocatedBytes": 18110784,
+          "rssBytes": 96100352,
+          "processPeakRssBytes": 96100352,
+          "outputBytes": 10736
+        }
+      ]
+    },
+    {
+      "documentId": "contract-revisions",
+      "category": "contract",
+      "inputSha256": "e79dce2bee7f87071f5b89cc25145a38a7988dbd97266f03fdfc8e1b4f0090a0",
+      "outputSha256": "809f74966f89869b0100210dca9dcb34ac524d172ff04aa7c2fb1eb470f3596b",
+      "editableSha256": "b91231b0d11155e081040c8b4a7b3f2f182ffcf13a4c2cc3a1f2d21c81deb3aa",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Revisions.Accepted"
+      ],
+      "observedKnownLosses": [
+        "Revisions.Accepted"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [
+        {
+          "code": "Revisions.Accepted",
+          "count": 2,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[3]/ins[1]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[3]/del[1]",
+              "phase": "Parse"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 264.9054,
+          "allocatedBytes": 22369176,
+          "rssBytes": 91332608,
+          "processPeakRssBytes": 91332608,
+          "outputBytes": 10500
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 94.1139,
+          "allocatedBytes": 20050888,
+          "rssBytes": 92856320,
+          "processPeakRssBytes": 92856320,
+          "outputBytes": 10500
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 81.0329,
+          "allocatedBytes": 17966296,
+          "rssBytes": 93274112,
+          "processPeakRssBytes": 93274112,
+          "outputBytes": 10500
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 82.8363,
+          "allocatedBytes": 17966624,
+          "rssBytes": 92442624,
+          "processPeakRssBytes": 92868608,
+          "outputBytes": 10500
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 57.9319,
+          "allocatedBytes": 17966352,
+          "rssBytes": 93634560,
+          "processPeakRssBytes": 93634560,
+          "outputBytes": 10500
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 33.5601,
+          "allocatedBytes": 17966360,
+          "rssBytes": 94044160,
+          "processPeakRssBytes": 94044160,
+          "outputBytes": 10500
+        }
+      ]
+    },
+    {
+      "documentId": "report-quarterly",
+      "category": "report",
+      "inputSha256": "eb436d049fe672a6e182de68171b398ef11a019dfe8c860d64664619134588fc",
+      "outputSha256": "4592e6e30b7c5485de33b772e73b09c1628c7b5846ca233cad6a7739fe3a3110",
+      "editableSha256": "649a6a8ae3861605ffcab8f8afa68f8dfd7c109e026b1a63c7a40cd075bcb4ff",
+      "status": "measured",
+      "fidelityStatus": "no-detected-losses",
+      "knownLosses": [],
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 388.8955,
+          "allocatedBytes": 41711944,
+          "rssBytes": 101130240,
+          "processPeakRssBytes": 101130240,
+          "outputBytes": 17367
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 172.8755,
+          "allocatedBytes": 35242408,
+          "rssBytes": 102449152,
+          "processPeakRssBytes": 102449152,
+          "outputBytes": 17367
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 184.9978,
+          "allocatedBytes": 35231968,
+          "rssBytes": 103763968,
+          "processPeakRssBytes": 103763968,
+          "outputBytes": 17367
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 181.4998,
+          "allocatedBytes": 35221896,
+          "rssBytes": 101244928,
+          "processPeakRssBytes": 103411712,
+          "outputBytes": 17367
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 202.4916,
+          "allocatedBytes": 35224256,
+          "rssBytes": 102731776,
+          "processPeakRssBytes": 103411712,
+          "outputBytes": 17367
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 241.4351,
+          "allocatedBytes": 35229152,
+          "rssBytes": 104914944,
+          "processPeakRssBytes": 104914944,
+          "outputBytes": 17367
+        }
+      ]
+    },
+    {
+      "documentId": "report-columns",
+      "category": "report",
+      "inputSha256": "5ee233cc3bbcc85f6b26cd2d128e926c623f5b31b5d4d97b357db4ef53a385c7",
+      "outputSha256": "3057cb3f026c4eb983c4e689f3f51b6c3ec45e8177d51815909c73a0cdba18a5",
+      "editableSha256": "cc8477b0ec99e861ec0b3e10bb230456bab41a106531b1dad48d2a835409e6a1",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Docx.PageLayout"
+      ],
+      "observedKnownLosses": [
+        "Docx.PageLayout"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [
+        {
+          "code": "Docx.PageLayout",
+          "count": 1,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/sectPr[1]",
+              "phase": "Parse"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 253.1361,
+          "allocatedBytes": 22347080,
+          "rssBytes": 94937088,
+          "processPeakRssBytes": 94937088,
+          "outputBytes": 10070
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 93.1028,
+          "allocatedBytes": 20061768,
+          "rssBytes": 95424512,
+          "processPeakRssBytes": 95424512,
+          "outputBytes": 10070
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 80.2281,
+          "allocatedBytes": 17960416,
+          "rssBytes": 95457280,
+          "processPeakRssBytes": 95457280,
+          "outputBytes": 10070
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 57.6271,
+          "allocatedBytes": 17965160,
+          "rssBytes": 96157696,
+          "processPeakRssBytes": 96157696,
+          "outputBytes": 10070
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 32.8024,
+          "allocatedBytes": 17960408,
+          "rssBytes": 96673792,
+          "processPeakRssBytes": 96673792,
+          "outputBytes": 10070
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 33.967,
+          "allocatedBytes": 17960392,
+          "rssBytes": 97058816,
+          "processPeakRssBytes": 97058816,
+          "outputBytes": 10070
+        }
+      ]
+    },
+    {
+      "documentId": "report-pages",
+      "category": "report",
+      "inputSha256": "a19b83640c3d3edd6191af35693e8f282242da3b7efcc45c3dbf0f5ca722a178",
+      "outputSha256": "d3bb07d1bc6325ae448b04fff63547f2f42e0fd0380fc6443da4fe3903997272",
+      "editableSha256": "27148cc90dfbf007f01cfa4eef7e112c61212bd00fd40c814bd7467478a403b6",
+      "status": "measured",
+      "fidelityStatus": "no-detected-losses",
+      "knownLosses": [],
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 2,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 253.838,
+          "allocatedBytes": 22338952,
+          "rssBytes": 91004928,
+          "processPeakRssBytes": 91004928,
+          "outputBytes": 10664
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 96.6496,
+          "allocatedBytes": 20045440,
+          "rssBytes": 92315648,
+          "processPeakRssBytes": 92315648,
+          "outputBytes": 10664
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 81.2404,
+          "allocatedBytes": 17948552,
+          "rssBytes": 92733440,
+          "processPeakRssBytes": 92733440,
+          "outputBytes": 10664
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 55.4062,
+          "allocatedBytes": 17948856,
+          "rssBytes": 92557312,
+          "processPeakRssBytes": 92557312,
+          "outputBytes": 10664
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 33.6907,
+          "allocatedBytes": 17948560,
+          "rssBytes": 93421568,
+          "processPeakRssBytes": 93421568,
+          "outputBytes": 10664
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 34.3899,
+          "allocatedBytes": 17952704,
+          "rssBytes": 93822976,
+          "processPeakRssBytes": 93822976,
+          "outputBytes": 10664
+        }
+      ]
+    },
+    {
+      "documentId": "letterhead-offer",
+      "category": "letterhead",
+      "inputSha256": "af70f5436db5b56dd2afaded60a446032d3dc88c45c193b12fe5c5c3192555cb",
+      "outputSha256": "b2a6d97a2be664d305cc115b210167fc464879eb21adc5bb3dc3fe0f2d92e336",
+      "editableSha256": "0998c22ee2e40641aed7f04ff6fb47700070cf3908d4558d11e9faae69bfd853",
+      "status": "measured",
+      "fidelityStatus": "no-detected-losses",
+      "knownLosses": [],
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 279.5793,
+          "allocatedBytes": 22568128,
+          "rssBytes": 94932992,
+          "processPeakRssBytes": 94932992,
+          "outputBytes": 11482
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 100.5976,
+          "allocatedBytes": 20285512,
+          "rssBytes": 95109120,
+          "processPeakRssBytes": 95109120,
+          "outputBytes": 11482
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 96.2423,
+          "allocatedBytes": 18181552,
+          "rssBytes": 95174656,
+          "processPeakRssBytes": 95174656,
+          "outputBytes": 11482
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 94.6479,
+          "allocatedBytes": 18182664,
+          "rssBytes": 95739904,
+          "processPeakRssBytes": 95739904,
+          "outputBytes": 11482
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 38.1687,
+          "allocatedBytes": 18181592,
+          "rssBytes": 95961088,
+          "processPeakRssBytes": 95961088,
+          "outputBytes": 11482
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 36.0299,
+          "allocatedBytes": 18181576,
+          "rssBytes": 95981568,
+          "processPeakRssBytes": 95981568,
+          "outputBytes": 11482
+        }
+      ]
+    },
+    {
+      "documentId": "letterhead-brand",
+      "category": "letterhead",
+      "inputSha256": "65c917e37416768ed8ee6f4a4c095e8a94d0c694affb28d3fac9e368f61251c2",
+      "outputSha256": "e8796f4114bd9c14cc5bef30f3c3a7bad48355ee50a3aaec86ea83e699d20a91",
+      "editableSha256": "6d2a4a6b1c487f438d24e3b0ca4714c8309359c5e9d0f5d7ea339407b95f13bf",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Font.Substituted"
+      ],
+      "observedKnownLosses": [
+        "Font.Substituted"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "netstandard",
+        "wordnet",
+        "wordnet.Benchmarks",
+        "wordnet.Fonts"
+      ],
+      "diagnostics": [
+        {
+          "code": "Font.Substituted",
+          "count": 1,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[1]",
+              "phase": "Layout"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 327.8325,
+          "allocatedBytes": 22331016,
+          "rssBytes": 100073472,
+          "processPeakRssBytes": 100073472,
+          "outputBytes": 10391
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 110.2656,
+          "allocatedBytes": 20042816,
+          "rssBytes": 103428096,
+          "processPeakRssBytes": 103428096,
+          "outputBytes": 10391
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 97.5289,
+          "allocatedBytes": 17945896,
+          "rssBytes": 97251328,
+          "processPeakRssBytes": 103137280,
+          "outputBytes": 10391
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 85.4219,
+          "allocatedBytes": 17953536,
+          "rssBytes": 98066432,
+          "processPeakRssBytes": 103137280,
+          "outputBytes": 10391
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 44.572,
+          "allocatedBytes": 17945912,
+          "rssBytes": 98082816,
+          "processPeakRssBytes": 103137280,
+          "outputBytes": 10391
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 45.7667,
+          "allocatedBytes": 17948176,
+          "rssBytes": 98476032,
+          "processPeakRssBytes": 103137280,
+          "outputBytes": 10391
+        }
+      ]
+    },
+    {
+      "documentId": "letterhead-textbox",
+      "category": "letterhead",
+      "inputSha256": "6fe20890103d76470ebc44eb442fb7a9cef4854bd9a66f9b2d957d15d0fd339e",
+      "outputSha256": "18ae259ba1380014dfe60fa20c1f3f18a7f40086874de756e331c2dd51136640",
+      "editableSha256": "3c22d8ad65bbdcacb955f96ebf649081f31763d2cd96403b15e8449f8287c9b9",
+      "status": "measured",
+      "fidelityStatus": "detected-losses",
+      "knownLosses": [
+        "Docx.Inline"
+      ],
+      "observedKnownLosses": [
+        "Docx.Inline"
+      ],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "pageCount": 1,
+      "assembliesLoaded": [
+        "BenchmarkDotNet",
+        "Microsoft.CSharp",
+        "Microsoft.Win32.Primitives",
+        "OpenMcdf",
+        "System.Collections",
+        "System.Collections.Concurrent",
+        "System.Collections.Immutable",
+        "System.ComponentModel.Primitives",
+        "System.Console",
+        "System.Diagnostics.Process",
+        "System.IO.Compression",
+        "System.Linq",
+        "System.Linq.Expressions",
+        "System.Memory",
+        "System.Numerics.Vectors",
+        "System.Private.CoreLib",
+        "System.Private.Uri",
+        "System.Private.Xml",
+        "System.Private.Xml.Linq",
+        "System.Runtime",
+        "System.Runtime.InteropServices",
+        "System.Runtime.Loader",
+        "System.Security.Cryptography",
+        "System.Text.Encoding.CodePages",
+        "System.Text.Encoding.Extensions",
+        "System.Text.RegularExpressions",
+        "System.Threading",
+        "System.Threading.Thread",
+        "System.Xml.ReaderWriter",
+        "System.Xml.XDocument",
+        "UglyToad.PdfPig",
+        "UglyToad.PdfPig.Core",
+        "UglyToad.PdfPig.Fonts",
+        "UglyToad.PdfPig.Tokenization",
+        "UglyToad.PdfPig.Tokens",
+        "wordnet",
+        "wordnet.Benchmarks"
+      ],
+      "diagnostics": [
+        {
+          "code": "Docx.Inline",
+          "count": 5,
+          "severity": "Warning",
+          "occurrences": [
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]/r[1]/pict[1]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]/r[1]/pict[1]/shape[1]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]/r[1]/pict[1]/shape[1]/textbox[1]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]/r[1]/pict[1]/shape[1]/textbox[1]/txbxContent[1]",
+              "phase": "Parse"
+            },
+            {
+              "part": "word/document.xml",
+              "path": "/document[1]/body[1]/p[2]/r[1]/pict[1]/shape[1]/textbox[1]/txbxContent[1]/p[1]",
+              "phase": "Parse"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "cold-conversion",
+          "milliseconds": 280.9246,
+          "allocatedBytes": 22379088,
+          "rssBytes": 94810112,
+          "processPeakRssBytes": 94810112,
+          "outputBytes": 10533
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 106.5552,
+          "allocatedBytes": 20081104,
+          "rssBytes": 95272960,
+          "processPeakRssBytes": 95272960,
+          "outputBytes": 10533
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 99.3719,
+          "allocatedBytes": 17996408,
+          "rssBytes": 95330304,
+          "processPeakRssBytes": 95330304,
+          "outputBytes": 10533
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 108.7448,
+          "allocatedBytes": 17997184,
+          "rssBytes": 96120832,
+          "processPeakRssBytes": 96120832,
+          "outputBytes": 10533
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 124.0826,
+          "allocatedBytes": 17989616,
+          "rssBytes": 96137216,
+          "processPeakRssBytes": 96137216,
+          "outputBytes": 10533
+        },
+        {
+          "kind": "warm-conversion",
+          "milliseconds": 99.4736,
+          "allocatedBytes": 17989752,
+          "rssBytes": 96595968,
+          "processPeakRssBytes": 96595968,
+          "outputBytes": 10533
+        }
+      ]
+    }
+  ]
+}

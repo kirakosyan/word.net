@@ -6,6 +6,77 @@ approximation and excludes document body text. `Severity` is `Info` or `Warning`
 Multi-pass layout may report a feature more than once. Counts are observations,
 not a count of unique document objects.
 
+Each group also exposes `Occurrences`: up to 128 distinct `(Location, Phase)`
+findings. `LocationsTruncated` marks additional locations; `Count` still includes
+all observations and multi-pass layout. Location paths are materialized only when
+a finding is observed; bounded hash-based deduplication keeps repeated losses cheap. DOCX locations contain a package part and
+indexed element path, such as `word/document.xml:/document[1]/body[1]/tbl[1]/tr[1]/tc[2]/p[1]`.
+Headers/footers identify their own part. Paths contain no document text, attribute
+values, bookmark names or caller filesystem paths. They remain stable for unchanged
+input; edits can change indices. `/` explicitly means document/part precision;
+Parser findings in DOC, EPUB, Markdown and PDF use that coarser fallback where
+physical source mapping is unavailable. Their destination/layout findings use explicit
+logical paths such as `/model/body/table[1]/row[1]/cell[2]/paragraph[1]`, or
+`/model/section[1]/header-default/paragraph[1]`. These identify the retained parsed
+model, not byte offsets or original PDF coordinates. Grouped codes/properties and existing constructors
+remain compatible. Counts now observe individual matching blocks for destination
+checks, which can expose several locations under one existing code.
+
+## Inspect before conversion
+
+`WordConverter.Inspect` and `InspectAsync` consume input from the current position,
+leave the caller stream open and never serialize conversion output. They share the
+same bounded readers and destination checks. Strict inspection collects losses
+instead of stopping at the first one; `WouldRejectStrict` records observed losses
+and glyph/geometry conditions that Strict would reject, including fallbacks reported
+as warnings in BestEffort/Lenient. Advisory story repositioning/scaling alone does not
+set this flag. Strict inspection follows the BestEffort fallback path when collecting
+losses, while actual Strict conversion still rejects them before copying output. Unsupported pairs/encryption/providers, corrupt input, limits and
+nonrecoverable geometry still throw. Async inspection uses async input I/O; parsing,
+provider calls and layout remain synchronous with cooperative cancellation.
+
+```csharp
+using System;
+using System.IO;
+using WordNet;
+
+using var input = File.OpenRead("invoice.docx");
+var options = new ConversionOptions(FidelityMode.BestEffort);
+var report = new WordConverter().Inspect(input, DocumentFormat.Docx,
+    DocumentFormat.Pdf, options, includeLayout: true);
+Console.WriteLine($"Input: {report.InputBytes} bytes; retained tables: {report.Features.Tables}");
+foreach (var diagnostic in report.Diagnostics)
+    foreach (var occurrence in diagnostic.Occurrences)
+        Console.WriteLine($"{diagnostic.Code} [{occurrence.Phase}] {occurrence.Location}: {diagnostic.Message}");
+// Reopen or rewind seekable input before conversion: inspection consumes it.
+```
+
+`DiagnosticPhase.Parse` identifies adapter findings, `Destination` identifies
+shared feature-policy checks, `Layout` covers font resolution and pagination,
+`Provider` covers optional PDF import/OCR and `Write` identifies serialization.
+Default inspection fully parses the input and resolves fixed-page fonts using the
+same caller/bundled font policy. It also checks code fonts, unsupported shaping, XPS
+hyperlinks, keep-with-table and cell page controls directly from the model, without
+pagination. These findings use the Destination phase in both inspection and conversion.
+Font-only inspection records coalesced runs and list-label mappings in one pass. It
+does not paginate. `includeLayout: true` runs
+full PDF/XPS layout without writing a PDF/XPS; it is invalid for reflowable outputs.
+PDF import invokes the same optional provider and configured OCR as conversion,
+including their costs and prerequisites. Managed DOCX export inspection needs no
+native provider or network access.
+
+`InputBytes`, retained feature/character counts and admitted decoded image pixels
+are observations, not forecasts of original content or process memory. DOCX
+`ArchiveEntryCount` and `DeclaredExpandedBytes` describe checked ZIP metadata;
+null means unavailable for another adapter. Fonts identify actual resolved mappings
+for PDF/XPS. `PageCount` is from actual optional layout, never a heuristic estimate.
+
+Inspection cannot observe output-only losses, output byte limits, final I/O failures
+or unperformed layout findings. For example, `Pdf.ImageAlternativeText` is emitted
+by PDF serialization and is absent from preflight; a font's missing-glyph finding
+can require full layout. A clean report does not prove lossless conversion. Inspect
+and conversion must use the same options/font sources/clock for comparable findings.
+
 `Loss` entries throw `NotSupportedException` in Strict mode before destination copying;
 they become warnings in BestEffort and Lenient. `Report` entries are informational
 unless the call explicitly reports a warning (for example Lenient scaling/splitting).

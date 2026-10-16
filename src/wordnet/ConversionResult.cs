@@ -15,6 +15,8 @@ public enum DiagnosticSeverity
 /// <summary>A detected conversion loss. Codes are stable; messages describe the affected feature.</summary>
 public sealed class ConversionDiagnostic
 {
+    private readonly List<DiagnosticOccurrence> occurrences = new List<DiagnosticOccurrence>();
+    private readonly HashSet<(string Part, string Path, DiagnosticPhase Phase)> locations = new HashSet<(string, string, DiagnosticPhase)>();
     internal ConversionDiagnostic(string code, string message, DiagnosticSeverity severity = DiagnosticSeverity.Warning)
     {
         Code = code;
@@ -33,6 +35,22 @@ public sealed class ConversionDiagnostic
 
     /// <summary>Gets the number of occurrences grouped under this code.</summary>
     public int Count { get; internal set; } = 1;
+
+    /// <summary>Gets up to 128 distinct source locations/stages; grouping and Count remain unchanged.</summary>
+    public IReadOnlyList<DiagnosticOccurrence> Occurrences => occurrences.AsReadOnly();
+
+    /// <summary>Gets whether additional distinct source locations could not be retained.</summary>
+    public bool LocationsTruncated { get; private set; }
+
+    internal void Observe(SourceLocation location, DiagnosticPhase phase)
+    {
+        if (LocationsTruncated) return;
+        var key = (location.Part, location.Path, phase);
+        if (locations.Contains(key)) return;
+        if (occurrences.Count == 128) { LocationsTruncated = true; return; }
+        locations.Add(key);
+        occurrences.Add(new DiagnosticOccurrence(new SourceLocation(key.Part, key.Path), phase));
+    }
 }
 
 /// <summary>Reports successfully written output and any detected losses.</summary>

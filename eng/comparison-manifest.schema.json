@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Authored comparison corpus v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "provenance",
+    "generator",
+    "fonts",
+    "documents",
+    "generatorSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "provenance": {
+      "type": "string"
+    },
+    "generator": {
+      "type": "string"
+    },
+    "fonts": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "version"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "path",
+          "sha256",
+          "requiredText",
+          "knownLosses",
+          "expectedPages",
+          "references"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "enum": [
+              "invoice",
+              "contract",
+              "report",
+              "letterhead"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "requiredText": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "knownLosses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expectedPages": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "documentId",
+                "kind",
+                "version",
+                "artifactMode",
+                "inputSha256",
+                "pdf",
+                "sha256",
+                "fonts",
+                "renderer"
+              ],
+              "properties": {
+                "documentId": {
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "word",
+                    "aspose",
+                    "raster-golden"
+                  ]
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "artifactMode": {
+                  "enum": [
+                    "licensed",
+                    "evaluation"
+                  ]
+                },
+                "inputSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "pdf": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "fonts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "sha256",
+                      "version"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "version": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "renderer": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "generatorSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

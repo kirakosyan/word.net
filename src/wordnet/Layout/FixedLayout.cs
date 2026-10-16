@@ -94,6 +94,8 @@ internal static partial class FixedLayout
 
     internal static List<FixedPage> Create(DocumentModel model, ConversionContext context)
     {
+        DiagnosticPhase previousPhase = context.Phase;
+        context.Phase = DiagnosticPhase.Layout;
         List<FixedPage> pages = CreateCore(model, context, 1, null);
         if (DocumentFields.NeedsPages(model))
         {
@@ -104,6 +106,7 @@ internal static partial class FixedLayout
             if (pages.Count != expected || current.Count != sections.Count || current.Any(p => !sections.TryGetValue(p.Key, out int count) || count != p.Value))
                 pages = CreateCore(model, context, pages.Count, current);
         }
+        context.Phase = previousPhase;
         return pages;
 
         static Dictionary<PageSettings, int> Counts(List<FixedPage> result) => result.GroupBy(p => p.SourceSettings).ToDictionary(g => g.Key, g => g.Count());
@@ -135,6 +138,7 @@ internal static partial class FixedLayout
         for (int blockIndex = 0; blockIndex < model.Blocks.Count; blockIndex++)
         {
             DocumentBlock block = model.Blocks[blockIndex];
+            using var location = context.At(block.Location);
             context.CheckCancellation();
             if (!ReferenceEquals(previousSection, block.Section))
             {
@@ -153,8 +157,6 @@ internal static partial class FixedLayout
                 {
                     int index = blockIndex + 1;
                     double after = paragraph.Layout.After ?? 6;
-                    if (index < model.Blocks.Count && model.Blocks[index] is TableBlock)
-                        context.Loss("Layout.KeepWithTable", "Keeping a paragraph with the following table is not supported by this layout profile.");
                     while (index < model.Blocks.Count && model.Blocks[index] is ParagraphBlock following
                         && ReferenceEquals(block.Section, following.Section) && !following.Layout.PageBreakBefore)
                     {
@@ -213,7 +215,7 @@ internal static partial class FixedLayout
                 if (!sourceSettings.Stories.TryGetValue(prefix + variant, out List<DocumentBlock>? story)) return;
                 List<Line> lines = StoryLines(story);
                 double top = atEnd ? position - lines.Sum(l => l.Height) : position;
-                if (context.Options.FidelityMode == FidelityMode.Lenient)
+                if (context.EffectiveMode == FidelityMode.Lenient)
                 {
                     double constrained = Math.Max(0, Math.Min(top, settings.Height - lines.Sum(l => l.Height)));
                     if (constrained != top) context.Report("Layout.StoryPositionApproximated", "A header/footer outside page bounds is moved onto the page.", DiagnosticSeverity.Warning);
@@ -244,11 +246,11 @@ internal static partial class FixedLayout
             PageSettings reserved = source.Copy();
             if (header > 0) reserved.Top = Math.Max(source.Top, source.HeaderDistance + header + 6);
             if (footer > 0) reserved.Bottom = Math.Max(source.Bottom, source.FooterDistance + footer + 6);
-            if (context.Options.FidelityMode == FidelityMode.Lenient && reserved.Top + reserved.Bottom >= reserved.Height)
+            if (context.EffectiveMode == FidelityMode.Lenient && reserved.Top + reserved.Bottom >= reserved.Height)
             {
                 reserved.Top = Math.Min(reserved.Top, reserved.Height * 0.45);
                 reserved.Bottom = Math.Min(reserved.Bottom, reserved.Height * 0.45);
-                context.Report("Layout.StoryAreaConstrained", "Oversized header/footer reservation is constrained to retain printable body space.", DiagnosticSeverity.Warning);
+                context.ReportStrictRejection("Layout.StoryAreaConstrained", "Oversized header/footer reservation is constrained to retain printable body space.");
             }
             reserved.Validate(); return reserved;
         }
@@ -287,7 +289,7 @@ internal static partial class FixedLayout
                     }
                 }
             }
-            if (context.Options.FidelityMode == FidelityMode.Lenient)
+            if (context.EffectiveMode == FidelityMode.Lenient)
             {
                 double height = result.Sum(l => l.Height), maximum = settings.Height * 0.35;
                 if (height > maximum)
@@ -302,6 +304,7 @@ internal static partial class FixedLayout
 
         void AddParagraph(ParagraphBlock paragraph, double left, double width, List<Line> target)
         {
+            using var location = context.At(paragraph.Location);
             List<Line> lines = Lines(paragraph, left, width, 12, false);
             if (lines.Count > 0) { lines[0].Ascent += paragraph.Layout.Before ?? 0; lines[lines.Count - 1].Descent += paragraph.Layout.After ?? 6; }
             target.AddRange(lines);
@@ -325,8 +328,8 @@ internal static partial class FixedLayout
                     CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
                     if (left < -0.1 || left + width > settings.Width + 0.1 || width <= padding.Left + padding.Right)
                     {
-                        if (context.Options.FidelityMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableWidth: Table cells do not fit the page or their margins.");
-                        context.Report("Table.WidthApproximated", "Cell width and padding are constrained to printable space.", DiagnosticSeverity.Warning);
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableWidth: Table cells do not fit the page or their margins.");
+                        context.ReportStrictRejection("Table.WidthApproximated", "Cell width and padding are constrained to printable space.");
                         left = Math.Max(settings.Left, Math.Min(left, settings.Width - settings.Right - 1));
                         width = Math.Max(1, Math.Min(width, settings.Width - settings.Right - left));
                         padding = new CellPadding();
@@ -337,8 +340,7 @@ internal static partial class FixedLayout
                         for (int p = 0; p < cell.Paragraphs.Count; p++)
                         {
                             ParagraphBlock paragraph = cell.Paragraphs[p];
-                            if (paragraph.Layout.PageBreakBefore || paragraph.Layout.KeepTogether || paragraph.Layout.KeepWithNext)
-                                context.Loss("Layout.CellPageControls", "Paragraph page controls inside table cells use the table row's pagination policy.");
+                            using var cellLocation = context.At(paragraph.Location);
                             if (paragraph.Layout.Before is double before && before > 0) preparedCell.Lines.Add(new Line { Descent = before });
                             preparedCell.Lines.AddRange(Lines(paragraph, left + padding.Left, width - padding.Left - padding.Right,
                                 paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 11, false));
@@ -367,8 +369,8 @@ internal static partial class FixedLayout
             double pageHeight = settings.Height - settings.Top - settings.Bottom;
             if (headerHeight >= pageHeight)
             {
-                if (context.Options.FidelityMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableHeader: Repeating headers leave no space for body rows.");
-                context.Report("Table.HeaderRepeatOmitted", "An oversized table header is retained once without repetition.", DiagnosticSeverity.Warning);
+                if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableHeader: Repeating headers leave no space for body rows.");
+                context.ReportStrictRejection("Table.HeaderRepeatOmitted", "An oversized table header is retained once without repetition.");
                 table.HeaderRowCount = 0; headerHeight = 0;
             }
             if (table.HeaderRowCount > 0 && table.HeaderRowCount < rows.Count)
@@ -393,9 +395,9 @@ internal static partial class FixedLayout
                 {
                     if (end - r > 1 || table.NonSplittingRows.Contains(r) || r < table.HeaderRowCount)
                     {
-                        if (context.Options.FidelityMode != FidelityMode.Lenient)
+                        if (context.EffectiveMode != FidelityMode.Lenient)
                             throw new NotSupportedException("Layout.TableGroupHeight: A non-splitting row or vertically merged group exceeds a page.");
-                        context.Report(end - r > 1 ? "Table.MergedGroupSplit" : "Table.RowForcedSplit", "An oversized row/group is split at line boundaries to retain its content.", DiagnosticSeverity.Warning);
+                        context.ReportStrictRejection(end - r > 1 ? "Table.MergedGroupSplit" : "Table.RowForcedSplit", "An oversized row/group is split at line boundaries to retain its content.");
                         for (int member = r; member < end; member++) SplitRow(rows[member], r >= table.HeaderRowCount);
                     }
                     else SplitRow(rows[r], r >= table.HeaderRowCount);
@@ -444,8 +446,8 @@ internal static partial class FixedLayout
                     }
                     if (!progress && y <= settings.Top + (repeat ? headerHeight : 0) + 0.001)
                     {
-                        if (context.Options.FidelityMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableLineHeight: A cell line and its padding cannot fit below repeating headers.");
-                        context.Report("Table.LineScaledToFit", "Unusable cell padding is omitted and an oversized line is scaled to fit printable space.", DiagnosticSeverity.Warning);
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableLineHeight: A cell line and its padding cannot fit below repeating headers.");
+                        context.ReportStrictRejection("Table.LineScaledToFit", "Unusable cell padding is omitted and an oversized line is scaled to fit printable space.");
                         used = settings.Height - settings.Bottom - y;
                         for (int c = 0; c < row.Cells.Count; c++)
                             if (offsets[c] < row.Cells[c].Lines.Count) Place(FitLine(row.Cells[c].Lines[offsets[c]++], used), y);
@@ -458,6 +460,7 @@ internal static partial class FixedLayout
 
         List<Line> Prepare(ParagraphBlock paragraph)
         {
+            using var location = context.At(paragraph.Location);
             if (!prepared.TryGetValue(paragraph, out List<Line>? lines))
             {
                 lines = Lines(paragraph, settings.Left, settings.Width - settings.Left - settings.Right,
@@ -481,8 +484,8 @@ internal static partial class FixedLayout
 
         Line FitLine(Line line, double maximum)
         {
-            if (line.Height <= maximum || context.Options.FidelityMode != FidelityMode.Lenient) return line;
-            context.Report("Layout.TextScaledToFit", "An oversized line is reduced to fit printable space.", DiagnosticSeverity.Warning);
+            if (line.Height <= maximum || context.EffectiveMode != FidelityMode.Lenient) return line;
+            context.ReportStrictRejection("Layout.TextScaledToFit", "An oversized line is reduced to fit printable space.");
             return ScaleLine(line, maximum / line.Height);
         }
 
@@ -526,8 +529,8 @@ internal static partial class FixedLayout
             width -= paragraph.Layout.FirstLine;
             if (left < 0 || continuationLeft < 0 || width <= 0 || continuationWidth <= 0 || left + width > settings.Width || continuationLeft + continuationWidth > settings.Width)
             {
-                if (context.Options.FidelityMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.Indent: Paragraph indentation leaves no usable content space or extends beyond the page.");
-                context.Report("Layout.IndentApproximated", "Unusable indentation is constrained to printable space.", DiagnosticSeverity.Warning);
+                if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.Indent: Paragraph indentation leaves no usable content space or extends beyond the page.");
+                context.ReportStrictRejection("Layout.IndentApproximated", "Unusable indentation is constrained to printable space.");
                 left = continuationLeft = Math.Max(settings.Left, Math.Min(left, settings.Width - settings.Right - 12));
                 width = continuationWidth = Math.Max(1, settings.Width - settings.Right - left);
             }
@@ -536,40 +539,36 @@ internal static partial class FixedLayout
                 renderPage == 0 ? pages.Count : renderPage, totalPages, renderSectionPages, context))).Split('\t').Skip(1).Select(t => t.Split('\n')[0]));
             double x = left;
             Line line = NewLine();
-            if (paragraph.IsCodeBlock || runs.Any(r => r.Code)) context.Loss("Layout.CodeFont", "Code content uses the embedded proportional font.");
             foreach (TextRun run in runs)
             {
                 context.CheckCancellation();
-                if (run.Link != null && context.Destination == DocumentFormat.Xps) context.Loss("Layout.Hyperlink", "This XPS profile retains hyperlink text without an interactive target.");
                 if (run.Image is DocumentImage image)
                 {
-                    if (context.Options.FidelityMode == FidelityMode.Lenient)
+                    if (context.EffectiveMode == FidelityMode.Lenient)
                     {
                         double scale = Math.Min(1, Math.Min(width / image.Width, (settings.Height - settings.Top - settings.Bottom) / image.Height));
-                        if (scale < 1) { image = image.Scaled(scale); context.Report("Image.ScaledToFit", "An oversized image is proportionally scaled to fit printable space.", DiagnosticSeverity.Warning); }
+                        if (scale < 1) { image = image.Scaled(scale); context.ReportStrictRejection("Image.ScaledToFit", "An oversized image is proportionally scaled to fit printable space."); }
                     }
                     if (image.Width > width) throw new NotSupportedException("Layout.ImageWidth: Image exceeds the content width; dimensions are never silently reduced.");
                     if (x > left && x + image.Width > left + width) Finish(false);
                     line.Items.Add(new PositionedText("", x, 0, 0, 0, image: image, link: run.Link)); x += image.Width;
                     line.Ascent = Math.Max(line.Ascent, image.Height); continue;
                 }
-                if (run.Text.Any(c => c >= '\u0590' && c <= '\u0dff' || char.IsSurrogate(c)))
-                    context.Loss("Layout.Shaping", "Unsupported complex-script shaping and supplementary characters use visible fallback characters.");
                 int font = resolver.Resolve(run, paragraph.HeadingLevel > 0);
                 double size = run.FontSize ?? baseSize;
-                if (context.Options.FidelityMode == FidelityMode.Lenient && size * 1.5 > settings.Height - settings.Top - settings.Bottom)
+                if (context.EffectiveMode == FidelityMode.Lenient && size * 1.5 > settings.Height - settings.Top - settings.Bottom)
                 {
                     size = (settings.Height - settings.Top - settings.Bottom) / 1.5;
-                    context.Report("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.", DiagnosticSeverity.Warning);
+                    context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                 }
                 string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages.Count : renderPage, totalPages, renderSectionPages, context);
-                if (context.Options.FidelityMode != FidelityMode.Strict)
+                if (context.EffectiveMode != FidelityMode.Strict)
                 {
                     var safe = new StringBuilder(runText.Length);
                     foreach (char c in runText)
                     {
                         if (c is '\n' or '\t' || !(c >= '\u0590' && c <= '\u0dff') && !char.IsSurrogate(c) && maps[font] != null && maps[font]!.TryGetGlyphIndex(c, out int glyph) && glyph != 0) safe.Append(c);
-                        else { safe.Append('?'); context.Report("Font.MissingGlyph", "An unsupported glyph or shaping requirement uses a visible fallback character.", DiagnosticSeverity.Warning); }
+                        else { safe.Append('?'); context.ReportStrictRejection("Font.MissingGlyph", "An unsupported glyph or shaping requirement uses a visible fallback character."); }
                     }
                     runText = safe.ToString();
                 }
@@ -615,9 +614,9 @@ internal static partial class FixedLayout
                 {
                     if (advance > width)
                     {
-                        if (context.Options.FidelityMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.ColumnWidth: A glyph cannot fit within the column.");
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.ColumnWidth: A glyph cannot fit within the column.");
                         size *= width / advance; advance = width;
-                        context.Report("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.", DiagnosticSeverity.Warning);
+                        context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                     }
                     if (x > left && x + advance > left + width) Finish(false);
                     MeasuredText shaped = Shape(value, font, size);

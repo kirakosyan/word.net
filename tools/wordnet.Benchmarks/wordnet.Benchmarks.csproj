@@ -4,6 +4,14 @@
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <!-- The existing revision gate builds this harness against the 1.0 API.
+       New comparison/preflight APIs must not enter that reference build. -->
+  <PropertyGroup Condition="'$(WordnetSourceProject)' != ''">
+    <DefineConstants>$(DefineConstants);WORDNET_REFERENCE_BUILD</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(WordnetSourceProject)' != ''">
+    <Compile Remove="ComparisonMeasurement.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetSourceProject)' == ''" />
     <ProjectReference Include="$(WordnetSourceProject)" Condition="'$(WordnetSourceProject)' != ''" />

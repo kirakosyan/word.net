@@ -17,6 +17,7 @@ internal sealed class DocumentModel
 
 internal abstract class DocumentBlock
 {
+    internal SourceLocation? Location { get; set; }
     internal PageSettings? Section { get; set; }
 }
 

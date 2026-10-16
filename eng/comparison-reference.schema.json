@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Word, Aspose and test-only raster reference provenance v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "references"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "documentId",
+          "kind",
+          "version",
+          "artifactMode",
+          "inputSha256",
+          "pdf",
+          "sha256",
+          "fonts",
+          "renderer"
+        ],
+        "properties": {
+          "documentId": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "word",
+              "aspose",
+              "raster-golden"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifactMode": {
+            "enum": [
+              "licensed",
+              "evaluation"
+            ]
+          },
+          "inputSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "pdf": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "fonts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "sha256",
+                "version"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "version": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "renderer": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

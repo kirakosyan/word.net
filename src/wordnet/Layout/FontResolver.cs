@@ -25,9 +25,9 @@ internal sealed class FontResolver
     private bool recording;
     internal List<byte[]> Data { get; } = new List<byte[]>();
 
-    internal FontResolver(DocumentModel model, ConversionContext context)
+    internal FontResolver(DocumentModel model, ConversionContext context, bool recordUsage = false)
     {
-        this.context = context; this.model = model;
+        this.context = context; this.model = model; recording = recordUsage;
         characters = Enumerable.Range(32, 95).Select(i => (char)i)
             .Concat(model.Title + model.Author)
             .Concat(model.Paragraphs.SelectMany(p => p.Runs).SelectMany(r => r.Text + r.FieldInstruction)).Distinct().ToArray();
@@ -39,6 +39,8 @@ internal sealed class FontResolver
         if (sources.Length > 128 || sources.Any(s => s == null)) throw new ArgumentException("Configure at most 128 non-null caller font faces.");
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
+            context.CheckCancellation();
+            using var location = context.At(paragraph.Location);
             if (paragraph.List != null) _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
             foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
         }
@@ -63,7 +65,7 @@ internal sealed class FontResolver
             choice = new Choice(selected, actual); choices.Add(key, choice);
         }
         FontSource? source = choice.Source; string resolved = choice.Family;
-        if (source != null && context.Options.FidelityMode != FidelityMode.Strict)
+        if (source != null && context.EffectiveMode != FidelityMode.Strict)
         {
             Func<char, bool> hasGlyph = Coverage(source.Bytes);
             if (!hasGlyph('?'))
@@ -73,7 +75,7 @@ internal sealed class FontResolver
                 if (text.Any(c => c is not '\n' and not '\t' && (!hasGlyph(c) || char.IsSurrogate(c))))
                 {
                     source = null; resolved = "Noto Sans";
-                    context.Report("Font.MissingGlyph", "A face without a usable replacement glyph uses the bundled glyph font for the affected run.", DiagnosticSeverity.Warning);
+                    context.ReportStrictRejection("Font.MissingGlyph", "A face without a usable replacement glyph uses the bundled glyph font for the affected run.");
                 }
             }
         }

@@ -65,6 +65,10 @@ Ordinary Word-authored DOCX files often need best effort for font substitution,
 advanced typography and unsupported section types. Harmless document
 properties and language/editor metadata produce informational diagnostics instead.
 `CanConvert` describes format pairs, not support for every feature in a particular file.
+Use `WordConverter.Inspect` / `InspectAsync` for bounded preflight with source locations,
+font mappings and optional PDF/XPS layout; see the [remediation report example](https://github.com/kirakosyan/word.net/blob/main/docs/diagnostics.md#inspect-before-conversion).
+The [reproducible comparison harness](https://github.com/kirakosyan/word.net/blob/main/docs/comparison.md) provides twelve synthetic
+business documents and optional caller-provisioned Word/Aspose references.
 
 ## C# examples
 

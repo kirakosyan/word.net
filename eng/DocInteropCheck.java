@@ -7,6 +7,12 @@ import org.apache.poi.hwpf.sprm.SprmOperation;
 /** Optional independent DOC validation with Apache POI 5.4.1; never a library dependency. */
 public class DocInteropCheck {
     public static void main(String[] args) throws Exception {
+        if (args.length == 2 && args[0].equals("--extract-text")) {
+            try (HWPFDocument doc = new HWPFDocument(new FileInputStream(args[1]))) {
+                System.out.print(doc.getRange().text().replace('\r', '\n').replace('\u0007', ' '));
+            }
+            return;
+        }
         if (args.length == 2 && args[0].equals("--check-layout-corpus")) {
             try (HWPFDocument doc = new HWPFDocument(new FileInputStream(args[1]))) {
                 Range range = doc.getRange();

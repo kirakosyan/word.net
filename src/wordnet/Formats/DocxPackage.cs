@@ -54,6 +54,8 @@ internal sealed class DocxPackage : IDisposable
 
                 entries.Add(entry.FullName, entry);
             }
+            context.ArchiveEntryCount = archive.Entries.Count;
+            context.DeclaredExpandedBytes = expanded;
         }
         catch
         {

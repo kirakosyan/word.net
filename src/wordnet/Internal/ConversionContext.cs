@@ -18,6 +18,25 @@ internal sealed class ConversionContext
     internal byte[][] FontData { get; set; } = Array.Empty<byte[]>();
     internal int? PageCount { get; set; }
     internal DocumentFormat Destination { get; set; }
+    internal DiagnosticPhase Phase { get; set; }
+    internal SourceLocation Location { get; set; } = new SourceLocation("document", "/");
+    internal bool Inspecting { get; set; }
+    internal bool HasStrictRejection { get; private set; }
+    internal FidelityMode EffectiveMode => Inspecting && Options.FidelityMode == FidelityMode.Strict ? FidelityMode.BestEffort : Options.FidelityMode;
+    internal int? ArchiveEntryCount { get; set; }
+    internal long? DeclaredExpandedBytes { get; set; }
+    internal long ImagePixels => imagePixels;
+
+    internal IDisposable At(SourceLocation? location) => new LocationScope(this, location ?? Location);
+
+    private sealed class LocationScope : IDisposable
+    {
+        private readonly ConversionContext context;
+        private readonly SourceLocation previous;
+        internal LocationScope(ConversionContext context, SourceLocation location)
+        { this.context = context; previous = context.Location; context.Location = location; }
+        public void Dispose() => context.Location = previous;
+    }
     private DateTimeOffset? fieldTime;
     internal DateTimeOffset FieldTime => fieldTime ??= (Options.Clock ?? throw new ArgumentException("Conversion clock must not be null."))();
     internal void RecordFont(string requested, string resolved)
@@ -60,11 +79,18 @@ internal sealed class ConversionContext
     internal void Loss(string code, string message)
     {
         CheckCancellation();
-        if (Options.FidelityMode == FidelityMode.Strict)
+        HasStrictRejection = true;
+        if (EffectiveMode == FidelityMode.Strict)
         {
             throw new NotSupportedException(code + ": " + message);
         }
 
+        Report(code, message, DiagnosticSeverity.Warning);
+    }
+
+    internal void ReportStrictRejection(string code, string message)
+    {
+        HasStrictRejection = true;
         Report(code, message, DiagnosticSeverity.Warning);
     }
 
@@ -77,13 +103,21 @@ internal sealed class ConversionContext
             diagnostics.Add(diagnostic);
         }
         else existing.Count = checked(existing.Count + 1);
+        codes[code].Observe(Location, Phase);
     }
 
     internal ConversionResult Result(long count)
     {
-        if (ocrPages > 0) Report("Ocr.Confidence", "Mean of per-page recognized-word confidences: "
-            + ((double)ocrConfidenceSum / ocrPages).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)
-            + "/100 across " + ocrPages.ToString(System.Globalization.CultureInfo.InvariantCulture) + " OCR page(s).");
+        if (ocrPages > 0)
+        {
+            DiagnosticPhase previousPhase = Phase;
+            Phase = DiagnosticPhase.Provider;
+            using (At(new SourceLocation(DocumentFormat.Pdf.ToString(), "/")))
+                Report("Ocr.Confidence", "Mean of per-page recognized-word confidences: "
+                    + ((double)ocrConfidenceSum / ocrPages).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)
+                    + "/100 across " + ocrPages.ToString(System.Globalization.CultureInfo.InvariantCulture) + " OCR page(s).");
+            Phase = previousPhase;
+        }
         elapsed.Stop();
         var fonts = fontUsage.Values.ToList().AsReadOnly();
         return new ConversionResult(count, diagnostics.AsReadOnly(), new ConversionMetrics(PageCount, count, elapsed.Elapsed,

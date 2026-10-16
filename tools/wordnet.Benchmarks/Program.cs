@@ -11,6 +11,9 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+#if !WORDNET_REFERENCE_BUILD
+        if (args.Length > 0 && args[0] == "--comparison") return ComparisonMeasurement.Run(args.Skip(1).ToArray());
+#endif
         if (args.Length > 0 && args[0] == "--measure") return PerformanceMeasurement.Run(args.Skip(1).ToArray());
         var summaries = BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args).ToArray();
         return summaries.Length > 0 && summaries.All(s => s.Reports.Length > 0 && s.Reports.All(r => r.Success)) ? 0 : 1;
