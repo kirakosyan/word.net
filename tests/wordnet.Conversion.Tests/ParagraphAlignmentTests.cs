@@ -165,11 +165,12 @@ public sealed class ParagraphAlignmentTests
     [InlineData("both")]
     [InlineData("distribute")]
     [InlineData("end")]
-    public void UnsupportedJustificationIsDiagnosed(string value)
+    public void SupportedJustificationIsPreservedAndDirectionDependentAlignmentIsDiagnosed(string value)
     {
         using var input = new MemoryStream(TestDocuments.Docx(TestDocuments.Body(Paragraph(value)))); using var output = new MemoryStream();
         ConversionResult result = new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Doc, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
-        Assert.Contains(result.Diagnostics, d => d.Code == "Docx.Alignment");
+        if (value == "end") Assert.Contains(result.Diagnostics, d => d.Code == "Docx.Alignment");
+        else Assert.DoesNotContain(result.Diagnostics, d => d.Code == "Docx.Alignment");
     }
 
     [Fact]

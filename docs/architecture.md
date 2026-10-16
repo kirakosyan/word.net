@@ -1,10 +1,10 @@
 # Architecture and implementation status
 
-All 28 Word-related directions have implementations and real acceptance tests.
+All 28 original Word-related directions and two new HTML export directions have implementations and acceptance tests.
 They implement the documented desktop feature profile, with explicit fidelity limits.
 The public namespace is `WordNet`; the assembly and package ID are `wordnet`.
 All targets retain matching APIs:
-`net472;netstandard2.0;net8.0;net10.0`.
+`net462;net472;netstandard2.0;net8.0;net10.0`.
 
 ## Pipeline
 
@@ -25,7 +25,14 @@ flowchart LR
 
 `WordConverter` dispatches Word exchanges; XPS has no reader. Per-call
 `ConversionContext` owns cancellation and grouped diagnostics. Options/results
-are immutable; provider types stay outside the public API.
+have per-call snapshots for mutable HTML/font settings; callers configure those
+collections before concurrent use. Provider types stay outside the public API.
+
+Core export is managed. `wordnet.Fonts` supplies embedded OFL resources. Optional
+`wordnet.Ocr` contains PDF input, Skia and Tesseract integration; a per-call managed
+delegate bridge loads it only for PDF input. Missing that package yields a setup
+error. Caller stream ownership and original public signatures remain. GAC, merged
+and strong-name variants are waived under the NuGet-only deployment decision.
 
 ## Adapters
 
@@ -39,11 +46,14 @@ are immutable; provider types stay outside the public API.
 | MOBI / KF8 | Own PalmDB, PalmDOC decompression, headers and skeleton/fragment handling; no DRM/HUFF/CDIC/hybrid containers |
 | PDF | PdfPig reading/writing, content-order extraction and optional Skia rasterization |
 | XPS | Own XPS 2005 package relationships, glyph positions and embedded fonts |
+| HTML output | Own UTF-8 HTML5 serializer, inline CSS/data images, nested lists/tables and safe links; no loader or executable content |
 
 The model carries absolute font sizes/RGB colors, decimal/bullet lists, inline PNG/JPEG
 with physical dimensions, section geometry, paragraph spacing/indentation/pagination,
 multi-paragraph cells, spans, repeating headers and row controls. It has no advanced
-numbering, revisions or editable charts/equations yet. Detected
+numbering or editable charts/equations yet. DOCX revisions render their accepted state
+with an explicit fidelity warning in BestEffort/Lenient; Strict rejects revision
+and comment loss before output is copied. Detected
 losses are diagnosed. See the [fidelity profile](document-fidelity.md).
 DOCX bold/italic style inheritance follows published toggle semantics; direct values
 are absolute. Sources include [WordprocessingML properties](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.bold),
@@ -66,6 +76,30 @@ Missing glyphs and unsupported shaping fail. Ordinary long table rows split betw
 lines and repeat headers. Non-splitting rows and vertically merged groups must fit a page.
 Keep chains have bounded lookahead; unsupported keep-with-table controls report loss.
 Faithful original pagination and richer typography remain unfinished.
+
+The enterprise export profile adds caller-selected faces, bounded TTC extraction/catalogs,
+metric-compatible OFL fallbacks, subset PDF embedding and legacy horizontal `kern`
+pairs and GPOS pair/class/extension positioning. Static CFF outlines are converted
+to bounded quadratic glyph subsets with a sub-unit outline error bound. Variable/
+color outlines, advanced ligatures and complex shaping remain outside the profile.
+Catalog resolution ranks OS/2 weights against regular (400) or bold (700),
+preserving the requested italic style. Only used font faces are parsed;
+layout/font state is per-call. Fixed-clock metadata
+and normalized trailer identity make PDF output deterministic. PAGE/NUMPAGES layout
+runs two passes (a third if the count changes); stories select first/even/default
+per section, reserve vertical space and have independent numbering state. Body page
+fields retain their field tokens in prepared lines and evaluate when the line is
+placed, so page breaks and paragraph movement use the destination page. Cached DOC/DOCX field results retain
+their original paragraph/table-cell destinations, including nested fields. HTML
+retains cached pagination fields and never invokes fixed-page layout. Its optional
+header/footer blocks use only the first page's applicable story variants.
+
+Nested tables preserve structure through DOCX/HTML; other writers diagnose and
+flatten cell paragraphs. Cell borders/shading/vertical alignment reach DOCX/HTML and
+are diagnosed elsewhere. Aligned tab stops and justified/distributed text reach
+fixed pages. Lenient scaling and forced row/group splits retain content with
+warnings; this does not promise recovery of every pathological geometry.
+See [the enterprise audit](enterprise-audit.md).
 
 PDF import always reports reconstruction loss. Digital text becomes editable paragraphs.
 With OCR configured, image-only pages and pages with an image occupying at least half

@@ -126,7 +126,7 @@ public sealed class ConversionRobustnessTests
     [Theory]
     [InlineData("<w:p><w:pPr><w:spacing w:after=\"240\"/></w:pPr><w:r><w:t>text</w:t></w:r></w:p>", "Layout.Paragraph")]
     [InlineData("<w:p><w:r><w:rPr><w:color w:val=\"ff0000\"/></w:rPr><w:t>text</w:t></w:r></w:p>", "Text.Formatting")]
-    [InlineData("<w:p><w:ins><w:r><w:t>inserted</w:t></w:r></w:ins></w:p>", "Docx.Inline")]
+    [InlineData("<w:p><w:object><w:r><w:t>object alternative</w:t></w:r></w:object></w:p>", "Docx.Inline")]
     public void UnsupportedWordFeaturesAreExplicit(string paragraph, string code)
     {
         NotSupportedException error = FailsWithoutWriting<NotSupportedException>(TestDocuments.Docx(TestDocuments.Body(paragraph)), DocumentFormat.Docx);

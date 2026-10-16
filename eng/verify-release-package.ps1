@@ -10,7 +10,7 @@ Assert-ReleaseVersion -Version $Version
 if ($Commit -notmatch '^[0-9a-f]{40}$') { throw 'Expected a full Git commit SHA.' }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-$frameworks = @('net472', 'netstandard2.0', 'net8.0', 'net10.0')
+$frameworks = @('net462', 'net472', 'netstandard2.0', 'net8.0', 'net10.0')
 foreach ($extension in @('nupkg', 'snupkg')) {
     $path = Join-Path $PackageDirectory "wordnet.$Version.$extension"
     $archive = [IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $path).Path)
@@ -43,11 +43,38 @@ foreach ($extension in @('nupkg', 'snupkg')) {
             }
         }
         $libraries = @($archive.Entries | Where-Object { $_.FullName -match '^lib/[^/]+/wordnet\.(dll|pdb)$' })
-        if ($libraries.Count -ne 4) { throw "Unexpected framework assets in $path" }
+        if ($libraries.Count -ne $frameworks.Count) { throw "Unexpected framework assets in $path" }
+        if ($extension -eq 'nupkg') {
+            if (@($archive.Entries | Where-Object FullName -Match '/native/').Count -gt 0) { throw 'Core package contains native assets.' }
+            if (@($metadata.dependencies.group.dependency | Where-Object id -Match 'Skia|HarfBuzz|wordnet.Ocr').Count -gt 0) { throw 'Core package pulls native providers.' }
+        }
     } finally { $archive.Dispose() }
     $stream = [IO.File]::OpenRead((Resolve-Path -LiteralPath $path).Path)
     $sha = [Security.Cryptography.SHA256]::Create()
     try { $hash = [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-', '').ToLowerInvariant() }
     finally { $sha.Dispose(); $stream.Dispose() }
     Write-Host "$hash  $path"
+}
+
+foreach ($id in @('wordnet.Fonts', 'wordnet.Ocr')) {
+    $path = Join-Path $PackageDirectory "$id.$Version.nupkg"
+    $archive = [IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $path).Path)
+    try {
+        $reader = [IO.StreamReader]::new($archive.GetEntry("$id.nuspec").Open())
+        try { [xml]$nuspec = $reader.ReadToEnd() } finally { $reader.Dispose() }
+        if ($nuspec.package.metadata.id -cne $id -or $nuspec.package.metadata.version -cne $Version -or $nuspec.package.metadata.repository.commit -cne $Commit) {
+            throw "Companion package identity mismatch: $id"
+        }
+        $targets = if ($id -eq 'wordnet.Fonts') { @('netstandard2.0') } else { $frameworks }
+        foreach ($target in $targets) {
+            if ($null -eq $archive.GetEntry("lib/$target/$id.dll")) { throw "Missing $target in $id" }
+        }
+        if ($id -eq 'wordnet.Fonts') {
+            foreach ($entry in @('licenses/Liberation-OFL.txt', 'licenses/Carlito-OFL.txt', 'licenses/Caladea-OFL.txt', 'licenses/provenance.json')) {
+                if ($null -eq $archive.GetEntry($entry)) { throw "Missing font notice: $entry" }
+            }
+        }
+        if (@($archive.Entries | Where-Object FullName -Match '/native/').Count -gt 0) { throw 'Companion archive unexpectedly embeds native assets instead of explicit NuGet dependencies.' }
+    } finally { $archive.Dispose() }
+    Write-Host "Validated companion package: $path"
 }

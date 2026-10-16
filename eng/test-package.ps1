@@ -9,7 +9,9 @@ $ErrorActionPreference = 'Stop'
 & "$PSScriptRoot/verify-release-package.ps1" -Version $Version -Commit $Commit
 if (-not $UseProvisionedOcr) { & "$PSScriptRoot/prepare-ocr-tests.ps1" }
 $project = Join-Path $PSScriptRoot '../tests/wordnet.Conversion.Tests'
-dotnet restore $project "-p:WordnetPackageVersion=$Version" --configfile "$PSScriptRoot/NuGet.Packages.Config"
+# Re-evaluate the generated obj/packaged lock after validating the supplied archives.
+# Local preview rebuilds can reuse a version; committed source lock files stay intact.
+dotnet restore $project "-p:WordnetPackageVersion=$Version" --force-evaluate --configfile "$PSScriptRoot/NuGet.Packages.Config"
 if ($LASTEXITCODE -ne 0) { throw 'Packaged restore failed.' }
 dotnet build $project -c Release --no-restore "-p:WordnetPackageVersion=$Version"
 if ($LASTEXITCODE -ne 0) { throw 'Packaged build failed.' }

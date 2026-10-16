@@ -23,10 +23,51 @@ public sealed class WordConverter : IDocumentConverter
     /// <inheritdoc />
     public bool CanConvert(DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
         sourceFormat != destinationFormat &&
-        ((IsWord(sourceFormat) && (IsReadable(destinationFormat) || destinationFormat == DocumentFormat.Xps))
+        ((IsWord(sourceFormat) && (IsReadable(destinationFormat) || destinationFormat is DocumentFormat.Xps or DocumentFormat.Html))
         || (IsWord(destinationFormat) && IsReadable(sourceFormat)));
 
     private static bool IsWord(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx;
+
+    /// <summary>Converts DOCX bytes to PDF, leaving all processing in memory.</summary>
+    /// <param name="docx">The complete DOCX package.</param>
+    /// <param name="options">Conversion policy, or null for the strict defaults.</param>
+    /// <returns>The generated PDF bytes.</returns>
+    /// <remarks>Use the overload with a result parameter to inspect diagnostics and metrics, particularly with BestEffort or Lenient policy.</remarks>
+    public byte[] ConvertToPdf(byte[] docx, ConversionOptions? options = null) => ConvertToPdf(docx, out _, options);
+
+    /// <summary>Converts DOCX bytes to PDF and reports diagnostics and output metrics.</summary>
+    /// <param name="docx">The complete DOCX package.</param>
+    /// <param name="result">The completed conversion's diagnostics and metrics.</param>
+    /// <param name="options">Conversion policy, or null for the strict defaults.</param>
+    /// <returns>The generated PDF bytes.</returns>
+    public byte[] ConvertToPdf(byte[] docx, out ConversionResult result, ConversionOptions? options = null) => ConvertBytes(docx, DocumentFormat.Pdf, options, out result);
+
+    /// <summary>Converts DOCX bytes to a self-contained UTF-8 HTML5 document.</summary>
+    /// <param name="docx">The complete DOCX package.</param>
+    /// <param name="options">Conversion policy, or null for the strict defaults.</param>
+    /// <returns>The generated UTF-8 HTML bytes.</returns>
+    /// <remarks>Use the overload with a result parameter to inspect diagnostics and metrics, particularly with BestEffort or Lenient policy.</remarks>
+    public byte[] ConvertToHtml(byte[] docx, ConversionOptions? options = null) => ConvertToHtml(docx, out _, options);
+
+    /// <summary>Converts DOCX bytes to self-contained HTML and reports diagnostics and output metrics.</summary>
+    /// <param name="docx">The complete DOCX package.</param>
+    /// <param name="result">The completed conversion's diagnostics and metrics.</param>
+    /// <param name="options">Conversion policy, or null for the strict defaults.</param>
+    /// <returns>The generated UTF-8 HTML bytes.</returns>
+    public byte[] ConvertToHtml(byte[] docx, out ConversionResult result, ConversionOptions? options = null) => ConvertBytes(docx, DocumentFormat.Html, options, out result);
+
+    private byte[] ConvertBytes(byte[] docx, DocumentFormat destination, ConversionOptions? options, out ConversionResult result)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(docx);
+#else
+        if (docx == null) throw new ArgumentNullException(nameof(docx));
+#endif
+        using var source = new MemoryStream(docx, writable: false);
+        using var output = new MemoryStream();
+        result = Convert(source, output, DocumentFormat.Docx, destination, options ?? new ConversionOptions());
+        return output.ToArray();
+    }
     private static bool IsReadable(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Epub or DocumentFormat.Pdf or DocumentFormat.Mobi or DocumentFormat.Azw3;
 
     /// <inheritdoc />
@@ -145,6 +186,7 @@ public sealed class WordConverter : IDocumentConverter
 
     private static void Execute(MemoryStream input, Stream output, DocumentFormat from, DocumentFormat to, ConversionContext context)
     {
+        context.Destination = to;
         context.CheckCancellation();
         input.Position = 0;
         DocumentModel document;
@@ -154,7 +196,7 @@ public sealed class WordConverter : IDocumentConverter
         }
         else if (from == DocumentFormat.Doc) document = DocFormat.Read(input, context);
         else if (from == DocumentFormat.Epub) document = EpubFormat.Read(input, context);
-        else if (from == DocumentFormat.Pdf) document = PdfFormat.Read(input, context);
+        else if (from == DocumentFormat.Pdf) document = PdfImportBridge.Read(input, context);
         else if (from is DocumentFormat.Mobi or DocumentFormat.Azw3) document = KindleFormat.Read(input, from == DocumentFormat.Azw3, context);
         else
         {
@@ -172,6 +214,7 @@ public sealed class WordConverter : IDocumentConverter
         else if (to == DocumentFormat.Doc) DocFormat.Write(document, output, context);
         else if (to == DocumentFormat.Epub) EpubFormat.Write(document, output, context);
         else if (to == DocumentFormat.Pdf) PdfFormat.Write(document, output, context);
+        else if (to == DocumentFormat.Html) HtmlFormat.Write(document, output, context);
         else if (to == DocumentFormat.Xps) XpsFormat.Write(document, output, context);
         else if (to is DocumentFormat.Mobi or DocumentFormat.Azw3) KindleFormat.Write(document, output, to == DocumentFormat.Azw3, context);
         else

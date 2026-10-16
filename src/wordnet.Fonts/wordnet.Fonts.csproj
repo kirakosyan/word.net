@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>wordnet.Fonts</AssemblyName>
+    <RootNamespace>WordNet.Fonts</RootNamespace>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageId>wordnet.Fonts</PackageId>
+    <Description>OFL-licensed Liberation, Carlito and Caladea fallback font resources for wordnet.</Description>
+    <PackageLicenseExpression>MIT AND OFL-1.1</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/*.ttf" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Update="Resources/*-OFL.txt;Resources/provenance.json" Pack="true" PackagePath="licenses/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

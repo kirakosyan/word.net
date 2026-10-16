@@ -13,7 +13,9 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
+    <ProjectReference Include="../../src/wordnet.Ocr/wordnet.Ocr.csproj" Condition="'$(WordnetPackageVersion)' == ''" />
     <PackageReference Include="wordnet" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
+    <PackageReference Include="wordnet.Ocr" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
     <PackageReference Include="DocumentFormat.OpenXml" PrivateAssets="all" />
     <!-- Keep the existing VSTest/TRX commands on every desktop framework. -->

@@ -77,7 +77,10 @@ internal static partial class DocFormat
                         case 0x3009:
                             if (operand[0] != 2) context.Loss("Doc.SectionBreak", "Section breaks other than next-page become next-page breaks.");
                             break;
-                        case 0xb017: case 0xb018: case 0x900c: case 0x703a: break;
+                        case 0xb017: settings.HeaderDistance = U16(operand, 0) / 20.0; break;
+                        case 0xb018: settings.FooterDistance = U16(operand, 0) / 20.0; break;
+                        case 0x300a: settings.DifferentFirstPage = operand[0] != 0; break;
+                        case 0x900c: case 0x703a: break;
                         case 0x500b:
                         case 0xb025:
                             if (U16(operand, 0) != 0) context.Loss("Doc.SectionLayout", "Multiple columns and binding gutters are not retained.");
@@ -102,6 +105,7 @@ internal static partial class DocFormat
     {
         settings.Validate();
         return Join(Sprm(0x3009, 2), Sprm(0x301d, settings.Landscape ? 2 : 1),
+            Sprm(0x300a, settings.DifferentFirstPage ? 1 : 0), Dimension(0xb017, settings.HeaderDistance), Dimension(0xb018, settings.FooterDistance),
             Dimension(0xb01f, settings.Width), Dimension(0xb020, settings.Height),
             Dimension(0xb021, settings.Left), Dimension(0xb022, settings.Right),
             Dimension(0x9023, settings.Top), Dimension(0x9024, settings.Bottom));

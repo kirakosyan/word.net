@@ -225,7 +225,9 @@ internal static class Program
         };
         inputs[DocumentFormat.Docx] = Convert(inputs[DocumentFormat.Text], DocumentFormat.Text, DocumentFormat.Docx);
         var pairs = (from source in inputs.Keys from target in Enum.GetValues<DocumentFormat>() where converter.CanConvert(source, target) select (Source: source, Target: target)).ToArray();
-        if (pairs.Length != 28) throw new InvalidOperationException("Expected all 28 conversion directions.");
+        if (pairs.Length != 30 || pairs.Count(p => p.Target != DocumentFormat.Html) != 28
+            || pairs.Count(p => p.Target == DocumentFormat.Html && p.Source is DocumentFormat.Doc or DocumentFormat.Docx) != 2)
+            throw new InvalidOperationException("Expected the original 28 conversion directions and both Word-to-HTML directions.");
         var measurements = new System.Collections.Concurrent.ConcurrentBag<Measurement>();
         Parallel.For(0, iterations, new ParallelOptions { MaxDegreeOfParallelism = 4 }, iteration =>
         {
@@ -234,6 +236,13 @@ internal static class Program
                 var watch = Stopwatch.StartNew(); byte[] result = Convert(inputs[pair.Source], pair.Source, pair.Target); watch.Stop();
                 measurements.Add(new Measurement(pair.Source.ToString(), pair.Target.ToString(), iteration, watch.Elapsed.TotalMilliseconds, result.Length));
                 // Check content on each iteration, not just successful allocation or file signatures.
+                if (pair.Target == DocumentFormat.Html)
+                {
+                    using var html = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(Encoding.UTF8.GetString(result));
+                    if (html.Body == null || !html.Body.TextContent.Contains("English printed text 12345.", StringComparison.Ordinal))
+                        throw new InvalidOperationException("Concurrent HTML conversion lost canonical content.");
+                    continue;
+                }
                 if (pair.Target == DocumentFormat.Xps)
                 {
                     using var zip = new ZipArchive(new MemoryStream(result));

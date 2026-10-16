@@ -1,10 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace WordNet.Model;
 
 internal sealed class PageSettings
 {
+    internal Dictionary<string, List<DocumentBlock>> Stories { get; } = new Dictionary<string, List<DocumentBlock>>(StringComparer.Ordinal);
+    internal bool DifferentFirstPage { get; set; }
+    internal bool EvenAndOdd { get; set; }
+    internal double HeaderDistance { get; set; } = 36;
+    internal double FooterDistance { get; set; } = 36;
     internal double Width { get; set; } = 595.276;
     internal double Height { get; set; } = 841.89;
     internal double Left { get; set; } = 48;
@@ -38,7 +44,18 @@ internal sealed class ParagraphLayout
     internal bool PageBreakBefore { get; set; }
     internal bool KeepTogether { get; set; }
     internal bool KeepWithNext { get; set; }
+    internal List<TabStop> Tabs { get; private set; } = new List<TabStop>();
     internal bool HasValues => Before.HasValue || After.HasValue || Left != 0 || Right != 0 || FirstLine != 0
         || LineSpacing.HasValue || PageBreakBefore || KeepTogether || KeepWithNext;
-    internal ParagraphLayout Copy() => (ParagraphLayout)MemberwiseClone();
+    internal ParagraphLayout Copy()
+    {
+        var copy = (ParagraphLayout)MemberwiseClone(); copy.Tabs = new List<TabStop>(Tabs); return copy;
+    }
+}
+
+internal sealed class TabStop
+{
+    internal double Position { get; set; }
+    internal string Alignment { get; set; } = "left";
+    internal string Leader { get; set; } = "none";
 }

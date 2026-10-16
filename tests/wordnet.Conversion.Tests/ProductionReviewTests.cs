@@ -248,7 +248,7 @@ public sealed class ProductionReviewTests
         Assembly assembly = typeof(WordConverter).Assembly;
         Type contextType = assembly.GetType("WordNet.Internal.ConversionContext", true)!;
         object context = Activator.CreateInstance(contextType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { new ConversionOptions(), TestContext.Current.CancellationToken }, CultureInfo.InvariantCulture)!;
-        MethodInfo method = assembly.GetType("WordNet.Ocr.OcrReadingOrder", true)!.GetMethod("Columns", BindingFlags.NonPublic | BindingFlags.Static)!;
+        MethodInfo method = Assembly.Load("wordnet.Ocr").GetType("WordNet.Ocr.OcrReadingOrder", true)!.GetMethod("Columns", BindingFlags.NonPublic | BindingFlags.Static)!;
         string actual = (string)method.Invoke(null, new[] { tsv, (object)600, 300, context })!;
         Assert.Equal("Left00 Left01\nLeft10 Left11\n\nLeft20 Left21\n\nRight00 Right01\nRight10 Right11\n\nRight20 Right21", actual);
     }

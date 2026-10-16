@@ -27,20 +27,21 @@ internal static class XpsFormat
         Xml("_rels/.rels", new XElement(rel + "Relationships", new XElement(rel + "Relationship", new XAttribute("Id", "r1"), new XAttribute("Type", "http://schemas.microsoft.com/xps/2005/06/fixedrepresentation"), new XAttribute("Target", "FixedDocumentSequence.fdseq"))));
         Xml("FixedDocumentSequence.fdseq", new XElement(xps + "FixedDocumentSequence", new XElement(xps + "DocumentReference", new XAttribute("Source", "Documents/1/FixedDocument.fdoc"))));
         Xml("Documents/1/FixedDocument.fdoc", new XElement(xps + "FixedDocument", Enumerable.Range(1, pages.Count).Select(n => new XElement(xps + "PageContent", new XAttribute("Source", "Pages/" + n.ToString(CultureInfo.InvariantCulture) + ".fpage")))));
-        for (int i = 0; i < 4; i++) PackageArchive.Write(archive, "Resources/Fonts/" + FixedLayout.FontNames[i], FixedLayout.FontBytes(i));
+        for (int i = 0; i < context.FontData.Length; i++) PackageArchive.Write(archive, "Resources/Fonts/" + FontName(i), context.FontData[i]);
         for (int p = 0; p < pages.Count; p++)
         {
             context.CheckCancellation();
             string name = (p + 1).ToString(CultureInfo.InvariantCulture);
             Xml("Documents/1/Pages/" + name + ".fpage", new XElement(xps + "FixedPage", new XAttribute("Width", Number(pages[p].Settings.Width)), new XAttribute("Height", Number(pages[p].Settings.Height)), new XAttribute(XNamespace.Xml + "lang", "en-US"),
-                pages[p].Text.Where(t => t.Text.Length != 0).Select(t => new XElement(xps + "Glyphs", new XAttribute("FontUri", "/Resources/Fonts/" + FixedLayout.FontNames[t.Font]),
+                pages[p].Text.Where(t => t.Text.Length != 0).Select(t => new XElement(xps + "Glyphs", new XAttribute("FontUri", "/Resources/Fonts/" + FontName(t.Font)),
                     new XAttribute("FontRenderingEmSize", Number(t.Size)), new XAttribute("OriginX", Number(t.X)), new XAttribute("OriginY", Number(t.Y)), new XAttribute("Fill", "#FF" + (t.Color ?? "000000")),
                     new XAttribute("UnicodeString", t.Text[0] == '{' ? "{}" + t.Text : t.Text)))));
-            Xml("Documents/1/Pages/_rels/" + name + ".fpage.rels", new XElement(rel + "Relationships", Enumerable.Range(0, 4).Select(f => new XElement(rel + "Relationship", new XAttribute("Id", "f" + f.ToString(CultureInfo.InvariantCulture)),
-                new XAttribute("Type", "http://schemas.microsoft.com/xps/2005/06/required-resource"), new XAttribute("Target", "/Resources/Fonts/" + FixedLayout.FontNames[f])))));
+            Xml("Documents/1/Pages/_rels/" + name + ".fpage.rels", new XElement(rel + "Relationships", Enumerable.Range(0, context.FontData.Length).Select(f => new XElement(rel + "Relationship", new XAttribute("Id", "f" + f.ToString(CultureInfo.InvariantCulture)),
+                new XAttribute("Type", "http://schemas.microsoft.com/xps/2005/06/required-resource"), new XAttribute("Target", "/Resources/Fonts/" + FontName(f))))));
         }
         void Xml(string name, XElement root) => PackageArchive.Write(archive, name, TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting)));
     }
 
     private static string Number(double points) => (points * 96 / 72).ToString("0.####", CultureInfo.InvariantCulture);
+    private static string FontName(int index) => "Face-" + index.ToString(CultureInfo.InvariantCulture) + ".ttf";
 }

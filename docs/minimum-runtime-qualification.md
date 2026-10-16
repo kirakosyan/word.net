@@ -1,4 +1,32 @@
-# Finish minimum-runtime qualification on AK-PC
+# Minimum-runtime qualification on AK-PC
+
+## Stable 1.1.0 release gate
+
+The stable release requires **487/487** cases on actual Framework 4.7.2 x64 with
+the documented legacy JIT, both from current source and from the immutable final
+main-CI package. The final qualification JSON and runtime reports accompany the
+GitHub release. The earlier 451-case alpha.1 results below do not qualify changes
+made during PR #5 review; targeting net472 on a newer installed runtime is also
+insufficient. See [releasing](releasing.md) for the exact-artifact gate.
+
+## Enterprise alpha.1 candidate — 2026-10-16
+
+Actual Framework 4.7.2 x64, release 461814, passed **451/451** conversion/OCR cases
+with `compatjit.dll` observed, zero inherited diagnostic overrides, and the documented
+legacy-JIT child configuration. The exact net472 NuGet DLL hash matches the running
+library. Its net462 asset also passed managed-only mixed PDF/HTML probes on actual
+4.7.2 with no Skia/HarfBuzz/OCR providers loaded. This qualifies 4.7.2 with that
+configuration, rather than an actual 4.6.2 installation.
+
+The complete run took 1479.881 seconds under software emulation. Verified native OCR
+prerequisites were copied to the guest's local disk; an earlier run executing those
+prerequisites from the test share terminated with an access violation and is retained
+as failed evidence. No pass is inferred from that earlier run or from VM startup.
+Structured reports are under ignored `artifacts/enterprise-audit/minimum472-final451`;
+the external VM/results directory is `C:\wordnet-issue4-framework472` (VM stopped).
+See [the enterprise audit](enterprise-audit.md) for exact package hashes and CI lanes.
+
+The default-JIT defect and the legacy-JIT requirement below remain applicable.
 
 This runbook preserves `net472;netstandard2.0;net8.0;net10.0` and the `WordNet` API.
 macOS remains deferred. Minimum-runtime qualification covers **actual Framework 4.7.2**

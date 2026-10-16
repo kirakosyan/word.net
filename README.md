@@ -7,22 +7,28 @@
 **Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
 
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
-DOC / DOCX → XPS
+DOC / DOCX → XPS · HTML
 
-> **1.0.0 — desktop release profile.** All 28 conversion directions and local English
-> printed-text OCR have real acceptance tests. The supported feature subset and fidelity
-> diagnostics are described below. Windows/Linux x64 and ARM64 are the release platforms;
-> Android and macOS are outside this release's qualified scope.
+> **1.1.0 — enterprise export desktop release.** Adds managed
+> PDF export, self-contained HTML, header/footer stories and fields, caller fonts and
+> metric-compatible bundled fallbacks. PDF import/OCR now requires `wordnet.Ocr`.
+> See the
+> [enterprise audit](https://github.com/kirakosyan/word.net/blob/main/docs/enterprise-audit.md) for the issue #4 acceptance profile;
+> Word page counts match the 36 authored business fixtures; broader layout fidelity
+> and actual .NET 4.6.2 runtime qualification remain unqualified.
 
 ## Convert a document
 
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-dotnet add package wordnet --version 1.0.0
+dotnet add package wordnet --version 1.1.0
 ```
 
-Validate representative deployment documents against the
+The three release packages share one version: `wordnet.Fonts`, `wordnet`, and
+optional `wordnet.Ocr`. Local packages are produced by `eng/pack.ps1`; public releases
+use the explicit publishing workflow. Upgrading from 1.0.0 requires adding
+`wordnet.Ocr` for PDF input and OCR. Validate representative deployment documents against the
 [implemented profiles](#implemented-profiles) and inspect diagnostics. Stable versioning
 covers this documented subset; it does not promise complete Microsoft Word fidelity.
 Local packaging is also supported. Publication requires an explicit maintainer-run
@@ -55,12 +61,58 @@ against the new package. Package references continue to use `wordnet`.
 Strict mode is the default: detected losses throw before output is copied.
 Best-effort mode converts supported content and returns warnings. DOC and PDF import
 always report formatting/reconstruction losses and therefore require best-effort mode.
-Ordinary Word-authored DOCX files also often need best effort: arbitrary font families,
-headers/footers, advanced typography and unsupported section types require diagnostics. Harmless document
+Ordinary Word-authored DOCX files often need best effort for font substitution,
+advanced typography and unsupported section types. Harmless document
 properties and language/editor metadata produce informational diagnostics instead.
 `CanConvert` describes format pairs, not support for every feature in a particular file.
 
 ## C# examples
+
+### Managed PDF and self-contained HTML from DOCX bytes
+
+Referencing `wordnet` brings its managed dependencies and `wordnet.Fonts`. DOCX export
+does not require Office, installed fonts, Skia, Tesseract, disk writes or network access.
+NuGet deployment is supported; assemblies are unsigned and no GAC variant is supplied.
+
+```csharp
+using System;
+using WordNet;
+
+byte[] inputDocx = System.IO.File.ReadAllBytes("input.docx"); // Or your template-merge bytes.
+var converter = new WordConverter();
+var options = new ConversionOptions(FidelityMode.Lenient)
+{
+    Clock = () => DateTimeOffset.UtcNow,
+    Html = new HtmlOptions { MaxContentWidthPx = 700, IncludeHeadersAndFooters = false }
+};
+byte[] pdf = converter.ConvertToPdf(inputDocx, out ConversionResult pdfResult, options);
+byte[] html = converter.ConvertToHtml(inputDocx, out ConversionResult htmlResult, options);
+foreach (ConversionResult result in new[] { pdfResult, htmlResult })
+{
+    foreach (ConversionDiagnostic diagnostic in result.Diagnostics)
+        Console.WriteLine($"{diagnostic.Code} ({diagnostic.Count}): {diagnostic.Message}");
+    Console.WriteLine($"Wrote {result.BytesWritten} bytes; pages: {result.Metrics.PageCount}");
+}
+```
+
+`FontSource.FromStream` reads named static TrueType/CFF OpenType faces and TTC collections;
+`FontSource.FromDirectory` reads an explicitly selected directory. Add the returned
+faces to `options.Fonts.Sources`. Legacy kern and GPOS pair adjustments are supported.
+Variable/color fonts, advanced ligatures and complex shaping remain outside the profile.
+Configure options before sharing them between calls.
+Use the `out ConversionResult` overloads or the stream API to inspect grouped
+diagnostics and conversion metrics. The byte-only overloads intentionally return
+only the output bytes. Catalog fonts select the closest regular (400) or bold (700)
+weight, so filename ordering does not let Light/Black variants replace Regular.
+
+HTML is reflowable: page fields retain cached text with
+`Html.PageFieldsUsedCachedResult`, without running PDF pagination or font resolution.
+When headers/footers are enabled, only the variants applicable to the first page
+of the first section appear; even/default/later-section stories are not stacked.
+
+`options.Pdf` controls content/font stream compression, optional heading outlines and
+`PdfConformance.PdfA2b` (default: ordinary PDF 1.7). Archival corpus outputs are checked
+with veraPDF; this profile does not generate tagged PDF.
 
 ### DOCX to PDF with limits and cancellation
 
@@ -200,6 +252,7 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 | AZW3 ↔ Word | Standalone unencrypted KF8; skeleton/fragment input and single-flow output |
 | PDF ↔ Word | Selectable-text/color/image export, digital text and simple raster-image import, optional English OCR for scanned/mixed pages |
 | XPS ← Word | XPS 2005 packages with positioned text and embedded fonts |
+| HTML ← Word | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks |
 
 All direction tests inspect real content. Generated DOCX is independently schema
 validated. PDF/ebook/XPS tests check content and containers. External DOC and Kindle
@@ -211,16 +264,22 @@ Current limitations:
 - DOC retains the [documented formatting/table subset](https://github.com/kirakosyan/word.net/blob/main/docs/doc-format.md). The shared
   [formatting/image profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md) covers inline PNG/JPEG and simple
   decimal/bulleted lists. Floating/linked/vector images, cropping/effects, advanced list
-  labels, headers/footers, notes, continuous/parity section breaks and nested tables remain outside it.
+  labels and continuous/parity section breaks remain outside it. Header/footer stories
+  and fields survive DOCX/DOC exchange. Notes degrade to end text with a warning.
+  Nested tables survive DOCX/HTML; other outputs flatten their text with a warning.
   Conversion preserves next-page section geometry, paragraph spacing/indents,
   multiple cell paragraphs and horizontal/vertical merges through Word and EPUB.
-- PDF/XPS export uses section-aware wrapping/pagination, embedded Noto Sans, headings,
+- PDF/XPS export uses section-aware wrapping/pagination, selected embedded font subsets, headings,
   emphasis, run sizes/colors, paragraph/cell alignment, absolute table widths and padding.
-  PDF also embeds inline PNG/JPEG at their requested dimensions; oversized content fails.
-  Unsupported glyphs and complex shaping fail.
-  Original Word pagination is not reproduced.
+  PDF also embeds PNG/JPEG; GIF/BMP become PNG. Anchors use inline placement with a warning.
+  Strict mode rejects missing glyphs; other modes use visible fallback characters.
+  The authored business corpus meets the recorded Word page-count tolerance;
+  exact line breaks and arbitrary template parity are not guaranteed.
   Long ordinary table rows split between lines and repeat contiguous headers. Oversized
-  non-splitting rows and vertically merged groups fail explicitly.
+  non-splitting rows and vertically merged groups fail explicitly in Strict/BestEffort;
+  Lenient splits them and scales oversized images/text, constrains indentation and
+  reserves/scales oversized stories. Malformed inputs, limits, cancellation and I/O
+  still fail; see the enterprise audit for the diagnosed fidelity approximations.
 - PDF import reconstructs editable paragraphs and simple embedded raster images in geometric
   reading order. It does not reconstruct original tables/styles or arbitrary clipping and
   transforms. OCR reconstructs English printed text; handwriting is deferred.
@@ -228,13 +287,19 @@ Current limitations:
   HUFF/CDIC compression, hybrid Kindle containers and DRM remain outside the profile.
   TXT/Markdown/MOBI/AZW3/XPS output diagnoses image loss and retains available alternative
   text in best-effort mode. No remote resources load.
-- Password protection, tracked changes/comments and editable charts/equations are
-  deferred. Unsupported content must fail or produce loss diagnostics.
-- Justified/distributed and direction-dependent paragraph alignment is outside the current
-  profile. Markdown prose and plain text report alignment loss; Markdown tables retain
+- Password protection and editable charts/equations are deferred. DOCX revisions render
+  their accepted state with a `Revisions.Accepted` warning in BestEffort/Lenient;
+  comments produce `Comments.Ignored`. Strict rejects both losses before output is copied.
+- Fixed-page export supports justified/distributed alignment and aligned tab stops.
+  Direction-dependent paragraph alignment remains outside the profile. Markdown prose and plain text report alignment loss; Markdown tables retain
   one alignment per column and diagnose conflicting cell alignments.
 
 ## English OCR
+
+Add `wordnet.Ocr` at the same package version for **all PDF input**, including digital
+PDF import. Its dependencies carry the optional native renderer; the core export
+package has no native dependencies. Existing conversion APIs and OCR options remain
+in `WordNet`. Missing the provider produces a setup error before output is copied.
 
 Provide a local **Tesseract 5 C API library**, its native dependencies, and a directory
 containing `eng.traineddata`. The architecture must match the application process.
@@ -287,7 +352,9 @@ Tesseract and language data are supplied by the host, not included in the wordne
 
 ## Frameworks and platforms
 
-The library retains **`net472;netstandard2.0;net8.0;net10.0`** with matching public APIs.
+The library targets **`net462;net472;netstandard2.0;net8.0;net10.0`** with matching public APIs.
+The new net462 asset builds and runs on this machine's Framework 4.8.1; actual 4.6.2
+execution remains unqualified. Earlier release platform evidence below applies to 1.0.0.
 
 | Consumer | Release profile |
 | --- | --- |
@@ -356,7 +423,7 @@ dotnet build wordnet.sln -c Release --no-restore
 dotnet test tests/wordnet.Conversion.Tests -c Release -f net8.0 --no-build --no-restore
 dotnet test tests/wordnet.Conversion.Tests -c Release -f net10.0 --no-build --no-restore
 dotnet format wordnet.sln --verify-no-changes --no-restore
-dotnet pack src/wordnet/wordnet.csproj -c Release --no-build --no-restore --output artifacts/packages
+./eng/pack.ps1
 ```
 
 Run `net472` tests on Windows with a compatible host. On Windows ARM64, provision
@@ -374,16 +441,18 @@ dotnet build tests/wordnet.Android.Compatibility -c Release --no-restore -t:Sign
 ```
 
 Agents use `rtk` per [AGENTS.md](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md); consumers and CI need not.
-The package includes four assemblies, XML API docs, README, MIT license, dependency
+The core package includes five framework assets, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
 See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) and the
-[1.0.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.0.0.md).
+[1.1.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.1.0.md).
 
 ## Project guide
 
 | Path | Purpose |
 | --- | --- |
-| `src/wordnet/` | API, semantic model, format adapters, page layout and OCR |
+| `src/wordnet/` | API, semantic model, managed format adapters and page layout |
+| `src/wordnet.Fonts/` | Managed embedded Liberation/Carlito/Caladea font resources and OFL notices |
+| `src/wordnet.Ocr/` | Optional PDF import and native English OCR providers |
 | `tests/wordnet.Conversion.Tests/` | 28 direction tests, four OCR cases and regressions |
 | `tests/wordnet.Android.Compatibility/` | Android device app running the shared conversion/OCR/regression suite |
 | `tools/wordnet.Qualification/` | Isolated malformed-input, concurrent conversion and OCR resource campaigns |

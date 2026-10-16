@@ -19,6 +19,9 @@ internal sealed partial class DocxReader
     private ParagraphAlignment defaultAlignment;
     private ParagraphLayout defaultLayout = new ParagraphLayout();
     private TextStyle defaultRun = new TextStyle();
+    private string title = "";
+    private string author = "";
+    private bool evenAndOdd;
 
     private DocxReader(ConversionContext context, Dictionary<string, XElement> relationships)
     {
@@ -69,6 +72,7 @@ internal sealed partial class DocxReader
         reader.mainPart = main;
         reader.knownParts = knownParts;
         reader.ReadNumbering();
+        reader.ReadNotes();
         reader.ReadAuxiliaryParts("", rootRelations);
         reader.ReadAuxiliaryParts(main, reader.relationships.Values);
 
@@ -89,6 +93,9 @@ internal sealed partial class DocxReader
         if (reader.sectionCount > 0 && bodies[0].Element(W + "sectPr") == null)
             reader.EndSection(new XElement(W + "sectPr"), document.Blocks);
         document.FinalSection = reader.finalSection;
+        foreach (DocumentBlock note in reader.noteBlocks) { note.Section = document.FinalSection; document.Blocks.Add(note); }
+        document.Title = reader.title; document.Author = reader.author;
+        if (reader.fields.Count != 0) throw new InvalidDataException("Docx.Field: Unclosed complex field.");
         if (package.PartNames.Any(name => !knownParts.Contains(name)))
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         return document;
@@ -110,8 +117,15 @@ internal sealed partial class DocxReader
             string path = DocxPackage.ResolvePart(owner, relation);
             XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.AuxiliaryPart: Missing root.");
             knownParts.Add(path);
+            if (metadata)
+            {
+                XNamespace dc = "http://purl.org/dc/elements/1.1/";
+                title = root.Element(dc + "title")?.Value ?? title;
+                author = root.Element(dc + "creator")?.Value ?? author;
+            }
+            if (settings && root.Element(W + "evenAndOddHeaders") is XElement parity) evenAndOdd = IsOn(parity);
             if (settings && root.Elements().Any(e => e.Name != W + "proofState" && e.Name != W + "zoom"
-                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl"))
+                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl" && e.Name != W + "evenAndOddHeaders"))
                 context.Loss("Docx.Settings", "Unsupported document settings may affect layout or editing behavior and are not retained.");
             if (settings && root.Elements().Any(e => e.Name == W + "defaultTabStop" || e.Name == W + "characterSpacingControl"))
                 context.Loss("Docx.Settings", "Tab and character-spacing settings are not retained.");
@@ -154,6 +168,11 @@ internal sealed partial class DocxReader
         foreach (XElement element in container.Elements())
         {
             context.CheckCancellation();
+            if (Container(element, out XElement? content))
+            {
+                if (content != null) ReadBlocks(content, blocks);
+                continue;
+            }
             if (element.Name == W + "p")
             {
                 blocks.Add(ReadParagraph(element));
@@ -199,8 +218,29 @@ internal sealed partial class DocxReader
         foreach (XElement child in element.Elements())
         {
             context.CheckCancellation();
+            if (Container(child, out XElement? content))
+            {
+                if (content != null) ReadInlines(content, runs, inherited, link);
+                continue;
+            }
             if (child.Name == W + "pPr" || child.Name == W + "rPr")
             {
+                continue;
+            }
+
+            if (child.Name == W + "fldChar") { FieldBoundary((string?)child.Attribute(W + "fldCharType"), runs); continue; }
+            if (child.Name == W + "instrText")
+            {
+                if (fields.Count == 0) context.Report("Field.OrphanInstruction", "An orphan field instruction is omitted.");
+                else if (!fields.Peek().Separated) fields.Peek().Instruction.Append(child.Value);
+                continue;
+            }
+            if (child.Name == W + "fldSimple")
+            {
+                fields.Push(new FieldCapture { Separated = true });
+                ReadInlines(child, runs, inherited, link);
+                FieldCapture field = fields.Pop();
+                EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result);
                 continue;
             }
 
@@ -212,11 +252,11 @@ internal sealed partial class DocxReader
             }
             else if (child.Name == W + "t")
             {
-                runs.Add(new TextRun(child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color));
+                Emit(runs, new TextRun(child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "tab")
             {
-                runs.Add(new TextRun("\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color));
+                Emit(runs, new TextRun("\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "br" || child.Name == W + "cr")
             {
@@ -226,13 +266,30 @@ internal sealed partial class DocxReader
                     context.Loss("Docx.Break", "Page and column breaks become line breaks.");
                 }
 
-                runs.Add(new TextRun("\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color));
+                Emit(runs, new TextRun("\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "drawing")
             {
+                XElement? box = child.Descendants(W + "txbxContent").FirstOrDefault();
+                if (box != null)
+                {
+                    context.Loss("Shape.TextBoxFlattened", "Text-box text is retained inline; its position, fill and outline are approximated.");
+                    var blocks = new List<DocumentBlock>(); ReadBlocks(box, blocks);
+                    foreach (ParagraphBlock paragraph in blocks.SelectMany(b => b is ParagraphBlock p ? new[] { p } : ((TableBlock)b).Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs)))
+                    { foreach (TextRun run in paragraph.Runs) Emit(runs, run); Emit(runs, new TextRun("\n")); }
+                    continue;
+                }
                 DocumentImage? image = ReadDrawing(child);
-                if (image != null) runs.Add(new TextRun("", link: link, image: image));
+                if (image != null) Emit(runs, new TextRun("", link: link, image: image));
             }
+            else if (child.Name == W + "footnoteReference" || child.Name == W + "endnoteReference")
+            {
+                string id = Integer(child, W + "id", 0, int.MaxValue).ToString(CultureInfo.InvariantCulture);
+                if (!noteIds.Contains((child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id))
+                    throw new InvalidDataException("Docx.Notes: Unresolved note reference.");
+                Emit(runs, new TextRun("[" + id + "]"));
+            }
+            else if (child.Name == W + "footnoteRef" || child.Name == W + "endnoteRef") { }
             else if (child.Name == W + "hyperlink")
             {
                 string? id = (string?)child.Attribute(DocxPackage.DocumentRelationships + "id");
@@ -310,13 +367,19 @@ internal sealed partial class DocxReader
                 foreach (XElement content in TableContents(rowChild))
                 {
                     if (content.Name == W + "tcPr") continue;
+                    if (content.Name == W + "tbl")
+                    {
+                        TableBlock nested = ReadTable(content); cell.Content.Add(nested);
+                        cell.Paragraphs.AddRange(nested.Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs));
+                        continue;
+                    }
                     if (content.Name != W + "p")
                     {
                         context.Loss("Docx.TableCell", "Nested tables and unsupported cell content are not retained.");
                         continue;
                     }
 
-                    cell.Paragraphs.Add(ReadParagraph(content));
+                    ParagraphBlock paragraph = ReadParagraph(content); cell.Paragraphs.Add(paragraph); cell.Content.Add(paragraph);
                 }
                 if (cell.Paragraphs.Count == 0) cell.Paragraphs.Add(new ParagraphBlock());
                 cells.Add(cell);
@@ -411,8 +474,8 @@ internal sealed partial class DocxReader
                     case "left": style.Alignment = ParagraphAlignment.Left; break;
                     case "center": style.Alignment = ParagraphAlignment.Center; break;
                     case "right": style.Alignment = ParagraphAlignment.Right; break;
-                    case "both":
-                    case "distribute":
+                    case "both": style.Alignment = ParagraphAlignment.Justified; break;
+                    case "distribute": style.Alignment = ParagraphAlignment.Distributed; break;
                     case "mediumKashida":
                     case "highKashida":
                     case "lowKashida":
@@ -464,9 +527,69 @@ internal sealed partial class DocxReader
                 style.Bold ^= character.Bold;
                 style.Italic ^= character.Italic;
                 style.FontSize = character.FontSize ?? style.FontSize;
+                if (character.Appearance.FontFamily != null) style.Appearance.FontFamily = character.Appearance.FontFamily;
+                style.Appearance.Underline |= character.Appearance.Underline;
+                style.Appearance.Strike |= character.Appearance.Strike;
+                style.Appearance.Background = character.Appearance.Background ?? style.Appearance.Background;
+                style.Appearance.VerticalAlignment = character.Appearance.VerticalAlignment ?? style.Appearance.VerticalAlignment;
                 if (character.HasColor) { style.Color = character.Color; style.HasColor = true; }
             }
             else if (property.Name == W + "sz") style.FontSize = Integer(property, W + "val", 2, 3276) / 2.0;
+            else if (property.Name == W + "rFonts" && !knownCodeStyle)
+            {
+                style.Appearance.FontFamily = (string?)property.Attribute(W + "ascii") ?? (string?)property.Attribute(W + "hAnsi") ?? style.Appearance.FontFamily;
+                if (property.Attributes().Any(a => a.Name.LocalName.EndsWith("Theme", StringComparison.Ordinal)))
+                    context.Loss("Docx.ThemeFont", "Theme fonts without a resolved family use the explicit family or output fallback.");
+            }
+            else if (property.Name == W + "u")
+            {
+                string value = (string?)property.Attribute(W + "val") ?? "single";
+                style.Appearance.Underline = value != "none";
+                if (value is not "none" and not "single") context.Loss("Docx.Underline", "Unsupported underline decoration uses a single line.");
+            }
+            else if (property.Name == W + "strike") style.Appearance.Strike = IsOn(property);
+            else if (property.Name == W + "vertAlign")
+            {
+                string value = DocxPackage.RequiredAttribute(property, W + "val");
+                if (value is not "baseline" and not "superscript" and not "subscript") throw new InvalidDataException("Docx.VerticalAlignment: Invalid run alignment.");
+                style.Appearance.VerticalAlignment = value == "baseline" ? null : value;
+            }
+            else if (property.Name == W + "highlight")
+            {
+                string value = DocxPackage.RequiredAttribute(property, W + "val");
+                style.Appearance.Background = value switch
+                {
+                    "none" => null,
+                    "yellow" => "FFFF00",
+                    "green" => "00FF00",
+                    "cyan" => "00FFFF",
+                    "magenta" => "FF00FF",
+                    "blue" => "0000FF",
+                    "red" => "FF0000",
+                    "darkBlue" => "000080",
+                    "darkCyan" => "008080",
+                    "darkGreen" => "008000",
+                    "darkMagenta" => "800080",
+                    "darkRed" => "800000",
+                    "darkYellow" => "808000",
+                    "darkGray" => "808080",
+                    "lightGray" => "C0C0C0",
+                    "black" => "000000",
+                    "white" => "FFFFFF",
+                    _ => throw new InvalidDataException("Docx.Highlight: Invalid highlight color."),
+                };
+            }
+            else if (property.Name == W + "shd")
+            {
+                string? fill = (string?)property.Attribute(W + "fill");
+                if (fill is not null and not "auto")
+                {
+                    if (fill.Length != 6 || !uint.TryParse(fill, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _)) throw new InvalidDataException("Docx.Color: Invalid shading color.");
+                    style.Appearance.Background = fill.ToUpperInvariant();
+                }
+                if ((string?)property.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
+                    context.Loss("Docx.Shading", "Patterned shading uses the solid background color.");
+            }
             else if (property.Name == W + "color")
             {
                 string value = DocxPackage.RequiredAttribute(property, W + "val");
@@ -517,11 +640,13 @@ internal sealed partial class DocxReader
         internal int ListId { get; set; }
         internal int ListLevel { get; set; }
         internal ParagraphLayout Layout { get; set; } = new ParagraphLayout();
+        internal RunAppearance Appearance { get; set; } = new RunAppearance();
 
         internal TextStyle Copy()
         {
             var copy = (TextStyle)MemberwiseClone();
             copy.Layout = Layout.Copy();
+            copy.Appearance = Appearance.Copy();
             return copy;
         }
     }

@@ -299,8 +299,8 @@ internal static partial class DocFormat
                     case 0x4a30: break; // Character style selected before direct formatting.
                     case 0x2403: // Physical alignment (Word 97).
                         if (operand[0] > 5) throw new InvalidDataException("Doc.Alignment: Invalid paragraph alignment.");
-                        state.Alignment = operand[0] <= 2 ? (ParagraphAlignment)operand[0] : ParagraphAlignment.Left;
-                        if (operand[0] > 2) context.Loss("Doc.Alignment", "Justified and distributed paragraphs become left aligned.");
+                        state.Alignment = operand[0] <= 4 ? (ParagraphAlignment)operand[0] : ParagraphAlignment.Left;
+                        if (operand[0] > 4) context.Loss("Doc.Alignment", "Unsupported paragraph alignment becomes left aligned.");
                         break;
                     case 0x2405: state.Layout.KeepTogether = operand[0] != 0; break;
                     case 0x2406: state.Layout.KeepWithNext = operand[0] != 0; break;

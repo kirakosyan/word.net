@@ -26,6 +26,7 @@ internal sealed partial class DocxWriter
     internal static void Write(DocumentModel document, Stream output, ConversionContext context)
     {
         var writer = new DocxWriter(context);
+        writer.RegisterStories(document);
         var body = new XElement(W + "body");
         PageSettings? previousSection = null;
         foreach (DocumentBlock block in document.Blocks)
@@ -34,7 +35,7 @@ internal sealed partial class DocxWriter
             PageSettings? section = block.Section;
             if (body.HasElements && !ReferenceEquals(previousSection, section))
             {
-                AttachSection(body, previousSection ?? new PageSettings());
+                writer.AttachSection(body, previousSection ?? new PageSettings());
             }
             previousSection = section;
             if (block is ParagraphBlock paragraph)
@@ -53,10 +54,10 @@ internal sealed partial class DocxWriter
         }
         if (document.FinalSection != null && previousSection != null && !ReferenceEquals(previousSection, document.FinalSection))
         {
-            AttachSection(body, previousSection);
+            writer.AttachSection(body, previousSection);
         }
         if (previousSection != null || document.FinalSection != null)
-            body.Add(Section(document.FinalSection ?? previousSection!));
+            body.Add(writer.Section(document.FinalSection ?? previousSection!));
 
         XNamespace contentTypes = DocxPackage.ContentTypes;
         var types = new XElement(contentTypes + "Types",
@@ -67,12 +68,22 @@ internal sealed partial class DocxWriter
                 new XAttribute("ContentType", DocxPackage.MainContentType)));
 
         using var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true);
-        WritePart(archive, "_rels/.rels", new XElement(DocxPackage.Relationships + "Relationships",
-            Relationship("rDocument", "officeDocument", "word/document.xml")));
+        var rootRelationships = new XElement(DocxPackage.Relationships + "Relationships", Relationship("rDocument", "officeDocument", "word/document.xml"));
+        if (document.Title.Length > 0 || document.Author.Length > 0)
+        {
+            XNamespace core = "http://schemas.openxmlformats.org/package/2006/metadata/core-properties";
+            XNamespace dc = "http://purl.org/dc/elements/1.1/";
+            rootRelationships.Add(new XElement(DocxPackage.Relationships + "Relationship", new XAttribute("Id", "rCore"),
+                new XAttribute("Type", "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"), new XAttribute("Target", "docProps/core.xml")));
+            types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/docProps/core.xml"), new XAttribute("ContentType", "application/vnd.openxmlformats-package.core-properties+xml")));
+            WritePart(archive, "docProps/core.xml", new XElement(core + "coreProperties", new XElement(dc + "title", document.Title), new XElement(dc + "creator", document.Author)));
+        }
+        WritePart(archive, "_rels/.rels", rootRelationships);
         WritePart(archive, "word/document.xml", new XElement(W + "document",
             new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
             new XAttribute(XNamespace.Xmlns + "r", DocxPackage.DocumentRelationships.NamespaceName), body));
 
+        writer.WriteStories(document, archive, types);
         if (writer.usedStyles.Count > 0)
         {
             types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/styles.xml"),
@@ -91,7 +102,7 @@ internal sealed partial class DocxWriter
         context.CheckCancellation();
     }
 
-    private static void AttachSection(XElement body, PageSettings settings)
+    private void AttachSection(XElement body, PageSettings settings)
     {
         XElement? last = body.Elements().LastOrDefault();
         if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
@@ -115,12 +126,13 @@ internal sealed partial class DocxWriter
         ParagraphLayoutProperties(properties, paragraph.Layout);
         if (paragraph.List != null)
         {
-            XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "spacing" || e.Name == W + "ind");
+            XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "tabs" || e.Name == W + "spacing" || e.Name == W + "ind");
             if (spacing == null) properties.Add(NumberingReference(paragraph.List));
             else spacing.AddBeforeSelf(NumberingReference(paragraph.List));
         }
         if (paragraph.Alignment != ParagraphAlignment.Left)
-            properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment == ParagraphAlignment.Center ? "center" : "right")));
+            properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment switch
+            { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
         if (properties.HasElements) element.Add(properties);
 
         foreach (TextRun run in paragraph.Runs)
@@ -146,13 +158,18 @@ internal sealed partial class DocxWriter
 
     private XElement Run(TextRun run)
     {
+        if (run.FieldInstruction != null)
+            return new XElement(W + "fldSimple", new XAttribute(W + "instr", run.FieldInstruction),
+                Run(new TextRun(run.Text, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, run.Image, run.Appearance)));
         var element = new XElement(W + "r");
         var properties = new XElement(W + "rPr");
+        RunAppearance appearance = run.Appearance;
         if (run.Code)
         {
             usedStyles.Add("WordnetCode");
             properties.Add(new XElement(W + "rStyle", new XAttribute(W + "val", "WordnetCode")));
         }
+        if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily)));
 
         if (run.Bold)
         {
@@ -163,8 +180,12 @@ internal sealed partial class DocxWriter
         {
             properties.Add(new XElement(W + "i"));
         }
+        if (appearance.Strike) properties.Add(new XElement(W + "strike"));
         if (run.Color != null) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color)));
         if (run.FontSize.HasValue) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(run.FontSize.Value * 2)))));
+        if (appearance.Underline) properties.Add(new XElement(W + "u", new XAttribute(W + "val", "single")));
+        if (appearance.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", appearance.Background)));
+        if (appearance.VerticalAlignment != null) properties.Add(new XElement(W + "vertAlign", new XAttribute(W + "val", appearance.VerticalAlignment)));
 
         if (properties.HasElements)
         {
@@ -228,9 +249,13 @@ internal sealed partial class DocxWriter
                 if (cell.CellWidth.HasValue) cellProperties.Add(new XElement(W + "tcW", new XAttribute(W + "type", "dxa"), new XAttribute(W + "w", Twips(cell.CellWidth.Value))));
                 if (cell.ColumnSpan > 1) cellProperties.Add(new XElement(W + "gridSpan", new XAttribute(W + "val", cell.ColumnSpan)));
                 if (cell.Merge != VerticalMerge.None) cellProperties.Add(new XElement(W + "vMerge", new XAttribute(W + "val", cell.Merge == VerticalMerge.Start ? "restart" : "continue")));
+                if (cell.Borders.Count > 0) cellProperties.Add(new XElement(W + "tcBorders", cell.Borders.Select(b => new XElement(W + b.Key,
+                    new XAttribute(W + "val", b.Value.Width == 0 ? "nil" : b.Value.Style), new XAttribute(W + "sz", Math.Round(b.Value.Width * 8)), new XAttribute(W + "color", b.Value.Color)))));
+                if (cell.Background != null) cellProperties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", cell.Background)));
                 if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
                     Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
-                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, cell.Paragraphs.Select(Paragraph)));
+                if (cell.VerticalAlignment != "top") cellProperties.Add(new XElement(W + "vAlign", new XAttribute(W + "val", cell.VerticalAlignment)));
+                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, cell.Blocks.Select(b => b is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)b))));
             }
 
             element.Add(row);

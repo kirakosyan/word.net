@@ -121,8 +121,29 @@ public sealed class AdditionalFormatTests
     {
         byte[] docx = Convert(Encoding.UTF8.GetBytes("漢字"), DocumentFormat.Text, DocumentFormat.Docx, BestEffort);
         using var input = new MemoryStream(docx); using var output = new MemoryStream();
-        Assert.Contains("Layout.Glyph", Assert.Throws<NotSupportedException>(() => converter.Convert(input, output, DocumentFormat.Docx, target, BestEffort, TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
+        Assert.Contains("Layout.Glyph", Assert.Throws<NotSupportedException>(() => converter.Convert(input, output, DocumentFormat.Docx, target, new ConversionOptions(), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
         Assert.Equal(0, output.Length);
+    }
+
+    [Theory]
+    [InlineData(DocumentFormat.Pdf)]
+    [InlineData(DocumentFormat.Xps)]
+    public void BestEffortMissingGlyphsUseVisibleFallback(DocumentFormat target)
+    {
+        byte[] docx = Convert(Encoding.UTF8.GetBytes("漢字"), DocumentFormat.Text, DocumentFormat.Docx, BestEffort);
+        using var input = new MemoryStream(docx); using var output = new MemoryStream();
+        ConversionResult result = converter.Convert(input, output, DocumentFormat.Docx, target, BestEffort, TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Font.MissingGlyph" && d.Count == 2);
+        if (target == DocumentFormat.Pdf)
+        {
+            using PdfDocument pdf = PdfDocument.Open(output.ToArray()); Assert.Equal("??", pdf.GetPage(1).Text);
+        }
+        else
+        {
+            using var zip = new ZipArchive(new MemoryStream(output.ToArray()));
+            XDocument page = XDocument.Load(zip.GetEntry("Documents/1/Pages/1.fpage")!.Open());
+            Assert.Equal("??", string.Concat(page.Descendants().Select(e => (string?)e.Attribute("UnicodeString"))));
+        }
     }
 
     [Fact]

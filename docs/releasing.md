@@ -1,5 +1,13 @@
 # Releasing wordnet
 
+The enterprise desktop release is **1.1.0**. Pack and verify
+`wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
+one package version. The workflow publishes fonts before core and the optional
+provider. New companion package IDs need their own authorized NuGet ownership/
+Trusted Publishing configuration before any release. The maintainer has requested
+stable publication after the PR #5 fixes; the existing
+exact-commit CI and minimum-runtime gates still apply.
+
 The first stable release is **1.0.0**, for the documented Windows/Linux x64 and ARM64
 desktop profile. Android and macOS are deferred by the maintainer for this release.
 Publishing alone does not establish quality: retain the corpus, resource, API and
@@ -15,7 +23,9 @@ No long-lived NuGet API key belongs in the repository or GitHub secrets.
 - Repository owner/name: `kirakosyan` / `word.net`.
 - Workflow filename: `publish.yml` (without `.github/workflows/`).
 - GitHub environment: `nuget`, restricted to the `main` branch.
-- Allowed scope: push new packages and versions, exact package pattern `wordnet`.
+- Allowed scope: push new packages and versions. Authorize the exact package IDs
+  `wordnet`, `wordnet.Fonts`, and `wordnet.Ocr` through their Trusted Publishing
+  policies before dispatching the three-package release.
   Do not allow unlisting/relisting or a wildcard for unrelated packages.
 - GitHub environment variable `NUGET_USER`: `kirakosyan` (the profile name, not email).
 
@@ -49,7 +59,7 @@ and release scripts through normal repository review.
 5. The workflow rejects other repositories/branches, unsuccessful or mismatched CI,
    missing notes, ambiguous version spellings and expired artifacts. Stable and
    prerelease SemVer identities are accepted. It downloads the immutable
-   CI package artifact and verifies its ID, version, repository commit, all four
+   CI package artifact and verifies its ID, version, repository commit, the declared
    framework assets, symbols and notices.
 6. The complete suite runs against that downloaded NuGet on native Windows/Linux
    x64/ARM64 (.NET 8/10 and Windows x64 Framework). A clean package cache and source
