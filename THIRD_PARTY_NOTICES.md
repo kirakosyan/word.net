@@ -53,6 +53,7 @@ notices when distributing a bundled application. The lock files record exact has
 
 | Package | Version | License | Purpose / source |
 | --- | --- | --- | --- |
+| System.Text.Encoding.CodePages | 10.0.12 | MIT | [dotnet/runtime](https://github.com/dotnet/runtime); managed single-byte code-page provider, explicitly declared for every core target |
 | AngleSharp | 1.8.4 | MIT | [HTML parser](https://github.com/AngleSharp/AngleSharp); no network loader configured |
 | OpenMcdf | 3.3.0 | MPL-2.0 | [Compound binary storage](https://github.com/openmcdf/openmcdf); unmodified library |
 | PdfPig | 0.1.16 | Apache-2.0 | [PDF reading/writing and font metrics](https://github.com/UglyToad/PdfPig) |

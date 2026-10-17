@@ -45,6 +45,12 @@ foreach ($extension in @('nupkg', 'snupkg')) {
         $libraries = @($archive.Entries | Where-Object { $_.FullName -match '^lib/[^/]+/wordnet\.(dll|pdb)$' })
         if ($libraries.Count -ne $frameworks.Count) { throw "Unexpected framework assets in $path" }
         if ($extension -eq 'nupkg') {
+            foreach ($group in $metadata.dependencies.group) {
+                # .NET 10 prunes this package because its shared framework supplies assembly v10.
+                if ($group.targetFramework -ne 'net10.0' -and @($group.dependency | Where-Object id -EQ 'System.Text.Encoding.CodePages').Count -ne 1) {
+                    throw "Missing directly used code-page dependency for $($group.targetFramework) in $path"
+                }
+            }
             if (@($archive.Entries | Where-Object FullName -Match '/native/').Count -gt 0) { throw 'Core package contains native assets.' }
             if (@($metadata.dependencies.group.dependency | Where-Object id -Match 'Skia|HarfBuzz|wordnet.Ocr').Count -gt 0) { throw 'Core package pulls native providers.' }
         }

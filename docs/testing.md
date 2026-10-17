@@ -100,7 +100,12 @@ all source targets compile, and local suites execute on .NET 8.0.32 and 10.0.12.
 The review-fix build passes **828/828 on each runtime**, with zero failed/skipped cases,
 a warning-free solution build, locked restore and formatting verification. The repaired
 36-direction concurrent qualification benchmark passes 32 iterations (1,152 measured,
-content-validated exchanges). These local results precede the refreshed PR-head CI.
+content-validated exchanges). These local results precede the refreshed PR-head CI. Its packaged Standard-on-.NET-8
+lane then exposed an undeclared CodePages 10 dependency (modern assets passed). The
+follow-up explicitly declares the centrally pinned 10.0.12 provider for every core TFM;
+archive validation now checks the required legacy/Standard/.NET 8 dependency groups
+(.NET 10 legitimately prunes its shared-framework assembly), and packed fallback qualification
+runs on both modern runtimes. Source and release evidence remain separate.
 
 The optional Python qualification tools are external development dependencies; the
 validator uses Docker's local Unix socket, exact copied bytes and `--network none`,

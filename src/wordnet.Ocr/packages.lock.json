@@ -117,6 +117,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "System.Text.Encoding.CodePages": "[10.0.12, )",
           "wordnet.Fonts": "[1.1.0, )"
         }
       },
@@ -338,6 +339,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "System.Text.Encoding.CodePages": "[10.0.12, )",
           "wordnet.Fonts": "[1.1.0, )"
         }
       },
@@ -553,6 +555,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "System.Text.Encoding.CodePages": "[10.0.12, )",
           "wordnet.Fonts": "[1.1.0, )"
         }
       },
@@ -863,6 +866,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "System.Text.Encoding.CodePages": "[10.0.12, )",
           "wordnet.Fonts": "[1.1.0, )"
         }
       },
@@ -939,6 +943,12 @@
           "HarfBuzzSharp": "14.2.1.301",
           "SkiaSharp": "4.153.1"
         }
+      },
+      "System.Text.Encoding.CodePages": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A=="
       }
     }
   }
