@@ -12,3 +12,9 @@ regressions; the CodePages dependency fix also passes four full local packed run
 including explicit Standard fallback on both .NET 8/10. Merged source remains
 separate from published 1.1.0 and historical qualification. No package was published.
 Bucket 5 (#28–#31) remains design-only; deferred implementation requires its scope decision.
+
+Documentation reconciliation and native font-storage follow-up merged in PR #38
+as `2f16d47ac007bf1a5affb41bc0b7653f5198c9f8`, with 20 passing exact-head checks and a matching tree.
+The additional compacting-GC regression brings the current suite to 829.
+The [bucket 5 design proposals](later-design-decisions.md) are the pending next work;
+ODT/review/encryption/object runtime support is not delivered by those documents.

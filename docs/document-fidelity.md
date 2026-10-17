@@ -210,3 +210,10 @@ The unreleased [interoperability guide](interoperability.md) adds explicit opt-i
 Arabic typography, semantic PDF/UA, previews, digital reconstruction and OCR metadata,
 plus bounded HTML/RTF exchanges. Existing exclusions describe the default/released
 profiles; the linked guide specifies supported additions and remaining limits.
+
+## Later design profiles (unimplemented)
+
+The [bucket 5 ADRs](later-design-decisions.md) define future ODT exchange, review
+history/comparison, DOCX encryption and chart/equation stages. Their supported-subset
+tables describe proposals, not capabilities of merged source or package 1.1.0.
+Current unsupported-feature behavior and Strict guarantees remain unchanged.

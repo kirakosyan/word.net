@@ -135,3 +135,14 @@ has no native assets, and retains all five library targets. No version was downg
 NuGet correctly prunes the redundant .NET 10 dependency because that shared framework
 supplies assembly v10. The archive verifier requires it in legacy, Standard and .NET 8 groups; complete packed
 conversion/OCR suites exercise both explicit Standard fallback runtimes.
+
+## Bucket 5 dependency proposals
+
+The [four ADRs](later-design-decisions.md) add no dependencies. Proposed ODT adapters,
+review algorithms and chart/OMML model work start with managed BCL/existing adapters;
+the encryption proposal uses BCL primitives plus existing unmodified MPL-2.0 OpenMcdf,
+with its existing notices/source link preserved. No crypto primitives will be authored.
+ODF validators, LibreOffice, Python/Java crypto readers and math fonts are prospective
+independent qualification prerequisites with their own licenses, not runtime selections.
+Any later library/font choice still needs maintenance, license, five-TFM and actual
+platform qualification; these designs do not extend the current dependency audit.
