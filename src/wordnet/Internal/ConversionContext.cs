@@ -23,6 +23,18 @@ internal sealed class ConversionContext
     internal SourceLocation Location { get; set; } = new SourceLocation("document", "/");
     internal bool Inspecting { get; set; }
     internal bool Editing { get; set; }
+    internal bool HtmlImport { get; set; }
+    internal bool PreviewIntermediate { get; set; }
+    internal OcrMetadataOptions OcrMetadata { get; }
+    internal List<OcrPage> OcrPages { get; } = new List<OcrPage>();
+    private long metadataBytes;
+    private int metadataRegions;
+    internal void ReserveOcrMetadata(int regions, long bytes)
+    {
+        metadataRegions = checked(metadataRegions + regions); metadataBytes = checked(metadataBytes + bytes);
+        if (metadataRegions > OcrMetadata.MaximumRegions || metadataBytes > Math.Min(OcrMetadata.MaximumBytes, Options.MaximumExpandedBytes))
+            throw new InvalidDataException("Limit.OcrMetadata: Structured OCR metadata exceeds its aggregate admission budget.");
+    }
     internal bool HasStrictRejection { get; private set; }
     internal FidelityMode EffectiveMode => Inspecting && Options.FidelityMode == FidelityMode.Strict ? FidelityMode.BestEffort : Options.FidelityMode;
     internal int? ArchiveEntryCount { get; set; }
@@ -62,6 +74,7 @@ internal sealed class ConversionContext
     internal ConversionContext(ConversionOptions options, CancellationToken cancellationToken)
     {
         Options = options;
+        OcrMetadata = (options.OcrMetadata ?? throw new ArgumentException("OCR metadata options must not be null.")).Snapshot();
         CancellationToken = cancellationToken;
     }
 
@@ -136,7 +149,7 @@ internal sealed class ConversionContext
         var fonts = fontUsage.Values.ToList().AsReadOnly();
         return new ConversionResult(count, diagnostics.AsReadOnly(), new ConversionMetrics(PageCount, count, elapsed.Elapsed,
             fonts, fonts.Where(f => !f.RequestedFamily.Equals(f.ResolvedFamily, StringComparison.OrdinalIgnoreCase))
-                .Select(f => f.RequestedFamily).Distinct(StringComparer.OrdinalIgnoreCase).Count()));
+                .Select(f => f.RequestedFamily).Distinct(StringComparer.OrdinalIgnoreCase).Count()), OcrPages.AsReadOnly());
     }
 
     internal string? SafeLink(string? link)

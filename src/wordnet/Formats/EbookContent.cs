@@ -108,6 +108,7 @@ internal static partial class EbookContent
                 Attributes(e, context);
                 var table = new TableBlock();
                 table.Width = CssLength(e, "width", context);
+                if (context.HtmlImport) table.WidthPercent = HtmlInput.Percent(e);
                 foreach (IElement col in e.QuerySelectorAll("colgroup > col").Where(c => c.ParentElement?.ParentElement == e))
                 {
                     int count = Span(col, "span", context);
@@ -144,11 +145,13 @@ internal static partial class EbookContent
                         for (int c = column; c < column + columnSpan; c++)
                             if (spans.ContainsKey(c)) throw new InvalidDataException("Ebook.TableMerge: Overlapping cell spans.");
                         var target = new TableCell { CellWidth = CssLength(cell, "width", context), Padding = CssPadding(cell, context), ColumnSpan = columnSpan, Merge = rowSpan > 1 ? VerticalMerge.Start : VerticalMerge.None };
+                        if (context.HtmlImport) { target.WidthPercent = HtmlInput.Percent(cell); target.Background = HtmlInput.Css(cell, "background-color")?.TrimStart('#').ToUpperInvariant(); }
                         if (cell.QuerySelector("p,div,ul,ol,table,h1,h2,h3,h4,h5,h6,pre") != null)
                         {
                             var content = new DocumentModel();
                             ReadBlocks(cell, content, context, imageReader);
-                            if (content.Blocks.Any(b => b is TableBlock)) context.Loss("Ebook.NestedTable", "Nested tables are flattened.");
+                            if (context.HtmlImport) target.Content.AddRange(content.Blocks);
+                            else if (content.Blocks.Any(b => b is TableBlock)) context.Loss("Ebook.NestedTable", "Nested tables are flattened.");
                             target.Paragraphs.AddRange(content.Paragraphs);
                         }
                         else
@@ -213,7 +216,8 @@ internal static partial class EbookContent
             if (tag == "li" && e.HasAttribute("value")) context.Loss("Ebook.ListValue", "Per-item numbering overrides are not retained.");
             if (!(tag is "p" or "pre" or "li" or "blockquote" || paragraph.HeadingLevel > 0)) context.Loss("Ebook.Block", "Unsupported ebook block formatting was flattened.");
             Inline(e, paragraph, context, false, false, paragraph.IsCodeBlock, null, paragraph.IsCodeBlock, imageReader);
-            if (!paragraph.IsCodeBlock) Trim(paragraph);
+            if (!paragraph.IsCodeBlock && !(context.HtmlImport && HtmlInput.Css(e, "white-space") is "pre" or "pre-wrap"))
+            { if (context.HtmlImport) HtmlInput.Trim(paragraph); else Trim(paragraph); }
             model.Blocks.Add(paragraph);
             if (tag == "li") foreach (IElement nested in e.Children.Where(c => c.LocalName is "ul" or "ol"))
                 ReadBlocks(e, model, context, imageReader, list, new[] { nested });
@@ -240,11 +244,18 @@ internal static partial class EbookContent
     private static void Inline(INode node, ParagraphBlock paragraph, ConversionContext context, bool bold, bool italic, bool code, string? link, bool preserve,
         Func<IElement, DocumentImage?>? imageReader = null, double? fontSize = null, string? color = null)
     {
-        if (node is IText text) { paragraph.Runs.Add(new TextRun(preserve ? text.Data : Collapse(text.Data), bold, italic, code, link, fontSize, color)); return; }
+        if (node is IText text)
+        {
+            RunAppearance? appearance = null;
+            if (context.HtmlImport && text.ParentElement is IElement parent)
+                appearance = new RunAppearance { FontFamily = HtmlInput.Css(parent, "font-family"), Underline = HtmlInput.Css(parent, "text-decoration") == "underline", Strike = HtmlInput.Css(parent, "text-decoration") == "line-through", Background = HtmlInput.Css(parent, "background-color")?.TrimStart('#').ToUpperInvariant() };
+            paragraph.Runs.Add(new TextRun(preserve ? text.Data : Collapse(text.Data), bold, italic, code, link, fontSize, color, appearance: appearance)); return;
+        }
         if (node is IElement e)
         {
             Attributes(e, context);
             string tag = e.LocalName;
+            if (context.HtmlImport) preserve = HtmlInput.Css(e, "white-space") is "pre" or "pre-wrap" || tag == "pre";
             if (tag is "ul" or "ol") return;
             fontSize = CssLength(e, "font-size", context) ?? fontSize;
             color = CssColor(e, context) ?? color;
@@ -274,6 +285,7 @@ internal static partial class EbookContent
             string? weight = Css(e, "font-weight");
             if (weight != null) bold = weight is "bold" or "700";
             italic |= tag is "i" or "em";
+            if (context.HtmlImport && HtmlInput.Css(e, "font-style") is string slant) italic = slant == "italic";
             code |= tag is "code" or "pre";
             if (tag == "a") link = context.SafeLink(e.GetAttribute("href") ?? "");
         }
@@ -282,8 +294,8 @@ internal static partial class EbookContent
 
     private static void Attributes(IElement element, ConversionContext context)
     {
-        if (element.HasAttribute("class") || (element.GetAttribute("style") ?? "").Split(';').Any(declaration =>
-            !string.IsNullOrWhiteSpace(declaration) && !SupportedCss(element, declaration)))
+        if (!context.HtmlImport && (element.HasAttribute("class") || (element.GetAttribute("style") ?? "").Split(';').Any(declaration =>
+            !string.IsNullOrWhiteSpace(declaration) && !SupportedCss(element, declaration))))
             context.Loss("Ebook.Css", "CSS beyond supported inline alignment, font size, RGB color and table/image geometry is not preserved.");
         if (element.Attributes.Any(a => a.Name.StartsWith("on", StringComparison.OrdinalIgnoreCase))) context.Loss("Ebook.ActiveContent", "Event handlers are omitted.");
     }
@@ -314,6 +326,7 @@ internal static partial class EbookContent
                 case "left": case "initial": return ParagraphAlignment.Left;
                 case "center": return ParagraphAlignment.Center;
                 case "right": return ParagraphAlignment.Right;
+                case "justify" when context.HtmlImport: return ParagraphAlignment.Justified;
                 case "inherit": case "unset": continue;
                 default:
                     context.Loss("Ebook.Alignment", "Unsupported or direction-dependent ebook alignment becomes left alignment.");

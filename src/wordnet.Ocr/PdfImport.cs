@@ -28,15 +28,21 @@ internal static class PdfImport
         if (pdf.IsEncrypted) throw new NotSupportedException("Pdf.Encryption: Encrypted PDFs are unsupported.");
         if (pdf.NumberOfPages > context.Options.MaximumPages) throw new InvalidDataException("Limit.Pages: PDF exceeds the page limit.");
         context.Loss("Pdf.Reconstruction", "PDF reading order is reconstructed into editable paragraphs; original page layout and vector graphics are not retained.");
-        var result = new DocumentModel(); int characters = 0; bool rendererAdded = false;
+        var result = new DocumentModel(); int characters = 0, canonicalCharacters = 0, paragraphCount = 0; bool rendererAdded = false;
+        PdfImportOptions reconstruction = (context.Options.PdfImport ?? throw new ArgumentException("PDF input options must not be null.")).Snapshot();
+        if (reconstruction.ReconstructLayout && pdf.TryGetForm(out _))
+        { context.Report("Pdf.ReconstructionAmbiguity", "PDF form fields use the existing content-order fallback; editable form semantics are not inferred.", DiagnosticSeverity.Warning); reconstruction.ReconstructLayout = false; }
         for (int p = 1; p <= pdf.NumberOfPages; p++)
         {
             context.CheckCancellation();
             var page = ReadPage(pdf, p);
+            OcrRecognition? recognition = null;
             string text = ContentOrderTextExtractor.GetText(page);
             bool images = page.NumberOfImages > 0;
             var embeddedImages = page.GetImages().ToArray();
             bool scannedPage = embeddedImages.Any(i => i.BoundingBox.Width * i.BoundingBox.Height >= page.Width * page.Height * 0.5);
+            if (images && scannedPage && string.IsNullOrWhiteSpace(text) && context.Options.EnglishOcr == null)
+                throw new NotSupportedException("Ocr.Required: Configure local English OCR to import scanned PDF pages.");
             if (images && context.Options.EnglishOcr != null && (scannedPage || string.IsNullOrWhiteSpace(text)))
             {
                 context.Loss("Pdf.OcrImageLoss", "OCR replaces the rendered page with editable text; embedded images are not retained.");
@@ -54,7 +60,12 @@ internal static class PdfImport
                 }
                 if (!rendererAdded) { pdf.AddSkiaPageFactory(); rendererAdded = true; }
                 using SKBitmap bitmap = pdf.GetPageAsSKBitmap(p, (float)scale, SKColors.White);
-                text = EnglishOcr.Recognize(bitmap, options, context);
+                if (context.OcrMetadata.Enabled) { recognition = EnglishOcr.RecognizeWithMetadata(bitmap, options, context); text = recognition.Text; }
+                else text = EnglishOcr.Recognize(bitmap, options, context);
+            }
+            else if (reconstruction.ReconstructLayout && PdfReconstruction.Read(page, reconstruction, context) is IReadOnlyList<DocumentBlock> recovered)
+            {
+                Append(recovered); characters = checked(characters + text.Length); context.CheckCharacters(characters); continue;
             }
             else if (images)
             {
@@ -85,15 +96,29 @@ internal static class PdfImport
                     blocks.Add((embedded.BoundingBox.Top, embedded.BoundingBox.Left, paragraph));
                 }
                 context.Loss("Pdf.ImagePlacement", "Images retain their displayed dimensions in reading-order paragraphs; original anchoring, clipping and transforms are not retained.");
-                result.Blocks.AddRange(blocks.OrderByDescending(b => b.Top).ThenBy(b => b.Left).Select(b => b.Paragraph));
+                Append(blocks.OrderByDescending(b => b.Top).ThenBy(b => b.Left).Select(b => b.Paragraph));
                 characters = checked(characters + text.Length); context.CheckCharacters(characters);
                 continue;
             }
             characters = checked(characters + text.Length); context.CheckCharacters(characters);
-            DocumentModel content = TextFormat.Read(text.Replace("\r\n", "\n").Replace('\r', '\n'), context);
-            result.Blocks.AddRange(content.Blocks);
+            string canonical = text.Replace("\r\n", "\n").Replace('\r', '\n');
+            DocumentModel content = TextFormat.Read(canonical, context);
+            if (recognition != null)
+                context.OcrPages.Add(OcrGeometry.Build(recognition.Tsv!, canonical, p, checked(canonicalCharacters + (paragraphCount > 0 ? 1 : 0)), page.Width, page.Height,
+                    recognition.OriginalWidth, recognition.OriginalHeight, recognition.Width, recognition.Height, recognition.Transform, recognition.Confidence, recognition.Sequence, context));
+            Append(content.Blocks);
         }
         return result;
+
+        void Append(IEnumerable<DocumentBlock> blocks)
+        {
+            foreach (DocumentBlock block in blocks)
+            {
+                foreach (ParagraphBlock paragraph in DocumentModel.Expand(new[] { block }).OfType<ParagraphBlock>())
+                { canonicalCharacters = checked(canonicalCharacters + paragraph.Text.Length + (paragraphCount > 0 ? 1 : 0)); paragraphCount++; }
+                result.Blocks.Add(block);
+            }
+        }
     }
 
     private static UglyToad.PdfPig.Content.Page ReadPage(PdfDocument pdf, int page)

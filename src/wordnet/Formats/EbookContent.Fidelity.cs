@@ -87,6 +87,7 @@ internal static partial class EbookContent
     {
         string? value = Css(element, name, name == "font-size");
         if (value == null) return null;
+        if (context.HtmlImport && name == "width" && element.LocalName is "table" or "td" or "th" && value.Length > 0 && value[value.Length - 1] == '%') return null;
         double? result = Length(value, element.LocalName == "img" && name is "width" or "height");
         if (!result.HasValue || result == 0 && (name == "font-size" || name is "width" or "height"))
         { context.Loss("Ebook.CssLength", "Only positive absolute point/pixel dimensions and nonnegative margins are supported."); return null; }

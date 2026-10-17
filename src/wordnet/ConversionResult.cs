@@ -69,11 +69,12 @@ public sealed class ConversionDiagnostic
 /// <summary>Reports successfully written output and any detected losses.</summary>
 public sealed class ConversionResult
 {
-    internal ConversionResult(long bytesWritten, IReadOnlyList<ConversionDiagnostic> diagnostics, ConversionMetrics metrics)
+    internal ConversionResult(long bytesWritten, IReadOnlyList<ConversionDiagnostic> diagnostics, ConversionMetrics metrics, IReadOnlyList<OcrPage>? ocrPages = null)
     {
         BytesWritten = bytesWritten;
         Diagnostics = diagnostics;
         Metrics = metrics;
+        OcrPages = ocrPages ?? Array.Empty<OcrPage>();
     }
 
     /// <summary>Gets the number of bytes appended at the destination's initial position.</summary>
@@ -84,6 +85,8 @@ public sealed class ConversionResult
 
     /// <summary>Gets measurements of this completed conversion.</summary>
     public ConversionMetrics Metrics { get; }
+    /// <summary>Gets opt-in structured OCR metadata, or an empty collection by default. Recognized text appears only when explicitly requested.</summary>
+    public IReadOnlyList<OcrPage> OcrPages { get; }
 }
 
 /// <summary>A requested to resolved font-family mapping used by fixed-page output.</summary>

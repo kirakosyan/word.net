@@ -35,7 +35,7 @@ internal static class FidelityChecks
                 "Table.NestedFlattened", "Nested tables retain their text in reading order as cell paragraphs in this output profile.");
             if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Rows.SelectMany(r => r).Any(c => c.Background != null || c.Borders.Count > 0 || c.VerticalAlignment != "top")).Select(t => t.Location),
                 "Table.Decoration", "This output profile omits cell shading, borders and vertical alignment while retaining cell content.");
-            LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Appearance.HasValues
+            if (format != DocumentFormat.Rtf) LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Appearance.HasValues
                 && (format is not DocumentFormat.Pdf and not DocumentFormat.Xps || r.Appearance.Underline || r.Appearance.Strike || r.Appearance.Background != null || r.Appearance.VerticalAlignment != null))).Select(p => p.Location),
                 "Formatting.RunAppearance", "This output profile does not retain requested font families or additional text decoration.");
         }
@@ -91,7 +91,7 @@ internal static class FidelityChecks
                 if (format == DocumentFormat.Html) context.Report("Html.PageGeometryIgnored", "Page geometry and section breaks are ignored by the reflowable HTML policy.");
                 else context.Loss("Layout.Sections", "Page geometry and section breaks are not preserved by this reflowable output profile.");
             }
-            if (format != DocumentFormat.Html)
+            if (format is not DocumentFormat.Html and not DocumentFormat.Rtf)
                 LossAt(paragraphs.Where(p => p.Layout.HasValues).Select(p => p.Location), "Layout.Paragraph", "Paragraph spacing, indentation and pagination controls are not preserved by this output profile.");
             LossAt(tables.Where(t => t.NonSplittingRows.Count > 0).Select(t => t.Location), "Table.Pagination", "Non-splitting table-row controls are not preserved by this reflowable output profile.");
         }
@@ -101,7 +101,7 @@ internal static class FidelityChecks
             LossAt(tables.Where(t => t.LeftIndent != 0 || t.Width.HasValue || t.ColumnWidths.Any(w => w > 0) || t.Rows.SelectMany(r => r).Any(c => c.CellWidth.HasValue || c.Padding != null)).Select(t => t.Location), "Table.Geometry", "This text format cannot retain table widths and cell padding.");
             LossAt(paragraphs.Where(p => p.List != null).Select(p => p.Location), "List.Structure", "Editable list numbering becomes literal labels in this text profile.");
         }
-        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Epub and not DocumentFormat.Html and not DocumentFormat.Xps)
+        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Epub and not DocumentFormat.Html and not DocumentFormat.Xps and not DocumentFormat.Rtf)
         {
             LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Image != null)).Select(p => p.Location), "Image.Output", "This output profile cannot embed images; alternative text is retained where available.");
             foreach (ParagraphBlock paragraph in paragraphs)

@@ -28,7 +28,7 @@ public sealed partial class WordDocument
     {
         Guard.NotNull(source, nameof(source));
         if (!source.CanRead) throw new ArgumentException("The source must be readable.", nameof(source));
-        if (format is DocumentFormat.Html or DocumentFormat.Xps || (format < DocumentFormat.Doc || format > DocumentFormat.Html)) throw new NotSupportedException("Editing.InputFormat: This format has no supported document reader.");
+        if (format == DocumentFormat.Xps || (format < DocumentFormat.Doc || format > DocumentFormat.Rtf)) throw new NotSupportedException("Editing.InputFormat: This format has no supported document reader.");
         options ??= new ConversionOptions();
         var context = new ConversionContext(options, cancellationToken) { Destination = DocumentFormat.Docx, Editing = true };
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
@@ -132,7 +132,7 @@ public sealed partial class WordDocument
     {
         Guard.NotNull(destination, nameof(destination));
         if (!destination.CanWrite) throw new ArgumentException("The destination must be writable.", nameof(destination));
-        if ((format < DocumentFormat.Doc || format > DocumentFormat.Html)) throw new ArgumentOutOfRangeException(nameof(format));
+        if ((format < DocumentFormat.Doc || format > DocumentFormat.Rtf)) throw new ArgumentOutOfRangeException(nameof(format));
         lock (gate)
         {
             using var operation = BeginOperation();
@@ -263,6 +263,7 @@ public sealed partial class WordDocument
         else if (format == DocumentFormat.Doc) DocFormat.Write(m, output, c);
         else if (format == DocumentFormat.Pdf) PdfFormat.Write(m, output, c);
         else if (format == DocumentFormat.Html) HtmlFormat.Write(m, output, c);
+        else if (format == DocumentFormat.Rtf) RtfFormat.Write(m, output, c);
         else if (format == DocumentFormat.Xps) XpsFormat.Write(m, output, c);
         else if (format == DocumentFormat.Epub) EpubFormat.Write(m, output, c);
         else if (format is DocumentFormat.Mobi or DocumentFormat.Azw3) KindleFormat.Write(m, output, format == DocumentFormat.Azw3, c);

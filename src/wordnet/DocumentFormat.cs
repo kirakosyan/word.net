@@ -34,6 +34,9 @@ public enum DocumentFormat
     /// <summary>XML Paper Specification (.xps); output only.</summary>
     Xps = 9,
 
-    /// <summary>Self-contained UTF-8 HTML5 for e-mail; output only from DOC or DOCX.</summary>
+    /// <summary>UTF-8 HTML5; safe bounded HTML/CSS input and self-contained output.</summary>
     Html = 10,
+
+    /// <summary>Rich Text Format; bounded Word exchanges with Unicode, formatting, lists, tables and raster images.</summary>
+    Rtf = 11,
 }

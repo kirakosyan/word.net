@@ -19,14 +19,19 @@ namespace WordNet.Formats;
 
 internal static class PdfFormat
 {
-    internal static void Write(DocumentModel model, Stream output, ConversionContext context)
+    internal static void Write(DocumentModel model, Stream output, ConversionContext context, IReadOnlyList<FixedPage>? prepared = null, IReadOnlyList<PageRange>? selection = null)
     {
         PdfOptions options = (context.Options.Pdf ?? throw new ArgumentException("PDF options must not be null.")).Snapshot();
-        var pages = FixedLayout.Create(model, context);
+        var allPages = prepared ?? FixedLayout.Create(model, context);
+        int[] indices = PageSelection.Resolve(selection ?? options.Pages.ToArray(), allPages.Count);
+        var pages = indices.Select(p => allPages[p - 1]).ToList();
+        var pageMap = indices.Select((p, i) => (p, i)).ToDictionary(pair => pair.p, pair => pair.i + 1);
+        context.PageCount = pages.Count;
         using var buffer = new MemoryStream();
         byte[]? metadata = options.Conformance == PdfConformance.PdfA2b
             ? System.Text.Encoding.UTF8.GetBytes(PdfExportMetadata.Xmp(model, context.FieldTime).ToString(System.Xml.Linq.SaveOptions.DisableFormatting)) : null;
-        using var builder = new PdfDocumentBuilder(buffer, false, PdfWriterType.Default, 1.7, new PdfExportTokenWriter(options.Compress, metadata));
+        using var builder = new PdfDocumentBuilder(buffer, false, PdfWriterType.Default, 1.7, new PdfExportTokenWriter(options.Compress, metadata,
+            indices.Where((p, i) => p != i + 1).Any() || pages.Count != allPages.Count ? pages.Select(p => ListCounter.Number(p.PageNumber, p.SourceSettings.PageNumberFormat)).ToArray() : null));
         builder.IncludeDocumentInformation = true;
         builder.DocumentInformation.Title = model.Title;
         builder.DocumentInformation.Author = model.Author;
@@ -84,7 +89,7 @@ internal static class PdfFormat
                     if (image.Extension == "png") target.AddPng(image.Bytes, source); else target.AddJpeg(image.Bytes, source);
                     operations.Add(Pop.Value);
                     if (text.Link != null) target.AddLink(text.Link, rectangle);
-                    if (image.AlternativeText.Length > 0) context.Loss("Pdf.ImageAlternativeText", "This PDF profile does not create accessibility tags for images.");
+                    if (image.AlternativeText.Length > 0 && !context.PreviewIntermediate) context.Loss("Pdf.ImageAlternativeText", "This PDF profile does not create accessibility tags for images.");
                 }
                 else if (text.Text.Length > 0)
                 {
@@ -99,7 +104,11 @@ internal static class PdfFormat
                             var area = new PdfRectangle(text.X, page.Settings.Height - text.Y - text.Size * 0.25, measured[measured.Count - 1].EndBaseLine.X, page.Settings.Height - text.Y + text.Size);
                             if ((text.Link.Length > 0 && text.Link[0] == '#'))
                             {
-                                if (model.BookmarkPages.TryGetValue(text.Link.Substring(1), out var destination)) target.AddLink(new ExplicitDestination(destination.Page, ExplicitDestinationType.XyzCoordinates, new ExplicitDestinationCoordinates(destination.X, destination.Y)), area);
+                                if (model.BookmarkPages.TryGetValue(text.Link.Substring(1), out var destination))
+                                {
+                                    if (pageMap.TryGetValue(destination.Page, out int mapped)) target.AddLink(new ExplicitDestination(mapped, ExplicitDestinationType.XyzCoordinates, new ExplicitDestinationCoordinates(destination.X, destination.Y)), area);
+                                    else context.Loss("Pdf.OmittedDestination", "A hyperlink to an excluded physical page retains visible text without a destination.");
+                                }
                             }
                             else target.AddLink(text.Link, area);
                         }

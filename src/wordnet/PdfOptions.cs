@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace WordNet;
 
@@ -14,6 +15,9 @@ public enum PdfConformance
 /// <summary>Controls PDF output. Configure before starting concurrent conversions.</summary>
 public sealed class PdfOptions
 {
+    private List<PageRange> pages = new List<PageRange>();
+    /// <summary>Gets ascending nonoverlapping physical source-page ranges; empty selects all. Full layout precedes selection, retaining original PAGE/NUMPAGES and labels.</summary>
+    public IList<PageRange> Pages => pages;
     /// <summary>Gets or sets whether headings create a hierarchical document outline. The default is false.</summary>
     public bool OutlineHeadings { get; set; }
 
@@ -27,6 +31,8 @@ public sealed class PdfOptions
     {
         if (Conformance is not PdfConformance.Pdf17 and not PdfConformance.PdfA2b)
             throw new ArgumentOutOfRangeException(nameof(Conformance));
-        return (PdfOptions)MemberwiseClone();
+        var copy = (PdfOptions)MemberwiseClone();
+        if (pages.Count > 100000) throw new ArgumentException("Too many PDF page ranges.");
+        copy.pages = new List<PageRange>(pages); return copy;
     }
 }
