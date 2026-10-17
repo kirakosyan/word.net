@@ -202,11 +202,18 @@ Native typography copies admitted font bytes into a HarfBuzz-owned blob while th
 managed source is briefly pinned. The native face/font/blob live together for the
 shaping session; no stream-created pointer to movable managed memory is retained.
 
-## Bucket 5 design proposals (pending review)
+## Bucket 5 designs (merged; implementation deferred)
 
-The [decision index](later-design-decisions.md) proposes an ODF adapter, range-aware
+PR #39 merged the [decision index](later-design-decisions.md), which proposes an ODF adapter, range-aware
 review state, explicit authenticated DOCX-envelope utilities and a validated retained
 chart/OMML graph. Each has bounded APIs, losses and independent acceptance gates.
 These are prospective architecture contracts; no such model nodes, format, crypto
 utility or object editor is implemented by this design PR. Existing offline managed
 export, opt-in native providers and five-target compatibility remain the baseline.
+
+## 1.2.0 release profile
+
+The implemented additions above are included in the 1.2.0 candidate package profile.
+No provider/API/runtime behavior changes accompany the version increment; package
+validation now compares against the published 1.1.0 API. See [release notes](releases/1.2.0.md)
+and [readiness](release-1.2.0-readiness.md) for publication and actual-runtime gates.

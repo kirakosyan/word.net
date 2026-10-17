@@ -4,13 +4,14 @@
     <RootNamespace>WordNet.Ocr</RootNamespace>
     <AssemblyName>wordnet.Ocr</AssemblyName>
     <PackageId>wordnet.Ocr</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Description>Optional native PDF import and local English OCR providers for wordnet. Managed DOCX export does not require this package.</Description>
+    <Description>Optional native PDF import, local English OCR, Arabic typography and PNG preview providers for wordnet. Managed document export does not require this package.</Description>
+    <PackageReleaseNotes>Matching 1.2.0 native providers: opt-in digital PDF reconstruction, OCR word/region confidence and source-coordinate mapping, bounded Arabic shaping and PNG previews. Fixes native font storage across garbage collection. See the core 1.2.0 release notes and qualification limits.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

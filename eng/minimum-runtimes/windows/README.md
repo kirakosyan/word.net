@@ -38,6 +38,10 @@ share fails, reports remain in the guest at `C:\wordnet-results`.
 Startup prints a scoped Docker Compose stop command. Stop the VM after collecting
 results. Restarting the same work directory preserves its disk and evidence. Use a
 new work directory for a fresh qualification attempt. No host disks are passed through.
+Both source and package setups use compose project `wordnet-framework472`. Before
+starting a different setup, use that printed command with `down` instead of `stop`
+to remove only the test container/network. Do not add `--volumes`; retain the
+bind-mounted source results/disk until verified and use a separate package directory.
 
 Repository scripts alone do not include test binaries. From the repository root,
 run `./eng/minimum-runtimes/prepare-windows-vm.ps1` to build the tests and assemble
@@ -45,6 +49,15 @@ the setup directory with `tests.zip` and its checksum manifest. See the complete
 [AK-PC runbook](../../../docs/minimum-runtime-qualification.md) in the repository.
 The prepared transfer bundle already includes these inputs. Setup/configuration validation is not proof
 that the VM booted or that Framework tests passed.
+
+CI also uploads ready-to-run `framework-source-vm` and `framework-package-vm`
+artifacts from the Windows x64 lanes. The latter is made from the already-tested
+clean NuGet consumer without rebuilding from source; its three DLL hashes are
+checked against that run's immutable packages. `bundle.json` records asset type,
+source commit, CI run, required count, binary hashes and package archive hashes.
+For a release, use both artifacts from the successful final main push run and
+return two independent result sets. A successful artifact preparation is not an
+actual-4.7.2 pass.
 
 Sources: [Dockur](https://github.com/dockur/windows/tree/v6.06),
 [its environment options](https://github.com/dockur/windows/blob/v6.06/docs/environment.md),

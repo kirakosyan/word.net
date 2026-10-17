@@ -5,12 +5,12 @@
     <AssemblyName>wordnet</AssemblyName>
     <IsPackable>true</IsPackable>
     <PackageId>wordnet</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>Armen Kirakosyan</Authors>
-    <Description>Word conversion for .NET: DOC/DOCX exchanges with PDF, Markdown, text, EPUB, MOBI and AZW3, plus XPS output and local English OCR. Explicit fidelity diagnostics and bounded document processing.</Description>
-    <PackageTags>word;docx;doc;pdf;markdown;epub;mobi;azw3;xps;converter;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
-    <PackageReleaseNotes>Stable enterprise export release: managed DOC/DOCX to PDF and self-contained HTML, caller and bundled fonts, header/footer stories and fields, PDF/A-2b, deterministic Lenient degradation, diagnostics and metrics. Includes all PR 5 review fixes. PDF input/OCR requires wordnet.Ocr at the same version. See the 1.1.0 release notes for migration and qualified support limits.</PackageReleaseNotes>
+    <Description>Bounded Word conversion, document editing and templates for .NET. DOC/DOCX exchanges with PDF, HTML, RTF, Markdown, text and ebooks; XPS output, semantic PDF, previews and optional local English OCR. Explicit fidelity diagnostics.</Description>
+    <PackageTags>word;docx;doc;pdf;html;rtf;markdown;epub;mobi;azw3;xps;converter;templates;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
+    <PackageReleaseNotes>Business-document automation and interoperability: bounded layout fidelity, document editing/composition/mail merge/templates, safe HTML and RTF exchange, optional Arabic typography, semantic PDF/UA, selected-page previews, digital PDF reconstruction and OCR metadata. Native font storage remains stable across garbage collections. PDF import/OCR, PNG previews and native typography require matching wordnet.Ocr. Bucket 5 is design-only. See the 1.2.0 release notes and qualification limits.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -22,7 +22,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>1.0.0</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>1.1.0</PackageValidationBaselineVersion>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472' or '$(TargetFramework)' == 'net462'">
     <Reference Include="System.IO.Compression" />

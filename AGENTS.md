@@ -125,7 +125,7 @@ This rule applies to agent shell use. RTK is not required by consumers or hosted
 
 ## Bucket 5 design status
 
-The [later-design decisions](docs/later-design-decisions.md) are proposed design
-deliverables for #28–#31, pending review. They do not change the deferred-feature
+The [later-design decisions](docs/later-design-decisions.md) merged in PR #39 as design
+deliverables for #28–#31. They do not change the deferred-feature
 boundaries above or authorize their implementation. Read the relevant ADR and
 independent acceptance plan before selecting a separately scoped implementation slice.

@@ -10,6 +10,9 @@ try {
     $status.exactFramework472 = $status.frameworkRelease -in @(461808, 461814)
     if (-not $status.exactFramework472) { throw "Guest Framework release $($status.frameworkRelease) is not actual 4.7.2. Preserve the results; do not count this run as the minimum-runtime gate." }
     $manifest = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'bundle.json') -Raw | ConvertFrom-Json
+    $status.sourceCommit = $manifest.sourceCommit
+    $status.testAsset = $manifest.testAsset
+    $status.testsSha256 = $manifest.testsSha256
     $zip = Join-Path $PSScriptRoot 'tests.zip'
     if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne $manifest.testsSha256) { throw 'Guest test bundle hash mismatch.' }
     if (Test-Path -LiteralPath $tests) { throw 'Guest test directory already exists. Use a fresh VM for this qualification run.' }

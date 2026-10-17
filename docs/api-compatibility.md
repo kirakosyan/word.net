@@ -60,7 +60,7 @@ remote service, publishing credential or repository checkout is required there.
 
 ## Bucket 4 additive API
 
-The merged, unreleased source from PR #37 appends `Rtf`, adds provider-neutral typography/import/metadata
+The 1.2.0 candidate includes the merged source from PR #37, which appends `Rtf`, adds provider-neutral typography/import/metadata
 options, immutable OCR/preview results, PDF accessibility/language/page selection and
 `WordConverter.RenderPages`. The existing four-argument `TemplateImage` constructor
 is retained; explicit decoration uses a new five-argument overload. Default managed
@@ -74,3 +74,11 @@ chart/equation editor in this change. A future ODT enum addition must also repla
 numeric format-range assumptions and explicitly gate the two proposed DOCX pairs.
 Each selected implementation slice requires separate additive API/package validation
 across all five targets; the designs do not change existing overload metadata.
+
+## 1.2.0 compatibility baseline
+
+Release packing compares against published 1.1.0, including its additive public
+surface. All five target assets, existing enum values and constructor metadata remain;
+AssemblyVersion stays 1.0.0.0. New APIs are additive. This baseline check does not
+qualify older runtime execution; [actual-4.7.2 evidence](release-1.2.0-readiness.md)
+and exact-package publication gates remain separate.

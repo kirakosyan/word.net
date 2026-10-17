@@ -206,7 +206,7 @@ while an EOI pattern inside metadata cannot validate truncated image data.
 
 ## Bucket 4 merged-source profiles
 
-The unreleased [interoperability guide](interoperability.md) adds explicit opt-ins for
+The 1.2.0 [interoperability guide](interoperability.md) adds explicit opt-ins for
 Arabic typography, semantic PDF/UA, previews, digital reconstruction and OCR metadata,
 plus bounded HTML/RTF exchanges. Existing exclusions describe the default/released
 profiles; the linked guide specifies supported additions and remaining limits.
