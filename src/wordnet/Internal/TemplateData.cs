@@ -55,6 +55,7 @@ internal static class TemplateData
                 }
                 return list;
             }
+            if (item.GetType().IsValueType) throw new ArgumentException("Template.DataType: This scalar type is outside the supported data profile.", nameof(value));
             PropertyInfo[] properties = item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (PropertyInfo property in properties)
             {

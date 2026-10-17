@@ -31,6 +31,12 @@ internal sealed class DocumentModel
         }
     }
     internal int CharacterCount => Paragraphs.Sum(p => p.Text.Length);
+    internal static IEnumerable<ParagraphBlock> CellParagraphs(IEnumerable<DocumentBlock> blocks)
+    {
+        foreach (DocumentBlock block in blocks)
+            if (block is ParagraphBlock paragraph) yield return paragraph;
+            else foreach (ParagraphBlock nested in ((TableBlock)block).Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs)) yield return nested;
+    }
 }
 
 internal abstract class DocumentBlock

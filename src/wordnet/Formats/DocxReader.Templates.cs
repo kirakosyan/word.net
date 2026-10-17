@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,10 +21,11 @@ internal sealed partial class DocxReader
     }
     private TemplateControl? ReadControl(XElement element)
     {
+        string? tag = (string?)element.Element(W + "sdtPr")?.Element(W + "tag")?.Attribute(W + "val");
+        if (tag == null || !(tag.StartsWith("merge:", StringComparison.Ordinal) || tag.StartsWith("image:", StringComparison.Ordinal)
+            || tag.StartsWith("if:", StringComparison.Ordinal) || tag.StartsWith("repeat:", StringComparison.Ordinal))) return null;
         if (element.Element(W + "sdtPr")?.Elements().Any(p => p.Name != W + "tag" && p.Name != W + "id" && p.Name != W + "alias") == true)
             context.Loss("Template.ControlProperties", "Control-specific validation, locking, data bindings and appearance are outside the editable tagged-control profile.");
-        string? tag = (string?)element.Element(W + "sdtPr")?.Element(W + "tag")?.Attribute(W + "val");
-        if (tag == null) return null;
         if (tag.Length > 256) throw new InvalidDataException("Template.TagLength: A control tag exceeds the supported length.");
         return new TemplateControl(tag);
     }
@@ -44,6 +46,12 @@ internal sealed partial class DocxReader
     private bool ReadInlineControl(XElement element, List<TextRun> runs, TextStyle inherited, string? link)
     {
         if (!context.Editing || element.Name != W + "sdt") return false;
+        if (fields.Count > 0)
+        {
+            if (ReadControl(element) != null) context.Loss("Template.FieldStructure", "Controls inside field results retain cached content without template execution.");
+            if (element.Element(W + "sdtContent") is XElement fieldContent) ReadInlines(fieldContent, runs, inherited, link);
+            return true;
+        }
         var cached = new List<TextRun>();
         if (element.Element(W + "sdtContent") is XElement content) ReadInlines(content, cached, inherited, link);
         TemplateControl? control = ReadControl(element);

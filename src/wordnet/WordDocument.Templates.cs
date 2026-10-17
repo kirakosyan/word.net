@@ -34,7 +34,10 @@ public sealed partial class WordDocument
     }
     private DocumentEditResult MergeData(Func<ConversionContext, Dictionary<string, object?>> data, TemplateOptions policy, CancellationToken token) => Edit((m, c) =>
     {
+        if (c.Result(0).Diagnostics.Any(d => d.Code is "Template.NestedBlockControls" or "Template.NestedInlineControls" or "Template.NestedRowControls" or "Template.TableControl"))
+            throw new NotSupportedException("Template.ControlStructure: Flattened nested or unsupported table controls cannot be executed safely.");
         Dictionary<string, object?> root = data(c);
+        var processedNotes = new HashSet<DocumentNote>();
         int changes = 0, rows = 0, identity = 0;
         long expansion = m.CharacterCount;
         long structuralExpansion = 0;
@@ -43,7 +46,7 @@ public sealed partial class WordDocument
         foreach (List<DocumentBlock> story in m.Blocks.Select(b => b.Section).Concat(new[] { m.FinalSection }).Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct()) Blocks(story, root, 0);
         var referenced = new HashSet<DocumentNote>(DocumentModel.Expand(m.Blocks).OfType<ParagraphBlock>().SelectMany(p => p.Runs).Where(r => r.Note != null).Select(r => r.Note!));
         m.Notes.RemoveAll(n => !referenced.Contains(n));
-        foreach (DocumentNote note in m.Notes) { Blocks(note.Blocks, root, 0); if (note.Blocks.Count == 0) note.Blocks.Add(new ParagraphBlock()); }
+        foreach (DocumentNote note in m.Notes.ToArray()) ProcessNote(note, root, 0);
         ValidateRanges(m);
         return changes;
 
@@ -104,8 +107,9 @@ public sealed partial class WordDocument
                         structuralExpansion += source.Paragraphs.Sum(p => (p.Runs.Count + 1) * 64L) + source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Image != null).Sum(r => (long)r.Image!.Bytes.Length);
                         LimitExpansion();
                         DocumentModel clone = new DocumentCloner(c).Copy(source);
-                        Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max(), isolateCounters: false);
+                        Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max(), isolateCounters: false, isolateExternalReferences: false);
                         m.Notes.AddRange(clone.Notes); Add(((TableBlock)clone.Blocks[0]).Rows[0], item, depth + 1);
+                        foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1);
                     }
                     changes++;
                 }
@@ -122,7 +126,7 @@ public sealed partial class WordDocument
                     {
                         var blocks = cell.Blocks.ToList(); if (process) Blocks(blocks, item, currentDepth);
                         if (blocks.Count == 0) blocks.Add(new ParagraphBlock());
-                        cell.Content.Clear(); cell.Content.AddRange(blocks); cell.Paragraphs.Clear(); cell.Paragraphs.AddRange(DocumentModel.Expand(blocks).OfType<ParagraphBlock>());
+                        cell.Content.Clear(); cell.Content.AddRange(blocks); cell.Paragraphs.Clear(); cell.Paragraphs.AddRange(DocumentModel.CellParagraphs(blocks));
                     }
                     output.Add(cells);
                 }
@@ -131,6 +135,12 @@ public sealed partial class WordDocument
             table.RowHeights.Clear(); foreach (var item in heights) table.RowHeights.Add(item.Key, item.Value);
             table.RowLefts.Clear(); foreach (var item in lefts) table.RowLefts.Add(item.Key, item.Value);
             table.NonSplittingRows.Clear(); table.NonSplittingRows.UnionWith(nonsplitting); table.RowControls.Clear(); foreach (var item in controls) table.RowControls.Add(item.Key, item.Value);
+        }
+        void ProcessNote(DocumentNote note, object? scope, int depth)
+        {
+            if (!processedNotes.Add(note)) return;
+            Blocks(note.Blocks, scope, depth);
+            if (note.Blocks.Count == 0) note.Blocks.Add(new ParagraphBlock());
         }
         void Paragraph(ParagraphBlock paragraph, object? scope, int depth)
         {
@@ -187,7 +197,18 @@ public sealed partial class WordDocument
                 || formatKind == "\\#" && value is not byte and not sbyte and not short and not ushort and not int and not uint and not long and not ulong and not decimal and not float and not double))
                 throw new InvalidDataException("Template.Format: A date/number switch requires matching scalar data.");
             string text;
-            try { text = value == null ? "" : value is IFormattable formattable ? formattable.ToString(format, policy.Culture) : Convert.ToString(value, policy.Culture) ?? ""; }
+            CultureInfo culture = policy.Culture;
+            if (format != null && formatKind != null)
+            {
+                (format, bool lowerMeridiem) = WordFormat(format, formatKind);
+                if (lowerMeridiem)
+                {
+                    culture = (CultureInfo)culture.Clone();
+                    culture.DateTimeFormat.AMDesignator = culture.DateTimeFormat.AMDesignator.ToLower(culture);
+                    culture.DateTimeFormat.PMDesignator = culture.DateTimeFormat.PMDesignator.ToLower(culture);
+                }
+            }
+            try { text = value == null ? "" : value is IFormattable formattable ? formattable.ToString(format, culture) : Convert.ToString(value, culture) ?? ""; }
             catch (FormatException) { throw new InvalidDataException("Template.Format: Unsupported scalar formatting."); }
             CheckText(text, c); expansion += text.Length; LimitExpansion(); return BoundText(prototype, text);
         }
@@ -230,6 +251,28 @@ public sealed partial class WordDocument
             if (precision.Success && (!int.TryParse(precision.Groups[1].Value, out int digits) || digits > 1000)) throw new InvalidDataException("Template.Format: Numeric precision exceeds its bound.");
         }
         return (args[1], format, formatSwitch);
+    }
+    private static (string Format, bool LowerMeridiem) WordFormat(string format, string kind)
+    {
+        var result = new System.Text.StringBuilder(); char quote = '\0'; bool lower = false;
+        for (int i = 0; i < format.Length; i++)
+        {
+            char value = format[i];
+            if (value == '\\')
+            {
+                if (++i == format.Length) throw new InvalidDataException("Template.Format: An escape must have a following character.");
+                result.Append('\\').Append(format[i]); continue;
+            }
+            if (quote != '\0') { result.Append(value); if (value == quote) quote = '\0'; continue; }
+            if (value is '\'' or '"') { quote = value; result.Append(value); continue; }
+            if (kind == "\\@" && i + 5 <= format.Length && string.Compare(format, i, "AM/PM", 0, 5, StringComparison.OrdinalIgnoreCase) == 0)
+            { lower |= format[i] == 'a'; result.Append("tt"); i += 4; }
+            else if (kind == "\\#" && value == '%') result.Append("\\%");
+            else if (kind == "\\#" && value == '\u2030') throw new InvalidDataException("Template.Format: Per-mille formatting is outside the supported Word numeric profile.");
+            else result.Append(value);
+        }
+        if (quote != '\0') throw new InvalidDataException("Template.Format: A quoted literal is not closed.");
+        return (result.ToString(), lower);
     }
     private static void ValidatePath(string path)
     { if (path.Length > 256 || !path.Split('.').All(TemplateData.Identifier)) throw new InvalidDataException("Template.Path: Unsupported property path."); }

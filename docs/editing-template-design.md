@@ -21,6 +21,14 @@ detected losses. Separate sessions can be used concurrently. Caller data/options
 must remain stable during a call. Session operations are synchronous; the existing
 converter's asynchronous I/O contract is unchanged.
 
+For report generation, `AddParagraphs` batches caller text paragraphs in one copied
+transaction, with incremental admission during enumeration and one final validation.
+This avoids quadratic whole-model copying from repeated individual appends while
+retaining cancellation, serialized callbacks and atomic failure. Individual edits
+keep their existing copy-on-edit semantics. Literal replacement has cancellation
+and resource bounds without a fixed wall-clock deadline, and traverses run slices
+once; regex operations retain their explicit finite matching budget.
+
 Literal and timeout-bounded regex replacements are leftmost, non-overlapping,
 paragraph-local and story-local. Fields, bookmarks, images, notes and boxes are
 barriers. Replacement text is literal, inherits the first matched run's formatting,

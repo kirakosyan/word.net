@@ -80,7 +80,7 @@ public sealed partial class WordDocument
         while (identifiers.Any(n => n.StartsWith("wn" + i.ToString(CultureInfo.InvariantCulture) + "_", StringComparison.Ordinal))) i++;
         return "wn" + i.ToString(CultureInfo.InvariantCulture) + "_";
     }
-    internal static void Remap(DocumentModel source, string prefix, int lastNoteId, bool isolateCounters = true)
+    internal static void Remap(DocumentModel source, string prefix, int lastNoteId, bool isolateCounters = true, bool isolateExternalReferences = true)
     {
         var bookmarks = source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/'))
             .Select(r => r.Bookmark!).Distinct().Select((name, i) => (Name: name, NewName: prefix + "b" + i.ToString(CultureInfo.InvariantCulture))).ToDictionary(x => x.Name, x => x.NewName, StringComparer.Ordinal);
@@ -94,7 +94,7 @@ public sealed partial class WordDocument
             }
             foreach (TextRun cached in run.FieldCache ?? Enumerable.Empty<TextRun>()) if (cached.Link != null && Starts(cached.Link, '#')) MissingTarget(cached.Link.Substring(1));
         }
-        void MissingTarget(string name) { if (!bookmarks.ContainsKey(name)) bookmarks.Add(name, prefix + "u" + bookmarks.Count.ToString(CultureInfo.InvariantCulture)); }
+        void MissingTarget(string name) { if (isolateExternalReferences && !bookmarks.ContainsKey(name)) bookmarks.Add(name, prefix + "u" + bookmarks.Count.ToString(CultureInfo.InvariantCulture)); }
         foreach (DocumentNote note in source.Notes) { note.PartId = checked(++lastNoteId); note.Id = (note.Endnote ? "endnotes:" : "footnotes:") + note.PartId.ToString(CultureInfo.InvariantCulture); }
         foreach (ParagraphBlock paragraph in source.Paragraphs)
         {

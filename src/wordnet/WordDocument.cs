@@ -64,6 +64,27 @@ public sealed partial class WordDocument
             AddRuns(p.Runs, runs, c); m.Blocks.Add(p); return 1;
         }, cancellationToken);
     }
+    /// <summary>Appends many text paragraphs in one atomic, bounded operation without cloning the document per paragraph.</summary>
+    public void AddParagraphs(IEnumerable<string> paragraphs, TextFormatting? formatting = null, int headingLevel = 0, CancellationToken cancellationToken = default)
+    {
+        Guard.NotNull(paragraphs, nameof(paragraphs));
+        if (headingLevel < 0 || headingLevel > 6) throw new ArgumentOutOfRangeException(nameof(headingLevel));
+        _ = Edit((m, c) =>
+        {
+            int count = 0; long characters = m.CharacterCount;
+            PageSettings? section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section;
+            foreach (string text in paragraphs)
+            {
+                CheckText(text, c); characters = checked(characters + text.Length);
+                if (characters > c.Options.MaximumCharacters || ++count > c.Options.MaximumCharacters || characters * 2 + count * 128L > c.Options.MaximumExpandedBytes)
+                    throw new InvalidDataException("Limit.Expansion: Paragraph batch exceeds aggregate resource limits.");
+                var paragraph = new ParagraphBlock { HeadingLevel = headingLevel, Section = section };
+                AddRuns(paragraph.Runs, new[] { new DocumentText(text, formatting) }, c); m.Blocks.Add(paragraph);
+            }
+            return count;
+        }, cancellationToken);
+    }
+
     /// <summary>Appends a simple editable table with one paragraph per cell.</summary>
     public void AddTable(IEnumerable<IEnumerable<string>> rows, bool firstRowIsHeader = false, CancellationToken cancellationToken = default)
     {
@@ -101,7 +122,7 @@ public sealed partial class WordDocument
         {
             ParagraphBlock[] paragraphs = m.BodyParagraphs.ToArray();
             if (index < 0 || index >= paragraphs.Length) throw new ArgumentOutOfRangeException(nameof(index));
-            if (paragraphs[index].Runs.Any(r => r.Bookmark != null || r.FieldInstruction != null || r.Note != null || r.Box != null)) throw new NotSupportedException("Editing.ProtectedParagraph: Use range-aware editing for structured paragraphs.");
+            if (paragraphs[index].Runs.Any(r => r.Bookmark != null || r.FieldInstruction != null || r.Note != null || r.Box != null || r.Control != null)) throw new NotSupportedException("Editing.ProtectedParagraph: Use range-aware editing for structured paragraphs.");
             paragraphs[index].Runs.Clear(); AddRuns(paragraphs[index].Runs, runs, c); return 1;
         }, cancellationToken);
     }

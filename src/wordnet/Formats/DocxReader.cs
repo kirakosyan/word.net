@@ -430,6 +430,13 @@ internal sealed partial class DocxReader
                 {
                     if (content.Name == W + "tcPr") continue;
                     if (BlockBookmark(content, cell.Content, pendingBookmarks)) continue;
+                    int previousBlocks = cell.Content.Count;
+                    if (ReadBlockControl(content, cell.Content))
+                    {
+                        cell.Paragraphs.AddRange(DocumentModel.CellParagraphs(cell.Content.Skip(previousBlocks)));
+                        AttachBookmarks(pendingBookmarks, cell.Content.Skip(previousBlocks), true);
+                        continue;
+                    }
                     if (content.Name == W + "tbl")
                     {
                         TableBlock nested = ReadTable(content); cell.Content.Add(nested);
@@ -476,9 +483,15 @@ internal sealed partial class DocxReader
         {
             if (child.Name == W + "sdt" || child.Name == W + "sdtContent" || child.Name == W + "customXml")
             {
-                if (!context.Editing) context.Loss("Docx.TableStructure", "Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs.");
+                if (context.Editing && container.Name == W + "tc" && child.Name == W + "sdt") { yield return child; continue; }
                 XElement? content = child.Name == W + "sdt" ? child.Element(W + "sdtContent") : child;
                 TemplateControl? control = context.Editing && child.Name == W + "sdt" ? ReadControl(child) : null;
+                bool rows = control != null && content != null && content.Elements().All(e => e.Name == W + "tr" || e.Name == W + "sdt");
+                if (!rows && child.Name != W + "sdtContent")
+                {
+                    if (control != null) context.Loss("Template.TableControl", "Tagged non-row table wrappers retain cached cells and paragraphs but cannot execute safely.");
+                    else context.Loss("Docx.TableStructure", "Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs.");
+                }
                 if (content != null) foreach (XElement nested in TableContents(content))
                 {
                     if (control != null && nested.Name == W + "tr")

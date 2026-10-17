@@ -40,7 +40,7 @@ internal sealed partial class DocxWriter
             new XElement(Wp + "docPr", new XAttribute("id", id), new XAttribute("name", "Text box " + id.ToString(CultureInfo.InvariantCulture))),
             new XElement(A + "graphic", new XElement(A + "graphicData", new XAttribute("uri", wps.NamespaceName),
                 new XElement(wps + "wsp", new XElement(wps + "cNvSpPr", new XAttribute("txBox", true)), properties,
-                    new XElement(wps + "txbx", new XElement(W + "txbxContent", box.Blocks.Select(Block))),
+                    new XElement(wps + "txbx", new XElement(W + "txbxContent", Blocks(box.Blocks))),
                     new XElement(wps + "bodyPr", new XAttribute("lIns", Emu(box.Padding.Left)), new XAttribute("rIns", Emu(box.Padding.Right)),
                         new XAttribute("tIns", Emu(box.Padding.Top)), new XAttribute("bIns", Emu(box.Padding.Bottom)), new XElement(A + "noAutofit"))))));
         Anchor(container, box.Anchor); return new XElement(W + "drawing", container);

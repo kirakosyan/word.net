@@ -59,7 +59,7 @@ internal sealed class DocumentImage
         if (Math.Max(w, h) > 1584)
         {
             context.Loss("Image.Scaled", "Image dimensions exceed the 1584-point profile and are scaled proportionally; encoded pixels are retained.");
-            double scale = 1584 / Math.Max(w, h); w *= scale; h *= scale;
+            double scale = 1584 / Math.Max(w, h); w = Math.Min(1584, w * scale); h = Math.Min(1584, h * scale);
         }
         return new DocumentImage(bytes, extension, info.Width, info.Height, w, h, alt);
     }

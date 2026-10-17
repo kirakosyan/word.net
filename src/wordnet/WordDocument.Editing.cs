@@ -16,7 +16,7 @@ public sealed partial class WordDocument
     {
         if (string.IsNullOrEmpty(search)) throw new ArgumentException("Search text cannot be empty.", nameof(search));
         if (search.Length > 4096) throw new ArgumentException("Search text exceeds the pattern limit.", nameof(search));
-        return ReplaceCore(Regex.Escape(search), replacement, ignoreCase, TimeSpan.FromSeconds(1), cancellationToken);
+        return ReplaceCore(Regex.Escape(search), replacement, ignoreCase, TimeSpan.FromSeconds(1), cancellationToken, literal: true);
     }
     /// <summary>Replaces bounded regex matches with literal text. Zero-length matches and surrogate-splitting matches fail atomically.</summary>
     public DocumentEditResult ReplaceRegex(string pattern, string replacement, TimeSpan timeout, bool ignoreCase = false, CancellationToken cancellationToken = default)
@@ -26,10 +26,10 @@ public sealed partial class WordDocument
         if (timeout <= TimeSpan.Zero || timeout > TimeSpan.FromSeconds(1)) throw new ArgumentOutOfRangeException(nameof(timeout));
         return ReplaceCore(pattern, replacement, ignoreCase, timeout, cancellationToken);
     }
-    private DocumentEditResult ReplaceCore(string pattern, string replacement, bool ignoreCase, TimeSpan timeout, CancellationToken token)
+    private DocumentEditResult ReplaceCore(string pattern, string replacement, bool ignoreCase, TimeSpan timeout, CancellationToken token, bool literal = false)
     {
         Guard.NotNull(replacement, nameof(replacement));
-        var regex = new Regex(pattern, RegexOptions.CultureInvariant | (ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None), timeout);
+        var regex = new Regex(pattern, RegexOptions.CultureInvariant | (ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None), literal ? Regex.InfiniteMatchTimeout : timeout);
         return Edit((m, c) =>
         {
             CheckText(replacement, c); int changes = 0; long expansion = m.CharacterCount;
@@ -37,28 +37,40 @@ public sealed partial class WordDocument
             foreach (ParagraphBlock paragraph in m.Paragraphs)
             {
                 c.CheckCancellation(); var output = new List<TextRun>();
-                if (elapsed.Elapsed > timeout) throw new TimeoutException("Editing.RegexTimeout: Matching exceeded the operation time bound.");
+                if (!literal && elapsed.Elapsed > timeout) throw new TimeoutException("Editing.RegexTimeout: Matching exceeded the operation time bound.");
                 for (int i = 0; i < paragraph.Runs.Count;)
                 {
                     if (!Plain(paragraph.Runs[i])) { output.Add(paragraph.Runs[i++]); continue; }
                     var runs = new List<TextRun>();
                     while (i < paragraph.Runs.Count && Plain(paragraph.Runs[i])) runs.Add(paragraph.Runs[i++]);
-                    string text = string.Concat(runs.Select(r => r.Text)); int copied = 0;
+                    string text = string.Concat(runs.Select(r => r.Text)); int position = 0, runIndex = 0, offset = 0;
                     for (Match match = regex.Match(text); match.Success; match = match.NextMatch())
                     {
                         c.CheckCancellation();
-                        if (elapsed.Elapsed > timeout) throw new TimeoutException("Editing.RegexTimeout: Matching exceeded the operation time bound.");
+                        if (!literal && elapsed.Elapsed > timeout) throw new TimeoutException("Editing.RegexTimeout: Matching exceeded the operation time bound.");
                         if (match.Length == 0) throw new ArgumentException("Editing.ZeroLengthMatch: Zero-length regex matches are unsupported.", nameof(pattern));
                         Boundary(text, match.Index); Boundary(text, match.Index + match.Length);
                         expansion = checked(expansion + replacement.Length - match.Length);
                         if (expansion > c.Options.MaximumCharacters) throw new InvalidDataException("Limit.Characters: Replacement expansion exceeds the character limit.");
                         if (++changes > c.Options.MaximumCharacters) throw new InvalidDataException("Limit.Matches: Too many replacement matches.");
-                        Slice(runs, copied, match.Index - copied, output);
-                        TextRun prototype = At(runs, match.Index);
+                        CopyUntil(match.Index, true);
+                        TextRun prototype = runs[runIndex];
                         if (replacement.Length > 0) output.Add(prototype.WithText(replacement));
-                        copied = match.Index + match.Length;
+                        CopyUntil(match.Index + match.Length, false);
                     }
-                    Slice(runs, copied, text.Length - copied, output);
+                    CopyUntil(text.Length, true);
+                    void CopyUntil(int end, bool keep)
+                    {
+                        while (runIndex < runs.Count)
+                        {
+                            TextRun run = runs[runIndex];
+                            if (offset == run.Text.Length) { runIndex++; offset = 0; continue; }
+                            if (position == end) break;
+                            int count = Math.Min(end - position, run.Text.Length - offset);
+                            if (keep && count > 0) output.Add(run.WithText(run.Text.Substring(offset, count)));
+                            offset += count; position += count;
+                        }
+                    }
                 }
                 paragraph.Runs.Clear(); paragraph.Runs.AddRange(output);
             }
@@ -122,6 +134,8 @@ public sealed partial class WordDocument
             if (starts.Length != 1 || ends.Length != 1) throw new InvalidDataException("Editing.BookmarkRange: A unique closed bookmark is required.");
             var a = starts[0]; var b = ends[0];
             if (!ReferenceEquals(a.Paragraph, b.Paragraph) || a.Index >= b.Index) throw new NotSupportedException("Editing.BookmarkStructure: This profile edits ranges within one paragraph.");
+            if (a.Paragraph.Runs.Skip(a.Index).Take(b.Index - a.Index + 1).Any(r => r.Control != null))
+                throw new NotSupportedException("Editing.BookmarkStructure: Template controls cannot be split or overwritten.");
             if (!insert && a.Paragraph.Runs.Skip(a.Index + 1).Take(b.Index - a.Index - 1).Any(r => r.Bookmark != null || r.Note != null || r.Box != null || r.FieldInstruction != null))
                 throw new NotSupportedException("Editing.BookmarkStructure: Nested ranges and field/note structures cannot be overwritten.");
             var runs = new List<TextRun>(); AddRuns(runs, content, c);
@@ -133,8 +147,6 @@ public sealed partial class WordDocument
     private static bool Starts(string text, char c) => text.Length > 0 && text[0] == c;
     private static void Boundary(string text, int index)
     { if (index > 0 && index < text.Length && char.IsHighSurrogate(text[index - 1]) && char.IsLowSurrogate(text[index])) throw new ArgumentException("Editing.UnicodeBoundary: An edit splits a Unicode character."); }
-    private static TextRun At(List<TextRun> runs, int index)
-    { foreach (TextRun run in runs) { if (index < run.Text.Length) return run; index -= run.Text.Length; } return runs[runs.Count - 1]; }
     private static void Slice(List<TextRun> runs, int start, int length, List<TextRun> output)
     {
         int position = 0, end = checked(start + length);

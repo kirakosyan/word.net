@@ -5,10 +5,11 @@
 The latest merged rendering increment is PR [#34](https://github.com/kirakosyan/word.net/pull/34),
 main commit `1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, with **610** required cases.
 Its reviewed head passed all **20** CI check runs before merge. The editing/template
-candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35), head
-`4f063d98d690ee4b159b3f7f29df93964c0d4caf`, has **664** required cases and all
-**20** CI check runs passed when reconciled on 2026-10-17. It remains unmerged at
-this reconciliation; any review changes require checks on their new head.
+candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35) now has **694**
+required cases after review regressions. The earlier 664-case head
+`811d6a26af91ebbd95249f4189230be99ddb483e` passed all **20** CI check runs.
+The PR remains unmerged at this reconciliation; review changes require checks on
+their new head. Current local evidence follows below.
 
 The PR CI checks include native Windows/Linux x64/ARM64 source and packed-asset
 lanes, compile checks and the single-core PDF performance/memory gate. These are
@@ -18,12 +19,34 @@ Local runs and independent-reader evidence are detailed below. Historical releas
 sections retain their original case counts. See the [delivery status and post-merge
 checklist](implementation-plan.md) before interpreting an old count as current.
 
+## PR #35 review regressions
+
+Thirty new cases address the 15 review findings, bringing the editing/template
+profile to **84** authored cases and the complete suite to **694**. Independent
+OOXML fixtures and schema validation check external/local repeat references,
+cell block controls and diagnosed unsupported wrappers, text boxes inside cells,
+inherited shared headers, multi-block/row control boundaries, wrapped section/note
+paragraphs, cached controls inside fields, rejected flattened nested execution,
+item-scoped repeated notes, Word percent/meridiem/literal formats, unrelated Word
+controls and protected inline-control edits. Independent EPUB input exercises
+scaled-image rounding through public snapshots. Large cases replace 30,000 styled
+runs and atomically create a 20,000-paragraph report with the bulk API, including
+cancellation and limit rollback.
+
+Locked restore, warning-free all-target Release builds, **694/694** complete
+conversion/OCR cases on each local Linux x64 .NET **8.0.32** and **10.0.12**
+(zero failures/skips), formatting, five comparison controls, package/API validation
+and package-content inspection pass. The added `AddParagraphs` API is documented
+in all five core assets; dependencies are unchanged. The public sample also runs.
+Reports are under ignored `artifacts/pr35-review`. These local results do not add
+Windows/Framework, ARM64, minimum-runtime, Word/Aspose or PDF/UA qualification.
+
 ## Document editing and templates — roadmap #32, section 3
 
 The [editing/template guide](editing-and-templates.md) and
 [design contract](editing-template-design.md) describe the additive public API and
-bounded grammar. There are **54** authored editing/template cases, bringing the
-required suite to **664**. Fixtures independently construct OOXML and Open XML SDK
+bounded grammar. The initial **54** authored editing/template cases brought the
+required suite to **664** before review. Fixtures independently construct OOXML and Open XML SDK
 validates editable output; PDF assertions check actual text, pages, geometry,
 images and labels. Cases cover styled cross-run replacement, Unicode/regex barriers,
 bookmark pairs, atomic failure, callback reentrancy and serialized sessions;

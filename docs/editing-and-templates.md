@@ -46,6 +46,16 @@ copying to the caller's current stream position without truncation. Streams stay
 open. A failure during final I/O can leave partial bytes, as with `WordConverter`.
 Configure shared options/data before use. Separate sessions may run concurrently.
 
+For reports built from many text paragraphs, use one atomic batch:
+
+```csharp
+document.AddParagraphs(reportLines, new TextFormatting { FontSize = 11 });
+```
+
+`AddParagraphs` enumerates once and validates/commits the batch once. Repeated
+individual mutations each copy and validate the session; use batches for large
+reports. Invalid or cancelled batches leave all existing content unchanged.
+
 ## Replace text and edit bookmarks
 
 ```csharp
@@ -60,7 +70,9 @@ Matching covers body, nested cells, notes, boxes and header/footer stories, with
 one paragraph at a time. Fields, images, bookmarks, notes, boxes and tagged controls
 are barriers. Matching uses invariant culture; case-sensitive matching is the
 default. Literal matches are leftmost/non-overlapping. Regex patterns have at most
-4096 characters and a positive timeout of at most one second. The matching phase
+4096 characters and a positive timeout of at most one second. Literal replacement
+has no fixed time budget; cancellation and admission limits still apply. Run slicing
+advances through source runs once. The regex matching phase
 also checks that time budget between paragraphs/matches; one in-progress regex
 match can consume another timeout interval. Replacement text is literal (no `$1`
 expansion), inherits the first matched run's appearance, and retains untouched
@@ -71,6 +83,8 @@ surrogate-splitting matches and excessive expansion fail atomically.
 one plain-text body paragraph. Replacing/inserting supports paragraph-local ranges
 and styled text/images, preserving paired markers. Cross-paragraph/story ranges
 and overwriting nested bookmarks, fields, notes or boxes are explicitly rejected.
+Paragraph replacement and bookmark insertion/replacement also reject template
+controls that would otherwise be deleted or split.
 This API is not an automatic redaction guarantee or tracked-edit engine.
 
 ## Compose documents
@@ -113,7 +127,8 @@ are rejected. `MergeJson` accepts a bounded JSON object, rejects duplicate keys,
 comments and malformed syntax, and uses the same evaluator. No scripting engine,
 database lookup, implicit filesystem/network access or runtime expression execution
 is involved. Supported scalars are strings, booleans, finite numbers, dates, GUIDs
-and null (empty text). Paths use case-sensitive ASCII identifiers of at most 64
+and null (empty text). Other value types, including enums, characters and time spans,
+are rejected during snapshotting. Paths use case-sensitive ASCII identifiers of at most 64
 characters, separated by dots, with at most 256 characters in total. Repeat-item
 scope is checked before root scope.
 
@@ -122,7 +137,12 @@ runs, support `MERGEFIELD Path`, `\@ "date format"`, `\# "number format"` and
 `\* MERGEFORMAT`. Date/number switches require matching scalar types; format strings
 have at most 128 characters and standard numeric precision at most 1000. Formatting
 uses the explicitly selected culture (invariant by default). Repeated field targets
-are allowed. Other field grammars and switch combinations are explicit failures.
+are allowed. The bounded Word-format mapping treats numeric `%` as a literal, maps
+date `AM/PM` and `am/pm` to culture-specific upper/lower designators, and preserves
+quoted literals and escapes. Standard .NET numeric formats such as `F2` are also
+accepted. Per-mille scaling and unclosed quotes/escapes fail explicitly; this is
+not the complete Word format language. Other field grammars and switch combinations
+are explicit failures.
 Ordinary `WordConverter` calls continue to use merge-field caches.
 
 Content-control `w:tag/@w:val` values use this exact grammar:
@@ -137,9 +157,15 @@ Content-control `w:tag/@w:val` values use this exact grammar:
 False values are null, false, numeric zero, an empty string or an empty array.
 Conditions can contain scalar fields/inline controls. Nesting controls that share
 the same block, row or run group is outside the profile and diagnosed on load.
+Merge rejects these flattened nested constructs before executing any condition.
+Block controls inside cells are supported; cell-level table wrappers are diagnosed
+and cannot execute. Multi-block/multi-row control boundaries survive DOCX save/load,
+so unsupported scalar/repeat regions remain unsupported after serialization.
 Control-specific validation, locking, data binding and appearance also report loss. No
 arithmetic, comparisons, calls, array indexing or general-purpose expressions are
-supported. Unknown tags fail explicitly during execution.
+supported. Controls without a recognized template-operation prefix retain ordinary
+cached-content conversion behavior; template validation does not apply to their
+unrelated Word/add-in properties or tags.
 
 Repeats execute before conditions/scalars/images in each generated row. Nested
 repeats in nested tables default to a maximum depth of eight; generated rows default
@@ -147,7 +173,10 @@ to at most 10,000. Bounds also apply to the input snapshot, characters, structur
 images and aggregate expansion. Empty arrays/null remove the marked row; an empty
 table is removed. Horizontal spans, decoration, heights and row controls survive.
 List/SEQ numbering continues within a repeated region. Cloned bookmarks/notes have
-unique identities; note labels are renumbered in reference order. Vertically merged
+unique identities; note labels are renumbered in reference order. Cloned repeat-row
+notes bind against the item scope before root fallback. References to
+bookmarks elsewhere in the same document keep their original targets, while local
+cloned bookmark targets are remapped. Vertically merged
 repeat rows and bookmark ranges crossing a repeat boundary fail explicitly.
 
 Missing data defaults to an atomic error. `MissingValues = KeepCached` retains the

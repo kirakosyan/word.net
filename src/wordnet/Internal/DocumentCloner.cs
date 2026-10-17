@@ -11,6 +11,7 @@ internal sealed class DocumentCloner
     private readonly Dictionary<DocumentNote, DocumentNote> notes = new Dictionary<DocumentNote, DocumentNote>();
     private readonly Dictionary<TemplateControl, TemplateControl> controls = new Dictionary<TemplateControl, TemplateControl>();
     private readonly Dictionary<ListLevel[], ListLevel[]> lists = new Dictionary<ListLevel[], ListLevel[]>();
+    private readonly Dictionary<List<DocumentBlock>, List<DocumentBlock>> stories = new Dictionary<List<DocumentBlock>, List<DocumentBlock>>();
     private readonly ConversionContext context;
     internal DocumentCloner(ConversionContext context) { this.context = context; }
     internal DocumentModel Copy(DocumentModel source)
@@ -93,7 +94,7 @@ internal sealed class DocumentCloner
         };
         foreach (var border in source.Borders) cell.Borders.Add(border.Key, Border(border.Value));
         cell.Content.AddRange(source.Blocks.Select(Block));
-        cell.Paragraphs.AddRange(DocumentModel.Expand(cell.Content).OfType<ParagraphBlock>());
+        cell.Paragraphs.AddRange(DocumentModel.CellParagraphs(cell.Content));
         return cell;
     }
     private TextRun Run(TextRun r)
@@ -116,7 +117,15 @@ internal sealed class DocumentCloner
         if (sections.TryGetValue(source, out PageSettings? existing)) return existing;
         PageSettings copy = source.EditingCopy(); sections.Add(source, copy);
         copy.Footnotes = Policy(source.Footnotes); copy.Endnotes = Policy(source.Endnotes);
-        foreach (var story in source.Stories) copy.Stories.Add(story.Key, story.Value.Select(Block).ToList());
+        foreach (var story in source.Stories)
+        {
+            if (!stories.TryGetValue(story.Value, out List<DocumentBlock>? content))
+            {
+                content = new List<DocumentBlock>(); stories.Add(story.Value, content);
+                content.AddRange(story.Value.Select(Block));
+            }
+            copy.Stories.Add(story.Key, content);
+        }
         return copy;
     }
     private DocumentNote Note(DocumentNote source)

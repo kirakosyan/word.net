@@ -24,9 +24,13 @@ internal sealed partial class DocxWriter
             foreach (DocumentNote note in notes)
             {
                 var element = new XElement(W + kind, new XAttribute(W + "id", note.PartId));
-                foreach (DocumentBlock block in note.Blocks) element.Add(Block(block));
-                XElement? first = element.Elements(W + "p").FirstOrDefault();
-                if (first != null) first.AddFirst(new XElement(W + "r", new XElement(W + (kind + "Ref"))));
+                element.Add(Blocks(note.Blocks));
+                XElement? first = element.Descendants(W + "p").FirstOrDefault();
+                if (first != null)
+                {
+                    var reference = new XElement(W + "r", new XElement(W + (kind + "Ref")));
+                    if (first.Element(W + "pPr") is XElement properties) properties.AddAfterSelf(reference); else first.AddFirst(reference);
+                }
                 root.Add(element);
             }
             WritePart(archive, "word/" + part, root);

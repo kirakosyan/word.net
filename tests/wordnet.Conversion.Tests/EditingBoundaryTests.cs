@@ -234,13 +234,13 @@ public sealed partial class EditingTemplateTests
     }
 
     [Fact]
-    public void StrictMissingFallbackAndUnsupportedTemplateSyntaxAreExplicit()
+    public void StrictMissingFallbackAndUnrelatedControlTagsAreExplicit()
     {
         using var input = new MemoryStream(Docx("<w:p>" + Field("MERGEFIELD Name", "cached") + "</w:p>"));
         WordDocument strict = WordDocument.Load(input, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Throws<NotSupportedException>(() => strict.Merge(new { }, new TemplateOptions { MissingValues = MissingTemplateValue.KeepCached }, TestContext.Current.CancellationToken)); Assert.Equal("cached", strict.Paragraphs[0].Text);
         WordDocument unsupported = Load(Docx(Control("execute:Code", P("cached")))); byte[] before = Save(unsupported);
-        Assert.Throws<NotSupportedException>(() => unsupported.Merge(new { Code = "ignored" }, cancellationToken: TestContext.Current.CancellationToken)); Assert.Equal(before, Save(unsupported));
+        Assert.Equal(0, unsupported.Merge(new { Code = "ignored" }, cancellationToken: TestContext.Current.CancellationToken).Changes); Assert.Equal(before, Save(unsupported));
     }
 
     [Fact]
