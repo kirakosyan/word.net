@@ -332,9 +332,13 @@ provider/font/script/structure/styled-joining/alignment/word-width exclusions;
 `Limit.Typography*` and `Limit.FontOutlines` reject admission budget violations.
 `Pdf.Language`, `Pdf.Title`, `Pdf.ImageAlt`, `Pdf.TableHeaders`, `Pdf.TableSemantics`,
 `Pdf.SemanticFeature`, `Pdf.HeadingOrder`, `Pdf.ListNesting` and `Pdf.LinkSemantics` require author
-semantics. Tagged mode reports losses; PDF/UA-1 rejects them even under BestEffort.
+semantics. Missing Link relationships omit annotations in Tagged BestEffort/Lenient,
+with the visual content retained; Strict and PDF/UA-1 reject atomically. Special RTF
+charset bytes retain literal Latin-1 values with `Rtf.FontCharset` in BestEffort/Lenient.
+A repeated RTF row definition with inconsistent edges fails `Rtf.Structure`.
 `Pdf.TagsConformance`/`Pdf.TagsTypography` reject unqualified combinations.
 `Pdf.OmittedDestination` retains visible content without an excluded link target.
+`Pdf.OmittedDestination` does not apply to annotation-free raster intermediates.
 `Limit.Preview*` bounds preview work. `Pdf.Reconstruction`, `Pdf.ReconstructionAmbiguity`
 and `Pdf.ReconstructionFlow` distinguish geometric import limits from confidence
 information. `Ocr.UnmappedRegion` reports missing canonical span mappings without

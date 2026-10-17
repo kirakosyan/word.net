@@ -77,7 +77,7 @@ internal static partial class RtfFormat
                     }
                     foreach (TableCell cell in table.Rows[r])
                     {
-                        foreach (ParagraphBlock p in cell.Paragraphs) Paragraph(p, true);
+                        for (int i = 0; i < cell.Paragraphs.Count; i++) Paragraph(cell.Paragraphs[i], true, i + 1 < cell.Paragraphs.Count);
                         text.Append(@"\cell ");
                     }
                     text.Append(@"\row ");
@@ -87,7 +87,7 @@ internal static partial class RtfFormat
         }
         text.Append('}'); Check(); byte[] bytes = Encoding.ASCII.GetBytes(text.ToString()); output.Write(bytes, 0, bytes.Length);
 
-        void Paragraph(ParagraphBlock p, bool cell)
+        void Paragraph(ParagraphBlock p, bool cell, bool terminate = true)
         {
             context.CheckCancellation(); text.Append(@"\pard\plain"); if (p.RightToLeft.HasValue) text.Append(p.RightToLeft.Value ? @"\rtlpar" : @"\ltrpar"); if (cell) text.Append(@"\intbl");
             text.Append(p.Alignment switch { ParagraphAlignment.Center => @"\qc", ParagraphAlignment.Right => @"\qr", ParagraphAlignment.Justified => @"\qj", _ => @"\ql" });
@@ -113,7 +113,6 @@ internal static partial class RtfFormat
                         .Append(@"\picw").Append(image.PixelsWide.ToString(CultureInfo.InvariantCulture)).Append(@"\pich").Append(image.PixelsHigh.ToString(CultureInfo.InvariantCulture))
                         .Append(@"\picwgoal").Append(Twips(image.Width)).Append(@"\pichgoal").Append(Twips(image.Height)).Append(' ');
                     if ((long)image.Bytes.Length * 2 + text.Length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: RTF picture exceeds output bounds.");
-                    if (text.Length + (long)image.Bytes.Length * 2 > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: RTF picture expansion exceeds its output budget.");
                     foreach (byte value in image.Bytes) text.Append(value.ToString("x2", CultureInfo.InvariantCulture)); text.Append('}'); continue;
                 }
                 if (run.Link != null) context.Loss("Rtf.Link", "RTF hyperlinks retain visible text without executable field instructions.");
@@ -126,7 +125,7 @@ internal static partial class RtfFormat
                 if (run.Appearance.Background != null) text.Append(@"\highlight").Append((colorIds[run.Appearance.Background] + 1).ToString(CultureInfo.InvariantCulture));
                 text.Append(' '); Escape(run.Text); text.Append('}'); Check();
             }
-            text.Append(@"\par ");
+            if (terminate) text.Append(@"\par ");
         }
         void Escape(string value)
         {

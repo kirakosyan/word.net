@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 IMAGE = "verapdf/cli:v1.30.2@sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb"
 
 def validate(directory, output, flavour):
-    files = ["accessible-ua1.pdf", "accessible-multipage.pdf", "accessible-negative.pdf"] if flavour == "ua1" else sorted(p.name for p in directory.glob("*.pdf"))
+    files = ["accessible-ua1.pdf", "accessible-multipage.pdf", "accessible-early-link.pdf", "accessible-negative.pdf"] if flavour == "ua1" else sorted(p.name for p in directory.glob("*.pdf"))
     assert files, "Generate the PDF corpus first."
     environment = os.environ.copy()
     for key in ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY", "DOCKER_CERT_PATH"):
@@ -37,9 +37,9 @@ def validate(directory, output, flavour):
         for job in root.findall("./jobs/job"):
             report = job.find("validationReport"); assert report is not None
             reports[Path(job.findtext("item/name")).name] = report.get("isCompliant") == "true"
-        expected = {files[0]: True, files[1]: True, files[2]: False} if flavour == "ua1" else {f: True for f in files}
+        expected = {f: f != "accessible-negative.pdf" for f in files} if flavour == "ua1" else {f: True for f in files}
         assert reports == expected, reports
-        print("veraPDF 1.30.2 PDF/UA-1: both supported fixtures compliant; untagged negative control rejected." if flavour == "ua1" else f"veraPDF 1.30.2 PDF/A-2b: {len(files)}/{len(files)} compliant.")
+        print("veraPDF 1.30.2 PDF/UA-1: all supported fixtures compliant; untagged negative control rejected." if flavour == "ua1" else f"veraPDF 1.30.2 PDF/A-2b: {len(files)}/{len(files)} compliant.")
     finally:
         run(["rm", "-f", name], stdout=subprocess.DEVNULL)
 

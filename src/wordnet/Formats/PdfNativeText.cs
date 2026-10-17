@@ -18,14 +18,13 @@ namespace WordNet.Formats;
 
 internal sealed class PdfNativeText
 {
-    private readonly Dictionary<int, TrueTypeOutlines> fonts = new Dictionary<int, TrueTypeOutlines>();
     private readonly ConversionContext context;
     private long operations;
     internal PdfNativeText(ConversionContext context) { this.context = context; }
     internal void Draw(PdfPageBuilder target, PositionedText item, double pageHeight, PdfDocumentBuilder.AddedFont carrier)
     {
         ShapedWord word = item.NativeShape!;
-        if (!fonts.TryGetValue(item.Font, out TrueTypeOutlines? font)) fonts.Add(item.Font, font = new TrueTypeOutlines(context.FontData[item.Font], context));
+        RenderFontCache.Face font = context.RenderFonts.Get(item.Font);
         var ops = target.CurrentStream.Operations; double pen = 0, scale = item.Size / word.Units;
         ops.Add(new BeginMarkedContent(NameToken.Create("Artifact")));
         foreach (ShapedGlyph glyph in word.Glyphs)

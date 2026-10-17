@@ -48,12 +48,13 @@ internal static class PdfReconstruction
                 }
             }
         Grid? grid = options.DetectRuledTables && options.Columns == 1 ? FindGrid(segments, context) : null;
-        var blocks = new List<(int Column, double Top, double Left, DocumentBlock Block)>(); var tableLetters = new HashSet<Letter>();
+        var blocks = new List<(int Column, double Top, double Left, double Bottom, DocumentBlock Block)>(); var tableLetters = new HashSet<Letter>();
         if (grid != null)
         {
             TableBlock? table = Table(grid, letters, tableLetters, context);
             if (table != null && !images.Any(i => Overlap(i.BoundingBox, grid.X[0], grid.Y[grid.Y.Length - 1], grid.X[grid.X.Length - 1], grid.Y[0])))
-                blocks.Add((0, page.Height - grid.Y[0], grid.X[0], table));
+                // The layout engine reserves six points between rows and after a table.
+                blocks.Add((0, page.Height - grid.Y[0], grid.X[0], page.Height - grid.Y[grid.Y.Length - 1] + (table.Rows.Count + 1) * 6, table));
             else { tableLetters.Clear(); Ambiguous(context, "An incomplete/overlapping grid remains prose without inferred editable table structure."); }
         }
         for (int column = 0; column < options.Columns; column++)
@@ -66,20 +67,21 @@ internal static class PdfReconstruction
                 if (line.Left < columnLeft - .5 || line.Letters.Max(l => l.EndBaseLine.X) > page.Width * (column + 1) / options.Columns + .5)
                     Ambiguous(context, "Text crossing a configured column boundary retains approximate paragraph geometry.");
                 List<Line>? last = groups.LastOrDefault(); Line? previous = last?.LastOrDefault();
-                if (previous == null || previous.Baseline - line.Baseline > Math.Max(previous.Size, line.Size) * 1.8 || Math.Abs(previous.Left - line.Left) > line.Size * .75 || Math.Abs(previous.Size - line.Size) > line.Size * .1)
+                if (previous == null || previous.Baseline - line.Baseline > Math.Max(previous.Size, line.Size) * 1.8 || last!.Count >= 2 && Math.Abs(last[1].Left - line.Left) > line.Size * .75 || Math.Abs(previous.Size - line.Size) > line.Size * .1)
                 { last = new List<Line>(); groups.Add(last); }
                 last!.Add(line);
             }
-            double bottom = 0;
             foreach (var group in groups)
             {
                 ParagraphBlock paragraph = Paragraph(group, context); Line first = group[0];
-                paragraph.Layout.Left = Math.Max(0, first.Left - columnLeft);
+                double bodyLeft = group.Count > 1 ? group[1].Left : first.Left;
+                paragraph.Layout.Left = Math.Max(0, bodyLeft - columnLeft);
+                paragraph.Layout.FirstLine = first.Left - bodyLeft;
                 double top = Math.Max(0, page.Height - first.Baseline - first.Size);
-                paragraph.Layout.Before = Math.Max(0, top - bottom); paragraph.Layout.After = 0;
+                paragraph.Layout.After = 0;
                 if (group.Count > 1) { paragraph.Layout.LineSpacing = group.Zip(group.Skip(1), (a, b) => a.Baseline - b.Baseline).Average(); paragraph.Layout.MultipleLineSpacing = false; }
-                bottom = page.Height - group[group.Count - 1].Baseline + group[group.Count - 1].Size * .5;
-                blocks.Add((column, top, first.Left, paragraph));
+                double bottom = page.Height - group[group.Count - 1].Baseline + Math.Max(12, group[group.Count - 1].Size) * .5;
+                blocks.Add((column, top, first.Left, bottom, paragraph));
             }
         }
         bool clip = page.Paths.Any(p => p.IsClipping);
@@ -105,16 +107,36 @@ internal static class PdfReconstruction
                 mapped.Anchor = new DrawingAnchor { HorizontalOrigin = "page", VerticalOrigin = "page", X = left, Y = top, Wrap = "none" };
             }
             else context.Loss("Pdf.ReconstructionImageTransform", "Unsupported clipping, shear, rotation or out-of-page image geometry uses an inline image fallback.");
-            var paragraph = new ParagraphBlock(); paragraph.Runs.Add(new TextRun("", image: mapped));
+            var paragraph = new ParagraphBlock { Layout = new ParagraphLayout { After = 0 } }; paragraph.Runs.Add(new TextRun("", image: mapped));
             int column = Math.Min(options.Columns - 1, (int)Math.Floor(Math.Max(0, left) * options.Columns / page.Width));
-            blocks.Add((column, Math.Max(0, top), left, paragraph));
+            paragraph.Layout.Left = Math.Max(0, left - page.Width * column / options.Columns);
+            blocks.Add((column, Math.Max(0, top), left, Math.Max(0, top) + Math.Max(12, height) + 6, paragraph));
         }
-        var result = new List<DocumentBlock>(); int previousColumn = 0;
+        // Page-relative anchors belong to a flow paragraph without adding another line.
+        TextRun[] anchors = blocks.Where(b => b.Block is ParagraphBlock p && p.Runs.Count == 1 && p.Runs[0].Image?.Anchor != null)
+            .Select(b => ((ParagraphBlock)b.Block).Runs[0]).ToArray();
+        blocks.RemoveAll(b => b.Block is ParagraphBlock p && p.Runs.Count == 1 && p.Runs[0].Image?.Anchor != null);
+        var result = new List<DocumentBlock>(); int previousColumn = 0; double previousBottom = 0;
+        ParagraphBlock? previousParagraph = null;
         foreach (var block in blocks.OrderBy(b => b.Column).ThenBy(b => b.Top).ThenBy(b => b.Left))
         {
             if (block.Column > previousColumn)
-            { var separator = new ParagraphBlock(); separator.Runs.Add(new TextRun(new string('\v', block.Column - previousColumn))); result.Add(separator); }
-            result.Add(block.Block); previousColumn = block.Column;
+            { var separator = new ParagraphBlock(); separator.Runs.Add(new TextRun(new string('\v', block.Column - previousColumn))); result.Add(separator); previousBottom = 0; previousParagraph = null; }
+            double gap = Math.Max(0, block.Top - previousBottom);
+            if (block.Block is ParagraphBlock paragraph) paragraph.Layout.Before = gap;
+            else if (gap > 0)
+            {
+                if (previousParagraph != null) previousParagraph.Layout.After = (previousParagraph.Layout.After ?? 0) + gap;
+                else result.Add(new ParagraphBlock { Layout = new ParagraphLayout { Before = 0, After = 0, LineSpacing = gap, MultipleLineSpacing = false, ExactLineSpacing = true } });
+            }
+            result.Add(block.Block); previousColumn = block.Column; previousBottom = Math.Max(previousBottom, block.Bottom);
+            previousParagraph = block.Block as ParagraphBlock;
+        }
+        if (anchors.Length > 0)
+        {
+            ParagraphBlock? host = result.OfType<ParagraphBlock>().FirstOrDefault(p => p.Runs.Count > 0);
+            if (host == null) { host = new ParagraphBlock { Layout = new ParagraphLayout { Before = 0, After = 0 } }; result.Add(host); }
+            host.Runs.AddRange(anchors);
         }
         if (result.Count == 0) result.Add(new ParagraphBlock());
         foreach (DocumentBlock block in result) block.Section = section;
@@ -137,21 +159,30 @@ internal static class PdfReconstruction
     }
     private static ParagraphBlock Paragraph(IEnumerable<Line> lines, ConversionContext context)
     {
-        var paragraph = new ParagraphBlock(); bool first = true;
+        var paragraph = new ParagraphBlock(); bool first = true, bold = false, italic = false; double? size = null;
+        var text = new StringBuilder();
+        void Flush()
+        {
+            if (text.Length == 0) return;
+            paragraph.Runs.Add(new TextRun(text.ToString(), bold: bold, italic: italic, fontSize: size)); text.Clear();
+        }
         foreach (Line line in lines)
         {
-            if (!first) paragraph.Runs.Add(new TextRun("\n")); first = false; double? previous = null;
+            if (!first) text.Append('\n'); first = false; double? previous = null;
             foreach (Letter letter in line.Letters.OrderBy(l => l.StartBaseLine.X))
             {
+                context.CheckCancellation();
                 if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.PointSize * .25)
                 {
                     if (letter.StartBaseLine.X - previous.Value > letter.PointSize * 3) Ambiguous(context, "Wide within-line gaps may represent a form/borderless table; no cell structure is inferred.");
-                    paragraph.Runs.Add(new TextRun(" "));
+                    text.Append(' ');
                 }
-                paragraph.Runs.Add(new TextRun(letter.Value, bold: NameContains(letter.FontName, "Bold"), italic: NameContains(letter.FontName, "Italic") || NameContains(letter.FontName, "Oblique"), fontSize: letter.PointSize));
-                previous = letter.EndBaseLine.X;
+                bool nextBold = NameContains(letter.FontName, "Bold"), nextItalic = NameContains(letter.FontName, "Italic") || NameContains(letter.FontName, "Oblique");
+                if (bold != nextBold || italic != nextItalic || size != letter.PointSize) { Flush(); bold = nextBold; italic = nextItalic; size = letter.PointSize; }
+                text.Append(letter.Value); previous = letter.EndBaseLine.X;
             }
         }
+        Flush();
         return paragraph;
     }
     private static Grid? FindGrid(List<(PdfPoint From, PdfPoint To)> segments, ConversionContext context)

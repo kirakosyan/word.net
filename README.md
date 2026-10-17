@@ -23,7 +23,8 @@ improvements from PRs [#33](https://github.com/kirakosyan/word.net/pull/33) and
 automation merged in [#35](https://github.com/kirakosyan/word.net/pull/35)
 (`0b2af843`). Buckets 1–3 are complete within their documented profiles. This unreleased bucket 4
 source candidate adds safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA,
-selected pages/previews, digital PDF reconstruction and OCR metadata. See the
+selected pages/previews, digital PDF reconstruction and OCR metadata. Its review-fix
+build passes 828 conversion/OCR cases on each local Linux x64 .NET 8/10 runtime. See the
 [bounded profiles and usage](docs/interoperability.md); review/CI and merge acceptance
 remain separate from package 1.1.0. See the
 [implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)

@@ -106,6 +106,26 @@ def qualify(directory, fontpath):
                 assert "".join(text).endswith("Record 49Value 49")
                 assert roles.count("/TH") == 2  # repeated visual header copies remain artifacts
             print(filename, "structure, MCIDs, roles, language and page references PASS")
+    with fitz.open(directory / "accessible-early-link.pdf") as pdf:
+        assert len(pdf) == 2
+        structure = int(pdf.xref_get_key(pdf.pdf_catalog(), "StructTreeRoot")[1].split()[0])
+        parent_tree = int(pdf.xref_get_key(structure, "ParentTree")[1].split()[0])
+        entries = re.findall(r"(\d+)\s*(\[[^\]]*\]|\d+\s+0\s+R)", pdf.xref_get_key(parent_tree, "Nums")[1])
+        keys = [int(key) for key, value in entries]
+        assert keys == sorted(set(keys)), keys
+        parents = dict((int(key), value) for key, value in entries)
+        for page in pdf:
+            key = int(pdf.xref_get_key(page.xref, "StructParents")[1])
+            assert parents[key].startswith("[")
+            for link in page.get_links():
+                annotation = link["xref"]
+                key = int(pdf.xref_get_key(annotation, "StructParent")[1])
+                owner = int(parents[key].split()[0])
+                assert pdf.xref_get_key(owner, "S")[1] == "/Link"
+                kids = pdf.xref_get_key(owner, "K")[1]
+                assert re.search(r"/Obj\s+" + str(annotation) + r"\s+0\s+R", kids)
+                assert re.search(r"/Pg\s+" + str(page.xref) + r"\s+0\s+R", kids)
+        print("Early-page link ParentTree keys, page arrays and annotation OBJR references PASS")
     print("Independent tools:", "PyMuPDF", fitz.VersionBind, "uharfbuzz", hb.__version__, "HarfBuzz", hb.version_string())
 
 if __name__ == "__main__":

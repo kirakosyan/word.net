@@ -883,13 +883,15 @@ internal static partial class FixedLayout
             left += paragraph.Layout.Left;
             width -= paragraph.Layout.Left + paragraph.Layout.Right;
             List<TextRun> runs = context.Typography.Enabled || context.Options.Pdf.Accessibility != PdfAccessibility.None ? new List<TextRun>(paragraph.Runs) : RunCoalescer.Combine(paragraph.Runs);
+            TextRun? listLabel = null;
             if (paragraph.List != null)
             {
                 ListLevel? level = paragraph.List.Definition?[paragraph.List.Level];
                 double indent = level?.LayoutProperties.Contains("ind") == true ? 0 : 18 * paragraph.List.Level; left += indent; width -= indent;
                 List<TextRun> content = runs;
                 string suffix = level == null ? " " : level.Suffix == "tab" ? " \t" : level.Suffix == "space" ? " " : "";
-                runs = new List<TextRun> { (level?.Appearance ?? new TextRun("")).WithText(counter.Label(paragraph.List) + suffix) }; runs.AddRange(content);
+                listLabel = (level?.Appearance ?? new TextRun("")).WithText(counter.Label(paragraph.List) + suffix);
+                runs = new List<TextRun> { listLabel }; runs.AddRange(content);
             }
             double continuationLeft = left, continuationWidth = width;
             left += paragraph.Layout.FirstLine;
@@ -1016,7 +1018,7 @@ internal static partial class FixedLayout
                     MeasuredText shaped = Shape(value, font, size);
                     if (shaped.Native != null)
                     {
-                        line.Items.Add(new PositionedText(value, x, 0, size, font, run.Color, link: activeLink, sourceParagraph: paragraph, sourceRun: run, nativeShape: shaped.Native, label: !paragraph.Runs.Contains(run)));
+                        line.Items.Add(new PositionedText(value, x, 0, size, font, run.Color, link: activeLink, sourceParagraph: paragraph, sourceRun: run, nativeShape: shaped.Native, label: ReferenceEquals(run, listLabel)));
                         x += advance; line.Ascent = Math.Max(line.Ascent, size * 1.5); line.Descent = Math.Max(line.Descent, size * 0.65); return;
                     }
                     int begin = 0;
@@ -1024,12 +1026,12 @@ internal static partial class FixedLayout
                     {
                         if (Math.Abs((shaped.X[i] - shaped.OriginalX[i]) - (shaped.X[begin] - shaped.OriginalX[begin])) < 0.000001
                             && Math.Abs(shaped.Y[i] - shaped.Y[begin]) < 0.000001) continue;
-                        line.Items.Add(new PositionedText(value.Substring(begin, i - begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, sourceParagraph: paragraph, sourceRun: run, label: !paragraph.Runs.Contains(run)));
+                        line.Items.Add(new PositionedText(value.Substring(begin, i - begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, sourceParagraph: paragraph, sourceRun: run, label: ReferenceEquals(run, listLabel)));
                         begin = i;
                     }
                     string kind = run.FieldInstruction == null ? "" : DocumentFields.Kind(run.FieldInstruction);
                     TextRun? pageField = run.Note != null || begin == 0 && value == runText && kind is "PAGE" or "NUMPAGES" or "SECTIONPAGES" ? run : null;
-                    line.Items.Add(new PositionedText(value.Substring(begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, field: pageField, sourceParagraph: paragraph, sourceRun: run, label: !paragraph.Runs.Contains(run))); x += advance;
+                    line.Items.Add(new PositionedText(value.Substring(begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, field: pageField, sourceParagraph: paragraph, sourceRun: run, label: ReferenceEquals(run, listLabel))); x += advance;
                     line.Ascent = Math.Max(line.Ascent, size); line.Descent = Math.Max(line.Descent, size * 0.5);
                 }
             }
@@ -1100,6 +1102,8 @@ internal static partial class FixedLayout
                 if (paragraph.Layout.LineSpacing is double spacing)
                 {
                     double requested = paragraph.Layout.MultipleLineSpacing ? line.Height * spacing : spacing;
+                    if (paragraph.Layout.ExactLineSpacing && paragraph.Runs.All(r => r.Text.Length == 0 && r.Image == null && r.Box == null && r.Note == null))
+                    { line.Ascent = 0; line.Descent = requested; }
                     if (requested < line.Height && (paragraph.Layout.ExactLineSpacing || paragraph.Layout.MultipleLineSpacing))
                         context.Loss("Layout.LineSpacing", "Line spacing smaller than content height is expanded to avoid clipping or overlap.");
                     line.Descent += Math.Max(0, requested - line.Height);

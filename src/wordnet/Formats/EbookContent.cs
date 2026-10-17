@@ -151,7 +151,7 @@ internal static partial class EbookContent
                         for (int c = column; c < column + columnSpan; c++)
                             if (spans.ContainsKey(c)) throw new InvalidDataException("Ebook.TableMerge: Overlapping cell spans.");
                         var target = new TableCell { CellWidth = CssLength(cell, "width", context), Padding = CssPadding(cell, context), ColumnSpan = columnSpan, Merge = rowSpan > 1 ? VerticalMerge.Start : VerticalMerge.None };
-                        if (context.HtmlImport) { target.WidthPercent = HtmlInput.Percent(cell); target.Background = HtmlInput.Css(cell, "background-color")?.TrimStart('#').ToUpperInvariant(); }
+                        if (context.HtmlImport) { target.WidthPercent = HtmlInput.Percent(cell); string? background = HtmlInput.Css(cell, "background-color"); target.Background = background == "transparent" ? null : background?.TrimStart('#').ToUpperInvariant(); }
                         if (cell.QuerySelector("p,div,ul,ol,table,h1,h2,h3,h4,h5,h6,pre") != null)
                         {
                             var content = new DocumentModel();
@@ -247,6 +247,17 @@ internal static partial class EbookContent
         return null;
     }
 
+    private static string? InlineBackground(IElement element)
+    {
+        for (IElement? current = element; current != null; current = current.ParentElement)
+        {
+            string? color = HtmlInput.Css(current, "background-color");
+            if (color != null && color != "transparent") return color.TrimStart('#').ToUpperInvariant();
+            if (current.LocalName is "p" or "div" or "li" or "td" or "th" or "body" or "blockquote" or "pre" or "h1" or "h2" or "h3" or "h4" or "h5" or "h6") break;
+        }
+        return null;
+    }
+
     private static void Inline(INode node, ParagraphBlock paragraph, ConversionContext context, bool bold, bool italic, bool code, string? link, bool preserve,
         Func<IElement, DocumentImage?>? imageReader = null, double? fontSize = null, string? color = null)
     {
@@ -254,7 +265,7 @@ internal static partial class EbookContent
         {
             RunAppearance? appearance = null;
             if (context.HtmlImport && text.ParentElement is IElement parent)
-                appearance = new RunAppearance { FontFamily = HtmlInput.Css(parent, "font-family"), Underline = HtmlInput.Css(parent, "text-decoration") == "underline", Strike = HtmlInput.Css(parent, "text-decoration") == "line-through", Background = HtmlInput.Css(parent, "background-color")?.TrimStart('#').ToUpperInvariant() };
+                appearance = new RunAppearance { FontFamily = HtmlInput.Css(parent, "font-family"), Underline = HtmlInput.Css(parent, "text-decoration") == "underline", Strike = HtmlInput.Css(parent, "text-decoration") == "line-through", Background = InlineBackground(parent) };
             paragraph.Runs.Add(new TextRun(preserve ? text.Data : Collapse(text.Data), bold, italic, code, link, fontSize, color, appearance: appearance)); return;
         }
         if (node is IElement e)

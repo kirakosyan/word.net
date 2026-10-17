@@ -17,6 +17,8 @@ internal sealed class ConversionContext
     internal bool RecordSubstitution(string family) => substitutedFamilies.Add(family);
     private readonly Stopwatch elapsed = Stopwatch.StartNew();
     internal byte[][] FontData { get; set; } = Array.Empty<byte[]>();
+    private WordNet.Layout.RenderFontCache? renderFonts;
+    internal WordNet.Layout.RenderFontCache RenderFonts => renderFonts ??= new WordNet.Layout.RenderFontCache(this);
     private long outlinePoints;
     internal void ReserveOutlinePoints(int count) { outlinePoints = checked(outlinePoints + count); if (outlinePoints > Options.MaximumExpandedBytes / 64) throw new InvalidDataException("Limit.FontOutlines: Expanded outline cache exceeds its point budget."); }
     internal int? PageCount { get; set; }

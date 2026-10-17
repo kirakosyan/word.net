@@ -189,3 +189,11 @@ Skia assets and installed fonts for unembedded PDF text. macOS is deferred; broa
 OS coverage and trimming/AOT remain outstanding. Actual Framework 4.7.2 x64 requires
 the documented legacy JIT application configuration. See [testing](testing.md),
 the [DOC profile](doc-format.md) and the [implementation plan](implementation-plan.md).
+
+Bucket 4 review fixes keep render font/outline/path caches in the conversion context,
+shared across preview pages and keyed by the actual font byte-array identity. Admission
+charges each decoded glyph once; no mutable state crosses conversion calls. Tagged
+annotations are admitted against source semantics before page annotation creation, and
+ParentTree key/value pairs are numerically ordered. PDF reconstruction orders flow blocks
+before assigning gaps; page-relative illustration anchors share an existing paragraph,
+and adjacent glyphs with the same supported appearance share one editable run.

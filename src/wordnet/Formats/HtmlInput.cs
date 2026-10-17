@@ -124,7 +124,7 @@ internal static class HtmlInput
             if (ManagedRaster.Identify(data).Extension is not "png" and not "jpg" and not "jpeg")
             { context.Loss("Html.ImageFormat", "Only PNG/JPEG images are within the HTML input profile."); return null; }
             DocumentImage image = DocumentImage.Read(data, width, height, alt, context);
-            image.Decorative = element.HasAttribute("alt") && alt.Length == 0 || supplied?.Decorative == true;
+            image.Decorative = alt.Length == 0 && (element.HasAttribute("alt") || supplied?.Decorative == true);
             return image;
         }
     }
@@ -196,9 +196,10 @@ internal static class HtmlInput
         if (name == "font-family") return value.Length is > 0 and <= 256 && !HasAny(value, ",;\"'") ? value : null;
         if (name == "color" || name == "background-color")
         {
+            if (name == "background-color" && lower == "transparent") return lower;
             if (lower.Length == 4 && lower[0] == '#' && lower.Skip(1).All(Uri.IsHexDigit)) return "#" + string.Concat(lower.Skip(1).SelectMany(c => new[] { c, c }));
             if (lower.Length == 7 && lower[0] == '#' && lower.Skip(1).All(Uri.IsHexDigit)) return lower;
-            return lower switch { "black" => "#000000", "white" => "#ffffff", "red" => "#ff0000", "blue" => "#0000ff", "green" => "#008000", _ => null };
+            return lower switch { "black" => "#000000", "white" => "#ffffff", "red" => "#ff0000", "blue" => "#0000ff", "green" => "#008000", "yellow" => "#ffff00", _ => null };
         }
         if (name == "font-weight") return lower is "normal" or "bold" or "400" or "700" ? lower : null;
         if (name == "font-style") return lower is "normal" or "italic" ? lower : null;

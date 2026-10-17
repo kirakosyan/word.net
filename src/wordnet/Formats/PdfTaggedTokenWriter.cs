@@ -50,13 +50,13 @@ internal sealed class PdfTaggedTokenWriter : PdfExportTokenWriter, ITokenWriter
         var nodes = new Dictionary<PdfTags.Node, IndirectReference>();
         void Assign(PdfTags.Node node) { nodes.Add(node, New()); foreach (PdfTags.Node child in node.Children.Where(c => c.Used)) Assign(child); }
         Assign(tags.Root);
-        var parentNums = new List<IToken>();
+        var parents = new SortedDictionary<int, IToken>();
         int annotationKey = pages.Count;
         var annotations = new Dictionary<(int Page, int Index), IndirectReference>();
         for (int p = 0; p < pages.Count; p++)
         {
             var page = (DictionaryToken)objects[pages[p]]; var entries = Copy(page); entries[N("StructParents")] = new NumericToken(p); entries[N("Tabs")] = N("S"); objects[pages[p]] = new DictionaryToken(entries);
-            parentNums.Add(new NumericToken(p)); parentNums.Add(new ArrayToken(tags.Pages[p].Select(n => (IToken)R(nodes[n])).ToArray()));
+            parents.Add(p, new ArrayToken(tags.Pages[p].Select(n => (IToken)R(nodes[n])).ToArray()));
             var annots = page.TryGet(N("Annots"), out ArrayToken array) ? array : new ArrayToken(Array.Empty<IToken>());
             if (annots.Data.Count != tags.Annotations[p].Count) throw new InvalidDataException("Pdf.Tags: Link annotation mapping does not match exported content.");
             var annotationRefs = new List<IToken>();
@@ -67,7 +67,7 @@ internal sealed class PdfTaggedTokenWriter : PdfExportTokenWriter, ITokenWriter
                 else { reference = New(); objects.Add(reference, annots.Data[i]); }
                 annotationRefs.Add(R(reference)); annotations.Add((p, i), reference);
                 var annotation = Copy((DictionaryToken)objects[reference]); annotation[N("StructParent")] = new NumericToken(annotationKey); annotation[N("F")] = new NumericToken(4); annotation[N("Contents")] = PdfNativeText.Unicode(tags.Annotations[p][i].LinkDescription ?? ""); objects[reference] = new DictionaryToken(annotation);
-                parentNums.Add(new NumericToken(annotationKey++)); parentNums.Add(R(nodes[tags.Annotations[p][i]]));
+                parents.Add(annotationKey++, R(nodes[tags.Annotations[p][i]]));
             }
             if (annotationRefs.Count > 0) { entries[N("Annots")] = new ArrayToken(annotationRefs); objects[pages[p]] = new DictionaryToken(entries); }
         }
@@ -84,7 +84,7 @@ internal sealed class PdfTaggedTokenWriter : PdfExportTokenWriter, ITokenWriter
             }
             objects.Add(pair.Value, new DictionaryToken(entry));
         }
-        objects.Add(parentTree, D(("Nums", new ArrayToken(parentNums))));
+        objects.Add(parentTree, D(("Nums", new ArrayToken(parents.SelectMany(pair => new IToken[] { new NumericToken(pair.Key), pair.Value }).ToArray()))));
         objects.Add(structure, D(("Type", N("StructTreeRoot")), ("K", R(nodes[tags.Root])), ("ParentTree", R(parentTree)), ("ParentTreeNextKey", new NumericToken(annotationKey))));
         objects.Add(metadata, new StreamToken(D(("Type", N("Metadata")), ("Subtype", N("XML")), ("Length", new NumericToken(xmp.Length))), xmp));
         var catalogEntries = Copy(catalog); catalogEntries[N("StructTreeRoot")] = R(structure); catalogEntries[N("MarkInfo")] = D(("Marked", BooleanToken.True), ("Suspects", BooleanToken.False)); catalogEntries[N("ViewerPreferences")] = D(("DisplayDocTitle", BooleanToken.True)); catalogEntries[N("Metadata")] = R(metadata);

@@ -31,9 +31,9 @@ checklist](implementation-plan.md) before interpreting an old count as current.
 
 The unreleased implementation covers #20–#23 and #25–#27; see the
 [bounded profiles/API](interoperability.md) and [decisions](interoperability-design.md).
-The required suite expands from 696 to **795** cases: 15 HTML, 21 RTF, 12 typography,
-10 accessibility, 16 previews, 9 geometric PDF reconstruction and 16 OCR metadata/control
-cases are described by their actual test classes (the aggregate count is authoritative).
+The required suite expands from 696 to **828** cases (795 initial plus 33 review regressions): 15 HTML, 21 RTF, 12 typography,
+10 accessibility, 16 previews, 14 geometric PDF reconstruction and 16 OCR metadata/control
+cases plus 28 cross-feature review cases are described by their actual test classes (the aggregate count is authoritative).
 Historical PR #35 counts above remain historical, not a claim about these additions.
 
 Independent checks on Linux x64 use LibreOfficeDev 26.8 alpha build
@@ -52,11 +52,21 @@ a dedicated Arabic-dot regression and cyclic-composite rejection protect that pa
 Independent SVG/PNG ink-mask IoU is **0.9333** for the Latin preview control. Direct
 pixels verify cropped/rotated/flipped rasters and clipping bounds, alongside page labels
 and original PAGE/NUMPAGES. LibreOffice reads emitted RTF into real editable OOXML,
-including exact Unicode/emphasis, table cells and a **60 × 30 pt** PNG frame.
+including exact Unicode/emphasis, one paragraph per ordinary table cell, preserved
+multi-paragraph/explicit-empty cells and a **60 × 30 pt** PNG frame.
+
+The 33 review regressions cover generated/artifact link degradation, sorted ParentTree
+page/annotation mappings, Word-style RTF repeated rows and picture containers, special
+charset losses, Strict cross-page-link PNG previews, 80-page outline-budget reuse,
+continued unique-glyph admission, alt/decorative precedence, nested highlights and
+2,000-run list semantics. Independent ReportLab additions check first-line/hanging
+indents, compact style runs, 32-line prose and measured baselines after tables/inline
+images. The qualification benchmark now includes and validates all 36 directions;
+the previous 30-direction guard caused both x64 CI failures despite passing source suites.
 
 Pinned offline veraPDF **1.30.2**, image digest
 `sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb`,
-accepts both UA-1 fixtures (invoice and multi-page lists/images/table), rejects the
+accepts three UA-1 fixtures (invoice, multi-page lists/images/table and an early-page link), rejects the
 untagged negative control, and retains **38/38 PDF/A-2b** corpus results. Separate
 MuPDF inspection verifies structure roles, parent trees, unique MCIDs, actual page
 references, annotations/OBJRs, Unicode text, embedded TrueType programs and source
@@ -87,6 +97,10 @@ python3 eng/validate-pdf-accessibility.py artifacts/bucket4/pdfa --flavour 2b --
 
 Complete suite results and exact final candidate revision are recorded with the PR;
 all source targets compile, and local suites execute on .NET 8.0.32 and 10.0.12.
+The review-fix build passes **828/828 on each runtime**, with zero failed/skipped cases,
+a warning-free solution build, locked restore and formatting verification. The repaired
+36-direction concurrent qualification benchmark passes 32 iterations (1,152 measured,
+content-validated exchanges). These local results precede the refreshed PR-head CI.
 
 The optional Python qualification tools are external development dependencies; the
 validator uses Docker's local Unix socket, exact copied bytes and `--network none`,

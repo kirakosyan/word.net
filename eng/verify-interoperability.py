@@ -35,6 +35,7 @@ def main():
         assert "Unicode Ω Ж 😀 {braces} \\ path" in text
         assert len(root.findall(".//w:tbl", ns)) == 1
         assert len(root.findall(".//w:tc", ns)) == 4
+        assert [len(cell.findall("w:p", ns)) for cell in root.findall(".//w:tc", ns)] == [1, 1, 1, 1]
         extent, = root.findall(".//wp:extent", ns)
         assert extent.attrib == {"cx": "762000", "cy": "381000"}
         run, = [r for r in root.findall(".//w:r", ns)
@@ -42,6 +43,13 @@ def main():
         assert run.find("w:rPr/w:b", ns) is not None
         assert run.find("w:rPr/w:i", ns) is not None
         assert run.find("w:rPr/w:sz", ns).get("{" + ns["w"] + "}val") == "36"
+        subprocess.run([soffice, "-env:UserInstallation=" + (directory / "profile").as_uri(),
+                        "--headless", "--convert-to", "docx:Office Open XML Text", "--outdir", str(directory),
+                        str(artifacts / "writer-multiparagraph.rtf")], check=True)
+        with zipfile.ZipFile(directory / "writer-multiparagraph.docx") as archive:
+            cells = ET.fromstring(archive.read("word/document.xml")).findall(".//w:tc", ns)
+        assert [len(cell.findall("w:p", ns)) for cell in cells] == [2, 2]
+        assert [["".join(t.text or "" for t in p.findall(".//w:t", ns)) for p in cell.findall("w:p", ns)] for cell in cells] == [["One", "Two"], ["Last", ""]]
     with fitz.open(artifacts / "selected.pdf") as pdf:
         assert [page.get_label() for page in pdf] == ["iv", "v"]
     with fitz.open(artifacts / "source-2.svg") as svg:

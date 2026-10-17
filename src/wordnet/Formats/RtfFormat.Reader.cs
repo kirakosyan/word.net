@@ -27,7 +27,7 @@ internal static partial class RtfFormat
     }
     private sealed class State
     {
-        internal bool Skip, Star, Bold, Italic, Underline, Strike, InTable;
+        internal bool Skip, Star, Bold, Italic, Underline, Strike, InTable, PrimaryContainer;
         internal string Destination = "body";
         internal int Uc = 1, Font, Color, Background, Heading, Red, Green, Blue, List, Level, OverrideId, DefinitionLevel;
         internal bool ColorSeen;
@@ -63,7 +63,8 @@ internal static partial class RtfFormat
         private readonly List<double> edges = new List<double>();
         private TableBlock? table;
         private int offset, characters, fallback, codePage = 1252;
-        private bool rootClosed, header, rowHeader, rowKeep;
+        private bool rootClosed, header, rowHeader, rowKeep, primaryPicture;
+        private int repeatedEdge = -1;
 
         internal Reader(byte[] input, ConversionContext context) { this.input = input; this.context = context; }
         public void Dispose() { foreach (Picture picture in pictures) picture.Dispose(); }
@@ -124,6 +125,7 @@ internal static partial class RtfFormat
             }
             if (value < 128) { Append(((char)value).ToString()); return; }
             int cp = state.Destination != "font" && fonts.TryGetValue(state.Font, out FontInfo? face) ? face.CodePage ?? codePage : codePage;
+            if (cp == -1) { Append(((char)value).ToString()); return; }
             if (!encodings.TryGetValue(cp, out Encoding? encoding))
             {
                 encoding = CodePagesEncodingProvider.Instance.GetEncoding(cp, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
@@ -141,7 +143,7 @@ internal static partial class RtfFormat
             if (state.Destination == "font") { if (state.FontEntry != null && value != ";") state.FontEntry.Name.Append(value); return; }
             if (state.Destination == "title") { title.Append(value); return; }
             if (state.Destination == "author") { author.Append(value); return; }
-            if (state.Destination == "body") text.Append(value);
+            if (state.Destination == "body") { text.Append(value); primaryPicture = false; }
         }
 
         private void Control()
@@ -199,7 +201,7 @@ internal static partial class RtfFormat
             if (state.Star)
             {
                 state.Star = false;
-                if (word is not "listtable" and not "listoverridetable") { state.Skip = true; context.Loss("Rtf.Destination", "An unsupported ignorable destination is omitted without execution."); }
+                if (word is not "listtable" and not "listoverridetable" and not "shppict") { state.Skip = true; context.Loss("Rtf.Destination", "An unsupported ignorable destination is omitted without execution."); }
             }
             if (state.Skip) return;
             int n = argument ?? 1;
@@ -276,15 +278,32 @@ internal static partial class RtfFormat
                 case "ilvl": if (n < 0 || n > 8) throw Invalid("List depth exceeds nine levels."); state.Level = n; break;
                 case "leveltext": case "levelnumbers": case "listtext": case "pntext": state.Skip = true; break;
                 case "trowd":
-                    if (row != null) throw Invalid("Nested table rows are outside the RTF profile."); row = new List<TableCell>(); edges.Clear(); state.InTable = true; rowHeader = rowKeep = false; break;
+                    if (row != null)
+                    {
+                        if (repeatedEdge >= 0 || row.Count == 0 || row.Count != edges.Count || cellParagraphs.Count > 0 || paragraph.Runs.Count > 0)
+                            throw Invalid("Nested or incomplete table rows are outside the RTF profile.");
+                        repeatedEdge = 0;
+                    }
+                    else { row = new List<TableCell>(); edges.Clear(); rowHeader = rowKeep = false; }
+                    state.InTable = true; break;
                 case "cellx":
-                    double edge = Twips(n); if (edge <= (edges.Count > 0 ? edges[edges.Count - 1] : 0) || edges.Count >= 1024) throw Invalid("Invalid table cell edge."); edges.Add(edge); break;
+                    double edge = Twips(n);
+                    if (repeatedEdge >= 0)
+                    { if (repeatedEdge >= edges.Count || Math.Abs(edges[repeatedEdge++] - edge) > .001) throw Invalid("Repeated row definition disagrees with its cell edges."); }
+                    else { if (row == null || edge <= (edges.Count > 0 ? edges[edges.Count - 1] : 0) || edges.Count >= 1024) throw Invalid("Invalid table cell edge."); edges.Add(edge); }
+                    break;
                 case "trhdr": rowHeader = n != 0; break;
                 case "trkeep": rowKeep = n != 0; break;
                 case "cpg": if (state.FontEntry != null) state.FontEntry.CodePage = n; break;
                 case "intbl": state.InTable = n != 0; break;
                 case "cell": FinishCell(); break;
                 case "row": FinishRow(); break;
+                case "irow": case "irowband": case "lastrow": break;
+                case "shppict": primaryPicture = false; state.PrimaryContainer = true; break;
+                case "nonshppict":
+                    state.Skip = true;
+                    if (!primaryPicture) context.Loss("Rtf.Picture", "An unsupported fallback picture without a supported primary picture is omitted.");
+                    primaryPicture = false; break;
                 case "pict":
                     if (state.Picture != null) throw Invalid("Nested picture destination.");
                     if (pictures.Count >= context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.RtfPictures: Too many picture destinations.");
@@ -349,21 +368,21 @@ internal static partial class RtfFormat
         }
         private void FinishCell()
         {
-            if (row == null) throw Invalid("Cell outside a table row.");
-            FinishParagraph(cellParagraphs.Count == 0 || paragraph.Runs.Count > 0);
+            if (row == null || repeatedEdge >= 0) throw Invalid("Cell outside table content or inside a repeated row definition.");
+            FinishParagraph(true);
             var cell = new TableCell(); cell.Paragraphs.AddRange(cellParagraphs); cellParagraphs.Clear(); row.Add(cell);
             if (row.Count > 1024) throw new InvalidDataException("Limit.RtfCells: Too many row cells.");
         }
         private void FinishRow()
         {
-            if (row == null || row.Count == 0 || row.Count != edges.Count || cellParagraphs.Count > 0 || paragraph.Runs.Count > 0) throw Invalid("Unclosed cells or inconsistent table grid.");
+            if (row == null || row.Count == 0 || row.Count != edges.Count || repeatedEdge >= 0 && repeatedEdge != edges.Count || cellParagraphs.Count > 0 || paragraph.Runs.Count > 0) throw Invalid("Unclosed cells or inconsistent table grid.");
             if (table == null) { table = new TableBlock(); model.Blocks.Add(table); }
             double previous = 0;
             for (int i = 0; i < row.Count; i++) { row[i].CellWidth = edges[i] - previous; previous = edges[i]; }
             if (table.Rows.Count == 0) { table.ColumnWidths.AddRange(row.Select(c => c.CellWidth!.Value)); table.Width = previous; }
             if (rowHeader && table.HeaderRowCount == table.Rows.Count) table.HeaderRowCount++;
             if (rowKeep) table.NonSplittingRows.Add(table.Rows.Count);
-            table.Rows.Add(row); row = null; state.InTable = false;
+            table.Rows.Add(row); row = null; repeatedEdge = -1; state.InTable = false;
             if (table.Rows.Count > 100000) throw new InvalidDataException("Limit.RtfRows: Too many table rows.");
         }
         private void FinishPicture(Picture picture)
@@ -375,7 +394,7 @@ internal static partial class RtfFormat
                 byte[] bytes = picture.Binary.Length > 0 ? picture.Binary.ToArray() : new byte[picture.Hex.Length / 2];
                 if (picture.Binary.Length == 0) for (int i = 0; i < bytes.Length; i++) bytes[i] = (byte)(Hex((byte)picture.Hex[i * 2]) * 16 + Hex((byte)picture.Hex[i * 2 + 1]));
                 DocumentImage image = DocumentImage.Read(bytes, picture.Width.HasValue ? Twips(picture.Width.Value) : null, picture.Height.HasValue ? Twips(picture.Height.Value) : null, "", context);
-                paragraph.Runs.Add(new TextRun("", image: image));
+                paragraph.Runs.Add(new TextRun("", image: image)); primaryPicture = state.PrimaryContainer;
             }
             finally { picture.Binary.Dispose(); }
         }

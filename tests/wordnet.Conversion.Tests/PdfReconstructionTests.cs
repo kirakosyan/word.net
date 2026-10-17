@@ -87,6 +87,54 @@ public sealed class PdfReconstructionTests
         using var scan = new MemoryStream(ConversionAcceptanceTests.Fixture("scanned.pdf")); options.PdfImport.MaximumElements = 100000;
         Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(scan, output, DocumentFormat.Pdf, DocumentFormat.Docx, options, TestContext.Current.CancellationToken));
     }
+    [Theory]
+    [InlineData("grid")]
+    [InlineData("grid-leading")]
+    public void MergedBlockFlowRetainsTableLeadingGapAndFollowingProseBaseline(string name)
+    {
+        byte[] word = Import(name, out _); Schema(word);
+        byte[] output = new WordConverter().ConvertToPdf(word, new ConversionOptions(FidelityMode.BestEffort)); using PdfDocument pdf = PdfDocument.Open(output);
+        Assert.Equal(1, pdf.NumberOfPages);
+        var after = pdf.GetPage(1).GetWords().First(w => w.Text == "After"); Assert.Equal(460, after.Letters[0].StartBaseLine.Y, 1);
+        var item = pdf.GetPage(1).GetWords().First(w => w.Text == "Item"); Assert.Equal(578, item.Letters[0].StartBaseLine.Y, 1);
+    }
+
+    [Fact]
+    public void InlineFallbackImageConsumesFlowOnceAndAnchoredImageAddsNoParagraph()
+    {
+        byte[] word = Import("inline-image-flow", out ConversionResult result); Schema(word);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Pdf.ReconstructionImageTransform");
+        using PdfDocument pdf = PdfDocument.Open(new WordConverter().ConvertToPdf(word, new ConversionOptions(FidelityMode.BestEffort)));
+        Assert.Equal(1, pdf.NumberOfPages); Assert.Equal(460, pdf.GetPage(1).GetWords().First(w => w.Text == "After").Letters[0].StartBaseLine.Y, 1);
+        Assert.Equal(2, Part(Import("image-transform", out _)).Element(W + "body")!.Elements().Count()); // paragraph and final section
+    }
+
+    [Fact]
+    public void FirstLineAndHangingIndentsRemainSingleParagraphsWithSourceGeometry()
+    {
+        byte[] word = Import("indented-prose", out _); Schema(word); XElement[] paragraphs = Part(word).Element(W + "body")!.Elements(W + "p").ToArray(); Assert.Equal(2, paragraphs.Length);
+        Assert.Equal("720", (string?)paragraphs[0].Descendants(W + "ind").Single().Attribute(W + "firstLine"));
+        Assert.Equal("480", (string?)paragraphs[1].Descendants(W + "ind").Single().Attribute(W + "hanging"));
+        using PdfDocument pdf = PdfDocument.Open(new WordConverter().ConvertToPdf(word, new ConversionOptions(FidelityMode.BestEffort)));
+        var words = pdf.GetPage(1).GetWords().ToArray(); Assert.Equal(76, words.First(w => w.Text == "Indented").Letters[0].StartBaseLine.X, 1);
+        Assert.Equal(40, words.First(w => w.Text == "Continuation").Letters[0].StartBaseLine.X, 1);
+        Assert.Equal(64, words.First(w => w.Text == "Hanging" && w.Letters[0].StartBaseLine.Y < 530).Letters[0].StartBaseLine.X, 1);
+    }
+
+    [Fact]
+    public void AdjacentGlyphsRemainCompactEditableRunsWithoutLosingStyleBoundaries()
+    {
+        byte[] word = Import("styled-prose", out _); Schema(word); XElement root = Part(word);
+        Assert.Equal("Plain bold italic plain.Second line stays editable.", string.Concat(root.Descendants(W + "t").Select(t => t.Value)));
+        Assert.InRange(root.Descendants(W + "r").Count(), 4, 5); Assert.Single(root.Descendants(W + "br"));
+        Assert.Contains(root.Descendants(W + "r"), r => r.Value == "bold " && r.Element(W + "rPr")?.Element(W + "b") != null);
+        Assert.Contains(root.Descendants(W + "r"), r => r.Value == "italic " && r.Element(W + "rPr")?.Element(W + "i") != null);
+        byte[] longWord = Import("many-glyphs", out _); Schema(longWord); XElement longRoot = Part(longWord);
+        Assert.Single(longRoot.Descendants(W + "p")); Assert.Single(longRoot.Descendants(W + "r")); Assert.Equal(31, longRoot.Descendants(W + "br").Count());
+        using PdfDocument pdf = PdfDocument.Open(new WordConverter().ConvertToPdf(longWord, new ConversionOptions(FidelityMode.BestEffort)));
+        Assert.Equal(1, pdf.NumberOfPages); Assert.Equal(660, pdf.GetPage(1).Letters[0].StartBaseLine.Y, 1); Assert.Equal(102, pdf.GetPage(1).Letters[pdf.GetPage(1).Letters.Count - 1].StartBaseLine.Y, 1);
+    }
+
     private static byte[] Import(string name, out ConversionResult result, int columns = 1, bool enabled = true)
     {
         using var input = File.OpenRead(Path.Combine(TestDocuments.FixtureDirectory, "Interoperability", name + ".pdf")); using var output = new MemoryStream();

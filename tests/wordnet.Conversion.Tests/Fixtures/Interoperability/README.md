@@ -22,7 +22,9 @@ soffice -env:UserInstallation=file:///tmp/wordnet-rtf-producer --headless \
 | editor.html | `590d97c4e39501ad030feb03c838ae8fb83187b8d3f723e0ecd19ee3d608dbd5` |
 | editor.rtf | `716d1b33332a62104175de7c5e3ee09d5964a7e3bb0456bb90b221925ceed745` |
 
-Specification-authored edge cases live directly in RtfTests/HtmlInputTests. Open XML
+Specification-authored edge cases live directly in RtfTests/HtmlInputTests and
+InteroperabilityReviewTests (including Word-style repeated row definitions and
+primary-raster/redundant-metafile picture containers). Open XML
 SDK independently schema-checks imported Word. Emitted RTF is separately read by
 LibreOffice and its resulting editable structure inspected, avoiding reliance on
 matching WordNet reader/writer bugs. See eng/verify-interoperability.py.
@@ -42,4 +44,7 @@ The signed negative dot-coordinate and half-unit regression is specification-bas
 interleaved-paint two-column text, ruled/borderless tables, forms, rotation and a
 transformed MIT color-grid illustration. `pdf-ground-truth.json` records their exact
 SHA-256, producer and numeric baseline/width/image-frame ground truth. No customer
-content or WordNet writer generated those inputs.
+content or WordNet writer generated those inputs. Review additions independently author
+first-line/hanging indents, mixed bold/italic prose, 32 lines of uniform prose, a leading
+grid and an inline-fallback illustration between paragraphs. Their numeric ground truth
+and hashes are recorded in the same manifest.

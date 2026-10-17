@@ -32,7 +32,10 @@ headings, inline bold/italic/underline/strike, fonts/sizes/colors/backgrounds, l
 nested lists and merged/nested tables are mapped through the shared model. Ordinary
 whitespace collapses across inline boundaries; `pre`/`pre-wrap` retain it.
 Simple compound tag/class/id selectors use specificity, source order and important
-precedence; inline declarations otherwise win. Font properties inherit.
+precedence; inline declarations otherwise win. Font properties inherit. Inline backgrounds
+paint nested text through transparent children until the nearest block; a nearer opaque
+background overrides them. Explicit nonempty image alt text overrides a decorative caller
+resource; explicit empty alt and a decorative resource with no element alt remain artifacts.
 
 Lengths use 72 pt/in, 96 px/in, cm/mm and font-relative em. Font-size percentages are
 relative to inherited size; table/cell percentages use their containing width.
@@ -59,11 +62,18 @@ Unicode escapes and fallback counts, declared single-byte ANSI code pages, run a
 paragraph appearance, first-level list definitions, non-nested basic tables and
 PNG/JPEG hex/binary pictures with physical goals. Group state/numeric arguments,
 Unicode expansion, lists/fonts/colors, binary/picture bytes and output are bounded.
+Word-style repeated row definitions are accepted only after complete cells with identical
+edges; nested/incomplete/mismatched definitions fail. Word `shppict` PNG/JPEG containers
+retain the primary raster once and skip the adjacent redundant `nonshppict` fallback.
+A fallback without a supported primary reports a loss. Cell terminators end the final
+paragraph; explicit empty final paragraphs are retained.
 
 Unknown controls/destinations, OLE, linked objects, field execution, unsupported
 picture scale/table offsets, nested lists/tables and cell merges are omitted or
 flattened with `Rtf.*` diagnostics. DBCS byte runs and Symbol character mapping are
-outside this profile; Unicode escapes preserve their text instead. Cached field
+outside this profile. Special charset bytes retain their Latin-1 code values with an
+`Rtf.FontCharset` loss in BestEffort/Lenient; Strict rejects atomically. Unicode escapes
+retain their specified values without a symbol-font mapping. Cached field
 results can remain visible, but instructions never execute. This is an interchange
 subset, not complete historical RTF fidelity. Use `CanConvert` for format pairs.
 Independent LibreOffice-produced input and a separate LibreOffice reader qualify
@@ -130,7 +140,11 @@ this initial profile assumes the caller-specified document language applies thro
 unsupported notes/text boxes, missing link relationships/destinations, vertically
 merged tables and combination with PDF/A or native typography. Ordinary PDF/PDF-A
 remain the defaults. Tagged mode reports missing semantics; tags alone do not establish
-UA compliance. Only the bounded authored profile has independent UA-1 qualification.
+UA compliance. Generated REF/PAGEREF/TOC links, repeated-header links and decorative-image
+links without a source Link relationship omit the annotation with `Pdf.LinkSemantics`
+in Tagged BestEffort/Lenient; Strict and UA-1 reject before copying output. Their visual
+content remains. Parent-tree keys are sorted across page and annotation entries.
+Only the bounded authored profile has independent UA-1 qualification.
 
 ```csharp
 WordDocument document = WordDocument.Create();
@@ -163,7 +177,11 @@ produce a loss; the UA profile requires valid included link destinations.
 SVG 1.1 contains self-contained outlined, non-selectable text, escaped XML and data
 images. PNG uses an internally staged selected-page PDF and optional native rasterizer.
 Bounds apply to all preview dimensions at the selected DPI, not only PNG. Crop/rotation,
-image frames, aspect ratio, actual ink and aggregate bytes are checked.
+image frames, aspect ratio, actual ink and aggregate bytes are checked. Raster intermediates
+omit annotations, so links to other source pages do not create preview destination losses.
+Font parsing, decoded outlines and SVG paths are cached across pages within each render
+call; unique glyphs consume the outline budget once. New glyphs and aggregate output
+retain their admission bounds; concurrent calls do not share mutable caches.
 
 ```csharp
 var selection = new PreviewOptions { Format = PreviewFormat.Png, Dpi = 144 };
@@ -180,7 +198,11 @@ foreach (PagePreview page in preview.Pages)
 LTR prose, baseline/indent paragraph grouping, complete axis-aligned ruled grids and
 supported PNG/JPEG illustrations. Set `PdfImport.Columns` explicitly; this does not
 claim arbitrary column discovery. Editable cells preserve measured column widths;
-text/images are assigned once. Orthogonal image frames retain supported position,
+text/images are assigned once. First-line and hanging indents remain in one paragraph,
+and adjacent same-size/bold/italic glyphs become compact editable runs with line breaks.
+Spacing is assigned after ordering all flow blocks, including table leading gaps and
+inline-image fallback heights. Page-relative anchors share an existing flow paragraph.
+Orthogonal image frames retain supported position,
 rotation/flip and dimensions. Element/grid-search/pixel/byte work is bounded.
 
 Forms, rotated/bidi text, borderless tables, shear/clipping and ambiguous grids use

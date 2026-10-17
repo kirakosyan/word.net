@@ -133,11 +133,11 @@ internal sealed class PdfTags
         }
         return node;
     }
-    internal void Link(Node? node)
+    internal bool Link(Node? node)
     {
         if (node?.Role == "Figure" && node.Parent?.Role == "Link") node = node.Parent;
-        if (node?.Role != "Link") { Missing("Pdf.LinkSemantics", "A generated hyperlink lacks a source link relationship."); return; }
-        int page = Pages.Count - 1; node.Links.Add((page, Annotations[page].Count)); Annotations[page].Add(node);
+        if (node?.Role != "Link") { Missing("Pdf.LinkSemantics", "A generated or artifact hyperlink lacks a source link relationship; its annotation is omitted."); return false; }
+        int page = Pages.Count - 1; node.Links.Add((page, Annotations[page].Count)); Annotations[page].Add(node); return true;
     }
     internal byte[] Xmp(string title)
     {

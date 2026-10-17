@@ -7,7 +7,6 @@ using System.Text;
 using System.Xml.Linq;
 using UglyToad.PdfPig.Core;
 using UglyToad.PdfPig.Fonts.TrueType;
-using UglyToad.PdfPig.Fonts.TrueType.Parser;
 using WordNet.Internal;
 using WordNet.Layout;
 using WordNet.Model;
@@ -34,8 +33,7 @@ internal static class SvgPreview
                     shape.Style is "dotted" or "dashed" ? new XAttribute("stroke-dasharray", N(shape.Stroke * (shape.Style == "dashed" ? 3 : 1)) + " " + N(shape.Stroke * (shape.Style == "dashed" ? 2 : 1))) : null));
             }
         }
-        var fonts = new Dictionary<int, TrueTypeFont>(); var outlines = new Dictionary<int, TrueTypeOutlines>();
-        var paths = new Dictionary<(int Font, int Glyph), string>(); long length = 0; int imageId = 0;
+        long length = 0; int imageId = 0;
         foreach (PositionedText item in page.Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1))
         {
             context.CheckCancellation();
@@ -50,7 +48,7 @@ internal static class SvgPreview
                 root.Add(group); length += (long)image.Bytes.Length * 4 / 3; Check(); continue;
             }
             if (item.Text.Length == 0) continue;
-            if (!fonts.TryGetValue(item.Font, out TrueTypeFont? font)) fonts.Add(item.Font, font = Parse(context.FontData[item.Font]));
+            RenderFontCache.Face face = context.RenderFonts.Get(item.Font); TrueTypeFont font = face.Font;
             var text = new XElement(svg + "g", new XAttribute("fill", "#" + (item.Color ?? "000000")), new XElement(svg + "title", item.Text));
             double x = item.X, scale = item.Size / font.GetUnitsPerEm();
             int glyphCount = item.NativeShape?.Glyphs.Length ?? item.Text.Length;
@@ -60,11 +58,10 @@ internal static class SvgPreview
                 int codepoint = shaped == null ? char.ConvertToUtf32(item.Text, c) : 32; if (codepoint > 0xffff) c++;
                 int glyph = shaped?.Glyph ?? 0;
                 if (shaped == null && font.TableRegister.CMapTable?.TryGetGlyphIndex(codepoint, out glyph) != true) throw new NotSupportedException("Preview.Glyph: A preview glyph is unavailable.");
-                if (!paths.TryGetValue((item.Font, glyph), out string? path))
+                if (!face.SvgPaths.TryGetValue(glyph, out string? path))
                 {
                     var data = new StringBuilder();
-                    if (!outlines.TryGetValue(item.Font, out TrueTypeOutlines? decoder)) outlines.Add(item.Font, decoder = new TrueTypeOutlines(context.FontData[item.Font], context));
-                    foreach (PdfSubpath outline in decoder.Paths(glyph))
+                    foreach (PdfSubpath outline in face.Paths(glyph))
                         foreach (var command in outline.Commands)
                         {
                             context.CheckCancellation();
@@ -76,7 +73,7 @@ internal static class SvgPreview
                             else throw new InvalidDataException("Preview.Font: Unsupported outline command.");
                             if (data.Length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.PreviewPaths: Glyph outline exceeds output bounds.");
                         }
-                    path = data.ToString(); paths.Add((item.Font, glyph), path);
+                    path = data.ToString(); face.SvgPaths.Add(glyph, path);
                 }
                 text.Add(new XElement(svg + "path", new XAttribute("d", path), new XAttribute("transform", "translate(" + N(x + (shaped?.X ?? 0) * scale) + " " + N(item.Y - (shaped?.Y ?? 0) * scale) + ") scale(" + N(scale) + " " + N(-scale) + ")")));
                 length += path.Length + 200; Check();
@@ -87,7 +84,6 @@ internal static class SvgPreview
         }
         byte[] bytes = TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting)); if (bytes.Length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: SVG exceeds output bounds."); return bytes;
         void Check() { if (length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: SVG resources exceed output bounds."); }
-        static TrueTypeFont Parse(byte[] bytes) { TrueTypeOutlineGuard.Validate(bytes); return TrueTypeFontParser.Parse(new TrueTypeDataBytes(bytes)); }
         static string Point(PdfPoint p) => N(p.X) + " " + N(p.Y);
         static string N(double number) => number.ToString("0.######", CultureInfo.InvariantCulture);
     }

@@ -125,17 +125,18 @@ internal static class PdfFormat
                 }
                 void AddLink(string link, PdfRectangle area, PdfTags.Node? semantic)
                 {
+                    if (context.PreviewIntermediate) return;
                     if (link.Length > 0 && link[0] == '#')
                     {
                         if (model.BookmarkPages.TryGetValue(link.Substring(1), out var destination) && pageMap.TryGetValue(destination.Page, out int mapped))
-                        { target.AddLink(new ExplicitDestination(mapped, ExplicitDestinationType.XyzCoordinates, new ExplicitDestinationCoordinates(destination.X, destination.Y)), area); tags?.Link(semantic); }
+                        { if (tags?.Link(semantic) != false) target.AddLink(new ExplicitDestination(mapped, ExplicitDestinationType.XyzCoordinates, new ExplicitDestinationCoordinates(destination.X, destination.Y)), area); }
                         else
                         {
                             if (options.Accessibility == PdfAccessibility.PdfUa1 && tags != null) throw new NotSupportedException("Pdf.OmittedDestination: Accessible links must target an included destination.");
                             context.Loss("Pdf.OmittedDestination", "A hyperlink to a missing or excluded physical page retains visible content without a destination.");
                         }
                     }
-                    else { target.AddLink(link, area); tags?.Link(semantic); }
+                    else if (tags?.Link(semantic) != false) target.AddLink(link, area);
                 }
             }
             byte[] bytes = builder.Build(); complete = true; PdfIdentity.Normalize(bytes); output.Write(bytes, 0, bytes.Length);
