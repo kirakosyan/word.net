@@ -8,7 +8,9 @@ All targets retain matching APIs:
 
 The [implementation plan](implementation-plan.md) separates merged roadmap work,
 pending PRs and published-package capabilities. Business-document profiles landed in
-PR #34; the editing/template implementation below is delivered through PR #35.
+PR #34; the editing/template implementation below merged in PR #35 as `0b2af843`.
+Both are unreleased source increments after package 1.1.0. The next bucket's HTML/RTF,
+typography, accessibility, preview and import work is not yet implemented.
 
 ## Pipeline
 
