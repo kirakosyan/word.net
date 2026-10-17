@@ -13,7 +13,7 @@ reconciliation; package publication and runtime qualification have separate gate
 | Bucket 1: measurement and adoption diagnostics | PR [#33](https://github.com/kirakosyan/word.net/pull/33) merged as `2a18874`; #6 and #24 closed. Twelve authored business documents, optional caller-provisioned Word/Aspose comparison, bounded preflight and location-aware diagnostics. |
 | Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's composition-collision acceptance landed in #35; all eight issues are closed. |
 | Bucket 3: document editing and templates | PR [#35](https://github.com/kirakosyan/word.net/pull/35) merged as `0b2af843`; #11–#15 and #17 are closed with verified acceptance evidence. The merged source adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
-| Bucket 4: interoperability, typography, accessibility and import | Next after #35's reconciliation: #20, #21, #22, #23, #25, #26 and #27. Read the individual issue contracts and record required architecture/provider decisions before implementation. |
+| Bucket 4: interoperability, typography, accessibility and import | Implementation candidate for #20, #21, #22, #23, #25, #26 and #27 on `codex/interoperability-typography-import`; architecture decisions preceded source. See [profiles/usage](interoperability.md). Review fixes add 33 regressions (828 total), passing locally on Linux x64 .NET 8/10 with independent readers/validators. Await exact-head CI and merge reconciliation before closure. |
 | Bucket 5: later design decisions | #28–#31 remain design-only. ODT needs a bounded future profile; revisions/comments/comparison, encryption and chart/equation implementation remain deferred. |
 
 Bucket 2's [supported profile](document-fidelity.md) and
@@ -37,8 +37,7 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Preserved contracts
 
 - DOC and DOCX, including DOC ↔ DOCX; each Word format ↔ PDF, MD, TXT, EPUB,
-  MOBI and AZW3; each Word format → XPS and HTML. XPS and HTML input are not
-  implemented by these merged buckets.
+  MOBI and AZW3; each Word format → XPS and HTML. XPS remains output-only. HTML/RTF input and RTF output are bucket 4 candidate additions.
 - English printed OCR, with caller-provisioned native dependencies through
   `wordnet.Ocr`; handwriting and additional OCR languages remain deferred.
 - Matching public APIs on `net462;net472;netstandard2.0;net8.0;net10.0`, with
@@ -53,11 +52,10 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Deliver bucket 4's safe HTML/CSS import, defensive RTF exchanges, bounded
-   bidi/complex-script typography, semantic tagged PDF/PDF-UA validation, selected
-   pages/previews, digital PDF reconstruction and OCR confidence/coordinate mapping.
-   Typography, accessibility and previews need the issue's design/provider decisions
-   and independent validation before support is advertised.
+1. Review and merge the bucket 4 implementation candidate after independent qualification
+   and full required checks; reconcile all seven issues and the roadmap after merge.
+   [Documented limits](interoperability.md) remain explicit, including typography/UA
+   combinations, complex table semantics and approximate reconstructed vertical flow.
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
    input campaigns and production-like resource measurements. The bounded binary
    [DOC profile](doc-format.md), ebook CSS and complex PDF reading order retain limits.

@@ -132,6 +132,12 @@ internal sealed partial class DocxWriter
         if (paragraph.Alignment != ParagraphAlignment.Left)
             properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment switch
             { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
+        if (paragraph.RightToLeft.HasValue)
+        {
+            var direction = new XElement(W + "bidi", new XAttribute(W + "val", paragraph.RightToLeft.Value ? "1" : "0"));
+            XElement? following = properties.Elements().FirstOrDefault(e => e.Name == W + "spacing" || e.Name == W + "ind" || e.Name == W + "jc");
+            if (following == null) properties.Add(direction); else following.AddBeforeSelf(direction);
+        }
         if (properties.HasElements) element.Add(properties);
 
         TemplateControl? currentControl = null;

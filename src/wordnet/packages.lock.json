@@ -60,6 +60,17 @@
           "System.Memory": "4.6.3"
         }
       },
+      "System.Text.Encoding.CodePages": {
+        "type": "Direct",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
+        "dependencies": {
+          "System.Memory": "4.6.3",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2",
+          "System.ValueTuple": "4.6.2"
+        }
+      },
       "Microsoft.Bcl.HashCode": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -102,17 +113,6 @@
       },
       "wordnet.fonts": {
         "type": "Project"
-      },
-      "System.Text.Encoding.CodePages": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
-        "dependencies": {
-          "System.Memory": "4.6.3",
-          "System.Runtime.CompilerServices.Unsafe": "6.1.2",
-          "System.ValueTuple": "4.6.2"
-        }
       }
     },
     ".NETFramework,Version=v4.7.2": {
@@ -173,6 +173,17 @@
           "System.Memory": "4.6.3"
         }
       },
+      "System.Text.Encoding.CodePages": {
+        "type": "Direct",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
+        "dependencies": {
+          "System.Memory": "4.6.3",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2",
+          "System.ValueTuple": "4.6.2"
+        }
+      },
       "Microsoft.Bcl.HashCode": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -215,17 +226,6 @@
       },
       "wordnet.fonts": {
         "type": "Project"
-      },
-      "System.Text.Encoding.CodePages": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
-        "dependencies": {
-          "System.Memory": "4.6.3",
-          "System.Runtime.CompilerServices.Unsafe": "6.1.2",
-          "System.ValueTuple": "4.6.2"
-        }
       }
     },
     ".NETStandard,Version=v2.0": {
@@ -286,6 +286,16 @@
           "System.Memory": "4.6.3"
         }
       },
+      "System.Text.Encoding.CodePages": {
+        "type": "Direct",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
+        "dependencies": {
+          "System.Memory": "4.6.3",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        }
+      },
       "Microsoft.Bcl.HashCode": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -323,16 +333,6 @@
       },
       "wordnet.fonts": {
         "type": "Project"
-      },
-      "System.Text.Encoding.CodePages": {
-        "type": "CentralTransitive",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A==",
-        "dependencies": {
-          "System.Memory": "4.6.3",
-          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
-        }
       }
     },
     "net10.0": {
@@ -368,6 +368,12 @@
         "dependencies": {
           "PdfPig": "0.1.16"
         }
+      },
+      "System.Text.Encoding.CodePages": {
+        "type": "Direct",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A=="
       },
       "wordnet.fonts": {
         "type": "Project"
@@ -406,6 +412,12 @@
         "dependencies": {
           "PdfPig": "0.1.16"
         }
+      },
+      "System.Text.Encoding.CodePages": {
+        "type": "Direct",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A=="
       },
       "wordnet.fonts": {
         "type": "Project"

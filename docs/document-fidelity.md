@@ -107,7 +107,7 @@ section subset. Destinations that cannot preserve richer features report the rel
 losses. No remote resources are fetched. Strict rejects detected losses and invalid or
 oversized geometry before copying staged output; Lenient retains its documented scaling
 and splitting behavior for the older profile. Resource limits apply in every mode.
-PDF is not tagged with accessible image alternative text. XPS now embeds raster images;
+Default PDF is untagged; the bucket 4 candidate adds the separate semantic PDF/UA profile. XPS now embeds raster images;
 TXT/Markdown/MOBI/AZW3 retain available alternative text with an image-loss diagnostic.
 
 PDF import always diagnoses reconstruction. Scan detection treats an image covering
@@ -203,3 +203,10 @@ Optional headers/footers select the first page's variants in the first section.
 Unsupported image formats use explicit placeholders in BestEffort/Lenient; malformed
 supported raster data still fails. JPEG data after its real EOI marker is accepted,
 while an EOI pattern inside metadata cannot validate truncated image data.
+
+## Bucket 4 candidate profiles
+
+The unreleased [interoperability guide](interoperability.md) adds explicit opt-ins for
+Arabic typography, semantic PDF/UA, previews, digital reconstruction and OCR metadata,
+plus bounded HTML/RTF exchanges. Existing exclusions describe the default/released
+profiles; the linked guide specifies supported additions and remaining limits.

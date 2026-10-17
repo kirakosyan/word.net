@@ -126,7 +126,7 @@ public sealed class DocumentInspectionTests
     public async Task InspectionChecksPairsPoliciesAndLimits()
     {
         var converter = new WordConverter(); using var source = new MemoryStream(Encoding.UTF8.GetBytes("too large"));
-        Assert.Throws<NotSupportedException>(() => converter.Inspect(source, DocumentFormat.Html, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<NotSupportedException>(() => converter.Inspect(source, DocumentFormat.Xps, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Throws<ArgumentException>(() => converter.Inspect(source, DocumentFormat.Text, DocumentFormat.Docx, includeLayout: true, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Throws<InvalidDataException>(() => converter.Inspect(source, DocumentFormat.Text, DocumentFormat.Docx, new ConversionOptions(maximumInputBytes: 2), cancellationToken: TestContext.Current.CancellationToken));
         source.Position = 0;

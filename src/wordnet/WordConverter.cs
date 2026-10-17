@@ -68,7 +68,7 @@ public sealed partial class WordConverter : IDocumentConverter
         result = Convert(source, output, DocumentFormat.Docx, destination, options ?? new ConversionOptions());
         return output.ToArray();
     }
-    private static bool IsReadable(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Epub or DocumentFormat.Pdf or DocumentFormat.Mobi or DocumentFormat.Azw3;
+    private static bool IsReadable(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Epub or DocumentFormat.Pdf or DocumentFormat.Mobi or DocumentFormat.Azw3 or DocumentFormat.Html or DocumentFormat.Rtf;
 
     /// <inheritdoc />
     public void Convert(Stream source, Stream destination, DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
@@ -185,6 +185,7 @@ public sealed partial class WordConverter : IDocumentConverter
         else if (to == DocumentFormat.Epub) EpubFormat.Write(document, output, context);
         else if (to == DocumentFormat.Pdf) PdfFormat.Write(document, output, context);
         else if (to == DocumentFormat.Html) HtmlFormat.Write(document, output, context);
+        else if (to == DocumentFormat.Rtf) RtfFormat.Write(document, output, context);
         else if (to == DocumentFormat.Xps) XpsFormat.Write(document, output, context);
         else if (to is DocumentFormat.Mobi or DocumentFormat.Azw3) KindleFormat.Write(document, output, to == DocumentFormat.Azw3, context);
         else
@@ -209,6 +210,8 @@ public sealed partial class WordConverter : IDocumentConverter
         }
         else if (from == DocumentFormat.Doc) document = DocFormat.Read(input, context);
         else if (from == DocumentFormat.Epub) document = EpubFormat.Read(input, context);
+        else if (from == DocumentFormat.Html) document = HtmlInput.Read(input.ToArray(), context);
+        else if (from == DocumentFormat.Rtf) document = RtfFormat.Read(input.ToArray(), context);
         else if (from == DocumentFormat.Pdf) document = PdfImportBridge.Read(input, context);
         else if (from is DocumentFormat.Mobi or DocumentFormat.Azw3) document = KindleFormat.Read(input, from == DocumentFormat.Azw3, context);
         else

@@ -251,7 +251,7 @@ internal sealed partial class DocxReader
             listLevel.ApplyLayout(style.Layout);
             ReadParagraphProperties(properties, style);
         }
-        var paragraph = new ParagraphBlock { Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        var paragraph = new ParagraphBlock { RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         ReadInlines(element, paragraph.Runs, style, null);
         return paragraph;
     }
@@ -578,6 +578,7 @@ internal sealed partial class DocxReader
                     default: throw new InvalidDataException("Docx.Alignment: Invalid paragraph justification value.");
                 }
             }
+            else if (property.Name == W + "bidi") style.RightToLeft = IsOn(property);
             else if (property.Name == W + "numPr")
             {
                 if (property.Element(W + "numId") is XElement num) style.ListId = Integer(num, W + "val", 0, int.MaxValue);
@@ -718,6 +719,7 @@ internal sealed partial class DocxReader
 
     private sealed class TextStyle
     {
+        internal bool? RightToLeft { get; set; }
         internal bool Bold { get; set; }
         internal bool Italic { get; set; }
         internal bool Code { get; set; }

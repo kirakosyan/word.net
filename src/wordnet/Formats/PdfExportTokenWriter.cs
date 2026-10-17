@@ -7,15 +7,23 @@ using UglyToad.PdfPig.Writer;
 
 namespace WordNet.Formats;
 
-internal sealed class PdfExportTokenWriter : TokenWriter
+internal class PdfExportTokenWriter : TokenWriter
 {
     private readonly bool compress;
     private readonly byte[]? metadata;
-    internal PdfExportTokenWriter(bool compress, byte[]? metadata = null) { this.compress = compress; this.metadata = metadata; }
+    private readonly string[]? labels;
+    internal PdfExportTokenWriter(bool compress, byte[]? metadata = null, string[]? labels = null) { this.compress = compress; this.metadata = metadata; this.labels = labels; }
 
     protected override void WriteObject(ObjectToken objectToken, Stream outputStream)
     {
         IToken token = metadata == null ? objectToken.Data : ArchiveToken(objectToken.Data);
+        if (labels != null && token is DictionaryToken dictionary && dictionary.TryGet(NameToken.Type, out NameToken type) && type.Data == "Catalog")
+        {
+            var entries = dictionary.Data.ToDictionary(p => NameToken.Create(p.Key), p => p.Value);
+            entries[NameToken.Create("PageLabels")] = new DictionaryToken(new System.Collections.Generic.Dictionary<NameToken, IToken>
+            { [NameToken.Create("Nums")] = new ArrayToken(labels.SelectMany((label, index) => new IToken[] { new NumericToken(index), new DictionaryToken(new System.Collections.Generic.Dictionary<NameToken, IToken> { [NameToken.Create("P")] = new StringToken(label) }) }).ToArray()) });
+            token = new DictionaryToken(entries);
+        }
         base.WriteObject(new ObjectToken(objectToken.Position, objectToken.Number, token), outputStream);
     }
 

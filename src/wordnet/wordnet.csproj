@@ -30,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../wordnet.Fonts/wordnet.Fonts.csproj" />
+    <PackageReference Include="System.Text.Encoding.CodePages" />
     <PackageReference Include="Markdig" />
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="OpenMcdf" />

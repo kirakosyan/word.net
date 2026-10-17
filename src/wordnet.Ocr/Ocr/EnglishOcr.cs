@@ -8,12 +8,22 @@ using WordNet.Internal;
 
 namespace WordNet.Ocr;
 
+internal sealed class OcrRecognition
+{
+    internal string Text = "";
+    internal string? Tsv;
+    internal int Confidence, Width, Height, OriginalWidth, OriginalHeight;
+    internal bool Columns;
+    internal OcrWordSequence? Sequence;
+    internal OcrTransform Transform = OcrTransform.Identity;
+}
+
 internal static class EnglishOcr
 {
-    private static string RecognizeCandidates(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context,
-        Func<SKBitmap, (string Text, int Confidence, bool Columns)> recognize)
+    private static OcrRecognition RecognizeCandidates(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context,
+        Func<SKBitmap, OcrRecognition> recognize)
     {
-        (string Text, int Confidence, bool Columns) best = recognize(bitmap);
+        OcrRecognition best = recognize(bitmap);
         double bestScore = Score(best), correction = 0;
         if (options.CorrectOrientation)
         {
@@ -26,19 +36,28 @@ internal static class EnglishOcr
                 using SKBitmap? corrected = skew == 0 ? null : OcrImage.Rotate(oriented, skew, options, context);
                 var candidate = recognize(corrected ?? oriented);
                 double score = Score(candidate);
-                if (score > bestScore) { best = candidate; bestScore = score; correction = angle + skew; }
+                if (score > bestScore)
+                {
+                    candidate.Transform = OcrTransform.Rotation(bitmap.Width, bitmap.Height, oriented.Width, oriented.Height, angle)
+                        .Then(OcrTransform.Rotation(oriented.Width, oriented.Height, candidate.Width, candidate.Height, skew));
+                    best = candidate; bestScore = score; correction = angle + skew;
+                }
             }
             if (correction != 0) context.Report("Ocr.Orientation", "OCR selected a rotated or deskewed raster using recognition confidence; review the recognized text.");
         }
         context.Report("Ocr.English", "English printed-text OCR was used; recognition requires review.");
         if (best.Columns) context.Report("Ocr.Columns", "OCR read two text columns down the left column, then down the right column, using a wide uninterrupted gutter.");
         context.AddOcrConfidence(best.Confidence);
-        return best.Text;
+        best.OriginalWidth = bitmap.Width; best.OriginalHeight = bitmap.Height;
+        return best;
 
-        static double Score((string Text, int Confidence, bool Columns) result) => result.Confidence * Math.Min(1, result.Text.Count(char.IsLetterOrDigit) / 20.0);
+        static double Score(OcrRecognition result) => result.Confidence * Math.Min(1, result.Text.Count(char.IsLetterOrDigit) / 20.0);
     }
 
     internal static string Recognize(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context)
+        => RecognizeWithMetadata(bitmap, options, context).Text;
+
+    internal static OcrRecognition RecognizeWithMetadata(SKBitmap bitmap, EnglishOcrOptions options, ConversionContext context)
     {
         if (!File.Exists(Path.Combine(options.DataDirectory, "eng.traineddata"))) throw new FileNotFoundException("Ocr.LanguageData: eng.traineddata must be provisioned locally.");
         if ((long)bitmap.Width * bitmap.Height > options.MaximumImagePixels) throw new InvalidDataException("Limit.ImagePixels: OCR image exceeds the pixel limit.");
@@ -64,7 +83,7 @@ internal static class EnglishOcr
             if (init(api, NativeModule.Utf8(options.DataDirectory), NativeModule.Utf8("eng")) != 0) throw new InvalidOperationException("Ocr.Initialize: English model could not be loaded.");
             return RecognizeCandidates(bitmap, options, context, RecognizeSingle);
 
-            (string Text, int Confidence, bool Columns) RecognizeSingle(SKBitmap candidate)
+            OcrRecognition RecognizeSingle(SKBitmap candidate)
             {
                 if ((long)candidate.Width * candidate.Height > options.MaximumImagePixels) throw new InvalidDataException("Limit.ImagePixels: OCR image exceeds the pixel limit.");
                 using SKBitmap gray = candidate.Copy(SKColorType.Gray8) ?? throw new InvalidOperationException("Ocr.Image: Could not convert raster to grayscale.");
@@ -81,10 +100,19 @@ internal static class EnglishOcr
                 if (status != 0) throw new InvalidOperationException("Ocr.Recognition: Tesseract recognition failed.");
                 string text = ReadText(getText(api), Math.Min(int.MaxValue - 1L, (long)context.Options.MaximumCharacters * 4));
                 context.CheckCharacters(text.Length);
-                string? columns = options.ReadTextColumns
-                    ? OcrReadingOrder.Columns(ReadText(getTsv(api, 0), context.Options.MaximumExpandedBytes), candidate.Width, candidate.Height, context)
-                    : null;
-                return (columns ?? text.TrimEnd('\n', '\r'), confidence(api), columns != null);
+                string? tsv = options.ReadTextColumns || context.OcrMetadata.Enabled ? ReadText(getTsv(api, 0), context.Options.MaximumExpandedBytes) : null;
+                OcrWordSequence? sequence = null;
+                string? columns = options.ReadTextColumns ? OcrReadingOrder.ColumnsWithSequence(tsv!, candidate.Width, candidate.Height, context, out sequence) : null;
+                return new OcrRecognition
+                {
+                    Text = columns ?? text.TrimEnd('\n', '\r'),
+                    Confidence = confidence(api),
+                    Columns = columns != null,
+                    Sequence = sequence,
+                    Tsv = context.OcrMetadata.Enabled ? tsv : null,
+                    Width = candidate.Width,
+                    Height = candidate.Height
+                };
             }
 
             string ReadText(IntPtr pointer, long maximum)

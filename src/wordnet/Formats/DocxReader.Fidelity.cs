@@ -157,6 +157,7 @@ internal sealed partial class DocxReader
         try
         {
             DocumentImage image = DocumentImage.Read(bytes, width, height, alt, context);
+            image.Decorative = inline.Element(Wp + "docPr")?.Descendants(XName.Get("decorative", "http://schemas.microsoft.com/office/drawing/2017/decorative")).Any(e => (string?)e.Attribute("val") is "1" or "true") == true;
             XElement? crop = picture.Element(Pic + "blipFill")?.Element(A + "srcRect");
             double Crop(string side)
             {

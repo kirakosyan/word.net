@@ -27,6 +27,94 @@ Local runs and independent-reader evidence are detailed below. Historical releas
 sections retain their original case counts. See the [delivery status and post-merge
 checklist](implementation-plan.md) before interpreting an old count as current.
 
+## Bucket 4 candidate qualification
+
+The unreleased implementation covers #20–#23 and #25–#27; see the
+[bounded profiles/API](interoperability.md) and [decisions](interoperability-design.md).
+The required suite expands from 696 to **828** cases (795 initial plus 33 review regressions): 15 HTML, 21 RTF, 12 typography,
+10 accessibility, 16 previews, 14 geometric PDF reconstruction and 16 OCR metadata/control
+cases plus 28 cross-feature review cases are described by their actual test classes (the aggregate count is authoritative).
+Historical PR #35 counts above remain historical, not a claim about these additions.
+
+Independent checks on Linux x64 use LibreOfficeDev 26.8 alpha build
+`2c87e51eeaa2b413ff4ae097b2705eea1995d8e5`, ReportLab 4.4.9,
+PyMuPDF 1.26.6/MuPDF 1.26.11, Pillow 12.3.0, uharfbuzz 0.53.0/HarfBuzz 12.1.0,
+FontTools 4.61.1 and FriBidi 1.0.16. Noto Arabic font hash/license and PDF ground truth accompany
+the fixtures. No commercial reference engine is used. The production optional shaper
+uses HarfBuzzSharp/native 14.2.1.301; the independent binding/version is deliberately
+separate. Actual Arabic glyph IDs, UTF-16 clusters, advances and mark offsets match;
+independent glyph-mask IoU is **1.0**, and both base directions match FriBidi token order.
+MuPDF extraction retains logical Unicode/marks after removing extractor-inserted layout
+line breaks; word search spans measure **63.12 pt** for the 30 pt Arabic golden.
+
+The own outline decoder fixes negative signed Y deltas and implied half-unit points;
+a dedicated Arabic-dot regression and cyclic-composite rejection protect that path.
+Independent SVG/PNG ink-mask IoU is **0.9333** for the Latin preview control. Direct
+pixels verify cropped/rotated/flipped rasters and clipping bounds, alongside page labels
+and original PAGE/NUMPAGES. LibreOffice reads emitted RTF into real editable OOXML,
+including exact Unicode/emphasis, one paragraph per ordinary table cell, preserved
+multi-paragraph/explicit-empty cells and a **60 × 30 pt** PNG frame.
+
+The 33 review regressions cover generated/artifact link degradation, sorted ParentTree
+page/annotation mappings, Word-style RTF repeated rows and picture containers, special
+charset losses, Strict cross-page-link PNG previews, 80-page outline-budget reuse,
+continued unique-glyph admission, alt/decorative precedence, nested highlights and
+2,000-run list semantics. Independent ReportLab additions check first-line/hanging
+indents, compact style runs, 32-line prose and measured baselines after tables/inline
+images. The qualification benchmark now includes and validates all 36 directions;
+the previous 30-direction guard caused both x64 CI failures despite passing source suites.
+
+Pinned offline veraPDF **1.30.2**, image digest
+`sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb`,
+accepts three UA-1 fixtures (invoice, multi-page lists/images/table and an early-page link), rejects the
+untagged negative control, and retains **38/38 PDF/A-2b** corpus results. Separate
+MuPDF inspection verifies structure roles, parent trees, unique MCIDs, actual page
+references, annotations/OBJRs, Unicode text, embedded TrueType programs and source
+reading order. Repeated table headers remain artifacts; one semantic Figure retains
+alt text while the explicitly decorative second image is an artifact. Fixed-clock
+PDF tagging is deterministic. Ordinary PDF/PDF-A defaults remain separate profiles.
+
+Manual reading-order review on 2026-10-17 inspected the emitted hierarchy/content
+mappings against source and viewed the invoice raster: H1 Invoice → P Summary first →
+row-wise Product/Price, Service/42.50 table → Terms link. The two-page sample orders
+heading → two labelled list items → final instruction → described Figure → table
+rows 1–49, with column header semantics only once despite visual repetition on page 2.
+The Terms descriptions/destinations and image alt were checked in actual objects.
+This is a bounded manual structure/visual review, not a claimed NVDA/JAWS session or
+arbitrary-document accessibility guarantee.
+
+```sh
+# Prepare OCR in the same PowerShell process as both complete suites (see AGENTS).
+dotnet restore wordnet.sln --locked-mode
+dotnet build wordnet.sln -c Release --no-restore -m:1
+# Set WORDNET_INTEROP_ARTIFACTS to an absolute output directory for authored tests.
+python3 eng/verify-interoperability.py artifacts/bucket4/interop
+python3 eng/verify-typography-accessibility.py artifacts/bucket4/interop
+python3 eng/validate-pdf-accessibility.py artifacts/bucket4/interop
+# Generate the existing archival corpus with wordnet.ManagedExport.Probe, then:
+python3 eng/validate-pdf-accessibility.py artifacts/bucket4/pdfa --flavour 2b --output artifacts/bucket4/pdfa-report.xml
+```
+
+Complete suite results and exact final candidate revision are recorded with the PR;
+all source targets compile, and local suites execute on .NET 8.0.32 and 10.0.12.
+The review-fix build passes **828/828 on each runtime**, with zero failed/skipped cases,
+a warning-free solution build, locked restore and formatting verification. The repaired
+36-direction concurrent qualification benchmark passes 32 iterations (1,152 measured,
+content-validated exchanges). These local results precede the refreshed PR-head CI. Its packaged Standard-on-.NET-8
+lane then exposed an undeclared CodePages 10 dependency (modern assets passed). The
+follow-up explicitly declares the centrally pinned 10.0.12 provider for every core TFM;
+archive validation now checks the required legacy/Standard/.NET 8 dependency groups
+(.NET 10 legitimately prunes its shared-framework assembly), and packed fallback qualification
+runs on both modern runtimes. Source and release evidence remain separate.
+
+The optional Python qualification tools are external development dependencies; the
+validator uses Docker's local Unix socket, exact copied bytes and `--network none`,
+including in environments where host bind mounts refer to another filesystem.
+Run the self-contained `examples/WordNet.Interoperability` sample for editable HTML,
+RTF, semantic PDF and managed SVG. Actual execution here is Linux x64 .NET 8/10;
+Windows/ARM64 and exact packed/runtime lanes require CI. Framework compilation does
+not qualify 4.6.2 execution. No Word/Aspose, Android/macOS or trimming/AOT claim follows.
+
 ## PR #35 review regressions
 
 Thirty-two new cases address the 15 review findings, bringing the editing/template

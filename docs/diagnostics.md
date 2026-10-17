@@ -321,3 +321,25 @@ conversion diagnostics.
 | `Template.UnmergedOutput` | Loss | Unexecuted template constructs use cached content without editable template semantics in this destination. |
 | `Text.Formatting` | Loss | Plain text cannot represent rich formatting. |
 | `Text.TableStructure` | Loss | Table structure becomes tab-separated rows in plain text. |
+
+## Bucket 4 candidate diagnostics
+
+See [profiles and options](interoperability.md). `Html.Css`, `Html.ActiveContent` and
+`Html.Image*` identify omitted CSS/active content/resources. `Rtf.Destination`,
+`Rtf.Control`, `Rtf.FontCharset`, `Rtf.PictureScale`, `Rtf.TableOffset` and
+`Rtf.TableMerge` describe the bounded interchange losses. `Typography.*` identifies
+provider/font/script/structure/styled-joining/alignment/word-width exclusions;
+`Limit.Typography*` and `Limit.FontOutlines` reject admission budget violations.
+`Pdf.Language`, `Pdf.Title`, `Pdf.ImageAlt`, `Pdf.TableHeaders`, `Pdf.TableSemantics`,
+`Pdf.SemanticFeature`, `Pdf.HeadingOrder`, `Pdf.ListNesting` and `Pdf.LinkSemantics` require author
+semantics. Missing Link relationships omit annotations in Tagged BestEffort/Lenient,
+with the visual content retained; Strict and PDF/UA-1 reject atomically. Special RTF
+charset bytes retain literal Latin-1 values with `Rtf.FontCharset` in BestEffort/Lenient.
+A repeated RTF row definition with inconsistent edges fails `Rtf.Structure`.
+`Pdf.TagsConformance`/`Pdf.TagsTypography` reject unqualified combinations.
+`Pdf.OmittedDestination` retains visible content without an excluded link target.
+`Pdf.OmittedDestination` does not apply to annotation-free raster intermediates.
+`Limit.Preview*` bounds preview work. `Pdf.Reconstruction`, `Pdf.ReconstructionAmbiguity`
+and `Pdf.ReconstructionFlow` distinguish geometric import limits from confidence
+information. `Ocr.UnmappedRegion` reports missing canonical span mappings without
+body text. Metadata remains opt-in; confidence is not calibrated accuracy.

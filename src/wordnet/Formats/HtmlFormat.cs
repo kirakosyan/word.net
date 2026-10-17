@@ -132,6 +132,7 @@ internal sealed class HtmlFormat
         if (layout.PageBreakBefore || layout.KeepTogether || layout.KeepWithNext)
             context.Report("Html.PaginationIgnored", "Pagination controls are omitted from the reflowable HTML document.");
         var element = new XElement(paragraph.HeadingLevel > 0 ? "h" + paragraph.HeadingLevel.ToString(CultureInfo.InvariantCulture) : "p", new XAttribute("style", css));
+        if (paragraph.RightToLeft.HasValue) element.Add(new XAttribute("dir", paragraph.RightToLeft.Value ? "rtl" : "ltr"));
         foreach (TextRun run in paragraph.Runs)
         {
             context.CheckCancellation();

@@ -88,6 +88,12 @@ public sealed class ImplementedConversionTests
         Assert.Equal(28, supported.Count);
         supported.Add((DocumentFormat.Doc, DocumentFormat.Html));
         supported.Add((DocumentFormat.Docx, DocumentFormat.Html));
+        supported.Add((DocumentFormat.Html, DocumentFormat.Doc));
+        supported.Add((DocumentFormat.Html, DocumentFormat.Docx));
+        supported.Add((DocumentFormat.Doc, DocumentFormat.Rtf));
+        supported.Add((DocumentFormat.Docx, DocumentFormat.Rtf));
+        supported.Add((DocumentFormat.Rtf, DocumentFormat.Doc));
+        supported.Add((DocumentFormat.Rtf, DocumentFormat.Docx));
 #if NET8_0_OR_GREATER
         DocumentFormat[] formats = Enum.GetValues<DocumentFormat>();
 #else

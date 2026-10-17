@@ -117,3 +117,21 @@ Graphics upgrades require Windows/Linux/Android execution: SkiaSharp 4 includes
 [Linux font fallback changes](https://mono.github.io/SkiaSharp/docs/releases/4.153.0.html).
 The small fixture suite does not qualify every native image codec or document feature.
 See [test evidence](testing.md) for the exact platforms and remaining limits.
+
+## Bucket 4 provider decision
+
+No runtime dependency was added. Safe HTML reuses pinned AngleSharp without browsing,
+RTF and TrueType outline decoding are specification-authored, and optional shaping
+uses existing HarfBuzzSharp/native 14.2.1.301 through wordnet.Ocr. PNG reuses SkiaSharp
+4.153.1. Native state remains per-call; core has no provider types or mandatory native
+load. Independent qualification tools are development-only and separately licensed.
+
+Bucket 4's RTF reader directly uses the managed `System.Text.Encoding.CodePages`
+provider. Core therefore declares the existing centrally pinned **10.0.12** package
+on every target, rather than relying on PdfPig's legacy-target transitive dependency
+or the older .NET 8 shared-framework assembly. This preserves the .NET Standard fallback's dependency
+closure on .NET 8 as well as .NET 10. It is maintained with dotnet/runtime, uses MIT,
+has no native assets, and retains all five library targets. No version was downgraded.
+NuGet correctly prunes the redundant .NET 10 dependency because that shared framework
+supplies assembly v10. The archive verifier requires it in legacy, Standard and .NET 8 groups; complete packed
+conversion/OCR suites exercise both explicit Standard fallback runtimes.

@@ -200,6 +200,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "System.Text.Encoding.CodePages": "[10.0.12, )",
           "wordnet.Fonts": "[1.1.0, )"
         }
       },
@@ -946,6 +947,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
+          "System.Text.Encoding.CodePages": "[10.0.12, )",
           "wordnet.Fonts": "[1.1.0, )"
         }
       },
@@ -1076,6 +1078,12 @@
         "resolved": "10.0.12",
         "contentHash": "Bsop0fosps100BOj1s9uIM3XaUpoLok5s0LTuEeKXvKse1XvpYvnzeC/7AZXCs3MkFurRkLe9k9XwKNZz2retw=="
       },
+      "System.Text.Encoding.CodePages": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A=="
+      },
       "xunit.v3.assert": {
         "type": "CentralTransitive",
         "requested": "[4.0.2, )",
@@ -1134,6 +1142,12 @@
         "requested": "[4.153.1, )",
         "resolved": "4.153.1",
         "contentHash": "DlBk91MARPfARK5kqd1K6+u6UuUQx+8Rsc+Pwi2dVO7X+S3LsLwqJq1gULLdpIgW2zmcqZ87O6TMfdWkwBXfkQ=="
+      },
+      "System.Text.Encoding.CodePages": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "rt1G/LdKC6oc3xPyQhMn5vRTp9iTTt1BS9Dx/67TpW9KWgFJ39lyEz0y4CbDksx7iTZEfgG61UsQMoGEXEpF4A=="
       }
     }
   }

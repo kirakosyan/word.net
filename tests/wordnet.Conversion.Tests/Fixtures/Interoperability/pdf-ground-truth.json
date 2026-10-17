@@ -1,0 +1,109 @@
+{
+  "producer": "ReportLab 4.4.9; independent generator, invariant metadata",
+  "pagePoints": [
+    500,
+    700
+  ],
+  "prose": {
+    "paragraphs": [
+      "First paragraph line one.\nFirst paragraph line two.",
+      "Second paragraph starts."
+    ],
+    "leftPoints": 40,
+    "firstBaselineFromTopPoints": 60
+  },
+  "columns": {
+    "count": 2,
+    "leftPoints": [
+      40,
+      290
+    ],
+    "leadingPoints": 18
+  },
+  "grid": {
+    "rows": 2,
+    "columns": 2,
+    "widthsPoints": [
+      150,
+      150
+    ],
+    "leftPoints": 40
+  },
+  "image-transform": {
+    "rotationClockwise": 270,
+    "framePoints": [
+      80,
+      40
+    ],
+    "displayPoints": [
+      40,
+      80
+    ],
+    "leftTopPoints": [
+      160,
+      320
+    ]
+  },
+  "indented-prose": {
+    "firstLinePoints": [
+      36,
+      -24
+    ],
+    "bodyLeftPoints": [
+      40,
+      64
+    ],
+    "baselinesPoints": [
+      640,
+      622,
+      604,
+      540,
+      522,
+      504
+    ]
+  },
+  "styled-prose": {
+    "text": "Plain bold italic plain.\nSecond line stays editable.",
+    "styles": [
+      "plain",
+      "bold",
+      "italic",
+      "plain"
+    ],
+    "baselinesPoints": [
+      640,
+      622
+    ]
+  },
+  "many-glyphs": {
+    "lines": 32,
+    "textPerLine": "Repeated editable words keep ordinary prose compact.",
+    "baselinesPoints": [
+      660,
+      102
+    ]
+  },
+  "grid-leading": {
+    "tableTopPoints": 100,
+    "afterBaselinePoints": 460
+  },
+  "inline-image-flow": {
+    "imageTopPoints": 160,
+    "heightPoints": 40,
+    "afterBaselinePoints": 460
+  },
+  "sha256": {
+    "borderless.pdf": "9e03528b42f47f3571f2c7765343f831aeb030b6ed26fa30e45768ae5cb7db28",
+    "columns.pdf": "9ede395b5d0504a12d0e6efacdf84bf254ab1a72e7340b98f3f7deb2048d2903",
+    "form.pdf": "7e44c21d42a8e52478b83d4a16b60f416b26381732279228fd77523813f6a07e",
+    "grid-leading.pdf": "7e8facee34ceac60d90ac07d48365a31f88856ec90b12d89e4f8cd1397b495d2",
+    "grid.pdf": "1eef30b731ab373301f21da37fb07db20ff5c2959ed8f4bd0d07fa865ea42ac3",
+    "image-transform.pdf": "01a6561c34e5f015dcb54f2cc7d6959d541d90ac5eb047aa6223fd70aac1e0b8",
+    "indented-prose.pdf": "23292bae600555bd0574fe3cede26aa411b6449f828400888cf37212b77fefcb",
+    "inline-image-flow.pdf": "bfcfcd144802b327a35861c77114657c064b64c3a0df31109f7685a42ebfd54a",
+    "many-glyphs.pdf": "3be76b3f7337a597ddb106121031b18ebd08ac1ea231092693a57d5baa126db7",
+    "prose.pdf": "44bcf0a270fb1a8dfa7b214e54bcb8720bb6725933fd990bb0683b8765226882",
+    "rotated.pdf": "f78d5b2c5c77c0edba2f1d81f0e2268c4e566895cf3cb1bfb7a3b80d5ad014a2",
+    "styled-prose.pdf": "88b44418fbee7b94e00aa2cebe24a4ab693c030d2405f22a8c9c4a6a4194636d"
+  }
+}

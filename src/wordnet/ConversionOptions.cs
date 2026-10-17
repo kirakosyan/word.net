@@ -18,6 +18,17 @@ public enum FidelityMode
 /// <summary>Conversion policy and immutable resource bounds. Configure export settings before concurrent use.</summary>
 public sealed class ConversionOptions
 {
+    /// <summary>Gets or sets optional Arabic/Latin shaping and base direction.</summary>
+    public TypographyOptions Typography { get; set; } = new TypographyOptions();
+    /// <summary>Gets or sets safe HTML input resources. Configure before concurrent use.</summary>
+    public HtmlInputOptions HtmlInput { get; set; } = new HtmlInputOptions();
+
+    /// <summary>Gets or sets opt-in structured OCR confidence, original coordinates and editable-text spans.</summary>
+    public OcrMetadataOptions OcrMetadata { get; set; } = new OcrMetadataOptions();
+
+    /// <summary>Gets or sets opt-in digital PDF reconstruction settings; PDF input still requires wordnet.Ocr.</summary>
+    public PdfImportOptions PdfImport { get; set; } = new PdfImportOptions();
+
     /// <summary>Gets or sets HTML output options. Configure before sharing options across conversions.</summary>
     public HtmlOptions Html { get; set; } = new HtmlOptions();
 

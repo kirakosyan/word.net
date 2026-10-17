@@ -53,6 +53,7 @@ notices when distributing a bundled application. The lock files record exact has
 
 | Package | Version | License | Purpose / source |
 | --- | --- | --- | --- |
+| System.Text.Encoding.CodePages | 10.0.12 | MIT | [dotnet/runtime](https://github.com/dotnet/runtime); managed single-byte code-page provider, explicitly declared for every core target |
 | AngleSharp | 1.8.4 | MIT | [HTML parser](https://github.com/AngleSharp/AngleSharp); no network loader configured |
 | OpenMcdf | 3.3.0 | MPL-2.0 | [Compound binary storage](https://github.com/openmcdf/openmcdf); unmodified library |
 | PdfPig | 0.1.16 | Apache-2.0 | [PDF reading/writing and font metrics](https://github.com/UglyToad/PdfPig) |
@@ -131,3 +132,11 @@ Word pagination parity. No proprietary Microsoft font is redistributed.
 - Aspose.Words and Microsoft Word are optional caller-provisioned, legitimately
   licensed reference tools. No commercial binaries, fonts or license keys are
   included in this repository or the shipped packages.
+
+## Bucket 4 test fixtures and independent tools
+
+The Noto Sans Arabic test face is Copyright 2015–2020 Google LLC, SIL OFL 1.1; its
+notice/license and SHA-256 provenance accompany the fixture. It is not embedded in
+production packages. LibreOffice, ReportLab, PyMuPDF/MuPDF, FontTools, uharfbuzz,
+FriBidi and veraPDF are optional external qualification tools, not runtime dependencies.
+No proprietary reference data or code was added. Existing native provider licenses apply.

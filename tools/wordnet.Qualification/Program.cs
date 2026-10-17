@@ -224,10 +224,13 @@ internal static class Program
             [DocumentFormat.Markdown] = Encoding.UTF8.GetBytes("# Wordnet conversion test\n\nEnglish printed text 12345.")
         };
         inputs[DocumentFormat.Docx] = Convert(inputs[DocumentFormat.Text], DocumentFormat.Text, DocumentFormat.Docx);
+        inputs[DocumentFormat.Html] = Encoding.UTF8.GetBytes("<p>Wordnet conversion test</p><p>English printed text 12345.</p>");
+        inputs[DocumentFormat.Rtf] = Encoding.ASCII.GetBytes(@"{\rtf1\ansi Wordnet conversion test\par English printed text 12345.\par}");
         var pairs = (from source in inputs.Keys from target in Enum.GetValues<DocumentFormat>() where converter.CanConvert(source, target) select (Source: source, Target: target)).ToArray();
-        if (pairs.Length != 30 || pairs.Count(p => p.Target != DocumentFormat.Html) != 28
-            || pairs.Count(p => p.Target == DocumentFormat.Html && p.Source is DocumentFormat.Doc or DocumentFormat.Docx) != 2)
-            throw new InvalidOperationException("Expected the original 28 conversion directions and both Word-to-HTML directions.");
+        if (pairs.Length != 36 || pairs.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf) != 28
+            || pairs.Count(p => p.Source is DocumentFormat.Html or DocumentFormat.Rtf) != 4
+            || pairs.Count(p => p.Target is DocumentFormat.Html or DocumentFormat.Rtf) != 4)
+            throw new InvalidOperationException("Expected the original 28 conversion directions and eight HTML/RTF exchanges with Word.");
         var measurements = new System.Collections.Concurrent.ConcurrentBag<Measurement>();
         Parallel.For(0, iterations, new ParallelOptions { MaxDegreeOfParallelism = 4 }, iteration =>
         {
