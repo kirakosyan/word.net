@@ -1,7 +1,7 @@
 # Interoperability, typography and import decisions
 
 This records the implementation contract for roadmap #32, bucket 4: #20, #21,
-#22, #23, #25, #26 and #27. It records decisions made before implementation; current candidate support and qualification are in [interoperability.md](interoperability.md). Bucket 3 merged
+#22, #23, #25, #26 and #27. It records decisions made before implementation; current merged-source support and qualification are in [interoperability.md](interoperability.md). Bucket 3 merged
 as `0b2af843`; its post-merge documentation merged in PR #36 as `141236a3`. No package is published
 by this work. All five framework assets and the existing managed export path remain.
 
