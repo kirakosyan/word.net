@@ -1,6 +1,31 @@
 # Conversion tests and qualification
 
+## PR #38 native font-lifetime follow-up (pending merge)
+
+The documentation reconciliation also fixes a failure exposed by its own CI: an
+initial Linux ARM64 process exited 139 after 370 passing cases; a Windows packed
+.NET 10 run then reported an invalid outline glyph. Investigation found that the
+HarfBuzzSharp stream-blob factory retains an unpinned temporary managed array.
+The adapter now duplicates admitted font bytes into native-owned storage while
+the source is pinned. A new regression forces compacting collections and reuses
+large temporary allocations before checking an independently generated Arabic
+glyph/cluster/advance/offset golden. It fails before the fix with a missing-glyph
+error after collection and passes with owned storage. The current suite requires
+**829** cases; the 828-case PR #37 evidence below remains historical.
+
 ## Evidence by revision
+
+PR [#37](https://github.com/kirakosyan/word.net/pull/37) squash-merged on 2026-10-17
+as `44c9e3629f95ed2c984a325a384174303550cb53`. All **15** submitted review findings are resolved; all **20**
+checks passed on final reviewed head `2af6a4358e7596a8d82046086c04374e96d7eea7`
+([CI run](https://github.com/kirakosyan/word.net/actions/runs/39067299512),
+[PR CI run](https://github.com/kirakosyan/word.net/actions/runs/39067303481)). The merged
+tree equals that head. Native Windows/Linux x64/ARM64 source and packed lanes pass,
+including explicit Standard fallback on .NET 8/10 and the hosted Windows x64 Framework lane.
+The required suite is **828**, including 33 review regressions. Seven bucket-4 issues
+have verified acceptance and closure; roadmap #32 records completed buckets 1–4.
+This remains unreleased source, separate from published 1.1.0, actual-minimum-runtime
+qualification and exact-main-package release qualification.
 
 PR [#35](https://github.com/kirakosyan/word.net/pull/35) was squash-merged on
 2026-10-17 as `0b2af843a40b8c866119594a887e8dac1f5c7340`, with **696** required
@@ -11,7 +36,7 @@ passed on the final reviewed head `383ea15f1bb21d96f38a61a2eaee42980cae0124`
 [PR CI](https://github.com/kirakosyan/word.net/actions/runs/39034268071)).
 The expected-head merge was verified and its tree equals that reviewed head.
 Issues #11–#15 and #17 have checked acceptance criteria, merge evidence and verified
-closure; roadmap #32 records completed buckets 1–3 and the next bucket 4.
+closure; at that reconciliation, roadmap #32 recorded completed buckets 1–3 and the next bucket 4.
 
 PR [#34](https://github.com/kirakosyan/word.net/pull/34), commit
 `1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, had **610** required cases and 20 successful
@@ -27,9 +52,9 @@ Local runs and independent-reader evidence are detailed below. Historical releas
 sections retain their original case counts. See the [delivery status and post-merge
 checklist](implementation-plan.md) before interpreting an old count as current.
 
-## Bucket 4 candidate qualification
+## Bucket 4 merged-source qualification
 
-The unreleased implementation covers #20–#23 and #25–#27; see the
+The merged, unreleased implementation covers #20–#23 and #25–#27; see the
 [bounded profiles/API](interoperability.md) and [decisions](interoperability-design.md).
 The required suite expands from 696 to **828** cases (795 initial plus 33 review regressions): 15 HTML, 21 RTF, 12 typography,
 10 accessibility, 16 previews, 14 geometric PDF reconstruction and 16 OCR metadata/control
@@ -95,25 +120,32 @@ python3 eng/validate-pdf-accessibility.py artifacts/bucket4/interop
 python3 eng/validate-pdf-accessibility.py artifacts/bucket4/pdfa --flavour 2b --output artifacts/bucket4/pdfa-report.xml
 ```
 
-Complete suite results and exact final candidate revision are recorded with the PR;
+Complete suite results and the final reviewed revision are recorded with PR #37;
 all source targets compile, and local suites execute on .NET 8.0.32 and 10.0.12.
 The review-fix build passes **828/828 on each runtime**, with zero failed/skipped cases,
 a warning-free solution build, locked restore and formatting verification. The repaired
 36-direction concurrent qualification benchmark passes 32 iterations (1,152 measured,
-content-validated exchanges). These local results precede the refreshed PR-head CI. Its packaged Standard-on-.NET-8
+content-validated exchanges). These local results preceded the refreshed PR-head CI. Its packaged Standard-on-.NET-8
 lane then exposed an undeclared CodePages 10 dependency (modern assets passed). The
 follow-up explicitly declares the centrally pinned 10.0.12 provider for every core TFM;
 archive validation now checks the required legacy/Standard/.NET 8 dependency groups
 (.NET 10 legitimately prunes its shared-framework assembly), and packed fallback qualification
 runs on both modern runtimes. Source and release evidence remain separate.
 
+The final CodePages dependency fix also passes a fresh-cache local package run:
+**828/828** on modern .NET 8 and .NET 10, plus **828/828** on the explicit Standard
+asset under each runtime (**3,312** passed; zero failed/skipped). Archive metadata
+and matching commit/companion assets are verified. Independent LibreOffice cell
+paragraph counts, MuPDF/FontTools/FriBidi geometry and source order, three pinned
+UA-1 positives/untagged negative and 38 PDF/A-2b files pass again from this build.
+
 The optional Python qualification tools are external development dependencies; the
 validator uses Docker's local Unix socket, exact copied bytes and `--network none`,
 including in environments where host bind mounts refer to another filesystem.
 Run the self-contained `examples/WordNet.Interoperability` sample for editable HTML,
 RTF, semantic PDF and managed SVG. Actual execution here is Linux x64 .NET 8/10;
-Windows/ARM64 and exact packed/runtime lanes require CI. Framework compilation does
-not qualify 4.6.2 execution. No Word/Aspose, Android/macOS or trimming/AOT claim follows.
+Native Windows/Linux x64/ARM64 source/packed CI results are linked above. Framework
+compilation does not qualify 4.6.2 execution. No Word/Aspose, Android/macOS or trimming/AOT claim follows.
 
 ## PR #35 review regressions
 

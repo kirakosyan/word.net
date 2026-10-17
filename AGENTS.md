@@ -4,7 +4,7 @@
 
 This repository hosts an independent MIT-licensed .NET document-conversion library.
 Implementation is authorized. All 28 original directions and English OCR have active baseline
-tests; the bucket 4 candidate extends the matrix to 36 with bounded HTML/RTF exchanges. Deliver independently tested fidelity increments and keep unsupported features
+tests; the merged bucket 4 profile extends the matrix to 36 with bounded HTML/RTF exchanges. Deliver independently tested fidelity increments and keep unsupported features
 explicit. Never substitute fake conversion behavior or overstate platform qualification.
 
 Read `README.md`, `docs/architecture.md`, and `docs/testing.md` before changing scope.
@@ -17,7 +17,7 @@ package ID are `wordnet`. Keep namespace spelling consistent across all targets 
   licensed dependencies. Do not copy proprietary implementation code or resources into
   source, tests, tools, or packages. Preserve dependency notices and fixture provenance.
 - Preserve the MIT license and existing user changes.
-- Preserve `net472;netstandard2.0;net8.0;net10.0` unless the user changes support policy.
+- Preserve `net462;net472;netstandard2.0;net8.0;net10.0` unless the user changes support policy.
 - The 1.0 release scope is Windows/Linux x64 and ARM64. Android ARM64 and macOS are
   deferred by the user; preserve portability without making release claims for them.
   Do not introduce a Windows-only dependency into the portable core.

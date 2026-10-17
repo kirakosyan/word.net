@@ -62,10 +62,33 @@ public sealed class TypographyTests
     [Fact]
     public void GlyphsClustersAdvancesAndMarkOffsetsMatchIndependentHarfBuzzGolden()
     {
+        var context = new ConversionContext(Options(), TestContext.Current.CancellationToken) { FontData = new[] { File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Interoperability", "NotoSansArabic-Regular.ttf")) } };
+        using TypographySession shaper = NativeTypography.Open(context)!; AssertArabicGolden(shaper.Shape(Arabic, 0, true));
+    }
+    [Fact]
+    public void NativeFontStorageSurvivesCompactingCollectionsAndAllocationPressure()
+    {
+        var context = new ConversionContext(Options(), TestContext.Current.CancellationToken) { FontData = new[] { File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Interoperability", "NotoSansArabic-Regular.ttf")) } };
+        using TypographySession shaper = NativeTypography.Open(context)!;
+        // Register the native face, then shape previously unused Arabic glyphs after
+        // collections/reuse of temporary large arrays. Cached first-word glyphs alone
+        // would hide a dangling font-table pointer.
+        _ = shaper.Shape("ب", 0, true);
+        for (int iteration = 0; iteration < 4; iteration++)
+        {
+            System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+            var pressure = new byte[16][];
+            for (int i = 0; i < pressure.Length; i++) { pressure[i] = new byte[context.FontData[0].Length]; for (int j = 0; j < pressure[i].Length; j++) pressure[i][j] = 0xA5; }
+            AssertArabicGolden(shaper.Shape(Arabic, 0, true));
+            GC.KeepAlive(pressure);
+        }
+    }
+    private static void AssertArabicGolden(ShapedWord shaped)
+    {
         // uharfbuzz 0.53.0 / HarfBuzz 12.1.0; font SHA256 in fixture provenance.
         int[][] golden = { new[] { 47, 8, 291, 0, 0 }, new[] { 299, 6, 0, -7, -174 }, new[] { 104, 6, 343, 0, 0 }, new[] { 291, 4, 0, 4, -106 }, new[] { 417, 4, 549, 0, 0 }, new[] { 1217, 2, 0, 35, -107 }, new[] { 979, 2, 396, 0, 0 }, new[] { 291, 0, 0, 142, -100 }, new[] { 771, 0, 525, 0, 0 } };
-        var context = new ConversionContext(Options(), TestContext.Current.CancellationToken) { FontData = new[] { File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Interoperability", "NotoSansArabic-Regular.ttf")) } };
-        using TypographySession shaper = NativeTypography.Open(context)!; ShapedWord shaped = shaper.Shape(Arabic, 0, true); Assert.Equal(1000, shaped.Units); Assert.Equal(golden.Length, shaped.Glyphs.Length);
+        Assert.Equal(1000, shaped.Units); Assert.Equal(golden.Length, shaped.Glyphs.Length);
         for (int i = 0; i < golden.Length; i++) { ShapedGlyph g = shaped.Glyphs[i]; Assert.Equal(golden[i][0], g.Glyph); Assert.Equal(golden[i][1], g.Cluster); Assert.Equal(golden[i][2], g.Advance); Assert.Equal(golden[i][3], g.X); Assert.Equal(golden[i][4], g.Y); }
         Assert.Equal(2.104, shaped.Width, 6);
     }

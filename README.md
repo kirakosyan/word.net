@@ -17,19 +17,16 @@ DOC / DOCX → XPS
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
 
-Main also contains unreleased comparison/preflight and business-document rendering
-improvements from PRs [#33](https://github.com/kirakosyan/word.net/pull/33) and
-[#34](https://github.com/kirakosyan/word.net/pull/34), plus document editing and template
-automation merged in [#35](https://github.com/kirakosyan/word.net/pull/35)
-(`0b2af843`). Buckets 1–3 are complete within their documented profiles. This unreleased bucket 4
-source candidate adds safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA,
-selected pages/previews, digital PDF reconstruction and OCR metadata. Its review-fix
-build passes 828 conversion/OCR cases on each local Linux x64 .NET 8/10 runtime. See the
-[bounded profiles and usage](docs/interoperability.md); review/CI and merge acceptance
-remain separate from package 1.1.0. See the
-[implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)
-for merged work, pending acceptance and the next roadmap bucket. Source capabilities
-added after 1.1.0 require a project reference until a release includes them.
+Main contains the unreleased comparison/preflight, business rendering and editing/template
+work from PRs #33–#35, plus bucket 4 merged in [#37](https://github.com/kirakosyan/word.net/pull/37)
+as `44c9e362`. Buckets 1–4 are complete within their documented profiles. Bucket 4 adds
+safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA, selected pages/previews,
+digital PDF reconstruction and OCR metadata. All 15 review findings are resolved; all
+20 CI checks passed on reviewed head `2af6a43`, whose tree matches the merge. The suite
+requires 829 conversion/OCR cases, including the GC/font-lifetime regression proposed in PR #38. See [profiles and usage](docs/interoperability.md),
+[build-specific evidence](docs/testing.md) and the [implementation plan](docs/implementation-plan.md).
+These merged source features are separate from published package 1.1.0 and require project
+references until a release includes them. Bucket 5 remains design-only.
 
 ## Convert a document
 
@@ -276,7 +273,7 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 | AZW3 ↔ Word | Standalone unencrypted KF8; skeleton/fragment input and single-flow output |
 | PDF ↔ Word | Selectable-text/color/image export, digital text and simple raster-image import, optional English OCR for scanned/mixed pages |
 | XPS ← Word | XPS 2005 packages with positioned text, embedded fonts/raster images and the shared fixed-page table/section profile |
-| HTML ↔ Word (input unreleased) | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks; candidate safe CSS/data/caller-image import |
+| HTML ↔ Word (input unreleased) | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks; bounded safe CSS/data/caller-image import |
 | RTF ↔ Word (unreleased) | Bounded Unicode/code-page text, emphasis/paragraphs, basic lists/tables and embedded PNG/JPEG |
 
 All direction tests inspect real content. Generated DOCX is independently schema

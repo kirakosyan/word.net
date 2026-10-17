@@ -1,6 +1,6 @@
 # Architecture and implementation status
 
-The bucket 4 candidate extends 30 merged directions to 36 with HTML input and RTF exchanges.
+The merged bucket 4 profile extends the earlier 30 directions to 36 with HTML input and RTF exchanges.
 See [interoperability profiles](interoperability.md) for the unreleased supported subset.
 They implement the documented desktop feature profile, with explicit fidelity limits.
 The public namespace is `WordNet`; the assembly and package ID are `wordnet`.
@@ -11,7 +11,7 @@ The [implementation plan](implementation-plan.md) separates merged roadmap work,
 pending PRs and published-package capabilities. Business-document profiles landed in
 PR #34; the editing/template implementation below merged in PR #35 as `0b2af843`.
 Both are unreleased source increments after package 1.1.0. Bucket 4's HTML/RTF, typography, accessibility, preview and import implementation
-is an unreleased candidate awaiting review. [Provider decisions](interoperability-design.md)
+merged in PR #37 as `44c9e362` and remains unreleased. [Provider decisions](interoperability-design.md)
 keep managed export offline and native shaping/rasterization explicit.
 
 ## Pipeline
@@ -197,3 +197,7 @@ annotations are admitted against source semantics before page annotation creatio
 ParentTree key/value pairs are numerically ordered. PDF reconstruction orders flow blocks
 before assigning gaps; page-relative illustration anchors share an existing paragraph,
 and adjacent glyphs with the same supported appearance share one editable run.
+
+Native typography copies admitted font bytes into a HarfBuzz-owned blob while the
+managed source is briefly pinned. The native face/font/blob live together for the
+shaping session; no stream-created pointer to movable managed memory is retained.

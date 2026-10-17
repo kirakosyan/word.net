@@ -1,7 +1,7 @@
 # Interoperability, typography and import decisions
 
 This records the implementation contract for roadmap #32, bucket 4: #20, #21,
-#22, #23, #25, #26 and #27. It records decisions made before implementation; current candidate support and qualification are in [interoperability.md](interoperability.md). Bucket 3 merged
+#22, #23, #25, #26 and #27. It records decisions made before implementation; current merged-source support and qualification are in [interoperability.md](interoperability.md). Bucket 3 merged
 as `0b2af843`; its post-merge documentation merged in PR #36 as `141236a3`. No package is published
 by this work. All five framework assets and the existing managed export path remain.
 
@@ -156,3 +156,12 @@ suites, formatting and package/API checks. Preserve Latin/PDF-A and existing con
 regressions. Record actual tool versions, counts and platform limits. Keep each issue
 open until its entire bounded acceptance profile is verified and merged; bucket 5
 remains design-only. After every merge perform the standing reconciliation.
+
+## Native font storage correction (PR #38)
+
+HarfBuzzSharp `Blob.FromStream` in the pinned binding retains a temporary managed
+array after its pin ends. The adapter now constructs a `MemoryMode.Duplicate` blob
+while its admitted source bytes are pinned, then immediately releases the pin.
+HarfBuzz owns the stable copy until session disposal. No dependency/API changes.
+A compacting-GC/allocation regression checks glyph IDs, clusters, advances and mark
+offsets against the independent Arabic golden after font registration.
