@@ -1,5 +1,18 @@
 # Conversion tests and qualification
 
+## PR #38 native font-lifetime follow-up (pending merge)
+
+The documentation reconciliation also fixes a failure exposed by its own CI: an
+initial Linux ARM64 process exited 139 after 370 passing cases; a Windows packed
+.NET 10 run then reported an invalid outline glyph. Investigation found that the
+HarfBuzzSharp stream-blob factory retains an unpinned temporary managed array.
+The adapter now duplicates admitted font bytes into native-owned storage while
+the source is pinned. A new regression forces compacting collections and reuses
+large temporary allocations before checking an independently generated Arabic
+glyph/cluster/advance/offset golden. It fails before the fix with a missing-glyph
+error after collection and passes with owned storage. The current suite requires
+**829** cases; the 828-case PR #37 evidence below remains historical.
+
 ## Evidence by revision
 
 PR [#37](https://github.com/kirakosyan/word.net/pull/37) squash-merged on 2026-10-17

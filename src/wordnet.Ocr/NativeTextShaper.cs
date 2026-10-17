@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using HarfBuzzSharp;
 using WordNet.Internal;
 using WordNet.Layout;
@@ -21,8 +22,13 @@ internal sealed class NativeTextShaper : TypographySession
         if (!fonts.TryGetValue(index, out var entry))
         {
             byte[] data = context.FontData[index]; TrueTypeOutlineGuard.Validate(data);
-            using var stream = new MemoryStream(data, writable: false);
-            Blob blob = Blob.FromStream(stream); Face? face = null; Font? font = null;
+            // FromStream retains an unpinned temporary managed array in this binding.
+            // Duplicate while pinned so HarfBuzz owns stable native storage for the face.
+            GCHandle pinned = GCHandle.Alloc(data, GCHandleType.Pinned);
+            Blob blob;
+            try { blob = new Blob(pinned.AddrOfPinnedObject(), data.Length, MemoryMode.Duplicate); }
+            finally { pinned.Free(); }
+            Face? face = null; Font? font = null;
             try { face = new Face(blob, 0); font = new Font(face); font.SetFunctionsOpenType(); font.SetScale(face.UnitsPerEm, face.UnitsPerEm); entry = (blob, face, font); fonts.Add(index, entry); }
             catch { font?.Dispose(); face?.Dispose(); blob.Dispose(); throw; }
         }

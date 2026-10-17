@@ -156,3 +156,12 @@ suites, formatting and package/API checks. Preserve Latin/PDF-A and existing con
 regressions. Record actual tool versions, counts and platform limits. Keep each issue
 open until its entire bounded acceptance profile is verified and merged; bucket 5
 remains design-only. After every merge perform the standing reconciliation.
+
+## Native font storage correction (PR #38)
+
+HarfBuzzSharp `Blob.FromStream` in the pinned binding retains a temporary managed
+array after its pin ends. The adapter now constructs a `MemoryMode.Duplicate` blob
+while its admitted source bytes are pinned, then immediately releases the pin.
+HarfBuzz owns the stable copy until session disposal. No dependency/API changes.
+A compacting-GC/allocation regression checks glyph IDs, clusters, advances and mark
+offsets against the independent Arabic golden after font registration.

@@ -197,3 +197,7 @@ annotations are admitted against source semantics before page annotation creatio
 ParentTree key/value pairs are numerically ordered. PDF reconstruction orders flow blocks
 before assigning gaps; page-relative illustration anchors share an existing paragraph,
 and adjacent glyphs with the same supported appearance share one editable run.
+
+Native typography copies admitted font bytes into a HarfBuzz-owned blob while the
+managed source is briefly pinned. The native face/font/blob live together for the
+shaping session; no stream-created pointer to movable managed memory is retained.

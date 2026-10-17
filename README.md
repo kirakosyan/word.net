@@ -23,7 +23,7 @@ as `44c9e362`. Buckets 1–4 are complete within their documented profiles. Buck
 safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA, selected pages/previews,
 digital PDF reconstruction and OCR metadata. All 15 review findings are resolved; all
 20 CI checks passed on reviewed head `2af6a43`, whose tree matches the merge. The suite
-requires 828 conversion/OCR cases. See [profiles and usage](docs/interoperability.md),
+requires 829 conversion/OCR cases, including the GC/font-lifetime regression proposed in PR #38. See [profiles and usage](docs/interoperability.md),
 [build-specific evidence](docs/testing.md) and the [implementation plan](docs/implementation-plan.md).
 These merged source features are separate from published package 1.1.0 and require project
 references until a release includes them. Bucket 5 remains design-only.
