@@ -71,12 +71,16 @@ ambiguous styled joining rather than render unshaped Arabic. Indic shaping, CJK
 line breaking, vertical text and hyphenation are separate future work. English OCR
 does not gain another language.
 
-HarfBuzz supplies actual glyph/cluster/advance/offset data; Skia supplies glyph
-outlines. A provider-neutral immutable geometry representation keeps PDF serialization
+HarfBuzz supplies actual glyph/cluster/advance/offset data. Managed TrueType
+glyph paths supply the outlines; native typography initially requires static TrueType
+faces with bounded composite graphs. Skia remains the optional PNG rasterizer. A provider-neutral immutable geometry representation keeps PDF serialization
 managed and permits SVG outlines. A logical Unicode PDF text mapping must accompany
-the visual glyphs. Invisible text/ActualText is a candidate only: an independent
-extraction/search probe is a release gate, and a successful outline raster alone is
-insufficient. No private-use Unicode, raster text or guessed glyph mapping may be
+the visual glyphs. The selected mapping uses one invisible embedded-font carrier per shaped word,
+UTF-16BE ActualText and horizontal scaling to that word's actual advance. This
+passed independent MuPDF logical extraction/search and word-wide highlight geometry
+in the preparation probe, including Arabic combining marks. Search geometry has
+word granularity; it does not claim individual shaped-glyph selection bounds. Full
+integration still requires mixed-direction, wrapping and independent glyph assertions. No private-use Unicode, raster text or guessed glyph mapping may be
 advertised as searchable Arabic. Native font/path/buffer ownership is per-call.
 
 ## Semantic PDF (#23)
