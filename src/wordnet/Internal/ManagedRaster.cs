@@ -9,7 +9,7 @@ using UglyToad.PdfPig.Writer;
 
 namespace WordNet.Internal;
 
-internal static class ManagedRaster
+internal static partial class ManagedRaster
 {
     internal static (string Extension, int Width, int Height) Identify(byte[] bytes)
     {

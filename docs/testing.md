@@ -4,9 +4,9 @@
 
 The bounded table, drawing, section, numbering, note and reference profiles are
 specified in [business fidelity decisions](business-fidelity-design.md) and the
-[fidelity guide](document-fidelity.md). The suite now has **569 cases**, including
-45 new authored OOXML cases and removal of the obsolete XPS image-loss case.
-Both complete source suites pass **569/569**, with zero failures/skips, on Linux
+[fidelity guide](document-fidelity.md). The suite now has **610 cases**, including
+86 authored business-fidelity cases and removal of the obsolete XPS image-loss case.
+Both complete source suites pass **610/610**, with zero failures/skips, on Linux
 x64 .NET **8.0.32** and **10.0.12**. Locked restore, warning-free Release builds
 of all five core assets, format verification and NuGet package/API validation pass.
 The five Python comparison controls also pass; corpus fixture bytes are unchanged
@@ -19,7 +19,12 @@ An asymmetric four-color raster with a corner marker checks cropping and both
 mirror axes across right-angle rotations. Skia-rendered PDF samples for nested
 cells, text boxes and image transforms were inspected. MuPDF **1.26.11** through
 PyMuPDF **1.26.6** independently renders all **12** XPS transform combinations,
-checks **48** pixel samples and validates the nested table's text/colors.
+checks **48** transform pixel samples, **8** PNG/JFIF/EXIF density cases at 72/144 dpi,
+and validates the nested table's text/colors. The review regressions cover all
+reflowable break fallbacks, zero-based page labels, negative crop padding,
+body/table/cell bookmarks, DOCX refresh without layout, Lenient drawing/row/box
+fallbacks, final note labels/appearance/sections, implicit table layout, Word's
+multi-paragraph default TOC, rich field caches and nested text-box content.
 
 Reproduce the optional independent XPS check after the required build:
 

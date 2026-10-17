@@ -540,7 +540,11 @@ internal static partial class FixedLayout
                 }
             foreach (var height in table.RowHeights)
             {
-                if (height.Value.Exact && height.Value.Height < rows[height.Key].Height) throw new NotSupportedException("Layout.TableRowHeight: An exact row height cannot contain its content.");
+                if (height.Value.Exact && height.Value.Height < rows[height.Key].Height)
+                {
+                    if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TableRowHeight: An exact row height cannot contain its content.");
+                    context.ReportStrictRejection("Layout.TableRowHeight", "An exact row height is increased to retain its content.");
+                }
                 rows[height.Key].Height = Math.Max(rows[height.Key].Height, height.Value.Height);
             }
             for (int r = 0; r < rows.Count; r++)
@@ -717,7 +721,7 @@ internal static partial class FixedLayout
             return lines;
         }
 
-        (double X, double Y, double Width, double Height, string Wrap) DrawingBounds(DrawingAnchor anchor, double width, double height, double paragraphTop)
+        (double X, double Y, double Width, double Height, string Wrap) DrawingBounds(DrawingAnchor anchor, double width, double height, double paragraphTop, bool validate = true)
         {
             double left = anchor.HorizontalOrigin == "page" ? 0 : anchor.HorizontalOrigin == "column" ? settings.Left : sourceSettings.Left;
             double top = anchor.VerticalOrigin == "page" ? 0 : anchor.VerticalOrigin == "paragraph" ? paragraphTop : sourceSettings.Top;
@@ -725,8 +729,11 @@ internal static partial class FixedLayout
             double areaHeight = anchor.VerticalOrigin == "page" ? settings.Height : settings.Height - sourceSettings.Top - sourceSettings.Bottom;
             double x = left + anchor.X + (anchor.HorizontalAlignment == "center" ? (areaWidth - width) / 2 : anchor.HorizontalAlignment == "right" ? areaWidth - width : 0);
             double topY = top + anchor.Y + (anchor.VerticalAlignment == "center" ? (areaHeight - height) / 2 : anchor.VerticalAlignment == "bottom" ? areaHeight - height : 0);
-            if (x < 0 || topY < 0 || x + width > settings.Width || topY + height > settings.Height)
-                throw new NotSupportedException("Layout.AnchorBounds: A positioned drawing extends outside the physical page.");
+            if (validate && (x < 0 || topY < 0 || x + width > settings.Width || topY + height > settings.Height))
+            {
+                if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.AnchorBounds: A positioned drawing extends outside the physical page.");
+                context.ReportStrictRejection("Layout.AnchorBounds", "A positioned drawing extends outside the physical page and is clipped at the page edge.");
+            }
             return (x, topY, width, height, anchor.Wrap);
         }
 
@@ -757,27 +764,46 @@ internal static partial class FixedLayout
                 {
                     PositionedBox box = item.Box;
                     var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
+                    CellPadding boxPadding = box.Padding;
+                    if (box.Width <= boxPadding.Left + boxPadding.Right || box.Height <= boxPadding.Top + boxPadding.Bottom)
+                    {
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TextBoxPadding: Text-box padding leaves no usable content area.");
+                        context.ReportStrictRejection("Layout.TextBoxPadding", "Text-box padding is omitted to retain usable content space.");
+                        boxPadding = new CellPadding();
+                    }
                     var cell = new CellLayout
                     {
                         Left = bounds.X,
                         Width = box.Width,
                         Extent = box.Height,
-                        Padding = box.Padding,
+                        Padding = boxPadding,
                         Source = new TableCell { Background = box.Fill }
                     };
                     if (box.Border != null) foreach (string side in new[] { "left", "top", "right", "bottom" }) cell.Source.Borders.Add(side, box.Border);
                     destination.Shapes.AddRange(CellShapes(cell, bounds.Y, box.Height));
-                    double boxTop = bounds.Y + box.Padding.Top;
-                    foreach (DocumentBlock boxBlock in box.Blocks)
+                    double boxTop = bounds.Y + boxPadding.Top;
+                    var boxLines = new List<Line>();
+                    if (box.Blocks.Any(b => b is not ParagraphBlock) || DocumentModel.Expand(box.Blocks).OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Box != null)))
                     {
-                        if (boxBlock is not ParagraphBlock boxParagraph) throw new NotSupportedException("Layout.TextBoxContent: Positioned text boxes support paragraphs only.");
-                        var boxLines = new List<Line>(); AddParagraph(boxParagraph, bounds.X + box.Padding.Left, box.Width - box.Padding.Left - box.Padding.Right, boxLines);
-                        foreach (Line boxLine in boxLines)
-                        {
-                            if (boxTop + boxLine.Height > bounds.Y + box.Height - box.Padding.Bottom) throw new NotSupportedException("Layout.TextBoxOverflow: Text does not fit inside the positioned box.");
-                            foreach (PositionedText boxItem in boxLine.Items) destination.Text.Add(boxItem.At(boxItem.X, boxTop + boxLine.Ascent + boxItem.Y));
-                            boxTop += boxLine.Height;
-                        }
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TextBoxContent: Positioned text boxes support paragraphs only.");
+                        context.ReportStrictRejection("Layout.TextBoxContent", "Tables and nested boxes in a positioned text box are flattened to formatted text in reading order.");
+                        var flattened = new ParagraphBlock(); flattened.Runs.AddRange(FidelityChecks.FlattenBox(box));
+                        AddParagraph(flattened, bounds.X + boxPadding.Left, box.Width - boxPadding.Left - boxPadding.Right, boxLines);
+                    }
+                    else foreach (ParagraphBlock boxParagraph in box.Blocks.Cast<ParagraphBlock>())
+                        AddParagraph(boxParagraph, bounds.X + boxPadding.Left, box.Width - boxPadding.Left - boxPadding.Right, boxLines);
+                    double available = box.Height - boxPadding.Top - boxPadding.Bottom;
+                    double contentHeight = boxLines.Sum(l => l.Height);
+                    if (contentHeight > available)
+                    {
+                        if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TextBoxOverflow: Text does not fit inside the positioned box.");
+                        context.ReportStrictRejection("Layout.TextBoxOverflow", "Text-box content is proportionally reduced to fit its frame.");
+                        boxLines = boxLines.Select(l => ScaleLine(l, available / contentHeight)).ToList();
+                    }
+                    foreach (Line boxLine in boxLines)
+                    {
+                        foreach (PositionedText boxItem in boxLine.Items) destination.Text.Add(boxItem.At(boxItem.X, boxTop + boxLine.Ascent + boxItem.Y));
+                        boxTop += boxLine.Height;
                     }
                     RememberExclusion(box.Anchor, bounds); continue;
                 }
@@ -875,7 +901,7 @@ internal static partial class FixedLayout
             foreach (TextRun drawing in runs.Where(r => r.Image?.Anchor != null || r.Box != null))
             {
                 DrawingAnchor anchor = drawing.Image?.Anchor ?? drawing.Box!.Anchor;
-                var bounds = DrawingBounds(anchor, drawing.Image?.Width ?? drawing.Box!.Width, drawing.Image?.Height ?? drawing.Box!.Height, renderPage == 0 ? y : 0);
+                var bounds = DrawingBounds(anchor, drawing.Image?.Width ?? drawing.Box!.Width, drawing.Image?.Height ?? drawing.Box!.Height, renderPage == 0 ? y : 0, validate: false);
                 if (anchor.Wrap != "none") exclusions.Add((bounds.X - anchor.Distance.Left, bounds.Y - anchor.Distance.Top, bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
             }
             double x = left;

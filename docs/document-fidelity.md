@@ -36,7 +36,8 @@ The business-document profiles added for roadmap #32 are described in
 - Nested tables retain cell content order, padding, solid shading, top/center/bottom
   alignment and single/double/dashed/dotted RGB borders in PDF/XPS. Shared border
   segments choose width, then style, then source order. Minimum row heights are
-  retained; exact heights fail if their content would overflow. Ordinary nested rows
+  retained; overflowing exact heights fail in Strict/BestEffort and grow with a
+  diagnostic in Lenient. Ordinary nested rows
   split at complete line bands. Non-splitting nested rows and merged groups must fit
   one body area. Parent table headers repeat across pages/columns. Nested repeating
   headers and arbitrary floating tables remain outside the profile.
@@ -44,21 +45,28 @@ The business-document profiles added for roadmap #32 are described in
   Percentages resolve against the containing body, column or cell. Autofit uses one
   content-constraint pass, including spans, and wraps long words at glyph boundaries.
   Absolute fixed grids keep their previous precedence. Implicit layout retains the
-  legacy fixed-grid policy; historical Word autofit quirks are not reproduced.
+  legacy fixed-grid policy in PDF/XPS, while DOCX preserves omitted `tblLayout`
+  as Word's implicit autofit. Historical Word autofit quirks are not reproduced.
 - PNG/JPEG crops, flips and clockwise 0/90/180/270-degree rotation preserve source
   bytes through DOCX. PDF uses clipping and affine transforms; XPS uses image brushes
-  and transformed frames. HTML uses cropped CSS frames with embedded data images.
-  Crops must remain inside the source and leave positive area. Arbitrary rotations,
+  and transformed frames, with PNG pHYs and JPEG JFIF/EXIF density accounted for.
+  HTML uses cropped CSS frames with embedded data images. Crops must leave positive
+  area; negative outward padding is clamped with an explicit loss. Arbitrary rotations,
   vector pictures and artistic effects still require explicit diagnostics.
 - Raster anchors retain page/margin/column horizontal origins and page/margin/paragraph
   vertical origins, offsets, alignment and wrapping distances. Square and top/bottom
   wrapping use rectangular exclusions. Behind/in-front images have deterministic
   paint order and may overlap stories when explicitly positioned there. Out-of-page
-  frames fail before destination copying. Tight/through wrapping reports its square
+  frames fail in Strict/BestEffort; Lenient retains their placement with page-edge
+  clipping and a diagnostic. Bounds are checked after paragraph movement.
+  Tight/through wrapping reports its square
   approximation. Keep chains, table anchors and wrapping across page transitions are
   bounded approximations rather than a claim of complete Word drawing layout.
 - Positioned rectangular text boxes retain paragraph content, inset padding, RGB fill
-  and outline through DOCX/PDF/XPS. Content must fit the declared frame. Rotated boxes,
+  and outline through DOCX/PDF/XPS. Content must fit the declared frame in Strict/
+  BestEffort. Lenient flattens tables/nested boxes in reading order and scales
+  overflowing content into the frame, with diagnostics. Other destinations flatten
+  boxes while retaining nested text, images, links and run formatting where supported. Rotated boxes,
   vertical text, arbitrary geometry, autofit and nested table content are outside the
   fixed-page text-box profile. Reflowable HTML reports inline-frame placement.
 - Continuous, next/odd/even-page sections retain physical page geometry. Equal-width
@@ -67,6 +75,8 @@ The business-document profiles added for roadmap #32 are described in
   approximation; a page-number restart on a shared page is diagnosed. Decimal, Roman
   and alphabetic labels/restarts are separate from physical page counts. Blank parity
   pages count physically and suppress stories. Unequal columns remain diagnosed.
+  Page numbers may start at zero. Explicit page/column breaks become diagnosed line
+  breaks in destinations without fixed pagination or DOCX break semantics.
 - Nine-level lists retain decimal/alphabetic/Roman formats, compound labels, legal
   numbering (Roman values through 3999), start overrides, supported restarts, label appearance and suffix/tab/
   hanging-indent settings through DOCX/PDF/XPS/HTML. Centered/right-aligned labels report left alignment. Private-use bullets without
@@ -77,13 +87,20 @@ The business-document profiles added for roadmap #32 are described in
   continuous/section/page restarts are retained. DOCX has editable note parts and HTML
   has linked end matter. Tables inside notes report flattened layout. Custom note
   separators/placement and arbitrary nested note stories remain outside the profile.
+  Other destinations use bracketed references with the final note label and append
+  notes in the final body section. DOCX retains reference run appearance.
 - REF, PAGEREF, SEQ and heading-based TOC fields refresh text from bookmarks, counters
-  and final pagination. TOC supports heading ranges and hyperlinks; REF supports text,
+  and final pagination in PDF/XPS. TOC supports Word's default `\o "1-3" \h \z \u`
+  instruction across cached paragraphs, heading ranges, hyperlinks, `\p` separators
+  and unqualified `\n` page-label suppression; REF supports text,
   numbering and hyperlinks; SEQ supports start/current/next and supported number
   formats. Calculation is bounded to four additional layout passes. Unsupported
-  switches, missing/cyclic references and fields spanning paragraphs retain caches
-  with diagnostics. DOCX retains supported field tokens and refreshed caches. HTML
-  retains pagination-field caches because it has no physical pagination.
+  switches, missing/cyclic references and structured/mixed-format field results
+  retain their cached runs with diagnostics, including pictures and bookmarks.
+  DOCX refreshes plain REF/SEQ text without fixed layout; DOCX and HTML retain
+  pagination-dependent caches. Other multi-paragraph fields and qualified `\n`
+  level ranges remain outside the refresh profile. Body/table/cell bookmarks attach
+  to adjacent paragraph boundaries; unmatched ends are tolerated with a diagnostic.
 
 DOC retains its existing absolute-table, inline-image, decimal/bullet and next-page
 section subset. Destinations that cannot preserve richer features report the relevant

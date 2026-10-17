@@ -29,7 +29,7 @@ internal sealed class HtmlFormat
     internal static void Write(DocumentModel model, Stream output, ConversionContext context)
     {
         var writer = new HtmlFormat(model, context);
-        if (DocumentReferences.HasFields(model)) _ = DocumentReferences.Refresh(model, context);
+        if (DocumentReferences.HasFields(model)) _ = DocumentReferences.Refresh(model, context, paginate: false);
         var body = new XElement("body", new XAttribute("style", "margin:0;padding:0;"));
         var content = new XElement("div", new XAttribute("style", "max-width:" + writer.options.MaxContentWidthPx.ToString(CultureInfo.InvariantCulture)
             + "px;margin:0 auto;font-family:'Noto Sans',Arial,sans-serif;font-size:12pt;"));

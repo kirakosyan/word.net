@@ -20,6 +20,7 @@ internal static class FidelityChecks
                 using var location = context.At(note.Blocks.FirstOrDefault()?.Location);
                 context.Loss("Notes.PlacedAtEnd", "This destination retains notes as numbered end text without editable note semantics.");
                 if (note.Blocks.FirstOrDefault() is ParagraphBlock first) first.Runs.Insert(0, new TextRun("[" + note.Label + "] "));
+                foreach (DocumentBlock block in note.Blocks) block.Section = model.FinalSection ?? model.Blocks.LastOrDefault()?.Section;
                 model.Blocks.AddRange(note.Blocks);
             }
         }
@@ -44,9 +45,22 @@ internal static class FidelityChecks
                     if (paragraph.Runs[i].Box is PositionedBox box)
                     {
                         context.Loss("Shape.TextBoxFlattened", "This destination retains text-box paragraphs as inline text.");
-                        paragraph.Runs[i] = new TextRun(string.Join("\n", box.Blocks.OfType<ParagraphBlock>().Select(p => p.Text)));
+                        paragraph.Runs.RemoveAt(i);
+                        List<TextRun> flattened = FlattenBox(box);
+                        paragraph.Runs.InsertRange(i, flattened);
+                        i += flattened.Count - 1;
                     }
         }
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+            foreach (ParagraphBlock paragraph in model.Paragraphs.Distinct())
+                for (int i = 0; i < paragraph.Runs.Count; i++)
+                {
+                    TextRun run = paragraph.Runs[i];
+                    if (run.Text.IndexOf('\f') < 0 && run.Text.IndexOf('\v') < 0) continue;
+                    using var location = context.At(paragraph.Location);
+                    context.Loss("Layout.ExplicitBreak", "Page and column breaks become line breaks in this output profile.");
+                    paragraph.Runs[i] = run.WithText(run.Text.Replace('\f', '\n').Replace('\v', '\n'));
+                }
         if (format is DocumentFormat.Doc or DocumentFormat.Epub or DocumentFormat.Mobi or DocumentFormat.Azw3)
             LossAt(paragraphs.Where(p => p.List?.Definition?.Any(l => l.Format is not "decimal" and not "bullet" || l.Legal || l.Pattern != "%" + (System.Array.IndexOf(p.List.Definition, l) + 1).ToString(System.Globalization.CultureInfo.InvariantCulture) + "." && l.Format != "bullet" || l.RestartAfter != System.Array.IndexOf(p.List.Definition, l) - 1 || l.Layout.HasValues) == true).Select(p => p.Location),
                 "List.AdvancedOutput", "This destination uses decimal/round-bullet list definitions without the richer label profile.");
@@ -117,6 +131,28 @@ internal static class FidelityChecks
             {
                 using var location = context.At(source);
                 context.Loss(code, message);
+            }
+        }
+    }
+
+    internal static List<TextRun> FlattenBox(PositionedBox box)
+    {
+        var result = new List<TextRun>();
+        Append(box.Blocks);
+        return result;
+
+        void Append(IEnumerable<DocumentBlock> blocks)
+        {
+            foreach (DocumentBlock block in blocks)
+            {
+                if (block is TableBlock table) Append(table.Rows.SelectMany(r => r).SelectMany(c => c.Blocks));
+                else if (block is ParagraphBlock paragraph)
+                {
+                    if (result.Count > 0) result.Add(new TextRun("\n"));
+                    foreach (TextRun run in paragraph.Runs)
+                        if (run.Box != null) Append(run.Box.Blocks);
+                        else result.Add(run);
+                }
             }
         }
     }

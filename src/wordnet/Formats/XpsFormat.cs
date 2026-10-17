@@ -31,10 +31,12 @@ internal static class XpsFormat
         Xml("Documents/1/FixedDocument.fdoc", new XElement(xps + "FixedDocument", Enumerable.Range(1, pages.Count).Select(n => new XElement(xps + "PageContent", new XAttribute("Source", "Pages/" + n.ToString(CultureInfo.InvariantCulture) + ".fpage")))));
         for (int i = 0; i < context.FontData.Length; i++) PackageArchive.Write(archive, "Resources/Fonts/" + FontName(i), context.FontData[i]);
         var imageNames = new System.Collections.Generic.Dictionary<DocumentImage, string>();
+        var imageDensities = new System.Collections.Generic.Dictionary<DocumentImage, (double X, double Y)>();
         foreach (DocumentImage image in pages.SelectMany(p => p.Text).Where(t => t.Image != null).Select(t => t.Image!).Distinct())
         {
             string imageName = "/Resources/Images/" + imageNames.Count.ToString(CultureInfo.InvariantCulture) + "." + image.Extension;
             imageNames.Add(image, imageName); PackageArchive.Write(archive, imageName.Substring(1), image.Bytes);
+            imageDensities.Add(image, ManagedRaster.Density(image.Bytes, image.Extension));
         }
         for (int p = 0; p < pages.Count; p++)
         {
@@ -69,6 +71,8 @@ internal static class XpsFormat
         XElement Image(PositionedText text, string path)
         {
             DocumentImage image = text.Image!;
+            var density = imageDensities[image];
+            double naturalWidth = image.PixelsWide * 96 / density.X, naturalHeight = image.PixelsHigh * 96 / density.Y;
             double angle = image.Rotation * System.Math.PI / 180, c = System.Math.Round(System.Math.Cos(angle)), s = System.Math.Round(System.Math.Sin(angle));
             double a = c * (image.FlipHorizontal ? -1 : 1), b = s * (image.FlipHorizontal ? -1 : 1), d = c * (image.FlipVertical ? -1 : 1), k = -s * (image.FlipVertical ? -1 : 1);
             string Matrix(double v) => v.ToString("0.########", CultureInfo.InvariantCulture);
@@ -78,7 +82,7 @@ internal static class XpsFormat
             return new XElement(xps + "Canvas", new XAttribute("RenderTransform", transform),
                 new XElement(xps + "Path", new XAttribute("Data", "M 0,0 l " + Number(image.FrameWidth) + ",0 0," + Number(image.FrameHeight) + " " + Number(-image.FrameWidth) + ",0 Z"),
                     new XElement(xps + "Path.Fill", new XElement(xps + "ImageBrush", new XAttribute("ImageSource", path), new XAttribute("ViewboxUnits", "Absolute"), new XAttribute("ViewportUnits", "Absolute"),
-                        new XAttribute("Viewbox", Matrix(image.CropLeft * image.PixelsWide) + "," + Matrix(image.CropTop * image.PixelsHigh) + "," + Matrix((1 - image.CropLeft - image.CropRight) * image.PixelsWide) + "," + Matrix((1 - image.CropTop - image.CropBottom) * image.PixelsHigh)),
+                        new XAttribute("Viewbox", Matrix(image.CropLeft * naturalWidth) + "," + Matrix(image.CropTop * naturalHeight) + "," + Matrix((1 - image.CropLeft - image.CropRight) * naturalWidth) + "," + Matrix((1 - image.CropTop - image.CropBottom) * naturalHeight)),
                         new XAttribute("Viewport", "0,0," + Number(image.FrameWidth) + "," + Number(image.FrameHeight))))));
         }
         void Xml(string name, XElement root) => PackageArchive.Write(archive, name, TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting)));

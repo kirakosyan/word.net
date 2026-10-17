@@ -19,7 +19,7 @@ internal sealed class DocumentModel
     internal IEnumerable<ParagraphBlock> Paragraphs => Expand(AllBlocks).OfType<ParagraphBlock>().Distinct();
     internal IEnumerable<DocumentBlock> AllBlocks => Blocks.Concat(Notes.SelectMany(n => n.Blocks)).Concat(Blocks.Select(b => b.Section).Concat(new[] { FinalSection }).Where(s => s != null).Distinct()
         .SelectMany(s => s!.Stories.Values).Distinct().SelectMany(story => story));
-    private static IEnumerable<DocumentBlock> Expand(IEnumerable<DocumentBlock> blocks)
+    internal static IEnumerable<DocumentBlock> Expand(IEnumerable<DocumentBlock> blocks)
     {
         foreach (DocumentBlock block in blocks)
         {
@@ -63,6 +63,7 @@ internal sealed class TableBlock : DocumentBlock
     internal double? Width { get; set; }
     internal double? WidthPercent { get; set; }
     internal bool AutoFit { get; set; }
+    internal bool LayoutExplicit { get; set; }
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal Dictionary<int, double> RowLefts { get; } = new Dictionary<int, double>();
@@ -111,7 +112,7 @@ internal sealed class TextRun
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
         double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null)
     {
-        Text = text;
+        this.text = text;
         Bold = bold;
         Italic = italic;
         Code = code;
@@ -123,7 +124,8 @@ internal sealed class TextRun
         FieldInstruction = fieldInstruction; Note = note; Box = box; Bookmark = bookmark;
     }
 
-    internal string Text { get; }
+    private readonly string text;
+    internal string Text => Note == null ? text : "[" + Note.Label + "]";
     internal bool Bold { get; }
     internal bool Italic { get; }
     internal bool Code { get; }

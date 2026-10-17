@@ -136,6 +136,7 @@ conversion diagnostics.
 | `Docx.AlternateContent` | Loss | Alternate content without an understood choice or fallback is omitted. |
 | `Docx.AuxiliaryMetadata` | Report | Document properties, font/theme catalogs and editor metadata are not retained; unsupported content formatting is diagnosed separately. |
 | `Docx.Block` | Loss | Unsupported document block structure is flattened where supported content is available. |
+| `Docx.BookmarkEndIgnored` | Report | An unmatched bookmark end is ignored while retaining its surrounding content. |
 | `Docx.CellPadding` | Loss | Unknown cell margin side is omitted. |
 | `Docx.Columns` | Loss | Only one to three equal-width body columns are supported. |
 | `Docx.Drawing` | Loss | Unsupported or linked drawings are omitted; remote images are never fetched. |
@@ -143,6 +144,7 @@ conversion diagnostics.
 | `Docx.Gutter` | Loss | Binding gutters are not retained. |
 | `Docx.HeadingLevel` | Loss | Heading levels greater than six are not supported in Markdown. |
 | `Docx.Hyperlink` | Loss | An internal or unresolved hyperlink becomes plain text. |
+| `Docx.ImageCropPadding` | Loss | Outward image crop padding is omitted; the original image edge is retained. |
 | `Docx.ImageEffects` | Loss | Arbitrary-angle image rotation is not retained. |
 | `Docx.Inline` | Loss | Unsupported inline content or annotations are flattened where text is available. |
 | `Docx.LanguageMetadata` | Report | Language/proofing metadata is not retained; Unicode text is preserved. |
@@ -219,12 +221,14 @@ conversion diagnostics.
 | `Image.WrapApproximated` | Loss | Tight/through wrapping uses the rectangular square-wrap profile. |
 | `Kindle.Flows` | Loss | Additional CSS, SVG and resource flows are not retained. |
 | `Kindle.ListLayout` | Loss | Kindle list indentation depends on the reading application's reflow layout. |
+| `Layout.AnchorBounds` | Report | A positioned drawing extends outside the physical page and is clipped at the page edge. |
 | `Layout.CellPageControls` | Loss | Paragraph page controls inside table cells use the table row's pagination policy. |
 | `Layout.CodeFont` | Loss | Code content uses the embedded proportional font. |
 | `Layout.ContinuousGeometry` | Loss | A continuous section with incompatible physical geometry begins a new page. |
 | `Layout.ContinuousPageRestart` | Loss | A page-number restart on a shared physical page takes effect on the following page. |
 | `Layout.DocSections` | Loss | Binary DOC output retains next-page sections without columns or displayed-page-number restarts. |
 | `Layout.DocTabStops` | Loss | Binary DOC retains tab characters with default stops; custom tab definitions are not retained. |
+| `Layout.ExplicitBreak` | Loss | Page and column breaks become line breaks in this output profile. |
 | `Layout.Hyperlink` | Loss | This XPS profile retains hyperlink text without an interactive target. |
 | `Layout.IndentApproximated` | Report | Unusable indentation is constrained to printable space. |
 | `Layout.KeepWithTable` | Loss | Keeping a paragraph with the following table is not supported by this layout profile. |
@@ -237,6 +241,10 @@ conversion diagnostics.
 | `Layout.StoryScaledToFit` | Report | An oversized header/footer is proportionally scaled to retain body space. |
 | `Layout.TabAlignment` | Loss | Unsupported tab alignment uses a left tab stop. |
 | `Layout.TabLeader` | Loss | Unsupported tab leaders are omitted. |
+| `Layout.TableRowHeight` | Report | An exact row height is increased to retain its content. |
+| `Layout.TextBoxContent` | Report | Tables and nested boxes in a positioned text box are flattened to formatted text in reading order. |
+| `Layout.TextBoxOverflow` | Report | Text-box content is proportionally reduced to fit its frame. |
+| `Layout.TextBoxPadding` | Report | Text-box padding is omitted to retain usable content space. |
 | `Layout.TextScaledToFit` | Report | Oversized text is reduced to fit printable space. |
 | `Link.UnsupportedTarget` | Loss | Only absolute HTTP, HTTPS and mailto hyperlinks are retained; other targets become text. |
 | `List.AdvancedOutput` | Loss | This destination uses decimal/round-bullet list definitions without the richer label profile. |

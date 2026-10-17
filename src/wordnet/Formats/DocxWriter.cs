@@ -28,7 +28,7 @@ internal sealed partial class DocxWriter
     internal static void Write(DocumentModel document, Stream output, ConversionContext context)
     {
         var writer = new DocxWriter(context) { model = document };
-        if (DocumentReferences.HasFields(document)) _ = WordNet.Layout.FixedLayout.Create(document, context);
+        if (DocumentReferences.HasFields(document)) _ = DocumentReferences.Refresh(document, context, paginate: false);
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
         PageSettings? previousSection = null;
@@ -261,7 +261,7 @@ internal sealed partial class DocxWriter
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
             new XElement(W + "tblW", new XAttribute(W + "w", table.WidthPercent.HasValue ? Math.Round(table.WidthPercent.Value * 50).ToString(CultureInfo.InvariantCulture) : table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.WidthPercent.HasValue ? "pct" : table.Width.HasValue ? "dxa" : "auto"))));
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
-        element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
+        if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));

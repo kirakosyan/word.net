@@ -9,6 +9,7 @@ import json
 import math
 from pathlib import Path
 import re
+import zipfile
 
 import fitz
 
@@ -46,7 +47,21 @@ def verify(directory: Path):
         assert raster.pixel(225, 35) == (255, 255, 0)
         assert raster.pixel(29, 60) == (255, 255, 255)
         raster.save(directory / "nested-tables-mupdf.png")
-    result = {"pymupdf": fitz.version[0], "mupdf": fitz.version[1], "transform_cases": len(cases), "pixel_samples": samples, "nested_table": "passed"}
+    density_cases = sorted(directory.glob("density-*.xps"))
+    assert len(density_cases) == 8, f"Expected 8 density cases, got {len(density_cases)}"
+    for path in density_cases:
+        dpi = int(path.stem.rsplit("-", 1)[1])
+        with zipfile.ZipFile(path) as package:
+            resource = next(name for name in package.namelist() if name.startswith("Resources/Images/"))
+            pixels = fitz.Pixmap(package.read(resource))
+            assert abs(pixels.xres - dpi) <= 1 and abs(pixels.yres - dpi) <= 1, (path.name, pixels.xres, pixels.yres)
+        with fitz.open(path) as document:
+            raster = document[0].get_pixmap(alpha=False)
+            for x, y, expected in ((48, 42, (255, 0, 0)), (126, 42, (0, 255, 0)), (48, 72, (0, 0, 255)), (126, 72, (255, 255, 0))):
+                actual = raster.pixel(x, y)
+                assert sum(abs(a - b) for a, b in zip(actual, expected)) <= 20, (path.name, actual, expected)
+            raster.save(directory / (path.stem + "-mupdf.png"))
+    result = {"pymupdf": fitz.version[0], "mupdf": fitz.version[1], "transform_cases": len(cases), "pixel_samples": samples, "density_cases": len(density_cases), "nested_table": "passed"}
     (directory / "xps-verification.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result))
 

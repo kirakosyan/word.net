@@ -11,7 +11,7 @@ internal static class DocumentReferences
 {
     internal static bool HasFields(DocumentModel model) => model.Paragraphs.SelectMany(p => p.Runs).Any(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) is "REF" or "PAGEREF" or "SEQ" or "TOC");
 
-    internal static bool Refresh(DocumentModel model, ConversionContext context)
+    internal static bool Refresh(DocumentModel model, ConversionContext context, bool paginate = true)
     {
         if (!model.ReferencesPrepared)
         {
@@ -80,7 +80,9 @@ internal static class DocumentReferences
             string result;
             if (kind == "TOC")
             {
-                if (!ValidSwitches(args, "\\o", "\\h", "\\u")) return Cached(run);
+                if (!SupportedToc(run.FieldInstruction)) return Cached(run);
+                bool omitPages = args.Contains("\\n");
+                if (!paginate && !omitPages) return Cached(run);
                 string[] levels = (Switch(args, "\\o") ?? "1-3").Split('-');
                 if (levels.Length != 2 || !int.TryParse(levels[0], out int first) || !int.TryParse(levels[1], out int last) || first < 1 || last > 6 || first > last) return Cached(run);
                 var entries = new List<string>(); var targets = new List<string>();
@@ -89,14 +91,18 @@ internal static class DocumentReferences
                     string name = heading.Runs.First(r => r.Bookmark?.StartsWith("_wordnet_heading_", StringComparison.Ordinal) == true).Bookmark!;
                     string title = string.Concat(heading.Runs.Where(r => r.Bookmark == null).Select(r => Evaluate(r, visiting)));
                     string page = model.BookmarkPages.TryGetValue(name, out var destination) ? destination.Label : "1";
-                    entries.Add((labels[name].Length == 0 ? "" : labels[name] + " ") + title + "\t" + page); targets.Add(name);
+                    entries.Add((labels[name].Length == 0 ? "" : labels[name] + " ") + title + (omitPages ? "" : (Switch(args, "\\p") ?? "\t") + page)); targets.Add(name);
                 }
                 result = string.Join("\n", entries); if (args.Contains("\\h")) model.TocTargets[run] = targets;
             }
             else
             {
                 if (args.Length < 2 || !ValidSwitches(args, "\\h", "\\n") || !ranges.TryGetValue(args[1], out List<TextRun>? contents)) return Cached(run);
-                if (kind == "PAGEREF") result = model.BookmarkPages.TryGetValue(args[1], out var destination) ? destination.Label : "1";
+                if (kind == "PAGEREF")
+                {
+                    if (!paginate) return Cached(run);
+                    result = model.BookmarkPages.TryGetValue(args[1], out var destination) ? destination.Label : "1";
+                }
                 else if (args.Contains("\\n")) result = labels[args[1]];
                 else if (contents.Any(r => r.Image != null || r.Box != null)) return Cached(run);
                 else result = string.Concat(contents.Select(r => Evaluate(r, visiting)));
@@ -105,6 +111,15 @@ internal static class DocumentReferences
         }
         string Cached(TextRun run)
         { context.Report("Field.UnsupportedUsedCachedResult", "An unsupported, cyclic or unresolved reference retains its cached result."); model.FieldResults[run] = run.Text; return run.Text; }
+    }
+
+    internal static bool SupportedToc(string instruction)
+    {
+        string[] args = Arguments(instruction);
+        // The optional level range on \n needs a separate layout policy.
+        if (!ValidSwitches(args, "\\o", "\\h", "\\u", "\\z", "\\n", "\\p")) return false;
+        string[] levels = (Switch(args, "\\o") ?? "1-3").Split('-');
+        return levels.Length == 2 && int.TryParse(levels[0], out int first) && int.TryParse(levels[1], out int last) && first >= 1 && last <= 6 && first <= last;
     }
 
     private static string[] Arguments(string instruction)
@@ -121,7 +136,7 @@ internal static class DocumentReferences
         for (int i = args[0].Equals("TOC", StringComparison.OrdinalIgnoreCase) ? 1 : 2; i < args.Length; i++)
         {
             if (!supported.Contains(args[i])) return false;
-            if (args[i] is "\\o" or "\\r" or "\\*")
+            if (args[i] is "\\o" or "\\r" or "\\*" or "\\p")
             {
                 if (++i >= args.Length || args[i].Length == 0 || args[i][0] == '\\') return false;
             }

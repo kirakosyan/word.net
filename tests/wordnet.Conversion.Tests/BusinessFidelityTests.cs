@@ -18,7 +18,7 @@ using Xunit;
 namespace WordNet.Tests;
 
 // Fixtures below are authored directly as OOXML, independently of production writers.
-public sealed class BusinessFidelityTests
+public sealed partial class BusinessFidelityTests
 {
     private const string Page = "<w:sectPr><w:pgSz w:w='8000' w:h='6000'/><w:pgMar w:top='600' w:bottom='600' w:left='600' w:right='600' w:header='0' w:footer='0' w:gutter='0'/></w:sectPr>";
     private static readonly XNamespace W = TestDocuments.W;
@@ -137,7 +137,6 @@ public sealed class BusinessFidelityTests
 
     [Theory]
     [InlineData("l='100000'")]
-    [InlineData("l='-1'")]
     [InlineData("l='50000' r='50000'")]
     [InlineData("t='NaN'")]
     public void InvalidCropNeverReplacesCallerOutput(string crop) => Fails<InvalidDataException>(FidelityDocuments.Docx("color-grid.png",
@@ -242,7 +241,7 @@ public sealed class BusinessFidelityTests
         Assert.DoesNotContain("stale", pdf.GetPage(1).Text, StringComparison.Ordinal); Assert.Contains("45", pdf.GetPage(1).Text, StringComparison.Ordinal);
         Assert.Equal("Clause title", pdf.GetPage(2).Text); Assert.True(pdf.GetPage(1).GetAnnotations().Count() >= 3);
         byte[] word = Export(input, DocumentFormat.Docx); Schema(word);
-        Assert.Equal("2", Part(word, "word/document.xml").Descendants(W + "fldSimple").Single(e => ((string?)e.Attribute(W + "instr"))?.StartsWith("PAGEREF", StringComparison.Ordinal) == true).Value);
+        Assert.Equal("99", Part(word, "word/document.xml").Descendants(W + "fldSimple").Single(e => ((string?)e.Attribute(W + "instr"))?.StartsWith("PAGEREF", StringComparison.Ordinal) == true).Value);
     }
 
     [Theory]

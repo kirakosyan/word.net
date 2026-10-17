@@ -93,6 +93,7 @@ internal sealed partial class DocxReader
         reader.ReadBlocks(bodies[0], document.Blocks);
         if (reader.sectionCount > 0 && bodies[0].Element(W + "sectPr") == null)
             reader.EndSection(new XElement(W + "sectPr"), document.Blocks);
+        reader.PruneTocParagraphs(document.Blocks);
         document.FinalSection = reader.finalSection;
         document.Notes.AddRange(reader.notes.Values.Where(n => n.Number > 0));
         var noteCounters = new Dictionary<(bool Endnote, PageSettings? Section), int>();
@@ -100,7 +101,7 @@ internal sealed partial class DocxReader
         foreach (DocumentBlock block in document.Blocks)
         {
             PageSettings? section = block.Section;
-            IEnumerable<ParagraphBlock> paragraphs = block is ParagraphBlock p ? new[] { p } : ((TableBlock)block).Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs);
+            IEnumerable<ParagraphBlock> paragraphs = DocumentModel.Expand(new[] { block }).OfType<ParagraphBlock>();
             foreach (DocumentNote note in paragraphs.SelectMany(p => p.Runs).Where(r => r.Note != null).Select(r => r.Note!))
             {
                 if (!numberedNotes.Add(note)) continue;
@@ -182,23 +183,29 @@ internal sealed partial class DocxReader
 
     private void ReadBlocks(XElement container, List<DocumentBlock> blocks)
     {
+        var pendingBookmarks = new List<TextRun>();
         foreach (XElement element in container.Elements())
         {
             context.CheckCancellation();
             using var location = element.Name == W + "p" || element.Name == W + "tbl" ? null : context.At(XmlSourceLocation.Create(element, mainPart));
+            if (BlockBookmark(element, blocks, pendingBookmarks)) continue;
             if (Container(element, out XElement? content))
             {
+                int first = blocks.Count;
                 if (content != null) ReadBlocks(content, blocks);
+                if (blocks.Count > first) AttachBookmarks(pendingBookmarks, new[] { blocks[first] }, true);
                 continue;
             }
             if (element.Name == W + "p")
             {
                 blocks.Add(ReadParagraph(element));
+                AttachBookmarks(pendingBookmarks, new[] { blocks[blocks.Count - 1] }, true);
                 if (element.Element(W + "pPr")?.Element(W + "sectPr") is XElement section) EndSection(section, blocks, paragraphBoundary: true);
             }
             else if (element.Name == W + "tbl")
             {
                 blocks.Add(ReadTable(element));
+                AttachBookmarks(pendingBookmarks, new[] { blocks[blocks.Count - 1] }, true);
             }
             else if (element.Name == W + "sectPr")
             {
@@ -212,6 +219,11 @@ internal sealed partial class DocxReader
                     ReadBlocks(element, blocks);
                 }
             }
+        }
+        if (pendingBookmarks.Count > 0)
+        {
+            if (!DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any()) blocks.Add(new ParagraphBlock());
+            AttachBookmarks(pendingBookmarks, blocks, false);
         }
     }
 
@@ -254,18 +266,11 @@ internal sealed partial class DocxReader
                 continue;
             }
 
-            if (child.Name == W + "bookmarkStart")
+            if (child.Name == W + "bookmarkStart" || child.Name == W + "bookmarkEnd")
             {
-                int id = Integer(child, W + "id", 0, int.MaxValue);
-                string name = DocxPackage.RequiredAttribute(child, W + "name");
-                if (name.Length > 256 || bookmarks.ContainsKey(id) || bookmarks.ContainsValue(name)) throw new InvalidDataException("Docx.Bookmark: Duplicate or oversized bookmark.");
-                bookmarks.Add(id, name); Emit(runs, new TextRun("", bookmark: name)); continue;
-            }
-            if (child.Name == W + "bookmarkEnd")
-            {
-                int id = Integer(child, W + "id", 0, int.MaxValue);
-                if (!bookmarks.TryGetValue(id, out string? name)) throw new InvalidDataException("Docx.Bookmark: Unresolved bookmark end.");
-                Emit(runs, new TextRun("", bookmark: "/" + name)); continue;
+                TextRun? marker = ReadBookmark(child);
+                if (marker != null) Emit(runs, marker);
+                continue;
             }
             if (child.Name == W + "fldChar") { FieldBoundary((string?)child.Attribute(W + "fldCharType"), runs); continue; }
             if (child.Name == W + "instrText")
@@ -321,7 +326,8 @@ internal sealed partial class DocxReader
                     throw new InvalidDataException("Docx.Notes: Unresolved note reference.");
                 DocumentNote note = notes[(child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id];
                 if (note.Number == 0) note.Number = notes.Values.Count(n => n.Endnote == note.Endnote && n.Number > 0) + 1;
-                Emit(runs, new TextRun(note.Label, fontSize: 8, note: note));
+                Emit(runs, new TextRun("", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
+                    appearance: inherited.Appearance.Copy(), note: note));
             }
             else if (child.Name == W + "footnoteRef" || child.Name == W + "endnoteRef") { }
             else if (child.Name == W + "hyperlink")
@@ -357,10 +363,12 @@ internal sealed partial class DocxReader
     {
         using var location = context.At(XmlSourceLocation.Create(element, mainPart));
         var table = new TableBlock { Location = context.Location };
+        var pendingTableBookmarks = new List<TextRun>();
         ReadTableGeometry(element, table);
         foreach (XElement child in TableContents(element))
         {
             context.CheckCancellation();
+            if (BlockBookmark(child, new[] { table }, pendingTableBookmarks)) continue;
             if (child.Name == W + "tblPr" || child.Name == W + "tblGrid")
             {
                 continue;
@@ -376,6 +384,7 @@ internal sealed partial class DocxReader
             var cells = new List<TableCell>();
             foreach (XElement rowChild in TableContents(child))
             {
+                if (BlockBookmark(rowChild, table.Rows.SelectMany(r => r).Concat(cells).SelectMany(c => c.Blocks), pendingTableBookmarks)) continue;
                 if (rowChild.Name == W + "trPr")
                 {
                     XElement? header = rowChild.Element(W + "tblHeader");
@@ -407,13 +416,16 @@ internal sealed partial class DocxReader
 
                 using var cellLocation = context.At(XmlSourceLocation.Create(rowChild, mainPart));
                 var cell = new TableCell();
+                var pendingBookmarks = new List<TextRun>();
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
                 foreach (XElement content in TableContents(rowChild))
                 {
                     if (content.Name == W + "tcPr") continue;
+                    if (BlockBookmark(content, cell.Content, pendingBookmarks)) continue;
                     if (content.Name == W + "tbl")
                     {
                         TableBlock nested = ReadTable(content); cell.Content.Add(nested);
+                        AttachBookmarks(pendingBookmarks, new[] { nested }, true);
                         cell.Paragraphs.AddRange(nested.Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs));
                         continue;
                     }
@@ -424,8 +436,11 @@ internal sealed partial class DocxReader
                     }
 
                     ParagraphBlock paragraph = ReadParagraph(content); cell.Paragraphs.Add(paragraph); cell.Content.Add(paragraph);
+                    AttachBookmarks(pendingBookmarks, new[] { paragraph }, true);
                 }
-                if (cell.Paragraphs.Count == 0) cell.Paragraphs.Add(new ParagraphBlock());
+                if (cell.Paragraphs.Count == 0) { var empty = new ParagraphBlock(); cell.Paragraphs.Add(empty); cell.Content.Add(empty); }
+                AttachBookmarks(pendingBookmarks, cell.Content, false);
+                AttachBookmarks(pendingTableBookmarks, cell.Blocks, true);
                 cells.Add(cell);
             }
 
@@ -443,6 +458,7 @@ internal sealed partial class DocxReader
             }
         }
 
+        AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
     }
 

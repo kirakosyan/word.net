@@ -158,7 +158,13 @@ internal sealed partial class DocxReader
         {
             DocumentImage image = DocumentImage.Read(bytes, width, height, alt, context);
             XElement? crop = picture.Element(Pic + "blipFill")?.Element(A + "srcRect");
-            double Crop(string side) => crop?.Attribute(side) == null ? 0 : Integer(crop, side, 0, 100000) / 100000.0;
+            double Crop(string side)
+            {
+                if (crop?.Attribute(side) == null) return 0;
+                int value = Integer(crop, side, int.MinValue, 100000);
+                if (value < 0) context.Loss("Docx.ImageCropPadding", "Outward image crop padding is omitted; the original image edge is retained.");
+                return Math.Max(0, value) / 100000.0;
+            }
             image.CropLeft = Crop("l"); image.CropRight = Crop("r"); image.CropTop = Crop("t"); image.CropBottom = Crop("b");
             if (image.CropLeft + image.CropRight >= 1 || image.CropTop + image.CropBottom >= 1)
                 throw new InvalidDataException("Docx.ImageCrop: Cropping must retain positive image area.");
@@ -203,6 +209,7 @@ internal sealed partial class DocxReader
         string? layout = (string?)properties?.Element(W + "tblLayout")?.Attribute(W + "type");
         if (layout is not null and not "fixed" and not "autofit") throw new InvalidDataException("Docx.TableLayout: Invalid layout type.");
         table.AutoFit = layout == "autofit";
+        table.LayoutExplicit = layout != null;
         if (properties?.Element(W + "tblInd") is XElement indent)
         {
             if ((string?)indent.Attribute(W + "type") == "dxa") table.LeftIndent = Integer(indent, W + "w", -31680, 31680) / 20.0;

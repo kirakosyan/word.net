@@ -39,6 +39,23 @@ of passes. Unsupported switches, missing/cyclic references or non-convergence
 retain cached results with diagnostics; no field expression executes code or
 loads remote content.
 
+DOCX serialization never requires fixed layout. It refreshes plain REF/SEQ text
+and retains pagination-dependent caches. Structured or mixed-format field caches
+keep their original runs; only the supported fixed-page heading TOC replaces its
+multi-paragraph cache. Empty paragraphs from that replaced result are removed.
+Word's default TOC display switches are accepted; unsupported range policies stay
+explicit. Block-level bookmark boundaries attach to adjacent content paragraphs.
+
+Lenient fixed-page layout grows overflowing exact-height rows, permits page-edge
+clipping of bleed drawings and reduces overflowing text-box content into its frame.
+Tables/nested boxes in text boxes flatten in reading order. Each approximation
+reports a strict-rejection diagnostic; Strict/BestEffort retain explicit failures.
+Non-paginated destinations map page/column controls to diagnosed line breaks and
+flatten text boxes without discarding nested runs. Note references resolve their
+final label at output time, and appended notes inherit the final body section.
+XPS image viewboxes use natural 96th-inch units derived from bounded PNG pHYs,
+JPEG JFIF and TIFF IFD0 EXIF density metadata, independent of physical frame size.
+
 Verification uses hand-authored OOXML, asymmetric raster markers, Open XML schema
 validation, independent PDF text/coordinates and rendered pixels. These tests
 qualify the documented profile, not arbitrary Microsoft Word pagination parity.

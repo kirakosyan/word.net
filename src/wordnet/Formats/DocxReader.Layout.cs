@@ -61,7 +61,7 @@ internal sealed partial class DocxReader
             }
             else if (property.Name == W + "pgNumType")
             {
-                if (property.Attribute(W + "start") != null) settings.PageNumberStart = Integer(property, W + "start", 1, int.MaxValue - 1);
+                if (property.Attribute(W + "start") != null) settings.PageNumberStart = Integer(property, W + "start", 0, int.MaxValue - 1);
                 string format = (string?)property.Attribute(W + "fmt") ?? "decimal";
                 if (format is "decimal" or "lowerRoman" or "upperRoman" or "lowerLetter" or "upperLetter") settings.PageNumberFormat = format;
                 else context.Loss("Docx.PageNumberFormat", "An unsupported page-number format uses decimal labels.");
