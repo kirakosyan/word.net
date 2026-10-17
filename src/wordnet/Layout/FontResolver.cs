@@ -30,6 +30,7 @@ internal sealed class FontResolver
         this.context = context; this.model = model; recording = recordUsage;
         characters = Enumerable.Range(32, 95).Select(i => (char)i)
             .Concat(model.Title + model.Author)
+            .Concat(model.Paragraphs.Where(p => p.List?.Definition != null).SelectMany(p => p.List!.Definition!).SelectMany(l => l.Pattern))
             .Concat(model.Paragraphs.SelectMany(p => p.Runs).SelectMany(r => r.Text + r.FieldInstruction)).Distinct().ToArray();
         FontOptions options = context.Options.Fonts ?? throw new ArgumentException("Font options must not be null.");
         sources = options.Sources.ToArray();
@@ -41,7 +42,11 @@ internal sealed class FontResolver
         {
             context.CheckCancellation();
             using var location = context.At(paragraph.Location);
-            if (paragraph.List != null) _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
+            if (paragraph.List != null)
+            {
+                _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
+                if (paragraph.List.Definition != null) foreach (ListLevel level in paragraph.List.Definition) _ = Resolve(level.Appearance.WithText(level.Pattern), paragraph.HeadingLevel > 0);
+            }
             foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
         }
         recording = true;

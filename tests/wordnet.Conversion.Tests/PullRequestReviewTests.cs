@@ -7,6 +7,7 @@ using AngleSharp.Html.Parser;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using OpenMcdf;
+using UglyToad.PdfPig;
 using WordNet.Formats;
 using WordNet.Internal;
 using WordNet.Layout;
@@ -137,7 +138,9 @@ public sealed class PullRequestReviewTests
         ConversionResult result;
         byte[] output = html ? converter.ConvertToHtml(input, out result, new ConversionOptions(FidelityMode.Lenient))
             : converter.ConvertToPdf(input, out result, new ConversionOptions(FidelityMode.Lenient));
-        Assert.Contains(result.Diagnostics, d => d.Code == "Notes.PlacedAtEnd" && d.Severity == DiagnosticSeverity.Warning);
+        Assert.DoesNotContain(result.Diagnostics, d => d.Code == "Notes.PlacedAtEnd");
+        if (html) Assert.Contains("doc-noteref", Encoding.UTF8.GetString(output), StringComparison.Ordinal);
+        else { using PdfDocument pdf = PdfDocument.Open(output); Assert.Contains("Independent contractual note", string.Concat(pdf.GetPages().Select(p => p.Text)), StringComparison.Ordinal); }
         Assert.Equal(output.LongLength, result.BytesWritten); Assert.Equal(output.LongLength, result.Metrics.BytesWritten);
         if (html) Assert.Null(result.Metrics.PageCount); else Assert.True(result.Metrics.PageCount > 0);
     }

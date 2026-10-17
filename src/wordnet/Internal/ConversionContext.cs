@@ -9,6 +9,7 @@ namespace WordNet.Internal;
 
 internal sealed class ConversionContext
 {
+    internal string PageNumberFormat { get; set; } = "decimal";
     private readonly List<ConversionDiagnostic> diagnostics = new List<ConversionDiagnostic>();
     private readonly Dictionary<string, ConversionDiagnostic> codes = new Dictionary<string, ConversionDiagnostic>(StringComparer.Ordinal);
     private readonly Dictionary<string, FontUsage> fontUsage = new Dictionary<string, FontUsage>(StringComparer.OrdinalIgnoreCase);

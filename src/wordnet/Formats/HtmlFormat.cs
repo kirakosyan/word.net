@@ -29,12 +29,24 @@ internal sealed class HtmlFormat
     internal static void Write(DocumentModel model, Stream output, ConversionContext context)
     {
         var writer = new HtmlFormat(model, context);
+        if (DocumentReferences.HasFields(model)) _ = DocumentReferences.Refresh(model, context, paginate: false);
         var body = new XElement("body", new XAttribute("style", "margin:0;padding:0;"));
         var content = new XElement("div", new XAttribute("style", "max-width:" + writer.options.MaxContentWidthPx.ToString(CultureInfo.InvariantCulture)
             + "px;margin:0 auto;font-family:'Noto Sans',Arial,sans-serif;font-size:12pt;"));
         if (writer.options.IncludeHeadersAndFooters) writer.Stories(content, model, "header-");
-        else if (model.AllBlocks.Count() != model.Blocks.Count) context.Report("Html.HeadersFootersOmitted", "Headers and footers are omitted by the HTML output policy.");
+        else if (model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Any(s => s?.Stories.Count > 0)) context.Report("Html.HeadersFootersOmitted", "Headers and footers are omitted by the HTML output policy.");
         writer.Blocks(content, model.Blocks);
+        if (model.Notes.Count > 0)
+        {
+            var notes = new XElement("section", new XAttribute("role", "doc-endnotes"));
+            foreach (DocumentNote note in model.Notes)
+            {
+                var entry = new XElement("div", new XAttribute("id", "note-" + note.Id.Replace(":", "-")), new XAttribute("role", "doc-endnote"),
+                    new XElement("a", new XAttribute("href", "#ref-" + note.Id.Replace(":", "-")), new XAttribute("aria-label", "Back to reference " + note.Label), note.Label));
+                writer.Blocks(entry, note.Blocks); notes.Add(entry);
+            }
+            content.Add(notes);
+        }
         if (writer.options.IncludeHeadersAndFooters) writer.Stories(content, model, "footer-");
         body.Add(content);
         var document = new XDocument(new XDocumentType("html", null, null, null),
@@ -88,7 +100,12 @@ internal sealed class HtmlFormat
             }
             var current = lists[level];
             var li = new XElement("li", element);
-            if (item.Ordered) li.SetAttributeValue("value", label.TrimEnd('.'));
+            if (item.Ordered) li.SetAttributeValue("value", counter.CurrentValue);
+            if (item.Definition != null)
+            {
+                li.SetAttributeValue("style", "list-style-type:none;");
+                element.AddFirst(new XElement("span", new XAttribute("style", "white-space:pre;"), label + (item.Definition[item.Level].Suffix == "nothing" ? "" : " ")));
+            }
             current.List.Add(li); current.Item = li; lists[level] = current;
         }
     }
@@ -118,9 +135,25 @@ internal sealed class HtmlFormat
         foreach (TextRun run in paragraph.Runs)
         {
             context.CheckCancellation();
+            if (run.Bookmark != null)
+            { if ((run.Bookmark.Length == 0 || run.Bookmark[0] != '/')) element.Add(new XElement("span", new XAttribute("id", run.Bookmark), "")); continue; }
             XElement span;
-            if (run.Image is DocumentImage image)
+            if (run.Box != null)
             {
+                span = new XElement("span", new XAttribute("style", "display:inline-block;position:relative;width:" + Pt(run.Box.Width) + ";height:" + Pt(run.Box.Height) + ";"));
+                Blocks(span, run.Box.Blocks);
+                foreach (XElement boxParagraph in span.Elements().Where(e => e.Name.LocalName is "p" or "h1" or "h2" or "h3" or "h4" or "h5" or "h6"))
+                { boxParagraph.Name = "span"; boxParagraph.SetAttributeValue("style", "display:block;" + (string?)boxParagraph.Attribute("style")); }
+                context.Loss("Html.DrawingPosition", "Positioned drawings use inline frames in reflowable HTML.");
+            }
+            else if (run.Note != null)
+            {
+                string id = run.Note.Id.Replace(":", "-");
+                span = new XElement("sup", new XElement("a", new XAttribute("id", "ref-" + id), new XAttribute("href", "#note-" + id), new XAttribute("role", "doc-noteref"), run.Note.Label));
+            }
+            else if (run.Image is DocumentImage image)
+            {
+                if (image.Anchor != null) context.Loss("Html.DrawingPosition", "Positioned drawings use inline frames in reflowable HTML.");
                 if (!options.EmbedImages)
                 {
                     context.Loss("Html.ImageOmitted", "Image embedding is disabled; alternative text is retained.");
@@ -130,6 +163,19 @@ internal sealed class HtmlFormat
                     new XAttribute("alt", image.AlternativeText), new XAttribute("width", Number(image.Width * 96 / 72)),
                     new XAttribute("height", Number(image.Height * 96 / 72)),
                     new XAttribute("style", "display:inline-block;width:" + Pt(image.Width) + ";height:" + Pt(image.Height) + ";border:0;"));
+                if (options.EmbedImages && image.Transformed)
+                {
+                    double a = image.Rotation * Math.PI / 180, c = Math.Round(Math.Cos(a)), s = Math.Round(Math.Sin(a));
+                    double xx = c * (image.FlipHorizontal ? -1 : 1), xy = s * (image.FlipHorizontal ? -1 : 1), yx = -s * (image.FlipVertical ? -1 : 1), yy = c * (image.FlipVertical ? -1 : 1);
+                    double fw = image.FrameWidth / (1 - image.CropLeft - image.CropRight), fh = image.FrameHeight / (1 - image.CropTop - image.CropBottom);
+                    span.SetAttributeValue("width", Number(fw * 96 / 72)); span.SetAttributeValue("height", Number(fh * 96 / 72));
+                    span.SetAttributeValue("style", "position:absolute;max-width:none;width:" + Pt(fw) + ";height:" + Pt(fh) + ";left:" + Pt(-fw * image.CropLeft) + ";top:" + Pt(-fh * image.CropTop) + ";");
+                    var frame = new XElement("span", new XAttribute("style", "position:absolute;overflow:hidden;width:" + Pt(image.FrameWidth) + ";height:" + Pt(image.FrameHeight)
+                        + ";transform-origin:0 0;transform:matrix(" + Number(xx) + "," + Number(xy) + "," + Number(yx) + "," + Number(yy) + ","
+                        + Number((image.Width / 2 - xx * image.FrameWidth / 2 - yx * image.FrameHeight / 2) * 96 / 72) + ","
+                        + Number((image.Height / 2 - xy * image.FrameWidth / 2 - yy * image.FrameHeight / 2) * 96 / 72) + ");"), span);
+                    span = new XElement("span", new XAttribute("style", "display:inline-block;position:relative;width:" + Pt(image.Width) + ";height:" + Pt(image.Height) + ";"), frame);
+                }
             }
             else
             {
@@ -143,7 +189,7 @@ internal sealed class HtmlFormat
                 if (appearance.VerticalAlignment != null) style += "vertical-align:" + (appearance.VerticalAlignment == "superscript" ? "super" : "sub") + ";";
                 span = new XElement("span", new XAttribute("style", style));
                 string text;
-                if (run.FieldInstruction != null && DocumentFields.Kind(run.FieldInstruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES")
+                if (run.FieldInstruction != null && DocumentFields.Kind(run.FieldInstruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES" or "PAGEREF" or "TOC")
                 {
                     context.Report("Html.PageFieldsUsedCachedResult", "Page fields retain their cached text because HTML has no fixed pagination.");
                     text = run.Text;
@@ -158,7 +204,7 @@ internal sealed class HtmlFormat
             }
             if (run.Link != null)
             {
-                string? link = context.SafeLink(run.Link);
+                string? link = (run.Link.Length > 0 && run.Link[0] == '#') ? run.Link : context.SafeLink(run.Link);
                 if (link != null) span = new XElement("a", new XAttribute("href", link), span);
             }
             element.Add(span);
@@ -170,10 +216,10 @@ internal sealed class HtmlFormat
 
     private XElement Table(TableBlock table)
     {
-        string width = table.Width.HasValue ? Pt(table.Width.Value) : "100%";
-        var element = new XElement("table", new XAttribute("width", table.Width.HasValue ? Number(table.Width.Value * 96 / 72) : "100%"),
+        string width = table.WidthPercent.HasValue ? Number(table.WidthPercent.Value) + "%" : table.Width.HasValue ? Pt(table.Width.Value) : "100%";
+        var element = new XElement("table", new XAttribute("width", table.WidthPercent.HasValue ? Number(table.WidthPercent.Value) + "%" : table.Width.HasValue ? Number(table.Width.Value * 96 / 72) : "100%"),
             new XAttribute("cellspacing", "0"), new XAttribute("cellpadding", "0"),
-            new XAttribute("style", "border-collapse:collapse;table-layout:fixed;width:" + width + ";margin-left:" + Pt(table.LeftIndent) + ";"));
+            new XAttribute("style", "border-collapse:collapse;table-layout:" + (table.AutoFit ? "auto" : "fixed") + ";width:" + width + ";margin-left:" + Pt(table.LeftIndent) + ";"));
         if (table.ColumnWidths.Count > 0) element.Add(new XElement("colgroup", table.ColumnWidths.Select(w => new XElement("col", new XAttribute("style", "width:" + Pt(w) + ";")))));
         var rows = new XElement("tbody");
         for (int r = 0; r < table.Rows.Count; r++)
@@ -191,7 +237,7 @@ internal sealed class HtmlFormat
                             + (border.Value.Style == "single" ? "solid" : border.Value.Style) + " #" + border.Value.Color + ";";
                     var output = new XElement("td", new XAttribute("style", "vertical-align:" + (cell.VerticalAlignment == "center" ? "middle" : cell.VerticalAlignment)
                         + ";padding:" + Pt(p.Top) + " " + Pt(p.Right) + " " + Pt(p.Bottom) + " " + Pt(p.Left)
-                        + ";" + decoration + (cell.CellWidth.HasValue ? "width:" + Pt(cell.CellWidth.Value) + ";" : "")));
+                        + ";" + decoration + (cell.WidthPercent.HasValue ? "width:" + Number(cell.WidthPercent.Value) + "%;" : cell.CellWidth.HasValue ? "width:" + Pt(cell.CellWidth.Value) + ";" : "")));
                     if (cell.ColumnSpan > 1) output.SetAttributeValue("colspan", cell.ColumnSpan);
                     if (cell.Merge == VerticalMerge.Start)
                     {

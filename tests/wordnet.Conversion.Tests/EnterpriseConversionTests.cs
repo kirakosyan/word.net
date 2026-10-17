@@ -59,7 +59,7 @@ public sealed class EnterpriseConversionTests
         Assert.All(html.QuerySelectorAll("[src],[href]"), element =>
         {
             string url = element.GetAttribute("src") ?? element.GetAttribute("href")!;
-            Assert.True(url.StartsWith("data:", StringComparison.Ordinal) || url.StartsWith("https:", StringComparison.Ordinal) || url.StartsWith("mailto:", StringComparison.Ordinal));
+            Assert.True(url.StartsWith("data:", StringComparison.Ordinal) || url.StartsWith("https:", StringComparison.Ordinal) || url.StartsWith("mailto:", StringComparison.Ordinal) || url.Length > 1 && url[0] == '#' && html.GetElementById(url.Substring(1)) != null);
         });
         using PdfDocument pdf = PdfDocument.Open(converter.ConvertToPdf(input, Options));
         Assert.Contains("Enterprise", string.Concat(pdf.GetPages().Select(p => p.Text)), StringComparison.Ordinal);

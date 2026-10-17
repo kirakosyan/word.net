@@ -7,16 +7,28 @@ namespace WordNet.Model;
 internal sealed class DocumentImage
 {
     private DocumentImage(byte[] bytes, string extension, int pixelsWide, int pixelsHigh, double width, double height, string alternativeText)
-    { Bytes = bytes; Extension = extension; PixelsWide = pixelsWide; PixelsHigh = pixelsHigh; Width = width; Height = height; AlternativeText = alternativeText; }
+    { Bytes = bytes; Extension = extension; PixelsWide = pixelsWide; PixelsHigh = pixelsHigh; FrameWidth = width; FrameHeight = height; AlternativeText = alternativeText; }
     internal byte[] Bytes { get; }
     internal string Extension { get; }
     internal string MediaType => Extension == "png" ? "image/png" : "image/jpeg";
     internal int PixelsWide { get; }
     internal int PixelsHigh { get; }
-    internal double Width { get; }
-    internal double Height { get; }
+    internal double FrameWidth { get; }
+    internal double FrameHeight { get; }
+    internal double Width => Rotation % 180 == 0 ? FrameWidth : FrameHeight;
+    internal double Height => Rotation % 180 == 0 ? FrameHeight : FrameWidth;
+    internal DrawingAnchor? Anchor { get; set; }
+    internal int Rotation { get; set; }
+    internal bool FlipHorizontal { get; set; }
+    internal bool FlipVertical { get; set; }
+    internal double CropLeft { get; set; }
+    internal double CropRight { get; set; }
+    internal double CropTop { get; set; }
+    internal double CropBottom { get; set; }
+    internal bool Transformed => Rotation != 0 || FlipHorizontal || FlipVertical || CropLeft != 0 || CropRight != 0 || CropTop != 0 || CropBottom != 0;
     internal string AlternativeText { get; }
-    internal DocumentImage Scaled(double factor) => new DocumentImage(Bytes, Extension, PixelsWide, PixelsHigh, Width * factor, Height * factor, AlternativeText);
+    internal DocumentImage Scaled(double factor) => new DocumentImage(Bytes, Extension, PixelsWide, PixelsHigh, FrameWidth * factor, FrameHeight * factor, AlternativeText)
+    { Anchor = Anchor, Rotation = Rotation, FlipHorizontal = FlipHorizontal, FlipVertical = FlipVertical, CropLeft = CropLeft, CropRight = CropRight, CropTop = CropTop, CropBottom = CropBottom };
 
     internal static DocumentImage Placeholder(double width, double height, string alt, ConversionContext context)
     {

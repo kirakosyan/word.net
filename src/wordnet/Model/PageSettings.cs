@@ -18,10 +18,19 @@ internal sealed class PageSettings
     internal double Top { get; set; } = 48;
     internal double Bottom { get; set; } = 48;
     internal bool Landscape { get; set; }
+    internal string BreakType { get; set; } = "nextPage";
+    internal int Columns { get; set; } = 1;
+    internal double ColumnGap { get; set; } = 36;
+    internal int? PageNumberStart { get; set; }
+    internal string PageNumberFormat { get; set; } = "decimal";
+    internal NotePolicy Footnotes { get; set; } = new NotePolicy();
+    internal NotePolicy Endnotes { get; set; } = new NotePolicy();
     internal PageSettings Copy() => (PageSettings)MemberwiseClone();
 
     internal void Validate()
     {
+        if (Columns < 1 || Columns > 3 || ColumnGap < 0 || (Width - Left - Right - (Columns - 1) * ColumnGap) / Columns <= 0)
+            throw new InvalidDataException("Layout.Columns: Columns must leave positive text width.");
         if (!Dimension(Width) || !Dimension(Height) || !Margin(Left) || !Margin(Right)
             || !Margin(Top) || !Margin(Bottom) || Left + Right >= Width || Top + Bottom >= Height)
             throw new InvalidDataException("Layout.PageGeometry: Page dimensions and margins must leave positive content space within the 22-inch profile.");
@@ -58,4 +67,11 @@ internal sealed class TabStop
     internal double Position { get; set; }
     internal string Alignment { get; set; } = "left";
     internal string Leader { get; set; } = "none";
+}
+
+internal sealed class NotePolicy
+{
+    internal string Format { get; set; } = "decimal";
+    internal int Start { get; set; } = 1;
+    internal string Restart { get; set; } = "continuous";
 }

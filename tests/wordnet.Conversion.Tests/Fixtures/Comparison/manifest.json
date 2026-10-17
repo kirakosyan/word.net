@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Independently authored synthetic examples, MIT; no customer data or proprietary resources.",
   "generator": "eng/generate-comparison-corpus.py",
-  "generatorSha256": "cdded33e218c9dc6a44c48f4e5c947f529b8b281cf95be6ad630749837acc25b",
+  "generatorSha256": "5bb1cc193904b08ee155f5a38bf0a1a85059cbe1d0855c9c12fb8b6c71adc2ba",
   "fonts": [
     {
       "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
@@ -54,10 +54,7 @@
         "80 EUR",
         "Total 480 EUR"
       ],
-      "knownLosses": [
-        "Table.NestedFlattened",
-        "Table.Decoration"
-      ],
+      "knownLosses": [],
       "expectedPages": 1,
       "references": []
     },
@@ -73,9 +70,7 @@
         "Tax 50 EUR",
         "Total 300 EUR"
       ],
-      "knownLosses": [
-        "Docx.RelativeWidth"
-      ],
+      "knownLosses": [],
       "expectedPages": 1,
       "references": []
     },
@@ -106,10 +101,7 @@
         "Acceptance criteria",
         "Liability cap is 5000 EUR."
       ],
-      "knownLosses": [
-        "Docx.ListFormat",
-        "Docx.ListLabel"
-      ],
+      "knownLosses": [],
       "expectedPages": 1,
       "references": []
     },
@@ -155,9 +147,7 @@
         "Observation one: response improved.",
         "Observation two: review remains open."
       ],
-      "knownLosses": [
-        "Docx.PageLayout"
-      ],
+      "knownLosses": [],
       "expectedPages": 1,
       "references": []
     },

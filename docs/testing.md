@@ -1,5 +1,46 @@
 # Conversion tests and qualification
 
+## Business-document fidelity — roadmap #32, section 2
+
+The bounded table, drawing, section, numbering, note and reference profiles are
+specified in [business fidelity decisions](business-fidelity-design.md) and the
+[fidelity guide](document-fidelity.md). The suite now has **610 cases**, including
+86 authored business-fidelity cases and removal of the obsolete XPS image-loss case.
+Both complete source suites pass **610/610**, with zero failures/skips, on Linux
+x64 .NET **8.0.32** and **10.0.12**. Locked restore, warning-free Release builds
+of all five core assets, format verification and NuGet package/API validation pass.
+The five Python comparison controls also pass; corpus fixture bytes are unchanged
+and the four newly supported cases have updated expected-loss manifests.
+
+The new cases independently validate DOCX markup with Open XML SDK and assert PDF
+text, precise positions, physical pages versus labels, linked TOCs/references,
+footnote placement, nested row splitting, invalid geometry and destination safety.
+An asymmetric four-color raster with a corner marker checks cropping and both
+mirror axes across right-angle rotations. Skia-rendered PDF samples for nested
+cells, text boxes and image transforms were inspected. MuPDF **1.26.11** through
+PyMuPDF **1.26.6** independently renders all **12** XPS transform combinations,
+checks **48** transform pixel samples, **8** PNG/JFIF/EXIF density cases at 72/144 dpi,
+and validates the nested table's text/colors. The review regressions cover all
+reflowable break fallbacks, zero-based page labels, negative crop padding,
+body/table/cell bookmarks, DOCX refresh without layout, Lenient drawing/row/box
+fallbacks, final note labels/appearance/sections, implicit table layout, Word's
+multi-paragraph default TOC, rich field caches and nested text-box content.
+
+Reproduce the optional independent XPS check after the required build:
+
+```sh
+WORDNET_BUSINESS_ARTIFACTS=/absolute/path/to/artifacts/business-fidelity/rasters \
+  dotnet test tests/wordnet.Conversion.Tests -c Release -f net10.0 --no-build --no-restore \
+  --filter FullyQualifiedName~BusinessFidelityTests
+python eng/verify-business-xps.py /absolute/path/to/artifacts/business-fidelity/rasters
+```
+
+PyMuPDF is a separately installed qualification tool under its own license, not a
+wordnet package dependency. Reports and reviewed samples are retained locally in
+ignored `artifacts/business-fidelity/`. This run does not qualify Windows,
+Framework execution, ARM64, desktop Word/Aspose parity or arbitrary template layout.
+
+
 ## Comparison corpus and preflight
 
 The additive preflight API and twelve-document comparison corpus are described in

@@ -57,8 +57,8 @@ and strong-name variants are waived under the NuGet-only deployment decision.
 
 The model carries absolute font sizes/RGB colors, decimal/bullet lists, inline PNG/JPEG
 with physical dimensions, section geometry, paragraph spacing/indentation/pagination,
-multi-paragraph cells, spans, repeating headers and row controls. It has no advanced
-numbering or editable charts/equations yet. DOCX revisions render their accepted state
+multi-paragraph cells, spans, repeating headers and row controls. It also carries bounded multilevel numbering, drawings, notes and section labels;
+editable charts/equations remain deferred. DOCX revisions render their accepted state
 with an explicit fidelity warning in BestEffort/Lenient; Strict rejects revision
 and comment loss before output is copied. Detected
 losses are diagnosed. See the [fidelity profile](document-fidelity.md).
@@ -101,12 +101,12 @@ their original paragraph/table-cell destinations, including nested fields. HTML
 retains cached pagination fields and never invokes fixed-page layout. Its optional
 header/footer blocks use only the first page's applicable story variants.
 
-Nested tables preserve structure through DOCX/HTML; other writers diagnose and
-flatten cell paragraphs. Cell borders/shading/vertical alignment reach DOCX/HTML and
-are diagnosed elsewhere. Aligned tab stops and justified/distributed text reach
-fixed pages. Lenient scaling and forced row/group splits retain content with
-warnings; this does not promise recovery of every pathological geometry.
-See [the enterprise audit](enterprise-audit.md).
+The [business fidelity profiles](business-fidelity-design.md) extend shared layout
+with recursively measured table bands, collapsed border primitives, bounded autofit,
+clipped/transformed raster frames, drawing exclusions, sequential columns, page labels,
+footnote reservations and calculated bookmark/TOC references. These remain internal
+model extensions with no new runtime dependencies or public API. DOCX preserves the
+supported editable structure; binary DOC retains explicit subset diagnostics.
 
 PDF import always reports reconstruction loss. Digital text becomes editable paragraphs.
 With OCR configured, image-only pages and pages with an image occupying at least half

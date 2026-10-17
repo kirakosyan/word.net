@@ -10,7 +10,7 @@ namespace WordNet.Formats;
 
 internal sealed partial class DocxReader
 {
-    private readonly List<DocumentBlock> noteBlocks = new List<DocumentBlock>();
+    private readonly Dictionary<string, DocumentNote> notes = new Dictionary<string, DocumentNote>(StringComparer.Ordinal);
     private readonly HashSet<string> noteIds = new HashSet<string>(StringComparer.Ordinal);
 
     private void ReadNotes()
@@ -29,10 +29,15 @@ internal sealed partial class DocxReader
             {
                 using var noteLocation = context.At(XmlSourceLocation.Create(note, path));
                 int id = Integer(note, W + "id", int.MinValue, int.MaxValue);
-                if (id < 0 || (string?)note.Attribute(W + "type") is "separator" or "continuationSeparator") continue;
+                if (id < 0 || (string?)note.Attribute(W + "type") is "separator" or "continuationSeparator")
+                {
+                    if (note.Descendants().Any(e => e.Name == W + "t" || e.Name == W + "drawing" || e.Name == W + "tbl" || e.Name == W + "rPr"))
+                        context.Loss("Notes.Separator", "Custom note separator content and appearance use a standard horizontal rule.");
+                    continue;
+                }
                 string label = id.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (!noteIds.Add(kind + ":" + label)) throw new InvalidDataException("Docx.Notes: Duplicate note identifier.");
-                context.Loss("Notes.PlacedAtEnd", "Note text is retained at the document end; original page placement and numbering styles are approximated.");
+
                 var reader = new DocxReader(context, package.ReadRelationships(path))
                 { package = package, mainPart = path, knownParts = knownParts, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle };
                 foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
@@ -40,8 +45,8 @@ internal sealed partial class DocxReader
                 foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);
                 var blocks = new List<DocumentBlock>(); reader.ReadBlocks(note, blocks);
                 if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed note field.");
-                if (blocks.FirstOrDefault() is ParagraphBlock first) first.Runs.Insert(0, new TextRun("[" + label + "] "));
-                noteBlocks.AddRange(blocks);
+                var semantic = new DocumentNote { Id = kind + ":" + label, PartId = id, Endnote = kind == "endnotes" };
+                semantic.Blocks.AddRange(blocks); notes.Add(semantic.Id, semantic);
             }
         }
     }

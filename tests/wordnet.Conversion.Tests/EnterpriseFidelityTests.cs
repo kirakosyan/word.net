@@ -77,15 +77,16 @@ public sealed class EnterpriseFidelityTests
     }
 
     [Fact]
-    public void NotesDegradeToEndTextWithAnExplicitWarning()
+    public void HtmlNotesRetainReferenceLinksAndEndText()
     {
         byte[] bytes = File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Enterprise", "contract-notes.docx"));
         using var source = new MemoryStream(bytes); using var output = new MemoryStream();
         ConversionResult result = new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Html, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
         using var html = new HtmlParser().ParseDocument(Encoding.UTF8.GetString(output.ToArray()));
-        Assert.Contains("Reference[1]", html.Body!.TextContent, StringComparison.Ordinal);
-        Assert.EndsWith("[1] Independent contractual note", html.Body.TextContent, StringComparison.Ordinal);
-        Assert.Contains(result.Diagnostics, d => d.Code == "Notes.PlacedAtEnd" && d.Severity == DiagnosticSeverity.Warning);
+        Assert.Contains("Reference1", html.Body!.TextContent, StringComparison.Ordinal);
+        Assert.EndsWith("1Independent contractual note", html.Body.TextContent, StringComparison.Ordinal);
+        Assert.DoesNotContain(result.Diagnostics, d => d.Code == "Notes.PlacedAtEnd");
+        Assert.NotNull(html.QuerySelector("a[role=doc-noteref]"));
     }
 
     [Theory]
