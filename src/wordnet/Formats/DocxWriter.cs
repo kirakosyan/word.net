@@ -32,23 +32,17 @@ internal sealed partial class DocxWriter
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
         PageSettings? previousSection = null;
-        foreach (DocumentBlock block in document.Blocks)
+        foreach (var group in writer.BlockGroups(document.Blocks, includeSections: true))
         {
             context.CheckCancellation();
+            DocumentBlock block = group.First;
             PageSettings? section = block.Section;
             if (body.HasElements && !ReferenceEquals(previousSection, section))
             {
                 writer.AttachSection(body, previousSection ?? new PageSettings());
             }
-            previousSection = section;
-            if (block is ParagraphBlock paragraph)
-            {
-                body.Add(writer.Paragraph(paragraph));
-            }
-            else if (block is TableBlock table)
-            {
-                body.Add(writer.Table(table));
-            }
+            previousSection = group.Last.Section;
+            body.Add(group.Content);
         }
 
         if (!body.HasElements)
@@ -109,6 +103,7 @@ internal sealed partial class DocxWriter
     private void AttachSection(XElement body, PageSettings settings)
     {
         XElement? last = body.Elements().LastOrDefault();
+        while (last?.Name == W + "sdt") last = last.Element(W + "sdtContent")?.Elements().LastOrDefault();
         if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
         XElement? properties = last.Element(W + "pPr");
         if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
@@ -139,22 +134,32 @@ internal sealed partial class DocxWriter
             { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
         if (properties.HasElements) element.Add(properties);
 
+        TemplateControl? currentControl = null;
+        XElement parent = element;
         foreach (TextRun run in paragraph.Runs)
         {
             context.CheckCancellation();
+            if (!ReferenceEquals(currentControl, run.Control))
+            {
+                currentControl = run.Control; parent = element;
+                if (currentControl != null)
+                {
+                    XElement wrapper = Control(currentControl, null); element.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!;
+                }
+            }
             XElement runElement = Run(run);
             if (run.Link == null)
             {
-                element.Add(runElement);
+                parent.Add(runElement);
             }
-            else if ((run.Link.Length > 0 && run.Link[0] == '#')) element.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElement));
+            else if ((run.Link.Length > 0 && run.Link[0] == '#')) parent.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElement));
             else
             {
                 string id = "rLink" + relationships.Count.ToString(CultureInfo.InvariantCulture);
                 XElement relationship = Relationship(id, "hyperlink", run.Link);
                 relationship.Add(new XAttribute("TargetMode", "External"));
                 relationships.Add(relationship);
-                element.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElement));
+                parent.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElement));
             }
         }
 
@@ -173,6 +178,11 @@ internal sealed partial class DocxWriter
         {
             string result = model.FieldResults.TryGetValue(run, out string? calculated) ? calculated : run.Text;
             var field = new XElement(W + "fldSimple", new XAttribute(W + "instr", run.FieldInstruction));
+            if (run.FieldCache != null && calculated == null)
+            {
+                var cached = new ParagraphBlock(); cached.Runs.AddRange(run.FieldCache);
+                field.Add(Paragraph(cached).Elements().Where(e => e.Name != W + "pPr").ToArray()); return field;
+            }
             if (model.TocTargets.TryGetValue(run, out List<string>? targets))
             {
                 string[] lines = result.Split('\n');
@@ -265,6 +275,7 @@ internal sealed partial class DocxWriter
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));
+        TemplateControl? previousControl = null; XElement? rowContent = null;
         for (int index = 0; index < table.Rows.Count; index++)
         {
             context.CheckCancellation();
@@ -289,14 +300,41 @@ internal sealed partial class DocxWriter
                 if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
                     Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
                 if (cell.VerticalAlignment != "top") cellProperties.Add(new XElement(W + "vAlign", new XAttribute(W + "val", cell.VerticalAlignment)));
-                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, cell.Blocks.Select(b => b is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)b))));
+                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Blocks(cell.Blocks)));
             }
 
-            element.Add(row);
+            if (table.RowControls.TryGetValue(index, out TemplateControl? control))
+            {
+                if (ReferenceEquals(previousControl, control)) rowContent!.Add(row);
+                else { XElement wrapper = Control(control, row); element.Add(wrapper); rowContent = wrapper.Element(W + "sdtContent"); }
+                previousControl = control;
+            }
+            else { element.Add(row); previousControl = null; rowContent = null; }
         }
 
         return element;
     }
+
+    private IEnumerable<XElement> Blocks(IEnumerable<DocumentBlock> blocks) => BlockGroups(blocks).Select(g => g.Content);
+    private IEnumerable<(DocumentBlock First, DocumentBlock Last, XElement Content)> BlockGroups(IEnumerable<DocumentBlock> blocks, bool includeSections = false)
+    {
+        DocumentBlock? first = null, last = null; XElement? group = null;
+        foreach (DocumentBlock block in blocks)
+        {
+            if (first != null && (block.Control == null || !ReferenceEquals(first.Control, block.Control)))
+            { yield return (first, last!, group!); first = null; group = null; }
+            if (first != null && includeSections && !ReferenceEquals(last!.Section, block.Section))
+                AttachSection(group!.Element(W + "sdtContent")!, last.Section ?? new PageSettings());
+            XElement element = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
+            if (block.Control == null) { yield return (block, block, element); continue; }
+            if (first == null) { first = block; group = Control(block.Control, element); }
+            else group!.Element(W + "sdtContent")!.Add(element);
+            last = block;
+        }
+        if (first != null) yield return (first, last!, group!);
+    }
+    private static XElement Control(TemplateControl control, XElement? content) => new XElement(W + "sdt",
+        new XElement(W + "sdtPr", new XElement(W + "tag", new XAttribute(W + "val", control.Tag))), new XElement(W + "sdtContent", content));
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
     private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));

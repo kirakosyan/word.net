@@ -28,6 +28,23 @@ internal sealed partial class DocxReader
 
     private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result)
     {
+        if (context.Editing && DocumentFields.Kind(instruction) == "MERGEFIELD")
+        {
+            if (result.Any(r => r.Run.Image != null || r.Run.Box != null || r.Run.Bookmark != null || r.Run.Note != null || r.Run.FieldInstruction != null || r.Run.Control != null)
+                || result.Select(r => r.Target).Distinct().Skip(1).Any())
+            {
+                context.Loss("Template.FieldStructure", "A merge field with embedded structure or multiple result paragraphs retains its cached content.");
+                foreach (var cached in result) Emit(cached.Target, cached.Run);
+            }
+            else
+            {
+                TextRun prototype = result.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
+                Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(string.Concat(result.Select(r => r.Run.Text)), prototype.Bold, prototype.Italic,
+                    prototype.Code, prototype.Link, prototype.FontSize, prototype.Color, appearance: prototype.Appearance, fieldInstruction: instruction)
+                { FieldCache = result.Select(r => r.Run).ToList() });
+            }
+            return;
+        }
         if (!DocumentFields.Supported(instruction))
         {
             context.Report("Field.UnsupportedUsedCachedResult", "An unsupported field uses its cached result text.");

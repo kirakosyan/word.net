@@ -6,7 +6,7 @@ namespace WordNet.Model;
 
 internal sealed class PageSettings
 {
-    internal Dictionary<string, List<DocumentBlock>> Stories { get; } = new Dictionary<string, List<DocumentBlock>>(StringComparer.Ordinal);
+    internal Dictionary<string, List<DocumentBlock>> Stories { get; private set; } = new Dictionary<string, List<DocumentBlock>>(StringComparer.Ordinal);
     internal bool DifferentFirstPage { get; set; }
     internal bool EvenAndOdd { get; set; }
     internal double HeaderDistance { get; set; } = 36;
@@ -26,6 +26,10 @@ internal sealed class PageSettings
     internal NotePolicy Footnotes { get; set; } = new NotePolicy();
     internal NotePolicy Endnotes { get; set; } = new NotePolicy();
     internal PageSettings Copy() => (PageSettings)MemberwiseClone();
+    internal PageSettings EditingCopy()
+    {
+        var copy = Copy(); copy.Stories = new Dictionary<string, List<DocumentBlock>>(StringComparer.Ordinal); return copy;
+    }
 
     internal void Validate()
     {

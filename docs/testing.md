@@ -1,10 +1,81 @@
 # Conversion tests and qualification
 
+## Evidence by revision
+
+The latest merged rendering increment is PR [#34](https://github.com/kirakosyan/word.net/pull/34),
+main commit `1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, with **610** required cases.
+Its reviewed head passed all **20** CI check runs before merge. The editing/template
+candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35) now has **696**
+required cases after review regressions. The earlier 664-case head
+`811d6a26af91ebbd95249f4189230be99ddb483e` passed all **20** CI check runs.
+The PR remains unmerged at this reconciliation; review changes require checks on
+their new head. Current local evidence follows below.
+
+The PR CI checks include native Windows/Linux x64/ARM64 source and packed-asset
+lanes, compile checks and the single-core PDF performance/memory gate. These are
+PR-head results; they do not replace exact-main-package release qualification,
+actual minimum-Framework execution, desktop Word or licensed Aspose references.
+Local runs and independent-reader evidence are detailed below. Historical release
+sections retain their original case counts. See the [delivery status and post-merge
+checklist](implementation-plan.md) before interpreting an old count as current.
+
+## PR #35 review regressions
+
+Thirty-two new cases address the 15 review findings, bringing the editing/template
+profile to **86** authored cases and the complete suite to **696**. Independent
+OOXML fixtures and schema validation check external/local repeat references,
+cell block controls and diagnosed unsupported wrappers, text boxes inside cells,
+inherited shared headers, multi-block/row control boundaries (including cross-section and empty-region cases), wrapped section/note
+paragraphs, cached controls inside fields, rejected flattened nested execution,
+item-scoped repeated notes, Word percent/meridiem/literal formats, unrelated Word
+controls and protected inline-control edits. Independent EPUB input exercises
+scaled-image rounding through public snapshots. Large cases replace 30,000 styled
+runs and atomically create a 20,000-paragraph report with the bulk API, including
+cancellation and limit rollback.
+
+Locked restore, warning-free all-target Release builds, **696/696** complete
+conversion/OCR cases on each local Linux x64 .NET **8.0.32** and **10.0.12**
+(zero failures/skips), formatting, five comparison controls, package/API validation
+and package-content inspection pass. The added `AddParagraphs` API is documented
+in all five core assets; dependencies are unchanged. The public sample also runs.
+Reports are under ignored `artifacts/pr35-review`. These local results do not add
+Windows/Framework, ARM64, minimum-runtime, Word/Aspose or PDF/UA qualification.
+
+## Document editing and templates — roadmap #32, section 3
+
+The [editing/template guide](editing-and-templates.md) and
+[design contract](editing-template-design.md) describe the additive public API and
+bounded grammar. The initial **54** authored editing/template cases brought the
+required suite to **664** before review. Fixtures independently construct OOXML and Open XML SDK
+validates editable output; PDF assertions check actual text, pages, geometry,
+images and labels. Cases cover styled cross-run replacement, Unicode/regex barriers,
+bookmark pairs, atomic failure, callback reentrancy and serialized sessions;
+composition style/list/bookmark/story/image collisions, default page geometry and
+unresolved references; and scalar/JSON/culture merge, nested repeats, conditions,
+image bytes/dimensions, note identities, row spans/decoration, missing/null data,
+syntax/row/depth/expansion bounds and cancellation. Existing conversion behavior
+still uses cached merge-field content.
+
+The standalone `examples/WordNet.Automation` project exercises only the public
+core API. It creates a letter, fills an independently authored invoice and assembles
+an appendix, exporting DOCX and PDF. MuPDF 1.26.11 independently reads the invoice's
+populated text and the assembled document's three pages. The sample emits the
+expected image alternative-text/accessibility diagnostic. Generated outputs remain
+under ignored `artifacts/automation-sample`.
+
+Locked restore, warning-free all-target Release builds, **664/664** complete
+conversion/OCR cases on each Linux x64 .NET **8.0.32** and **10.0.12** (no skips),
+format verification, five comparison controls, NuGet/API validation and package
+inspection pass. Runtime dependencies remain unchanged and all five assets contain
+the same documented editing API. Reports are retained in ignored
+`artifacts/editing-templates/tests`. This change does not add local Windows,
+Framework-runtime, ARM64, desktop Word/Aspose or arbitrary-template qualification.
+
 ## Business-document fidelity — roadmap #32, section 2
 
 The bounded table, drawing, section, numbering, note and reference profiles are
 specified in [business fidelity decisions](business-fidelity-design.md) and the
-[fidelity guide](document-fidelity.md). The suite now has **610 cases**, including
+[fidelity guide](document-fidelity.md). That increment brought the suite to **610 cases**, including
 86 authored business-fidelity cases and removal of the obsolete XPS image-loss case.
 Both complete source suites pass **610/610**, with zero failures/skips, on Linux
 x64 .NET **8.0.32** and **10.0.12**. Locked restore, warning-free Release builds

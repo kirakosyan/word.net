@@ -197,7 +197,7 @@ public sealed partial class WordConverter : IDocumentConverter
         context.CheckCancellation();
     }
 
-    private static DocumentModel ReadDocument(MemoryStream input, DocumentFormat from, ConversionContext context)
+    internal static DocumentModel ReadDocument(MemoryStream input, DocumentFormat from, ConversionContext context)
     {
         context.Phase = from == DocumentFormat.Pdf ? DiagnosticPhase.Provider : DiagnosticPhase.Parse;
         context.Location = new SourceLocation(from.ToString(), "/");

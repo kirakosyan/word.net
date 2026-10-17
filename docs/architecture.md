@@ -6,7 +6,18 @@ The public namespace is `WordNet`; the assembly and package ID are `wordnet`.
 All targets retain matching APIs:
 `net462;net472;netstandard2.0;net8.0;net10.0`.
 
+The [implementation plan](implementation-plan.md) separates merged roadmap work,
+pending PRs and published-package capabilities. Business-document profiles landed in
+PR #34; the editing/template implementation below is delivered through PR #35.
+
 ## Pipeline
+
+The [editing/template API](editing-template-design.md) adds serialized `WordDocument`
+sessions over private semantic-model copies. Mutations admit aggregate resources
+before committing, and saves use independent copies. Editing loads preserve merge
+instructions and tagged controls without changing ordinary conversion's cache
+behavior. Composition remaps identifiers; template execution uses bounded named
+data, repeat rows and truth-value conditions. See the [usage guide](editing-and-templates.md).
 
 ```mermaid
 flowchart LR

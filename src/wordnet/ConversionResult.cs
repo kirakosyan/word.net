@@ -51,6 +51,19 @@ public sealed class ConversionDiagnostic
         locations.Add(key);
         occurrences.Add(new DiagnosticOccurrence(new SourceLocation(key.Part, key.Path), phase));
     }
+
+    internal ConversionDiagnostic Copy()
+    {
+        var copy = new ConversionDiagnostic(Code, Message, Severity) { Count = Count };
+        foreach (DiagnosticOccurrence occurrence in occurrences) copy.Observe(occurrence.Location, occurrence.Phase);
+        copy.LocationsTruncated = LocationsTruncated; return copy;
+    }
+    internal void Include(ConversionDiagnostic source)
+    {
+        Count = checked(Count + source.Count);
+        foreach (DiagnosticOccurrence occurrence in source.Occurrences) Observe(occurrence.Location, occurrence.Phase);
+        LocationsTruncated |= source.LocationsTruncated;
+    }
 }
 
 /// <summary>Reports successfully written output and any detected losses.</summary>
