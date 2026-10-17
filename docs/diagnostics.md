@@ -22,6 +22,13 @@ model, not byte offsets or original PDF coordinates. Grouped codes/properties an
 remain compatible. Counts now observe individual matching blocks for destination
 checks, which can expose several locations under one existing code.
 
+The editing/template API merged in #35 (`0b2af843`) preserves load findings across
+edits and saves; Strict saves reject retained losses. Unsupported execution regions
+fail before binding rather than silently executing flattened content. The generated
+catalog below includes that merged profile; see [editing limits](editing-and-templates.md)
+and [revision-specific evidence](testing.md). No bucket-4 diagnostic contract is
+advertised yet.
+
 ## Inspect before conversion
 
 `WordConverter.Inspect` and `InspectAsync` consume input from the current position,
