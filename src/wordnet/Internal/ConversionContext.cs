@@ -22,6 +22,7 @@ internal sealed class ConversionContext
     internal DiagnosticPhase Phase { get; set; }
     internal SourceLocation Location { get; set; } = new SourceLocation("document", "/");
     internal bool Inspecting { get; set; }
+    internal bool Editing { get; set; }
     internal bool HasStrictRejection { get; private set; }
     internal FidelityMode EffectiveMode => Inspecting && Options.FidelityMode == FidelityMode.Strict ? FidelityMode.BestEffort : Options.FidelityMode;
     internal int? ArchiveEntryCount { get; set; }
@@ -105,6 +106,18 @@ internal sealed class ConversionContext
         }
         else existing.Count = checked(existing.Count + 1);
         codes[code].Observe(Location, Phase);
+    }
+
+    internal void Inherit(ConversionDiagnostic source)
+    {
+        CheckCancellation();
+        if (source.Severity == DiagnosticSeverity.Warning)
+        {
+            HasStrictRejection = true;
+            if (EffectiveMode == FidelityMode.Strict) throw new NotSupportedException(source.Code + ": " + source.Message);
+        }
+        if (codes.TryGetValue(source.Code, out ConversionDiagnostic? existing)) existing.Include(source);
+        else { ConversionDiagnostic copy = source.Copy(); codes.Add(copy.Code, copy); diagnostics.Add(copy); }
     }
 
     internal ConversionResult Result(long count)

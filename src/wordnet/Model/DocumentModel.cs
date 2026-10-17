@@ -35,6 +35,7 @@ internal sealed class DocumentModel
 
 internal abstract class DocumentBlock
 {
+    internal TemplateControl? Control { get; set; }
     internal SourceLocation? Location { get; set; }
     internal PageSettings? Section { get; set; }
 }
@@ -64,6 +65,7 @@ internal sealed class TableBlock : DocumentBlock
     internal double? WidthPercent { get; set; }
     internal bool AutoFit { get; set; }
     internal bool LayoutExplicit { get; set; }
+    internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal Dictionary<int, double> RowLefts { get; } = new Dictionary<int, double>();
@@ -110,7 +112,7 @@ internal sealed class CellBorder
 internal sealed class TextRun
 {
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
-        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null)
+        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null)
     {
         this.text = text;
         Bold = bold;
@@ -122,6 +124,7 @@ internal sealed class TextRun
         Image = image;
         Appearance = appearance ?? new RunAppearance();
         FieldInstruction = fieldInstruction; Note = note; Box = box; Bookmark = bookmark;
+        Control = control;
     }
 
     private readonly string text;
@@ -138,7 +141,15 @@ internal sealed class TextRun
     internal DocumentNote? Note { get; }
     internal PositionedBox? Box { get; }
     internal string? Bookmark { get; }
-    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark);
+    internal TemplateControl? Control { get; }
+    internal List<TextRun>? FieldCache { get; set; }
+    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control) { FieldCache = FieldCache };
+}
+
+internal sealed class TemplateControl
+{
+    internal TemplateControl(string tag) { Tag = tag; }
+    internal string Tag { get; }
 }
 
 internal sealed class RunAppearance

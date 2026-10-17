@@ -43,11 +43,11 @@ internal sealed partial class DocxWriter
             previousSection = section;
             if (block is ParagraphBlock paragraph)
             {
-                body.Add(writer.Paragraph(paragraph));
+                body.Add(writer.Block(paragraph));
             }
             else if (block is TableBlock table)
             {
-                body.Add(writer.Table(table));
+                body.Add(writer.Block(table));
             }
         }
 
@@ -139,22 +139,32 @@ internal sealed partial class DocxWriter
             { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
         if (properties.HasElements) element.Add(properties);
 
+        TemplateControl? currentControl = null;
+        XElement parent = element;
         foreach (TextRun run in paragraph.Runs)
         {
             context.CheckCancellation();
+            if (!ReferenceEquals(currentControl, run.Control))
+            {
+                currentControl = run.Control; parent = element;
+                if (currentControl != null)
+                {
+                    XElement wrapper = Control(currentControl, null); element.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!;
+                }
+            }
             XElement runElement = Run(run);
             if (run.Link == null)
             {
-                element.Add(runElement);
+                parent.Add(runElement);
             }
-            else if ((run.Link.Length > 0 && run.Link[0] == '#')) element.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElement));
+            else if ((run.Link.Length > 0 && run.Link[0] == '#')) parent.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElement));
             else
             {
                 string id = "rLink" + relationships.Count.ToString(CultureInfo.InvariantCulture);
                 XElement relationship = Relationship(id, "hyperlink", run.Link);
                 relationship.Add(new XAttribute("TargetMode", "External"));
                 relationships.Add(relationship);
-                element.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElement));
+                parent.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElement));
             }
         }
 
@@ -173,6 +183,11 @@ internal sealed partial class DocxWriter
         {
             string result = model.FieldResults.TryGetValue(run, out string? calculated) ? calculated : run.Text;
             var field = new XElement(W + "fldSimple", new XAttribute(W + "instr", run.FieldInstruction));
+            if (run.FieldCache != null && calculated == null)
+            {
+                var cached = new ParagraphBlock(); cached.Runs.AddRange(run.FieldCache);
+                field.Add(Paragraph(cached).Elements().Where(e => e.Name != W + "pPr").ToArray()); return field;
+            }
             if (model.TocTargets.TryGetValue(run, out List<string>? targets))
             {
                 string[] lines = result.Split('\n');
@@ -289,14 +304,22 @@ internal sealed partial class DocxWriter
                 if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
                     Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
                 if (cell.VerticalAlignment != "top") cellProperties.Add(new XElement(W + "vAlign", new XAttribute(W + "val", cell.VerticalAlignment)));
-                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, cell.Blocks.Select(b => b is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)b))));
+                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, cell.Blocks.Select(Block)));
             }
 
-            element.Add(row);
+            element.Add(table.RowControls.TryGetValue(index, out TemplateControl? control) ? Control(control, row) : row);
         }
 
         return element;
     }
+
+    private XElement Block(DocumentBlock block)
+    {
+        XElement result = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
+        return block.Control == null ? result : Control(block.Control, result);
+    }
+    private static XElement Control(TemplateControl control, XElement? content) => new XElement(W + "sdt",
+        new XElement(W + "sdtPr", new XElement(W + "tag", new XAttribute(W + "val", control.Tag))), new XElement(W + "sdtContent", content));
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
     private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));

@@ -18,7 +18,8 @@ Saving uses another copy because fidelity checks and pagination may mutate their
 working model. Caller streams remain open, and output is staged before copying.
 Original load warnings remain visible on later results; Strict save rejects earlier
 detected losses. Separate sessions can be used concurrently. Caller data/options
-must remain stable during a call. Async I/O follows the existing converter contract.
+must remain stable during a call. Session operations are synchronous; the existing
+converter's asynchronous I/O contract is unchanged.
 
 Literal and timeout-bounded regex replacements are leftmost, non-overlapping,
 paragraph-local and story-local. Fields, bookmarks, images, notes and boxes are

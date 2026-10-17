@@ -19,6 +19,11 @@ DOC / DOCX → XPS · HTML
 
 ## Convert a document
 
+For the unreleased document creation, editing, composition and mail-merge API, see the
+[editing and templates guide](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md)
+and the standalone `examples/WordNet.Automation` sample. This adds a bounded
+`WordDocument` session API alongside the existing converter.
+
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh

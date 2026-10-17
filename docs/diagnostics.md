@@ -304,5 +304,12 @@ conversion diagnostics.
 | `Table.RowForcedSplit` | Report | An oversized non-splitting row is split at line boundaries. |
 | `Table.ShadingApproximated` | Loss | Patterned cell shading uses its solid background color. |
 | `Table.WidthApproximated` | Report | Cell width and padding are constrained to printable space. |
+| `Template.ControlProperties` | Loss | Control-specific validation, locking, data bindings and appearance are outside the editable tagged-control profile. |
+| `Template.FieldStructure` | Loss | A merge field with embedded structure or multiple result paragraphs retains its cached content. |
+| `Template.MissingValue` | Loss | Missing template data uses the explicitly selected fallback policy. |
+| `Template.NestedBlockControls` | Loss | Nested controls sharing a block are outside the editable template profile. |
+| `Template.NestedInlineControls` | Loss | Nested controls sharing inline text are outside the editable template profile. |
+| `Template.NestedRowControls` | Loss | Nested controls sharing one table row are outside the editable template profile. |
+| `Template.UnmergedOutput` | Loss | Unexecuted template constructs use cached content without editable template semantics in this destination. |
 | `Text.Formatting` | Loss | Plain text cannot represent rich formatting. |
 | `Text.TableStructure` | Loss | Table structure becomes tab-separated rows in plain text. |

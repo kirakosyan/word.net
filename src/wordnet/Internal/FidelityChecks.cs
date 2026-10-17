@@ -8,6 +8,9 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        if (format != DocumentFormat.Docx && (model.Paragraphs.Any(p => p.Control != null || p.Runs.Any(r => r.Control != null || r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "MERGEFIELD"))
+            || model.Tables.Any(t => t.Control != null || t.RowControls.Count > 0)))
+            context.Loss("Template.UnmergedOutput", "Unexecuted template constructs use cached content without editable template semantics in this destination.");
         foreach (TableBlock table in model.Tables)
         {
             using var location = context.At(table.Location);

@@ -1,10 +1,40 @@
 # Conversion tests and qualification
 
+## Document editing and templates — roadmap #32, section 3
+
+The [editing/template guide](editing-and-templates.md) and
+[design contract](editing-template-design.md) describe the additive public API and
+bounded grammar. There are **54** authored editing/template cases, bringing the
+required suite to **664**. Fixtures independently construct OOXML and Open XML SDK
+validates editable output; PDF assertions check actual text, pages, geometry,
+images and labels. Cases cover styled cross-run replacement, Unicode/regex barriers,
+bookmark pairs, atomic failure, callback reentrancy and serialized sessions;
+composition style/list/bookmark/story/image collisions, default page geometry and
+unresolved references; and scalar/JSON/culture merge, nested repeats, conditions,
+image bytes/dimensions, note identities, row spans/decoration, missing/null data,
+syntax/row/depth/expansion bounds and cancellation. Existing conversion behavior
+still uses cached merge-field content.
+
+The standalone `examples/WordNet.Automation` project exercises only the public
+core API. It creates a letter, fills an independently authored invoice and assembles
+an appendix, exporting DOCX and PDF. MuPDF 1.26.11 independently reads the invoice's
+populated text and the assembled document's three pages. The sample emits the
+expected image alternative-text/accessibility diagnostic. Generated outputs remain
+under ignored `artifacts/automation-sample`.
+
+Locked restore, warning-free all-target Release builds, **664/664** complete
+conversion/OCR cases on each Linux x64 .NET **8.0.32** and **10.0.12** (no skips),
+format verification, five comparison controls, NuGet/API validation and package
+inspection pass. Runtime dependencies remain unchanged and all five assets contain
+the same documented editing API. Reports are retained in ignored
+`artifacts/editing-templates/tests`. This change does not add local Windows,
+Framework-runtime, ARM64, desktop Word/Aspose or arbitrary-template qualification.
+
 ## Business-document fidelity — roadmap #32, section 2
 
 The bounded table, drawing, section, numbering, note and reference profiles are
 specified in [business fidelity decisions](business-fidelity-design.md) and the
-[fidelity guide](document-fidelity.md). The suite now has **610 cases**, including
+[fidelity guide](document-fidelity.md). That increment brought the suite to **610 cases**, including
 86 authored business-fidelity cases and removal of the obsolete XPS image-loss case.
 Both complete source suites pass **610/610**, with zero failures/skips, on Linux
 x64 .NET **8.0.32** and **10.0.12**. Locked restore, warning-free Release builds

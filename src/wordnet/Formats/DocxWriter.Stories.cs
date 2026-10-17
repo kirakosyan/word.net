@@ -32,7 +32,7 @@ internal sealed partial class DocxWriter
             int relationshipStart = relationships.Count;
             var root = new XElement(W + (story.Value.Kind == "header" ? "hdr" : "ftr"));
             foreach (DocumentBlock block in story.Key)
-                root.Add(block is ParagraphBlock paragraph ? Paragraph(paragraph) : Table((TableBlock)block));
+                root.Add(Block(block));
             var ownRelationships = relationships.Skip(relationshipStart).ToArray();
             relationships.RemoveRange(relationshipStart, relationships.Count - relationshipStart);
             WritePart(archive, "word/" + story.Value.Path, root);

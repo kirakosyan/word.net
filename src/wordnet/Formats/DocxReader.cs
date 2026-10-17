@@ -189,6 +189,12 @@ internal sealed partial class DocxReader
             context.CheckCancellation();
             using var location = element.Name == W + "p" || element.Name == W + "tbl" ? null : context.At(XmlSourceLocation.Create(element, mainPart));
             if (BlockBookmark(element, blocks, pendingBookmarks)) continue;
+            int controlStart = blocks.Count;
+            if (ReadBlockControl(element, blocks))
+            {
+                if (blocks.Count > controlStart) AttachBookmarks(pendingBookmarks, new[] { blocks[controlStart] }, true);
+                continue;
+            }
             if (Container(element, out XElement? content))
             {
                 int first = blocks.Count;
@@ -256,6 +262,7 @@ internal sealed partial class DocxReader
         {
             context.CheckCancellation();
             using var location = context.At(XmlSourceLocation.Create(child, mainPart));
+            if (ReadInlineControl(child, runs, inherited, link)) continue;
             if (Container(child, out XElement? content))
             {
                 if (content != null) ReadInlines(content, runs, inherited, link);
@@ -381,6 +388,7 @@ internal sealed partial class DocxReader
             }
 
             using var rowLocation = context.At(XmlSourceLocation.Create(child, mainPart));
+            if (rowControls.TryGetValue(child, out TemplateControl? control)) table.RowControls.Add(table.Rows.Count, control);
             var cells = new List<TableCell>();
             foreach (XElement rowChild in TableContents(child))
             {
@@ -468,9 +476,17 @@ internal sealed partial class DocxReader
         {
             if (child.Name == W + "sdt" || child.Name == W + "sdtContent" || child.Name == W + "customXml")
             {
-                context.Loss("Docx.TableStructure", "Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs.");
+                if (!context.Editing) context.Loss("Docx.TableStructure", "Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs.");
                 XElement? content = child.Name == W + "sdt" ? child.Element(W + "sdtContent") : child;
-                if (content != null) foreach (XElement nested in TableContents(content)) yield return nested;
+                TemplateControl? control = context.Editing && child.Name == W + "sdt" ? ReadControl(child) : null;
+                if (content != null) foreach (XElement nested in TableContents(content))
+                {
+                    if (control != null && nested.Name == W + "tr")
+                    {
+                        RegisterRowControl(nested, control);
+                    }
+                    yield return nested;
+                }
             }
             else yield return child;
         }

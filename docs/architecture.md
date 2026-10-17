@@ -8,6 +8,13 @@ All targets retain matching APIs:
 
 ## Pipeline
 
+The [editing/template API](editing-template-design.md) adds serialized `WordDocument`
+sessions over private semantic-model copies. Mutations admit aggregate resources
+before committing, and saves use independent copies. Editing loads preserve merge
+instructions and tagged controls without changing ordinary conversion's cache
+behavior. Composition remaps identifiers; template execution uses bounded named
+data, repeat rows and truth-value conditions. See the [usage guide](editing-and-templates.md).
+
 ```mermaid
 flowchart LR
     A[Bounded input] --> B[Format reader]
