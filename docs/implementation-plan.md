@@ -25,7 +25,7 @@ perfect Word pagination, arbitrary drawing layout and unrestricted field evaluat
 are outside the profile.
 
 Main's last merged rendering increment has **610** required conversion/OCR cases.
-The #35 review candidate has **694**, including 84 authored editing/template cases.
+The #35 review candidate has **696**, including 86 authored editing/template cases.
 PR #34 and #35's earlier 664-case head passed 20 CI checks each; the new review
 head requires fresh checks. Current local complete suites pass on Linux x64 .NET
 8/10 without skips. Counts and qualification belong to their specific revisions. See

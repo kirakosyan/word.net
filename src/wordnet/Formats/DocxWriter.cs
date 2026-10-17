@@ -32,7 +32,7 @@ internal sealed partial class DocxWriter
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
         PageSettings? previousSection = null;
-        foreach (var group in writer.BlockGroups(document.Blocks))
+        foreach (var group in writer.BlockGroups(document.Blocks, includeSections: true))
         {
             context.CheckCancellation();
             DocumentBlock block = group.First;
@@ -41,7 +41,7 @@ internal sealed partial class DocxWriter
             {
                 writer.AttachSection(body, previousSection ?? new PageSettings());
             }
-            previousSection = section;
+            previousSection = group.Last.Section;
             body.Add(group.Content);
         }
 
@@ -316,19 +316,22 @@ internal sealed partial class DocxWriter
     }
 
     private IEnumerable<XElement> Blocks(IEnumerable<DocumentBlock> blocks) => BlockGroups(blocks).Select(g => g.Content);
-    private IEnumerable<(DocumentBlock First, XElement Content)> BlockGroups(IEnumerable<DocumentBlock> blocks)
+    private IEnumerable<(DocumentBlock First, DocumentBlock Last, XElement Content)> BlockGroups(IEnumerable<DocumentBlock> blocks, bool includeSections = false)
     {
-        DocumentBlock? first = null; XElement? group = null;
+        DocumentBlock? first = null, last = null; XElement? group = null;
         foreach (DocumentBlock block in blocks)
         {
-            if (first != null && (block.Control == null || !ReferenceEquals(first.Control, block.Control) || !ReferenceEquals(first.Section, block.Section)))
-            { yield return (first, group!); first = null; group = null; }
+            if (first != null && (block.Control == null || !ReferenceEquals(first.Control, block.Control)))
+            { yield return (first, last!, group!); first = null; group = null; }
+            if (first != null && includeSections && !ReferenceEquals(last!.Section, block.Section))
+                AttachSection(group!.Element(W + "sdtContent")!, last.Section ?? new PageSettings());
             XElement element = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
-            if (block.Control == null) { yield return (block, element); continue; }
+            if (block.Control == null) { yield return (block, block, element); continue; }
             if (first == null) { first = block; group = Control(block.Control, element); }
             else group!.Element(W + "sdtContent")!.Add(element);
+            last = block;
         }
-        if (first != null) yield return (first, group!);
+        if (first != null) yield return (first, last!, group!);
     }
     private static XElement Control(TemplateControl control, XElement? content) => new XElement(W + "sdt",
         new XElement(W + "sdtPr", new XElement(W + "tag", new XAttribute(W + "val", control.Tag))), new XElement(W + "sdtContent", content));

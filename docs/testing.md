@@ -5,7 +5,7 @@
 The latest merged rendering increment is PR [#34](https://github.com/kirakosyan/word.net/pull/34),
 main commit `1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, with **610** required cases.
 Its reviewed head passed all **20** CI check runs before merge. The editing/template
-candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35) now has **694**
+candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35) now has **696**
 required cases after review regressions. The earlier 664-case head
 `811d6a26af91ebbd95249f4189230be99ddb483e` passed all **20** CI check runs.
 The PR remains unmerged at this reconciliation; review changes require checks on
@@ -21,11 +21,11 @@ checklist](implementation-plan.md) before interpreting an old count as current.
 
 ## PR #35 review regressions
 
-Thirty new cases address the 15 review findings, bringing the editing/template
-profile to **84** authored cases and the complete suite to **694**. Independent
+Thirty-two new cases address the 15 review findings, bringing the editing/template
+profile to **86** authored cases and the complete suite to **696**. Independent
 OOXML fixtures and schema validation check external/local repeat references,
 cell block controls and diagnosed unsupported wrappers, text boxes inside cells,
-inherited shared headers, multi-block/row control boundaries, wrapped section/note
+inherited shared headers, multi-block/row control boundaries (including cross-section and empty-region cases), wrapped section/note
 paragraphs, cached controls inside fields, rejected flattened nested execution,
 item-scoped repeated notes, Word percent/meridiem/literal formats, unrelated Word
 controls and protected inline-control edits. Independent EPUB input exercises
@@ -33,7 +33,7 @@ scaled-image rounding through public snapshots. Large cases replace 30,000 style
 runs and atomically create a 20,000-paragraph report with the bulk API, including
 cancellation and limit rollback.
 
-Locked restore, warning-free all-target Release builds, **694/694** complete
+Locked restore, warning-free all-target Release builds, **696/696** complete
 conversion/OCR cases on each local Linux x64 .NET **8.0.32** and **10.0.12**
 (zero failures/skips), formatting, five comparison controls, package/API validation
 and package-content inspection pass. The added `AddParagraphs` API is documented

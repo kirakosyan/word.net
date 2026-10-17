@@ -112,6 +112,25 @@ public sealed partial class EditingTemplateTests
         Assert.NotNull(body.Element(W + "sdt")?.Descendants(W + "sectPr").SingleOrDefault());
     }
 
+    [Fact]
+    public void ScalarControlAcrossSectionsRemainsOneUnsupportedRegion()
+    {
+        string first = "<w:p><w:pPr>" + Page + "</w:pPr><w:r><w:t>First</w:t></w:r></w:p>";
+        WordDocument document = Load(Docx(Control("merge:Address", first + P("Second")) + Page));
+        byte[] saved = Save(document); Schema(saved);
+        XElement body = Part(saved, "word/document.xml").Root!.Element(W + "body")!;
+        Assert.Single(body.Descendants(W + "sdt")); Assert.Equal(2, body.Descendants(W + "p").Count());
+        Assert.Throws<NotSupportedException>(() => Load(saved).Merge(new { Address = "Value" }, cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public void EmptyRepeatWrapperIsDiagnosedAndCannotExecute()
+    {
+        WordDocument document = Load(Docx("<w:tbl>" + Control("repeat:Items", "") + "<w:tr>" + Cell(P("Body")) + "</w:tr></w:tbl>"));
+        Assert.Contains(document.Diagnostics, d => d.Code == "Template.TableControl");
+        Assert.Throws<NotSupportedException>(() => document.Merge(new { Items = OneItem }, cancellationToken: TestContext.Current.CancellationToken));
+    }
+
     [Theory]
     [InlineData(2111)]
     [InlineData(2216)]

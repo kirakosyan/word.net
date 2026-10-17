@@ -486,13 +486,14 @@ internal sealed partial class DocxReader
                 if (context.Editing && container.Name == W + "tc" && child.Name == W + "sdt") { yield return child; continue; }
                 XElement? content = child.Name == W + "sdt" ? child.Element(W + "sdtContent") : child;
                 TemplateControl? control = context.Editing && child.Name == W + "sdt" ? ReadControl(child) : null;
-                bool rows = control != null && content != null && content.Elements().All(e => e.Name == W + "tr" || e.Name == W + "sdt");
+                XElement[] nestedContent = content == null ? Array.Empty<XElement>() : TableContents(content).ToArray();
+                bool rows = control != null && nestedContent.Length > 0 && nestedContent.All(e => e.Name == W + "tr");
                 if (!rows && child.Name != W + "sdtContent")
                 {
                     if (control != null) context.Loss("Template.TableControl", "Tagged non-row table wrappers retain cached cells and paragraphs but cannot execute safely.");
                     else context.Loss("Docx.TableStructure", "Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs.");
                 }
-                if (content != null) foreach (XElement nested in TableContents(content))
+                foreach (XElement nested in nestedContent)
                 {
                     if (control != null && nested.Name == W + "tr")
                     {
