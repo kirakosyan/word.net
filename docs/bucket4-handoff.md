@@ -15,16 +15,14 @@ open. The architecture contract is [interoperability-design.md](interoperability
 - Issues #11–#15 and #17 have all verified acceptance criteria checked and completed
   closure confirmed. Roadmap #32 records completed buckets 1–3. The seven earlier
   bucket-2 issues stay closed; do not repeat their implementation.
-- Documentation reconciliation is in PR [#36](https://github.com/kirakosyan/word.net/pull/36),
-  branch `codex/reconcile-editing-delivery`, head
-  `109df080c3a273d1e7aaf4ecc8604f64081796b9`. It updates README, architecture,
-  diagnostics, usage, implementation plan, revision-specific testing and the public
-  sample instructions. All 93 relative documentation links resolve, diff/consistency
-  checks pass, and no code/dependencies change. Refresh its review/CI and merge state
-  before continuing; do not infer a completed review from an empty review list.
+- Documentation reconciliation merged in PR [#36](https://github.com/kirakosyan/word.net/pull/36)
+  as `141236a3fe890d220b807a270cec2d86a8f7e3b5`. Its reviewed head
+  `109df080c3a273d1e7aaf4ecc8604f64081796b9` passed all 20 CI checks and all 93
+  relative documentation links; the merged tree is identical. PR #35's post-merge
+  main CI also passed all 10 checks. The PR attachment retry succeeded. This fixes
+  the earlier app-tool timeout; conversion/tests/merges did not time out.
 - `codex/interoperability-typography-import` starts at the #35 merge and contains
-  the architecture contract plus this handoff. Fetch/fast-forward main and incorporate
-  #36's documentation when merged. No bucket-4 source code or tests have been added.
+  the architecture contract plus this handoff. #36's documentation has been merged into this branch. No bucket-4 source code or tests have been added.
   `eng/required-tests.txt` remains 696. Package 1.1.0 is separate from these unreleased
   source increments; nothing here publishes packages or changes credentials.
 
