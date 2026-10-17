@@ -322,7 +322,7 @@ conversion diagnostics.
 | `Text.Formatting` | Loss | Plain text cannot represent rich formatting. |
 | `Text.TableStructure` | Loss | Table structure becomes tab-separated rows in plain text. |
 
-## Bucket 4 candidate diagnostics
+## Bucket 4 merged-source diagnostics
 
 See [profiles and options](interoperability.md). `Html.Css`, `Html.ActiveContent` and
 `Html.Image*` identify omitted CSS/active content/resources. `Rtf.Destination`,
