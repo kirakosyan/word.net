@@ -3,8 +3,8 @@
 ## Scope and current milestone
 
 This repository hosts an independent MIT-licensed .NET document-conversion library.
-Implementation is authorized. All 28 directions and English OCR now have active baseline
-tests. Deliver independently tested fidelity increments and keep unsupported features
+Implementation is authorized. All 28 original directions and English OCR have active baseline
+tests; the bucket 4 candidate extends the matrix to 36 with bounded HTML/RTF exchanges. Deliver independently tested fidelity increments and keep unsupported features
 explicit. Never substitute fake conversion behavior or overstate platform qualification.
 
 Read `README.md`, `docs/architecture.md`, and `docs/testing.md` before changing scope.

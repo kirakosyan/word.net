@@ -13,6 +13,12 @@ namespace WordNet.Formats;
 
 internal static partial class EbookContent
 {
+    private static bool? Direction(IElement element)
+    {
+        for (IElement? current = element; current != null; current = current.ParentElement)
+        { string? dir = current.GetAttribute("dir"); if (dir is "rtl" or "ltr") return dir == "rtl"; }
+        return null;
+    }
     internal static readonly XNamespace Html = "http://www.w3.org/1999/xhtml";
 
     internal static byte[] Write(DocumentModel model, ConversionContext context, Func<DocumentImage, string>? imageWriter = null)
@@ -210,7 +216,7 @@ internal static partial class EbookContent
             }
             if (tag == "blockquote") context.Loss("Ebook.Quote", "Block quote indentation is flattened.");
             Attributes(e, context);
-            var paragraph = new ParagraphBlock { IsCodeBlock = tag == "pre", HeadingLevel = tag.Length == 2 && tag[0] == 'h' && tag[1] >= '1' && tag[1] <= '6' ? tag[1] - '0' : 0 };
+            var paragraph = new ParagraphBlock { RightToLeft = Direction(e), IsCodeBlock = tag == "pre", HeadingLevel = tag.Length == 2 && tag[0] == 'h' && tag[1] >= '1' && tag[1] <= '6' ? tag[1] - '0' : 0 };
             paragraph.Alignment = Alignment(e, context);
             paragraph.List = tag == "li" ? list?.Copy() : null;
             if (tag == "li" && e.HasAttribute("value")) context.Loss("Ebook.ListValue", "Per-item numbering overrides are not retained.");
@@ -371,6 +377,7 @@ internal static partial class EbookContent
     private static XElement Paragraph(ParagraphBlock paragraph, Func<DocumentImage, string>? imageWriter)
     {
         var element = new XElement(Html + (paragraph.IsCodeBlock ? "pre" : paragraph.HeadingLevel > 0 ? "h" + paragraph.HeadingLevel : "p"));
+        if (paragraph.RightToLeft.HasValue) element.Add(new XAttribute("dir", paragraph.RightToLeft.Value ? "rtl" : "ltr"));
         // Make physical left alignment explicit too: HTML table headers default to centered text.
         element.Add(new XAttribute("style", "text-align:" + (paragraph.Alignment == ParagraphAlignment.Center ? "center" : paragraph.Alignment == ParagraphAlignment.Right ? "right" : "left")));
         foreach (TextRun run in paragraph.Runs)

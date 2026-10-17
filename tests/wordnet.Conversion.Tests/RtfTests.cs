@@ -31,6 +31,23 @@ public sealed class RtfTests
     }
 
     [Theory]
+    [InlineData(DocumentFormat.Doc)]
+    [InlineData(DocumentFormat.Docx)]
+    public void NormalConverterExchangesRtfWithBothWordFormats(DocumentFormat wordFormat)
+    {
+        const string value = "Unicode Ω café Ж.";
+        byte[] source = Encoding.ASCII.GetBytes(@"{\rtf1\ansi Unicode \u937? caf\'e9 \u1046?.\par}");
+        var options = new ConversionOptions(FidelityMode.BestEffort); var converter = new WordConverter();
+        using var rtf = new MemoryStream(source); using var word = new MemoryStream(); converter.Convert(rtf, word, DocumentFormat.Rtf, wordFormat, options, TestContext.Current.CancellationToken);
+        if (wordFormat == DocumentFormat.Docx) Schema(word.ToArray());
+        else Assert.Equal(new byte[] { 208, 207, 17, 224, 161, 177, 26, 225 }, word.ToArray().Take(8).ToArray());
+        word.Position = 0; WordDocument editable = WordDocument.Load(word, wordFormat, out _, options, TestContext.Current.CancellationToken); Assert.Equal(value, Assert.Single(editable.Paragraphs).Text);
+        word.Position = 0; using var written = new MemoryStream(); converter.Convert(word, written, wordFormat, DocumentFormat.Rtf, options, TestContext.Current.CancellationToken);
+        Assert.StartsWith(@"{\rtf1", Encoding.ASCII.GetString(written.ToArray()), StringComparison.Ordinal); written.Position = 0;
+        WordDocument imported = WordDocument.Load(written, DocumentFormat.Rtf, out _, options, TestContext.Current.CancellationToken); Assert.Equal(value, Assert.Single(imported.Paragraphs).Text);
+    }
+
+    [Theory]
     [InlineData(@"{\rtf1\ansi escaped \{braces\} and \\ slash}", "escaped {braces} and \\ slash")]
     [InlineData(@"{\rtf1\ansi\ansicpg1252 caf\'e9 \u937? \uc2\u1046xy!}", "café Ω Ж!")]
     [InlineData(@"{\rtf1\ansi\ansicpg1251 \'cf\'f0\'e8\'e2\'e5\'f2}", "Привет")]
@@ -45,12 +62,14 @@ public sealed class RtfTests
     [Fact]
     public void GroupFormattingScopesAndMultipleCellParagraphsRemainEditable()
     {
-        const string rtf = @"{\rtf1\ansi{\colortbl;\red51\green102\blue153;}\qc\fs36\cf1 A{\b B{\i C}D}E\par\trowd\cellx2000\cellx4000\pard\intbl One\par Two\cell Other\cell\row}";
+        const string rtf = @"{\rtf1\ansi{\colortbl;\red51\green102\blue153;}\rtlpar\qc\fs36\cf1 A{\b B{\i C}D}E\par\trowd\cellx2000\cellx4000\pard\intbl One\par Two\cell Other\cell\row}";
         byte[] word = Import(Encoding.ASCII.GetBytes(rtf)); Schema(word); XElement root = Part(word).Root!;
         XElement[] runs = root.Descendants(W + "p").First().Elements(W + "r").ToArray();
         Assert.Equal("ABCDE", string.Concat(runs.Select(r => r.Value))); Assert.Null(runs[0].Element(W + "rPr")?.Element(W + "b"));
         Assert.NotNull(runs.Single(r => r.Value == "C").Element(W + "rPr")?.Element(W + "i")); Assert.Null(runs.Last().Element(W + "rPr")?.Element(W + "b"));
         Assert.Equal(2, root.Descendants(W + "tc").First().Elements(W + "p").Count());
+        Assert.Equal("1", (string?)root.Descendants(W + "p").First().Element(W + "pPr")?.Element(W + "bidi")?.Attribute(W + "val"));
+        Assert.Empty(root.Descendants(W + "tc").Descendants(W + "bidi"));
         Assert.Equal("center", (string?)root.Descendants(W + "jc").First().Attribute(W + "val"));
     }
 

@@ -18,8 +18,8 @@ internal static class SvgPreview
 {
     internal static byte[] Write(FixedPage page, ConversionContext context)
     {
-        XNamespace svg = "http://www.w3.org/2000/svg";
-        var root = new XElement(svg + "svg", new XAttribute("version", "1.1"), new XAttribute("width", N(page.Settings.Width) + "pt"), new XAttribute("height", N(page.Settings.Height) + "pt"),
+        XNamespace svg = "http://www.w3.org/2000/svg", xlink = "http://www.w3.org/1999/xlink";
+        var root = new XElement(svg + "svg", new XAttribute("version", "1.1"), new XAttribute(XNamespace.Xmlns + "xlink", xlink), new XAttribute("width", N(page.Settings.Width) + "pt"), new XAttribute("height", N(page.Settings.Height) + "pt"),
             new XAttribute("viewBox", "0 0 " + N(page.Settings.Width) + " " + N(page.Settings.Height)), new XAttribute("role", "img"));
         root.Add(new XElement(svg + "rect", new XAttribute("width", "100%"), new XAttribute("height", "100%"), new XAttribute("fill", "#ffffff")));
         foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes))
@@ -34,7 +34,7 @@ internal static class SvgPreview
                     shape.Style is "dotted" or "dashed" ? new XAttribute("stroke-dasharray", N(shape.Stroke * (shape.Style == "dashed" ? 3 : 1)) + " " + N(shape.Stroke * (shape.Style == "dashed" ? 2 : 1))) : null));
             }
         }
-        var fonts = new Dictionary<int, TrueTypeFont>();
+        var fonts = new Dictionary<int, TrueTypeFont>(); var outlines = new Dictionary<int, TrueTypeOutlines>();
         var paths = new Dictionary<(int Font, int Glyph), string>(); long length = 0; int imageId = 0;
         foreach (PositionedText item in page.Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1))
         {
@@ -46,22 +46,25 @@ internal static class SvgPreview
                 group.Add(new XElement(svg + "clipPath", new XAttribute("id", id), new XElement(svg + "rect", new XAttribute("x", N(-image.FrameWidth / 2)), new XAttribute("y", N(-image.FrameHeight / 2)), new XAttribute("width", N(image.FrameWidth)), new XAttribute("height", N(image.FrameHeight)))));
                 double width = image.FrameWidth / (1 - image.CropLeft - image.CropRight), height = image.FrameHeight / (1 - image.CropTop - image.CropBottom);
                 group.Add(new XElement(svg + "g", new XAttribute("clip-path", "url(#" + id + ")"), new XElement(svg + "image", new XAttribute("x", N(-image.FrameWidth / 2 - width * image.CropLeft)), new XAttribute("y", N(-image.FrameHeight / 2 - height * image.CropTop)), new XAttribute("width", N(width)), new XAttribute("height", N(height)),
-                    new XAttribute("preserveAspectRatio", "none"), new XAttribute("href", "data:" + image.MediaType + ";base64," + Convert.ToBase64String(image.Bytes)), new XElement(svg + "title", image.AlternativeText))));
+                    new XAttribute("preserveAspectRatio", "none"), new XAttribute(xlink + "href", "data:" + image.MediaType + ";base64," + Convert.ToBase64String(image.Bytes)), new XElement(svg + "title", image.AlternativeText))));
                 root.Add(group); length += (long)image.Bytes.Length * 4 / 3; Check(); continue;
             }
             if (item.Text.Length == 0) continue;
-            if (!fonts.TryGetValue(item.Font, out TrueTypeFont? font)) fonts.Add(item.Font, font = TrueTypeFontParser.Parse(new TrueTypeDataBytes(context.FontData[item.Font])));
+            if (!fonts.TryGetValue(item.Font, out TrueTypeFont? font)) fonts.Add(item.Font, font = Parse(context.FontData[item.Font]));
             var text = new XElement(svg + "g", new XAttribute("fill", "#" + (item.Color ?? "000000")), new XElement(svg + "title", item.Text));
             double x = item.X, scale = item.Size / font.GetUnitsPerEm();
-            for (int c = 0; c < item.Text.Length; c++)
+            int glyphCount = item.NativeShape?.Glyphs.Length ?? item.Text.Length;
+            for (int c = 0; c < glyphCount; c++)
             {
-                int codepoint = char.ConvertToUtf32(item.Text, c); if (codepoint > 0xffff) c++;
-                if (font.TableRegister.CMapTable?.TryGetGlyphIndex(codepoint, out int glyph) != true) throw new NotSupportedException("Preview.Glyph: A preview glyph is unavailable.");
+                ShapedGlyph? shaped = item.NativeShape?.Glyphs[c];
+                int codepoint = shaped == null ? char.ConvertToUtf32(item.Text, c) : 32; if (codepoint > 0xffff) c++;
+                int glyph = shaped?.Glyph ?? 0;
+                if (shaped == null && font.TableRegister.CMapTable?.TryGetGlyphIndex(codepoint, out glyph) != true) throw new NotSupportedException("Preview.Glyph: A preview glyph is unavailable.");
                 if (!paths.TryGetValue((item.Font, glyph), out string? path))
                 {
                     var data = new StringBuilder();
-                    if (!font.TryGetPath(codepoint, _ => glyph, out IReadOnlyList<PdfSubpath> outlines)) { if (codepoint <= char.MaxValue && char.IsWhiteSpace((char)codepoint)) outlines = Array.Empty<PdfSubpath>(); else throw new InvalidDataException("Preview.Font: A glyph outline is unreadable."); }
-                    foreach (PdfSubpath outline in outlines)
+                    if (!outlines.TryGetValue(item.Font, out TrueTypeOutlines? decoder)) outlines.Add(item.Font, decoder = new TrueTypeOutlines(context.FontData[item.Font], context));
+                    foreach (PdfSubpath outline in decoder.Paths(glyph))
                         foreach (var command in outline.Commands)
                         {
                             context.CheckCancellation();
@@ -75,14 +78,16 @@ internal static class SvgPreview
                         }
                     path = data.ToString(); paths.Add((item.Font, glyph), path);
                 }
-                text.Add(new XElement(svg + "path", new XAttribute("d", path), new XAttribute("transform", "translate(" + N(x) + " " + N(item.Y) + ") scale(" + N(scale) + " " + N(-scale) + ")")));
+                text.Add(new XElement(svg + "path", new XAttribute("d", path), new XAttribute("transform", "translate(" + N(x + (shaped?.X ?? 0) * scale) + " " + N(item.Y - (shaped?.Y ?? 0) * scale) + ") scale(" + N(scale) + " " + N(-scale) + ")")));
                 length += path.Length + 200; Check();
-                if (font.TryGetAdvanceWidth(codepoint, _ => glyph, out double advance)) x += advance * scale;
+                if (shaped != null) x += shaped.Advance * scale;
+                else if (font.TryGetAdvanceWidth(codepoint, _ => glyph, out double advance)) x += advance * scale;
             }
             root.Add(text);
         }
         byte[] bytes = TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting)); if (bytes.Length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: SVG exceeds output bounds."); return bytes;
         void Check() { if (length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: SVG resources exceed output bounds."); }
+        static TrueTypeFont Parse(byte[] bytes) { TrueTypeOutlineGuard.Validate(bytes); return TrueTypeFontParser.Parse(new TrueTypeDataBytes(bytes)); }
         static string Point(PdfPoint p) => N(p.X) + " " + N(p.Y);
         static string N(double number) => number.ToString("0.######", CultureInfo.InvariantCulture);
     }

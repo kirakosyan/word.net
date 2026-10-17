@@ -17,6 +17,8 @@ internal sealed class ConversionContext
     internal bool RecordSubstitution(string family) => substitutedFamilies.Add(family);
     private readonly Stopwatch elapsed = Stopwatch.StartNew();
     internal byte[][] FontData { get; set; } = Array.Empty<byte[]>();
+    private long outlinePoints;
+    internal void ReserveOutlinePoints(int count) { outlinePoints = checked(outlinePoints + count); if (outlinePoints > Options.MaximumExpandedBytes / 64) throw new InvalidDataException("Limit.FontOutlines: Expanded outline cache exceeds its point budget."); }
     internal int? PageCount { get; set; }
     internal DocumentFormat Destination { get; set; }
     internal DiagnosticPhase Phase { get; set; }
@@ -26,6 +28,7 @@ internal sealed class ConversionContext
     internal bool HtmlImport { get; set; }
     internal bool PreviewIntermediate { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }
+    internal TypographyOptions Typography { get; }
     internal List<OcrPage> OcrPages { get; } = new List<OcrPage>();
     private long metadataBytes;
     private int metadataRegions;
@@ -74,6 +77,7 @@ internal sealed class ConversionContext
     internal ConversionContext(ConversionOptions options, CancellationToken cancellationToken)
     {
         Options = options;
+        Typography = (options.Typography ?? throw new ArgumentException("Typography options must not be null.")).Snapshot();
         OcrMetadata = (options.OcrMetadata ?? throw new ArgumentException("OCR metadata options must not be null.")).Snapshot();
         CancellationToken = cancellationToken;
     }

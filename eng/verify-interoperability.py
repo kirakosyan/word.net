@@ -60,6 +60,12 @@ def main():
         pixels = svg[0].get_pixmap()
         assert pixels.pixel(45, 45) == (208, 32, 32)
         assert pixels.pixel(130, 45) == (32, 64, 208)
+    for rotation, flip in ((0, False), (90, False), (90, True)):
+        filename = f"crop-{rotation}-{flip}.svg"
+        with fitz.open(artifacts / filename) as svg:
+            pix = svg[0].get_pixmap()
+            assert pix.pixel(45, 45) == (32, 64, 208)
+            assert pix.pixel(151 if rotation == 0 else 91, 45) == (255, 255, 255)
     print(f"Independent RTF structure/image, PDF labels, SVG bounds/pixels PASS; glyph-mask IoU={intersection/union:.4f}")
     print("PyMuPDF", fitz.VersionBind)
 

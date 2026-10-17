@@ -39,8 +39,8 @@ internal sealed class FixedHeading
 
 internal sealed class PositionedText
 {
-    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null)
-    { Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
+    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false)
+    { SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
     internal string Text { get; }
     internal double X { get; }
     internal double Y { get; }
@@ -51,8 +51,13 @@ internal sealed class PositionedText
     internal string? Link { get; }
     internal TextRun? Field { get; }
     internal PositionedBox? Box { get; }
-    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box);
-    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box);
+    internal ParagraphBlock? SourceParagraph { get; }
+    internal TextRun? SourceRun { get; }
+    internal ShapedWord? NativeShape { get; }
+    internal bool IsLabel { get; }
+    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel);
+    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel);
+    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel);
 }
 
 internal static partial class FixedLayout
@@ -95,6 +100,7 @@ internal static partial class FixedLayout
 
     private sealed class MeasuredText
     {
+        internal ShapedWord? Native { get; set; }
         internal double Width { get; set; }
         internal double[] X { get; set; } = Array.Empty<double>();
         internal double[] Y { get; set; } = Array.Empty<double>();
@@ -143,6 +149,8 @@ internal static partial class FixedLayout
 
     private static List<FixedPage> CreateCore(DocumentModel model, ConversionContext context, int totalPages, Dictionary<PageSettings, int>? sectionTotals)
     {
+        NativeTypography.Prepare(model, context);
+        using var native = NativeTypography.Open(context);
         using var measure = new PdfDocumentBuilder();
         var resolver = new FontResolver(model, context);
         var data = resolver.Data.ToArray();
@@ -833,7 +841,7 @@ internal static partial class FixedLayout
             scaled.Shapes.AddRange(line.Shapes.Select(s => new FixedShape(line.Origin + (s.X - line.Origin) * factor, s.Y * factor, s.Width * factor, s.Height * factor, s.Color, s.Stroke * factor, s.Style)));
             foreach (PositionedText item in line.Items)
                 scaled.Items.Add(new PositionedText(item.Text, line.Origin + (item.X - line.Origin) * factor, item.Y * factor,
-                    item.Size * factor, item.Font, item.Color, item.Image?.Scaled(factor), item.Link, item.Field));
+                    item.Size * factor, item.Font, item.Color, item.Image?.Scaled(factor), item.Link, item.Field, item.Box, item.SourceParagraph, item.SourceRun, item.NativeShape, item.IsLabel));
             return scaled;
         }
 
@@ -874,7 +882,7 @@ internal static partial class FixedLayout
             double tabOrigin = left;
             left += paragraph.Layout.Left;
             width -= paragraph.Layout.Left + paragraph.Layout.Right;
-            List<TextRun> runs = RunCoalescer.Combine(paragraph.Runs);
+            List<TextRun> runs = context.Typography.Enabled || context.Options.Pdf.Accessibility != PdfAccessibility.None ? new List<TextRun>(paragraph.Runs) : RunCoalescer.Combine(paragraph.Runs);
             if (paragraph.List != null)
             {
                 ListLevel? level = paragraph.List.Definition?[paragraph.List.Level];
@@ -912,7 +920,7 @@ internal static partial class FixedLayout
                 if (run.Bookmark != null) { line.Items.Add(new PositionedText("", x, 0, 0, 0, field: run)); continue; }
                 if (run.Box != null || run.Image?.Anchor != null)
                 {
-                    line.Items.Add(new PositionedText("", left, -consumedHeight, 0, 0, image: run.Image, box: run.Box)); continue;
+                    line.Items.Add(new PositionedText("", left, -consumedHeight, 0, 0, image: run.Image, box: run.Box, sourceParagraph: paragraph, sourceRun: run)); continue;
                 }
                 if (run.Image is DocumentImage image)
                 {
@@ -923,7 +931,7 @@ internal static partial class FixedLayout
                     }
                     if (image.Width > width) throw new NotSupportedException("Layout.ImageWidth: Image exceeds the content width; dimensions are never silently reduced.");
                     if (x > left && x + image.Width > left + width) Finish(false);
-                    line.Items.Add(new PositionedText("", x, 0, 0, 0, image: image, link: run.Link)); x += image.Width;
+                    line.Items.Add(new PositionedText("", x, 0, 0, 0, image: image, link: run.Link, sourceParagraph: paragraph, sourceRun: run)); x += image.Width;
                     line.Ascent = Math.Max(line.Ascent, image.Height); continue;
                 }
                 int font = resolver.Resolve(run, paragraph.HeadingLevel > 0);
@@ -934,7 +942,7 @@ internal static partial class FixedLayout
                     context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                 }
                 string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages[pages.Count - 1].PageNumber : renderPage, totalPages, renderSectionPages, context);
-                if (context.EffectiveMode != FidelityMode.Strict)
+                if (context.EffectiveMode != FidelityMode.Strict && native == null)
                 {
                     var safe = new StringBuilder(runText.Length);
                     foreach (char c in runText)
@@ -987,7 +995,13 @@ internal static partial class FixedLayout
                 {
                     if (token.Length == 0) return;
                     string value = token.ToString(); token.Clear(); double advance = Measure(value, font, size);
-                    if (advance <= width) Add(value, advance);
+                    if (native != null && value.Length > 1 && value[value.Length - 1] == ' ')
+                    {
+                        string word = value.TrimEnd(' '); if (word.Length > 0) Add(word, Measure(word, font, size));
+                        string spaces = value.Substring(word.Length); Add(spaces, Measure(spaces, font, size));
+                    }
+                    else if (advance <= width) Add(value, advance);
+                    else if (native != null) throw new NotSupportedException("Typography.WordWidth: A shaped word cannot fit the column; hyphenation is outside this profile.");
                     else foreach (char c in value) Add(c.ToString(), Measure(c.ToString(), font, size));
                 }
                 void Add(string value, double advance)
@@ -998,19 +1012,24 @@ internal static partial class FixedLayout
                         size *= width / advance; advance = width;
                         context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                     }
-                    if (x > left && x + advance > left + width) Finish(false);
+                    if (x > left && x + advance > left + width && (native == null || !string.IsNullOrWhiteSpace(value))) Finish(false);
                     MeasuredText shaped = Shape(value, font, size);
+                    if (shaped.Native != null)
+                    {
+                        line.Items.Add(new PositionedText(value, x, 0, size, font, run.Color, link: activeLink, sourceParagraph: paragraph, sourceRun: run, nativeShape: shaped.Native, label: !paragraph.Runs.Contains(run)));
+                        x += advance; line.Ascent = Math.Max(line.Ascent, size * 1.5); line.Descent = Math.Max(line.Descent, size * 0.65); return;
+                    }
                     int begin = 0;
                     for (int i = 1; i < value.Length; i++)
                     {
                         if (Math.Abs((shaped.X[i] - shaped.OriginalX[i]) - (shaped.X[begin] - shaped.OriginalX[begin])) < 0.000001
                             && Math.Abs(shaped.Y[i] - shaped.Y[begin]) < 0.000001) continue;
-                        line.Items.Add(new PositionedText(value.Substring(begin, i - begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink));
+                        line.Items.Add(new PositionedText(value.Substring(begin, i - begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, sourceParagraph: paragraph, sourceRun: run, label: !paragraph.Runs.Contains(run)));
                         begin = i;
                     }
                     string kind = run.FieldInstruction == null ? "" : DocumentFields.Kind(run.FieldInstruction);
                     TextRun? pageField = run.Note != null || begin == 0 && value == runText && kind is "PAGE" or "NUMPAGES" or "SECTIONPAGES" ? run : null;
-                    line.Items.Add(new PositionedText(value.Substring(begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, field: pageField)); x += advance;
+                    line.Items.Add(new PositionedText(value.Substring(begin), x + shaped.X[begin], shaped.Y[begin], size, font, run.Color, link: activeLink, field: pageField, sourceParagraph: paragraph, sourceRun: run, label: !paragraph.Runs.Contains(run))); x += advance;
                     line.Ascent = Math.Max(line.Ascent, size); line.Descent = Math.Max(line.Descent, size * 0.5);
                 }
             }
@@ -1038,6 +1057,7 @@ internal static partial class FixedLayout
             }
             void Finish(bool lastLine = true)
             {
+                if (native != null && line.Items.Count > 0) NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native);
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)
                 {
                     PositionedText? last = line.Items.LastOrDefault(i => i.Image != null || i.Text.TrimEnd(' ').Length > 0);
@@ -1097,6 +1117,12 @@ internal static partial class FixedLayout
             if (measurements.TryGetValue(key, out MeasuredText? cached)) return cached;
             try
             {
+                if (native != null)
+                {
+                    ShapedWord word = native.Shape(value, font, NativeTypography.Rtl(value));
+                    // Charge every shaping call; the ordinary measurement cache remains managed-only.
+                    return new MeasuredText { Width = word.Width * size, Native = word };
+                }
                 var letters = metrics.MeasureText(value, size, new PdfPoint(0, 0), fonts[font]);
                 var glyphs = new int[value.Length];
                 for (int i = 0; i < glyphs.Length; i++)

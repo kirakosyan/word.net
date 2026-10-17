@@ -26,3 +26,20 @@ Specification-authored edge cases live directly in RtfTests/HtmlInputTests. Open
 SDK independently schema-checks imported Word. Emitted RTF is separately read by
 LibreOffice and its resulting editable structure inspected, avoiding reliance on
 matching WordNet reader/writer bugs. See eng/verify-interoperability.py.
+
+## Arabic and digital PDF fixtures
+
+`NotoSansArabic-Regular.ttf` is the static Noto Sans Arabic face, Copyright 2015–2020
+Google LLC, SIL OFL 1.1 (see `Noto-Arabic-OFL.txt`), copied from Debian fonts-noto-core.
+SHA-256: `504d7407d86875acf7d04dfaa0fd7524d0b8797723bc4aa18022f29db25b0b6e`.
+It is test-only, not a production embedded font or implicit host-font dependency.
+HarfBuzz 12.1.0 via uharfbuzz 0.53.0 independently supplies glyph/cluster/offset goldens;
+FontTools supplies independent outlines, FriBidi supplies visual-order reference, and
+MuPDF checks actual glyph masks, logical Unicode and word-wide search geometry.
+The signed negative dot-coordinate and half-unit regression is specification-based.
+
+`generate-pdf.py` independently authors ReportLab 4.4.9 digital PDFs with prose,
+interleaved-paint two-column text, ruled/borderless tables, forms, rotation and a
+transformed MIT color-grid illustration. `pdf-ground-truth.json` records their exact
+SHA-256, producer and numeric baseline/width/image-frame ground truth. No customer
+content or WordNet writer generated those inputs.

@@ -7,7 +7,7 @@ using UglyToad.PdfPig.Writer;
 
 namespace WordNet.Formats;
 
-internal sealed class PdfExportTokenWriter : TokenWriter
+internal class PdfExportTokenWriter : TokenWriter
 {
     private readonly bool compress;
     private readonly byte[]? metadata;

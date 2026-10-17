@@ -18,6 +18,8 @@ public enum FidelityMode
 /// <summary>Conversion policy and immutable resource bounds. Configure export settings before concurrent use.</summary>
 public sealed class ConversionOptions
 {
+    /// <summary>Gets or sets optional Arabic/Latin shaping and base direction.</summary>
+    public TypographyOptions Typography { get; set; } = new TypographyOptions();
     /// <summary>Gets or sets safe HTML input resources. Configure before concurrent use.</summary>
     public HtmlInputOptions HtmlInput { get; set; } = new HtmlInputOptions();
 

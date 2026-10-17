@@ -25,10 +25,11 @@ internal sealed class DocumentImage
     internal double CropRight { get; set; }
     internal double CropTop { get; set; }
     internal double CropBottom { get; set; }
+    internal bool Decorative { get; set; }
     internal bool Transformed => Rotation != 0 || FlipHorizontal || FlipVertical || CropLeft != 0 || CropRight != 0 || CropTop != 0 || CropBottom != 0;
     internal string AlternativeText { get; }
     internal DocumentImage Scaled(double factor) => new DocumentImage(Bytes, Extension, PixelsWide, PixelsHigh, FrameWidth * factor, FrameHeight * factor, AlternativeText)
-    { Anchor = Anchor, Rotation = Rotation, FlipHorizontal = FlipHorizontal, FlipVertical = FlipVertical, CropLeft = CropLeft, CropRight = CropRight, CropTop = CropTop, CropBottom = CropBottom };
+    { Decorative = Decorative, Anchor = Anchor, Rotation = Rotation, FlipHorizontal = FlipHorizontal, FlipVertical = FlipVertical, CropLeft = CropLeft, CropRight = CropRight, CropTop = CropTop, CropBottom = CropBottom };
 
     internal static DocumentImage Placeholder(double width, double height, string alt, ConversionContext context)
     {

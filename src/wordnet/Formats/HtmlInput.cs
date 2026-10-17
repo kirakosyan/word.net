@@ -123,7 +123,9 @@ internal static class HtmlInput
             if ((imageBytes = checked(imageBytes + data.Length)) > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.HtmlImages: Images exceed expansion bounds.");
             if (ManagedRaster.Identify(data).Extension is not "png" and not "jpg" and not "jpeg")
             { context.Loss("Html.ImageFormat", "Only PNG/JPEG images are within the HTML input profile."); return null; }
-            return DocumentImage.Read(data, width, height, alt, context);
+            DocumentImage image = DocumentImage.Read(data, width, height, alt, context);
+            image.Decorative = element.HasAttribute("alt") && alt.Length == 0 || supplied?.Decorative == true;
+            return image;
         }
     }
 

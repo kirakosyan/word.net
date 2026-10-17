@@ -68,10 +68,31 @@ public sealed class PreviewTests
         byte[] source = FidelityDocuments.Docx("color-grid.png", FidelityDocuments.ImageParagraph() + Geometry); var options = new ConversionOptions(FidelityMode.BestEffort);
         using var svgInput = new MemoryStream(source); PagePreview svg = Assert.Single(new WordConverter().RenderPages(svgInput, DocumentFormat.Docx, options: options, cancellationToken: TestContext.Current.CancellationToken).Pages);
         XNamespace ns = "http://www.w3.org/2000/svg"; XElement image = Assert.Single(XElement.Parse(System.Text.Encoding.UTF8.GetString(svg.GetBytes())).Descendants(ns + "image"));
-        Assert.Equal("120", (string?)image.Attribute("width")); Assert.Equal("60", (string?)image.Attribute("height")); Assert.StartsWith("data:image/png;base64,", (string?)image.Attribute("href") ?? "", StringComparison.Ordinal);
+        Assert.Equal("120", (string?)image.Attribute("width")); Assert.Equal("60", (string?)image.Attribute("height")); Assert.StartsWith("data:image/png;base64,", (string?)image.Attribute(XName.Get("href", "http://www.w3.org/1999/xlink")) ?? "", StringComparison.Ordinal);
         using var pngInput = new MemoryStream(source); PagePreview png = Assert.Single(new WordConverter().RenderPages(pngInput, DocumentFormat.Docx, new PreviewOptions { Format = PreviewFormat.Png, Dpi = 72 }, options, TestContext.Current.CancellationToken).Pages);
         using SKBitmap bitmap = SKBitmap.Decode(png.GetBytes()); Assert.Equal(new SKColor(208, 32, 32), bitmap.GetPixel(45, 45)); Assert.Equal(new SKColor(32, 64, 208), bitmap.GetPixel(130, 45));
         SaveArtifact("image.svg", svg.GetBytes()); SaveArtifact("image.png", png.GetBytes());
+    }
+
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(90, false)]
+    [InlineData(90, true)]
+    public void CroppedRotatedPreviewUsesActualClippedPixels(int rotation, bool flip)
+    {
+        string drawing = FidelityDocuments.ImageParagraph().Replace("<a:xfrm>", "<a:xfrm rot='" + rotation * 60000 + "' flipH='" + (flip ? "1" : "0") + "'>").Replace("<a:stretch>", "<a:srcRect l='50000'/><a:stretch>");
+        byte[] source = FidelityDocuments.Docx("color-grid.png", drawing + Geometry); var options = new ConversionOptions(FidelityMode.BestEffort);
+        using var svgInput = new MemoryStream(source); var svg = Assert.Single(new WordConverter().RenderPages(svgInput, DocumentFormat.Docx, options: options, cancellationToken: TestContext.Current.CancellationToken).Pages);
+        using var pngInput = new MemoryStream(source); var png = Assert.Single(new WordConverter().RenderPages(pngInput, DocumentFormat.Docx, new PreviewOptions { Format = PreviewFormat.Png, Dpi = 72 }, options, TestContext.Current.CancellationToken).Pages);
+        using SKBitmap bitmap = SKBitmap.Decode(png.GetBytes()); Assert.Equal(new SKColor(32, 64, 208), bitmap.GetPixel(45, 45));
+        Assert.Equal(SKColors.White, bitmap.GetPixel(rotation == 0 ? 151 : 91, 45));
+        SaveArtifact("crop-" + rotation + "-" + flip + ".svg", svg.GetBytes()); SaveArtifact("crop-" + rotation + "-" + flip + ".png", png.GetBytes());
+    }
+    [Fact]
+    public void SelectionStillAdmitsTheEntireSourcePageSet()
+    {
+        var preview = new PreviewOptions(); preview.Pages.Add(new PageRange(1, 1)); using var input = new MemoryStream(Source());
+        Assert.Throws<InvalidDataException>(() => new WordConverter().RenderPages(input, DocumentFormat.Docx, preview, new ConversionOptions(maximumPages: 2), TestContext.Current.CancellationToken));
     }
 
     [Theory]

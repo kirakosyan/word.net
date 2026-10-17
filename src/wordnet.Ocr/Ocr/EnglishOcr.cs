@@ -102,7 +102,7 @@ internal static class EnglishOcr
                 context.CheckCharacters(text.Length);
                 string? tsv = options.ReadTextColumns || context.OcrMetadata.Enabled ? ReadText(getTsv(api, 0), context.Options.MaximumExpandedBytes) : null;
                 OcrWordSequence? sequence = null;
-                string? columns = options.ReadTextColumns ? OcrReadingOrder.Columns(tsv!, candidate.Width, candidate.Height, context, out sequence) : null;
+                string? columns = options.ReadTextColumns ? OcrReadingOrder.ColumnsWithSequence(tsv!, candidate.Width, candidate.Height, context, out sequence) : null;
                 return new OcrRecognition
                 {
                     Text = columns ?? text.TrimEnd('\n', '\r'),

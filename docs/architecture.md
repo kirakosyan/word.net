@@ -1,6 +1,7 @@
 # Architecture and implementation status
 
-All 28 original Word-related directions and two new HTML export directions have implementations and acceptance tests.
+The bucket 4 candidate extends 30 merged directions to 36 with HTML input and RTF exchanges.
+See [interoperability profiles](interoperability.md) for the unreleased supported subset.
 They implement the documented desktop feature profile, with explicit fidelity limits.
 The public namespace is `WordNet`; the assembly and package ID are `wordnet`.
 All targets retain matching APIs:
@@ -9,8 +10,9 @@ All targets retain matching APIs:
 The [implementation plan](implementation-plan.md) separates merged roadmap work,
 pending PRs and published-package capabilities. Business-document profiles landed in
 PR #34; the editing/template implementation below merged in PR #35 as `0b2af843`.
-Both are unreleased source increments after package 1.1.0. The next bucket's HTML/RTF,
-typography, accessibility, preview and import work is not yet implemented.
+Both are unreleased source increments after package 1.1.0. Bucket 4's HTML/RTF, typography, accessibility, preview and import implementation
+is an unreleased candidate awaiting review. [Provider decisions](interoperability-design.md)
+keep managed export offline and native shaping/rasterization explicit.
 
 ## Pipeline
 

@@ -13,9 +13,9 @@ internal static class OcrReadingOrder
     // Tesseract's TSV word rectangles expose a gutter even when its line segmentation
     // joins two columns. Only split a wide, uninterrupted gutter with text on both sides.
     internal static string? Columns(string tsv, int pageWidth, int pageHeight, ConversionContext context)
-        => Columns(tsv, pageWidth, pageHeight, context, out _);
+        => ColumnsWithSequence(tsv, pageWidth, pageHeight, context, out _);
 
-    internal static string? Columns(string tsv, int pageWidth, int pageHeight, ConversionContext context, out OcrWordSequence? sequence)
+    internal static string? ColumnsWithSequence(string tsv, int pageWidth, int pageHeight, ConversionContext context, out OcrWordSequence? sequence)
     {
         sequence = null;
         var words = new List<Word>();

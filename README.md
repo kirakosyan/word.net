@@ -6,8 +6,8 @@
 
 **Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
 
-DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI\
-DOC / DOCX → XPS · HTML
+DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI · HTML · RTF\
+DOC / DOCX → XPS
 
 > **1.1.0 — enterprise export desktop release.** Adds managed
 > PDF export, self-contained HTML, header/footer stories and fields, caller fonts and
@@ -21,8 +21,11 @@ Main also contains unreleased comparison/preflight and business-document renderi
 improvements from PRs [#33](https://github.com/kirakosyan/word.net/pull/33) and
 [#34](https://github.com/kirakosyan/word.net/pull/34), plus document editing and template
 automation merged in [#35](https://github.com/kirakosyan/word.net/pull/35)
-(`0b2af843`). Buckets 1–3 are complete within their documented profiles; bucket 4
-is next. See the
+(`0b2af843`). Buckets 1–3 are complete within their documented profiles. This unreleased bucket 4
+source candidate adds safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA,
+selected pages/previews, digital PDF reconstruction and OCR metadata. See the
+[bounded profiles and usage](docs/interoperability.md); review/CI and merge acceptance
+remain separate from package 1.1.0. See the
 [implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)
 for merged work, pending acceptance and the next roadmap bucket. Source capabilities
 added after 1.1.0 require a project reference until a release includes them.
@@ -117,7 +120,8 @@ foreach (ConversionResult result in new[] { pdfResult, htmlResult })
 `FontSource.FromStream` reads named static TrueType/CFF OpenType faces and TTC collections;
 `FontSource.FromDirectory` reads an explicitly selected directory. Add the returned
 faces to `options.Fonts.Sources`. Legacy kern and GPOS pair adjustments are supported.
-Variable/color fonts, advanced ligatures and complex shaping remain outside the profile.
+Variable/color fonts and general complex shaping remain outside the default profile;
+the unreleased [Arabic opt-in](docs/interoperability.md#optional-arabic-typography) has a separate bounded contract.
 Configure options before sharing them between calls.
 Use the `out ConversionResult` overloads or the stream API to inspect grouped
 diagnostics and conversion metrics. The byte-only overloads intentionally return
@@ -131,7 +135,7 @@ of the first section appear; even/default/later-section stories are not stacked.
 
 `options.Pdf` controls content/font stream compression, optional heading outlines and
 `PdfConformance.PdfA2b` (default: ordinary PDF 1.7). Archival corpus outputs are checked
-with veraPDF; this profile does not generate tagged PDF.
+with veraPDF; this default profile is untagged. The unreleased [accessibility opt-in](docs/interoperability.md#semantic-pdf-and-pdfua-1) is separate.
 
 ### DOCX to PDF with limits and cancellation
 
@@ -271,7 +275,8 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 | AZW3 ↔ Word | Standalone unencrypted KF8; skeleton/fragment input and single-flow output |
 | PDF ↔ Word | Selectable-text/color/image export, digital text and simple raster-image import, optional English OCR for scanned/mixed pages |
 | XPS ← Word | XPS 2005 packages with positioned text, embedded fonts/raster images and the shared fixed-page table/section profile |
-| HTML ← Word | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks |
+| HTML ↔ Word (input unreleased) | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks; candidate safe CSS/data/caller-image import |
+| RTF ↔ Word (unreleased) | Bounded Unicode/code-page text, emphasis/paragraphs, basic lists/tables and embedded PNG/JPEG |
 
 All direction tests inspect real content. Generated DOCX is independently schema
 validated. PDF/ebook/XPS tests check content and containers. External DOC and Kindle

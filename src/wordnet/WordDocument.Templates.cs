@@ -189,7 +189,7 @@ public sealed partial class WordDocument
                 if (value is not TemplateImage image) throw new InvalidDataException("Template.Image: An image placeholder requires caller image bytes and dimensions.");
                 if (image.Bytes.Length > c.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Template image exceeds the configured bound.");
                 CheckText(image.AlternativeText, c);
-                DocumentImage admitted = DocumentImage.Read(image.Bytes, image.Width, image.Height, image.AlternativeText, c);
+                DocumentImage admitted = DocumentImage.Read(image.Bytes, image.Width, image.Height, image.AlternativeText, c); admitted.Decorative = image.Decorative;
                 return new TextRun("", image: admitted);
             }
             if (value is Dictionary<string, object?> or List<object?> or TemplateImage) throw new InvalidDataException("Template.Scalar: This binding requires a supported scalar value.");

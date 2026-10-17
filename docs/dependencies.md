@@ -117,3 +117,11 @@ Graphics upgrades require Windows/Linux/Android execution: SkiaSharp 4 includes
 [Linux font fallback changes](https://mono.github.io/SkiaSharp/docs/releases/4.153.0.html).
 The small fixture suite does not qualify every native image codec or document feature.
 See [test evidence](testing.md) for the exact platforms and remaining limits.
+
+## Bucket 4 provider decision
+
+No runtime dependency was added. Safe HTML reuses pinned AngleSharp without browsing,
+RTF and TrueType outline decoding are specification-authored, and optional shaping
+uses existing HarfBuzzSharp/native 14.2.1.301 through wordnet.Ocr. PNG reuses SkiaSharp
+4.153.1. Native state remains per-call; core has no provider types or mandatory native
+load. Independent qualification tools are development-only and separately licensed.

@@ -115,8 +115,9 @@ internal static class FidelityChecks
             LossAt(paragraphs.Where(p => p.List != null).Select(p => p.Location), "Kindle.ListLayout", "Kindle list indentation depends on the reading application's reflow layout.");
         if (format is DocumentFormat.Pdf or DocumentFormat.Xps)
         {
+            if (!context.Typography.Enabled) LossAt(paragraphs.Where(p => p.RightToLeft == true).Select(p => p.Location), "Layout.Direction", "Right-to-left paragraphs require the optional typography profile.");
             LossAt(paragraphs.Where(p => p.IsCodeBlock || p.Runs.Any(r => r.Code)).Select(p => p.Location), "Layout.CodeFont", "Code content uses the embedded proportional font.");
-            LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Text.Any(c => c >= '\u0590' && c <= '\u0dff' || char.IsSurrogate(c)))).Select(p => p.Location),
+            if (!context.Typography.Enabled) LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Text.Any(c => c >= '\u0590' && c <= '\u0dff' || char.IsSurrogate(c)))).Select(p => p.Location),
                 "Layout.Shaping", "Unsupported complex-script shaping and supplementary characters use visible fallback characters.");
             if (format == DocumentFormat.Xps)
                 LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Link != null || r.FieldInstruction != null && r.FieldInstruction.Contains("\\h"))).Select(p => p.Location), "Layout.Hyperlink", "This XPS profile retains hyperlink text without an interactive target.");

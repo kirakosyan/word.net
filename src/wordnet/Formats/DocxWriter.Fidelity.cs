@@ -33,7 +33,7 @@ internal sealed partial class DocxWriter
         relationships.Add(Relationship("rImage" + id, "image", "media/image" + id + "." + image.Extension));
         var drawing = new XElement(W + "drawing", new XElement(Wp + "inline",
             new XElement(Wp + "extent", new XAttribute("cx", cx), new XAttribute("cy", cy)),
-            new XElement(Wp + "docPr", new XAttribute("id", id), new XAttribute("name", "Image " + id), new XAttribute("descr", image.AlternativeText)),
+            new XElement(Wp + "docPr", new XAttribute("id", id), new XAttribute("name", "Image " + id), new XAttribute("descr", image.AlternativeText), image.Decorative ? new XElement(A + "extLst", new XElement(A + "ext", new XAttribute("uri", "{C183D7F6-B498-43B3-948B-1728B52AA6E4}"), new XElement(XName.Get("decorative", "http://schemas.microsoft.com/office/drawing/2017/decorative"), new XAttribute("val", "1")))) : null),
             new XElement(A + "graphic", new XElement(A + "graphicData", new XAttribute("uri", Pic.NamespaceName),
                 new XElement(Pic + "pic",
                     new XElement(Pic + "nvPicPr", new XElement(Pic + "cNvPr", new XAttribute("id", "0"), new XAttribute("name", "Image " + id)), new XElement(Pic + "cNvPicPr")),

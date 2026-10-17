@@ -223,6 +223,7 @@ public sealed partial class WordDocument
                 if (value.Image.Bytes.Length > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Image data exceeds the configured bound.");
             }
             DocumentImage? image = value.Image == null ? null : DocumentImage.Read(value.Image.Bytes, value.Image.Width, value.Image.Height, value.Image.AlternativeText, context);
+            if (image != null) image.Decorative = value.Image!.Decorative;
             destination.Add(new TextRun(value.Text, f.Bold, f.Italic, fontSize: f.FontSize, color: f.Color?.ToUpperInvariant(), image: image,
                 appearance: new RunAppearance { FontFamily = f.FontFamily, Underline = f.Underline }));
         }
@@ -235,7 +236,7 @@ public sealed partial class WordDocument
         Color = r.Color,
         FontFamily = r.Appearance.FontFamily,
         Underline = r.Appearance.Underline
-    }) : new DocumentText(new TemplateImage(r.Image.Bytes, r.Image.FrameWidth, r.Image.FrameHeight, r.Image.AlternativeText));
+    }) : new DocumentText(new TemplateImage(r.Image.Bytes, r.Image.FrameWidth, r.Image.FrameHeight, r.Image.AlternativeText, r.Image.Decorative));
     private static void CheckText(string text, ConversionContext context)
     {
         Guard.NotNull(text, nameof(text));

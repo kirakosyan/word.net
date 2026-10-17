@@ -15,17 +15,20 @@ internal static partial class RtfFormat
     {
         var fonts = new List<string> { "Noto Sans" };
         var colors = new List<string>();
+        var fontIds = new Dictionary<string, int>(StringComparer.Ordinal) { ["Noto Sans"] = 0 }; var colorIds = new Dictionary<string, int>(StringComparer.Ordinal);
         var lists = new Dictionary<string, (int Id, ListItem Item)>(StringComparer.Ordinal);
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
             context.CheckCancellation();
             if (paragraph.List != null && !lists.ContainsKey(paragraph.List.Id)) lists.Add(paragraph.List.Id, (lists.Count + 1, paragraph.List));
+            if (lists.Count > 4096) throw new InvalidDataException("Limit.RtfDefinitions: RTF output lists exceed bounds.");
             foreach (TextRun run in paragraph.Runs)
             {
                 string? name = run.Appearance.FontFamily;
-                if (name != null && !fonts.Contains(name)) fonts.Add(name);
-                if (run.Color != null && !colors.Contains(run.Color)) colors.Add(run.Color);
-                if (run.Appearance.Background != null && !colors.Contains(run.Appearance.Background)) colors.Add(run.Appearance.Background);
+                if (name != null && !fontIds.ContainsKey(name)) { fontIds.Add(name, fonts.Count); fonts.Add(name); }
+                if (run.Color != null && !colorIds.ContainsKey(run.Color)) { colorIds.Add(run.Color, colors.Count); colors.Add(run.Color); }
+                if (run.Appearance.Background != null && !colorIds.ContainsKey(run.Appearance.Background)) { colorIds.Add(run.Appearance.Background, colors.Count); colors.Add(run.Appearance.Background); }
+                if (fonts.Count > 4096 || colors.Count > 4096 || lists.Count > 4096) throw new InvalidDataException("Limit.RtfDefinitions: RTF output definitions exceed bounds.");
             }
         }
         if (fonts.Count > 4096 || colors.Count > 4096 || lists.Count > 4096) throw new InvalidDataException("Limit.RtfDefinitions: RTF output definitions exceed bounds.");
@@ -86,7 +89,7 @@ internal static partial class RtfFormat
 
         void Paragraph(ParagraphBlock p, bool cell)
         {
-            context.CheckCancellation(); text.Append(@"\pard\plain"); if (cell) text.Append(@"\intbl");
+            context.CheckCancellation(); text.Append(@"\pard\plain"); if (p.RightToLeft.HasValue) text.Append(p.RightToLeft.Value ? @"\rtlpar" : @"\ltrpar"); if (cell) text.Append(@"\intbl");
             text.Append(p.Alignment switch { ParagraphAlignment.Center => @"\qc", ParagraphAlignment.Right => @"\qr", ParagraphAlignment.Justified => @"\qj", _ => @"\ql" });
             text.Append(@"\li").Append(Twips(p.Layout.Left)).Append(@"\ri").Append(Twips(p.Layout.Right)).Append(@"\fi").Append(Twips(p.Layout.FirstLine));
             if (p.Layout.Before.HasValue) text.Append(@"\sb").Append(Twips(p.Layout.Before.Value));
@@ -110,16 +113,17 @@ internal static partial class RtfFormat
                         .Append(@"\picw").Append(image.PixelsWide.ToString(CultureInfo.InvariantCulture)).Append(@"\pich").Append(image.PixelsHigh.ToString(CultureInfo.InvariantCulture))
                         .Append(@"\picwgoal").Append(Twips(image.Width)).Append(@"\pichgoal").Append(Twips(image.Height)).Append(' ');
                     if ((long)image.Bytes.Length * 2 + text.Length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: RTF picture exceeds output bounds.");
+                    if (text.Length + (long)image.Bytes.Length * 2 > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: RTF picture expansion exceeds its output budget.");
                     foreach (byte value in image.Bytes) text.Append(value.ToString("x2", CultureInfo.InvariantCulture)); text.Append('}'); continue;
                 }
                 if (run.Link != null) context.Loss("Rtf.Link", "RTF hyperlinks retain visible text without executable field instructions.");
                 if (run.Appearance.VerticalAlignment != null) context.Loss("Rtf.VerticalAlignment", "RTF vertical run alignment is not retained.");
-                text.Append(@"{\f").Append((run.Appearance.FontFamily == null ? 0 : fonts.IndexOf(run.Appearance.FontFamily)).ToString(CultureInfo.InvariantCulture))
+                text.Append(@"{\f").Append((run.Appearance.FontFamily == null ? 0 : fontIds[run.Appearance.FontFamily]).ToString(CultureInfo.InvariantCulture))
                     .Append(@"\fs").Append(Math.Round((run.FontSize ?? 11) * 2).ToString(CultureInfo.InvariantCulture))
                     .Append(run.Bold ? @"\b" : @"\b0").Append(run.Italic ? @"\i" : @"\i0")
                     .Append(run.Appearance.Underline ? @"\ul" : @"\ulnone").Append(run.Appearance.Strike ? @"\strike" : @"\strike0")
-                    .Append(@"\cf").Append((run.Color == null ? 0 : colors.IndexOf(run.Color) + 1).ToString(CultureInfo.InvariantCulture));
-                if (run.Appearance.Background != null) text.Append(@"\highlight").Append((colors.IndexOf(run.Appearance.Background) + 1).ToString(CultureInfo.InvariantCulture));
+                    .Append(@"\cf").Append((run.Color == null ? 0 : colorIds[run.Color] + 1).ToString(CultureInfo.InvariantCulture));
+                if (run.Appearance.Background != null) text.Append(@"\highlight").Append((colorIds[run.Appearance.Background] + 1).ToString(CultureInfo.InvariantCulture));
                 text.Append(' '); Escape(run.Text); text.Append('}'); Check();
             }
             text.Append(@"\par ");
@@ -128,6 +132,7 @@ internal static partial class RtfFormat
         {
             foreach (char c in value)
             {
+                Check();
                 if (c is '\\' or '{' or '}') text.Append('\\').Append(c);
                 else if (c == '\n') text.Append(@"\line ");
                 else if (c == '\t') text.Append(@"\tab ");

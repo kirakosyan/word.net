@@ -31,6 +31,7 @@ internal static partial class RtfFormat
         internal string Destination = "body";
         internal int Uc = 1, Font, Color, Background, Heading, Red, Green, Blue, List, Level, OverrideId, DefinitionLevel;
         internal bool ColorSeen;
+        internal bool? RightToLeft;
         internal double Size = 11;
         internal ParagraphAlignment Alignment;
         internal ParagraphLayout Layout = new ParagraphLayout();
@@ -236,7 +237,7 @@ internal static partial class RtfFormat
                 case "strike": state.Strike = n != 0; break;
                 case "fs": if (n <= 0 || n > 3276) throw Invalid("Invalid font size."); state.Size = n / 2.0; break;
                 case "plain": state.Bold = state.Italic = state.Underline = state.Strike = false; state.Size = 11; state.Color = state.Background = 0; break;
-                case "pard": state.Alignment = ParagraphAlignment.Left; state.Layout = new ParagraphLayout(); state.List = state.Level = state.Heading = 0; state.InTable = false; break;
+                case "pard": state.RightToLeft = null; state.Alignment = ParagraphAlignment.Left; state.Layout = new ParagraphLayout(); state.List = state.Level = state.Heading = 0; state.InTable = false; break;
                 case "ql": state.Alignment = ParagraphAlignment.Left; break;
                 case "qc": state.Alignment = ParagraphAlignment.Center; break;
                 case "qr": state.Alignment = ParagraphAlignment.Right; break;
@@ -306,7 +307,11 @@ internal static partial class RtfFormat
                 case "xmlnstbl":
                 case "shp":
                     state.Skip = true; context.Loss("Rtf.Destination", "An unsupported RTF destination is omitted without execution or fetching."); break;
-                case "ansi": case "viewkind": case "viewscale": case "deftab": case "deflang": case "deflangfe": case "lang": case "langfe": case "nouicompat": case "fnil": case "froman": case "fswiss": case "fmodern": case "fprq": case "falt": case "ftech": case "fbidi": case "fdecor": case "loch": case "hich": case "dbch": case "ltrch": case "ltrpar": case "af": case "afs": case "adeflang": case "listtemplateid": case "listoverride": case "listoverridecount": case "leveljc": case "levelfollow": case "levelspace": case "levelindent": case "jclisttab": case "tx": case "picw": case "pich": case "picscalex": case "picscaley": case "trgaph": case "trleft": break;
+                case "picscalex": case "picscaley": if (argument != 100) context.Loss("Rtf.PictureScale", "Non-default picture scale is outside the basic raster profile; explicit frame goals are retained."); break;
+                case "trleft": if (argument != 0) context.Loss("Rtf.TableOffset", "Nonzero RTF table offset is omitted."); break;
+                case "rtlpar": Flush(); state.RightToLeft = true; break;
+                case "ltrpar": Flush(); state.RightToLeft = false; break;
+                case "ansi": case "viewkind": case "viewscale": case "deftab": case "deflang": case "deflangfe": case "lang": case "langfe": case "nouicompat": case "fnil": case "froman": case "fswiss": case "fmodern": case "fprq": case "falt": case "ftech": case "fbidi": case "fdecor": case "loch": case "hich": case "dbch": case "ltrch": case "af": case "afs": case "adeflang": case "listtemplateid": case "listoverride": case "listoverridecount": case "leveljc": case "levelfollow": case "levelspace": case "levelindent": case "jclisttab": case "tx": case "picw": case "pich": case "trgaph": break;
                 default: context.Loss("Rtf.Control", "Formatting outside the documented RTF control-word profile is not retained."); break;
             }
             if (fonts.Count > 4096 || lists.Count > 4096 || overrides.Count > 4096) throw new InvalidDataException("Limit.RtfDefinitions: Too many RTF definitions.");
@@ -324,7 +329,7 @@ internal static partial class RtfFormat
                 if (face.CodePage == -1) context.Loss("Rtf.FontCharset", "A special font charset retains literal character values without a symbol-font encoding map.");
             }
             if (state.Color < 0 || state.Color >= colors.Count && state.Color != 0) throw Invalid("Invalid color table reference.");
-            paragraph.HeadingLevel = state.Heading; paragraph.Alignment = state.Alignment; paragraph.Layout = state.Layout.Copy();
+            paragraph.HeadingLevel = state.Heading; paragraph.RightToLeft = state.RightToLeft; paragraph.Alignment = state.Alignment; paragraph.Layout = state.Layout.Copy();
             if (state.List != 0)
             {
                 if (state.Level != 0) context.Loss("Rtf.ListDepth", "RTF input uses the first list-level definition for deeper items in this bounded profile.");
@@ -337,7 +342,7 @@ internal static partial class RtfFormat
         private void FinishParagraph(bool force)
         {
             Flush(); if (!force && paragraph.Runs.Count == 0) return;
-            paragraph.HeadingLevel = state.Heading; paragraph.Alignment = state.Alignment; paragraph.Layout = state.Layout.Copy();
+            paragraph.HeadingLevel = state.Heading; paragraph.RightToLeft = state.RightToLeft; paragraph.Alignment = state.Alignment; paragraph.Layout = state.Layout.Copy();
             if (state.InTable || row != null) cellParagraphs.Add(paragraph);
             else { model.Blocks.Add(paragraph); table = null; }
             paragraph = new ParagraphBlock();

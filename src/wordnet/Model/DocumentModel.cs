@@ -7,6 +7,7 @@ internal sealed class DocumentModel
 {
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
+    internal bool TypographyPrepared { get; set; }
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
     internal PageSettings? FinalSection { get; set; }
     internal List<DocumentNote> Notes { get; } = new List<DocumentNote>();
@@ -50,6 +51,7 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal bool? RightToLeft { get; set; }
     internal List<TextRun> Runs { get; } = new List<TextRun>();
 
     internal int HeadingLevel { get; set; }

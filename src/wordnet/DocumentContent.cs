@@ -32,8 +32,12 @@ public sealed class TemplateImage
 {
     internal byte[] Bytes { get; }
     /// <summary>Creates an inline image input. Encoded pixels are validated when admitted to a document.</summary>
-    public TemplateImage(byte[] bytes, double width, double height, string alternativeText = "")
+    public TemplateImage(byte[] bytes, double width, double height, string alternativeText = "") : this(bytes, width, height, alternativeText, false) { }
+    /// <summary>Creates an image with explicit decorative semantics. Decorative images must have empty alternative text.</summary>
+    public TemplateImage(byte[] bytes, double width, double height, string alternativeText, bool decorative)
     {
+        if (decorative && !string.IsNullOrEmpty(alternativeText)) throw new ArgumentException("Decorative images must have empty alternative text.", nameof(alternativeText));
+        Decorative = decorative;
         Guard.NotNull(bytes, nameof(bytes));
         if (!(width > 0 && width <= 1584)) throw new ArgumentOutOfRangeException(nameof(width));
         if (!(height > 0 && height <= 1584)) throw new ArgumentOutOfRangeException(nameof(height));
@@ -67,6 +71,8 @@ public sealed class TemplateImage
     public double Height { get; }
     /// <summary>Gets alternative text.</summary>
     public string AlternativeText { get; }
+    /// <summary>Gets whether the author explicitly marked the image as decorative.</summary>
+    public bool Decorative { get; }
 }
 
 /// <summary>A detached text or inline-image value. The formatting property returns a copy.</summary>

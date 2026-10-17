@@ -1,7 +1,7 @@
 # Interoperability, typography and import decisions
 
 This records the implementation contract for roadmap #32, bucket 4: #20, #21,
-#22, #23, #25, #26 and #27. It is a design, not a delivery claim. Bucket 3 merged
+#22, #23, #25, #26 and #27. It records decisions made before implementation; current candidate support and qualification are in [interoperability.md](interoperability.md). Bucket 3 merged
 as `0b2af843`; its post-merge documentation merged in PR #36 as `141236a3`. No package is published
 by this work. All five framework assets and the existing managed export path remain.
 
@@ -93,7 +93,7 @@ semantics must yield actionable diagnostics; never invent alternative text.
 
 Provide opt-in tagged output separately from the bounded PDF/UA-1 profile. Preserve
 ordinary PDF and PDF/A-2b defaults and their existing tests. PdfPig's public token
-writer extension can buffer the tagged path, find actual page objects, append
+writer interface and virtual object writer can buffer the tagged path, find actual page objects, append
 structure/parent-tree objects with sequential IDs, patch catalogs/pages/annotations
 and regenerate offsets/xref. Avoid private reflection or guessed object IDs. Bound
 buffer growth. MCIDs and annotation OBJR mappings must refer to their actual pages.
