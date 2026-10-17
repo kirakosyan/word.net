@@ -1,6 +1,12 @@
-# Production qualification work
+# Production qualification — 1.0 history
 
-This work preserves `net472;netstandard2.0;net8.0;net10.0`, the `WordNet` API namespace,
+This document records the 1.0 qualification work and its historical evidence. For
+current source capabilities, all five target assets, roadmap status and build-specific
+test counts, use the [implementation plan](implementation-plan.md),
+[fidelity profile](document-fidelity.md) and [testing evidence](testing.md).
+The section/layout limits below describe that earlier release, not subsequent PRs.
+
+The 1.0 work preserved `net472;netstandard2.0;net8.0;net10.0`, the `WordNet` API namespace,
 independent MIT implementation, and Windows/Linux x64/ARM64 desktop scope.
 Android and macOS are deferred by the maintainer for 1.0. This checklist records the
 release profile and evidence; it does not imply unrestricted Word fidelity.
@@ -33,7 +39,7 @@ cell paragraphs retain their editable structure in Word and EPUB.
 
 ## Environment evidence
 
-The current suite has 348 cases. [PR CI run 38629510750](https://github.com/kirakosyan/word.net/actions/runs/38629510750)
+The 1.0 suite has 348 cases. [PR CI run 38629510750](https://github.com/kirakosyan/word.net/actions/runs/38629510750)
 passes all nine native source and 17 exact-package runtime lanes: 9,048 passing cases,
 zero failed or skipped. Platforms are Windows Server 2022 x64, Windows 11 ARM64 and
 Ubuntu 24.04 x64/ARM64, on .NET 8/10 plus Windows x64 Framework. Explicit Standard-asset
@@ -42,7 +48,7 @@ are historical and do not substitute for current-build minimum-runtime evidence.
 OCR column reordering now requires the separate `ReadTextColumns` opt-in; ordinary OCR
 retains native line and paragraph order. See [review regression evidence](testing.md#pr-3-review-regressions--2026-10-14).
 
-The current 348-case source and locally packed 1.0.0 suites also pass on actual Framework 4.7.2 x64, release
+The 348-case source and locally packed 1.0.0 suites also pass on actual Framework 4.7.2 x64, release
 461814, with the explicit legacy JIT configuration and observed `compatjit.dll` version
 4.7.3460.0. No cases fail or skip. The release process additionally requires the exact
 main CI package to pass there before publishing. Default-JIT 4.7.2 is unsupported;
@@ -88,7 +94,7 @@ their setup scripts remain reproducible.
 
 ## Measurements and limits
 
-The current 348-case PR CI run above passes these isolated campaigns on .NET 10.0.13:
+The 348-case PR CI run above passes these isolated campaigns on .NET 10.0.13:
 
 | Native x64 campaign | Windows Server 2022 | Ubuntu 24.04 |
 | --- | --- | --- |

@@ -17,6 +17,14 @@ DOC / DOCX → XPS · HTML
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
 
+Main also contains unreleased comparison/preflight and business-document rendering
+improvements from PRs [#33](https://github.com/kirakosyan/word.net/pull/33) and
+[#34](https://github.com/kirakosyan/word.net/pull/34). Editing and template automation
+is tracked in [#35](https://github.com/kirakosyan/word.net/pull/35). See the
+[implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)
+for merged work, pending acceptance and the next roadmap bucket. Source capabilities
+added after 1.1.0 require a project reference until a release includes them.
+
 ## Convert a document
 
 For the unreleased document creation, editing, composition and mail-merge API, see the

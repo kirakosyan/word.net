@@ -4,9 +4,13 @@ The enterprise desktop release is **1.1.0**. Pack and verify
 `wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
 one package version. The workflow publishes fonts before core and the optional
 provider. New companion package IDs need their own authorized NuGet ownership/
-Trusted Publishing configuration before any release. The maintainer has requested
-stable publication after the PR #5 fixes; the existing
-exact-commit CI and minimum-runtime gates still apply.
+Trusted Publishing configuration before any release. Exact-commit CI and
+minimum-runtime gates apply to every release.
+
+Roadmap PRs after the 1.1.0 release add unreleased source capabilities. Merging does
+not publish packages. After every merge, complete the [issue, roadmap and documentation
+reconciliation](implementation-plan.md#after-every-merge) before taking the next bucket;
+keep release notes and package claims tied to the version that actually ships them.
 
 The first stable release is **1.0.0**, for the documented Windows/Linux x64 and ARM64
 desktop profile. Android and macOS are deferred by the maintainer for this release.

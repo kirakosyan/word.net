@@ -65,6 +65,17 @@ package ID are `wordnet`. Keep namespace spelling consistent across all targets 
 
 ## Validation and reporting
 
+After every pull-request merge, reconcile the delivered work before starting the next
+bucket. Verify the merged commit and final checks, update each linked issue's acceptance
+criteria with evidence and remaining limits, close completed issues, and update roadmap
+#32. Keep partially completed issues open with the outstanding requirement stated.
+Refresh affected README, capability/API/usage, diagnostic and testing documentation,
+including `docs/implementation-plan.md`; distinguish merged source, pending PRs and
+published packages. Preserve historical qualification as dated evidence. Include issue
+closing references in PR descriptions when their full acceptance scope is delivered.
+This reconciliation is part of the authorized implementation workflow and does not
+require another confirmation. See the implementation plan's post-merge checklist.
+
 For code, dependency, or project changes, use the relevant checks:
 
 ```sh

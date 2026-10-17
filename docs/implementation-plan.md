@@ -1,108 +1,92 @@
-# wordnet implementation plan
+# wordnet implementation and delivery status
 
-Updated 2026-10-14 for the **1.0.0 desktop release**.
+Reconciled 2026-10-17 against merged PRs #33/#34 and open PR #35. The live
+[roadmap #32](https://github.com/kirakosyan/word.net/issues/32) and linked issue
+acceptance criteria track delivery. This page records the source state at that
+reconciliation; package publication and runtime qualification have separate gates.
 
-The six production workstreams are tracked in [production readiness](production-readiness.md).
-This release adds section/paragraph layout, merged multi-paragraph tables, repeating
-headers and long-row splitting, independent geometric and OCR corpora, isolated
-malformed-input/resource campaigns, and package/API qualification automation. The shared
-suite has 348 cases after PR review regressions. Native Windows/Linux x64 and ARM64 CI
-passes all nine source and 17 package runtime lanes. Actual Framework 4.7.2 qualification
-uses the explicit legacy x64 JIT configuration. Android API 21 remains unresolved;
-the maintainer has deferred Android and macOS from the 1.0 release scope. Keep all four
-targets, preserve portability and tie release claims to the documented feature profile
-and build-specific evidence.
+## Current delivery
 
-Alpha.6 changes the public namespace to `WordNet`, with matching namespaces on every
-target. Consumers must update imports/qualified names and rebuild. Package and assembly
-identities stay `wordnet`; the converter feature profile is unchanged from alpha.5.
-
-Alpha.7 updates the graphics/native assets, PDF decoders and compatibility dependencies,
-and migrates the shared test suite to xUnit v3. All four library targets are preserved.
-See [dependency maintenance](dependencies.md) for versions and the retained build-only
-.NET Standard reference dependency.
-
-Alpha.8 added font sizes/colors, table widths/cell padding, editable decimal/bullet
-lists and bounded inline PNG/JPEG through Word/EPUB and PDF export/import. Alpha.9
-had 236 cases, including independent input, schema/geometry/pixel assertions and
-malformed-resource regressions. No runtime dependencies or target frameworks changed.
-
-All 28 agreed directions and local English OCR for scanned/mixed PDF input now have
-working implementations and real tests. Broader rich-document fidelity and additional
-platforms remain future work outside the documented 1.0 desktop profile.
-
-Use independently authored code, public specifications and appropriately licensed
-dependencies. Preserve fixture provenance and notices; exclude proprietary resources.
-
-## Agreed scope
-
-- DOC and DOCX, including DOC ↔ DOCX.
-- Each Word format ↔ PDF, MD, TXT, EPUB, MOBI and AZW3.
-- Each Word format → XPS; no XPS input.
-- English printed OCR; handwriting and more OCR languages deferred.
-- Core content first; explicit diagnostics for unsupported features. Password protection,
-  revisions/comments and editable charts/equations remain deferred.
-- Preserve `net472;netstandard2.0;net8.0;net10.0` and matching APIs.
-- Qualify Windows/Linux x64/ARM64; Framework remains Windows x64.
-  Android and macOS are deferred by the user for 1.0.
-
-## Completed baseline
-
-| Area | Evidence |
+| Work | Delivery and evidence |
 | --- | --- |
-| Public API | Streams, async I/O, checkpoints, finite admission limits and loss diagnostics |
-| DOCX / Markdown / text | Editable subset, independent Open XML validation and regressions |
-| DOC | Headings, bold/italic styles/runs and editable simple tables; independent Apache POI fixtures and export checks |
-| EPUB | OPF/spine import, EPUB 3 output, structure and hostile-input checks |
-| MOBI / KF8 | PalmDB text formats, PalmDOC decoder and KF8 mapping; external unpacking |
-| PDF / XPS | Embedded-font layout, wrapping/pagination and coordinate checks; PDF preview |
-| OCR | Local Tesseract, rasterization and exact editable text on scanned/mixed fixtures |
-| Frameworks | Four targets preserved; desktop suite and an Android device harness sharing the same tests |
-| Paragraph alignment | Physical left/center/right alignment through Word, ebooks and fixed pages; Markdown table columns; 24 new tests including independent DOC input and output validation |
-| Formatting and images | Word/EPUB appearance and list mapping, independent DOC/PDF/EPUB inputs, PNG/JPEG pixels and physical dimensions; see the fidelity profile |
-| Runtime/package validation | Full suites on exercised Windows/Linux/Android runtimes, explicit .NET Standard consumption; see testing evidence for build-specific results and limits |
+| Enterprise baseline, issue #4 | Delivered in PR #5 and the 1.1.0 release profile: managed PDF/HTML export, stories/fields, caller fonts and optional native PDF/OCR provider; see the [audit](enterprise-audit.md). |
+| Bucket 1: measurement and adoption diagnostics | PR [#33](https://github.com/kirakosyan/word.net/pull/33) merged as `2a18874`; #6 and #24 closed. Twelve authored business documents, optional caller-provisioned Word/Aspose comparison, bounded preflight and location-aware diagnostics. |
+| Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's rendering is merged; its composition-collision acceptance remains open until #35 lands. |
+| Bucket 3: document editing and templates | Implemented in open PR [#35](https://github.com/kirakosyan/word.net/pull/35); #11–#15 await final review and merge. The candidate adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
+| Bucket 4: interoperability, typography, accessibility and import | Next after #35 merges and its reconciliation is complete: #20, #21, #22, #23, #25, #26 and #27. Read the individual issue contracts and record required architecture/provider decisions before implementation. |
+| Bucket 5: later design decisions | #28–#31 remain design-only. ODT needs a bounded future profile; revisions/comments/comparison, encryption and chart/equation implementation remain deferred. |
 
-Minimal-content tests do not establish complete DOC/KF8 compatibility, arbitrary PDF
-reading order, rich page fidelity, real-world OCR accuracy or every platform.
+Bucket 2's [supported profile](document-fidelity.md) and
+[design decisions](business-fidelity-design.md) cover nested/decorated tables,
+percentage widths/autofit, anchored/transformed rasters, rectangular text boxes,
+continuous/parity sections and columns, multilevel numbering, page-bottom footnotes
+and bounded TOC/cross-reference refresh. These are implemented source capabilities;
+perfect Word pagination, arbitrary drawing layout and unrestricted field evaluation
+are outside the profile.
+
+Main's last merged rendering increment has **610** required conversion/OCR cases.
+The #35 candidate has **664**, including 54 authored editing/template cases. Both
+PR heads passed 20 CI checks; local complete suites passed on Linux x64 .NET 8/10
+without skips. Counts and qualification belong to their specific revisions. See
+[testing](testing.md) for independent-reader assertions, exact heads, historical
+release evidence and remaining platform/tool limits. Neither a green PR nor an
+unreleased API implies a published package or Word/Aspose parity.
+
+## Preserved contracts
+
+- DOC and DOCX, including DOC ↔ DOCX; each Word format ↔ PDF, MD, TXT, EPUB,
+  MOBI and AZW3; each Word format → XPS and HTML. XPS and HTML input are not
+  implemented by these merged buckets.
+- English printed OCR, with caller-provisioned native dependencies through
+  `wordnet.Ocr`; handwriting and additional OCR languages remain deferred.
+- Matching public APIs on `net462;net472;netstandard2.0;net8.0;net10.0`, with
+  managed export and provider types outside the portable public surface.
+- Windows/Linux x64/ARM64 desktop scope. Framework 4.7.2 x64 requires the
+  documented legacy JIT configuration; actual 4.6.2 remains unqualified. Android,
+  macOS and trimming/AOT require separate qualification before support claims.
+- Caller-owned streams, cancellation checkpoints, bounded admission, staged output
+  and explicit loss diagnostics. Host isolation is required for hard CPU/RSS limits.
+- Independent MIT-authored implementation, published specifications, licensed
+  dependencies and fixture provenance; no proprietary resources or implicit fetching.
 
 ## Remaining work
 
-1. **Independent corpora and interoperability:** rich DOC and KF8 fragment/index variants,
-   multi-spine EPUB, real viewer checks, malformed compression and fuzzing. DOC formatting
-   records and multi-story behavior need broader validation.
-2. **Document semantics:** continuous/parity sections, richer styles/numbering, notes and metadata.
-   Model each feature before adapters claim preservation.
-3. **DOC fidelity:** extend the implemented [formatting/table profile](doc-format.md)
-   with richer typography, image effects and supported objects from MS-DOC.
-4. **Layout:** shaping, font selection/fallback, advanced line breaking, continuous sections,
-   keep-with-table behavior and floating images. Extend the pinned reference corpus.
-5. **PDF/OCR:** complex columns/tables, image transforms and precise positions; broader
-   independently sourced scan corpora beyond the eight measured regression scenarios.
-6. **Ebooks:** CSS/media/navigation/metadata and independently validated KF8 variants.
-   Keep unsupported compression/DRM explicit.
-7. **Platforms:** maintain four native Windows/Linux CI lanes. The current 348-case
-   suite passes source, package and explicit Standard-asset runs on .NET 8/10; Windows
-   x64 also passes Framework. Preserve the actual-4.7.2 legacy JIT qualification gate.
-   Android/macOS and trimming/AOT require fresh qualification before adding support.
-   Check native codecs, OCR, model provisioning, fonts, architecture and minimum OS requirements.
-8. **Resources:** expand deterministic mutation seeds and longer production-like workloads.
-   Isolated fuzzing, throughput/RSS campaigns and host guidance now exist; admission bounds
-   still cannot enforce hard native CPU/RSS deadlines within an application process.
+1. Resolve #35 review feedback, validate its final head, merge, then reconcile
+   #11–#15 and #17. The adoption sample must retain editable invoice rows, optional
+   content and a caller logo in DOCX plus independently verified PDF.
+2. Deliver bucket 4's safe HTML/CSS import, defensive RTF exchanges, bounded
+   bidi/complex-script typography, semantic tagged PDF/PDF-UA validation, selected
+   pages/previews, digital PDF reconstruction and OCR confidence/coordinate mapping.
+   Typography, accessibility and previews need the issue's design/provider decisions
+   and independent validation before support is advertised.
+3. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
+   input campaigns and production-like resource measurements. The bounded binary
+   [DOC profile](doc-format.md), ebook CSS and complex PDF reading order retain limits.
+4. Preserve native desktop source/package/Standard lanes and refresh exact-package,
+   actual-minimum-runtime evidence for each release. Older successful runtime reports
+   do not qualify a new revision. Keep fonts, codecs, OCR and architecture explicit.
+5. Complete the four later design issues within their design-only boundaries.
+   Any deferred implementation needs a separate scope decision.
 
-## Release gates
+## After every merge
 
-- Every required direction and scanned/mixed OCR case executes meaningful assertions;
-  no required case is skipped or represented by placeholder output.
-- Independent readers/fixtures validate supported features. Round trips supplement them.
-- Define corpus-based character/word-error, reading-order and visual thresholds. Exact
-  matches on the small clean OCR fixtures are not broad benchmarks.
-- Test deferred/unsupported features for explicit rejection or documented losses.
-- Execute packed NuGet consumers on each claimed platform, including the explicit
-  .NET Standard asset and oldest claimed Framework runtime.
-- Complete security, dependency audit/license/native deployment, locked restore,
-  formatting, deterministic build, API compatibility and documentation checks.
-- Establish compatibility/versioning policy, performance budgets and reproducible
-  publication before releasing to NuGet.
+1. Verify the merged SHA, final review resolution and checks. Update the local main
+   branch without overwriting user work; identify which acceptance criteria landed.
+2. Reconcile linked issues: check only verified criteria, record the PR/commit,
+   independent evidence and residual limits, and close completed issues. Keep partial
+   issues open with a concrete remaining requirement. Verify automatic closing
+   references took effect; a PR reference alone does not complete an issue.
+3. Update roadmap #32's checkboxes, delivery table, dependencies and next bucket.
+   Re-read issue state rather than trusting a stale roadmap snapshot.
+4. Refresh this plan and affected README, architecture, capability, API/usage,
+   diagnostic catalog, samples and testing evidence. Distinguish merged source,
+   pending review and released packages. Preserve dated historical evidence and
+   report checks that actually ran, skips and qualification limits.
+5. Commit documentation changes through the repository's PR workflow, then proceed
+   to the next bucket. Do not publish packages or change release credentials as part
+   of this reconciliation. See the separate [release procedure](releasing.md).
 
-No additional product questions block progress. Licensed representative documents
-would improve coverage, but owned/public fixtures allow implementation to continue.
+For implementation, the locked restore, all-target Release build, complete applicable
+conversion/OCR suites, formatting and package/API checks in [AGENTS.md](../AGENTS.md)
+remain required. Documentation-only reconciliation uses diff, link and consistency
+checks; it does not require rerunning unchanged conversion code.

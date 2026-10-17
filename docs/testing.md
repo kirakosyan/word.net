@@ -1,5 +1,23 @@
 # Conversion tests and qualification
 
+## Evidence by revision
+
+The latest merged rendering increment is PR [#34](https://github.com/kirakosyan/word.net/pull/34),
+main commit `1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, with **610** required cases.
+Its reviewed head passed all **20** CI check runs before merge. The editing/template
+candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35), head
+`4f063d98d690ee4b159b3f7f29df93964c0d4caf`, has **664** required cases and all
+**20** CI check runs passed when reconciled on 2026-10-17. It remains unmerged at
+this reconciliation; any review changes require checks on their new head.
+
+The PR CI checks include native Windows/Linux x64/ARM64 source and packed-asset
+lanes, compile checks and the single-core PDF performance/memory gate. These are
+PR-head results; they do not replace exact-main-package release qualification,
+actual minimum-Framework execution, desktop Word or licensed Aspose references.
+Local runs and independent-reader evidence are detailed below. Historical release
+sections retain their original case counts. See the [delivery status and post-merge
+checklist](implementation-plan.md) before interpreting an old count as current.
+
 ## Document editing and templates — roadmap #32, section 3
 
 The [editing/template guide](editing-and-templates.md) and
