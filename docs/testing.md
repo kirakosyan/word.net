@@ -2,14 +2,22 @@
 
 ## Evidence by revision
 
-The latest merged rendering increment is PR [#34](https://github.com/kirakosyan/word.net/pull/34),
-main commit `1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, with **610** required cases.
-Its reviewed head passed all **20** CI check runs before merge. The editing/template
-candidate in PR [#35](https://github.com/kirakosyan/word.net/pull/35) now has **696**
-required cases after review regressions. The earlier 664-case head
-`811d6a26af91ebbd95249f4189230be99ddb483e` passed all **20** CI check runs.
-The PR remains unmerged at this reconciliation; review changes require checks on
-their new head. Current local evidence follows below.
+PR [#35](https://github.com/kirakosyan/word.net/pull/35) was squash-merged on
+2026-10-17 as `0b2af843a40b8c866119594a887e8dac1f5c7340`, with **696** required
+conversion/OCR cases, including **86** authored editing/template cases. All **15**
+review findings were addressed, replied to and resolved. All **20** CI check runs
+passed on the final reviewed head `383ea15f1bb21d96f38a61a2eaee42980cae0124`
+([push CI](https://github.com/kirakosyan/word.net/actions/runs/39034264216),
+[PR CI](https://github.com/kirakosyan/word.net/actions/runs/39034268071)).
+The expected-head merge was verified and its tree equals that reviewed head.
+Issues #11–#15 and #17 have checked acceptance criteria, merge evidence and verified
+closure; roadmap #32 records completed buckets 1–3 and the next bucket 4.
+
+PR [#34](https://github.com/kirakosyan/word.net/pull/34), commit
+`1c44d97f7378401ed8ee67a9ae50b2197499c4bd`, had **610** required cases and 20 successful
+pre-merge checks. PR #35's initial 664-case head
+`811d6a26af91ebbd95249f4189230be99ddb483e` also passed 20 checks; those are historical
+results, separate from the final review-regression evidence below.
 
 The PR CI checks include native Windows/Linux x64/ARM64 source and packed-asset
 lanes, compile checks and the single-core PDF performance/memory gate. These are

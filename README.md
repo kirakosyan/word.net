@@ -19,8 +19,10 @@ DOC / DOCX → XPS · HTML
 
 Main also contains unreleased comparison/preflight and business-document rendering
 improvements from PRs [#33](https://github.com/kirakosyan/word.net/pull/33) and
-[#34](https://github.com/kirakosyan/word.net/pull/34). Editing and template automation
-is tracked in [#35](https://github.com/kirakosyan/word.net/pull/35). See the
+[#34](https://github.com/kirakosyan/word.net/pull/34), plus document editing and template
+automation merged in [#35](https://github.com/kirakosyan/word.net/pull/35)
+(`0b2af843`). Buckets 1–3 are complete within their documented profiles; bucket 4
+is next. See the
 [implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)
 for merged work, pending acceptance and the next roadmap bucket. Source capabilities
 added after 1.1.0 require a project reference until a release includes them.

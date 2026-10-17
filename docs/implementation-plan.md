@@ -1,6 +1,6 @@
 # wordnet implementation and delivery status
 
-Reconciled 2026-10-17 against merged PRs #33/#34 and open PR #35. The live
+Reconciled 2026-10-17 against merged PRs #33–#35. The live
 [roadmap #32](https://github.com/kirakosyan/word.net/issues/32) and linked issue
 acceptance criteria track delivery. This page records the source state at that
 reconciliation; package publication and runtime qualification have separate gates.
@@ -11,9 +11,9 @@ reconciliation; package publication and runtime qualification have separate gate
 | --- | --- |
 | Enterprise baseline, issue #4 | Delivered in PR #5 and the 1.1.0 release profile: managed PDF/HTML export, stories/fields, caller fonts and optional native PDF/OCR provider; see the [audit](enterprise-audit.md). |
 | Bucket 1: measurement and adoption diagnostics | PR [#33](https://github.com/kirakosyan/word.net/pull/33) merged as `2a18874`; #6 and #24 closed. Twelve authored business documents, optional caller-provisioned Word/Aspose comparison, bounded preflight and location-aware diagnostics. |
-| Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's rendering is merged; its composition-collision acceptance remains open until #35 lands. |
-| Bucket 3: document editing and templates | Implemented in open PR [#35](https://github.com/kirakosyan/word.net/pull/35); #11–#15 await final review and merge. The candidate adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
-| Bucket 4: interoperability, typography, accessibility and import | Next after #35 merges and its reconciliation is complete: #20, #21, #22, #23, #25, #26 and #27. Read the individual issue contracts and record required architecture/provider decisions before implementation. |
+| Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's composition-collision acceptance landed in #35; all eight issues are closed. |
+| Bucket 3: document editing and templates | PR [#35](https://github.com/kirakosyan/word.net/pull/35) merged as `0b2af843`; #11–#15 and #17 are closed with verified acceptance evidence. The merged source adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
+| Bucket 4: interoperability, typography, accessibility and import | Next after #35's reconciliation: #20, #21, #22, #23, #25, #26 and #27. Read the individual issue contracts and record required architecture/provider decisions before implementation. |
 | Bucket 5: later design decisions | #28–#31 remain design-only. ODT needs a bounded future profile; revisions/comments/comparison, encryption and chart/equation implementation remain deferred. |
 
 Bucket 2's [supported profile](document-fidelity.md) and
@@ -24,14 +24,15 @@ and bounded TOC/cross-reference refresh. These are implemented source capabiliti
 perfect Word pagination, arbitrary drawing layout and unrestricted field evaluation
 are outside the profile.
 
-Main's last merged rendering increment has **610** required conversion/OCR cases.
-The #35 review candidate has **696**, including 86 authored editing/template cases.
-PR #34 and #35's earlier 664-case head passed 20 CI checks each; the new review
-head requires fresh checks. Current local complete suites pass on Linux x64 .NET
-8/10 without skips. Counts and qualification belong to their specific revisions. See
-[testing](testing.md) for independent-reader assertions, exact heads, historical
-release evidence and remaining platform/tool limits. Neither a green PR nor an
-unreleased API implies a published package or Word/Aspose parity.
+Main commit `0b2af843a40b8c866119594a887e8dac1f5c7340` contains **696** required
+conversion/OCR cases, including **86** authored editing/template cases. All 15 review
+findings were addressed and resolved; all **20** CI check runs passed on reviewed
+head `383ea15f1bb21d96f38a61a2eaee42980cae0124` before its expected-head squash merge.
+The merged source tree is identical to that head. Both complete local Linux x64
+.NET 8/10 suites passed without skips; package/API checks and the public sample pass.
+See [testing](testing.md) for exact runs, independent readers, historical release
+evidence and qualification limits. The source remains unreleased; this evidence
+does not establish Word/Aspose parity or exact-main-package release qualification.
 
 ## Preserved contracts
 
@@ -52,21 +53,18 @@ unreleased API implies a published package or Word/Aspose parity.
 
 ## Remaining work
 
-1. Resolve #35 review feedback, validate its final head, merge, then reconcile
-   #11–#15 and #17. The adoption sample must retain editable invoice rows, optional
-   content and a caller logo in DOCX plus independently verified PDF.
-2. Deliver bucket 4's safe HTML/CSS import, defensive RTF exchanges, bounded
+1. Deliver bucket 4's safe HTML/CSS import, defensive RTF exchanges, bounded
    bidi/complex-script typography, semantic tagged PDF/PDF-UA validation, selected
    pages/previews, digital PDF reconstruction and OCR confidence/coordinate mapping.
    Typography, accessibility and previews need the issue's design/provider decisions
    and independent validation before support is advertised.
-3. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
+2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
    input campaigns and production-like resource measurements. The bounded binary
    [DOC profile](doc-format.md), ebook CSS and complex PDF reading order retain limits.
-4. Preserve native desktop source/package/Standard lanes and refresh exact-package,
+3. Preserve native desktop source/package/Standard lanes and refresh exact-package,
    actual-minimum-runtime evidence for each release. Older successful runtime reports
    do not qualify a new revision. Keep fonts, codecs, OCR and architecture explicit.
-5. Complete the four later design issues within their design-only boundaries.
+4. Complete the four later design issues within their design-only boundaries.
    Any deferred implementation needs a separate scope decision.
 
 ## After every merge
