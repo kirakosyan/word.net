@@ -65,3 +65,12 @@ options, immutable OCR/preview results, PDF accessibility/language/page selectio
 `WordConverter.RenderPages`. The existing four-argument `TemplateImage` constructor
 is retained; explicit decoration uses a new five-argument overload. Default managed
 Latin/PDF and OCR text behavior remain. See [usage and deployment](interoperability.md).
+
+## Bucket 5 API proposals
+
+The [design index](later-design-decisions.md) collects unavailable API sketches.
+There is no `DocumentFormat.Odt`, review/comparison API, `DocxProtection` utility or
+chart/equation editor in this change. A future ODT enum addition must also replace
+numeric format-range assumptions and explicitly gate the two proposed DOCX pairs.
+Each selected implementation slice requires separate additive API/package validation
+across all five targets; the designs do not change existing overload metadata.

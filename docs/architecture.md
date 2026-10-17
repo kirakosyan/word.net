@@ -201,3 +201,12 @@ and adjacent glyphs with the same supported appearance share one editable run.
 Native typography copies admitted font bytes into a HarfBuzz-owned blob while the
 managed source is briefly pinned. The native face/font/blob live together for the
 shaping session; no stream-created pointer to movable managed memory is retained.
+
+## Bucket 5 design proposals (pending review)
+
+The [decision index](later-design-decisions.md) proposes an ODF adapter, range-aware
+review state, explicit authenticated DOCX-envelope utilities and a validated retained
+chart/OMML graph. Each has bounded APIs, losses and independent acceptance gates.
+These are prospective architecture contracts; no such model nodes, format, crypto
+utility or object editor is implemented by this design PR. Existing offline managed
+export, opt-in native providers and five-target compatibility remain the baseline.

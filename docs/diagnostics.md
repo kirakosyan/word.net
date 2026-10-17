@@ -343,3 +343,11 @@ A repeated RTF row definition with inconsistent edges fails `Rtf.Structure`.
 and `Pdf.ReconstructionFlow` distinguish geometric import limits from confidence
 information. `Ocr.UnmappedRegion` reports missing canonical span mappings without
 body text. Metadata remains opt-in; confidence is not calibrated accuracy.
+
+## Proposed bucket 5 diagnostics
+
+Names in the [later-design ADRs](later-design-decisions.md), including `Odt.*` and
+`Comparison.WorkLimit`, are design vocabulary, not emitted diagnostic codes. No
+catalog entry or fidelity behavior changes in the design PR. Existing revision/comment
+losses and encrypted/unsupported-object rejection remain. Future implementations must
+add catalog/usage tests and content-free crypto/history diagnostics at their own gate.

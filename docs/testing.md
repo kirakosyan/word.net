@@ -1,6 +1,6 @@
 # Conversion tests and qualification
 
-## PR #38 native font-lifetime follow-up (pending merge)
+## PR #38 native font-lifetime follow-up — merged 2026-10-17
 
 The documentation reconciliation also fixes a failure exposed by its own CI: an
 initial Linux ARM64 process exited 139 after 370 passing cases; a Windows packed
@@ -12,6 +12,22 @@ large temporary allocations before checking an independently generated Arabic
 glyph/cluster/advance/offset golden. It fails before the fix with a missing-glyph
 error after collection and passes with owned storage. The current suite requires
 **829** cases; the 828-case PR #37 evidence below remains historical.
+
+PR [#38](https://github.com/kirakosyan/word.net/pull/38) squash-merged as
+`2f16d47ac007bf1a5affb41bc0b7653f5198c9f8`. Its tree equals final head
+`e09c17c7ef43e38bcdf9717e535caa02b31d7812`, whose **20/20** checks passed
+([push CI](https://github.com/kirakosyan/word.net/actions/runs/39070508323),
+[PR CI](https://github.com/kirakosyan/word.net/actions/runs/39070512461)).
+The failed 2388075 attempts are superseded, not counted as passing qualification.
+Local validation passes locked restore, all-five-target Release build, formatting,
+all three packages/API/commit checks and 829/829 source cases on each .NET 8/10 runtime.
+Four fresh-cache packed runs each pass 829/829 (3,316 passed), including explicit
+Standard fallback on both modern runtimes; no cases failed or skipped. The pinned
+[binding source](https://github.com/mono/SkiaSharp/blob/4783f51448f9b070dda4f87b83e941c9599e466e/binding/HarfBuzzSharp/Blob.cs)
+confirms the stream-factory ownership issue. Exact artifacts/reports are hashed in
+`artifacts/pr38-native-lifetime/verification.json` in the qualification workspace.
+This native ownership fix changes neither public APIs nor dependencies. Actual
+minimum runtimes, released packages and the historical PR #37 run remain distinct.
 
 ## Evidence by revision
 
@@ -960,3 +976,14 @@ Packing checks API compatibility. Inspect assemblies/XML docs, README/notices/li
 and dependency groups. Execute representative packed consumers and explicitly load
 the .NET Standard asset. Android device tests now exercise native loading, fonts/models
 and conversions; broaden devices/API levels, memory checks and trimming/AOT coverage.
+
+## Bucket 5 design validation
+
+The [design/acceptance plan](later-design-decisions.md) is documentation only.
+Issue-to-design traceability, current source/API/resource contracts, published
+specifications and provider/license boundaries were reviewed; changed local links,
+anchors, whitespace and the final diff were checked. Planned cases and external
+editing/security reviews have not run and are not new runtime qualification.
+The 829 required cases belong to the merged implementation, not bucket 5 support.
+Future executable samples and build/platform evidence are gates in each ADR; the
+existing automation/interoperability samples continue to demonstrate implemented APIs.

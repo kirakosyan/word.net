@@ -1,6 +1,7 @@
 # wordnet implementation and delivery status
 
-Reconciled 2026-10-17 against merged PRs #33–#37. The live
+Reconciled 2026-10-17 against merged PRs #33–#38; bucket 5 designs are pending review.
+The live
 [roadmap #32](https://github.com/kirakosyan/word.net/issues/32) and linked issue
 acceptance criteria track delivery. This page records the source state at that
 reconciliation; package publication and runtime qualification have separate gates.
@@ -14,7 +15,13 @@ reconciliation; package publication and runtime qualification have separate gate
 | Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's composition-collision acceptance landed in #35; all eight issues are closed. |
 | Bucket 3: document editing and templates | PR [#35](https://github.com/kirakosyan/word.net/pull/35) merged as `0b2af843`; #11–#15 and #17 are closed with verified acceptance evidence. The merged source adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
 | Bucket 4: interoperability, typography, accessibility and import | PR [#37](https://github.com/kirakosyan/word.net/pull/37) merged as `44c9e362`; #20–#23 and #25–#27 closed with verified acceptance. All 15 review findings resolved, all 20 checks passed on `2af6a43`, and the merge tree matches that head. 828 required cases, including 33 review regressions; independent readers/validators and exact packed fallback runs pass. See [profiles/usage](interoperability.md). |
-| Bucket 5: later design decisions | #28–#31 remain design-only. ODT needs a bounded future profile; revisions/comments/comparison, encryption and chart/equation implementation remain deferred. |
+| Bucket 5: later design decisions | [Four design proposals](later-design-decisions.md) for #28–#31 are pending review, with API/provider decisions, profiles, safety/resource limits, fixture provenance and staged acceptance plans. Runtime implementation remains deferred; design acceptance does not claim support. |
+
+PR #38 merged documentation reconciliation and a native font-buffer lifetime fix
+as `2f16d47ac007bf1a5affb41bc0b7653f5198c9f8`. Its tree matches head `e09c17c7ef43e38bcdf9717e535caa02b31d7812`,
+which passed all 20 checks. The current required suite is **829**; the 828-case
+PR #37 qualification remains dated historical evidence. See [testing](testing.md).
+No package was published. Bucket 5 remains a design proposal; runtime implementation is deferred.
 
 Bucket 2's [supported profile](document-fidelity.md) and
 [design decisions](business-fidelity-design.md) cover nested/decorated tables,
@@ -52,8 +59,10 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Complete bucket 5 (#28–#31) within its design-only boundaries. Deferred implementation
-   needs a separate scope decision. [Bucket 4 limits](interoperability.md) remain explicit: native
+1. Review the bucket 5 design deliverables (#28–#31), then select a bounded follow-up
+   from their implementation slices. ODT is the recommended next candidate; deferred
+   review/encryption/object implementation needs a separate explicit scope decision.
+   [Bucket 4 limits](interoperability.md) remain explicit: native
    typography/UA combinations, complex table semantics and approximate reconstruction.
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
    input campaigns and production-like resource measurements. The bounded binary
