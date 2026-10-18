@@ -5,9 +5,13 @@
 Checkout, .NET setup and artifact actions now use SHA-pinned releases that declare
 Node.js 24 in their manifests. NuGet/login 1.2.0 already uses Node.js 24 and retains
 its existing pin. All four workflows pass actionlint 1.7.12. Parsed workflow comparison
-confirms that only external action references changed; triggers, permissions, matrices,
-commands, artifact inputs and publication gates are identical. No runtime-forcing
-environment variable is required. Native CI validates the updated action implementations;
+confirms that only external action references changed in the workflows; triggers,
+permissions, matrices, commands, artifact inputs and publication gates are identical.
+An initial Android run exposed setup-dotnet's newer roll-forward behavior: `latestPatch`
+installed SDK 10.0.402 and changed the implicit ILLink dependency to 10.0.13, violating
+the committed lock. `global.json` now disables SDK roll-forward and keeps 10.0.401;
+locked restore remains enforced. No runtime-forcing environment variable is required.
+Native CI validates the updated action implementations;
 its runs and current-head results are recorded on the maintenance PR and roadmap #32.
 
 The successful [1.2.0 publish run 39129534970](https://github.com/kirakosyan/word.net/actions/runs/39129534970)

@@ -9,8 +9,9 @@ reconciliation; package publication and runtime qualification have separate gate
 
 CI maintenance upgrades the pinned checkout, .NET setup and artifact actions to
 releases declaring Node.js 24 across all four workflows. NuGet/login already declares
-Node.js 24. Publication triggers, least-privilege permissions and exact-artifact gates
-remain unchanged; see [workflow validation](testing.md#github-actions-runtime-maintenance--2026-10-18).
+Node.js 24. SDK roll-forward is disabled to preserve the declared 10.0.401 toolchain
+and Android lock-file inputs. Publication triggers, least-privilege permissions and
+exact-artifact gates remain unchanged; see [workflow validation](testing.md#github-actions-runtime-maintenance--2026-10-18).
 The 1.2.0 publishing workflow succeeded at release commit `3202a1f`; public-feed
 processing and verification are tracked separately in the [ledger](release-1.2.0-readiness.md).
 

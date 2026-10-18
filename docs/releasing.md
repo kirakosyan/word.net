@@ -51,6 +51,9 @@ setup-dotnet 6.0.0, upload-artifact 7.0.2, download-artifact 8.0.2 and NuGet/log
 runtime and release notes. Node.js runs the actions; it does not change the library's
 .NET targets. Hosted runners provide the required Node.js runtime. Artifact uploads
 retain the default ZIP format and downloads fail on a digest mismatch.
+`global.json` selects SDK 10.0.401 without roll-forward so setup-dotnet cannot silently
+advance the SDK and its implicit Android dependencies beyond the committed lock files.
+Upgrade the SDK and affected locks together in a separately validated change.
 
 ## Prepare and publish
 
