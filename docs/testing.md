@@ -1,5 +1,24 @@
 # Conversion tests and qualification
 
+## Verified release main — 2026-10-18, before OS-icon documentation
+
+PR #41 merged as `91838ebfa9c5eeef38716b72757b3b017d1ad347`, with tree equality to
+`4b600e96f778f4f9252ba9beef37eb3d0ae1b4f3` and all 24 final-head checks passed.
+Its [main CI 39124192159](https://github.com/kirakosyan/word.net/actions/runs/39124192159)
+passed all **12** checks. Actual Framework 4.7.2 source and immutable-package suites
+each passed **829/829** with no failures/skips on release 461814/x64, observed legacy
+JIT and matching commit/library/test/configuration hashes. All three executed package
+DLLs match the six-archive NuGet artifact. Reports and cleanup receipts were downloaded
+and independently verified. All 12 Windows guests across the named release revisions
+through this snapshot removed their containers, networks, VM state and newly pulled
+images; no local qualification Docker resources remain.
+
+The [ledger](release-1.2.0-readiness.md) records immutable artifact IDs and hashes.
+README OS icons change no runtime profile, but a new main produces a different
+release artifact and needs its own exact-main qualification before publication.
+Use the [live publication record](https://github.com/kirakosyan/word.net/issues/32)
+for the current SHA/run. Version 1.2.0 remains unpublished at this reconciliation.
+
 ## PR #40 release preparation — merged 2026-10-18
 
 PR [#40](https://github.com/kirakosyan/word.net/pull/40) squash-merged as
