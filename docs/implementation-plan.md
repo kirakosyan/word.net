@@ -1,5 +1,11 @@
 # wordnet implementation and delivery status
 
+The 1.2.1 presentation patch replaces the README's HTML-sized OS icons with six
+consistent Markdown badges, including readable Windows/Linux x64/ARM64 labels.
+It versions all three packages together and compares APIs against published 1.2.0;
+the converter profile remains the same. This patch is pending review/qualification
+and publication; see [patch release notes](releases/1.2.1.md).
+
 Reconciled 2026-10-18 against merged PRs #33–#42 and the verified public 1.2.0 release.
 Publication and minimum-runtime evidence remain tied to their exact release commit.
 The live

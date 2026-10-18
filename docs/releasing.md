@@ -9,6 +9,16 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
+The [1.2.1 README patch](releases/1.2.1.md) is in preparation to correct NuGet's
+rendering of the OS icons. It needs a new version because published READMEs are
+immutable. The next dispatch must select successful final-main 1.2.1 CI; never
+rerun publication for 1.2.0 to update its README.
+
+Package README images must use Markdown syntax and a NuGet-allowed image host.
+Avoid HTML sizing/alignment tags: NuGet's renderer disables HTML. Validate the
+packed README with HTML disabled and inspect the package upload preview before
+publishing. Keep badge labels and support claims tied to actual qualification.
+
 For the fresh actual-4.7.2 gate, use the candidate push's source evidence before
 merge and the final main push's immutable-package evidence before publication.
 The [hosted VM jobs](hosted-minimum-runtime.md) can execute these bundles automatically;

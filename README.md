@@ -1,19 +1,19 @@
 # wordnet
 
-[![Build and tests](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml/badge.svg)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/v/wordnet.svg)](https://www.nuget.org/packages/wordnet)
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
+[![NuGet version](https://img.shields.io/nuget/v/wordnet?style=flat-square&logo=nuget&logoColor=white&label=NuGet&color=2563eb)](https://www.nuget.org/packages/wordnet)
+[![NuGet downloads](https://img.shields.io/nuget/dt/wordnet?style=flat-square&logo=nuget&logoColor=white&label=downloads&color=2563eb)](https://www.nuget.org/packages/wordnet)
+[![Build and tests](https://img.shields.io/github/actions/workflow/status/kirakosyan/word.net/ci.yml?branch=main&style=flat-square&logo=github&label=build)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
+[![MIT license](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
 
-**Supported desktop OSes:**
-[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/windows11/windows11-original.svg" alt="" width="20" height="20" /> Windows (x64 / ARM64)](#frameworks-and-platforms) ·
-[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/linux/linux-original.svg" alt="" width="20" height="20" /> Linux (x64 / ARM64)](#frameworks-and-platforms)
+[![Windows x64 and ARM64](https://img.shields.io/badge/Windows-x64%20%7C%20ARM64-16803d?style=flat-square&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0wIDBoMTF2MTFIMHptMTMgMGgxMXYxMUgxM3pNMCAxM2gxMXYxMUgwem0xMyAwaDExdjExSDEzeiIvPjwvc3ZnPg%3D%3D)](#frameworks-and-platforms)
+[![Linux x64 and ARM64](https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-16803d?style=flat-square&logo=linux&logoColor=white)](#frameworks-and-platforms)
 
-**Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
+**Word conversion and document automation for .NET, with explicit fidelity diagnostics and local English OCR.**
 
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI · HTML · RTF\
 DOC / DOCX → XPS
 
-> **1.2.0 — business-document automation and interoperability, available on NuGet.** Adds bounded
+> **Business-document automation and interoperability.** Adds bounded
 > layout fidelity, editing/composition/templates, safe HTML/RTF exchange, optional
 > Arabic typography, semantic PDF/UA, previews and richer PDF/OCR import metadata.
 > Publication and qualification status are in the [release ledger](docs/release-1.2.0-readiness.md).
@@ -23,7 +23,7 @@ DOC / DOCX → XPS
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
 
-The 1.2.0 release contains the comparison/preflight, business rendering and editing/template
+The 1.2 release series contains the comparison/preflight, business rendering and editing/template
 work from PRs #33–#35, plus bucket 4 merged in [#37](https://github.com/kirakosyan/word.net/pull/37)
 as `44c9e362`. Buckets 1–4 are complete within their documented profiles. Bucket 4 adds
 safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA, selected pages/previews,
@@ -54,7 +54,7 @@ and the standalone `examples/WordNet.Automation` sample. This adds a bounded
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-dotnet add package wordnet --version 1.2.0
+dotnet add package wordnet
 ```
 
 The three release packages share one version: `wordnet.Fonts`, `wordnet`, and

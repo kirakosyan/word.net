@@ -1,5 +1,17 @@
 # Conversion tests and qualification
 
+## NuGet README rendering patch — 1.2.1 preparation
+
+NuGet disables raw HTML while rendering Markdown. The earlier OS `<img>` tags
+therefore became visible text on the 1.2.0 package page. The replacement header
+uses six Markdown images on NuGet's allowed Shields host with matching flat-square
+styling and explicit alternative text. A Markdig pipeline with HTML disabled
+renders all six as images without escaped `<img>` text; the old header is the
+negative control. Validate the README extracted from each final package as well.
+Package identity and the PDF producer assertion advance to 1.2.1; API comparison
+uses public 1.2.0. Current-head source/package/minimum-runtime results belong to
+the patch PR; 1.2.0's reports remain historical evidence for that shipped artifact.
+
 ## GitHub Actions runtime maintenance — 2026-10-18
 
 Checkout, .NET setup and artifact actions now use SHA-pinned releases that declare
