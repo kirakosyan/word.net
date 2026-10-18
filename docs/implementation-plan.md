@@ -1,6 +1,6 @@
 # wordnet implementation and delivery status
 
-Reconciled 2026-10-17 against merged PRs #33–#39. Version 1.2.0 is a production
+Reconciled 2026-10-18 against merged PRs #33–#40. Version 1.2.0 is a production
 release candidate; publication and minimum-runtime gates remain explicit.
 The live
 [roadmap #32](https://github.com/kirakosyan/word.net/issues/32) and linked issue
@@ -60,8 +60,8 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Complete the [1.2.0 release gates](release-1.2.0-readiness.md), including fresh
-   actual-Framework-4.7.2 source and exact-main-package evidence, then publish through
+1. Complete the [1.2.0 release gates](release-1.2.0-readiness.md), including final-main CI
+   and exact-main-package evidence, then publish through
    the existing workflow. Afterwards select a bounded follow-up from bucket 5's
    [merged design slices](later-design-decisions.md). ODT is the recommended next candidate; deferred
    review/encryption/object implementation needs a separate explicit scope decision.
@@ -105,7 +105,14 @@ suite/five core/OCR assets. All 26 scoped roadmap issues have checked acceptance
 published NuGet remains 1.1.0 until publication and public-package verification finish.
 
 At the user's request to execute and clean up the Docker checks automatically,
-PR #40 adds [hosted Windows VM qualification](hosted-minimum-runtime.md). Source and
+PR #40 merged as `cd541f13cce3311a15a98e86fb9e656d9405e193`, with tree equality to
+`242488b9399717044b1b9583b10b9d73b2cd5c7e` and all 24 checks passed. It adds
+[hosted Windows VM qualification](hosted-minimum-runtime.md). Source and
 immutable-package jobs enforce actual Framework 4.7.2, legacy JIT and all 829 cases,
-retain evidence and verify owned VM/container/image disposal. Execution is pending;
-no minimum-runtime or publication pass is inferred from the new workflow.
+retain evidence and verify owned VM/container/image disposal. Candidate push and
+PR merge-ref source/package runs each passed 829/829 on actual release 461814 with
+observed legacy JIT; all four evidence sets and cleanup receipts were independently
+checked. All 26 scoped issues and roadmap #32 remain closed with checked criteria;
+this release work adds no new runtime capability. Final-main CI/package qualification,
+Trusted Publishing and public-package verification remain pending; see the
+[dated evidence ledger](release-1.2.0-readiness.md).

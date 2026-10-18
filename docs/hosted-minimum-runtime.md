@@ -49,3 +49,9 @@ push CI and the existing explicitly dispatched Trusted Publishing workflow.
 This is qualification infrastructure. A configured workflow or successful host
 preflight is not a Framework pass; current results must be inspected and recorded
 in the [release ledger](release-1.2.0-readiness.md).
+
+On 2026-10-18, PR #40's candidate push and PR merge-ref source/package jobs each
+passed all 829 cases on actual Framework release 461814 with observed legacy JIT.
+All four downloaded evidence sets and cleanup receipts were independently verified.
+See the ledger for immutable run/artifact IDs and hashes; final-main publication
+qualification remains separate from these candidate passes.

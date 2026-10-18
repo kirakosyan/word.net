@@ -1,5 +1,25 @@
 # Conversion tests and qualification
 
+## PR #40 release preparation — merged 2026-10-18
+
+PR [#40](https://github.com/kirakosyan/word.net/pull/40) squash-merged as
+`cd541f13cce3311a15a98e86fb9e656d9405e193`; its tree equals head
+`242488b9399717044b1b9583b10b9d73b2cd5c7e`, which passed **24/24** checks.
+The new [hosted Docker/KVM lane](hosted-minimum-runtime.md) supplies actual Windows
+Server 2019/Framework 4.7.2. Source and immutable candidate-package suites each passed
+**829/829**, without skips/failures, on release **461814**, x64, with observed
+`compatjit.dll` and the intended legacy-JIT configuration. Both push and PR merge-ref
+runs passed; their four downloaded report sets and cleanup receipts were independently
+verified. Each removed its containers, network, VM disk/ISO/staging and newly pulled
+image. No VM disks or credentials are retained in uploaded artifacts.
+
+The [release ledger](release-1.2.0-readiness.md) records run/artifact IDs and hashes.
+Six local evidence-rejection controls cover stale/tampered bundles, newer runtimes,
+missing JIT/configuration/hash evidence, skips/failures/partial suites and incomplete
+exports; these controls are separate from the actual runtime passes. Candidate package
+execution does not qualify the different final-main artifact, and no 1.2.0 publication
+is claimed. Historical sections below retain their original counts and boundaries.
+
 ## PR #38 native font-lifetime follow-up — merged 2026-10-17
 
 The documentation reconciliation also fixes a failure exposed by its own CI: an

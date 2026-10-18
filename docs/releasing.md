@@ -8,10 +8,12 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
-For the fresh actual-4.7.2 gate, use [the Windows Docker handoff](release-1.2.0-windows.md)
-and both source/package VM setup artifacts from the final main push CI run.
+For the fresh actual-4.7.2 gate, use the candidate push's source evidence before
+merge and the final main push's immutable-package evidence before publication.
 The [hosted VM jobs](hosted-minimum-runtime.md) can execute these bundles automatically;
 inspect their actual-runtime reports and cleanup receipts, not only their configuration.
+The [Windows Docker handoff](release-1.2.0-windows.md) is the manual fallback when
+hosted execution is unavailable.
 
 Roadmap PRs after the 1.1.0 release add unreleased source capabilities. Merging does
 not publish packages. After every merge, complete the [issue, roadmap and documentation

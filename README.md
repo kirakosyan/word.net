@@ -34,6 +34,12 @@ Bucket 5's [four design deliverables](docs/later-design-decisions.md) merged in 
 ODT, review-history editing/comparison, encryption and chart/equation implementation
 remain deferred. These proposals add no format support or executable APIs.
 
+Release preparation merged in [#40](https://github.com/kirakosyan/word.net/pull/40)
+after all 24 checks passed. Automated Docker/KVM guests ran the source and candidate
+packages on actual Framework 4.7.2 x64 with legacy JIT: each passed 829/829 and verified
+removal of its containers, network, VM files and image. See the [evidence and remaining
+final-main/publication gates](docs/release-1.2.0-readiness.md); this is not a NuGet publication claim.
+
 ## Convert a document
 
 For the 1.2.0 document creation, editing, composition and mail-merge API, see the
