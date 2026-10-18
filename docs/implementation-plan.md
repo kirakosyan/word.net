@@ -1,7 +1,7 @@
 # wordnet implementation and delivery status
 
-Reconciled 2026-10-18 against merged PRs #33–#40. Version 1.2.0 is a production
-release candidate; publication and minimum-runtime gates remain explicit.
+Reconciled 2026-10-18 against merged PRs #33–#42 and the verified public 1.2.0 release.
+Publication and minimum-runtime evidence remain tied to their exact release commit.
 The live
 [roadmap #32](https://github.com/kirakosyan/word.net/issues/32) and linked issue
 acceptance criteria track delivery. This page records the source state at that
@@ -12,8 +12,9 @@ releases declaring Node.js 24 across all four workflows. NuGet/login already dec
 Node.js 24. SDK roll-forward is disabled to preserve the declared 10.0.401 toolchain
 and Android lock-file inputs. Publication triggers, least-privilege permissions and
 exact-artifact gates remain unchanged; see [workflow validation](testing.md#github-actions-runtime-maintenance--2026-10-18).
-The 1.2.0 publishing workflow succeeded at release commit `3202a1f`; public-feed
-processing and verification are tracked separately in the [ledger](release-1.2.0-readiness.md).
+The 1.2.0 publishing workflow succeeded at release commit `3202a1f`; all three public
+packages' 11 DLLs match its qualified artifact. A fresh public-only restore/build
+passes; see the [ledger](release-1.2.0-readiness.md).
 
 ## Current delivery
 
@@ -68,9 +69,9 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Complete the [1.2.0 release gates](release-1.2.0-readiness.md), including final-main CI
-   and exact-main-package evidence, then publish through
-   the existing workflow. Afterwards select a bounded follow-up from bucket 5's
+1. Preserve the [verified 1.2.0 release evidence](release-1.2.0-readiness.md).
+   All three packages are published and publicly verified. Next select a separately
+   scoped bounded follow-up from bucket 5's
    [merged design slices](later-design-decisions.md). ODT is the recommended next candidate; deferred
    review/encryption/object implementation needs a separate explicit scope decision.
    [Bucket 4 limits](interoperability.md) remain explicit: native
@@ -107,10 +108,10 @@ checks; it does not require rerunning unchanged conversion code.
 
 PR #39 merged the four design-only issues as `4eb9ed93aadbe48dee6ca482a39f81ff489f4171` after all 20 checks
 passed on `d3961ec7980d34147188c105e531921d259eeecf`; tree equality and acceptance/closure
-are verified. The 1.2.0 candidate versions all three packages and keeps the 829-case
+are verified. Published 1.2.0 versions all three packages and keeps the 829-case
 suite/five core/OCR assets. All 26 scoped roadmap issues have checked acceptance;
-#32 is closed as a completed bounded milestone. See [readiness](release-1.2.0-readiness.md) for current gates;
-published NuGet remains 1.1.0 until publication and public-package verification finish.
+#32 is closed as a completed bounded milestone. See [readiness](release-1.2.0-readiness.md)
+for exact release/public-package evidence; future maintenance builds are distinct artifacts.
 
 At the user's request to execute and clean up the Docker checks automatically,
 PR #40 merged as `cd541f13cce3311a15a98e86fb9e656d9405e193`, with tree equality to
@@ -127,6 +128,8 @@ which passed all 24 checks. Its main CI passed all 12 checks, and source/immutab
 actual-4.7.2 suites each passed 829/829 with independently verified cleanup.
 The README OS icons identify the existing Windows/Linux x64/ARM64 profile; support,
 providers and runtime behavior are unchanged. Later main revisions require their own
-exact-main package qualification. Trusted Publishing and public-package verification
-remain pending; see the [dated evidence ledger](release-1.2.0-readiness.md) and
+exact-main package qualification. PR #42 merged as `3202a1f`; its 12 main checks and
+source/package actual-4.7.2 runs passed. Publish run `39129534970` then published
+that exact artifact; all three public packages and their 11 DLLs are verified.
+See the [dated evidence ledger](release-1.2.0-readiness.md) and
 [live publication record](https://github.com/kirakosyan/word.net/issues/32).

@@ -1,7 +1,8 @@
 # Releasing wordnet
 
-The next production candidate is **1.2.0**; the latest verified published desktop
-release is **1.1.0**. See the [current readiness ledger](release-1.2.0-readiness.md). Pack and verify
+The latest verified published desktop release is **1.2.0**, from commit `3202a1f`.
+See the [release ledger](release-1.2.0-readiness.md). Later maintenance builds of main
+are separate artifacts and must not overwrite this version. Pack and verify
 `wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
 one package version. The workflow publishes fonts before core and the optional
 provider. New companion package IDs need their own authorized NuGet ownership/
@@ -15,8 +16,8 @@ inspect their actual-runtime reports and cleanup receipts, not only their config
 The [Windows Docker handoff](release-1.2.0-windows.md) is the manual fallback when
 hosted execution is unavailable.
 
-Roadmap PRs after the 1.1.0 release add unreleased source capabilities. Merging does
-not publish packages. After every merge, complete the [issue, roadmap and documentation
+The bounded roadmap implementation is included in 1.2.0; bucket 5 remains design-only.
+Merging does not publish packages. After every merge, complete the [issue, roadmap and documentation
 reconciliation](implementation-plan.md#after-every-merge) before taking the next bucket;
 keep release notes and package claims tied to the version that actually ships them.
 
@@ -104,7 +105,7 @@ step instead of blindly rerunning or rebuilding an already published version.
 
 ## Production readiness
 
-The 1.2.0 candidate desktop profile has 36 working directions and real English printed OCR, independent
+The 1.2.0 desktop release profile has 36 working directions and real English printed OCR, independent
 corpus thresholds, mutation/resource campaigns and packed consumer checks. Actual
 Framework 4.7.2 evidence is required for its explicit compatibility configuration;
 default-JIT 4.7.2 operation is unsupported. Android API 21 remains unresolved, outside

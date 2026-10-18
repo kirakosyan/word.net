@@ -1,10 +1,9 @@
 # Interoperability, typography and import
 
 Bucket 4 merged in PR #37 as `44c9e3629f95ed2c984a325a384174303550cb53`, completing #20, #21, #22, #23, #25, #26 and #27 within the profiles below. These APIs are
-included in the 1.2.0 candidate; use project references or verified local packages
-until [publication](release-1.2.0-readiness.md) completes. Package 1.1.0 and merged buckets 1–3
-have separate historical qualification. The [architecture decision](interoperability-design.md)
-preceded implementation. No package publication is part of this work.
+included in published 1.2.0; see the [release evidence](release-1.2.0-readiness.md).
+Earlier package and PR qualifications retain their historical scope.
+The [architecture decision](interoperability-design.md) preceded implementation.
 
 ## Supported matrix and deployment
 

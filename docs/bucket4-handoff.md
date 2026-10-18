@@ -19,5 +19,5 @@ The additional compacting-GC regression brings the current suite to 829.
 The [bucket 5 designs](later-design-decisions.md) merged in PR #39;
 ODT/review/encryption/object runtime support is not delivered by those documents.
 
-The next milestone is the [1.2.0 release candidate](release-1.2.0-readiness.md).
+These APIs now ship in [verified public 1.2.0](release-1.2.0-readiness.md).
 Its release qualification and publication remain distinct from these merged profiles.

@@ -19,8 +19,10 @@ uses release commit `3202a1fcfed9b1210b1eadb8a5e3509d7c2adba9` and immutable pac
 from main CI `39126846669`. Its four desktop lanes produced nine independently
 downloaded, archive-digest/CRC-checked TRX reports: each contains 829 individually
 passing cases, with no failures/skips (7,461 executions). Package and symbol pushes
-for all three IDs were accepted. Public-feed processing and clean public-consumer
-verification remain separate gates in the [release ledger](release-1.2.0-readiness.md).
+for all three IDs were accepted. All three public packages are now listed. Their
+nuspec source commit and all 11 DLL hashes match the tested CI artifact; signed ZIP
+hashes are retained separately. A new public-only NuGet cache restored and built the
+package-mode consumer without warnings. See the [release ledger](release-1.2.0-readiness.md).
 
 ## Verified release main — 2026-10-18, before OS-icon documentation
 
