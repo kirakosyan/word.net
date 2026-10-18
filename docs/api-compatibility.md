@@ -60,7 +60,7 @@ remote service, publishing credential or repository checkout is required there.
 
 ## Bucket 4 additive API
 
-The 1.2.0 candidate includes the merged source from PR #37, which appends `Rtf`, adds provider-neutral typography/import/metadata
+Published 1.2.0 includes the merged source from PR #37, which appends `Rtf`, adds provider-neutral typography/import/metadata
 options, immutable OCR/preview results, PDF accessibility/language/page selection and
 `WordConverter.RenderPages`. The existing four-argument `TemplateImage` constructor
 is retained; explicit decoration uses a new five-argument overload. Default managed

@@ -2,11 +2,13 @@
 
 ## Current 1.2.0 release gate
 
-The 1.2.0 candidate requires **829/829** current-source and exact-main-CI-package
-cases on actual Framework 4.7.2 x64 (release 461808/461814) with observed legacy JIT.
-Those current reports are not yet available; the [readiness ledger](release-1.2.0-readiness.md)
-tracks the handoff. A newer installed Framework, previous 487-case report or net462
-compile is not a substitute. Preserve earlier evidence below as historical.
+Published 1.2.0 has **829/829** source and exact-main-CI-package passes on actual
+Framework 4.7.2 x64 (release 461814) with observed legacy JIT. Reports identify
+release commit `3202a1f`, executed DLL/test/configuration hashes and verified VM
+cleanup; public package DLLs match the qualified CI artifact. The
+[release ledger](release-1.2.0-readiness.md) records the immutable evidence.
+A newer installed Framework, previous 487-case report or net462 compile is not a
+substitute for a new release's qualification. Earlier evidence below is historical.
 
 ## Historical stable 1.1.0 release gate
 

@@ -1,28 +1,55 @@
 # 1.2.0 release readiness
 
-Status: **release preparation merged; not published**. The additive business-document,
-editing/template and interoperability work is a suitable minor-version milestone.
-Production publication remains conditional on the gates below. The latest verified
-published version is 1.1.0; bucket 5 is merged design work, not runtime feature delivery.
+Status: **1.2.0 published and publicly verified**. The
+[publish run 39129534970](https://github.com/kirakosyan/word.net/actions/runs/39129534970)
+accepted all three 1.2.0 package and symbol pushes. All three public packages are
+listed; a fresh public-only consumer restores/builds successfully, and all 11 public
+DLLs match the qualified CI artifact at release commit `3202a1f`.
+Bucket 5 is merged design work, not runtime feature delivery.
 
 The live [publication record on roadmap #32](https://github.com/kirakosyan/word.net/issues/32)
-identifies the selected current main SHA and CI run. The verified snapshots below
-remain tied to their named commits. Any later main change, including README/package
-documentation, needs its own successful exact-main CI and immutable-package evidence
-before publication; an older successful run cannot qualify the new main artifact.
+identifies release and maintenance commits separately. The verified snapshots below
+remain tied to their named commits. Later main changes, including README/package
+documentation, do not replace the published 1.2.0 artifact. A future release needs
+a new version, successful exact-main CI and its own immutable-package evidence.
 
 ## Gates
 
 | Gate | Evidence / state |
 | --- | --- |
 | Roadmap reconciliation | Buckets 1–4 implement bounded source profiles; bucket 5 closes only its four design issues. PR #39 merge SHA, checked criteria and roadmap reconciliation are recorded in the implementation plan. |
-| Release metadata/API | Candidate 1.2.0 for all three packages, unchanged AssemblyVersion/five core/OCR TFMs, API baseline 1.1.0. Current validation is recorded on the release PR linked from roadmap #32. |
+| Release metadata/API | Published 1.2.0 for all three packages, unchanged AssemblyVersion/five core/OCR TFMs, API baseline 1.1.0. |
 | Local current-source and package checks | 829 required cases; release PR evidence records locked restore/build/format/audit/pack and fresh-cache modern/Standard package runs. Earlier PR #38 results remain historical. |
-| Exact release PR/main CI | PR #40 and documentation PR #41 merged with verified tree equality and 24 successful checks on each final head. Main `91838eb` passed all 12 checks in run `39124192159`; see its dated snapshot below. Use the live record for any newer main. |
-| Actual Framework 4.7.2 source | **Passed** on named candidate/main revisions, including `91838eb`: all 829 cases, release 461814, x64 and observed legacy `compatjit.dll`; reports and cleanup independently checked. |
-| Actual Framework 4.7.2 immutable main package | **Passed for `91838eb`**. Its clean consumer matches the immutable CI archives and passes all 829 cases. Retain package/library/test/config hashes, runtime report and TRX. A newer main requires its own package evidence. |
-| Trusted publication | Not dispatched. Use existing `publish.yml`, `main`, exact successful `ci_run_id` and the `nuget` environment; do not expose/copy credentials. |
-| Public NuGet verification | Not published. After processing, restore all three packages into a clean consumer and compare DLLs with the tested CI artifact; NuGet signing can change ZIP hashes. |
+| Exact release PR/main CI | PR #42's final head passed all 24 checks with verified merge-tree equality. Release main `3202a1f` passed all 12 checks in run `39126846669`. |
+| Actual Framework 4.7.2 source | **Passed for `3202a1f`**: all 829 cases, release 461814, x64 and observed legacy `compatjit.dll`; reports and cleanup independently checked. |
+| Actual Framework 4.7.2 immutable main package | **Passed for `3202a1f`**. Its clean consumer matches the immutable CI archives and passes all 829 cases. Package/library/test/config hashes, runtime report and TRX retained. |
+| Trusted publication | **Succeeded**, run `39129534970`, using commit `3202a1f` and exact-main CI `39126846669`. All three package/symbol pushes were accepted after nine full 829-case suites passed. |
+| Public NuGet verification | **Passed**, all three public packages: fresh public-only restore/build, matching nuspec commit/version and all 11 DLL hashes. NuGet signing changes ZIP hashes; signed archives are retained separately. Do not rerun publication for an already accepted version. |
+
+## Published artifact selection — 2026-10-18
+
+PR #42 merged as `3202a1fcfed9b1210b1eadb8a5e3509d7c2adba9`. Its tree matches
+reviewed head `939e7bd660c404e1f403ded17dec924ed0dd2bc4`, which passed all 24 checks.
+Main CI [39126846669](https://github.com/kirakosyan/word.net/actions/runs/39126846669)
+passed all 12 checks. The immutable NuGet artifact is `12135704761`, archive SHA-256
+`3538666ebc0474a424432b4fc956a4f852cc62f4684d063c0471e5ed979606b0`.
+Actual-4.7.2 source/package artifacts `12137480072` / `12137277225` each passed
+829/829 on release 461814/x64 with observed legacy JIT and verified cleanup of their
+containers, networks, VM state and newly pulled images. All 18 Windows guests through
+this release revision completed with independently verified cleanup.
+
+The [publication run](https://github.com/kirakosyan/word.net/actions/runs/39129534970)
+passed all six jobs. Nine downloaded TRX reports each contain 829 individual passes
+without failures/skips. NuGet accepted all three `.nupkg` and `.snupkg` pushes.
+Public `wordnet`, `wordnet.Fonts` and `wordnet.Ocr` 1.2.0 packages were downloaded
+from NuGet, CRC-checked and compared against all 11 immutable CI DLL hashes.
+Their nuspecs identify the exact release commit; all three carry NuGet signatures.
+A new isolated package cache with only the public feed restored and built the
+package-mode consumer successfully. These checks use public packages, separate
+from the local candidate archives and earlier caches.
+Later CI/documentation maintenance commits are distinct from this release artifact;
+they must not overwrite version 1.2.0. Historical preparation snapshots below retain
+their original commit scope and publication status.
 
 ## Verified main snapshot — 2026-10-18, before OS-icon documentation
 
@@ -128,6 +155,7 @@ runtime with Actions dispatch access after the gates pass. Repository read/write
 PR-merge access do not establish workflow-dispatch access. Do not modify triggers,
 credentials or release gates to work around this limitation.
 
-Record exact release commit, main CI run/artifact IDs, package/DLL hashes, current
-minimum-runtime reports, publication run and public verification here when completed.
-Do not describe this candidate or older qualification as a published/qualified 1.2.0.
+The maintainer dispatched the successful publication through GitHub Actions UI.
+Retain the selected release commit and public verification above. Tag/GitHub release
+records must also identify that commit, even when main advances. Older qualification
+does not qualify another artifact.

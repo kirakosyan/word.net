@@ -1,5 +1,9 @@
 # Conversion diagnostics
 
+The bounded preflight, occurrence and interoperability diagnostics below ship in
+1.2.0. See the [release evidence](release-1.2.0-readiness.md); later design proposals
+add no runtime support or diagnostic guarantees.
+
 `ConversionDiagnostic.Code` is machine-readable. `Message` describes a feature or
 approximation and excludes document body text. `Severity` is `Info` or `Warning`;
 `Count` groups repeated occurrences of the same code during parsing/layout/writing.

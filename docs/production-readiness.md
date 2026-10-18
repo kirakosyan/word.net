@@ -128,9 +128,9 @@ budgets in [hosting](hosting.md), and expand representative documents before dep
 Do not publish a stable version or change the production status while any required gate
 has missing evidence. Package publication remains a separate action.
 
-## Current 1.2.0 candidate
+## Published 1.2.0
 
 This page retains 1.0 history. The [1.2.0 readiness ledger](release-1.2.0-readiness.md)
-tracks current 829-case source/package, actual-4.7.2 and publication gates. Historical
+records the release commit's 829-case source/package, actual-4.7.2 and publication evidence. Historical
 successful runs and hosted newer-Framework tests cannot satisfy a missing current
 minimum-runtime run. Bucket 5 is merged design work, not additional runtime support.

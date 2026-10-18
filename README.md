@@ -1,19 +1,19 @@
 # wordnet
 
-[![Build and tests](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml/badge.svg)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/v/wordnet.svg)](https://www.nuget.org/packages/wordnet)
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
+[![NuGet version](https://img.shields.io/nuget/v/wordnet?style=flat-square&logo=nuget&logoColor=white&label=NuGet&color=2563eb)](https://www.nuget.org/packages/wordnet)
+[![NuGet downloads](https://img.shields.io/nuget/dt/wordnet?style=flat-square&logo=nuget&logoColor=white&label=downloads&color=2563eb)](https://www.nuget.org/packages/wordnet)
+[![Build and tests](https://img.shields.io/github/actions/workflow/status/kirakosyan/word.net/ci.yml?branch=main&style=flat-square&logo=github&label=build)](https://github.com/kirakosyan/word.net/actions/workflows/ci.yml)
+[![MIT license](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
 
-**Supported desktop OSes:**
-[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/windows11/windows11-original.svg" alt="" width="20" height="20" /> Windows (x64 / ARM64)](#frameworks-and-platforms) ·
-[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/linux/linux-original.svg" alt="" width="20" height="20" /> Linux (x64 / ARM64)](#frameworks-and-platforms)
+[![Windows x64 and ARM64](https://img.shields.io/badge/Windows-x64%20%7C%20ARM64-16803d?style=flat-square&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0wIDBoMTF2MTFIMHptMTMgMGgxMXYxMUgxM3pNMCAxM2gxMXYxMUgwem0xMyAwaDExdjExSDEzeiIvPjwvc3ZnPg%3D%3D)](#frameworks-and-platforms)
+[![Linux x64 and ARM64](https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-16803d?style=flat-square&logo=linux&logoColor=white)](#frameworks-and-platforms)
 
-**Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
+**Word conversion and document automation for .NET, with explicit fidelity diagnostics and local English OCR.**
 
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI · HTML · RTF\
 DOC / DOCX → XPS
 
-> **1.2.0 candidate — business-document automation and interoperability.** Adds bounded
+> **Business-document automation and interoperability.** Adds bounded
 > layout fidelity, editing/composition/templates, safe HTML/RTF exchange, optional
 > Arabic typography, semantic PDF/UA, previews and richer PDF/OCR import metadata.
 > Publication and qualification status are in the [release ledger](docs/release-1.2.0-readiness.md).
@@ -23,7 +23,7 @@ DOC / DOCX → XPS
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
 
-The 1.2.0 candidate contains the comparison/preflight, business rendering and editing/template
+The 1.2 release series contains the comparison/preflight, business rendering and editing/template
 work from PRs #33–#35, plus bucket 4 merged in [#37](https://github.com/kirakosyan/word.net/pull/37)
 as `44c9e362`. Buckets 1–4 are complete within their documented profiles. Bucket 4 adds
 safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA, selected pages/previews,
@@ -32,17 +32,17 @@ digital PDF reconstruction and OCR metadata. All 15 review findings are resolved
 requires 829 conversion/OCR cases, including the GC/font-lifetime regression merged in
 PR #38. See [profiles and usage](docs/interoperability.md),
 [build-specific evidence](docs/testing.md) and the [implementation plan](docs/implementation-plan.md).
-The latest verified published package remains 1.1.0 until the [1.2.0 publication gates](docs/release-1.2.0-readiness.md)
-complete. Use project references or verified candidate packages for new APIs meanwhile.
+All three 1.2.0 packages are publicly available. Their 11 DLLs match the qualified
+CI artifact from release commit `3202a1f`; see the [publication evidence](docs/release-1.2.0-readiness.md).
 Bucket 5's [four design deliverables](docs/later-design-decisions.md) merged in PR #39;
 ODT, review-history editing/comparison, encryption and chart/equation implementation
 remain deferred. These proposals add no format support or executable APIs.
 
-Release preparation merged in [#40](https://github.com/kirakosyan/word.net/pull/40)
-after all 24 checks passed. Automated Docker/KVM guests ran the source and candidate
-packages on actual Framework 4.7.2 x64 with legacy JIT: each passed 829/829 and verified
-removal of its containers, network, VM files and image. See the [evidence and remaining
-final-main/publication gates](docs/release-1.2.0-readiness.md); this is not a NuGet publication claim.
+The release's exact-main CI passed all 12 checks. Automated Docker/KVM guests ran
+its source and immutable packages on actual Framework 4.7.2 x64 with legacy JIT:
+each passed 829/829 and verified removal of its containers, network, VM files and
+newly pulled image. Publication added nine complete 829-case suites across native
+Windows/Linux x64/ARM64. See the [release evidence](docs/release-1.2.0-readiness.md).
 
 ## Convert a document
 
@@ -54,8 +54,7 @@ and the standalone `examples/WordNet.Automation` sample. This adds a bounded
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-# Once 1.2.0 publication is verified (see the release ledger):
-dotnet add package wordnet --version 1.2.0
+dotnet add package wordnet
 ```
 
 The three release packages share one version: `wordnet.Fonts`, `wordnet`, and
@@ -494,7 +493,7 @@ Historical [1.1.0 notes](docs/releases/1.1.0.md) retain their original scope.
 | `src/wordnet/` | API, semantic model, managed format adapters and page layout |
 | `src/wordnet.Fonts/` | Managed embedded Liberation/Carlito/Caladea font resources and OFL notices |
 | `src/wordnet.Ocr/` | Optional PDF import and native English OCR providers |
-| `tests/wordnet.Conversion.Tests/` | 28 direction tests, four OCR cases and regressions |
+| `tests/wordnet.Conversion.Tests/` | 36 directions, English OCR and regressions; 829 required cases |
 | `tests/wordnet.Android.Compatibility/` | Android device app running the shared conversion/OCR/regression suite |
 | `tools/wordnet.Qualification/` | Isolated malformed-input, concurrent conversion and OCR resource campaigns |
 | [Architecture](https://github.com/kirakosyan/word.net/blob/main/docs/architecture.md) | Engine boundaries and resource contracts |

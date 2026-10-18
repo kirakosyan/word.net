@@ -1,8 +1,8 @@
 # Document automation sample
 
 This public-API sample accompanies PR #35, merged as `0b2af843`. The API is in the
-1.2.0 candidate; this sample uses the merged core through project references.
-Check [publication status](../../docs/release-1.2.0-readiness.md) before installing a package.
+published 1.2.0; this sample uses the merged core through project references.
+See [publication evidence](../../docs/release-1.2.0-readiness.md) when installing packages.
 
 From the repository root, run:
 

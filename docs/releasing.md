@@ -1,12 +1,23 @@
 # Releasing wordnet
 
-The next production candidate is **1.2.0**; the latest verified published desktop
-release is **1.1.0**. See the [current readiness ledger](release-1.2.0-readiness.md). Pack and verify
+The latest verified published desktop release is **1.2.0**, from commit `3202a1f`.
+See the [release ledger](release-1.2.0-readiness.md). Later maintenance builds of main
+are separate artifacts and must not overwrite this version. Pack and verify
 `wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
 one package version. The workflow publishes fonts before core and the optional
 provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
+
+The [1.2.1 README patch](releases/1.2.1.md) is in preparation to correct NuGet's
+rendering of the OS icons. It needs a new version because published READMEs are
+immutable. The next dispatch must select successful final-main 1.2.1 CI; never
+rerun publication for 1.2.0 to update its README.
+
+Package README images must use Markdown syntax and a NuGet-allowed image host.
+Avoid HTML sizing/alignment tags: NuGet's renderer disables HTML. Validate the
+packed README with HTML disabled and inspect the package upload preview before
+publishing. Keep badge labels and support claims tied to actual qualification.
 
 For the fresh actual-4.7.2 gate, use the candidate push's source evidence before
 merge and the final main push's immutable-package evidence before publication.
@@ -15,8 +26,8 @@ inspect their actual-runtime reports and cleanup receipts, not only their config
 The [Windows Docker handoff](release-1.2.0-windows.md) is the manual fallback when
 hosted execution is unavailable.
 
-Roadmap PRs after the 1.1.0 release add unreleased source capabilities. Merging does
-not publish packages. After every merge, complete the [issue, roadmap and documentation
+The bounded roadmap implementation is included in 1.2.0; bucket 5 remains design-only.
+Merging does not publish packages. After every merge, complete the [issue, roadmap and documentation
 reconciliation](implementation-plan.md#after-every-merge) before taking the next bucket;
 keep release notes and package claims tied to the version that actually ships them.
 
@@ -44,6 +55,16 @@ No long-lived NuGet API key belongs in the repository or GitHub secrets.
 Only the final publishing job has `id-token: write`; validation jobs cannot request a
 NuGet credential. Actions are pinned to commit SHAs. Protect changes to the workflow
 and release scripts through normal repository review.
+
+All workflows use actions whose manifests declare Node.js 24: checkout 7.0.1,
+setup-dotnet 6.0.0, upload-artifact 7.0.2, download-artifact 8.0.2 and NuGet/login
+1.2.0. Keep the full commit pins when updating them and check their `action.yml`
+runtime and release notes. Node.js runs the actions; it does not change the library's
+.NET targets. Hosted runners provide the required Node.js runtime. Artifact uploads
+retain the default ZIP format and downloads fail on a digest mismatch.
+`global.json` selects SDK 10.0.401 without roll-forward so setup-dotnet cannot silently
+advance the SDK and its implicit Android dependencies beyond the committed lock files.
+Upgrade the SDK and affected locks together in a separately validated change.
 
 ## Prepare and publish
 
@@ -94,7 +115,7 @@ step instead of blindly rerunning or rebuilding an already published version.
 
 ## Production readiness
 
-The 1.2.0 candidate desktop profile has 36 working directions and real English printed OCR, independent
+The 1.2.0 desktop release profile has 36 working directions and real English printed OCR, independent
 corpus thresholds, mutation/resource campaigns and packed consumer checks. Actual
 Framework 4.7.2 evidence is required for its explicit compatibility configuration;
 default-JIT 4.7.2 operation is unsupported. Android API 21 remains unresolved, outside

@@ -1,5 +1,41 @@
 # Conversion tests and qualification
 
+## NuGet README rendering patch — 1.2.1 preparation
+
+NuGet disables raw HTML while rendering Markdown. The earlier OS `<img>` tags
+therefore became visible text on the 1.2.0 package page. The replacement header
+uses six Markdown images on NuGet's allowed Shields host with matching flat-square
+styling and explicit alternative text. A Markdig pipeline with HTML disabled
+renders all six as images without escaped `<img>` text; the old header is the
+negative control. Validate the README extracted from each final package as well.
+Package identity and the PDF producer assertion advance to 1.2.1; API comparison
+uses public 1.2.0. Current-head source/package/minimum-runtime results belong to
+the patch PR; 1.2.0's reports remain historical evidence for that shipped artifact.
+
+## GitHub Actions runtime maintenance — 2026-10-18
+
+Checkout, .NET setup and artifact actions now use SHA-pinned releases that declare
+Node.js 24 in their manifests. NuGet/login 1.2.0 already uses Node.js 24 and retains
+its existing pin. All four workflows pass actionlint 1.7.12. Parsed workflow comparison
+confirms that only external action references changed in the workflows; triggers,
+permissions, matrices, commands, artifact inputs and publication gates are identical.
+An initial Android run exposed setup-dotnet's newer roll-forward behavior: `latestPatch`
+installed SDK 10.0.402 and changed the implicit ILLink dependency to 10.0.13, violating
+the committed lock. `global.json` now disables SDK roll-forward and keeps 10.0.401;
+locked restore remains enforced. No runtime-forcing environment variable is required.
+Native CI validates the updated action implementations;
+its runs and current-head results are recorded on the maintenance PR and roadmap #32.
+
+The successful [1.2.0 publish run 39129534970](https://github.com/kirakosyan/word.net/actions/runs/39129534970)
+uses release commit `3202a1fcfed9b1210b1eadb8a5e3509d7c2adba9` and immutable packages
+from main CI `39126846669`. Its four desktop lanes produced nine independently
+downloaded, archive-digest/CRC-checked TRX reports: each contains 829 individually
+passing cases, with no failures/skips (7,461 executions). Package and symbol pushes
+for all three IDs were accepted. All three public packages are now listed. Their
+nuspec source commit and all 11 DLL hashes match the tested CI artifact; signed ZIP
+hashes are retained separately. A new public-only NuGet cache restored and built the
+package-mode consumer without warnings. See the [release ledger](release-1.2.0-readiness.md).
+
 ## Verified release main — 2026-10-18, before OS-icon documentation
 
 PR #41 merged as `91838ebfa9c5eeef38716b72757b3b017d1ad347`, with tree equality to
