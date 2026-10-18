@@ -223,3 +223,8 @@ and immutable-package tests inside real Windows 2019 guests on isolated Linux/KV
 runners. Independent runtime/JIT/hash/suite checks and verified cleanup accompany
 the existing native desktop lanes. This qualification infrastructure introduces no
 converter provider or portable runtime dependency.
+
+The 1.2.1 presentation patch changes package/producer metadata, README badges and
+documentation links. Engine and provider boundaries retain the 1.2.0 contracts;
+API comparison uses published 1.2.0. CI actions explicitly target Node.js 24, and
+SDK selection stays at 10.0.401 to preserve the committed Android restore inputs.

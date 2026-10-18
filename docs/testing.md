@@ -8,9 +8,28 @@ uses six Markdown images on NuGet's allowed Shields host with matching flat-squa
 styling and explicit alternative text. A Markdig pipeline with HTML disabled
 renders all six as images without escaped `<img>` text; the old header is the
 negative control. Validate the README extracted from each final package as well.
+The live 1.2.0 page also confirms NuGet clears relative documentation links to
+empty `href` values. README file links now use absolute GitHub URLs, while internal
+anchors remain. Link validation applies NuGetGallery's HTTP(S)/fragment rule and
+checks the corresponding repository files locally.
 Package identity and the PDF producer assertion advance to 1.2.1; API comparison
 uses public 1.2.0. Current-head source/package/minimum-runtime results belong to
 the patch PR; 1.2.0's reports remain historical evidence for that shipped artifact.
+
+PR [#43](https://github.com/kirakosyan/word.net/pull/43) merged as
+`9f5e85af69242d344cce2e5a7e590aa6971db497`; its tree equals final head
+`c46ee0a447b295a326a41bb8fa84e30225320428`, whose 24 checks passed
+([push](https://github.com/kirakosyan/word.net/actions/runs/39131042415),
+[PR](https://github.com/kirakosyan/word.net/actions/runs/39131046861)). All four
+downloaded source/package minimum-runtime reports contain 829 individual passes
+without failures/skips, actual release 461814/x64, observed legacy JIT, matching
+commit/library/test/configuration provenance and all cleanup flags true. Both
+six-archive NuGet artifacts match the DLLs executed in their package guests.
+All 24 complete job logs contain zero Node.js 20 deprecation/forced-runtime warnings.
+Local locked restore, all-target build, both 829-case modern suites, formatting,
+dependency audit, API baseline 1.2.0, all six archives and package metadata/notices pass.
+This documentation-only follow-up uses rendering, URL, local-link and diff checks;
+final-main qualification and publication remain tracked in the live roadmap record.
 
 ## GitHub Actions runtime maintenance — 2026-10-18
 

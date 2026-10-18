@@ -3,8 +3,15 @@
 The 1.2.1 presentation patch replaces the README's HTML-sized OS icons with six
 consistent Markdown badges, including readable Windows/Linux x64/ARM64 labels.
 It versions all three packages together and compares APIs against published 1.2.0;
-the converter profile remains the same. This patch is pending review/qualification
-and publication; see [patch release notes](releases/1.2.1.md).
+the converter profile remains the same. PR #43 merged as
+`9f5e85af69242d344cce2e5a7e590aa6971db497`, with tree equality to
+`c46ee0a447b295a326a41bb8fa84e30225320428` and all 24 final-head checks passed.
+All four source/package actual-4.7.2 reports passed 829/829 with verified cleanup;
+all 24 job logs are free of the Node.js 20 warning. The documentation-only follow-up
+corrects NuGet's stripped relative file links and records this reconciliation.
+Publication remains pending final reconciled-main qualification. Use the live
+[roadmap record](https://github.com/kirakosyan/word.net/issues/32) for its exact
+SHA/run/artifact selection; see [patch release notes](releases/1.2.1.md).
 
 Reconciled 2026-10-18 against merged PRs #33–#42 and the verified public 1.2.0 release.
 Publication and minimum-runtime evidence remain tied to their exact release commit.

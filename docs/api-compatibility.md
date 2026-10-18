@@ -82,3 +82,11 @@ surface. All five target assets, existing enum values and constructor metadata r
 AssemblyVersion stays 1.0.0.0. New APIs are additive. This baseline check does not
 qualify older runtime execution; [actual-4.7.2 evidence](release-1.2.0-readiness.md)
 and exact-package publication gates remain separate.
+
+## 1.2.1 presentation patch
+
+All three packages advance together to 1.2.1 to deliver a corrected NuGet README.
+No public signatures or provider contracts change. API packing compares against
+published 1.2.0; AssemblyVersion remains 1.0.0.0 and all five core/OCR assets remain.
+The PDF producer identifies the new package version. Its exact release artifact
+still needs native desktop and actual-minimum-runtime qualification before publishing.

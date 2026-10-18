@@ -16,7 +16,7 @@ DOC / DOCX → XPS
 > **Business-document automation and interoperability.** Adds bounded
 > layout fidelity, editing/composition/templates, safe HTML/RTF exchange, optional
 > Arabic typography, semantic PDF/UA, previews and richer PDF/OCR import metadata.
-> Publication and qualification status are in the [release ledger](docs/release-1.2.0-readiness.md).
+> Publication and qualification status are in the [release ledger](https://github.com/kirakosyan/word.net/blob/main/docs/release-1.2.0-readiness.md).
 > PDF input/OCR, PNG previews and native typography require matching `wordnet.Ocr`.
 > See the
 > [enterprise audit](https://github.com/kirakosyan/word.net/blob/main/docs/enterprise-audit.md) for the issue #4 acceptance profile;
@@ -30,11 +30,11 @@ safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA, selected pa
 digital PDF reconstruction and OCR metadata. All 15 review findings are resolved; all
 20 CI checks passed on reviewed head `2af6a43`, whose tree matches the merge. The suite
 requires 829 conversion/OCR cases, including the GC/font-lifetime regression merged in
-PR #38. See [profiles and usage](docs/interoperability.md),
-[build-specific evidence](docs/testing.md) and the [implementation plan](docs/implementation-plan.md).
+PR #38. See [profiles and usage](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md),
+[build-specific evidence](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) and the [implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md).
 All three 1.2.0 packages are publicly available. Their 11 DLLs match the qualified
-CI artifact from release commit `3202a1f`; see the [publication evidence](docs/release-1.2.0-readiness.md).
-Bucket 5's [four design deliverables](docs/later-design-decisions.md) merged in PR #39;
+CI artifact from release commit `3202a1f`; see the [publication evidence](https://github.com/kirakosyan/word.net/blob/main/docs/release-1.2.0-readiness.md).
+Bucket 5's [four design deliverables](https://github.com/kirakosyan/word.net/blob/main/docs/later-design-decisions.md) merged in PR #39;
 ODT, review-history editing/comparison, encryption and chart/equation implementation
 remain deferred. These proposals add no format support or executable APIs.
 
@@ -42,7 +42,7 @@ The release's exact-main CI passed all 12 checks. Automated Docker/KVM guests ra
 its source and immutable packages on actual Framework 4.7.2 x64 with legacy JIT:
 each passed 829/829 and verified removal of its containers, network, VM files and
 newly pulled image. Publication added nine complete 829-case suites across native
-Windows/Linux x64/ARM64. See the [release evidence](docs/release-1.2.0-readiness.md).
+Windows/Linux x64/ARM64. See the [release evidence](https://github.com/kirakosyan/word.net/blob/main/docs/release-1.2.0-readiness.md).
 
 ## Convert a document
 
@@ -135,7 +135,7 @@ foreach (ConversionResult result in new[] { pdfResult, htmlResult })
 `FontSource.FromDirectory` reads an explicitly selected directory. Add the returned
 faces to `options.Fonts.Sources`. Legacy kern and GPOS pair adjustments are supported.
 Variable/color fonts and general complex shaping remain outside the default profile;
-the 1.2.0 [Arabic opt-in](docs/interoperability.md#optional-arabic-typography) has a separate bounded contract.
+the 1.2.0 [Arabic opt-in](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#optional-arabic-typography) has a separate bounded contract.
 Configure options before sharing them between calls.
 Use the `out ConversionResult` overloads or the stream API to inspect grouped
 diagnostics and conversion metrics. The byte-only overloads intentionally return
@@ -149,7 +149,7 @@ of the first section appear; even/default/later-section stories are not stacked.
 
 `options.Pdf` controls content/font stream compression, optional heading outlines and
 `PdfConformance.PdfA2b` (default: ordinary PDF 1.7). Archival corpus outputs are checked
-with veraPDF; this default profile is untagged. The 1.2.0 [accessibility opt-in](docs/interoperability.md#semantic-pdf-and-pdfua-1) is separate.
+with veraPDF; this default profile is untagged. The 1.2.0 [accessibility opt-in](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#semantic-pdf-and-pdfua-1) is separate.
 
 ### DOCX to PDF with limits and cancellation
 
@@ -483,8 +483,8 @@ Agents use `rtk` per [AGENTS.md](https://github.com/kirakosyan/word.net/blob/mai
 The core package includes five framework assets, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
 See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) and the
-[1.2.0 release notes](docs/releases/1.2.0.md) and [qualification/publication status](docs/release-1.2.0-readiness.md).
-Historical [1.1.0 notes](docs/releases/1.1.0.md) retain their original scope.
+[1.2.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.2.0.md) and [qualification/publication status](https://github.com/kirakosyan/word.net/blob/main/docs/release-1.2.0-readiness.md).
+Historical [1.1.0 notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.1.0.md) retain their original scope.
 
 ## Project guide
 

@@ -18,6 +18,8 @@ Package README images must use Markdown syntax and a NuGet-allowed image host.
 Avoid HTML sizing/alignment tags: NuGet's renderer disables HTML. Validate the
 packed README with HTML disabled and inspect the package upload preview before
 publishing. Keep badge labels and support claims tied to actual qualification.
+Use absolute HTTP(S) links for repository documentation in the package README;
+NuGet clears relative file links. Internal `#section` links are supported.
 
 For the fresh actual-4.7.2 gate, use the candidate push's source evidence before
 merge and the final main push's immutable-package evidence before publication.
