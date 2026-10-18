@@ -1,9 +1,10 @@
 # 1.2.0 release readiness
 
-Status: **release preparation merged; not published**. The additive business-document,
-editing/template and interoperability work is a suitable minor-version milestone.
-Production publication remains conditional on the gates below. The latest verified
-published version is 1.1.0; bucket 5 is merged design work, not runtime feature delivery.
+Status: **publication workflow succeeded; public verification pending**. The
+[publish run 39129534970](https://github.com/kirakosyan/word.net/actions/runs/39129534970)
+accepted all three 1.2.0 package and symbol pushes. Public-feed processing and a clean
+consumer remain separate gates; the last publicly verified version is 1.1.0.
+Bucket 5 is merged design work, not runtime feature delivery.
 
 The live [publication record on roadmap #32](https://github.com/kirakosyan/word.net/issues/32)
 identifies the selected current main SHA and CI run. The verified snapshots below
@@ -21,8 +22,27 @@ before publication; an older successful run cannot qualify the new main artifact
 | Exact release PR/main CI | PR #40 and documentation PR #41 merged with verified tree equality and 24 successful checks on each final head. Main `91838eb` passed all 12 checks in run `39124192159`; see its dated snapshot below. Use the live record for any newer main. |
 | Actual Framework 4.7.2 source | **Passed** on named candidate/main revisions, including `91838eb`: all 829 cases, release 461814, x64 and observed legacy `compatjit.dll`; reports and cleanup independently checked. |
 | Actual Framework 4.7.2 immutable main package | **Passed for `91838eb`**. Its clean consumer matches the immutable CI archives and passes all 829 cases. Retain package/library/test/config hashes, runtime report and TRX. A newer main requires its own package evidence. |
-| Trusted publication | Not dispatched. Use existing `publish.yml`, `main`, exact successful `ci_run_id` and the `nuget` environment; do not expose/copy credentials. |
-| Public NuGet verification | Not published. After processing, restore all three packages into a clean consumer and compare DLLs with the tested CI artifact; NuGet signing can change ZIP hashes. |
+| Trusted publication | **Succeeded**, run `39129534970`, using commit `3202a1f` and exact-main CI `39126846669`. All three package/symbol pushes were accepted after nine full 829-case suites passed. |
+| Public NuGet verification | Pending processing. Restore all three public packages into a clean consumer and compare DLLs with the tested CI artifact; NuGet signing can change ZIP hashes. Do not rerun publication for an already accepted version. |
+
+## Published artifact selection — 2026-10-18
+
+PR #42 merged as `3202a1fcfed9b1210b1eadb8a5e3509d7c2adba9`. Its tree matches
+reviewed head `939e7bd660c404e1f403ded17dec924ed0dd2bc4`, which passed all 24 checks.
+Main CI [39126846669](https://github.com/kirakosyan/word.net/actions/runs/39126846669)
+passed all 12 checks. The immutable NuGet artifact is `12135704761`, archive SHA-256
+`3538666ebc0474a424432b4fc956a4f852cc62f4684d063c0471e5ed979606b0`.
+Actual-4.7.2 source/package artifacts `12137480072` / `12137277225` each passed
+829/829 on release 461814/x64 with observed legacy JIT and verified cleanup of their
+containers, networks, VM state and newly pulled images. All 18 Windows guests through
+this release revision completed with independently verified cleanup.
+
+The [publication run](https://github.com/kirakosyan/word.net/actions/runs/39129534970)
+passed all six jobs. Nine downloaded TRX reports each contain 829 individual passes
+without failures/skips. NuGet accepted all three `.nupkg` and `.snupkg` pushes.
+Later CI/documentation maintenance commits are distinct from this release artifact;
+they must not overwrite version 1.2.0. Historical preparation snapshots below retain
+their original commit scope and publication status.
 
 ## Verified main snapshot — 2026-10-18, before OS-icon documentation
 
@@ -128,6 +148,6 @@ runtime with Actions dispatch access after the gates pass. Repository read/write
 PR-merge access do not establish workflow-dispatch access. Do not modify triggers,
 credentials or release gates to work around this limitation.
 
-Record exact release commit, main CI run/artifact IDs, package/DLL hashes, current
-minimum-runtime reports, publication run and public verification here when completed.
-Do not describe this candidate or older qualification as a published/qualified 1.2.0.
+The maintainer dispatched the successful publication through GitHub Actions UI.
+Retain the selected release commit above; finish public verification and release
+records after NuGet processing. Older qualification does not qualify another artifact.

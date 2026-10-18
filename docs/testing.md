@@ -1,5 +1,23 @@
 # Conversion tests and qualification
 
+## GitHub Actions runtime maintenance — 2026-10-18
+
+Checkout, .NET setup and artifact actions now use SHA-pinned releases that declare
+Node.js 24 in their manifests. NuGet/login 1.2.0 already uses Node.js 24 and retains
+its existing pin. All four workflows pass actionlint 1.7.12. Parsed workflow comparison
+confirms that only external action references changed; triggers, permissions, matrices,
+commands, artifact inputs and publication gates are identical. No runtime-forcing
+environment variable is required. Native CI validates the updated action implementations;
+its runs and current-head results are recorded on the maintenance PR and roadmap #32.
+
+The successful [1.2.0 publish run 39129534970](https://github.com/kirakosyan/word.net/actions/runs/39129534970)
+uses release commit `3202a1fcfed9b1210b1eadb8a5e3509d7c2adba9` and immutable packages
+from main CI `39126846669`. Its four desktop lanes produced nine independently
+downloaded, archive-digest/CRC-checked TRX reports: each contains 829 individually
+passing cases, with no failures/skips (7,461 executions). Package and symbol pushes
+for all three IDs were accepted. Public-feed processing and clean public-consumer
+verification remain separate gates in the [release ledger](release-1.2.0-readiness.md).
+
 ## Verified release main — 2026-10-18, before OS-icon documentation
 
 PR #41 merged as `91838ebfa9c5eeef38716b72757b3b017d1ad347`, with tree equality to

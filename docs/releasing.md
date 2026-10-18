@@ -45,6 +45,13 @@ Only the final publishing job has `id-token: write`; validation jobs cannot requ
 NuGet credential. Actions are pinned to commit SHAs. Protect changes to the workflow
 and release scripts through normal repository review.
 
+All workflows use actions whose manifests declare Node.js 24: checkout 7.0.1,
+setup-dotnet 6.0.0, upload-artifact 7.0.2, download-artifact 8.0.2 and NuGet/login
+1.2.0. Keep the full commit pins when updating them and check their `action.yml`
+runtime and release notes. Node.js runs the actions; it does not change the library's
+.NET targets. Hosted runners provide the required Node.js runtime. Artifact uploads
+retain the default ZIP format and downloads fail on a digest mismatch.
+
 ## Prepare and publish
 
 1. Choose a new SemVer in `src/wordnet/wordnet.csproj`. Update the README,

@@ -7,6 +7,13 @@ The live
 acceptance criteria track delivery. This page records the source state at that
 reconciliation; package publication and runtime qualification have separate gates.
 
+CI maintenance upgrades the pinned checkout, .NET setup and artifact actions to
+releases declaring Node.js 24 across all four workflows. NuGet/login already declares
+Node.js 24. Publication triggers, least-privilege permissions and exact-artifact gates
+remain unchanged; see [workflow validation](testing.md#github-actions-runtime-maintenance--2026-10-18).
+The 1.2.0 publishing workflow succeeded at release commit `3202a1f`; public-feed
+processing and verification are tracked separately in the [ledger](release-1.2.0-readiness.md).
+
 ## Current delivery
 
 | Work | Delivery and evidence |
