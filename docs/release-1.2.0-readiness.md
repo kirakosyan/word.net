@@ -1,6 +1,6 @@
 # 1.2.0 release readiness
 
-Status: **candidate preparation; not published**. The additive business-document,
+Status: **release preparation merged; not published**. The additive business-document,
 editing/template and interoperability work is a suitable minor-version milestone.
 Production publication remains conditional on the gates below. The latest verified
 published version is 1.1.0; bucket 5 is merged design work, not runtime feature delivery.
@@ -12,20 +12,50 @@ published version is 1.1.0; bucket 5 is merged design work, not runtime feature 
 | Roadmap reconciliation | Buckets 1–4 implement bounded source profiles; bucket 5 closes only its four design issues. PR #39 merge SHA, checked criteria and roadmap reconciliation are recorded in the implementation plan. |
 | Release metadata/API | Candidate 1.2.0 for all three packages, unchanged AssemblyVersion/five core/OCR TFMs, API baseline 1.1.0. Current validation is recorded on the release PR linked from roadmap #32. |
 | Local current-source and package checks | 829 required cases; release PR evidence records locked restore/build/format/audit/pack and fresh-cache modern/Standard package runs. Earlier PR #38 results remain historical. |
-| Exact release PR/main CI | Pending final release revision and successful exact-main push CI. A PR run or pre-version-change artifact cannot qualify publication. |
-| Actual Framework 4.7.2 source | **Missing** for the 829-case release candidate. Must observe release 461808/461814 and legacy `compatjit.dll`; a newer hosted Framework is insufficient. |
+| Exact release PR/main CI | PR #40 merged as `cd541f13cce3311a15a98e86fb9e656d9405e193`, with tree equality to head `242488b9399717044b1b9583b10b9d73b2cd5c7e` and all 24 checks passed. Exact-main CI and this documentation follow-up remain separate publication gates. |
+| Actual Framework 4.7.2 source | **Passed** on candidate push `242488b`: all 829 cases, release 461814, x64 and observed legacy `compatjit.dll`; reports and cleanup independently checked. See evidence below. |
 | Actual Framework 4.7.2 immutable main package | **Missing**. Build a clean consumer from the exact final main CI archive; retain package/library/test/config hashes, runtime report and complete 829-case TRX. |
 | Trusted publication | Not dispatched. Use existing `publish.yml`, `main`, exact successful `ci_run_id` and the `nuget` environment; do not expose/copy credentials. |
 | Public NuGet verification | Not published. After processing, restore all three packages into a clean consumer and compare DLLs with the tested CI artifact; NuGet signing can change ZIP hashes. |
 
-## Minimum-runtime handoff
+## Verified candidate Docker execution — 2026-10-18
+
+The [candidate push run 39119397507](https://github.com/kirakosyan/word.net/actions/runs/39119397507)
+and [PR run 39119400351](https://github.com/kirakosyan/word.net/actions/runs/39119400351)
+completed all **24** checks on head `242488b9399717044b1b9583b10b9d73b2cd5c7e`.
+The following push reports were downloaded, checked against GitHub's archive digest,
+CRC-checked and independently validated against their manifests and TRX counters:
+
+| Actual Framework 4.7.2 evidence | Source | Immutable candidate package |
+| --- | --- | --- |
+| Artifact | [12134158092](https://github.com/kirakosyan/word.net/actions/runs/39119397507/artifacts/12134158092) | [12133854770](https://github.com/kirakosyan/word.net/actions/runs/39119397507/artifacts/12133854770) |
+| Archive SHA-256 | `d2c3fbecae676e23ef12270589edc63c514ffcbe020b582de4d0cc1ac7e75dd9` | `04baa6d39129ea4211d8d06ed2526cc5071ea272461dd4f4670c08c2f3bcf236` |
+| Required/passed | 829/829, zero failures/skips | 829/829, zero failures/skips |
+| Core DLL SHA-256 | `824a0ef1e36fad8454e00bff786dedf276468d0bb5c195e59b7330b1bcba35fe` | `64593c3ed2240bdb679792b5a58152c75c40f1a472473feeaa933dbdfe33f1d7` |
+| Runtime/JIT | Release 461814, x64, observed `compatjit.dll` | Release 461814, x64, observed `compatjit.dll` |
+| Cleanup | Containers, network, VM state and newly pulled image removed | Containers, network, VM state and newly pulled image removed |
+
+Both reports have the exact candidate commit/asset, library/test/configuration hashes,
+no inherited diagnostic runtime overrides, and only the intended child
+`COMPlus_UseLegacyJit=1`. Package DLLs are tied to all three immutable 1.2.0 archives.
+The separate PR merge-ref runs also passed 829/829 each; both cleanup receipts were
+downloaded and verified. Thus **four** real Windows guests completed qualification
+and verified cleanup. No personal PC, host Framework installation or manual Docker
+execution was required. Evidence remains available; disks/credentials were not uploaded.
+
+These candidate results satisfy source-before-merge qualification. They do **not**
+qualify publication of the different final-main artifact. After all release/documentation
+merges, verify that commit's successful push CI and fresh immutable-package report
+before dispatching publication. Historical 1.1.0 and pre-automation results remain separate.
+
+## Minimum-runtime execution
 
 The [automated hosted VM lane](hosted-minimum-runtime.md) now runs both prepared
 bundles on fresh Windows Server 2019 guests using a dedicated Linux KVM host.
 It captures actual runtime/JIT/hash/full-suite evidence and verifies removal of
 its containers, network, disks and newly pulled image. This removes the need for
-manual PC execution when the hosted lane succeeds. Its initial run is pending;
-the missing gates above remain missing until the reports and cleanup are verified.
+manual PC execution when the hosted lane succeeds. Candidate execution and cleanup
+are verified above; final-main package qualification and publication remain pending.
 
 The [Windows Docker instructions](release-1.2.0-windows.md) first use the successful
 release-candidate push run's ready-to-run `framework-source-vm` artifact. Complete

@@ -217,3 +217,9 @@ The implemented additions above are included in the 1.2.0 candidate package prof
 No provider/API/runtime behavior changes accompany the version increment; package
 validation now compares against the published 1.1.0 API. See [release notes](releases/1.2.0.md)
 and [readiness](release-1.2.0-readiness.md) for publication and actual-runtime gates.
+
+The [hosted minimum-runtime lane](hosted-minimum-runtime.md) runs prepared source
+and immutable-package tests inside real Windows 2019 guests on isolated Linux/KVM
+runners. Independent runtime/JIT/hash/suite checks and verified cleanup accompany
+the existing native desktop lanes. This qualification infrastructure introduces no
+converter provider or portable runtime dependency.
