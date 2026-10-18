@@ -1,5 +1,9 @@
 # Run the 1.2.0 minimum-runtime checks with Docker on a Windows PC
 
+CI can now run the same prepared bundles through [the hosted Windows VM lane](hosted-minimum-runtime.md),
+including evidence validation and cleanup. Use this manual PC path only when that
+lane is unavailable or an additional local reproduction is needed.
+
 This is a release qualification handoff. It runs real Microsoft .NET Framework
 4.7.2 in an isolated Windows Server 2019 evaluation VM, leaving the host Framework
 unchanged. No SDK or NuGet publishing credential is needed inside the guest.

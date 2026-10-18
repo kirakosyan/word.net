@@ -997,3 +997,9 @@ are recorded in the release PR linked from roadmap #32 and its CI. The
 The earlier PR evidence above is dated source history. Actual Framework 4.7.2
 current-source and immutable-main-package runs remain publication gates; no current
 pass is inferred from historical qualification or hosted newer Framework execution.
+
+The [hosted minimum-runtime jobs](hosted-minimum-runtime.md) run the prepared source
+and clean-package bundles on real Windows 2019/Framework 4.7.2 guests under Linux KVM.
+Their independent report checks and negative controls are separate from the 829
+converter cases. Actual runtime passes and cleanup must be recorded after execution;
+this infrastructure addition alone does not qualify the candidate.

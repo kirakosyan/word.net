@@ -265,3 +265,15 @@ jobs:
           name: packaged-tests-${{ matrix.os }}
           path: artifacts/package-tests/*.trx
           if-no-files-found: error
+
+  minimum-framework-source:
+    needs: desktop
+    uses: ./.github/workflows/framework472.yml
+    with:
+      asset: source
+
+  minimum-framework-package:
+    needs: package
+    uses: ./.github/workflows/framework472.yml
+    with:
+      asset: package

@@ -47,6 +47,10 @@ try {
         $published = Join-Path $share 'results'
         [IO.Directory]::CreateDirectory($published) | Out-Null
         Get-ChildItem -LiteralPath $results -File | Where-Object Extension -ne '.exe' | Copy-Item -Destination $published -Force
+        # Publish this last, after every evidence file has been closed and copied.
+        $marker = Join-Path $published 'export-complete.tmp'
+        [IO.File]::WriteAllText($marker, (@{ exitCode = $exitCode } | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
+        Move-Item -LiteralPath $marker -Destination (Join-Path $published 'export-complete.json')
     } else { Write-Output "Could not export reports. Retrieve $results from the guest viewer."; $exitCode = 1 }
 }
 exit $exitCode

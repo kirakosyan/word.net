@@ -20,6 +20,13 @@ published version is 1.1.0; bucket 5 is merged design work, not runtime feature 
 
 ## Minimum-runtime handoff
 
+The [automated hosted VM lane](hosted-minimum-runtime.md) now runs both prepared
+bundles on fresh Windows Server 2019 guests using a dedicated Linux KVM host.
+It captures actual runtime/JIT/hash/full-suite evidence and verifies removal of
+its containers, network, disks and newly pulled image. This removes the need for
+manual PC execution when the hosted lane succeeds. Its initial run is pending;
+the missing gates above remain missing until the reports and cleanup are verified.
+
 The [Windows Docker instructions](release-1.2.0-windows.md) first use the successful
 release-candidate push run's ready-to-run `framework-source-vm` artifact. Complete
 that current-source run before merging the release PR, following releasing step 2.

@@ -103,3 +103,9 @@ are verified. The 1.2.0 candidate versions all three packages and keeps the 829-
 suite/five core/OCR assets. All 26 scoped roadmap issues have checked acceptance;
 #32 is closed as a completed bounded milestone. See [readiness](release-1.2.0-readiness.md) for current gates;
 published NuGet remains 1.1.0 until publication and public-package verification finish.
+
+At the user's request to execute and clean up the Docker checks automatically,
+PR #40 adds [hosted Windows VM qualification](hosted-minimum-runtime.md). Source and
+immutable-package jobs enforce actual Framework 4.7.2, legacy JIT and all 829 cases,
+retain evidence and verify owned VM/container/image disposal. Execution is pending;
+no minimum-runtime or publication pass is inferred from the new workflow.
