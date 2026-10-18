@@ -4,6 +4,10 @@
 [![NuGet](https://img.shields.io/nuget/v/wordnet.svg)](https://www.nuget.org/packages/wordnet)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakosyan/word.net/blob/main/LICENSE)
 
+**Supported desktop OSes:**
+[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/windows11/windows11-original.svg" alt="" width="20" height="20" /> Windows (x64 / ARM64)](#frameworks-and-platforms) ·
+[<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/linux/linux-original.svg" alt="" width="20" height="20" /> Linux (x64 / ARM64)](#frameworks-and-platforms)
+
 **Word conversion for .NET, with explicit fidelity diagnostics and local English OCR.**
 
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI · HTML · RTF\

@@ -113,6 +113,12 @@ retain evidence and verify owned VM/container/image disposal. Candidate push and
 PR merge-ref source/package runs each passed 829/829 on actual release 461814 with
 observed legacy JIT; all four evidence sets and cleanup receipts were independently
 checked. All 26 scoped issues and roadmap #32 remain closed with checked criteria;
-this release work adds no new runtime capability. Final-main CI/package qualification,
-Trusted Publishing and public-package verification remain pending; see the
-[dated evidence ledger](release-1.2.0-readiness.md).
+this release work adds no new runtime capability. PR #41 merged documentation as
+`91838ebfa9c5eeef38716b72757b3b017d1ad347`; its tree equals `4b600e96f778f4f9252ba9beef37eb3d0ae1b4f3`,
+which passed all 24 checks. Its main CI passed all 12 checks, and source/immutable-package
+actual-4.7.2 suites each passed 829/829 with independently verified cleanup.
+The README OS icons identify the existing Windows/Linux x64/ARM64 profile; support,
+providers and runtime behavior are unchanged. Later main revisions require their own
+exact-main package qualification. Trusted Publishing and public-package verification
+remain pending; see the [dated evidence ledger](release-1.2.0-readiness.md) and
+[live publication record](https://github.com/kirakosyan/word.net/issues/32).

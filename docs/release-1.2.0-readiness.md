@@ -5,6 +5,12 @@ editing/template and interoperability work is a suitable minor-version milestone
 Production publication remains conditional on the gates below. The latest verified
 published version is 1.1.0; bucket 5 is merged design work, not runtime feature delivery.
 
+The live [publication record on roadmap #32](https://github.com/kirakosyan/word.net/issues/32)
+identifies the selected current main SHA and CI run. The verified snapshots below
+remain tied to their named commits. Any later main change, including README/package
+documentation, needs its own successful exact-main CI and immutable-package evidence
+before publication; an older successful run cannot qualify the new main artifact.
+
 ## Gates
 
 | Gate | Evidence / state |
@@ -12,11 +18,40 @@ published version is 1.1.0; bucket 5 is merged design work, not runtime feature 
 | Roadmap reconciliation | Buckets 1–4 implement bounded source profiles; bucket 5 closes only its four design issues. PR #39 merge SHA, checked criteria and roadmap reconciliation are recorded in the implementation plan. |
 | Release metadata/API | Candidate 1.2.0 for all three packages, unchanged AssemblyVersion/five core/OCR TFMs, API baseline 1.1.0. Current validation is recorded on the release PR linked from roadmap #32. |
 | Local current-source and package checks | 829 required cases; release PR evidence records locked restore/build/format/audit/pack and fresh-cache modern/Standard package runs. Earlier PR #38 results remain historical. |
-| Exact release PR/main CI | PR #40 merged as `cd541f13cce3311a15a98e86fb9e656d9405e193`, with tree equality to head `242488b9399717044b1b9583b10b9d73b2cd5c7e` and all 24 checks passed. Exact-main CI and this documentation follow-up remain separate publication gates. |
-| Actual Framework 4.7.2 source | **Passed** on candidate push `242488b`: all 829 cases, release 461814, x64 and observed legacy `compatjit.dll`; reports and cleanup independently checked. See evidence below. |
-| Actual Framework 4.7.2 immutable main package | **Missing**. Build a clean consumer from the exact final main CI archive; retain package/library/test/config hashes, runtime report and complete 829-case TRX. |
+| Exact release PR/main CI | PR #40 and documentation PR #41 merged with verified tree equality and 24 successful checks on each final head. Main `91838eb` passed all 12 checks in run `39124192159`; see its dated snapshot below. Use the live record for any newer main. |
+| Actual Framework 4.7.2 source | **Passed** on named candidate/main revisions, including `91838eb`: all 829 cases, release 461814, x64 and observed legacy `compatjit.dll`; reports and cleanup independently checked. |
+| Actual Framework 4.7.2 immutable main package | **Passed for `91838eb`**. Its clean consumer matches the immutable CI archives and passes all 829 cases. Retain package/library/test/config hashes, runtime report and TRX. A newer main requires its own package evidence. |
 | Trusted publication | Not dispatched. Use existing `publish.yml`, `main`, exact successful `ci_run_id` and the `nuget` environment; do not expose/copy credentials. |
 | Public NuGet verification | Not published. After processing, restore all three packages into a clean consumer and compare DLLs with the tested CI artifact; NuGet signing can change ZIP hashes. |
+
+## Verified main snapshot — 2026-10-18, before OS-icon documentation
+
+PR #41 merged as `91838ebfa9c5eeef38716b72757b3b017d1ad347`, with tree equality to
+`4b600e96f778f4f9252ba9beef37eb3d0ae1b4f3` and all 24 final-head checks passed.
+Its [main CI run 39124192159](https://github.com/kirakosyan/word.net/actions/runs/39124192159)
+passed **12/12** checks. The following artifacts were downloaded, digest/CRC-checked
+and independently verified against their manifests and individual passing results:
+
+| Artifact | ID | SHA-256 |
+| --- | --- | --- |
+| Immutable NuGet, six archives | [12136330023](https://github.com/kirakosyan/word.net/actions/runs/39124192159/artifacts/12136330023) | `8a6a0bf05c81df9528dd8e887845d0288106f20625820702e7ed715b4d85f851` |
+| Actual Framework 4.7.2 source | [12135594415](https://github.com/kirakosyan/word.net/actions/runs/39124192159/artifacts/12135594415) | `fe42343b506f86a69026ba21e87373af921d1404f383048752598a1f06c1913b` |
+| Actual Framework 4.7.2 package | [12136047049](https://github.com/kirakosyan/word.net/actions/runs/39124192159/artifacts/12136047049) | `39161b0cf98cfd5481fa077a41f9ab27e6333858bda6e4a4b87abd573116759d` |
+
+Both minimum-runtime suites passed **829/829**, without failures/skips, on release
+461814/x64 with observed legacy `compatjit.dll`, exact commit/binary provenance and
+configuration hash `e23400f6651addee1c9b5947621babd2fbe38b44347376f98fdb2c51823b2067`.
+All three executed package DLLs match the immutable archives. Both cleanup receipts
+verify removal of containers, network, VM state and newly pulled image. Across the
+release candidate and main revisions through this snapshot, all 12 Windows guests
+completed and verified cleanup. This evidence is historical once main changes.
+
+Publication dispatch was attempted for this qualified snapshot and returned
+`Forbidden`; no publication run was created and no 1.2.0 package was published.
+For the newly selected main, wait for its successful **Build, test, and pack** run
+and verified minimum-runtime reports. Then open **Publish NuGet → Run workflow**,
+select **main**, and enter that run's numeric ID as `ci_run_id`. See the live record
+for the current value; do not reuse `39124192159` after the README merge.
 
 ## Verified candidate Docker execution — 2026-10-18
 
@@ -54,8 +89,9 @@ The [automated hosted VM lane](hosted-minimum-runtime.md) now runs both prepared
 bundles on fresh Windows Server 2019 guests using a dedicated Linux KVM host.
 It captures actual runtime/JIT/hash/full-suite evidence and verifies removal of
 its containers, network, disks and newly pulled image. This removes the need for
-manual PC execution when the hosted lane succeeds. Candidate execution and cleanup
-are verified above; final-main package qualification and publication remain pending.
+manual PC execution when the hosted lane succeeds. Named candidate/main execution
+and cleanup are verified above; selecting the current exact-main artifact and
+completing publication remain separate requirements.
 
 The [Windows Docker instructions](release-1.2.0-windows.md) first use the successful
 release-candidate push run's ready-to-run `framework-source-vm` artifact. Complete
