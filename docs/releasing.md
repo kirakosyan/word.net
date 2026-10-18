@@ -1,11 +1,17 @@
 # Releasing wordnet
 
-The enterprise desktop release is **1.1.0**. Pack and verify
+The next production candidate is **1.2.0**; the latest verified published desktop
+release is **1.1.0**. See the [current readiness ledger](release-1.2.0-readiness.md). Pack and verify
 `wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share
 one package version. The workflow publishes fonts before core and the optional
 provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
+
+For the fresh actual-4.7.2 gate, use [the Windows Docker handoff](release-1.2.0-windows.md)
+and both source/package VM setup artifacts from the final main push CI run.
+The [hosted VM jobs](hosted-minimum-runtime.md) can execute these bundles automatically;
+inspect their actual-runtime reports and cleanup receipts, not only their configuration.
 
 Roadmap PRs after the 1.1.0 release add unreleased source capabilities. Merging does
 not publish packages. After every merge, complete the [issue, roadmap and documentation
@@ -86,7 +92,7 @@ step instead of blindly rerunning or rebuilding an already published version.
 
 ## Production readiness
 
-The desktop profile has 28 working directions and real English printed OCR, independent
+The 1.2.0 candidate desktop profile has 36 working directions and real English printed OCR, independent
 corpus thresholds, mutation/resource campaigns and packed consumer checks. Actual
 Framework 4.7.2 evidence is required for its explicit compatibility configuration;
 default-JIT 4.7.2 operation is unsupported. Android API 21 remains unresolved, outside

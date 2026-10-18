@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>wordnet.Fonts</AssemblyName>
     <RootNamespace>WordNet.Fonts</RootNamespace>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -11,6 +11,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageId>wordnet.Fonts</PackageId>
     <Description>OFL-licensed Liberation, Carlito and Caladea fallback font resources for wordnet.</Description>
+    <PackageReleaseNotes>Version-aligned managed fallback font resources for wordnet 1.2.0. Font files and OFL provenance are unchanged.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT AND OFL-1.1</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

@@ -1,8 +1,8 @@
 # Bucket 5: later design decisions
 
 Design deliverables for roadmap [#32](https://github.com/kirakosyan/word.net/issues/32),
-authored 2026-10-17. Status: **proposed for review**. Issues #28–#31 close on these
-designs and acceptance plans after merge; they do not authorize or deliver runtime
+authored 2026-10-17. Status: **merged in PR #39** as `4eb9ed93aadbe48dee6ca482a39f81ff489f4171`.
+Issues #28–#31 are completed on these designs and acceptance plans; they do not authorize or deliver runtime
 implementation. The existing 36-direction matrix, 829 required cases, Strict behavior,
 five TFMs and released package 1.1.0 remain separate from these proposals.
 

@@ -9,15 +9,17 @@
 DOC / DOCX ↔ PDF · Markdown · Text · AZW3 · EPUB · MOBI · HTML · RTF\
 DOC / DOCX → XPS
 
-> **1.1.0 — enterprise export desktop release.** Adds managed
-> PDF export, self-contained HTML, header/footer stories and fields, caller fonts and
-> metric-compatible bundled fallbacks. PDF import/OCR now requires `wordnet.Ocr`.
+> **1.2.0 candidate — business-document automation and interoperability.** Adds bounded
+> layout fidelity, editing/composition/templates, safe HTML/RTF exchange, optional
+> Arabic typography, semantic PDF/UA, previews and richer PDF/OCR import metadata.
+> Publication and qualification status are in the [release ledger](docs/release-1.2.0-readiness.md).
+> PDF input/OCR, PNG previews and native typography require matching `wordnet.Ocr`.
 > See the
 > [enterprise audit](https://github.com/kirakosyan/word.net/blob/main/docs/enterprise-audit.md) for the issue #4 acceptance profile;
 > Word page counts match the 36 authored business fixtures; broader layout fidelity
 > and actual .NET 4.6.2 runtime qualification remain unqualified.
 
-Main contains the unreleased comparison/preflight, business rendering and editing/template
+The 1.2.0 candidate contains the comparison/preflight, business rendering and editing/template
 work from PRs #33–#35, plus bucket 4 merged in [#37](https://github.com/kirakosyan/word.net/pull/37)
 as `44c9e362`. Buckets 1–4 are complete within their documented profiles. Bucket 4 adds
 safe HTML/RTF exchange, optional Arabic typography, semantic PDF/UA, selected pages/previews,
@@ -26,14 +28,15 @@ digital PDF reconstruction and OCR metadata. All 15 review findings are resolved
 requires 829 conversion/OCR cases, including the GC/font-lifetime regression merged in
 PR #38. See [profiles and usage](docs/interoperability.md),
 [build-specific evidence](docs/testing.md) and the [implementation plan](docs/implementation-plan.md).
-These merged source features are separate from published package 1.1.0 and require project
-references until a release includes them. Bucket 5's [four design proposals](docs/later-design-decisions.md) are pending review;
+The latest verified published package remains 1.1.0 until the [1.2.0 publication gates](docs/release-1.2.0-readiness.md)
+complete. Use project references or verified candidate packages for new APIs meanwhile.
+Bucket 5's [four design deliverables](docs/later-design-decisions.md) merged in PR #39;
 ODT, review-history editing/comparison, encryption and chart/equation implementation
 remain deferred. These proposals add no format support or executable APIs.
 
 ## Convert a document
 
-For the unreleased document creation, editing, composition and mail-merge API, see the
+For the 1.2.0 document creation, editing, composition and mail-merge API, see the
 [editing and templates guide](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md)
 and the standalone `examples/WordNet.Automation` sample. This adds a bounded
 `WordDocument` session API alongside the existing converter.
@@ -41,7 +44,8 @@ and the standalone `examples/WordNet.Automation` sample. This adds a bounded
 The public namespace is **`WordNet`**. The assembly and NuGet package ID are **wordnet**.
 
 ```sh
-dotnet add package wordnet --version 1.1.0
+# Once 1.2.0 publication is verified (see the release ledger):
+dotnet add package wordnet --version 1.2.0
 ```
 
 The three release packages share one version: `wordnet.Fonts`, `wordnet`, and
@@ -122,7 +126,7 @@ foreach (ConversionResult result in new[] { pdfResult, htmlResult })
 `FontSource.FromDirectory` reads an explicitly selected directory. Add the returned
 faces to `options.Fonts.Sources`. Legacy kern and GPOS pair adjustments are supported.
 Variable/color fonts and general complex shaping remain outside the default profile;
-the unreleased [Arabic opt-in](docs/interoperability.md#optional-arabic-typography) has a separate bounded contract.
+the 1.2.0 [Arabic opt-in](docs/interoperability.md#optional-arabic-typography) has a separate bounded contract.
 Configure options before sharing them between calls.
 Use the `out ConversionResult` overloads or the stream API to inspect grouped
 diagnostics and conversion metrics. The byte-only overloads intentionally return
@@ -136,7 +140,7 @@ of the first section appear; even/default/later-section stories are not stacked.
 
 `options.Pdf` controls content/font stream compression, optional heading outlines and
 `PdfConformance.PdfA2b` (default: ordinary PDF 1.7). Archival corpus outputs are checked
-with veraPDF; this default profile is untagged. The unreleased [accessibility opt-in](docs/interoperability.md#semantic-pdf-and-pdfua-1) is separate.
+with veraPDF; this default profile is untagged. The 1.2.0 [accessibility opt-in](docs/interoperability.md#semantic-pdf-and-pdfua-1) is separate.
 
 ### DOCX to PDF with limits and cancellation
 
@@ -276,8 +280,8 @@ Word means DOC and DOCX; Open XML means DOCX. XPS is output-only.
 | AZW3 ↔ Word | Standalone unencrypted KF8; skeleton/fragment input and single-flow output |
 | PDF ↔ Word | Selectable-text/color/image export, digital text and simple raster-image import, optional English OCR for scanned/mixed pages |
 | XPS ← Word | XPS 2005 packages with positioned text, embedded fonts/raster images and the shared fixed-page table/section profile |
-| HTML ↔ Word (input unreleased) | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks; bounded safe CSS/data/caller-image import |
-| RTF ↔ Word (unreleased) | Bounded Unicode/code-page text, emphasis/paragraphs, basic lists/tables and embedded PNG/JPEG |
+| HTML ↔ Word (1.2.0 profile) | UTF-8 HTML5, inline CSS, nested lists/tables and merged cells, embedded raster images, safe links, run decoration and optional header/footer blocks; bounded safe CSS/data/caller-image import |
+| RTF ↔ Word (1.2.0 profile) | Bounded Unicode/code-page text, emphasis/paragraphs, basic lists/tables and embedded PNG/JPEG |
 
 All direction tests inspect real content. Generated DOCX is independently schema
 validated. PDF/ebook/XPS tests check content and containers. External DOC and Kindle
@@ -470,7 +474,8 @@ Agents use `rtk` per [AGENTS.md](https://github.com/kirakosyan/word.net/blob/mai
 The core package includes five framework assets, XML API docs, README, MIT license, dependency
 notices and font license, plus a symbol package. Packing checks framework API compatibility.
 See [release checks and publishing](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) and the
-[1.1.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.1.0.md).
+[1.2.0 release notes](docs/releases/1.2.0.md) and [qualification/publication status](docs/release-1.2.0-readiness.md).
+Historical [1.1.0 notes](docs/releases/1.1.0.md) retain their original scope.
 
 ## Project guide
 

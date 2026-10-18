@@ -4,8 +4,8 @@
 bucket 3 (#11–#15). It keeps the existing converter API and five framework assets.
 It adds no runtime dependency and uses the same managed offline DOCX/PDF writers.
 See [the API decisions](editing-template-design.md) for ownership and architecture.
-This API merged in PR #35 (`0b2af843`) and remains unreleased; use the project
-reference until a release includes it. The [sample instructions](../examples/WordNet.Automation/README.md)
+This API merged in PR #35 (`0b2af843`) and is included in the 1.2.0 candidate.
+Use project references or verified candidate packages until [publication](release-1.2.0-readiness.md) completes. The [sample instructions](../examples/WordNet.Automation/README.md)
 reproduce the public invoice and assembly workflow.
 
 ## Create, edit and save

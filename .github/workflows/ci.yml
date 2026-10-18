@@ -133,6 +133,18 @@ jobs:
           dotnet pack src/wordnet.Fonts/wordnet.Fonts.csproj --configuration Release --no-build --no-restore --output artifacts/packages
           dotnet pack src/wordnet/wordnet.csproj --configuration Release --no-build --no-restore --output artifacts/packages
           dotnet pack src/wordnet.Ocr/wordnet.Ocr.csproj --configuration Release --no-build --no-restore --output artifacts/packages
+      - name: Prepare portable minimum-runtime source qualification
+        if: runner.os == 'Windows' && runner.arch == 'X64'
+        shell: pwsh
+        run: ./eng/minimum-runtimes/prepare-windows-vm.ps1 -OutputDirectory artifacts/framework-source-vm -TestDirectory tests/wordnet.Conversion.Tests/bin/Release/net472/win-x64 -TestAsset source
+      - name: Upload minimum-runtime source VM setup
+        if: runner.os == 'Windows' && runner.arch == 'X64'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: framework-source-vm
+          path: artifacts/framework-source-vm/
+          compression-level: 0
+          if-no-files-found: error
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -232,6 +244,20 @@ jobs:
           [xml]$project = Get-Content src/wordnet/wordnet.csproj
           $framework = '${{ runner.os }}' -eq 'Windows' -and '${{ runner.arch }}' -eq 'X64'
           ./eng/test-package.ps1 -Version $project.Project.PropertyGroup.Version -Commit $env:GITHUB_SHA -IncludeFramework:$framework
+      - name: Prepare portable minimum-runtime package qualification
+        if: runner.os == 'Windows' && runner.arch == 'X64'
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content src/wordnet/wordnet.csproj
+          ./eng/minimum-runtimes/prepare-windows-vm.ps1 -OutputDirectory artifacts/framework-package-vm -TestDirectory tests/wordnet.Conversion.Tests/bin/Release/net472/win-x64 -TestAsset package -PackageVersion $project.Project.PropertyGroup.Version
+      - name: Upload minimum-runtime package VM setup
+        if: runner.os == 'Windows' && runner.arch == 'X64'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: framework-package-vm
+          path: artifacts/framework-package-vm/
+          compression-level: 0
+          if-no-files-found: error
       - name: Upload package execution evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -239,3 +265,15 @@ jobs:
           name: packaged-tests-${{ matrix.os }}
           path: artifacts/package-tests/*.trx
           if-no-files-found: error
+
+  minimum-framework-source:
+    needs: desktop
+    uses: ./.github/workflows/framework472.yml
+    with:
+      asset: source
+
+  minimum-framework-package:
+    needs: package
+    uses: ./.github/workflows/framework472.yml
+    with:
+      asset: package

@@ -1,0 +1,56 @@
+name: Actual Framework 4.7.2 VM
+
+on:
+  workflow_call:
+    inputs:
+      asset:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    name: Actual Framework 4.7.2 / ${{ inputs.asset }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: framework-${{ inputs.asset }}-vm
+          path: artifacts/framework-setup
+      - name: Verify qualification evidence rejection controls
+        run: python3 eng/minimum-runtimes/test-linux-vm.py
+      - name: Reclaim unused preinstalled tools on this disposable VM runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test "$RUNNER_OS" = Linux
+          # This dedicated job consumes prebuilt tests; no SDK/browser/Android tools are needed.
+          # These fixed paths belong to the disposable runner image, outside the checkout.
+          sudo rm -rf -- /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache /opt/google /opt/microsoft /usr/local/share/chromium
+          df -h .
+          sudo chown "$(id -u):$(id -g)" /dev/kvm
+          sudo chmod 600 /dev/kvm
+      - name: Run actual Windows 2019 Framework 4.7.2 and clean up its VM
+        env:
+          VM_ASSET: ${{ inputs.asset }}
+        run: >-
+          python3 eng/minimum-runtimes/run-linux-vm.py
+          --setup artifacts/framework-setup
+          --work artifacts/framework-vm-state
+          --results artifacts/framework-evidence
+          --commit "$GITHUB_SHA"
+          --asset "$VM_ASSET"
+          --timeout-seconds 3600
+      - name: Upload actual minimum-runtime reports and cleanup receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: minimum-framework472-${{ inputs.asset }}
+          path: artifacts/framework-evidence/
+          if-no-files-found: error

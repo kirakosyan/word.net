@@ -1,6 +1,14 @@
 # Minimum-runtime qualification on AK-PC
 
-## Stable 1.1.0 release gate
+## Current 1.2.0 release gate
+
+The 1.2.0 candidate requires **829/829** current-source and exact-main-CI-package
+cases on actual Framework 4.7.2 x64 (release 461808/461814) with observed legacy JIT.
+Those current reports are not yet available; the [readiness ledger](release-1.2.0-readiness.md)
+tracks the handoff. A newer installed Framework, previous 487-case report or net462
+compile is not a substitute. Preserve earlier evidence below as historical.
+
+## Historical stable 1.1.0 release gate
 
 The stable release requires **487/487** cases on actual Framework 4.7.2 x64 with
 the documented legacy JIT, both from current source and from the immutable final
