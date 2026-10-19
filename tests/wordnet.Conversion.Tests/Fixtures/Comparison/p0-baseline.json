@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "date": "2026-10-19",
-  "basis": "local working tree based on 7a09ef6; pending PR, not released",
-  "sourceRevision": "7a09ef6b5d7dfcec8ee9507741b2b78016f14761",
+  "basis": "review-corrected local working tree based on 948863b; pending PR #83, not released",
+  "sourceRevision": "948863bd539e27a3205b86bf1f182ad4449a8f72",
   "sourceDirty": true,
-  "manifestSha256": "8332c4db08cdaaab9ae7399cbdfb41a25f95f772ad6a93afaeff4a7f01c0371b",
-  "rawResultsSha256": "0f5848322989143b1648467f7c11d58e95bb1760a10ae1c519adfb3accc83af1",
-  "referenceManifestSha256": "b5f30de8b6dc62ff8532af054803a49bce0b4bb7f7b46a8fa716d489c029971e",
+  "manifestSha256": "42944a14744b76c32f5278ff7485cf6afaa899fde241894712aa2cfb68d11ac9",
+  "rawResultsSha256": "33c71003c27b9a5f498946fadd2b54e1e4d839d5c039af48466c3eee25dc3759",
+  "referenceManifestSha256": "1ebc9e48c30403a6924aa308a5c58d48daa938dfc5ddf0a5827e77e568b5a7d0",
   "referenceProducer": "LibreOffice 25.2.3.2 520(Build:2)",
   "runtime": ".NET 10.0.12",
   "renderer": "pdftoppm version 26.05.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
@@ -106,7 +106,7 @@
     {
       "documentId": "mixed-fonts-short",
       "inputSha256": "1450a3b16c7db6571f29a446798705bb986efec8c7958f2ea0d3c91f5d8fb81a",
-      "referencePdfSha256": "3442f75590e6858241d915f367950b20f7357aa481bbe5f6af39c54a410627ce",
+      "referencePdfSha256": "296c767446397c6ab522ad50070504ac3ec790d2cbe7647557760f053ef37001",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -139,7 +139,7 @@
     {
       "documentId": "mixed-fonts-report",
       "inputSha256": "ce123fdc3705dd6e3c204a966f845fc8cf938d604f7059897baf6d3103919d7b",
-      "referencePdfSha256": "e099e6428fea6fc0c875384b07f85c13ecf7491e32073c5f32a3cff332d9a9d1",
+      "referencePdfSha256": "28e7c369801d442a047e5917ffab62a33ba1a6641dc060773db7867bf7131b5e",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -184,7 +184,7 @@
     {
       "documentId": "long-table-ledger",
       "inputSha256": "a4d537e07b2312fac5c6554fd8ae1efeec2ccf14edd1a5815f8da81fe382920d",
-      "referencePdfSha256": "dabe6c3b407bf210327dd2274314613fd2e5d9632bdbebdbc7e6215685c6e403",
+      "referencePdfSha256": "42ca5897864d61ec0233c2bf7050e7c32f5a887141080b2db388cd187a71a17e",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -223,7 +223,7 @@
     {
       "documentId": "long-table-inventory",
       "inputSha256": "87fdf5d5dcbcfc95dafb4e4064e39aaafce5173d59e6b93a33f32263294e1767",
-      "referencePdfSha256": "68ecc945d74d6d6b419a587e37abe1ad83df228bb83e203df19f876758a9863d",
+      "referencePdfSha256": "7d5113150e3c224a78c530696493ee5b34a1e100ad617d2f402fa7e76c8f8a08",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -262,7 +262,7 @@
     {
       "documentId": "footnotes-contract",
       "inputSha256": "3c3abb14065b62da76636fe4c59e9abe523e046c4db77d50397bc6fe8bf0778b",
-      "referencePdfSha256": "969b7df92ee778a930ef6aa32db63c6e6fed59e045c5cdf56a2f806abdd17385",
+      "referencePdfSha256": "40e4b534ca8781dad88a1a2d6062877fbc249eb3b804a39d88619004de454769",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -295,7 +295,7 @@
     {
       "documentId": "footnotes-report",
       "inputSha256": "feeb32235477665d9f44e6f55820b1a96e014e76edc5a3df936bab284cc7d496",
-      "referencePdfSha256": "fa68d1794f02dbaffea5a908868fa80139dc931b11b68aa635b9831ee74a8fbe",
+      "referencePdfSha256": "32e048b79daaf6556e974e1aa1a30234ee79440ed9959152fe7bd886964e7e09",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -328,7 +328,7 @@
     {
       "documentId": "continuous-same-width",
       "inputSha256": "ddc269d51e22ab9c6595c9a062198658d85498397f4a3c13a5bfa19ae751c4b6",
-      "referencePdfSha256": "6394067bac1ef7d6fa032b17d3c1f1f8719261dbb7afce00008f250fd240b5fe",
+      "referencePdfSha256": "9db679b189cfd81d3bb98587512b565169bf3f3053634cb3e4d8d4f2b70eea9e",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -360,8 +360,8 @@
     },
     {
       "documentId": "continuous-two-columns",
-      "inputSha256": "56d17b231212358dc6d7e62357527b0988cc787e28091261f4ce68f3a9e3be2f",
-      "referencePdfSha256": "699aff9138f57a075133875871da7cd80b9a1e53ba2bdf70aaeb43b5a7bba4d9",
+      "inputSha256": "a8779c8031a76f9924ad61468c5013bf2a7cf5cd369293f4f61fd62aa06ba0da",
+      "referencePdfSha256": "ddf9af13ded2b3c4e40f9913eaaf1b99aac8cb3b7228eead4c4a81dc8d7579f1",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -376,14 +376,14 @@
         "pageGeometryMatches": false,
         "textAndOrderMatches": true,
         "glyphSequenceMatches": true,
-        "maximumGlyphDisplacementPoints": 243.75,
+        "maximumGlyphDisplacementPoints": 18.239000000000033,
         "glyphPlacementPasses": false,
         "visual": [
           {
             "passed": false,
             "dimensionsMatch": true,
-            "changedPixelFraction": 0.005011988847792101,
-            "meanChannelError": 0.8090352622406248
+            "changedPixelFraction": 0.004879651706588371,
+            "meanChannelError": 0.7858504680024494
           }
         ],
         "status": "compared",
@@ -394,7 +394,7 @@
     {
       "documentId": "floating-logo-left",
       "inputSha256": "d929494ef3b88b2a2d66d2bef5bf0525159cbd0ce1ffec947ef0fe8c35483b8e",
-      "referencePdfSha256": "f793931800f7a1341e7bac5f06fba900bfeb275e674236b8bd21ca79dff2cd4c",
+      "referencePdfSha256": "7a51fd2d9432bce5996016f8c160468c2f261a74b4491f65c0608707835442d3",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -427,7 +427,7 @@
     {
       "documentId": "floating-logo-right",
       "inputSha256": "d414a5e48ebd6424e4856294ebdcbd2b9cb4fcbcb563bf9dc2c5b20aecbdea68",
-      "referencePdfSha256": "bda8817459eddf432a622bb6f79173b33cd3e55089e4bc9d4da48e24ea7e4ccc",
+      "referencePdfSha256": "00fae431a2e1a9ab287bbaef2882e52b6059c6273c57b8ae02ba78fcc04fb839",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -460,7 +460,7 @@
     {
       "documentId": "multipage-operations",
       "inputSha256": "ff4e81cd4fbbdb97bb434b58e38da76d4a9262db41799429f7394ce34a6bb3de",
-      "referencePdfSha256": "7cc2639dac171a0b6c78a52453a5b2680eee0654ebb7f19de1493660789e79a8",
+      "referencePdfSha256": "ac48a3f1e8d844df50df1940c1a6a1e810cd543dacb6cca78e21fdb43ed71b16",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,
@@ -505,7 +505,7 @@
     {
       "documentId": "multipage-audit",
       "inputSha256": "678abfaa8211517b399d4172b37c7472c92217f85e5eed571c0c956ba0bdeba7",
-      "referencePdfSha256": "329024e478784d1fceb3660670b1ab375d7fb57b3ec58fa5c8ad9427a35dff92",
+      "referencePdfSha256": "bebb09e01dc009a56e285999ed760ce9746a84a04d881fce662d31ee628153a0",
       "authoredChecks": {
         "basis": "authored-source-expectations",
         "passed": true,

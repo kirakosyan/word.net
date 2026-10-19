@@ -101,7 +101,7 @@ for suffix, notes_count in [('contract', 1), ('report', 2)]:
 for suffix, columns in [('same-width', ''), ('two-columns', '<w:cols w:num="2"/>')]:
     name = 'continuous-' + suffix
     texts = ['CONTINUOUS SECTION', 'Before section boundary.', 'After section boundary.']
-    boundary = '<w:sectPr><w:type w:val="continuous"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/>' + columns + '</w:sectPr>'
+    boundary = '<w:sectPr><w:type w:val="continuous"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr>'
     body = p(texts[0]) + p(texts[1], boundary) + p(texts[2])
     cases.append((name, 'report', texts, [], body, {}, '', '<w:type w:val="continuous"/>' + columns))
     new_pages[name] = 1

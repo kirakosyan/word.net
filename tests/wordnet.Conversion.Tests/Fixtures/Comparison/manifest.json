@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Independently authored synthetic examples, MIT; no customer data or proprietary resources.",
   "generator": "eng/generate-comparison-corpus.py",
-  "generatorSha256": "9bb205030c2e2fe2a6b8ebef1c63f69b48c6bf27779c49bd8cf0e017fa1695c2",
+  "generatorSha256": "23518576400c7a00c4b474d6241034d4160dbfc5c227e3db5f7707efd9a82ec5",
   "fonts": [
     {
       "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
@@ -607,7 +607,7 @@
       "id": "continuous-two-columns",
       "category": "report",
       "path": "continuous-two-columns.docx",
-      "sha256": "56d17b231212358dc6d7e62357527b0988cc787e28091261f4ce68f3a9e3be2f",
+      "sha256": "a8779c8031a76f9924ad61468c5013bf2a7cf5cd369293f4f61fd62aa06ba0da",
       "requiredText": [
         "CONTINUOUS SECTION",
         "Before section boundary.",

@@ -79,8 +79,10 @@ jobs:
           artifacts/comparison-venv/bin/python eng/run-comparison.py --poi-classpath artifacts/comparison-poi
       - name: Capture independent office references for the P0 corpus
         if: matrix.os == 'ubuntu-24.04'
+        env:
+          LIBREOFFICE_VERSION: 4:24.2.7-0ubuntu0.24.04.7
         run: |
-          sudo apt-get install -y --no-install-recommends libreoffice-writer
+          sudo apt-get install -y --no-install-recommends "libreoffice-writer=$LIBREOFFICE_VERSION" "libreoffice-core=$LIBREOFFICE_VERSION"
           python3 eng/capture-office-comparison.py --output artifacts/p0-office
       - name: Measure office fidelity defects without changing the converter
         if: matrix.os == 'ubuntu-24.04'
@@ -91,11 +93,13 @@ jobs:
         run: |
           python3 - <<'PY'
           import json
+          import runpy
           from pathlib import Path
           report = json.loads(Path('artifacts/p0-comparison-office/results.json').read_text())
           assert len(report['results']) == 12
           assert all(r['status'] == 'measured' and len(r['referenceChecks']) == 1 and r['referenceChecks'][0]['status'] == 'compared' for r in report['results'])
-          assert Path('artifacts/p0-comparison-office/defects.json').is_file()
+          defects = json.loads(Path('artifacts/p0-comparison-office/defects.json').read_text())
+          runpy.run_path('eng/run-comparison.py')['validate_defect_report'](report, defects)
           PY
       - name: Upload authored comparison measurements and retained failures
         if: always() && matrix.os == 'ubuntu-24.04'

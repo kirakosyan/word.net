@@ -23,9 +23,9 @@ internal static class AutomationRecipes
         {
             if (string.IsNullOrWhiteSpace(item.Description) || item.Description.Length > 200 || item.Quantity < 1 || item.UnitPrice < 0)
                 throw new ArgumentException("Each item needs a description, positive quantity and nonnegative price.", nameof(items));
-            decimal lineTotal = checked(item.Quantity * item.UnitPrice);
-            total = checked(total + lineTotal);
-            rows.Add(new { item.Description, item.Quantity, UnitPrice = Money(item.UnitPrice), LineTotal = Money(lineTotal) });
+            decimal lineTotal = decimal.Round(item.Quantity * item.UnitPrice, 2, MidpointRounding.AwayFromZero);
+            total += lineTotal;
+            rows.Add(new { item.Description, item.Quantity, UnitPrice = item.UnitPrice.ToString("0.00##########################", CultureInfo.InvariantCulture), LineTotal = Money(lineTotal) });
         }
         return new
         {
@@ -71,12 +71,13 @@ internal static class AutomationRecipes
         try
         {
             File.WriteAllBytes(stagedDocx, docx); File.WriteAllBytes(stagedPdf, pdf);
+            log.WriteLine("stage: both output files are ready");
             cancellationToken.ThrowIfCancellationRequested();
             Commit(stagedDocx, docxPath); Commit(stagedPdf, pdfPath);
         }
         finally
         {
-            File.Delete(stagedDocx); File.Delete(stagedPdf);
+            TryDelete(stagedDocx); TryDelete(stagedPdf);
         }
     }
 
@@ -93,10 +94,17 @@ internal static class AutomationRecipes
         if (File.Exists(destination)) File.Replace(temporary, destination, null);
         else File.Move(temporary, destination);
     }
+    private static void TryDelete(string path)
+    {
+        // Cleanup must attempt both files and preserve the original exception.
+        try { File.Delete(path); }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
+    }
     private static string Money(decimal value) => value.ToString("F2", CultureInfo.InvariantCulture);
     private static void Report(TextWriter log, string phase, IReadOnlyList<ConversionDiagnostic> diagnostics)
     {
-        log.WriteLine(phase + ": " + diagnostics.Count.ToString(CultureInfo.InvariantCulture) + " diagnostics");
+        log.WriteLine(phase + ": " + diagnostics.Count.ToString(CultureInfo.InvariantCulture) + " cumulative diagnostics");
         foreach (ConversionDiagnostic diagnostic in diagnostics) log.WriteLine(phase + ": " + diagnostic.Code + ": " + diagnostic.Message);
     }
 }

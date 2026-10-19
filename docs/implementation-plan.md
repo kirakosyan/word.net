@@ -6,6 +6,8 @@ This branch implements [#46](https://github.com/kirakosyan/word.net/issues/46) a
 
 The [P0 comparison report](comparison-p0.md) records authored checks separately from measured office fidelity. Office differences remain visible under unchanged tolerances; licensed desktop Word/Aspose captures remain unavailable. The recipes use caller-calculated decimal totals, existing repeat/if controls and file staging. The README now presents installation, usage and bounded support without historical prerelease wording.
 
+The PR #83 review follow-up corrects line rounding, staged cleanup, cumulative logging, one-to-two-column fixture semantics and reference unit-rounding attribution. Four new recipe regressions raise the required suite to 855; thirteen Python tests cover capture guards, manifests, cohort partitioning, engine attribution and complete defect retention. CI pins its Ubuntu office writer/core packages.
+
 This is pending source work, not merged or published functionality. Qualification is local Linux x64 unless an exact PR/CI artifact is explicitly identified; historical release evidence below retains its original scope. After merge, verify the final checks and reconcile #46, #47 and #45 with the retained artifacts. Do not close or promote unqualified platform or Word-fidelity claims.
 
 

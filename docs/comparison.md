@@ -71,7 +71,7 @@ references remain `not-provided`, rather than an invented passing comparison.
 
 ### Independent open-source office capture
 
-Install LibreOffice Writer and fontconfig, then capture the P0 cohort with a private
+On Linux, install LibreOffice Writer and fontconfig, then capture the P0 cohort with a private
 fontconfig catalog containing only the manifest's verified font bytes:
 
 ```sh
@@ -80,6 +80,8 @@ artifacts/comparison-venv/bin/python eng/run-comparison.py --cohort p0-2026-10 \
   --iterations 1 --references artifacts/p0-office/references.json \
   --output artifacts/p0-comparison-office
 ```
+
+Capture rejects Windows/macOS because their LibreOffice builds do not honor this fontconfig isolation. CI pins both `libreoffice-writer` and `libreoffice-core` to `4:24.2.7-0ubuntu0.24.04.7`; updating that environment requires an explicit workflow change. Local Debian 25.2.3.2 evidence remains a distinct producer.
 
 This extends the existing manifest/reference contracts and comparison runner.
 `kind: libreoffice`, `artifactMode: open-source` explicitly identify these references;
@@ -94,14 +96,13 @@ basis. Neither corpus generation nor reference capture changes converter behavio
 
 The comparison command retains its nonzero exit on differences. `results.json`
 contains all measurements and unchanged verdicts; `defects.json` ranks failures by
-conversion, authored text, pagination, reference text/order, glyph placement and
-raster differences. Each finding names a minimal fixture and candidate implementation
+conversion, authored/editable text, diagnostic expectations, pagination, reference text/order, glyph placement, page geometry and raster differences. Findings identify their engine, retain every failed verdict and only attribute candidate wordnet source paths to wordnet results. Each finding names a minimal fixture and candidate implementation
 source locations; these are triage starting points, not proven root causes. The
 short inputs isolate features, while the long variants exercise their larger scope.
 See [the P0 comparison report](comparison-p0.md) for recorded results and limitations.
 
 CI requires all 24 authored/content/diagnostic gates. It also requires twelve complete
-independent office measurements, while retaining the known office fidelity differences
+independent office measurements and validates that every failed document/engine verdict has exactly one ranked finding, while retaining the known office fidelity differences
 in a separate nonblocking comparison step. `business-comparison` archives raw office
 PDFs/references, engine PDFs, snapshots, rasters and ranked findings, including failures.
 Office binaries and generated references stay out of Git and shipped packages.

@@ -7,15 +7,14 @@ add no runtime support or diagnostic guarantees.
 `ConversionDiagnostic.Code` is machine-readable. `Message` describes a feature or
 approximation and excludes document body text. `Severity` is `Info` or `Warning`;
 `Count` groups repeated occurrences of the same code during parsing/layout/writing.
+Multi-pass layout may report a feature more than once. Counts are observations,
+not a count of unique document objects.
 
-The [invoice/report recipes](../examples/WordNet.Automation/README.md) print separate
-load, edit and save phases. Their invoice's ordinary PDF reports
+The [invoice/report recipes](../examples/WordNet.Automation/README.md) label load, edit and save output with its phase. Each list is cumulative: edit results include retained load diagnostics, and save results include retained load/edit diagnostics. A warning can therefore appear under several phase labels. Their invoice's ordinary PDF reports
 `Pdf.ImageAlternativeText`; the editable DOCX retains the caller logo and its text.
 Sample diagnostics add no new engine codes. Office-reference text/geometry/raster
 differences are comparison verdicts, not new conversion diagnostics; see
 [the P0 report](comparison-p0.md).
-Multi-pass layout may report a feature more than once. Counts are observations,
-not a count of unique document objects.
 
 Each group also exposes `Occurrences`: up to 128 distinct `(Location, Phase)`
 findings. `LocationsTruncated` marks additional locations; `Count` still includes
