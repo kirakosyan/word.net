@@ -12,7 +12,7 @@ using Xunit;
 
 namespace WordNet.Tests;
 
-public sealed class ReviewWorkflowTests
+public sealed partial class ReviewWorkflowTests
 {
     private static readonly XNamespace W = TestDocuments.W;
     private static readonly DateTimeOffset Time = new DateTimeOffset(2026, 10, 19, 12, 0, 0, TimeSpan.Zero);

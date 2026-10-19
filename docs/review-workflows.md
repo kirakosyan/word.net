@@ -24,6 +24,9 @@ DOCX contains actual `w:ins`, `w:del`/`w:delText`, comment parts and marker refe
 Clone/save/append remap identifiers. Moves, property/structural revisions, modern
 comments, field/control ranges, text boxes and other stories reject preservation.
 Malformed duplicate/orphan identifiers and ranges are invalid data.
+Classic comment paragraphs resolve numbering and list-linked styles. Extended
+author-identity parts can be safely omitted with an informational diagnostic;
+their presence alone does not turn ordinary tracked changes into modern comments.
 
 Records and ranges are immutable handles tied to a session and version. Any
 committed edit invalidates existing handles. All selected handles are checked
@@ -64,13 +67,13 @@ retain history. New attribution/time always come from the caller.
 creates a third session. Inputs must be history-free, with matching paragraph/cell
 topology and supported non-text properties; equivalent adjacent run boundaries are
 coalesced. Word or Grapheme granularity uses pinned Unicode 17 tables, preserving
-punctuation, whitespace and logical text. Equal tokens retain original formatting;
+punctuation, whitespace and logical text. Equal tokens require matching formatting and retain it;
 deleted tokens use original formatting and inserted tokens revised formatting.
 Deletion wins ambiguous ties. Structural/property changes and unsupported structured
 stories/ranges fail explicitly; there is no move inference or formatting comparison.
 
 Limits include 10,000 review records, 1 MiB review text, 1,024-character authors,
-100,000 combined comparison tokens and 4,000,000 comparison/range steps, further
+100,000 combined tokens across changed paragraphs and 4,000,000 comparison/range steps, further
 constrained by conversion resource limits. Exhaustion/cancellation never commits a
 partial session. The comparison has no unbounded quadratic fallback.
 

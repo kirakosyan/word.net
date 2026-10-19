@@ -96,12 +96,31 @@ public sealed partial class BusinessFidelityTests
 
     [Theory]
     [InlineData("<w:col w:w='0'/>")]
-    [InlineData("<w:col w:w='6801'/>")]
+    [InlineData("<w:col w:w='6803'/>")]
     [InlineData("")]
     [InlineData("<w:col w:w='4000'/>")]
     public void InvalidExplicitColumnsPreserveTheDestination(string columns)
     {
         string page = UnequalPage.Remove(UnequalPage.IndexOf("<w:cols", StringComparison.Ordinal)) + "<w:cols w:num='2' w:equalWidth='0'>" + columns + "</w:cols></w:sectPr>";
         Fails<System.IO.InvalidDataException>(Docx(P("Text") + page), DocumentFormat.Pdf);
+    }
+    [Theory]
+    [InlineData("num")]
+    [InlineData("four")]
+    [InlineData("gutter")]
+    public void ExplicitColumnAdmissionIgnoresNumAndDiagnosesUnsupportedShapes(string kind)
+    {
+        string page = kind == "num" ? UnequalPage.Replace("w:num='2'", "w:num='99'") : kind == "gutter"
+            ? UnequalPage.Replace("w:gutter='0'", "w:gutter='400'").Replace("w:w='4000'", "w:w='3600'")
+            : UnequalPage.Replace("<w:col w:w='4000' w:space='400'/><w:col w:w='2400'/>", string.Concat(Enumerable.Repeat("<w:col w:w='1700'/>", 4)));
+        var context = new ConversionContext(new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        using var source = new System.IO.MemoryStream(Docx(P("Text") + page));
+        var model = DocxReader.Read(source, context);
+        Assert.Equal(kind == "four" ? 1 : 2, model.FinalSection!.Columns);
+        if (kind == "four") Assert.Contains(context.Result(0).Diagnostics, d => d.Code == "Docx.Columns");
+        if (kind == "gutter") { Assert.Equal(50, model.FinalSection.Left); Assert.Contains(context.Result(0).Diagnostics, d => d.Code == "Docx.Gutter"); }
+        using var input = new System.IO.MemoryStream(Docx(P("Text") + page)); using var output = new System.IO.MemoryStream();
+        new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        using PdfDocument result = PdfDocument.Open(output.ToArray()); Assert.Contains("Text", result.GetPage(1).Text, StringComparison.Ordinal);
     }
 }

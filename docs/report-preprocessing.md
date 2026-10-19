@@ -37,6 +37,9 @@ with immutable `ReportExpression.Literal`, `Path`, `Binary`, `Round` or `Not`
 nodes. `ReportOptions` sets finite row/group/key/node/depth/work limits. Input
 rows are counted across collections; collection evaluation also bounds generated
 rows. No computed output may replace an existing root identifier.
+Unsupported body repeat structures remain non-executable. DOCX save can retain
+their cached content while omitting the unsafe repeat tag with a
+`Template.ControlStructure` loss; it does not silently turn them into executable templates.
 
 See the runnable [P1 recipes](../examples/WordNet.Automation/P1Recipes.cs) and
 [template generator](../eng/generate-p1-templates.py): unsorted categories become

@@ -2,7 +2,7 @@
 
 ## Pending P1 qualification
 
-The required suite is **939** cases (855 baseline plus 84 P1 cases).
+The required suite is **957** cases (855 baseline plus 102 P1 cases, including review regressions).
 The P1 branch adds independent OOXML/ODF fixtures and regressions for unequal-column
 flow, report preprocessing, paragraph repeats, review preservation/decisions/recording
 and matching-structure comparison. Unicode 17 conformance executes all **766 grapheme**
@@ -10,9 +10,10 @@ and **1,944 word** cases, with SHA-256 checks on the original test files. These 
 inside two suite cases, not as extra converter cases.
 
 `eng/verify-odt.py` uses pinned OASIS 1.3 schemas and LibreOfficeDev 26.8 build
-`2c87e51eeaa2b413ff4ae097b2705eea1995d8e5`. Five independent output checks retain
+`2c87e51eeaa2b413ff4ae097b2705eea1995d8e5`. Six independent output checks retain
 text/order, list starts/nine levels, two master geometries and stories, merged cells,
-exact raster hashes and 60 × 30 pt frame geometry within 0.5 pt. Local artifacts and
+exact raster hashes and 60 × 30 pt frame geometry within 0.5 pt, plus styled headers,
+cell numbering and section transitions on list paragraphs. Local artifacts and
 `verification.json` are under ignored `artifacts/p1-odt`; original synthetic fixtures,
 generators, schema pins and conformance pins are committed.
 

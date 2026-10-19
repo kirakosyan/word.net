@@ -357,11 +357,11 @@ internal sealed partial class DocxWriter
         }
         if (first != null) yield return (first, last!, group!);
     }
-    private static XElement Control(TemplateControl control, XElement? content)
+    private XElement Control(TemplateControl control, XElement? content)
     {
-        if (!control.Executable) throw new NotSupportedException("Template.ControlStructure: An invalid region cannot be serialized as an executable control.");
+        if (!control.Executable) context.Loss("Template.ControlStructure", "An unsupported repeat tag is omitted while retaining its cached content.");
         return new XElement(W + "sdt",
-            new XElement(W + "sdtPr", new XElement(W + "tag", new XAttribute(W + "val", control.Tag))), new XElement(W + "sdtContent", content));
+            new XElement(W + "sdtPr", control.Executable ? new XElement(W + "tag", new XAttribute(W + "val", control.Tag)) : null), new XElement(W + "sdtContent", content));
     }
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);

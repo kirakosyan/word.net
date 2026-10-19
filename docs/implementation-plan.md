@@ -2,6 +2,11 @@
 
 ## Pending P1 delivery — issues #48–#63
 
+The owner assigned the next P2 chart/equation and typography tracks (#64–#73) and
+the revised integrated checkpoint #82. Encryption and digital signatures (#74–#81)
+were explicitly cancelled on 2026-10-19 and closed as not planned, not completed.
+Those features remain absent. P2 implementation/evidence belongs to its separate PR.
+
 The owner requested all sixteen P1 leaf issues from roadmap #45. This branch implements
 columns (#48), bounded reporting/body repeats (#49–#52), ODF package/mapping/exchange
 (#53–#57), and review identity/preservation/decisions/recording/Unicode/comparison

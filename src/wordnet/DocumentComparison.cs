@@ -63,11 +63,16 @@ public static class DocumentComparison
         for (int paragraph = 0; paragraph < a.Length; paragraph++)
         {
             context.CheckCancellation(); string oldText = a[paragraph].Text, newText = b[paragraph].Text;
+            if (oldText == newText)
+            {
+                if (!a[paragraph].Runs.Select(r => r.Text.Length).SequenceEqual(b[paragraph].Runs.Select(r => r.Text.Length)))
+                    throw new NotSupportedException("Comparison.Formatting: Formatting boundaries must match on unchanged text.");
+                continue;
+            }
             List<int> x = UnicodeBoundaries.Find(oldText, granularity == ComparisonGranularity.Word, context, tokens);
             List<int> y = UnicodeBoundaries.Find(newText, granularity == ComparisonGranularity.Word, context, tokens);
             tokenCount = checked(tokenCount + Math.Max(0, x.Count - 1) + Math.Max(0, y.Count - 1));
             if (tokenCount > tokens) throw new InvalidDataException("Comparison.TokenLimit: Combined token allowance exceeded.");
-            if (oldText == newText) continue;
             if (a[paragraph].Runs.Any(r => r.Image != null)) throw new NotSupportedException("Comparison.ObjectBoundary: Text changes in object paragraphs are unsupported.");
             int m = x.Count - 1, n = y.Count - 1;
             long cells = (m + 1L) * (n + 1L);
@@ -84,7 +89,13 @@ public static class DocumentComparison
             {
                 context.CheckCancellation();
                 if (u < m && v < n && Equal(u, v))
-                { output.AddRange(Slice(a[paragraph], x[u], x[u + 1] - x[u], context, ref work, steps)); revision = null; deleting = null; u++; v++; continue; }
+                {
+                    List<TextRun> oldRuns = RunCoalescer.Combine(Slice(a[paragraph], x[u], x[u + 1] - x[u], context, ref work, steps));
+                    List<TextRun> newRuns = RunCoalescer.Combine(Slice(b[paragraph], y[v], y[v + 1] - y[v], context, ref work, steps));
+                    if (oldRuns.Count != newRuns.Count || oldRuns.Where((run, i) => run.Text.Length != newRuns[i].Text.Length || !RunCoalescer.Same(run, newRuns[i])).Any())
+                        throw new NotSupportedException("Comparison.Formatting: Formatting on unchanged tokens must match.");
+                    output.AddRange(oldRuns); revision = null; deleting = null; u++; v++; continue;
+                }
                 bool deletion = u < m && (v == n || lengths[(u + 1) * (n + 1) + v] >= lengths[u * (n + 1) + v + 1]);
                 if (deleting != deletion)
                 {

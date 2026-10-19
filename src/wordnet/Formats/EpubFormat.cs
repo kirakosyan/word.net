@@ -74,10 +74,10 @@ internal static class EpubFormat
 
     internal static void Write(DocumentModel model, Stream output, ConversionContext context)
     {
-        using var archive = new ZipArchive(output, ZipArchiveMode.Create, true);
+        using var archive = new StoredZipWriter(output, context);
         var images = new List<DocumentImage>();
         byte[] content = EbookContent.Write(model, context, image => { images.Add(image); return "media/image" + images.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + "." + image.Extension; });
-        PackageArchive.Write(archive, "mimetype", TextFormat.Utf8.GetBytes("application/epub+zip"), CompressionLevel.NoCompression);
+        archive.Write("mimetype", TextFormat.Utf8.GetBytes("application/epub+zip"), stored: true);
         Xml("META-INF/container.xml", new XElement(Container + "container", new XAttribute("version", "1.0"),
             new XElement(Container + "rootfiles", new XElement(Container + "rootfile", new XAttribute("full-path", "EPUB/package.opf"), new XAttribute("media-type", "application/oebps-package+xml")))));
         Xml("EPUB/package.opf", new XElement(Opf + "package", new XAttribute("version", "3.0"), new XAttribute("unique-identifier", "book-id"),
@@ -86,15 +86,16 @@ internal static class EpubFormat
             new XElement(Opf + "manifest", Item("content", "content.xhtml", null), Item("nav", "nav.xhtml", "nav"),
                 images.Select((image, i) => new XElement(Opf + "item", new XAttribute("id", "image" + (i + 1)), new XAttribute("href", "media/image" + (i + 1) + "." + image.Extension), new XAttribute("media-type", image.MediaType)))),
             new XElement(Opf + "spine", new XElement(Opf + "itemref", new XAttribute("idref", "content")))));
-        PackageArchive.Write(archive, "EPUB/content.xhtml", content);
-        for (int i = 0; i < images.Count; i++) PackageArchive.Write(archive, "EPUB/media/image" + (i + 1) + "." + images[i].Extension, images[i].Bytes);
+        archive.Write("EPUB/content.xhtml", content);
+        for (int i = 0; i < images.Count; i++) archive.Write("EPUB/media/image" + (i + 1) + "." + images[i].Extension, images[i].Bytes);
         XNamespace h = EbookContent.Html;
         XNamespace epub = "http://www.idpf.org/2007/ops";
         Xml("EPUB/nav.xhtml", new XElement(h + "html", new XElement(h + "head", new XElement(h + "title", "Contents")),
             new XElement(h + "body", new XElement(h + "nav", new XAttribute(epub + "type", "toc"), new XElement(h + "h1", "Contents"),
                 new XElement(h + "ol", new XElement(h + "li", new XElement(h + "a", new XAttribute("href", "content.xhtml"), "Document")))))));
 
-        void Xml(string name, XElement element) => PackageArchive.Write(archive, name, TextFormat.Utf8.GetBytes(element.ToString(SaveOptions.DisableFormatting)));
+        archive.Complete();
+        void Xml(string name, XElement element) => archive.Write(name, TextFormat.Utf8.GetBytes(element.ToString(SaveOptions.DisableFormatting)));
     }
 
     private static XElement Item(string id, string href, string? properties)

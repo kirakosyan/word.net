@@ -33,6 +33,7 @@ expected = {
     'table-image': ['Merged', 'Left', 'Right'],
     'nine-levels': ['Level' + str(i) for i in range(1, 10)],
     'masters': ['First body', 'Second body'],
+    'review-exchange': ['First body', 'Second body', 'Cell one', 'Cell two'],
 }
 report = {'reader': version, 'validator': '.'.join(map(str, etree.LXML_VERSION)), 'libxml': '.'.join(map(str, etree.LIBXML_VERSION)),
           'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
@@ -74,14 +75,43 @@ for path in sorted(evidence.glob('*.odt')):
             assert numbering.xpath('//w:start[@w:val="3"] | //w:startOverride[@w:val="3"]', namespaces=ns)
         if path.stem == 'nine-levels':
             assert {int(value) for value in xml.xpath('//w:numPr/w:ilvl/@w:val', namespaces=ns)} == set(range(9))
-        if path.stem == 'masters':
+        if path.stem in ('masters', 'review-exchange'):
             assert len(xml.xpath('//w:sectPr', namespaces=ns)) == 2
             widths = [int(value) for value in xml.xpath('//w:sectPr/w:pgSz/@w:w', namespaces=ns)]
             assert abs(widths[0] / 20 - 400) <= 0.5 and abs(widths[1] / 20 - 500) <= 0.5
             stories = ''.join(archive.read(name).decode() for name in archive.namelist() if name.startswith('word/header') or name.startswith('word/footer'))
             for phrase in ['First header', 'Second header', 'First footer', 'Second footer']:
                 assert phrase in stories
+        if path.stem == 'review-exchange':
+            assert len(xml.xpath('//w:tc//w:pPr/w:numPr', namespaces=ns)) == 2
+            assert xml.xpath('//w:body/w:p[w:r/w:t="Second body"]/w:pPr/w:numPr', namespaces=ns)
+            header = next(etree.fromstring(archive.read(name)) for name in archive.namelist()
+                          if name.startswith('word/header') and b'First header' in archive.read(name))
+            styles = etree.fromstring(archive.read('word/styles.xml'))
+            style_index = {s.get('{'+ns['w']+'}styleId'): s for s in styles.findall('w:style', ns)}
+            paragraph = header.find('w:p', ns)
+            run = paragraph.find('w:r', ns)
+            def effective(node, area, name):
+                value = node.find('w:'+area+'/w:'+name, ns)
+                reference = node.find('w:'+area+'/w:'+('pStyle' if area == 'pPr' else 'rStyle'), ns)
+                if reference is None:
+                    reference = paragraph.find('w:pPr/w:pStyle', ns)
+                seen = set()
+                while value is None and reference is not None:
+                    key = reference.get('{'+ns['w']+'}val')
+                    assert key not in seen, 'Cyclic independent-reader style ancestry'
+                    seen.add(key)
+                    style = style_index[key]
+                    value = style.find('w:'+area+'/w:'+name, ns)
+                    reference = style.find('w:basedOn', ns)
+                return None if value is None else value.get('{'+ns['w']+'}val', 'true')
+            alignment = effective(paragraph, 'pPr', 'jc')
+            # LibreOffice uses logical `end` for physical right in this LTR header.
+            assert alignment == 'right' or alignment == 'end' and effective(paragraph, 'pPr', 'bidi') in (None, '0', 'false')
+            assert effective(run, 'rPr', 'b') not in (None, 'false', '0', 'off')
+            assert effective(run, 'rPr', 'sz') == '36'
+            assert effective(run, 'rPr', 'color') == '2468AC'
     report['files'].append({'file': path.name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'schema': 'pass', 'office': 'pass', 'external_sha256': hashlib.sha256(external.read_bytes()).hexdigest()})
-assert len(report['files']) == 5
+assert len(report['files']) == 6
 (evidence / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
 print(json.dumps({'reader': version, 'validated': len(report['files'])}))

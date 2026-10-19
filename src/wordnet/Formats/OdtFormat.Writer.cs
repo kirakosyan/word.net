@@ -27,6 +27,7 @@ internal static partial class OdtFormat
         private readonly Dictionary<string, string> lists = new Dictionary<string, string>(StringComparer.Ordinal);
         private readonly Dictionary<string, string> listInstances = new Dictionary<string, string>(StringComparer.Ordinal);
         private int listInstanceCount;
+        private bool inMaster;
         private readonly HashSet<string> bookmarks = new HashSet<string>(StringComparer.Ordinal);
         internal Writer(DocumentModel model, ConversionContext context) { this.model = model; this.context = context; }
         internal XElement Content()
@@ -44,7 +45,7 @@ internal static partial class OdtFormat
         internal void Write(Stream output)
         {
             XElement body = Content();
-            using var archive = new OdfPackageWriter(output, context);
+            using var archive = new StoredZipWriter(output, context);
             archive.Write("mimetype", Encoding.ASCII.GetBytes(OdfPackage.MediaType), stored: true);
             var manifest = new XElement(OdfPackage.Manifest + "manifest", new XAttribute(OdfPackage.Manifest + "version", "1.3"),
                 Declaration("/", OdfPackage.MediaType), Declaration("content.xml", "text/xml"), Declaration("styles.xml", "text/xml"), Declaration("meta.xml", "text/xml"));
@@ -62,18 +63,18 @@ internal static partial class OdtFormat
             new XAttribute(XNamespace.Xmlns + "svg", V), new XAttribute(XNamespace.Xmlns + "xlink", L), new XAttribute(XNamespace.Xmlns + "dc", Dc), new XAttribute(O + "version", "1.3"), children);
         private static XElement Declaration(string path, string type) => new XElement(OdfPackage.Manifest + "file-entry",
             new XAttribute(OdfPackage.Manifest + "full-path", path), new XAttribute(OdfPackage.Manifest + "media-type", type));
-        private void Xml(OdfPackageWriter archive, string name, XElement root)
+        private void Xml(StoredZipWriter archive, string name, XElement root)
         {
             context.CheckCancellation(); byte[] bytes = Encoding.UTF8.GetBytes(new XDocument(root).ToString(SaveOptions.DisableFormatting));
             if (bytes.Length > context.Options.MaximumExpandedBytes) throw Invalid("ResourceLimit"); archive.Write(name, bytes);
         }
         private string Appearance(string family, XElement properties, string? master = null)
         {
-            string key = family + ":" + master + ":" + properties.ToString(SaveOptions.DisableFormatting);
+            string key = (inMaster ? "master:" : "body:") + family + ":" + master + ":" + properties.ToString(SaveOptions.DisableFormatting);
             if (appearances.TryGetValue(key, out string? name)) return name;
             if (appearances.Count >= 4096) throw Invalid("StyleLimit");
             name = "s" + (appearances.Count + 1).ToString(CultureInfo.InvariantCulture); appearances.Add(key, name);
-            automatic.Add(new XElement(S + "style", new XAttribute(S + "name", name), new XAttribute(S + "family", family),
+            (inMaster ? pageLayouts : automatic).Add(new XElement(S + "style", new XAttribute(S + "name", name), new XAttribute(S + "family", family),
                 master == null ? null : new XAttribute(S + "master-page-name", master), properties)); return name;
         }
         private void Master(PageSettings page)
@@ -89,7 +90,10 @@ internal static partial class OdtFormat
             foreach (var story in page.Stories)
             {
                 if (story.Key is not "header-default" and not "footer-default") { Loss("SectionLoss"); continue; }
-                var content = new XElement(S + (story.Key == "header-default" ? "header" : "footer")); Blocks(story.Value, content, false); master.Add(content);
+                var content = new XElement(S + (story.Key == "header-default" ? "header" : "footer"));
+                inMaster = true;
+                try { Blocks(story.Value, content, false); } finally { inMaster = false; }
+                master.Add(content);
             }
             masterStyles.Add(master);
         }
@@ -111,7 +115,7 @@ internal static partial class OdtFormat
                 while (levels.Count <= item.Level)
                 {
                     var list = new XElement(T + "list", new XAttribute(T + "style-name", ListStyle(item)));
-                    string identity = item.Id + ":" + levels.Count.ToString(CultureInfo.InvariantCulture);
+                    string identity = (inMaster ? "master:" : "body:") + item.Id + ":" + levels.Count.ToString(CultureInfo.InvariantCulture);
                     string instance = "list" + (++listInstanceCount).ToString(CultureInfo.InvariantCulture);
                     list.Add(new XAttribute(XNamespace.Xml + "id", instance));
                     if (listInstances.TryGetValue(identity, out string? previousInstance)) list.Add(new XAttribute(T + "continue-list", previousInstance));
@@ -130,8 +134,9 @@ internal static partial class OdtFormat
         }
         private string ListStyle(ListItem item)
         {
-            if (lists.TryGetValue(item.Id, out string? existing)) return existing;
-            string name = "l" + (lists.Count + 1).ToString(CultureInfo.InvariantCulture); lists.Add(item.Id, name);
+            string key = (inMaster ? "master:" : "body:") + item.Id;
+            if (lists.TryGetValue(key, out string? existing)) return existing;
+            string name = "l" + (lists.Count + 1).ToString(CultureInfo.InvariantCulture); lists.Add(key, name);
             var list = new XElement(T + "list-style", new XAttribute(S + "name", name));
             for (int i = 0; i < 9; i++)
             {
@@ -150,7 +155,7 @@ internal static partial class OdtFormat
                 }
                 list.Add(definition);
             }
-            automatic.Add(list); return name;
+            (inMaster ? pageLayouts : automatic).Add(list); return name;
         }
         private XElement Paragraph(ParagraphBlock paragraph, string? master)
         {
@@ -251,7 +256,7 @@ internal static partial class OdtFormat
                     if (cell.VerticalAlignment != "top") appearance.Add(new XAttribute(S + "vertical-align", cell.VerticalAlignment == "center" ? "middle" : cell.VerticalAlignment));
                     target.Add(new XAttribute(B + "style-name", Appearance("table-cell", appearance)));
                     if (cell.Content.OfType<TableBlock>().Any()) Loss("NestedTableLoss");
-                    foreach (ParagraphBlock p in cell.Paragraphs) target.Add(Paragraph(p, null));
+                    Blocks(cell.Paragraphs, target, false);
                     row.Add(target); for (int i = 1; i < cell.ColumnSpan; i++) row.Add(new XElement(B + "covered-table-cell")); column += cell.ColumnSpan;
                 }
             }

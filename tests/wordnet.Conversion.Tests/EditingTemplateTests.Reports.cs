@@ -91,9 +91,14 @@ public sealed partial class EditingTemplateTests
     public void InvalidNestedRegionsCannotBeSavedIntoExecutableTemplates()
     {
         WordDocument doc = Load(Docx(Region(Region(P("A")))));
-        using var output = new MemoryStream(new byte[] { 1, 2, 3, 4 }, writable: true);
-        Assert.Throws<NotSupportedException>(() => doc.Save(output, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken));
-        Assert.Equal(new byte[] { 1, 2, 3, 4 }, output.ToArray());
+        using var output = new MemoryStream();
+        ConversionResult result = doc.Save(output, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Template.ControlStructure");
+        Schema(output.ToArray());
+        Assert.Empty(Part(output.ToArray(), "word/document.xml").Descendants(W + "tag"));
+        WordDocument loaded = Load(output.ToArray());
+        loaded.Merge(new { Items = Array.Empty<object>() }, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("A", Assert.Single(loaded.Paragraphs).Text);
         Assert.Throws<NotSupportedException>(() => doc.Merge(new { Items = Array.Empty<object>() }, cancellationToken: TestContext.Current.CancellationToken));
     }
 

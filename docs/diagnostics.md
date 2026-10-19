@@ -174,7 +174,7 @@ conversion diagnostics.
 | `Docx.Block` | Loss | Unsupported document block structure is flattened where supported content is available. |
 | `Docx.BookmarkEndIgnored` | Report | An unmatched bookmark end is ignored while retaining its surrounding content. |
 | `Docx.CellPadding` | Loss | Unknown cell margin side is omitted. |
-| `Docx.Columns` | Loss | Only one to three equal-width body columns are supported. |
+| `Docx.Columns` | Loss | Unsupported column shapes use a single body column; one to three equal or admitted explicit widths are supported. |
 | `Docx.Drawing` | Loss | Unsupported or linked drawings are omitted; remote images are never fetched. |
 | `Docx.FixedMargin` | Loss | Fixed negative vertical margins use their absolute distance; header overlap behavior is not retained. |
 | `Docx.Gutter` | Loss | Binding gutters are not retained. |

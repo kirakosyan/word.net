@@ -11,7 +11,7 @@ using Xunit;
 
 namespace WordNet.Tests;
 
-public sealed class OdtTests
+public sealed partial class OdtTests
 {
     private static byte[] Fixture(string name) => File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Odt", name + ".odt"));
     private static ConversionContext Context() => new ConversionContext(new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);

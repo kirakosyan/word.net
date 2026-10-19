@@ -25,7 +25,7 @@ internal static class RunCoalescer
         return result;
     }
 
-    private static bool Same(TextRun a, TextRun b) => b.Image == null && b.Note == null && b.Box == null && b.Bookmark == null && b.FieldInstruction == null && b.Control == null
+    internal static bool Same(TextRun a, TextRun b) => b.Image == null && b.Note == null && b.Box == null && b.Bookmark == null && b.FieldInstruction == null && b.Control == null
         && b.Revision == null && b.Comment == null
         && a.Bold == b.Bold && a.Italic == b.Italic && a.Code == b.Code && a.Link == b.Link && a.FontSize == b.FontSize && a.Color == b.Color
         && string.Equals(a.Appearance.FontFamily, b.Appearance.FontFamily, StringComparison.OrdinalIgnoreCase)

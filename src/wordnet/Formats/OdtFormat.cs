@@ -127,7 +127,7 @@ internal static partial class OdtFormat
             if (sources.Count > 1) ReadMasters(sources[0]);
             var document = new DocumentModel();
             XElement body = content.Root.Element(O + "body")?.Element(O + "text") ?? throw Invalid("Body");
-            Blocks(body, document.Blocks, 0);
+            Blocks(body, document.Blocks, 0, bodyFlow: true);
             if (!bookmarkStarts.SetEquals(bookmarkEnds)) throw Invalid("Bookmark");
             document.FinalSection = active;
             if (package.Contains("meta.xml"))
@@ -214,7 +214,7 @@ internal static partial class OdtFormat
             }
             active = masters.Values.FirstOrDefault();
         }
-        private void Blocks(XElement container, List<DocumentBlock> output, int depth, ListItem? item = null)
+        private void Blocks(XElement container, List<DocumentBlock> output, int depth, ListItem? item = null, bool bodyFlow = false)
         {
             if (depth > context.Options.MaximumNestingDepth) throw Invalid("NestingLimit");
             foreach (XElement element in container.Elements())
@@ -223,7 +223,7 @@ internal static partial class OdtFormat
                 if (element.Name == T + "p" || element.Name == T + "h")
                 {
                     Dictionary<XName, string> appearance = Style(element, "paragraph");
-                    if (depth == 0 && appearance.TryGetValue(S + "master-page-name", out string? master))
+                    if (bodyFlow && appearance.TryGetValue(S + "master-page-name", out string? master))
                     {
                         if (!masters.TryGetValue(master, out PageSettings? page)) throw Invalid("Master"); active = page;
                     }
@@ -243,40 +243,50 @@ internal static partial class OdtFormat
                             paragraph.Layout.PageBreakBefore = property.Value == "page";
                         }
                     }
-                    Inlines(element, paragraph.Runs, appearance); output.Add(paragraph);
+                    Inlines(element, paragraph.Runs, appearance); output.Add(paragraph); item = null;
                 }
-                else if (element.Name == T + "list") ReadList(element, output, depth);
+                else if (element.Name == T + "list") ReadList(element, output, depth, bodyFlow);
                 else if (element.Name == B + "table")
                 {
-                    if (depth > 0) { Loss("NestedTableLoss"); foreach (XElement cell in element.Descendants(B + "table-cell")) Blocks(cell, output, depth + 1); }
-                    else output.Add(Table(element, depth));
+                    if (!bodyFlow) { Loss("NestedTableLoss"); foreach (XElement cell in element.Descendants(B + "table-cell")) Blocks(cell, output, depth + 1); }
+                    else output.Add(Table(element, 0));
                 }
-                else if (element.Name == T + "sequence-decls" || element.Name == T + "variable-decls" || element.Name == T + "user-field-decls") { if (element.HasElements) Loss("FieldLoss"); }
-                else { Loss("FeatureLoss"); Blocks(element, output, depth + 1); }
+                else if (element.Name == T + "sequence-decls" || element.Name == T + "variable-decls" || element.Name == T + "user-field-decls" || element.Name == T + "soft-page-break") { }
+                else if (element.Name == T + "section") { Blocks(element, output, depth + 1, item, bodyFlow); item = null; }
+                else if (element.Name == T + "tracked-changes") Loss("RevisionLoss");
+                else if (element.Name == O + "annotation") Loss("AnnotationLoss");
+                else if (element.Name == T + "note") Loss("NotesLoss");
+                else Loss("FeatureLoss");
             }
         }
-        private void Inlines(XElement element, List<TextRun> output, Dictionary<XName, string> inherited, string? link = null)
+        private sealed class InlineSpace
         {
+            internal bool Visible;
+            internal TextRun? Pending;
+        }
+        private void Inlines(XElement element, List<TextRun> output, Dictionary<XName, string> inherited, string? link = null, InlineSpace? space = null)
+        {
+            space ??= new InlineSpace();
             Dictionary<XName, string> style = new Dictionary<XName, string>(inherited);
             if (element.Attribute(T + "style-name") != null && element.Name != T + "p" && element.Name != T + "h") foreach (var pair in Style(element, "text")) style[pair.Key] = pair.Value;
             foreach (XNode node in element.Nodes())
             {
                 Admit();
-                if (node is XText text) { Add(text.Value); continue; }
+                if (node is XText text) { Add(text.Value, ordinary: true); continue; }
                 if (node is not XElement child) continue;
                 if (child.Name == T + "s") { int count = Count(child, T + "c"); Admit(text: count); Add(new string(' ', count), false); }
                 else if (child.Name == T + "tab") Add("\t");
                 else if (child.Name == T + "line-break") Add("\n");
-                else if (child.Name == T + "span") Inlines(child, output, style, link);
+                else if (child.Name == T + "span") Inlines(child, output, style, link, space);
                 else if (child.Name == T + "a")
                 {
                     string? target = (string?)child.Attribute(L + "href");
                     if (target != null && target.Length > 0 && target[0] == '#')
                     {
                         if (!bookmarkNames.TryGetValue(target.Substring(1), out string? mapped)) throw Invalid("BookmarkLink");
-                        Inlines(child, output, style, "#" + mapped);
+                        Inlines(child, output, style, "#" + mapped, space);
                     }
-                    else Inlines(child, output, style, context.SafeLink(target));
+                    else Inlines(child, output, style, context.SafeLink(target), space);
                 }
                 else if (child.Name == T + "bookmark-start" || child.Name == T + "bookmark-end" || child.Name == T + "bookmark")
                 {
@@ -305,11 +315,20 @@ internal static partial class OdtFormat
                         byte[] bytes = package.Read(path); admitted = DocumentImage.Read(bytes, width, height, child.Element(V + "desc")?.Value ?? "", context);
                         if (admitted.Extension is not "png" and not "jpg") throw Invalid("Image"); package.RequireType(path, admitted.MediaType); images.Add(path, admitted);
                     }
+                    FlushSpace(); space.Visible = true;
                     output.Add(new TextRun("", image: DocumentImage.Read(admitted.Bytes, width, height, child.Element(V + "desc")?.Value ?? "", context, admitted.PixelsWide, admitted.PixelsHigh)));
                 }
-                else { Loss("FieldLoss"); Inlines(child, output, style, link); }
+                else if (child.Name == T + "soft-page-break") { }
+                else if (child.Name == O + "annotation" || child.Name == O + "annotation-end") Loss("AnnotationLoss");
+                else if (child.Name == T + "note") Loss("NotesLoss");
+                else if (child.Name == T + "change" || child.Name == T + "change-start" || child.Name == T + "change-end") Loss("RevisionLoss");
+                else if (child.Name.Namespace == T && child.Name.LocalName is "page-number" or "page-count" or "date" or "time" or "sequence" or "variable-get" or "user-field-get" or "text-input" or "file-name")
+                { Loss("FieldLoss"); Inlines(child, output, style, link, space); }
+                else Loss("FeatureLoss");
             }
-            void Add(string text, bool charge = true)
+            void FlushSpace()
+            { if (space.Pending != null) { output.Add(space.Pending); space.Pending = null; } }
+            void Add(string text, bool charge = true, bool ordinary = false)
             {
                 if (charge) Admit(text: text.Length);
                 bool bold = style.TryGetValue(F + "font-weight", out string? weight) && (weight == "bold" || weight == "700");
@@ -323,10 +342,28 @@ internal static partial class OdtFormat
                     run.Appearance.FontFamily = family.Trim('\'', '"');
                 }
                 if (style.TryGetValue(S + "text-underline-style", out string? underline)) run.Appearance.Underline = underline != "none";
-                output.Add(run);
+                if (!ordinary) { FlushSpace(); output.Add(run); if (text.Length != 0) space.Visible = true; return; }
+                var value = new StringBuilder(); TextRun gap = run.WithText(" ");
+                foreach (char character in text)
+                {
+                    if (character is ' ' or '\t' or '\r' or '\n')
+                    {
+                        if (space.Visible && space.Pending == null) space.Pending = gap;
+                    }
+                    else
+                    {
+                        if (space.Pending != null)
+                        {
+                            if (ReferenceEquals(space.Pending, gap)) { value.Append(' '); space.Pending = null; }
+                            else FlushSpace();
+                        }
+                        value.Append(character); space.Visible = true;
+                    }
+                }
+                if (value.Length != 0) output.Add(run.WithText(value.ToString()));
             }
         }
-        private void ReadList(XElement element, List<DocumentBlock> output, int depth)
+        private void ReadList(XElement element, List<DocumentBlock> output, int depth, bool bodyFlow)
         {
             if (listElements.Count >= 4096) throw Invalid("ListLimit");
             int listLevel = element.Ancestors(T + "list").Count();
@@ -380,7 +417,7 @@ internal static partial class OdtFormat
                 }
                 var item = new ListItem { Id = id, Level = listLevel, Ordered = levels[listLevel].Format != "bullet", Definition = levels, Start = Start(child, levels[listLevel].Start) };
                 listElements[element] = id;
-                Blocks(child, output, depth + 1, item);
+                Blocks(child, output, depth + 1, child.Name == T + "list-header" ? null : item, bodyFlow);
             }
             previousLists[name] = id;
             if (element.Attribute(XNamespace.Xml + "id") is XAttribute finalId) listIds[finalId.Value] = id;
@@ -487,6 +524,6 @@ internal static partial class OdtFormat
             }
             if (spans.Count != 0) throw Invalid("TableSpan"); TableValidation.Validate(table, context); return table;
         }
-        private void Loss(string code) => context.Loss("Odt." + code, "Content outside the bounded ODT profile uses its supported visible representation.");
+        private void Loss(string code) => context.Loss("Odt." + code, "The ODT exchange omits unsupported content or semantics and retains only the admitted visible representation.");
     }
 }

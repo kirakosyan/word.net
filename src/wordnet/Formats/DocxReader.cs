@@ -72,9 +72,9 @@ internal sealed partial class DocxReader
         reader.package = package;
         reader.mainPart = main;
         reader.knownParts = knownParts;
-        reader.ReadReviewComments();
         reader.ReadNumbering();
         reader.ReadNotes();
+        reader.ReadReviewComments();
         reader.ReadAuxiliaryParts("", rootRelations);
         reader.ReadAuxiliaryParts(main, reader.relationships.Values);
 

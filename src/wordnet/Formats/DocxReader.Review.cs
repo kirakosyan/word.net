@@ -20,8 +20,13 @@ internal sealed partial class DocxReader
         {
             string type = (string?)relation.Attribute("Type") ?? "";
             string role = type.Substring(type.LastIndexOf('/') + 1);
-            if (role.StartsWith("comments", StringComparison.Ordinal) && role != "comments" || role is "people" or "person")
+            if (role.StartsWith("comments", StringComparison.Ordinal) && role != "comments")
                 throw new NotSupportedException("Review.Unsupported: Modern review metadata is outside the preservation profile.");
+            if (role is "people" or "person")
+            {
+                string people = DocxPackage.ResolvePart(mainPart, relation); _ = package.ReadXml(people); knownParts.Add(people);
+                context.Report("Review.AuthorIdentitiesIgnored", "Extended author identities are omitted; revision/comment author metadata is retained.");
+            }
         }
         XElement[] relations = relationships.Values.Where(r => (string?)r.Attribute("Type") == DocxPackage.DocumentRelationships.NamespaceName + "/comments").ToArray();
         if (relations.Length > 1) throw new InvalidDataException("Review.Comments: Multiple comment parts.");

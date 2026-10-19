@@ -3,27 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using WordNet.Internal;
 
-namespace WordNet.Formats;
+namespace WordNet.Internal;
 
-// Write the ODF-required stored mimetype explicitly: Framework's NoCompression
+// Write package-required stored entries explicitly: Framework's NoCompression
 // still emits ZIP method 8. Other entries use the platform's raw DEFLATE stream.
-internal sealed class OdfPackageWriter : IDisposable
+internal sealed class StoredZipWriter : IDisposable
 {
     private readonly BinaryWriter writer;
     private readonly ConversionContext context;
     private readonly List<(byte[] Name, ushort Method, uint Crc, uint Size, uint Compressed, uint Offset)> entries = new List<(byte[], ushort, uint, uint, uint, uint)>();
     private static readonly uint[] CrcTable = CreateCrcTable();
     private long expanded;
-    internal OdfPackageWriter(Stream output, ConversionContext context)
+    internal StoredZipWriter(Stream output, ConversionContext context)
     { writer = new BinaryWriter(output, Encoding.UTF8, true); this.context = context; }
     internal void Write(string name, byte[] bytes, bool stored = false)
     {
         context.CheckCancellation(); expanded = checked(expanded + bytes.Length);
         byte[] path = Encoding.UTF8.GetBytes(name);
         if (path.Length > ushort.MaxValue || entries.Count >= Math.Min(ushort.MaxValue - 1, context.Options.MaximumArchiveEntries)
-            || expanded > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Odt.PackageLimit: Output package exceeds its bounds.");
+            || expanded > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Package.WriteLimit: Output package exceeds its bounds.");
         uint crc = uint.MaxValue;
         for (int i = 0; i < bytes.Length; i++)
         {
@@ -64,7 +63,7 @@ internal sealed class OdfPackageWriter : IDisposable
     private uint Position()
     {
         long position = writer.BaseStream.Position;
-        if (position < 0 || position > uint.MaxValue) throw new InvalidDataException("Odt.PackageLimit: ZIP64 output is outside the package profile.");
+        if (position < 0 || position > uint.MaxValue) throw new InvalidDataException("Package.WriteLimit: ZIP64 output is outside the package profile.");
         return (uint)position;
     }
     private static uint[] CreateCrcTable()

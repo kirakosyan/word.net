@@ -114,7 +114,7 @@ The shared layout profile includes section geometry, wrapping and pagination, ta
 
 PDF import reconstructs editable content; it does not recover arbitrary original tables, styles or pagination. OCR targets English printed text, with optional rotation/deskew and known two-column reading order. Handwriting is outside the profile.
 
-Password protection and editable charts/equations remain deferred. Default DOCX loads render revisions in their accepted state with diagnostics; Strict rejects revision/comment loss. The pending opt-in review profile is separate. Complete Word pagination parity and arbitrary drawing/CSS behavior are not guaranteed.
+Password encryption/decryption and DOCX/PDF digital signatures are not implemented and are excluded from the current roadmap at the owner's request. Password-protected input and signed-document workflows remain unsupported; no confidentiality, signature-validity or signer-trust utility is provided. Editable charts/equations remain pending separate P2 work. Default DOCX loads render revisions in their accepted state with diagnostics; Strict rejects revision/comment loss. The pending opt-in review profile is separate. Complete Word pagination parity and arbitrary drawing/CSS behavior are not guaranteed.
 
 See the [fidelity profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md), [DOC subset](https://github.com/kirakosyan/word.net/blob/main/docs/doc-format.md) and [interoperability guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md).
 

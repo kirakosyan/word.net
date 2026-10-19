@@ -21,6 +21,13 @@ lists and restarts, simple page masters/header/footer stories, bounded tables wi
 rectangular spans/repetition/cell appearance, inline PNG/JPEG frames, and safe links
 and bookmarks. Named style identity is flattened with a diagnostic. Physical units
 are pt/in/cm/mm/pc. Source page masters become next-page sections.
+Ordinary XML whitespace collapses according to ODF text rules across inline spans;
+explicit space/tab/break elements remain literal. List headers and continuation
+paragraphs are unnumbered. List paragraphs can carry body master transitions, and
+table-cell lists retain numbering. Master-story styles live in styles.xml.
+Unused declarations and soft page breaks are no-ops. Annotation/note subtrees,
+tracked-change stores and unknown non-flow containers are omitted with explicit
+losses; their metadata and deleted text never enter the live body.
 
 FODT, ODF 1.4, encrypted/signed/active packages, templates, dynamic masters,
 unequal ODT columns, nested tables, floating/vector/OLE objects and spreadsheet
@@ -40,7 +47,7 @@ The independent MIT fixture generator is
 [generate-odt-fixtures.py](../eng/generate-odt-fixtures.py). The external check
 [verify-odt.py](../eng/verify-odt.py) validates output with SHA-256-pinned OASIS 1.3
 schemas and LibreOffice, including editable list starts, nine levels, two master
-geometries/stories, merged cells, exact raster hashes and 60 × 30 pt frame geometry
+geometries/stories and styled headers, cell lists, merged cells, exact raster hashes and 60 × 30 pt frame geometry
 within 0.5 pt. Schema assets are development-only downloads and retain OASIS notices;
 they are not part of the runtime packages. This is a tested subset, not a claim of
 full ODF conformance or arbitrary office pagination parity.
