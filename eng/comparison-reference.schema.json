@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Word, Aspose and test-only raster reference provenance v1",
+  "title": "Office and test-only raster reference provenance v1",
   "type": "object",
   "required": [
     "schemaVersion",
@@ -33,7 +33,8 @@
             "enum": [
               "word",
               "aspose",
-              "raster-golden"
+              "raster-golden",
+              "libreoffice"
             ]
           },
           "version": {
@@ -43,7 +44,8 @@
           "artifactMode": {
             "enum": [
               "licensed",
-              "evaluation"
+              "evaluation",
+              "open-source"
             ]
           },
           "inputSha256": {

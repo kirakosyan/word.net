@@ -7,5 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="../../src/wordnet/wordnet.csproj" />
     <None Include="../../tests/wordnet.Conversion.Tests/Fixtures/color-grid.png" Link="logo.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Templates/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

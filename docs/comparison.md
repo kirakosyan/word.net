@@ -1,8 +1,10 @@
 # Reproducible business-document comparison
 
-The twelve independent MIT-authored examples in
+The twenty-four independent MIT-authored examples in
 `tests/wordnet.Conversion.Tests/Fixtures/Comparison` cover three invoices, contracts,
-reports and letterheads each. Names, amounts and organisations are invented.
+reports and letterheads in the original twelve-case cohort, plus twelve P0 cases
+covering mixed fonts, long tables, footnotes, continuous sections, floating logos
+and multi-page reports. Names, amounts and organisations are invented.
 `eng/generate-comparison-corpus.py` regenerates deterministic DOCX ZIPs and the
 manifest, independently of wordnet serialization. No customer documents, commercial
 binaries, license keys or proprietary fonts belong in Git. Inputs are independently
@@ -10,7 +12,7 @@ Open XML schema validated by the mandatory conversion suite.
 
 The generator writes portable POSIX paths and UTF-8/LF JSON; `.gitattributes` keeps
 its source and JSON hashes stable across Windows and Unix checkouts. The manifest
-records input hashes, pinned Noto Sans font hashes/versions, authored
+records input hashes, pinned Noto Sans/Liberation font hashes/versions, authored
 text in reading order, explicit page breaks and known losses. Its page counts are
 **authored expectations**, not measurements by Word. Nested tables/decoration,
 percentage widths, Roman numbering, columns, revision acceptance, missing fonts and
@@ -67,6 +69,45 @@ references remain `not-provided`, rather than an invented passing comparison.
 
 ## Optional Word and Aspose references
 
+### Independent open-source office capture
+
+Install LibreOffice Writer and fontconfig, then capture the P0 cohort with a private
+fontconfig catalog containing only the manifest's verified font bytes:
+
+```sh
+python eng/capture-office-comparison.py --output artifacts/p0-office
+artifacts/comparison-venv/bin/python eng/run-comparison.py --cohort p0-2026-10 \
+  --iterations 1 --references artifacts/p0-office/references.json \
+  --output artifacts/p0-comparison-office
+```
+
+This extends the existing manifest/reference contracts and comparison runner.
+`kind: libreoffice`, `artifactMode: open-source` explicitly identify these references;
+they are never labeled Word or licensed Aspose results. Capture records the exact
+office version/build, launcher/binary, input, font and PDF hashes and renderer banner.
+Use a fresh output directory when changing the font manifest. Temporary office
+profiles are isolated and removed; stale PDFs cannot become successful captures.
+
+`--cohort baseline` selects the original twelve inputs; `--cohort all` (the default)
+measures all 24. New fixture metadata identifies its feature and authored expectation
+basis. Neither corpus generation nor reference capture changes converter behavior.
+
+The comparison command retains its nonzero exit on differences. `results.json`
+contains all measurements and unchanged verdicts; `defects.json` ranks failures by
+conversion, authored text, pagination, reference text/order, glyph placement and
+raster differences. Each finding names a minimal fixture and candidate implementation
+source locations; these are triage starting points, not proven root causes. The
+short inputs isolate features, while the long variants exercise their larger scope.
+See [the P0 comparison report](comparison-p0.md) for recorded results and limitations.
+
+CI requires all 24 authored/content/diagnostic gates. It also requires twelve complete
+independent office measurements, while retaining the known office fidelity differences
+in a separate nonblocking comparison step. `business-comparison` archives raw office
+PDFs/references, engine PDFs, snapshots, rasters and ranked findings, including failures.
+Office binaries and generated references stay out of Git and shipped packages.
+
+### Commercial reference tools
+
 A caller-provisioned, legitimately licensed Aspose.Words .NET version and its local
 dependencies can be loaded by the non-packable benchmark worker. No Aspose package
 is restored or shipped. Use an ignored/output directory outside the checkout for
@@ -105,7 +146,7 @@ Capture defaults to `evaluation`; select `licensed` only for a legitimately lice
 desktop installation. The script opens authored inputs read-only, disables macros, records Word version/
 build and input/font/PDF hashes, closes its own Word instance and saves references
 outside Git. It does not alter documents or automate Office in production. Each
-reference declares `kind: word`, `aspose` or `raster-golden`, `artifactMode`, version,
+reference declares `kind: word`, `aspose`, `libreoffice` or `raster-golden`, `artifactMode`, version,
 input/PDF hashes, font manifest and renderer version. Existing Word page-count CSVs
 and test-only goldens remain separately identified; they are not relabeled Aspose.
 

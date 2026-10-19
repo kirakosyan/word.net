@@ -21,3 +21,4 @@
 
 # Keep the reproducible corpus generator hash stable on Windows and Unix.
 eng/generate-comparison-corpus.py text eol=lf
+eng/generate-automation-templates.py text eol=lf

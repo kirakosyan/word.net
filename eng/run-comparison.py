@@ -34,6 +34,50 @@ def loss_check(expected, diagnostics):
     return dict(passed=observed == expected, missing=sorted(expected - observed), unexpected=sorted(observed - expected))
 
 
+def defect_report(report, manifest):
+    """Rank visible findings without changing any fidelity verdict or tolerance."""
+    sources = {
+        'mixed-fonts': ('mixed-fonts-short', ['src/wordnet/Layout/FixedLayout.cs', 'src/wordnet/Layout/FontResolver.cs']),
+        'long-tables': ('long-table-ledger', ['src/wordnet/Layout/TableSizing.cs']),
+        'footnotes': ('footnotes-contract', ['src/wordnet/Formats/DocxReader.Notes.cs']),
+        'continuous-sections': ('continuous-same-width', ['src/wordnet/Layout/FixedLayout.cs']),
+        'floating-logos': ('floating-logo-left', ['src/wordnet/Formats/DocxReader.Drawings.cs']),
+        'multi-page-reports': ('multipage-operations', ['src/wordnet/Layout/FixedLayout.cs'])}
+    documents = {d['id']: d for d in manifest['documents']}
+    findings = []
+    for result in report['results']:
+        document = documents[result['documentId']]
+        checks = result.get('referenceChecks', [])
+        if result['status'] == 'failed':
+            failure, rank = 'conversion-or-reader-failure', 0
+        elif result.get('authoredChecks', {}).get('passed') is False:
+            failure, rank = 'authored-text-or-order', 1
+        elif any(c.get('pageCountMatches') is False for c in checks) or result.get('authoredChecks', {}).get('pageCountMatches') is False:
+            failure, rank = 'pagination', 2
+        elif any(c.get('textAndOrderMatches') is False for c in checks):
+            failure, rank = 'reference-text-or-order', 3
+        elif any(c.get('glyphPlacementPasses') is False for c in checks):
+            failure, rank = 'glyph-placement', 4
+        elif any(c.get('pageGeometryMatches') is False for c in checks):
+            failure, rank = 'page-geometry', 5
+        elif any(c.get('visualPassed') is False for c in checks):
+            failure, rank = 'raster', 6
+        else:
+            continue
+        minimal, locations = sources.get(document.get('feature'), (document['id'], ['src/wordnet/Formats/']))
+        findings.append(dict(rank=rank, finding=failure, documentId=document['id'], minimalFixture=document['path'],
+                             smallerRelatedFixture=minimal + '.docx',
+                             inputSha256=result['inputSha256'], candidateSourceLocations=locations,
+                             sourceLocationBasis='triage starting points, not confirmed root causes',
+                             diagnosticOccurrences=[o for d in result.get('measurement', {}).get('diagnostics', []) for o in d.get('occurrences', [])],
+                             authoredChecks=result.get('authoredChecks'), referenceChecks=checks))
+    observed_readers = {check.get('kind') for result in report['results'] for check in result.get('referenceChecks', []) if check.get('status') == 'compared'}
+    return dict(schemaVersion=1, sourceRevision=report['sourceRevision'], sourceDirty=report['sourceDirty'],
+                manifestSha256=report['manifestSha256'], tolerances=report['tolerances'],
+                unavailableReaders=[name for kind, name in [('word', 'licensed desktop Word'), ('aspose', 'licensed Aspose.Words')] if kind not in observed_readers],
+                findings=sorted(findings, key=lambda f: (f['rank'], f['documentId'])))
+
+
 def content_check(snapshot, expected):
     """Require every authored text fragment in reading order; no content-loss allowance."""
     text = normalized(' '.join(p['text'] for p in snapshot['pages']))
@@ -109,6 +153,7 @@ def main():
     parser.add_argument('--poi-classpath', help='Pinned POI jar directory for independent editable DOC text/reading-order checks')
     parser.add_argument('--editable-reader', default=shutil.which('antiword'))
     parser.add_argument('--references', type=Path, help='Caller-owned reference manifest; see docs/comparison.md')
+    parser.add_argument('--cohort', choices=['all', 'baseline', 'p0-2026-10'], default='all')
     parser.add_argument('--capture-aspose-reference', type=Path)
     parser.add_argument('--iterations', type=int, default=5)
     parser.add_argument('--dotnet', default=shutil.which('dotnet'))
@@ -156,6 +201,8 @@ def main():
         env.pop('WORDNET_ASPOSE_LICENSE', None)
     captured = []
     for document in manifest['documents']:
+        if args.cohort != 'all' and document.get('cohort', 'baseline') != args.cohort:
+            continue
         source = args.manifest.parent / document['path']
         if digest(source) != document['sha256']:
             parser.error('Input hash mismatch: ' + document['id'])
@@ -206,7 +253,7 @@ def main():
                 for reference, reference_root in [(r, base) for r, base in references if r['documentId'] == document['id']]:
                     check = dict(kind=reference['kind'], version=reference['version'])
                     result['referenceChecks'].append(check)
-                    if reference['artifactMode'] != 'licensed':
+                    if reference['artifactMode'] != 'licensed' and not (reference['kind'] == 'libreoffice' and reference['artifactMode'] == 'open-source'):
                         check['status'] = 'excluded-evaluation-artifact'
                         continue
                     if reference['inputSha256'] != document['sha256'] or reference['fonts'] != manifest['fonts']:
@@ -239,6 +286,7 @@ def main():
                 check['textAndGeometryPassed'] = all(check.get(k, False) for k in ('pageCountMatches', 'pageGeometryMatches', 'textAndOrderMatches', 'glyphPlacementPasses'))
                 check['visualPassed'] = all(p['passed'] for p in check['visual']) if 'visual' in check else None
     (args.output / 'results.json').write_text(json.dumps(report, indent=2) + '\n')
+    (args.output / 'defects.json').write_text(json.dumps(defect_report(report, manifest), indent=2) + '\n')
     failures = [r for r in report['results'] if r['status'] == 'failed' or r.get('knownLossChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('pageCountMatches') is False or r.get('editableContent', {}).get('passed') is False or any(c.get('textAndGeometryPassed') is False or c.get('visualPassed') is False for c in r.get('referenceChecks', []))]
     print(f"{len(report['results'])} results; {len(failures)} failures retained in {args.output / 'results.json'}")
     return 1 if failures else 0

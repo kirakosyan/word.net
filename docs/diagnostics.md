@@ -7,6 +7,13 @@ add no runtime support or diagnostic guarantees.
 `ConversionDiagnostic.Code` is machine-readable. `Message` describes a feature or
 approximation and excludes document body text. `Severity` is `Info` or `Warning`;
 `Count` groups repeated occurrences of the same code during parsing/layout/writing.
+
+The [invoice/report recipes](../examples/WordNet.Automation/README.md) print separate
+load, edit and save phases. Their invoice's ordinary PDF reports
+`Pdf.ImageAlternativeText`; the editable DOCX retains the caller logo and its text.
+Sample diagnostics add no new engine codes. Office-reference text/geometry/raster
+differences are comparison verdicts, not new conversion diagnostics; see
+[the P0 report](comparison-p0.md).
 Multi-pass layout may report a feature more than once. Counts are observations,
 not a count of unique document objects.
 

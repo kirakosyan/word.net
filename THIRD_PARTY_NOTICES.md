@@ -129,6 +129,10 @@ Word pagination parity. No proprietary Microsoft font is redistributed.
   upstream LICENSE/NOTICE remain inside the downloaded jars, outside Git and NuGet.
 - Poppler (`pdftoppm`, GPL-2.0-or-later) and an optional antiword installation
   (GPL-2.0-or-later) run as caller-installed test tools; they are not linked or shipped.
+- LibreOffice Writer (MPL-2.0; [licensing](https://www.libreoffice.org/about-us/licenses/))
+  captures independent test-only office PDF references using pinned repository fonts.
+  The exact installed build and artifact hashes are recorded for each capture. It is
+  invoked as a separate process and is not linked, redistributed or required by consumers.
 - Aspose.Words and Microsoft Word are optional caller-provisioned, legitimately
   licensed reference tools. No commercial binaries, fonts or license keys are
   included in this repository or the shipped packages.

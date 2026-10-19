@@ -118,7 +118,8 @@
                   "enum": [
                     "word",
                     "aspose",
-                    "raster-golden"
+                    "raster-golden",
+                    "libreoffice"
                   ]
                 },
                 "version": {
@@ -128,7 +129,8 @@
                 "artifactMode": {
                   "enum": [
                     "licensed",
-                    "evaluation"
+                    "evaluation",
+                    "open-source"
                   ]
                 },
                 "inputSha256": {

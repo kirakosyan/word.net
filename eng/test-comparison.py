@@ -91,8 +91,12 @@ class ComparisonTests(unittest.TestCase):
         manifest = json.loads(manifest_bytes)
         self.assertEqual(manifest['generatorSha256'], comparison.digest(comparison.ROOT / manifest['generator']))
         self.assertTrue(all('\\' not in f['path'] for f in manifest['fonts']))
-        self.assertEqual(12, len(manifest['documents']))
-        self.assertEqual(12, len({d['sha256'] for d in manifest['documents']}))
+        self.assertEqual(24, len(manifest['documents']))
+        self.assertEqual(24, len({d['sha256'] for d in manifest['documents']}))
+        extension = [d for d in manifest['documents'] if d.get('cohort') == 'p0-2026-10']
+        self.assertEqual(12, len(extension))
+        for feature in ('mixed-fonts', 'long-tables', 'footnotes', 'continuous-sections', 'floating-logos', 'multi-page-reports'):
+            self.assertEqual(2, sum(d['feature'] == feature for d in extension))
         self.assertEqual({'invoice', 'contract', 'report', 'letterhead'}, {d['category'] for d in manifest['documents']})
         for doc in manifest['documents']:
             self.assertEqual(doc['sha256'], comparison.digest(manifest_path.parent / doc['path']))

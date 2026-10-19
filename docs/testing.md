@@ -1,5 +1,19 @@
 # Conversion tests and qualification
 
+## P0 corpus and automation recipes — local pending PR, 2026-10-19
+
+This working tree, based on `7a09ef6b5d7dfcec8ee9507741b2b78016f14761`, implements #46 and #47 with twelve new corpus cases and ten shared recipe cases. The required suite is now **851** (829 previous + 12 corpus + 10 recipes). This section qualifies local Linux x64 source and local packaging, separate from merged source, public packages and historical platform evidence below.
+
+- Locked restore and all-five-target Release build pass with zero build warnings/errors. API-compatible packaging creates all six package/symbol archives for `wordnet.Fonts`, `wordnet` and `wordnet.Ocr` against the configured public 1.2.0 baseline. Archive inspection verifies all five core assets and the cleaned README.
+- Complete English OCR/conversion suites pass **851/851 on .NET 10.0.12** and **851/851 on .NET 8.0.32**, with zero failures/skips. Pinned English OCR is provisioned in the same PowerShell process that launches both suites. Reports are `artifacts/p0-tests/net10.trx` and `net8.trx`; the machine-readable counter/hash receipt is `artifacts/p0-tests/verification.json`.
+- All 24 corpus inputs pass independent Open XML schema validation, authored required text/order, exact authored pagination and expected diagnostic checks. Apache POI 5.4.1 independently recovers all required text from the 24 editable DOC exports. Five comparison controls pass, including missing-text, extra-page and shifted-glyph negative controls.
+- Twelve genuine LibreOffice 25.2.3.2 references execute under pinned Noto Sans/Liberation fonts. All twelve match page counts and all twelve fail the existing strict office geometry/raster policy. [The ranked report](comparison-p0.md) retains these defects without converter changes or relaxed thresholds. Licensed desktop Word and licensed Aspose are unavailable. CI captures its own exact office build and archives PDFs, snapshots, rasters, references and ranked verdicts in `business-comparison`.
+- The documented recipe command produces the four expected files without the optional native provider. Poppler independently verifies invoice customer/line-item/266.00 total text, report content, one/two-page pagination and refreshed page fields. Shared tests cover editable rows, exact image bytes, empty and 100-item/four-page invoices, required-data and expansion/output limits, cancellation and preservation/replacement of existing files.
+- Formatting verification, generator byte/hash reproducibility, JSON schemas, README/NuGet links, package README equality, actionlint 1.7.12 and diff checks pass. `dotnet format` reports workspace-load warnings for this host but exits successfully with no formatting changes required. RTK was unavailable; the prescribed .NET commands ran directly.
+
+Actual Framework execution, Windows/ARM64 and packed/Standard runtime suites are not local results on this Linux x64 host; they remain the applicable CI lanes. Android/macOS remain deferred and no workload was installed. No package publication, release tag or credentials change is part of this work. Historical sections retain their original counts and exact-artifact boundaries.
+
+
 ## NuGet README rendering patch — 1.2.1 preparation
 
 NuGet disables raw HTML while rendering Markdown. The earlier OS `<img>` tags
