@@ -2,7 +2,7 @@
 
 Issue #46 adds twelve independently authored MIT fixtures to the original twelve-case comparison corpus. Two cases each isolate mixed font families/faces, long tables, footnotes, continuous sections, floating logos and multi-page reports. No converter implementation changes are part of this work.
 
-This is local Linux x64 working-tree evidence based on review candidate `948863bd539e27a3205b86bf1f182ad4449a8f72`, pending PR #83 and separate from published-package qualification. `Comparison/p0-baseline.json` records manifest, input, font, reference PDF and raw report hashes. The generator reproduces all inputs; existing original fixture bytes are unchanged.
+PR [#83](https://github.com/kirakosyan/word.net/pull/83) delivered this corpus as merged commit `6cf54fd2a406880feb18abb1ee495b8c77bcc3e8`. The measurements below are local Linux x64 working-tree evidence captured during its review, based on candidate `948863bd539e27a3205b86bf1f182ad4449a8f72`; they remain separate from merged-commit or published-package qualification. `Comparison/p0-baseline.json` records manifest, input, font, reference PDF and raw report hashes. The generator reproduces all inputs; existing original fixture bytes are unchanged.
 
 ## Independent measurements
 

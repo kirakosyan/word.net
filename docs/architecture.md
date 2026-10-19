@@ -14,6 +14,8 @@ Both ship in package 1.2.0. Bucket 4's HTML/RTF, typography, accessibility, prev
 merged in PR #37 as `44c9e362` and also ships in 1.2.0. [Provider decisions](interoperability-design.md)
 keep managed export offline and native shaping/rasterization explicit.
 
+The P0 adoption work in PR [#83](https://github.com/kirakosyan/word.net/pull/83) adds independently captured reference evidence and executable invoice/report recipes over the existing public API. It changes no engine/provider boundary, public API or target framework. Reference findings identify the measured engine and retain every failed verdict, with wordnet source triage locations only for wordnet results. See [the comparison report](comparison-p0.md) and [recipe guide](../examples/WordNet.Automation/README.md).
+
 ## Pipeline
 
 The [editing/template API](editing-template-design.md) adds serialized `WordDocument`
