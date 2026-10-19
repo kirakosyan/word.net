@@ -53,7 +53,7 @@ internal sealed class PackageArchive : IDisposable
 
     internal XDocument ReadXml(string name) => ParseXml(Read(name), context);
 
-    internal static XDocument ParseXml(byte[] bytes, ConversionContext context)
+    internal static XDocument ParseXml(byte[] bytes, ConversionContext context, Action<XmlReader>? inspect = null)
     {
         var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = context.Options.MaximumCharacters };
         try
@@ -65,6 +65,7 @@ internal sealed class PackageArchive : IDisposable
                 {
                     context.CheckCancellation();
                     if (reader.Depth > context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: XML nesting exceeds the limit.");
+                    inspect?.Invoke(reader);
                 }
             }
             stream.Position = 0;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Xml;
 using WordNet.Internal;
 
 namespace WordNet.Model;
@@ -32,9 +33,9 @@ internal sealed class ObjectPart
 
 internal sealed class ObjectGraph
 {
-    internal ObjectGraph(string root, IEnumerable<ObjectPart> parts, long nestedExpansion)
+    internal ObjectGraph(string root, IEnumerable<ObjectPart> parts, long nestedExpansion, int nestedEntries = 0, long nestedCharacters = 0)
     {
-        Root = root; Parts = parts.ToList().AsReadOnly(); NestedExpansion = nestedExpansion;
+        Root = root; Parts = parts.ToList().AsReadOnly(); NestedExpansion = nestedExpansion; NestedEntries = nestedEntries; NestedCharacters = nestedCharacters;
         if (Parts.Count is < 1 or > 32 || Parts.Select(p => p.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != Parts.Count
             || !Parts.Any(p => p.Name == root)) throw new InvalidDataException("Object.Graph: Invalid admitted part closure.");
         string key = string.Join("\n", Parts.OrderBy(p => p.Name, StringComparer.Ordinal).Select(p => p.Name + ":" + p.ContentType + ":" + p.Hash));
@@ -43,6 +44,8 @@ internal sealed class ObjectGraph
     internal string Root { get; }
     internal IReadOnlyList<ObjectPart> Parts { get; }
     internal long NestedExpansion { get; }
+    internal int NestedEntries { get; }
+    internal long NestedCharacters { get; }
     internal long Bytes => Parts.Sum(p => (long)p.Length);
     internal string Identity { get; }
 }
@@ -81,7 +84,7 @@ internal sealed class ObjectBudget
     private readonly HashSet<string> graphs = new HashSet<string>(StringComparer.Ordinal);
     private int placements;
     internal int Placements => placements;
-    private long points, cells, mathNodes, characters, bytes, renderedCharacters, renderedWork;
+    private long points, cells, mathNodes, characters, bytes, renderedCharacters, renderedWork, nestedEntries, modelEntries, xmlNodes, xmlCharacters;
     internal ObjectBudget(ConversionContext context) { this.context = context; }
     internal void Place(DocumentObjectData item)
     {
@@ -93,8 +96,9 @@ internal sealed class ObjectBudget
             // Shared immutable graphs charge storage once; every placement is still counted.
             if (graphs.Add(item.Graph!.Identity))
             {
-                characters = checked(characters + chart.Title.Length + chart.CategoryTitle.Length + chart.ValueTitle.Length + chart.Categories.Sum(s => (long)s.Length) + chart.Series.Sum(s => (long)s.Name.Length));
+                characters = checked(characters + chart.Title.Length + chart.CategoryTitle.Length + chart.ValueTitle.Length + chart.Categories.Sum(s => (long)s.Length) + chart.Series.Sum(s => (long)s.Name.Length) + item.Graph.NestedCharacters);
                 bytes = checked(bytes + item.Graph.NestedExpansion + (context.DeclaredExpandedBytes.HasValue ? 0 : item.Graph.Bytes));
+                if (!context.ArchiveEntryCount.HasValue) modelEntries = checked(modelEntries + item.Graph.Parts.Count + item.Graph.NestedEntries);
             }
         }
         else
@@ -104,11 +108,32 @@ internal sealed class ObjectBudget
         }
         Finish(0, 0);
     }
-    internal void Workbook(long count, long expansion)
+    internal void Workbook(long count, long expansion, long currentCharacters = 0)
     {
         cells = checked(cells + count);
-        if (cells > 100000 || expansion > context.Options.MaximumExpandedBytes - (context.DeclaredExpandedBytes ?? 0) - bytes)
+        if (cells > 100000 || currentCharacters > context.Options.MaximumCharacters - characters || expansion > context.Options.MaximumExpandedBytes - (context.DeclaredExpandedBytes ?? 0) - bytes)
             throw new InvalidDataException("Object.WorkbookLimit: Nested worksheet data exceeds its operation allowance.");
+    }
+    internal void Archive(int count)
+    {
+        nestedEntries = checked(nestedEntries + count);
+        if (nestedEntries + (context.ArchiveEntryCount ?? 0) > context.Options.MaximumArchiveEntries)
+            throw new InvalidDataException("Object.ArchiveLimit: Outer and nested package entries exceed their shared operation allowance.");
+    }
+    internal (int Nodes, long Characters) ScanXml(XmlReader reader)
+    {
+        context.CheckCancellation(); int count = 0; long text = 0;
+        if (reader.NodeType == XmlNodeType.Element)
+        {
+            count = 1 + reader.AttributeCount; text = reader.Name.Length;
+            if (reader.HasAttributes) { while (reader.MoveToNextAttribute()) text = checked(text + reader.Name.Length + reader.Value.Length); reader.MoveToElement(); }
+        }
+        else if (reader.NodeType is XmlNodeType.Text or XmlNodeType.CDATA or XmlNodeType.Whitespace or XmlNodeType.SignificantWhitespace or XmlNodeType.Comment or XmlNodeType.ProcessingInstruction)
+        { count = 1; text = reader.Value.Length; }
+        xmlNodes = checked(xmlNodes + count); xmlCharacters = checked(xmlCharacters + text);
+        if (xmlCharacters > context.Options.MaximumCharacters || xmlNodes * 64 + xmlCharacters * 2 + bytes + (context.DeclaredExpandedBytes ?? 0) > context.Options.MaximumExpandedBytes)
+            throw new InvalidDataException("Object.XmlLimit: Aggregate object XML exceeds its allowance before tree allocation.");
+        return (count, text);
     }
     internal void Render(long text, long work)
     {
@@ -118,7 +143,7 @@ internal sealed class ObjectBudget
     }
     internal void Finish(long text, long modelBytes)
     {
-        if (points > 100000 || mathNodes > 10000 || characters + text > context.Options.MaximumCharacters
+        if (points > 100000 || mathNodes > 10000 || characters + text > context.Options.MaximumCharacters || !context.ArchiveEntryCount.HasValue && modelEntries + 8 > context.Options.MaximumArchiveEntries
             || bytes + modelBytes + (context.DeclaredExpandedBytes ?? 0) + mathNodes * 128 + characters * 2 > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Object.ResourceLimit: Aggregate object/model resources exceed their allowance.");
     }

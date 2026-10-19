@@ -40,12 +40,13 @@ def run(directory):
         else: raise TimeoutError('Independent office UNO socket was not ready within 20 seconds')
         args = ['java', '-cp', os.pathsep.join(map(str, [tools, jar])), 'EditP2Objects', str(directory / 'objects.docx'),
                 str(directory / 'objects-office-edited.docx'), str(directory / 'objects-office-edited.pdf')]
-        result = subprocess.run(args, check=True, capture_output=True, text=True, timeout=120)
+        result = subprocess.run(args, capture_output=True, text=True, timeout=120)
         (tools / 'edits.log').write_text(result.stdout + result.stderr)
+        print(result.stdout + result.stderr, flush=True)
+        result.check_returncode()
         assert 'Calc cell editor: B2 10.0 -> 42.0' in result.stdout
         assert 'Chart-data editor: first value 10.0 -> 42.0' in result.stdout
         assert 'Equation editor:' in result.stdout and '-> {x} over {3}' in result.stdout
-        print(result.stdout)
     finally:
         office.terminate()
         try: office.wait(timeout=10)

@@ -4,9 +4,9 @@
 
 The pending P2 profile adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).
 
-## Pending P1 implementation
+## Merged P1 implementation
 
-The owner-authorized P1 branch adds immutable explicit column geometry with active-width
+Merged PR #85 adds immutable explicit column geometry with active-width
 text/table/note layout, detached report-data preprocessing and contiguous body repeat
 regions. An independent ODF package layer and managed adapter enable only DOCX ↔ ODT;
 ODT remains outside document-session loading/saving. See [ODT](odt.md),
@@ -15,8 +15,8 @@ ODT remains outside document-session loading/saving. See [ODT](odt.md),
 ReviewStore retains admitted plain-text revisions and classic comment intervals.
 Session/version handles, clone-before-commit decisions/recording and explicit detached
 views prevent implicit review decisions. Pinned Unicode 17 tables support grapheme
-validation and bounded matching-structure comparison. These features are pending and
-unpublished; object/protection stages remain deferred. No runtime dependency is added.
+validation and bounded matching-structure comparison. These features are merged and
+unpublished; P2 objects remain under review and cryptographic features are cancelled. No runtime dependency is added.
 
 The merged bucket 4 profile extends the earlier 30 directions to 36 with HTML input and RTF exchanges.
 See [interoperability profiles](interoperability.md) for the supported 1.2.0 subset.

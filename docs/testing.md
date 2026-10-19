@@ -2,7 +2,7 @@
 
 ## Pending P2 qualification
 
-The required suite is **1,014** cases: the 957-case P1 head plus 57 P2 cases.
+The required suite is **1,016** cases: the 957-case P1 head plus 59 P2 cases.
 P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
 operations, managed chart/math geometry, native bidi/Hindi and native tagged/UA
 regressions. The two UAX #9 cases execute all **91,707** character cases and
@@ -20,7 +20,17 @@ Final exact-head source/package/runtime checks are recorded on the P2 PR; histor
 P1 qualification below remains separate. No new platform or package publication
 is implied by these source changes.
 
-## Pending P1 qualification
+## Merged P1 qualification — PR #85, 2026-10-19
+
+PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged as
+`73f935732a788c69a934edfa5d71f42635e02031`. Its tree is identical to reviewed
+head `d733a755663d776c4fa119ef18e599f3f3559b78`; all fifteen review threads are
+resolved. Final-head [CI 39313440331](https://github.com/kirakosyan/word.net/actions/runs/39313440331)
+and [Android compilation 39313440362](https://github.com/kirakosyan/word.net/actions/runs/39313440362)
+passed. All five desktop source/performance jobs, four packed jobs and both actual
+Framework 4.7.2 source/package jobs passed. Six complete local Linux x64 runs
+(source, packed and explicit Standard on .NET 8/10) each passed **957/957** with
+zero failures/skips. These are merged-source checks, not package publication.
 
 The P1 head required **957** cases (855 baseline plus 102 P1 cases, including review regressions).
 The P1 branch adds independent OOXML/ODF fixtures and regressions for unequal-column
@@ -41,7 +51,7 @@ Final PR-head source/package results are recorded on the PR. Local runtime execu
 is Linux x64 on .NET 8/10; Framework is not run on Linux. Other supported native and
 actual Framework guest qualification belongs to the corresponding CI lanes.
 Compilation alone does not qualify those runtimes. Historical results below are
-separate from this pending implementation.
+separate from this merged implementation.
 
 ## P0 merged delivery — PR #83, 2026-10-19
 

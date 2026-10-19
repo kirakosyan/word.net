@@ -4,7 +4,7 @@
 
 Pending P2 diagnostics include `Object.*` graph/owner/combination/editable-output losses, `Chart.*` cache/range/appearance/label-fit failures, `Equation.*` OMML/MATH/font/geometry limits, `Typography.Bidi*` balanced-control and resource checks, and `Pdf.NativeLanguage` for unsupported native language metadata. Malformed graphs, unsupported render constructions and UA combination failures remain hard errors in Lenient mode. See [P2 contracts](p2-objects-typography.md).
 
-## Pending P1 diagnostics
+## Merged P1 diagnostics
 
 Report preprocessing rejects invalid paths/types/cycles, arithmetic failures and
 row/group/key/node/depth/work/resource exhaustion with content-free `Report.*`

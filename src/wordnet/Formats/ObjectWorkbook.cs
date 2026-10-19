@@ -18,25 +18,30 @@ internal sealed class ObjectWorkbook
     private readonly Dictionary<(int Column, int Row), object?> values = new Dictionary<(int, int), object?>();
     internal string Sheet { get; private set; } = "";
     internal long Expansion { get; private set; }
+    internal int Entries { get; private set; }
+    internal long Characters { get; private set; }
     private static InvalidDataException Invalid(string part) => new InvalidDataException("Chart.Workbook" + part + ": Unsupported or invalid plain-value workbook.");
     internal static ObjectWorkbook Read(byte[] bytes, ConversionContext context)
     {
         var nested = new ConversionContext(context.Options, context.CancellationToken);
         using var stream = new MemoryStream(bytes, false); using var package = new DocxPackage(stream, nested);
+        int entryCount = nested.ArchiveEntryCount ?? throw Invalid("Entries"); context.Objects.Archive(entryCount);
         long expansion = nested.DeclaredExpandedBytes ?? throw Invalid("Size"); context.Objects.Workbook(0, expansion);
         if (package.PartNames.Count() > 32 || package.PartNames.Distinct(StringComparer.OrdinalIgnoreCase).Count() != package.PartNames.Count()) throw Invalid("Parts");
         var documents = new Dictionary<string, XDocument>(StringComparer.Ordinal); long characters = 0, nodes = 0;
+        void Inspect(System.Xml.XmlReader reader)
+        {
+            var cost = context.Objects.ScanXml(reader); nodes = checked(nodes + cost.Nodes); characters = checked(characters + cost.Characters);
+            context.Objects.Workbook(0, checked(expansion + nodes * 64 + characters * 2), characters);
+        }
         foreach (string part in package.PartNames)
         {
             context.CheckCancellation();
             if (!part.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) && !part.EndsWith(".rels", StringComparison.OrdinalIgnoreCase)) throw Invalid("PartType");
-            byte[] data = package.ReadBytes(part); XDocument xml = PackageArchive.ParseXml(data, context); documents.Add(part, xml);
+            byte[] data = package.ReadBytes(part); XDocument xml = PackageArchive.ParseXml(data, context, Inspect); documents.Add(part, xml);
             foreach (XElement element in xml.Descendants())
             {
-                context.CheckCancellation(); nodes++; characters = checked(characters + element.Attributes().Sum(a => (long)a.Value.Length));
-                foreach (XText text in element.Nodes().OfType<XText>()) characters = checked(characters + text.Value.Length);
-                if (characters > context.Options.MaximumCharacters) throw Invalid("ResourceLimit");
-                context.Objects.Workbook(0, checked(expansion + nodes * 64 + characters * 2));
+                context.CheckCancellation();
                 if (element.Name.Namespace == S && element.Name.LocalName is "f" or "definedNames" or "externalReferences" or "connections" or "oleObjects" or "extLst"
                     || (string?)element.Attribute("hidden") is string hidden && hidden is not "0" and not "false") throw Invalid("ActiveContent");
             }
@@ -93,7 +98,7 @@ internal sealed class ObjectWorkbook
         XDocument book = documents[workbook]; if (book.Root?.Name != S + "workbook") throw Invalid("Root");
         XElement[] sheets = book.Root.Element(S + "sheets")?.Elements(S + "sheet").ToArray() ?? Array.Empty<XElement>();
         if (sheets.Length != 1 || (string?)sheets[0].Attribute("state") is string state && state != "visible") throw Invalid("SheetCount");
-        var result = new ObjectWorkbook { Sheet = DocxPackage.RequiredAttribute(sheets[0], "name"), Expansion = expansion };
+        var result = new ObjectWorkbook { Sheet = DocxPackage.RequiredAttribute(sheets[0], "name"), Expansion = expansion, Entries = entryCount };
         ObjectText.Check(result.Sheet, "sheet", 31);
         Dictionary<string, XElement> relations = Relations(workbook);
         if (relations.Values.Count(r => (string?)r.Attribute("Type") == DocxPackage.DocumentRelationships.NamespaceName + "/worksheet") != 1
@@ -165,7 +170,7 @@ internal sealed class ObjectWorkbook
             result.values.Add(coordinate, admitted);
         }
         result.Expansion = checked(expansion + nodes * 64 + characters * 2);
-        context.Objects.Workbook(result.values.Count, result.Expansion); return result;
+        result.Characters = characters; context.Objects.Workbook(result.values.Count, result.Expansion, characters); return result;
     }
     internal object?[] Range(string formula)
     {

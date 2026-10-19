@@ -20,6 +20,8 @@ internal static class ChartObjectFormat
     internal static ObjectGraph Create(ChartDefinition definition, ConversionContext context)
     {
         context.CheckCancellation();
+        long repeatedLabels = definition.Categories.Sum(s => (long)s.Length) * definition.Series.Count + definition.Series.Sum(s => (long)s.Name.Length) + definition.Title.Length;
+        if (repeatedLabels > context.Options.MaximumCharacters) throw Invalid("XmlTextLimit");
         XElement V(string name, object value) => new XElement(C + name, new XAttribute("val", value));
         XElement Title(string text) => new XElement(C + "title", new XElement(C + "tx", new XElement(C + "rich", new XElement(A + "bodyPr"), new XElement(A + "lstStyle"),
             new XElement(A + "p", new XElement(A + "r", new XElement(A + "t", text))))));
@@ -63,9 +65,11 @@ internal static class ChartObjectFormat
         _ = Parse(root, admitted, context);
         XElement rels = new XElement(DocxPackage.Relationships + "Relationships", new XElement(DocxPackage.Relationships + "Relationship",
             new XAttribute("Id", "data"), new XAttribute("Type", R.NamespaceName + "/package"), new XAttribute("Target", "../embeddings/data.xlsx")));
-        return new ObjectGraph(name, new[] { new ObjectPart(name, ChartType, TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting))),
+        byte[] chartXml = TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting));
+        _ = PackageArchive.ParseXml(chartXml, context, reader => { _ = context.Objects.ScanXml(reader); });
+        return new ObjectGraph(name, new[] { new ObjectPart(name, ChartType, chartXml),
             new ObjectPart(DocxPackage.RelationshipPartName(name), "application/vnd.openxmlformats-package.relationships+xml", TextFormat.Utf8.GetBytes(rels.ToString(SaveOptions.DisableFormatting))),
-            new ObjectPart(book, WorkbookType, workbook) }, admitted.Expansion);
+            new ObjectPart(book, WorkbookType, workbook) }, admitted.Expansion, admitted.Entries, admitted.Characters);
     }
     private static InvalidDataException Invalid(string code) => new InvalidDataException("Chart." + code + ": Invalid or unsupported chart graph/data.");
     internal static string Resolve(string owner, XElement relation)
@@ -116,7 +120,7 @@ internal static class ChartObjectFormat
             { DocumentImage image = DocumentImage.Read(bytes, null, null, "", context); if (image.MediaType != expected) throw Invalid("ImageType"); }
             else
             {
-                XDocument xml = PackageArchive.ParseXml(bytes, context); documents.Add(name, xml);
+                XDocument xml = PackageArchive.ParseXml(bytes, context, reader => { _ = context.Objects.ScanXml(reader); }); documents.Add(name, xml);
                 if (expected == ChartType && xml.Root?.Name != C + "chartSpace") throw Invalid("Root");
                 XNamespace style = "http://schemas.microsoft.com/office/drawing/2012/chartStyle";
                 if (expected == "application/vnd.ms-office.chartstyle+xml" && xml.Root?.Name != style + "chartStyle"
@@ -127,7 +131,7 @@ internal static class ChartObjectFormat
             if (package.Contains(relName))
             {
                 if (expected == WorkbookType || expected is "image/png" or "image/jpeg") throw Invalid("Owner");
-                byte[] data = package.ReadBytes(relName); XDocument rels = PackageArchive.ParseXml(data, context);
+                byte[] data = package.ReadBytes(relName); XDocument rels = PackageArchive.ParseXml(data, context, reader => { _ = context.Objects.ScanXml(reader); });
                 if (rels.Root?.Name != DocxPackage.Relationships + "Relationships" || rels.Root.Elements().Take(33).Count() > 32) throw Invalid("Relationships");
                 Add(relName, "application/vnd.openxmlformats-package.relationships+xml", data);
                 foreach (XElement relation in rels.Root.Elements())
@@ -161,7 +165,7 @@ internal static class ChartObjectFormat
         }
         var parsed = Parse(space, workbook, context);
         bool simpleParts = parts.Values.All(p => p.ContentType is ChartType or WorkbookType or "application/vnd.openxmlformats-package.relationships+xml");
-        return (parsed.Definition, new ObjectGraph(root, parts.Values, workbook?.Expansion ?? 0), parsed.Renderable && simpleParts);
+        return (parsed.Definition, new ObjectGraph(root, parts.Values, workbook?.Expansion ?? 0, workbook?.Entries ?? 0, workbook?.Characters ?? 0), parsed.Renderable && simpleParts);
     }
     private static (ChartDefinition Definition, bool Renderable) Parse(XElement root, ObjectWorkbook? workbook, ConversionContext context)
     {

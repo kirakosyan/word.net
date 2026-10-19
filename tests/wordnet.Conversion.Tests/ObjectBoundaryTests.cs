@@ -14,6 +14,28 @@ namespace WordNet.Tests;
 public sealed partial class ObjectFoundationTests
 {
     [Fact]
+    public void NestedWorkbookEntriesShareTheOuterArchiveAllowance()
+    {
+        byte[] source = Input(); int outer, inner;
+        using (var stream = new MemoryStream(source)) using (var zip = new System.IO.Compression.ZipArchive(stream)) outer = zip.Entries.Count;
+        using (var stream = new MemoryStream(PartBytes(source, "word/embeddings/data.xlsx"))) using (var zip = new System.IO.Compression.ZipArchive(stream)) inner = zip.Entries.Count;
+        _ = Read(source, Context(new ConversionOptions(maximumArchiveEntries: outer + inner)));
+        var error = Assert.Throws<InvalidDataException>(() => Read(source, Context(new ConversionOptions(maximumArchiveEntries: outer + inner - 1))));
+        Assert.StartsWith("Object.ArchiveLimit", error.Message, StringComparison.Ordinal);
+    }
+    [Fact]
+    public void ObjectXmlAndRepeatedLabelCostsAreCheckedBeforeModelCommit()
+    {
+        var c = Context(new ConversionOptions(maximumExpandedBytes: 4096));
+        byte[] xml = Encoding.UTF8.GetBytes("<root>" + string.Concat(Enumerable.Repeat("<item/>", 100)) + "</root>");
+        var error = Assert.Throws<InvalidDataException>(() => PackageArchive.ParseXml(xml, c, reader => { _ = c.Objects.ScanXml(reader); }));
+        Assert.StartsWith("Object.XmlLimit", error.Message, StringComparison.Ordinal);
+        var doc = WordDocument.Create(new ConversionOptions(maximumCharacters: 1000)); doc.AddParagraph("Before", cancellationToken: TestContext.Current.CancellationToken);
+        var definition = new ChartDefinition(ChartKind.Line, new[] { new string('a', 600) }, new[] { new ChartSeries("A", "2468AC", new double?[] { 1 }), new ChartSeries("B", "C03040", new double?[] { 2 }) });
+        Assert.Throws<InvalidDataException>(() => doc.AddChart(definition, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Empty(doc.Objects); Assert.Equal("Before", Assert.Single(doc.Paragraphs).Text);
+    }
+    [Fact]
     public void UnsupportedChartWrapperEffectsAndLinksFailInsteadOfBeingDiscarded()
     {
         XNamespace wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";

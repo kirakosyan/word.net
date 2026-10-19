@@ -34,9 +34,9 @@ dotnet add package wordnet.Ocr
 This provider also supplies PNG previews and optional native typography. English OCR additionally requires a local Tesseract 5 library and `eng.traineddata`.
 See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md) and [deployment requirements](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md).
 
-## P1 implementation under review
+## P1 additions in merged source
 
-This branch adds unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions are pending PR review and are not in published packages. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; ODT is limited to the two DOCX exchanges.
+PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions are not in published packages. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; ODT is limited to the two DOCX exchanges.
 
 ## P2 implementation under review
 
@@ -46,7 +46,7 @@ qualified ordinary PDF/UA-1 profile. Math needs an explicit caller MATH font; na
 text needs the optional provider and suitable caller fonts. Objects and native/UA
 output have separate combination limits. See the [P2 profile](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md)
 and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/p2-capability-matrix.json).
-These changes remain unpublished and depend on the pending P1 PR.
+These changes remain under review in [PR #86](https://github.com/kirakosyan/word.net/pull/86), based on merged P1 source, and are unpublished.
 
 ## Quick start
 
@@ -118,7 +118,7 @@ Each earlier bidirectional exchange below works with both DOC and DOCX. ODT is l
 | EPUB ↔ Word | EPUB package/spine reading and EPUB 3 writing with the supported XHTML/CSS/image subset |
 | MOBI / AZW3 ↔ Word | Unencrypted MOBI 6 and standalone KF8 profiles; no DRM or hybrid containers |
 | Word → XPS | Positioned text, embedded fonts, raster images and shared fixed-page layout |
-| DOCX ↔ ODT (pending P1) | Bounded ODF 1.3 text/styles/lists/masters/tables/inline PNG/JPEG; explicit feature/style losses |
+| DOCX ↔ ODT (merged source) | Bounded ODF 1.3 text/styles/lists/masters/tables/inline PNG/JPEG; explicit feature/style losses |
 
 The shared layout profile includes section geometry, wrapping and pagination, table widths/merges/repeated headers, bounded drawings, notes and page fields. Optional profiles cover Arabic typography, semantic PDF/UA and previews. These capabilities have specific combination and fidelity limits.
 

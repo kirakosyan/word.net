@@ -65,9 +65,10 @@ internal sealed partial class DocxWriter
     private static void ObjectOutputBudget(DocumentModel document, ConversionContext context)
     {
         if (document.ObjectCount == 0) return;
-        long parts = document.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Object?.Chart != null).Sum(r => (long)r.Object!.Graph!.Parts.Count);
-        parts += document.Paragraphs.SelectMany(p => p.Runs).LongCount(r => r.Image != null) + document.Notes.Count;
-        parts += document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }).Where(s => s != null).Distinct().Sum(s => s!.Stories.Count);
+        long parts = document.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Object?.Chart != null).Sum(r => (long)r.Object!.Graph!.Parts.Count + r.Object!.Graph!.NestedEntries);
+        parts += document.Paragraphs.SelectMany(p => p.Runs).LongCount(r => r.Image != null) + document.Notes.Count * 2L;
+        parts += document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }).Where(s => s != null).Distinct().Sum(s => s!.Stories.Count * 2L);
+        if (document.Review.Comments.Count > 0) parts += 3;
         if (parts + 8 > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Object.PartLimit: Serialized objects and document parts exceed the archive-entry allowance.");
     }
 }
