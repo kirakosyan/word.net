@@ -1,15 +1,14 @@
 # wordnet implementation and delivery status
 
-## P0 adoption work — pending pull request, 2026-10-19
+## P0 adoption delivery — merged PR #83, 2026-10-19
 
-This branch implements [#46](https://github.com/kirakosyan/word.net/issues/46) and [#47](https://github.com/kirakosyan/word.net/issues/47) from roadmap [#45](https://github.com/kirakosyan/word.net/issues/45). It adds twelve independently authored reference fixtures to the existing corpus, an independent LibreOffice capture path and ranked defect reports, plus executable invoice/report recipes and shared regression tests. No converter algorithm, template syntax, public API, dependency version, target framework or publishing policy changes.
+PR [#83](https://github.com/kirakosyan/word.net/pull/83) merged as `6cf54fd2a406880feb18abb1ee495b8c77bcc3e8`; its tree matches reviewed head `e8e6cbfada0f261d3153934f730ec3b3f42be870`. All fifteen review threads were answered and resolved and all final-head push/PR checks passed. Issues [#46](https://github.com/kirakosyan/word.net/issues/46) and [#47](https://github.com/kirakosyan/word.net/issues/47) are complete and closed; roadmap [#45](https://github.com/kirakosyan/word.net/issues/45) retains the remaining unassigned work, beginning with #48. The broader #46–#52 adoption checkpoint is still incomplete; no P1 task is started by this reconciliation.
 
-The [P0 comparison report](comparison-p0.md) records authored checks separately from measured office fidelity. Office differences remain visible under unchanged tolerances; licensed desktop Word/Aspose captures remain unavailable. The recipes use caller-calculated decimal totals, existing repeat/if controls and file staging. The README now presents installation, usage and bounded support without historical prerelease wording.
+The existing corpus now has 24 independently authored fixtures, including twelve new business cases. Linux-only office capture pins fonts and records real references separately from authored expectations. Ranked findings retain every failed document/engine verdict; the [comparison report](comparison-p0.md) records twelve strict-policy differences without relaxing tolerances or changing the converter. The section-transition fixture now changes one column to two, and reference page-size unit rounding is identified explicitly. Licensed desktop Word/Aspose remain unavailable.
 
-The PR #83 review follow-up corrects line rounding, staged cleanup, cumulative logging, one-to-two-column fixture semantics and reference unit-rounding attribution. Four new recipe regressions raise the required suite to 855; thirteen Python tests cover capture guards, manifests, cohort partitioning, engine attribution and complete defect retention. CI pins its Ubuntu office writer/core packages.
+The invoice/report recipes use the existing public API, caller images and repeat/if controls. Application code rounds line amounts before summing; logs explicitly describe cumulative diagnostics. Staging/cancellation/cleanup and real replacement are independently tested. The required conversion/OCR suite is **855**, including fourteen recipe cases; thirteen Python tests cover comparison/capture contracts. [Testing evidence](testing.md) identifies the exact source/package/runtime checks and their limits.
 
-This is pending source work, not merged or published functionality. Qualification is local Linux x64 unless an exact PR/CI artifact is explicitly identified; historical release evidence below retains its original scope. After merge, verify the final checks and reconcile #46, #47 and #45 with the retained artifacts. Do not close or promote unqualified platform or Word-fidelity claims.
-
+This is merged source, separate from published packages. No new engine API, dependency version, target framework, platform claim, release tag or NuGet publication is added. The older presentation-patch and release descriptions below retain their dated evidence; the concise README delivered in #83 supersedes their earlier header layout.
 
 The 1.2.1 presentation patch replaces the README's HTML-sized OS icons with six
 consistent Markdown badges, including readable Windows/Linux x64/ARM64 labels.
@@ -94,10 +93,11 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Remaining work
 
 1. Preserve the [verified 1.2.0 release evidence](release-1.2.0-readiness.md).
-   All three packages are published and publicly verified. Next select a separately
-   scoped bounded follow-up from bucket 5's
-   [merged design slices](later-design-decisions.md). ODT is the recommended next candidate; deferred
-   review/encryption/object implementation needs a separate explicit scope decision.
+   All three packages are published and publicly verified. The next unassigned
+   follow-up is #48 from [roadmap #45](https://github.com/kirakosyan/word.net/issues/45);
+   further work requires owner assignment. The bucket 5
+   [merged design slices](later-design-decisions.md) remain bounded by their
+   individual implementation and policy gates.
    [Bucket 4 limits](interoperability.md) remain explicit: native
    typography/UA combinations, complex table semantics and approximate reconstruction.
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
