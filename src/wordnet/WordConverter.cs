@@ -22,6 +22,9 @@ public sealed partial class WordConverter : IDocumentConverter
 {
     /// <inheritdoc />
     public bool CanConvert(DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
+        sourceFormat == DocumentFormat.Odt || destinationFormat == DocumentFormat.Odt
+        ? sourceFormat == DocumentFormat.Docx && destinationFormat == DocumentFormat.Odt || sourceFormat == DocumentFormat.Odt && destinationFormat == DocumentFormat.Docx
+        :
         sourceFormat != destinationFormat &&
         ((IsWord(sourceFormat) && (IsReadable(destinationFormat) || destinationFormat is DocumentFormat.Xps or DocumentFormat.Html))
         || (IsWord(destinationFormat) && IsReadable(sourceFormat)));
@@ -186,6 +189,7 @@ public sealed partial class WordConverter : IDocumentConverter
         else if (to == DocumentFormat.Pdf) PdfFormat.Write(document, output, context);
         else if (to == DocumentFormat.Html) HtmlFormat.Write(document, output, context);
         else if (to == DocumentFormat.Rtf) RtfFormat.Write(document, output, context);
+        else if (to == DocumentFormat.Odt) OdtFormat.Write(document, output, context);
         else if (to == DocumentFormat.Xps) XpsFormat.Write(document, output, context);
         else if (to is DocumentFormat.Mobi or DocumentFormat.Azw3) KindleFormat.Write(document, output, to == DocumentFormat.Azw3, context);
         else
@@ -212,6 +216,7 @@ public sealed partial class WordConverter : IDocumentConverter
         else if (from == DocumentFormat.Epub) document = EpubFormat.Read(input, context);
         else if (from == DocumentFormat.Html) document = HtmlInput.Read(input.ToArray(), context);
         else if (from == DocumentFormat.Rtf) document = RtfFormat.Read(input.ToArray(), context);
+        else if (from == DocumentFormat.Odt) document = OdtFormat.Read(input, context);
         else if (from == DocumentFormat.Pdf) document = PdfImportBridge.Read(input, context);
         else if (from is DocumentFormat.Mobi or DocumentFormat.Azw3) document = KindleFormat.Read(input, from == DocumentFormat.Azw3, context);
         else

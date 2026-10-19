@@ -144,3 +144,12 @@ notice/license and SHA-256 provenance accompany the fixture. It is not embedded 
 production packages. LibreOffice, ReportLab, PyMuPDF/MuPDF, FontTools, uharfbuzz,
 FriBidi and veraPDF are optional external qualification tools, not runtime dependencies.
 No proprietary reference data or code was added. Existing native provider licenses apply.
+## Unicode boundary data
+
+The generated Unicode 17.0.0 word/grapheme, Indic conjunct and extended-pictographic
+tables derive from the Unicode Character Database. Copyright © 2025 Unicode, Inc.
+They are used under Unicode License V3 (Unicode-3.0). The unmodified license is
+included in packages as `licenses/Unicode-3.0.txt`. Generator inputs and SHA-256 pins
+are recorded in `tests/wordnet.Conversion.Tests/Fixtures/Unicode17/manifest.json`;
+the official conformance files retain their original notices. These tables do not
+add a shaping engine or language-specific dictionary segmentation.

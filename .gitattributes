@@ -16,9 +16,17 @@
 *.mobi binary
 *.azw3 binary
 *.xps binary
+*.odt binary
 *.png binary
 *.tif binary
 
 # Keep the reproducible corpus generator hash stable on Windows and Unix.
 eng/generate-comparison-corpus.py text eol=lf
 eng/generate-automation-templates.py text eol=lf
+eng/generate-odt-fixtures.py text eol=lf
+eng/generate-p1-templates.py text eol=lf
+eng/generate-unicode-tables.py text eol=lf
+
+# Preserve byte-identical official Unicode conformance data, including its comments.
+tests/wordnet.Conversion.Tests/Fixtures/Unicode17/*BreakTest.txt whitespace=-blank-at-eol
+tests/wordnet.Conversion.Tests/Fixtures/Unicode17/LICENSE text eol=lf

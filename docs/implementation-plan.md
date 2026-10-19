@@ -1,5 +1,19 @@
 # wordnet implementation and delivery status
 
+## Pending P1 delivery — issues #48–#63
+
+The owner requested all sixteen P1 leaf issues from roadmap #45. This branch implements
+columns (#48), bounded reporting/body repeats (#49–#52), ODF package/mapping/exchange
+(#53–#57), and review identity/preservation/decisions/recording/Unicode/comparison
+(#58–#63), following their hard dependencies. It is pending PR review and unpublished;
+no issue is closed or package released by this source change.
+
+Concrete profiles are in [report preprocessing](report-preprocessing.md), [ODT](odt.md)
+and [review workflows](review-workflows.md). Qualification and platform limits are in
+[testing](testing.md). After a later merge, reconcile each leaf and roadmap #45 using
+exact final-head checks; keep any unmet acceptance gate open. Historical evidence
+below remains tied to its original revisions.
+
 ## P0 adoption delivery — merged PR #83, 2026-10-19
 
 PR [#83](https://github.com/kirakosyan/word.net/pull/83) merged as `6cf54fd2a406880feb18abb1ee495b8c77bcc3e8`; its tree matches reviewed head `e8e6cbfada0f261d3153934f730ec3b3f42be870`. All fifteen review threads were answered and resolved and all final-head push/PR checks passed. Issues [#46](https://github.com/kirakosyan/word.net/issues/46) and [#47](https://github.com/kirakosyan/word.net/issues/47) are complete and closed; roadmap [#45](https://github.com/kirakosyan/word.net/issues/45) retains the remaining unassigned work, beginning with #48. The broader #46–#52 adoption checkpoint is still incomplete; no P1 task is started by this reconciliation.

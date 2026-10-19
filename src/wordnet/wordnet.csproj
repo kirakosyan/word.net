@@ -45,6 +45,7 @@
     <None Include="../../README.md" Pack="true" PackagePath="/" />
     <None Include="../../LICENSE" Pack="true" PackagePath="/" />
     <None Include="../../THIRD_PARTY_NOTICES.md" Pack="true" PackagePath="/" />
+    <None Include="../../tests/wordnet.Conversion.Tests/Fixtures/Unicode17/LICENSE" Pack="true" PackagePath="licenses/Unicode-3.0.txt" />
   </ItemGroup>
   <!-- Resolve the previous release's internal native-provider references for API
        comparison only. They are restored by the OCR/test projects, never core deps. -->

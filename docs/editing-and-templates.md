@@ -1,5 +1,24 @@
 # Creating, editing and filling documents
 
+## Pending P1 report and review additions
+
+[ReportData](report-preprocessing.md) produces deeply read-only ordinary merge values
+from grouping/sorting/aggregates, checked decimal expressions and typed predicates.
+Existing Merge/MergeJson syntax and missing-value behavior remain.
+
+A body `repeat:Path` control may contain contiguous paragraphs/list items in one
+section. Expansion preserves order/appearance and remaps closed bookmarks, numbering
+and notes. Item scope precedes root scope; an empty collection removes the region.
+Generated body blocks and table rows share MaximumRows; character/byte/depth limits
+still apply before commit. Cross-region bookmarks, positioned objects, section
+changes and overlapping nested block controls reject execution. Malformed repeat
+regions cannot be serialized into executable partial controls. Single-row repeats
+retain their existing behavior.
+
+[Review APIs](review-workflows.md) are separate from ordinary Replace/Merge operations.
+Only explicitly recorded replacements create history. Retained history protects
+ordinary edits/templates until resolved; append remaps supported history.
+
 `WordDocument` provides the bounded editing/template profile for roadmap #32,
 bucket 3 (#11–#15). It keeps the existing converter API and five framework assets.
 It adds no runtime dependency and uses the same managed offline DOCX/PDF writers.

@@ -81,6 +81,7 @@ internal sealed partial class DocxWriter
             new XAttribute(XNamespace.Xmlns + "r", DocxPackage.DocumentRelationships.NamespaceName), body));
 
         writer.WriteStories(document, archive, types);
+        writer.WriteReview(archive, types);
         if (writer.usedStyles.Count > 0)
         {
             types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/styles.xml"),
@@ -142,6 +143,7 @@ internal sealed partial class DocxWriter
 
         TemplateControl? currentControl = null;
         XElement parent = element;
+        string? currentRevision = null; XElement? revisionParent = null;
         foreach (TextRun run in paragraph.Runs)
         {
             context.CheckCancellation();
@@ -154,6 +156,16 @@ internal sealed partial class DocxWriter
                 }
             }
             XElement runElement = Run(run);
+            if (run.Revision != currentRevision)
+            {
+                currentRevision = run.Revision; revisionParent = null;
+                if (currentRevision != null) { revisionParent = Revision(currentRevision); parent.Add(revisionParent); }
+            }
+            if (revisionParent != null)
+            {
+                if (model.Review.Revisions[run.Revision!].Deletion) foreach (XElement text in runElement.Descendants(W + "t")) text.Name = W + "delText";
+                revisionParent.Add(runElement); continue;
+            }
             if (run.Link == null)
             {
                 parent.Add(runElement);
@@ -174,6 +186,12 @@ internal sealed partial class DocxWriter
 
     private XElement Run(TextRun run)
     {
+        if (run.Comment != null)
+        {
+            int id = ReviewId(commentIds, run.Comment);
+            var marker = new XElement(W + (run.CommentBoundary == 1 ? "commentRangeStart" : run.CommentBoundary == 2 ? "commentRangeEnd" : "commentReference"), new XAttribute(W + "id", id));
+            return run.CommentBoundary == 3 ? new XElement(W + "r", marker) : marker;
+        }
         if (run.Bookmark != null)
         {
             bool end = (run.Bookmark.Length > 0 && run.Bookmark[0] == '/'); string name = end ? run.Bookmark.Substring(1) : run.Bookmark;
@@ -339,8 +357,12 @@ internal sealed partial class DocxWriter
         }
         if (first != null) yield return (first, last!, group!);
     }
-    private static XElement Control(TemplateControl control, XElement? content) => new XElement(W + "sdt",
-        new XElement(W + "sdtPr", new XElement(W + "tag", new XAttribute(W + "val", control.Tag))), new XElement(W + "sdtContent", content));
+    private static XElement Control(TemplateControl control, XElement? content)
+    {
+        if (!control.Executable) throw new NotSupportedException("Template.ControlStructure: An invalid region cannot be serialized as an executable control.");
+        return new XElement(W + "sdt",
+            new XElement(W + "sdtPr", new XElement(W + "tag", new XAttribute(W + "val", control.Tag))), new XElement(W + "sdtContent", content));
+    }
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
     private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));

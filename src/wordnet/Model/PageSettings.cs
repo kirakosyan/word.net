@@ -21,11 +21,23 @@ internal sealed class PageSettings
     internal string BreakType { get; set; } = "nextPage";
     internal int Columns { get; set; } = 1;
     internal double ColumnGap { get; set; } = 36;
+    internal List<BodyColumn> ExplicitColumns { get; private set; } = new List<BodyColumn>();
     internal int? PageNumberStart { get; set; }
     internal string PageNumberFormat { get; set; } = "decimal";
     internal NotePolicy Footnotes { get; set; } = new NotePolicy();
     internal NotePolicy Endnotes { get; set; } = new NotePolicy();
-    internal PageSettings Copy() => (PageSettings)MemberwiseClone();
+    internal PageSettings Copy()
+    {
+        var copy = (PageSettings)MemberwiseClone(); copy.ExplicitColumns = new List<BodyColumn>(ExplicitColumns); return copy;
+    }
+    internal double ColumnWidth(int index) => ExplicitColumns.Count == 0
+        ? (Width - Left - Right - (Columns - 1) * ColumnGap) / Columns : ExplicitColumns[index].Width;
+    internal double ColumnLeft(int index)
+    {
+        double left = Left;
+        for (int i = 0; i < index; i++) left += ColumnWidth(i) + (ExplicitColumns.Count == 0 ? ColumnGap : ExplicitColumns[i].Gap);
+        return left;
+    }
     internal PageSettings EditingCopy()
     {
         var copy = Copy(); copy.Stories = new Dictionary<string, List<DocumentBlock>>(StringComparer.Ordinal); return copy;
@@ -33,15 +45,36 @@ internal sealed class PageSettings
 
     internal void Validate()
     {
-        if (Columns < 1 || Columns > 3 || ColumnGap < 0 || (Width - Left - Right - (Columns - 1) * ColumnGap) / Columns <= 0)
+        if (Columns < 1 || Columns > 3 || ColumnGap < 0 || double.IsNaN(ColumnGap) || double.IsInfinity(ColumnGap)
+            || ExplicitColumns.Count == 0 && (Width - Left - Right - (Columns - 1) * ColumnGap) / Columns <= 0)
             throw new InvalidDataException("Layout.Columns: Columns must leave positive text width.");
         if (!Dimension(Width) || !Dimension(Height) || !Margin(Left) || !Margin(Right)
             || !Margin(Top) || !Margin(Bottom) || Left + Right >= Width || Top + Bottom >= Height)
             throw new InvalidDataException("Layout.PageGeometry: Page dimensions and margins must leave positive content space within the 22-inch profile.");
+        if (ExplicitColumns.Count != 0)
+        {
+            if (ExplicitColumns.Count != Columns) throw new InvalidDataException("Layout.Columns: Explicit column count does not match geometry.");
+            double total = 0;
+            for (int i = 0; i < ExplicitColumns.Count; i++)
+            {
+                BodyColumn column = ExplicitColumns[i];
+                if (!Dimension(column.Width) || !Margin(column.Gap)) throw new InvalidDataException("Layout.Columns: Invalid explicit width or spacing.");
+                total += column.Width + (i + 1 < Columns ? column.Gap : 0);
+            }
+            if (System.Math.Abs(total - (Width - Left - Right)) > 0.1)
+                throw new InvalidDataException("Layout.Columns: Explicit columns must fill the body area within two twips.");
+        }
     }
 
     private static bool Dimension(double value) => value > 0 && value <= 1584 && !double.IsNaN(value);
     private static bool Margin(double value) => value >= 0 && value <= 1584 && !double.IsNaN(value);
+}
+
+internal sealed class BodyColumn
+{
+    internal BodyColumn(double width, double gap) { Width = width; Gap = gap; }
+    internal double Width { get; }
+    internal double Gap { get; }
 }
 
 internal sealed class ParagraphLayout

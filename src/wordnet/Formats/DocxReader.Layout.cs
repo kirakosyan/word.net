@@ -54,7 +54,19 @@ internal sealed partial class DocxReader
             else if (property.Name == W + "cols")
             {
                 int count = property.Attribute(W + "num") == null ? 1 : Integer(property, W + "num", 1, 64);
-                if (property.HasElements || (string?)property.Attribute(W + "equalWidth") is "0" or "false" || count > 3)
+                bool explicitWidths = (string?)property.Attribute(W + "equalWidth") is "0" or "false" or "off";
+                if (explicitWidths)
+                {
+                    XElement[] columns = property.Elements(W + "col").ToArray();
+                    if (columns.Length is < 1 or > 3 || property.Elements().Count() != columns.Length
+                        || property.Attribute(W + "num") != null && count != columns.Length)
+                        throw new InvalidDataException("Docx.Columns: Missing or inconsistent explicit column definitions.");
+                    settings.Columns = columns.Length;
+                    foreach (XElement column in columns)
+                        settings.ExplicitColumns.Add(new BodyColumn(Integer(column, W + "w", 1, 31680) / 20.0,
+                            column.Attribute(W + "space") == null ? 0 : Integer(column, W + "space", 0, 31680) / 20.0));
+                }
+                else if (property.HasElements || count > 3)
                     context.Loss("Docx.Columns", "Only one to three equal-width body columns are supported.");
                 else settings.Columns = count;
                 if (property.Attribute(W + "space") != null) settings.ColumnGap = Integer(property, W + "space", 0, 31680) / 20.0;

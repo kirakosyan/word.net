@@ -141,7 +141,7 @@ public sealed class TemplateOptions
     public CultureInfo Culture { get; set; } = CultureInfo.InvariantCulture;
     /// <summary>Gets or sets the missing-value policy.</summary>
     public MissingTemplateValue MissingValues { get; set; }
-    /// <summary>Gets or sets the maximum generated rows, default 10,000.</summary>
+    /// <summary>Gets or sets the maximum generated rows and body-region blocks, default 10,000.</summary>
     public int MaximumRows { get; set; } = 10000;
     /// <summary>Gets or sets the maximum nested repeat depth, default eight.</summary>
     public int MaximumDepth { get; set; } = 8;

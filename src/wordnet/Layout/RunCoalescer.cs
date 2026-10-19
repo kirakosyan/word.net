@@ -15,7 +15,8 @@ internal static class RunCoalescer
         for (int i = 0; i < runs.Count; i++)
         {
             TextRun first = runs[i];
-            if (first.Image != null || first.Note != null || first.Box != null || first.Bookmark != null || first.FieldInstruction != null || first.Control != null || i + 1 == runs.Count || !Same(first, runs[i + 1]))
+            if (first.Image != null || first.Note != null || first.Box != null || first.Bookmark != null || first.FieldInstruction != null || first.Control != null
+                || first.Revision != null || first.Comment != null || i + 1 == runs.Count || !Same(first, runs[i + 1]))
             { result.Add(first); continue; }
             var text = new StringBuilder(first.Text);
             while (i + 1 < runs.Count && Same(first, runs[i + 1])) text.Append(runs[++i].Text);
@@ -25,6 +26,7 @@ internal static class RunCoalescer
     }
 
     private static bool Same(TextRun a, TextRun b) => b.Image == null && b.Note == null && b.Box == null && b.Bookmark == null && b.FieldInstruction == null && b.Control == null
+        && b.Revision == null && b.Comment == null
         && a.Bold == b.Bold && a.Italic == b.Italic && a.Code == b.Code && a.Link == b.Link && a.FontSize == b.FontSize && a.Color == b.Color
         && string.Equals(a.Appearance.FontFamily, b.Appearance.FontFamily, StringComparison.OrdinalIgnoreCase)
         && a.Appearance.Background == b.Appearance.Background && a.Appearance.Underline == b.Appearance.Underline

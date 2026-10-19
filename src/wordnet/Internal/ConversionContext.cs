@@ -27,6 +27,7 @@ internal sealed class ConversionContext
     internal SourceLocation Location { get; set; } = new SourceLocation("document", "/");
     internal bool Inspecting { get; set; }
     internal bool Editing { get; set; }
+    internal bool PreserveReview { get; set; }
     internal bool HtmlImport { get; set; }
     internal bool PreviewIntermediate { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }

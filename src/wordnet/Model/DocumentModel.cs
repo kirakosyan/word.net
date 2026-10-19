@@ -5,6 +5,7 @@ namespace WordNet.Model;
 
 internal sealed class DocumentModel
 {
+    internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
     internal bool TypographyPrepared { get; set; }
@@ -51,6 +52,7 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal System.Guid Identity { get; set; } = System.Guid.NewGuid();
     internal bool? RightToLeft { get; set; }
     internal List<TextRun> Runs { get; } = new List<TextRun>();
 
@@ -151,13 +153,18 @@ internal sealed class TextRun
     internal string? Bookmark { get; }
     internal TemplateControl? Control { get; }
     internal List<TextRun>? FieldCache { get; set; }
-    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control) { FieldCache = FieldCache };
+    internal string? Revision { get; set; }
+    internal string? Comment { get; set; }
+    internal int CommentBoundary { get; set; }
+    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control)
+    { FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary };
 }
 
 internal sealed class TemplateControl
 {
     internal TemplateControl(string tag) { Tag = tag; }
     internal string Tag { get; }
+    internal bool Executable { get; set; } = true;
 }
 
 internal sealed class RunAppearance
@@ -230,6 +237,11 @@ internal sealed class ListCounter
 {
     private readonly Dictionary<string, int?[]> counters = new Dictionary<string, int?[]>();
     internal int CurrentValue { get; private set; }
+    internal ListCounter Copy()
+    {
+        var copy = new ListCounter { CurrentValue = CurrentValue };
+        foreach (var pair in counters) copy.counters.Add(pair.Key, (int?[])pair.Value.Clone()); return copy;
+    }
     internal string Label(ListItem item)
     {
         if (!counters.TryGetValue(item.Id, out int?[]? values)) counters.Add(item.Id, values = new int?[9]);

@@ -1,5 +1,15 @@
 # Invoice and report automation recipes
 
+## P1 recipes under review
+
+The program also runs `P1Recipes.Run`: it groups unsorted revenue, computes decimal
+tax/total and a threshold predicate, expands a body paragraph region, saves DOCX/PDF
+and exchanges the result with ODT. It records a caller-attributed replacement, writes
+reviewed DOCX and accepted/rejected PDFs, and compares matching snapshots.
+Generated files use the `p1-` prefix. Regenerate the independent template and manifest
+with `python3 eng/generate-p1-templates.py`. These APIs are pending review and are
+separate from the published packages.
+
 Generate an invoice and a two-section operations report using the public `WordDocument` API. Each recipe produces editable DOCX and selectable-text PDF, without Office automation, remote fetching or `wordnet.Ocr`.
 
 ## Run

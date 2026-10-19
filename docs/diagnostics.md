@@ -1,5 +1,24 @@
 # Conversion diagnostics
 
+## Pending P1 diagnostics
+
+Report preprocessing rejects invalid paths/types/cycles, arithmetic failures and
+row/group/key/node/depth/work/resource exhaustion with content-free `Report.*`
+exceptions. No field names or values are inserted in diagnostic text.
+
+`Odt.*Loss` diagnostics identify unsupported style identity/appearance, numbering,
+sections, drawings, nested tables, formulas, fields, notes, metadata and templates.
+Malformed package/media/path/manifest/XML and resource failures use `Odt.*` errors
+in every mode. Safe settings/thumbnails can produce `Odt.SettingsIgnored` information.
+
+`Review.*` failures distinguish unsupported preservation scopes, malformed/orphan
+ranges, stale/foreign handles, grapheme splits, comment intersections and resource
+caps. Non-DOCX session exports require an explicit view. Comparison rejects existing
+history/structural differences and has explicit token/work/resource failures under
+`Comparison.*`. `Review.CommentsRemoved` reports an explicit view operation. Authors,
+comment bodies and deleted text are available only through requested snapshots/output,
+not through diagnostics. See [review workflows](review-workflows.md).
+
 The bounded preflight, occurrence and interoperability diagnostics below ship in
 1.2.0. See the [release evidence](release-1.2.0-readiness.md); later design proposals
 add no runtime support or diagnostic guarantees.

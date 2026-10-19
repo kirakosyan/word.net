@@ -1,5 +1,19 @@
 # Architecture and implementation status
 
+## Pending P1 implementation
+
+The owner-authorized P1 branch adds immutable explicit column geometry with active-width
+text/table/note layout, detached report-data preprocessing and contiguous body repeat
+regions. An independent ODF package layer and managed adapter enable only DOCX ↔ ODT;
+ODT remains outside document-session loading/saving. See [ODT](odt.md),
+[report preprocessing](report-preprocessing.md) and [review workflows](review-workflows.md).
+
+ReviewStore retains admitted plain-text revisions and classic comment intervals.
+Session/version handles, clone-before-commit decisions/recording and explicit detached
+views prevent implicit review decisions. Pinned Unicode 17 tables support grapheme
+validation and bounded matching-structure comparison. These features are pending and
+unpublished; object/protection stages remain deferred. No runtime dependency is added.
+
 The merged bucket 4 profile extends the earlier 30 directions to 36 with HTML input and RTF exchanges.
 See [interoperability profiles](interoperability.md) for the supported 1.2.0 subset.
 They implement the documented desktop feature profile, with explicit fidelity limits.

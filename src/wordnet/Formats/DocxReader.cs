@@ -72,6 +72,7 @@ internal sealed partial class DocxReader
         reader.package = package;
         reader.mainPart = main;
         reader.knownParts = knownParts;
+        reader.ReadReviewComments();
         reader.ReadNumbering();
         reader.ReadNotes();
         reader.ReadAuxiliaryParts("", rootRelations);
@@ -90,6 +91,7 @@ internal sealed partial class DocxReader
         }
 
         var document = new DocumentModel();
+        reader.ValidateReviewSource(bodies[0]);
         reader.ReadBlocks(bodies[0], document.Blocks);
         if (reader.sectionCount > 0 && bodies[0].Element(W + "sectPr") == null)
             reader.EndSection(new XElement(W + "sectPr"), document.Blocks);
@@ -112,6 +114,9 @@ internal sealed partial class DocxReader
             }
         }
         document.Title = reader.title; document.Author = reader.author;
+        foreach (var pair in reader.review.Revisions) document.Review.Revisions.Add(pair.Key, pair.Value);
+        foreach (var pair in reader.review.Comments) document.Review.Comments.Add(pair.Key, pair.Value);
+        if (context.PreserveReview) document.Review.Validate(document, context);
         if (reader.fields.Count != 0) throw new InvalidDataException("Docx.Field: Unclosed complex field.");
         if (package.PartNames.Any(name => !knownParts.Contains(name)))
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
@@ -262,6 +267,7 @@ internal sealed partial class DocxReader
         {
             context.CheckCancellation();
             using var location = context.At(XmlSourceLocation.Create(child, mainPart));
+            if (ReviewInline(child, runs, inherited, link)) continue;
             if (ReadInlineControl(child, runs, inherited, link)) continue;
             if (Container(child, out XElement? content))
             {

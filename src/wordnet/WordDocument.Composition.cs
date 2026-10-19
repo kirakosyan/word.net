@@ -63,14 +63,17 @@ public sealed partial class WordDocument
             incoming.Blocks[0].Section!.BreakType = "nextPage";
             if (m.FinalSection != null && m.Blocks.Count > 0 && !ReferenceEquals(m.Blocks[m.Blocks.Count - 1].Section, m.FinalSection)) m.Blocks.Add(new ParagraphBlock { Section = m.FinalSection });
             m.Blocks.AddRange(incoming.Blocks); m.Notes.AddRange(incoming.Notes); m.FinalSection = fallback;
+            foreach (var pair in incoming.Review.Revisions) m.Review.Revisions.Add(pair.Key, pair.Value);
+            foreach (var pair in incoming.Review.Comments) m.Review.Comments.Add(pair.Key, pair.Value);
             return incoming.Blocks.Count;
-        }, cancellationToken);
+        }, cancellationToken, true);
     }
 
     private static string UniquePrefix(DocumentModel m)
     {
         var identifiers = new HashSet<string>(m.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Bookmark != null).Select(r => r.Bookmark!), StringComparer.Ordinal);
         identifiers.UnionWith(m.Paragraphs.Where(p => p.List != null).Select(p => p.List!.Id));
+        identifiers.UnionWith(m.Review.Revisions.Keys); identifiers.UnionWith(m.Review.Comments.Keys);
         foreach (TextRun run in m.Paragraphs.SelectMany(p => p.Runs).Where(r => r.FieldInstruction != null))
         {
             Match sequence = Regex.Match(run.FieldInstruction!, "^\\s*SEQ\\s+(\\S+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
@@ -82,6 +85,11 @@ public sealed partial class WordDocument
     }
     internal static void Remap(DocumentModel source, string prefix, int lastNoteId, bool isolateCounters = true, bool isolateExternalReferences = true)
     {
+        foreach (var store in new[] { source.Review.Revisions, source.Review.Comments })
+        {
+            var records = store.Values.ToArray(); store.Clear();
+            foreach (ReviewRecord record in records) { record.Id = prefix + "r" + record.Id; store.Add(record.Id, record); }
+        }
         var bookmarks = source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/'))
             .Select(r => r.Bookmark!).Distinct().Select((name, i) => (Name: name, NewName: prefix + "b" + i.ToString(CultureInfo.InvariantCulture))).ToDictionary(x => x.Name, x => x.NewName, StringComparer.Ordinal);
         foreach (TextRun run in source.Paragraphs.SelectMany(p => p.Runs))
@@ -98,6 +106,7 @@ public sealed partial class WordDocument
         foreach (DocumentNote note in source.Notes) { note.PartId = checked(++lastNoteId); note.Id = (note.Endnote ? "endnotes:" : "footnotes:") + note.PartId.ToString(CultureInfo.InvariantCulture); }
         foreach (ParagraphBlock paragraph in source.Paragraphs)
         {
+            paragraph.Identity = Guid.NewGuid();
             if (paragraph.List != null && isolateCounters) paragraph.List.Id = prefix + paragraph.List.Id;
             for (int i = 0; i < paragraph.Runs.Count; i++)
             {
@@ -121,11 +130,17 @@ public sealed partial class WordDocument
                 List<TextRun>? cache = r.FieldCache?.Select(cached => new TextRun(cached.Text, cached.Bold, cached.Italic, cached.Code,
                     cached.Link != null && Starts(cached.Link, '#') && bookmarks.TryGetValue(cached.Link.Substring(1), out string? destination) ? "#" + destination : cached.Link,
                     cached.FontSize, cached.Color, cached.Image, cached.Appearance.Copy())).ToList();
-                paragraph.Runs[i] = new TextRun(r.Text, r.Bold, r.Italic, r.Code, link, r.FontSize, r.Color, r.Image, r.Appearance, field, r.Note, r.Box, bookmark, r.Control) { FieldCache = cache };
+                paragraph.Runs[i] = new TextRun(r.Text, r.Bold, r.Italic, r.Code, link, r.FontSize, r.Color, r.Image, r.Appearance, field, r.Note, r.Box, bookmark, r.Control)
+                {
+                    FieldCache = cache,
+                    Revision = r.Revision == null ? null : prefix + "r" + r.Revision,
+                    Comment = r.Comment == null ? null : prefix + "r" + r.Comment,
+                    CommentBoundary = r.CommentBoundary
+                };
             }
         }
     }
     private static TextRun Restyle(TextRun r, TextRun appearance) => new TextRun(r.Text, appearance.Bold, appearance.Italic, appearance.Code, r.Link,
         appearance.FontSize, appearance.Color, r.Image, appearance.Appearance.Copy(), r.FieldInstruction, r.Note, r.Box, r.Bookmark, r.Control)
-    { FieldCache = r.FieldCache?.Select(cached => Restyle(cached, appearance)).ToList() };
+    { FieldCache = r.FieldCache?.Select(cached => Restyle(cached, appearance)).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
 }
