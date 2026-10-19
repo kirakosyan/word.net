@@ -45,6 +45,17 @@ public sealed class ReviewWorkflowTests
         Assert.Equal(2, Load(saved).Revisions.Count);
         Assert.Throws<NotSupportedException>(() => Save(doc, DocumentFormat.Pdf));
     }
+    [Fact]
+    public void PreservationRejectsMissingAuthorsAndRevisionsInsideRuns()
+    {
+        Assert.Throws<InvalidDataException>(() => Load(Input(Revisions.Replace(" w:author='Original Author'", ""))));
+        Assert.Throws<NotSupportedException>(() => Load(Input("<w:p><w:r><w:ins w:id='1' w:author='Author'><w:r><w:t>X</w:t></w:r></w:ins></w:r></w:p>")));
+        string comments = "<w:comments xmlns:w='" + W + "'><w:comment w:id='1'>" + P("Comment") + "</w:comment></w:comments>";
+        byte[] bytes = TestDocuments.Docx(TestDocuments.Body(P("Body")),
+            "<Relationship Id='comments' Type='" + TestDocuments.R + "/comments' Target='comments.xml'/>",
+            extra: new KeyValuePair<string, string>("word/comments.xml", comments));
+        Assert.Throws<InvalidDataException>(() => Load(bytes));
+    }
     [Theory]
     [InlineData(ReviewDecision.Accept, "Total 20")]
     [InlineData(ReviewDecision.Reject, "Total 10")]

@@ -2,7 +2,7 @@
 
 ## Pending P1 qualification
 
-The required suite is **938** cases (855 baseline plus 83 P1 cases).
+The required suite is **939** cases (855 baseline plus 84 P1 cases).
 The P1 branch adds independent OOXML/ODF fixtures and regressions for unequal-column
 flow, report preprocessing, paragraph repeats, review preservation/decisions/recording
 and matching-structure comparison. Unicode 17 conformance executes all **766 grapheme**

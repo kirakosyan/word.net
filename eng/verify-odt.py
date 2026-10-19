@@ -39,6 +39,7 @@ report = {'reader': version, 'validator': '.'.join(map(str, etree.LXML_VERSION))
           'working_tree_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=root, text=True).strip()), 'schemas': pins, 'files': []}
 for path in sorted(evidence.glob('*.odt')):
     with ZipFile(path) as archive:
+        assert archive.testzip() is None, 'ZIP payload CRC verification failed'
         names = archive.namelist()
         assert names[0] == 'mimetype'
         assert archive.getinfo('mimetype').compress_type == 0

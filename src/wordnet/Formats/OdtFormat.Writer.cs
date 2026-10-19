@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -45,16 +44,17 @@ internal static partial class OdtFormat
         internal void Write(Stream output)
         {
             XElement body = Content();
-            using var archive = new ZipArchive(output, ZipArchiveMode.Create, true);
-            PackageArchive.Write(archive, "mimetype", Encoding.ASCII.GetBytes(OdfPackage.MediaType), CompressionLevel.NoCompression);
+            using var archive = new OdfPackageWriter(output, context);
+            archive.Write("mimetype", Encoding.ASCII.GetBytes(OdfPackage.MediaType), stored: true);
             var manifest = new XElement(OdfPackage.Manifest + "manifest", new XAttribute(OdfPackage.Manifest + "version", "1.3"),
                 Declaration("/", OdfPackage.MediaType), Declaration("content.xml", "text/xml"), Declaration("styles.xml", "text/xml"), Declaration("meta.xml", "text/xml"));
             Xml(archive, "content.xml", Root("document-content", automatic, new XElement(O + "body", body)));
             Xml(archive, "styles.xml", Root("document-styles", new XElement(O + "styles"), pageLayouts, masterStyles));
             Xml(archive, "meta.xml", Root("document-meta", new XElement(O + "meta", new XElement(Dc + "title", model.Title), new XElement(Dc + "creator", model.Author))));
             foreach (var image in images)
-            { context.CheckCancellation(); PackageArchive.Write(archive, image.Name, image.Image.Bytes); manifest.Add(Declaration(image.Name, image.Image.MediaType)); }
+            { context.CheckCancellation(); archive.Write(image.Name, image.Image.Bytes); manifest.Add(Declaration(image.Name, image.Image.MediaType)); }
             Xml(archive, "META-INF/manifest.xml", manifest);
+            archive.Complete();
         }
         private static XElement Root(string kind, params object[] children) => new XElement(O + kind,
             new XAttribute(XNamespace.Xmlns + "office", O), new XAttribute(XNamespace.Xmlns + "text", T), new XAttribute(XNamespace.Xmlns + "style", S),
@@ -62,10 +62,10 @@ internal static partial class OdtFormat
             new XAttribute(XNamespace.Xmlns + "svg", V), new XAttribute(XNamespace.Xmlns + "xlink", L), new XAttribute(XNamespace.Xmlns + "dc", Dc), new XAttribute(O + "version", "1.3"), children);
         private static XElement Declaration(string path, string type) => new XElement(OdfPackage.Manifest + "file-entry",
             new XAttribute(OdfPackage.Manifest + "full-path", path), new XAttribute(OdfPackage.Manifest + "media-type", type));
-        private void Xml(ZipArchive archive, string name, XElement root)
+        private void Xml(OdfPackageWriter archive, string name, XElement root)
         {
             context.CheckCancellation(); byte[] bytes = Encoding.UTF8.GetBytes(new XDocument(root).ToString(SaveOptions.DisableFormatting));
-            if (bytes.Length > context.Options.MaximumExpandedBytes) throw Invalid("ResourceLimit"); PackageArchive.Write(archive, name, bytes);
+            if (bytes.Length > context.Options.MaximumExpandedBytes) throw Invalid("ResourceLimit"); archive.Write(name, bytes);
         }
         private string Appearance(string family, XElement properties, string? master = null)
         {

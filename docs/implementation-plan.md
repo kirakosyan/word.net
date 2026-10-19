@@ -108,8 +108,9 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 1. Preserve the [verified 1.2.0 release evidence](release-1.2.0-readiness.md).
    All three packages are published and publicly verified. The next unassigned
-   follow-up is #48 from [roadmap #45](https://github.com/kirakosyan/word.net/issues/45);
-   further work requires owner assignment. The bucket 5
+   checkpoint is review and reconciliation of P1 issues #48–#63 in
+   [PR #85](https://github.com/kirakosyan/word.net/pull/85). Later implementation
+   requires owner assignment. The bucket 5
    [merged design slices](later-design-decisions.md) remain bounded by their
    individual implementation and policy gates.
    [Bucket 4 limits](interoperability.md) remain explicit: native

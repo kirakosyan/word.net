@@ -120,6 +120,10 @@ public sealed class OdtTests
         Assert.Equal(60, image.Width); Assert.Equal(30, image.Height); Assert.Equal("Fixture grid", image.AlternativeText);
         Assert.Equal(FidelityDocuments.Fixture("color-grid.png"), image.Bytes);
         using var output = new MemoryStream(); OdtFormat.Write(model, output, Context()); output.Position = 0;
+        byte[] package = output.ToArray();
+        Assert.Equal(0, BitConverter.ToUInt16(package, 8)); // ZIP stored method, including on Framework.
+        Assert.Equal(0, BitConverter.ToUInt16(package, 28)); // ODF forbids extra fields on mimetype.
+        Assert.Equal((uint)OdfPackage.MediaType.Length, BitConverter.ToUInt32(package, 18));
         using var zip = new ZipArchive(output, ZipArchiveMode.Read, true);
         Assert.Equal("mimetype", zip.Entries[0].FullName);
         using var imageStream = zip.Entries.Single(e => e.FullName.StartsWith("Pictures/", StringComparison.Ordinal)).Open(); using var bytes = new MemoryStream(); imageStream.CopyTo(bytes);

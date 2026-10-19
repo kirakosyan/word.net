@@ -53,7 +53,7 @@ internal sealed partial class DocxReader
     private static ReviewRecord ReviewMetadata(XElement element)
     {
         string id = Integer(element, W + "id", 0, int.MaxValue).ToString(CultureInfo.InvariantCulture);
-        string author = (string?)element.Attribute(W + "author") ?? "";
+        string author = (string?)element.Attribute(W + "author") ?? throw new InvalidDataException("Review.Author: Missing required author metadata.");
         string? date = (string?)element.Attribute(W + "date"); DateTimeOffset? timestamp = null;
         if (date != null)
         {
@@ -107,7 +107,7 @@ internal sealed partial class DocxReader
             if (element.Name.Namespace == W && (element.Name.LocalName.EndsWith("Change", StringComparison.Ordinal)
                 || element.Name.LocalName.StartsWith("move", StringComparison.Ordinal) || element.Name.LocalName.StartsWith("customXml", StringComparison.Ordinal) && element.Name.LocalName.Contains("Range")))
                 throw new NotSupportedException("Review.Unsupported: Move, property and structural history is outside the preservation profile.");
-        if (root.Descendants(W + "ins").Concat(root.Descendants(W + "del")).Any(e => !e.Ancestors(W + "p").Any() || e.Parent?.Name == W + "rPr" || e.Parent?.Name == W + "trPr"))
+        if (root.Descendants(W + "ins").Concat(root.Descendants(W + "del")).Any(e => !e.Ancestors(W + "p").Any() || e.Parent?.Name == W + "r" || e.Parent?.Name == W + "rPr" || e.Parent?.Name == W + "trPr"))
             throw new NotSupportedException("Review.Unsupported: Structural revisions are unsupported.");
     }
 }
