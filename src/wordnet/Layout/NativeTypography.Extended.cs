@@ -85,7 +85,10 @@ internal static partial class NativeTypography
     private static void ReorderExtended(List<PositionedText> items, double left, bool rtl, TypographySession session)
     {
         int[] levels = items.Select(i => i.SourceRun?.BidiLevel ?? throw new NotSupportedException("Typography.Level: A native token lacks its logical level.")).ToArray();
-        for (int i = items.Count - 1; i >= 0 && items[i].Text.All(c => char.IsWhiteSpace(c) || UnicodeBidi.Format(c)); i--) levels[i] = rtl ? 1 : 0;
+        bool ResetAtLineEnd(char c) => UnicodeBidiData.Class(c) is UnicodeBidiData.Kind.WS or UnicodeBidiData.Kind.BN
+            or UnicodeBidiData.Kind.LRE or UnicodeBidiData.Kind.RLE or UnicodeBidiData.Kind.LRO or UnicodeBidiData.Kind.RLO or UnicodeBidiData.Kind.PDF
+            or UnicodeBidiData.Kind.LRI or UnicodeBidiData.Kind.RLI or UnicodeBidiData.Kind.FSI or UnicodeBidiData.Kind.PDI;
+        for (int i = items.Count - 1; i >= 0 && items[i].Text.All(ResetAtLineEnd); i--) levels[i] = rtl ? 1 : 0;
         int[] order = UnicodeBidi.Reorder(Enumerable.Range(0, items.Count).Where(i => levels[i] >= 0).ToArray(), levels);
         double x = left;
         foreach (int at in order)

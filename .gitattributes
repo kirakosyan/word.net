@@ -33,6 +33,7 @@ eng/EditP2Objects.java text eol=lf
 # Preserve byte-identical official Unicode conformance data, including its comments.
 tests/wordnet.Conversion.Tests/Fixtures/Unicode17/*BreakTest.txt whitespace=-blank-at-eol
 tests/wordnet.Conversion.Tests/Fixtures/Unicode17/LICENSE text eol=lf
-tests/wordnet.Conversion.Tests/Fixtures/Unicode17/Bidi*Test.txt whitespace=-blank-at-eol
+tests/wordnet.Conversion.Tests/Fixtures/Unicode17/Bidi*Test.txt whitespace=-blank-at-eol linguist-vendored=true
+src/wordnet/Internal/UnicodeBidiData.cs linguist-generated=true
 # Retain the unmodified upstream font license, including its original spacing.
 tests/wordnet.Conversion.Tests/Fixtures/P2/STIX-OFL.txt whitespace=-blank-at-eol
