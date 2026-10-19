@@ -51,6 +51,11 @@ internal static class Program
             ("plain.doc", DocumentFormat.Doc), ("digital.pdf", DocumentFormat.Pdf), ("plain.epub", DocumentFormat.Epub),
             ("plain.mobi", DocumentFormat.Mobi), ("plain.azw3", DocumentFormat.Azw3), ("sample.md", DocumentFormat.Markdown)
         };
+        if (args[0] == "fuzz")
+        {
+            seeds.Add(("Odt/text.odt", DocumentFormat.Odt));
+            seeds.Add(("Odt/table-image.odt", DocumentFormat.Odt));
+        }
         string docx = Path.Combine(output, args[0] + "-seed.docx"), text = Path.Combine(output, args[0] + "-seed.txt");
         File.WriteAllText(text, "Qualification heading\nEnglish printed text 12345.", new UTF8Encoding(false));
         CreateDocx(docx);
