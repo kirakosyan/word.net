@@ -10,6 +10,12 @@ approximation and excludes document body text. `Severity` is `Info` or `Warning`
 Multi-pass layout may report a feature more than once. Counts are observations,
 not a count of unique document objects.
 
+The [invoice/report recipes](../examples/WordNet.Automation/README.md) label load, edit and save output with its phase. Each list is cumulative: edit results include retained load diagnostics, and save results include retained load/edit diagnostics. A warning can therefore appear under several phase labels. Their invoice's ordinary PDF reports
+`Pdf.ImageAlternativeText`; the editable DOCX retains the caller logo and its text.
+Sample diagnostics add no new engine codes. Office-reference text/geometry/raster
+differences are comparison verdicts, not new conversion diagnostics; see
+[the P0 report](comparison-p0.md).
+
 Each group also exposes `Occurrences`: up to 128 distinct `(Location, Phase)`
 findings. `LocationsTruncated` marks additional locations; `Count` still includes
 all observations and multi-pass layout. Location paths are materialized only when

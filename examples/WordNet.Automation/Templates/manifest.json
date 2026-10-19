@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Independently authored synthetic templates, MIT; no customer/private content.",
+  "generator": "eng/generate-automation-templates.py",
+  "generatorSha256": "b32a4e9bbe43824e8af5bd734feec1b67257d7c5e38cfedb7dc5fec77af66a06",
+  "documents": [
+    {
+      "id": "invoice",
+      "path": "invoice.docx",
+      "sha256": "4ffd066c2e44c9bcfdabd25287e23565bebe31075e25c03a95e316bc74481c11",
+      "expectedPages": 1
+    },
+    {
+      "id": "report",
+      "path": "report.docx",
+      "sha256": "eed5bbe7b288ddecef4c7e95bece430690e273e2c542147343053bfac9d665c9",
+      "expectedPages": 2
+    }
+  ]
+}

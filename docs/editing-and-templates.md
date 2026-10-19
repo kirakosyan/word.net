@@ -6,7 +6,7 @@ It adds no runtime dependency and uses the same managed offline DOCX/PDF writers
 See [the API decisions](editing-template-design.md) for ownership and architecture.
 This API merged in PR #35 (`0b2af843`) and is included in published 1.2.0.
 See the [release evidence](release-1.2.0-readiness.md). The [sample instructions](../examples/WordNet.Automation/README.md)
-reproduce the public invoice and assembly workflow.
+reproduce complete invoice and multi-section report recipes. The sample computes totals in application code, uses existing repeat/if controls and stages both output formats before replacing files. It prints load/edit/save diagnostics; ordinary invoice PDF reports its image accessibility limitation. No new engine arithmetic or template syntax is introduced.
 
 ## Create, edit and save
 

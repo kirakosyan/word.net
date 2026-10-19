@@ -30,6 +30,18 @@ public sealed class DocumentInspectionTests
     [InlineData("letterhead-offer")]
     [InlineData("letterhead-brand")]
     [InlineData("letterhead-textbox")]
+    [InlineData("mixed-fonts-short")]
+    [InlineData("mixed-fonts-report")]
+    [InlineData("long-table-ledger")]
+    [InlineData("long-table-inventory")]
+    [InlineData("footnotes-contract")]
+    [InlineData("footnotes-report")]
+    [InlineData("continuous-same-width")]
+    [InlineData("continuous-two-columns")]
+    [InlineData("floating-logo-left")]
+    [InlineData("floating-logo-right")]
+    [InlineData("multipage-operations")]
+    [InlineData("multipage-audit")]
     public void IndependentBusinessDocumentsHaveConsistentPreflightAndConversionFindings(string name)
     {
         byte[] bytes = File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Comparison", name + ".docx"));
@@ -42,7 +54,7 @@ public sealed class DocumentInspectionTests
         Assert.True(source.CanRead); Assert.Equal(bytes.Length, inspection.InputBytes);
         Assert.InRange(inspection.ArchiveEntryCount!.Value, 4, 5); Assert.True(inspection.DeclaredExpandedBytes > 0);
         Assert.True(inspection.Features.Paragraphs > 0); Assert.True(inspection.Characters > 0);
-        Assert.True(inspection.LayoutPerformed); Assert.InRange(inspection.PageCount!.Value, 1, 2);
+        Assert.True(inspection.LayoutPerformed); Assert.InRange(inspection.PageCount!.Value, 1, 4);
         source.Position = 0;
         using var output = new MemoryStream();
         ConversionResult conversion = converter.Convert(source, output, DocumentFormat.Docx, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
@@ -53,7 +65,9 @@ public sealed class DocumentInspectionTests
         Assert.All(inspection.Diagnostics, d => Assert.NotEmpty(d.Occurrences));
         using var json = JsonReaderWriterFactory.CreateJsonReader(File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Comparison", "manifest.json")), XmlDictionaryReaderQuotas.Max);
         XElement manifest = XDocument.Load(json).Root!;
-        string[] expectedLosses = manifest.Element("documents")!.Elements("item").Single(d => d.Element("id")!.Value == name)
+        XElement entry = manifest.Element("documents")!.Elements("item").Single(d => d.Element("id")!.Value == name);
+        Assert.Equal(int.Parse(entry.Element("expectedPages")!.Value, System.Globalization.CultureInfo.InvariantCulture), inspection.PageCount);
+        string[] expectedLosses = entry
             .Element("knownLosses")!.Elements("item").Select(e => e.Value).OrderBy(code => code, StringComparer.Ordinal).ToArray();
         Assert.Equal(expectedLosses, conversion.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Select(d => d.Code).OrderBy(code => code, StringComparer.Ordinal));
     }

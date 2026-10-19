@@ -32,6 +32,8 @@
     <PackageReference Include="xunit.v3.extensibility.core" PrivateAssets="all" Publish="true" />
     <PackageReference Include="xunit.v3.assert" PrivateAssets="all" Publish="true" />
     <Compile Include="../wordnet.Conversion.Tests/*.cs" Link="SharedTests/%(Filename)%(Extension)" />
+    <Compile Include="../../examples/WordNet.Automation/AutomationRecipes.cs" Link="SharedTests/AutomationRecipes.cs" />
+    <AndroidAsset Include="../../examples/WordNet.Automation/Templates/**/*" Link="Fixtures/Automation/%(RecursiveDir)%(Filename)%(Extension)" />
     <AndroidAsset Include="../wordnet.Conversion.Tests/Fixtures/**/*" Link="Fixtures/%(RecursiveDir)%(Filename)%(Extension)" />
     <AndroidAsset Include="../../artifacts/ocr/tessdata/eng.traineddata" Link="tessdata/eng.traineddata" />
     <AndroidNativeLibrary Include="../../artifacts/android-native/jni/arm64-v8a/*.so" Abi="arm64-v8a" />

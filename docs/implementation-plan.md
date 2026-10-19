@@ -1,5 +1,16 @@
 # wordnet implementation and delivery status
 
+## P0 adoption work — pending pull request, 2026-10-19
+
+This branch implements [#46](https://github.com/kirakosyan/word.net/issues/46) and [#47](https://github.com/kirakosyan/word.net/issues/47) from roadmap [#45](https://github.com/kirakosyan/word.net/issues/45). It adds twelve independently authored reference fixtures to the existing corpus, an independent LibreOffice capture path and ranked defect reports, plus executable invoice/report recipes and shared regression tests. No converter algorithm, template syntax, public API, dependency version, target framework or publishing policy changes.
+
+The [P0 comparison report](comparison-p0.md) records authored checks separately from measured office fidelity. Office differences remain visible under unchanged tolerances; licensed desktop Word/Aspose captures remain unavailable. The recipes use caller-calculated decimal totals, existing repeat/if controls and file staging. The README now presents installation, usage and bounded support without historical prerelease wording.
+
+The PR #83 review follow-up corrects line rounding, staged cleanup, cumulative logging, one-to-two-column fixture semantics and reference unit-rounding attribution. Four new recipe regressions raise the required suite to 855; thirteen Python tests cover capture guards, manifests, cohort partitioning, engine attribution and complete defect retention. CI pins its Ubuntu office writer/core packages.
+
+This is pending source work, not merged or published functionality. Qualification is local Linux x64 unless an exact PR/CI artifact is explicitly identified; historical release evidence below retains its original scope. After merge, verify the final checks and reconcile #46, #47 and #45 with the retained artifacts. Do not close or promote unqualified platform or Word-fidelity claims.
+
+
 The 1.2.1 presentation patch replaces the README's HTML-sized OS icons with six
 consistent Markdown badges, including readable Windows/Linux x64/ARM64 labels.
 It versions all three packages together and compares APIs against published 1.2.0;
@@ -42,7 +53,7 @@ passes; see the [ledger](release-1.2.0-readiness.md).
 
 PR #38 merged documentation reconciliation and a native font-buffer lifetime fix
 as `2f16d47ac007bf1a5affb41bc0b7653f5198c9f8`. Its tree matches head `e09c17c7ef43e38bcdf9717e535caa02b31d7812`,
-which passed all 20 checks. The current required suite is **829**; the 828-case
+which passed all 20 checks. At that reconciliation the required suite was **829**; the 828-case
 PR #37 qualification remains dated historical evidence. See [testing](testing.md).
 No package was published. Bucket 5 is merged design work; runtime implementation is deferred.
 

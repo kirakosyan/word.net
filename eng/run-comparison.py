@@ -13,6 +13,30 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 TOLERANCES = dict(glyphPoints=0.25, significantPixelChannelSum=96, changedPixelFraction=0.002, meanChannelError=0.25)
+COHORTS = ('all', 'baseline', 'p0-2026-10')
+
+
+def in_cohort(document, cohort):
+    return cohort == 'all' or document.get('cohort', 'baseline') == cohort
+
+
+def stage_fonts(manifest, output):
+    font_dir = output / 'fonts'
+    font_dir.mkdir(exist_ok=True)
+    expected = {Path(font['path']).name for font in manifest['fonts']}
+    if any(path.name not in expected for path in font_dir.iterdir()):
+        raise ValueError('Output fonts directory contains unexpected files; choose a fresh output directory.')
+    for font in manifest['fonts']:
+        source = ROOT / font['path']
+        if digest(source) != font['sha256']:
+            raise ValueError('Pinned font hash mismatch: ' + font['path'])
+        shutil.copyfile(source, font_dir / source.name)
+    return font_dir
+
+
+def renderer_version(renderer):
+    banner = invoke([renderer, '-v'])
+    return renderer_identity(banner.stderr or banner.stdout)
 
 
 def digest(path):
@@ -32,6 +56,71 @@ def loss_check(expected, diagnostics):
     expected = set(expected)
     observed = {d['code'] for d in diagnostics if d['severity'] == 'Warning'}
     return dict(passed=observed == expected, missing=sorted(expected - observed), unexpected=sorted(observed - expected))
+
+
+def failure_verdicts(result):
+    """One source of truth for the exit status, ranked findings and CI retention gate."""
+    checks = result.get('referenceChecks', [])
+    verdicts = [
+        (0, 'conversion-or-reader-failure', result['status'] == 'failed'),
+        (1, 'authored-text-or-order', result.get('authoredChecks', {}).get('passed') is False),
+        (2, 'editable-text-or-order', result.get('editableContent', {}).get('passed') is False),
+        (3, 'diagnostic-expectations', result.get('knownLossChecks', {}).get('passed') is False),
+        (4, 'pagination', result.get('authoredChecks', {}).get('pageCountMatches') is False or any(c.get('pageCountMatches') is False for c in checks)),
+        (5, 'reference-text-or-order', any(c.get('textAndOrderMatches') is False for c in checks)),
+        (6, 'glyph-placement', any(c.get('glyphPlacementPasses') is False for c in checks)),
+        (7, 'page-geometry', any(c.get('pageGeometryMatches') is False for c in checks)),
+        (8, 'raster', any(c.get('visualPassed') is False for c in checks))]
+    failures = [(rank, name) for rank, name, failed in verdicts if failed]
+    # Keep a failed aggregate verdict visible even if its detailed flags are unavailable.
+    if any(c.get('textAndGeometryPassed') is False and not any(c.get(flag) is False for flag in
+           ('pageCountMatches', 'textAndOrderMatches', 'glyphPlacementPasses', 'pageGeometryMatches')) for c in checks):
+        failures.append((9, 'reference-text-or-geometry'))
+    return failures
+
+
+def validate_defect_report(report, defects):
+    expected = {(r['documentId'], r['engine']): [name for _, name in failure_verdicts(r)]
+                for r in report['results'] if failure_verdicts(r)}
+    actual = {(f['documentId'], f['engine']): f['failedVerdicts'] for f in defects['findings']}
+    if len(actual) != len(defects['findings']) or actual != expected:
+        raise ValueError('Ranked findings must retain every failed document/engine verdict exactly once.')
+
+
+def defect_report(report, manifest):
+    """Rank visible findings without changing any fidelity verdict or tolerance."""
+    sources = {
+        'mixed-fonts': ('mixed-fonts-short', ['src/wordnet/Layout/FixedLayout.cs', 'src/wordnet/Layout/FontResolver.cs']),
+        'long-tables': ('long-table-ledger', ['src/wordnet/Layout/TableSizing.cs']),
+        'footnotes': ('footnotes-contract', ['src/wordnet/Formats/DocxReader.Notes.cs']),
+        'continuous-sections': ('continuous-same-width', ['src/wordnet/Layout/FixedLayout.cs']),
+        'floating-logos': ('floating-logo-left', ['src/wordnet/Formats/DocxReader.Drawings.cs']),
+        'multi-page-reports': ('multipage-operations', ['src/wordnet/Layout/FixedLayout.cs'])}
+    documents = {d['id']: d for d in manifest['documents']}
+    findings = []
+    for result in report['results']:
+        document = documents[result['documentId']]
+        checks = result.get('referenceChecks', [])
+        failures = failure_verdicts(result)
+        if not failures:
+            continue
+        rank, failure = failures[0]
+        minimal, locations = sources.get(document.get('feature'), (document['id'], ['src/wordnet/Formats/']))
+        if result['engine'] != 'wordnet':
+            locations = []
+        findings.append(dict(rank=rank, finding=failure, failedVerdicts=[name for _, name in failures],
+                             documentId=document['id'], engine=result['engine'], minimalFixture=document['path'],
+                             smallerRelatedFixture=minimal + '.docx',
+                             inputSha256=result['inputSha256'], candidateSourceLocations=locations,
+                             sourceLocationBasis='triage starting points, not confirmed root causes' if locations else 'external engine; no wordnet source attribution',
+                             diagnosticOccurrences=[o for d in result.get('measurement', {}).get('diagnostics', []) for o in d.get('occurrences', [])],
+                             authoredChecks=result.get('authoredChecks'), knownLossChecks=result.get('knownLossChecks'),
+                             editableContent=result.get('editableContent'), referenceChecks=checks))
+    observed_readers = {check.get('kind') for result in report['results'] for check in result.get('referenceChecks', []) if check.get('status') == 'compared'}
+    return dict(schemaVersion=1, sourceRevision=report['sourceRevision'], sourceDirty=report['sourceDirty'],
+                manifestSha256=report['manifestSha256'], tolerances=report['tolerances'],
+                unavailableReaders=[name for kind, name in [('word', 'licensed desktop Word'), ('aspose', 'licensed Aspose.Words')] if kind not in observed_readers],
+                findings=sorted(findings, key=lambda f: (f['rank'], f['documentId'], f['engine'])))
 
 
 def content_check(snapshot, expected):
@@ -109,6 +198,7 @@ def main():
     parser.add_argument('--poi-classpath', help='Pinned POI jar directory for independent editable DOC text/reading-order checks')
     parser.add_argument('--editable-reader', default=shutil.which('antiword'))
     parser.add_argument('--references', type=Path, help='Caller-owned reference manifest; see docs/comparison.md')
+    parser.add_argument('--cohort', choices=COHORTS, default='all')
     parser.add_argument('--capture-aspose-reference', type=Path)
     parser.add_argument('--iterations', type=int, default=5)
     parser.add_argument('--dotnet', default=shutil.which('dotnet'))
@@ -130,24 +220,16 @@ def main():
     if manifest['schemaVersion'] != 1:
         parser.error('Unsupported corpus schema')
     args.output.mkdir(parents=True, exist_ok=True)
-    font_dir = args.output / 'fonts'
-    font_dir.mkdir(exist_ok=True)
-    # Require a clean font set so two providers cannot silently use different assets.
-    expected_font_names = {Path(f['path']).name for f in manifest['fonts']}
-    if any(p.name not in expected_font_names for p in font_dir.iterdir()):
-        parser.error('Output fonts directory contains unexpected files; choose a fresh output directory.')
-    for font in manifest['fonts']:
-        path = ROOT / font['path']
-        if digest(path) != font['sha256']:
-            parser.error('Pinned font hash mismatch: ' + font['path'])
-        shutil.copyfile(path, font_dir / path.name)
-    renderer_process = subprocess.run([args.renderer, '-v'], capture_output=True, text=True, check=True)
-    renderer_version = renderer_identity(renderer_process.stderr or renderer_process.stdout)
+    try:
+        font_dir = stage_fonts(manifest, args.output)
+    except ValueError as error:
+        parser.error(str(error))
+    renderer_banner = renderer_version(args.renderer)
     references = [(r, args.references.parent) for r in json.loads(args.references.read_text(encoding='utf-8-sig'))['references']] if args.references else []
     references.extend((r, args.manifest.parent) for d in manifest['documents'] for r in d.get('references', []))
     report = dict(schemaVersion=1, manifestSha256=digest(args.manifest), sourceRevision=invoke(['git', '-C', str(ROOT), 'rev-parse', 'HEAD']).stdout.strip(),
                   sourceDirty=bool(invoke(['git', '-C', str(ROOT), 'status', '--porcelain']).stdout.strip()),
-                  python=platform.python_version(), pillow=PIL.__version__, renderer=renderer_version, rendererSha256=digest(args.renderer),
+                  python=platform.python_version(), pillow=PIL.__version__, renderer=renderer_banner, rendererSha256=digest(args.renderer),
                   tolerances=TOLERANCES, fonts=manifest['fonts'], results=[])
     env = os.environ.copy()
     if args.aspose_license:
@@ -156,6 +238,8 @@ def main():
         env.pop('WORDNET_ASPOSE_LICENSE', None)
     captured = []
     for document in manifest['documents']:
+        if not in_cohort(document, args.cohort):
+            continue
         source = args.manifest.parent / document['path']
         if digest(source) != document['sha256']:
             parser.error('Input hash mismatch: ' + document['id'])
@@ -180,7 +264,7 @@ def main():
                 if engine == 'aspose':
                     captured.append(dict(documentId=document['id'], kind='aspose', version=next(a['version'] for a in measured['assemblies'] if a['name'] == 'Aspose.Words'),
                                          artifactMode=measured['artifactMode'], inputSha256=document['sha256'], pdf=os.path.relpath(pdf.resolve(), args.capture_aspose_reference.parent.resolve()) if args.capture_aspose_reference else pdf.name,
-                                         sha256=digest(pdf), fonts=manifest['fonts'], renderer=renderer_version, assemblies=measured['assemblies']))
+                                         sha256=digest(pdf), fonts=manifest['fonts'], renderer=renderer_banner, assemblies=measured['assemblies']))
                 if measured['artifactMode'] == 'evaluation':
                     result['authoredChecks'] = dict(status='excluded-evaluation-artifact')
                     result['referenceChecks'] = [dict(status='excluded-evaluation-artifact')]
@@ -206,7 +290,7 @@ def main():
                 for reference, reference_root in [(r, base) for r, base in references if r['documentId'] == document['id']]:
                     check = dict(kind=reference['kind'], version=reference['version'])
                     result['referenceChecks'].append(check)
-                    if reference['artifactMode'] != 'licensed':
+                    if reference['artifactMode'] != 'licensed' and not (reference['kind'] == 'libreoffice' and reference['artifactMode'] == 'open-source'):
                         check['status'] = 'excluded-evaluation-artifact'
                         continue
                     if reference['inputSha256'] != document['sha256'] or reference['fonts'] != manifest['fonts']:
@@ -218,7 +302,7 @@ def main():
                     snapshot_path = prefix.with_name(prefix.name + '-reference.json')
                     invoke([args.dotnet, str(args.worker), '--comparison', 'snapshot', str(reference_pdf), str(snapshot_path)])
                     check.update(snapshot_check(measured['snapshot'], json.loads(snapshot_path.read_text())))
-                    if renderer_identity(reference['renderer']) != renderer_version:
+                    if renderer_identity(reference['renderer']) != renderer_banner:
                         check['visualStatus'] = 'incomparable-renderer-version'
                     else:
                         reference_images = render(reference_pdf, prefix.with_name(prefix.name + '-reference'), args.renderer)
@@ -239,7 +323,10 @@ def main():
                 check['textAndGeometryPassed'] = all(check.get(k, False) for k in ('pageCountMatches', 'pageGeometryMatches', 'textAndOrderMatches', 'glyphPlacementPasses'))
                 check['visualPassed'] = all(p['passed'] for p in check['visual']) if 'visual' in check else None
     (args.output / 'results.json').write_text(json.dumps(report, indent=2) + '\n')
-    failures = [r for r in report['results'] if r['status'] == 'failed' or r.get('knownLossChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('passed') is False or r.get('authoredChecks', {}).get('pageCountMatches') is False or r.get('editableContent', {}).get('passed') is False or any(c.get('textAndGeometryPassed') is False or c.get('visualPassed') is False for c in r.get('referenceChecks', []))]
+    defects = defect_report(report, manifest)
+    (args.output / 'defects.json').write_text(json.dumps(defects, indent=2) + '\n')
+    validate_defect_report(report, defects)
+    failures = [r for r in report['results'] if failure_verdicts(r)]
     print(f"{len(report['results'])} results; {len(failures)} failures retained in {args.output / 'results.json'}")
     return 1 if failures else 0
 

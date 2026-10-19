@@ -1,6 +1,6 @@
 # Formatting and image profile
 
-The current implementation extends the alpha.8 appearance profile. It preserves
+The current implementation preserves
 the original targets and adds net462. The enterprise preview separates native import
 into `wordnet.Ocr` and adds managed OFL resources in `wordnet.Fonts`.
 

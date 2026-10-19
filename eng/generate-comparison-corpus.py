@@ -51,24 +51,119 @@ cases = [
   p('DELIVERY NOTICE') + '<w:p><w:r><w:pict xmlns:v="urn:schemas-microsoft-com:vml"><v:shape id="synthetic-box" style="position:absolute;left:200pt;top:40pt"><v:textbox><w:txbxContent>' + p('Routing label') + '</w:txbxContent></v:textbox></v:shape></w:pict></w:r></w:p>' + p('Dispatch reference SYN-404') + p('Retain this notice.'), {}, '', ''),
 ]
 
+# P0 extension: two minimal independently authored cases per requested feature.
+# Expectations are fixed here, before measuring either converter or office output.
+new_pages = {}
+features = {}
+for suffix, count in [('short', 1), ('report', 3)]:
+    name = 'mixed-fonts-' + suffix
+    texts = [f'FONT STUDY {suffix.upper()}', 'Regular face', 'Bold face', 'Italic face']
+    body = (p(texts[0]) + p(texts[1])
+            + p(texts[2], run='<w:rFonts w:ascii="Liberation Serif" w:hAnsi="Liberation Serif"/><w:b/>')
+            + p(texts[3], run='<w:rFonts w:ascii="Liberation Mono" w:hAnsi="Liberation Mono"/><w:i/>'))
+    if count > 1:
+        for page in range(2, count + 1):
+            texts.append(f'Font appendix {page}')
+            body += p(texts[-1], '<w:pageBreakBefore/>', '<w:sz w:val="28"/>')
+    cases.append((name, 'report', texts, [], body, {}, '', ''))
+    new_pages[name] = count
+    features[name] = 'mixed-fonts'
+
+for suffix, rows_count in [('ledger', 48), ('inventory', 54)]:
+    name = 'long-table-' + suffix
+    texts = [f'{suffix.upper()} REGISTER', 'Reference', 'Amount']
+    data = [[p('Reference'), p('Amount')]]
+    for number in range(1, rows_count + 1):
+        row = [f'Entry {number:03d}', f'{number * 10} EUR']
+        texts.extend(row)
+        data.append([p(value) for value in row])
+    body = p(texts[0]) + table(data).replace('<w:tr>', '<w:tr><w:trPr><w:tblHeader/></w:trPr>', 1)
+    cases.append((name, 'report', texts, [], body, {}, '', ''))
+    new_pages[name] = 2
+    features[name] = 'long-tables'
+
+for suffix, notes_count in [('contract', 1), ('report', 2)]:
+    name = 'footnotes-' + suffix
+    texts = [f'{suffix.upper()} WITH NOTES']
+    body = p(texts[0])
+    notes = ''
+    for number in range(1, notes_count + 1):
+        text = f'Clause {number} has a note.'
+        texts.append(text)
+        body += p(text).replace('</w:p>', f'<w:r><w:footnoteReference w:id="{number}"/></w:r></w:p>')
+        notes += f'<w:footnote w:id="{number}">' + p(f'Independent note {number}.') + '</w:footnote>'
+    texts.extend(f'Independent note {number}.' for number in range(1, notes_count + 1))
+    cases.append((name, 'contract' if suffix == 'contract' else 'report', texts, [], body,
+                  {'word/footnotes.xml': f'<w:footnotes xmlns:w="{W}">{notes}</w:footnotes>'}, 'footnotes', ''))
+    new_pages[name] = 1
+    features[name] = 'footnotes'
+
+for suffix, columns in [('same-width', ''), ('two-columns', '<w:cols w:num="2"/>')]:
+    name = 'continuous-' + suffix
+    texts = ['CONTINUOUS SECTION', 'Before section boundary.', 'After section boundary.']
+    boundary = '<w:sectPr><w:type w:val="continuous"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr>'
+    body = p(texts[0]) + p(texts[1], boundary) + p(texts[2])
+    cases.append((name, 'report', texts, [], body, {}, '', '<w:type w:val="continuous"/>' + columns))
+    new_pages[name] = 1
+    features[name] = 'continuous-sections'
+
+for suffix, x in [('left', 0), ('right', 3000000)]:
+    name = 'floating-logo-' + suffix
+    texts = ['EXAMPLE ENGINEERING', 'Service notice with positioned logo.', 'End of notice.']
+    # ECMA-376 DrawingML anchor; the raster is our existing MIT-authored fixture.
+    anchor = f'''<w:p><w:r><w:drawing><wp:anchor xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="0" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">
+    <wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="column"><wp:posOffset>{x}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>
+    <wp:extent cx="762000" cy="381000"/><wp:wrapSquare wrapText="bothSides"/><wp:docPr id="1" name="Synthetic logo"/><wp:cNvGraphicFramePr/>
+    <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="1" name="Synthetic logo"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="image"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="762000" cy="381000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r></w:p>'''
+    cases.append((name, 'letterhead', texts, [], p(texts[0]) + anchor + p(texts[1]) + p(texts[2]),
+                  {'word/media/logo.png': (DEST.parent / 'color-grid.png').read_bytes()}, 'image', ''))
+    new_pages[name] = 1
+    features[name] = 'floating-logos'
+
+for suffix, count in [('operations', 3), ('audit', 4)]:
+    name = 'multipage-' + suffix
+    texts, body = [], ''
+    for page in range(1, count + 1):
+        title = f'{suffix.upper()} PAGE {page}'
+        detail = f'Reviewed section {page}: synthetic results only.'
+        texts.extend([title, detail])
+        body += p(title, '<w:pageBreakBefore/>' if page > 1 else '', '<w:b/>') + p(detail)
+    cases.append((name, 'report', texts, [], body, {}, '', ''))
+    new_pages[name] = count
+    features[name] = 'multi-page-reports'
+
 rows = []
 for name, category, text, losses, body, extras, relation, section in cases:
     # One distinct font request per rPr (last wins in this authored helper).
     import re
     body = re.sub(r'(<w:rFonts[^>]*/>)(<w:rFonts[^>]*/>)', r'\2', body)
     rel = f'<Relationship Id="{relation}" Type="{R}/{relation}" Target="{relation}.xml"/>' if relation else ''
-    overrides = ''.join(f'<Override PartName="/{part}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.{relation}+xml"/>' for part in extras)
+    if relation == 'image':
+        rel = f'<Relationship Id="image" Type="{R}/image" Target="media/logo.png"/>'
+        overrides = '<Default Extension="png" ContentType="image/png"/>'
+    else:
+        overrides = ''.join(f'<Override PartName="/{part}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.{relation}+xml"/>' for part in extras)
+    section_start = section if relation == 'header' else ''
+    section_end = section if relation != 'header' else ''
+    if section.startswith('<w:type'):
+        section_start, section_end = section.split('/>', 1)
+        section_start += '/>'
     parts = {
         '[Content_Types].xml': f'<Types xmlns="{CT}"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>{overrides}</Types>',
         '_rels/.rels': f'<Relationships xmlns="{PR}"><Relationship Id="main" Type="{R}/officeDocument" Target="word/document.xml"/></Relationships>',
         'word/_rels/document.xml.rels': f'<Relationships xmlns="{PR}">{rel}</Relationships>',
-        'word/document.xml': f'<w:document xmlns:w="{W}" xmlns:r="{R}"><w:body>{body}<w:sectPr>{section if relation == 'header' else ''}<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720"/>{section if relation != 'header' else ''}</w:sectPr></w:body></w:document>', **extras}
+        'word/document.xml': f'<w:document xmlns:w="{W}" xmlns:r="{R}"><w:body>{body}<w:sectPr>{section_start}<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720"/>{section_end}</w:sectPr></w:body></w:document>', **extras}
     path = DEST / (name + '.docx')
     with ZipFile(path, 'w', ZIP_DEFLATED, compresslevel=9) as archive:
         for key, value in sorted(parts.items()):
             info = ZipInfo(key, (2000, 1, 1, 0, 0, 0)); info.compress_type = ZIP_DEFLATED
-            archive.writestr(info, value.encode())
-    rows.append(dict(id=name, category=category, path=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest(), requiredText=text, knownLosses=losses, expectedPages=2 if name == 'report-pages' else 1, references=[]))
+            archive.writestr(info, value if isinstance(value, bytes) else value.encode())
+    row = dict(id=name, category=category, path=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest(), requiredText=text, knownLosses=losses, expectedPages=new_pages.get(name, 2 if name == 'report-pages' else 1), references=[])
+    if name in features:
+        row.update(feature=features[name], cohort='p0-2026-10', expectationBasis='authored-source-expectations')
+    rows.append(row)
 fonts = [dict(path=p.relative_to(ROOT).as_posix(), sha256=hashlib.sha256(p.read_bytes()).hexdigest(), version='Noto Sans 2.008; SIL OFL 1.1') for p in sorted((ROOT / 'src/wordnet/Resources/Fonts').glob('*.ttf'))]
+fonts.extend(dict(path=p.relative_to(ROOT).as_posix(), sha256=hashlib.sha256(p.read_bytes()).hexdigest(), version='Liberation 2.1.5; SIL OFL 1.1')
+             for p in sorted((ROOT / 'src/wordnet.Fonts/Resources').glob('Liberation*.ttf')))
 manifest = dict(schemaVersion=1, provenance='Independently authored synthetic examples, MIT; no customer data or proprietary resources.', generator='eng/generate-comparison-corpus.py', generatorSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), fonts=fonts, documents=rows)
 (DEST / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')

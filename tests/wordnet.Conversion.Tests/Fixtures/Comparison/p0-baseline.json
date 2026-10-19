@@ -1,0 +1,557 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-19",
+  "basis": "review-corrected local working tree based on 948863b; pending PR #83, not released",
+  "sourceRevision": "948863bd539e27a3205b86bf1f182ad4449a8f72",
+  "sourceDirty": true,
+  "manifestSha256": "42944a14744b76c32f5278ff7485cf6afaa899fde241894712aa2cfb68d11ac9",
+  "rawResultsSha256": "33c71003c27b9a5f498946fadd2b54e1e4d839d5c039af48466c3eee25dc3759",
+  "referenceManifestSha256": "1ebc9e48c30403a6924aa308a5c58d48daa938dfc5ddf0a5827e77e568b5a7d0",
+  "referenceProducer": "LibreOffice 25.2.3.2 520(Build:2)",
+  "runtime": ".NET 10.0.12",
+  "renderer": "pdftoppm version 26.05.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+      "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+      "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+      "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+      "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+      "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+      "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+      "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+      "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    }
+  ],
+  "tolerances": {
+    "glyphPoints": 0.25,
+    "significantPixelChannelSum": 96,
+    "changedPixelFraction": 0.002,
+    "meanChannelError": 0.25
+  },
+  "unavailableReaders": [
+    "licensed desktop Word",
+    "licensed Aspose.Words"
+  ],
+  "results": [
+    {
+      "documentId": "mixed-fonts-short",
+      "inputSha256": "1450a3b16c7db6571f29a446798705bb986efec8c7958f2ea0d3c91f5d8fb81a",
+      "referencePdfSha256": "296c767446397c6ab522ad50070504ac3ec790d2cbe7647557760f053ef37001",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 32.18900000000008,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.0036661874118219685,
+            "meanChannelError": 0.5938584351469502
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "mixed-fonts-report",
+      "inputSha256": "ce123fdc3705dd6e3c204a966f845fc8cf938d604f7059897baf6d3103919d7b",
+      "referencePdfSha256": "28e7c369801d442a047e5917ffab62a33ba1a6641dc060773db7867bf7131b5e",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 32.18900000000008,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.003726748476440624,
+            "meanChannelError": 0.6003889366149954
+          },
+          {
+            "passed": true,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.0007469197969634234,
+            "meanChannelError": 0.09743041645825436
+          },
+          {
+            "passed": true,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.0007480412981600652,
+            "meanChannelError": 0.09732948135055661
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "long-table-ledger",
+      "inputSha256": "a4d537e07b2312fac5c6554fd8ae1efeec2ccf14edd1a5815f8da81fe382920d",
+      "referencePdfSha256": "42ca5897864d61ec0233c2bf7050e7c32f5a887141080b2db388cd187a71a17e",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": false,
+        "glyphSequenceMatches": false,
+        "maximumGlyphDisplacementPoints": 0.0,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.038729922324827123,
+            "meanChannelError": 5.907485123286627
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.014905872404565855,
+            "meanChannelError": 2.394387110811047
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "long-table-inventory",
+      "inputSha256": "87fdf5d5dcbcfc95dafb4e4064e39aaafce5173d59e6b93a33f32263294e1767",
+      "referencePdfSha256": "7d5113150e3c224a78c530696493ee5b34a1e100ad617d2f402fa7e76c8f8a08",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": false,
+        "glyphSequenceMatches": false,
+        "maximumGlyphDisplacementPoints": 0.0,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.039021512635953985,
+            "meanChannelError": 5.945104759426778
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.02125917668354152,
+            "meanChannelError": 3.3842722915185353
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "footnotes-contract",
+      "inputSha256": "3c3abb14065b62da76636fe4c59e9abe523e046c4db77d50397bc6fe8bf0778b",
+      "referencePdfSha256": "40e4b534ca8781dad88a1a2d6062877fbc249eb3b804a39d88619004de454769",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": false,
+        "glyphSequenceMatches": false,
+        "maximumGlyphDisplacementPoints": 0.0,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.0037794590326827877,
+            "meanChannelError": 0.6052652238179939
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "footnotes-report",
+      "inputSha256": "feeb32235477665d9f44e6f55820b1a96e014e76edc5a3df936bab284cc7d496",
+      "referencePdfSha256": "32e048b79daaf6556e974e1aa1a30234ee79440ed9959152fe7bd886964e7e09",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": false,
+        "glyphSequenceMatches": false,
+        "maximumGlyphDisplacementPoints": 0.0,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.006126761037254027,
+            "meanChannelError": 0.9841913191321375
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "continuous-same-width",
+      "inputSha256": "ddc269d51e22ab9c6595c9a062198658d85498397f4a3c13a5bfa19ae751c4b6",
+      "referencePdfSha256": "9db679b189cfd81d3bb98587512b565169bf3f3053634cb3e4d8d4f2b70eea9e",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 18.239000000000033,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.004879651706588371,
+            "meanChannelError": 0.7858504680024494
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "continuous-two-columns",
+      "inputSha256": "a8779c8031a76f9924ad61468c5013bf2a7cf5cd369293f4f61fd62aa06ba0da",
+      "referencePdfSha256": "ddf9af13ded2b3c4e40f9913eaaf1b99aac8cb3b7228eead4c4a81dc8d7579f1",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 18.239000000000033,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.004879651706588371,
+            "meanChannelError": 0.7858504680024494
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "floating-logo-left",
+      "inputSha256": "d929494ef3b88b2a2d66d2bef5bf0525159cbd0ce1ffec947ef0fe8c35483b8e",
+      "referencePdfSha256": "7a51fd2d9432bce5996016f8c160468c2f261a74b4491f65c0608707835442d3",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 60.099999999999994,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.007317795308087594,
+            "meanChannelError": 1.1720158535409158
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "floating-logo-right",
+      "inputSha256": "d414a5e48ebd6424e4856294ebdcbd2b9cb4fcbcb563bf9dc2c5b20aecbdea68",
+      "referencePdfSha256": "00fae431a2e1a9ab287bbaef2882e52b6059c6273c57b8ae02ba78fcc04fb839",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 29.589000000000055,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.007318916809284235,
+            "meanChannelError": 1.1717792167884242
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "multipage-operations",
+      "inputSha256": "ff4e81cd4fbbdb97bb434b58e38da76d4a9262db41799429f7394ce34a6bb3de",
+      "referencePdfSha256": "ac48a3f1e8d844df50df1940c1a6a1e810cd543dacb6cca78e21fdb43ed71b16",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 19.362999999999886,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.004337966628610392,
+            "meanChannelError": 0.71312784440741
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.004379462172886138,
+            "meanChannelError": 0.720175357927107
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.0043951631896391235,
+            "meanChannelError": 0.7219428438130143
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    },
+    {
+      "documentId": "multipage-audit",
+      "inputSha256": "678abfaa8211517b399d4172b37c7472c92217f85e5eed571c0c956ba0bdeba7",
+      "referencePdfSha256": "bebb09e01dc009a56e285999ed760ce9746a84a04d881fce662d31ee628153a0",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContentPassed": true,
+      "referenceChecks": {
+        "kind": "libreoffice",
+        "version": "LibreOffice 25.2.3.2 520(Build:2)",
+        "pageCountMatches": true,
+        "pageGeometryMatches": false,
+        "textAndOrderMatches": true,
+        "glyphSequenceMatches": true,
+        "maximumGlyphDisplacementPoints": 19.362999999999886,
+        "glyphPlacementPasses": false,
+        "visual": [
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.003985815252864875,
+            "meanChannelError": 0.6618886977352405
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.004040768811500322,
+            "meanChannelError": 0.6726921187624907
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.0040587128306465905,
+            "meanChannelError": 0.6731867007902097
+          },
+          {
+            "passed": false,
+            "dimensionsMatch": true,
+            "changedPixelFraction": 0.004075535348596217,
+            "meanChannelError": 0.676119426419428
+          }
+        ],
+        "status": "compared",
+        "textAndGeometryPassed": false,
+        "visualPassed": false
+      }
+    }
+  ]
+}
