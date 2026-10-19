@@ -35,7 +35,7 @@ public final class EditP2Objects {
         Object desktop = context.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", context);
         XComponentLoader loader = query(XComponentLoader.class, desktop);
         XComponent document = loader.loadComponentFromURL(new File(args[0]).toURI().toString(), "_blank", 0,
-            new PropertyValue[] { property("Hidden", true), property("UpdateDocMode", (short)0), property("MacroExecutionMode", (short)4) });
+            new PropertyValue[] { property("Hidden", true), property("UpdateDocMode", (short)0), property("MacroExecutionMode", com.sun.star.document.MacroExecMode.NEVER_EXECUTE) });
         if (document == null) throw new IllegalStateException("LibreOffice could not load the object document");
         int charts = 0, equations = 0;
         try {
@@ -54,7 +54,7 @@ public final class EditP2Objects {
                             while ((count = original.readBytes(chunk, 8192)) != 0) out.write(chunk[0], 0, count);
                         }
                         XComponent calc = loader.loadComponentFromURL(temp.toUri().toString(), "_blank", 0,
-                            new PropertyValue[] { property("Hidden", true), property("MacroExecutionMode", (short)4) });
+                            new PropertyValue[] { property("Hidden", true), property("MacroExecutionMode", com.sun.star.document.MacroExecMode.NEVER_EXECUTE) });
                         try {
                             com.sun.star.sheet.XSpreadsheetDocument sheetDoc = query(com.sun.star.sheet.XSpreadsheetDocument.class, calc);
                             com.sun.star.sheet.XSpreadsheet sheet = query(com.sun.star.sheet.XSpreadsheet.class, sheetDoc.getSheets().getByName("Data"));

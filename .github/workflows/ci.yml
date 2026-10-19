@@ -112,7 +112,7 @@ jobs:
         env:
           LIBREOFFICE_VERSION: 4:24.2.7-0ubuntu0.24.04.7
         run: |
-          sudo apt-get install -y --no-install-recommends "libreoffice-calc=$LIBREOFFICE_VERSION"
+          sudo apt-get install -y --no-install-recommends "libreoffice-calc=$LIBREOFFICE_VERSION" "libreoffice-math=$LIBREOFFICE_VERSION"
           python3 -m venv artifacts/p2-venv
           artifacts/p2-venv/bin/pip install -r eng/p2-requirements.txt
           python3 eng/verify-p2-office.py artifacts/p2-objects

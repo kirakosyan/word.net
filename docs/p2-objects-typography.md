@@ -1,7 +1,7 @@
 # Bounded P2 objects and typography
 
 The owner assigned #64–#73 and the revised integrated checkpoint #82. This work is
-unpublished and depends on P1 PR #85. Encryption/decryption and DOCX/PDF signatures
+unpublished and builds on merged P1 PR #85. Encryption/decryption and DOCX/PDF signatures
 (#74–#81) were cancelled and are absent. The staged design in
 [charts and equations](design/charts-equations.md) remains the implementation contract.
 
@@ -11,6 +11,8 @@ plain-value XLSX sheet. Charts retain an allowlisted local part graph; embedded
 data never executes or refreshes. Cache/range values must agree. OMML admits text,
 rows, fractions, sub/superscripts, square/nth roots and paired simple delimiters.
 Object placements, graph bytes and nested ZIP/XML work share operation limits.
+Outer and nested ZIP entries share the archive allowance. Chart/workbook XML is
+scanned against aggregate node/text costs before allocating its element trees.
 Caps remain 128 objects, 32 chart parts, 16 series, 10,000 points per chart,
 100,000 total points/cells, 1,024 characters per label, and 10,000 math nodes/depth 32.
 
@@ -122,7 +124,8 @@ abstract directional combinations, alongside the earlier UAX #29 cases.
 
 Set `WORDNET_P2_EVIDENCE` while running the suite to retain real DOCX/PDF/SVG output.
 `eng/verify-p2-office.py` invokes the pinned development UNO client against installed
-LibreOffice Writer/Calc. It changes the chart from 10 to 42 through the chart data
+LibreOffice Writer/Calc/Math. CI pins all three components to
+`4:24.2.7-0ubuntu0.24.04.7`; the client disables macros. It changes the chart from 10 to 42 through the chart data
 model and the retained XLSX B2 cell through Calc, and changes the formula denominator
 through the equation model. LibreOffice retains imported XLSX separately from the
 chart cache, so the driver returns Calc's saved stream through Writer's documented
