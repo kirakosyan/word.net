@@ -1,0 +1,12 @@
+{
+  "OpenDocument-v1.3-manifest-schema.rng": {
+    "url": "https://raw.githubusercontent.com/tdf/odftoolkit/master/validator/src/main/resources/schema/odf1.3/OpenDocument-v1.3-manifest-schema.rng",
+    "sha256": "8aee71f03484be112af972d622cc9031280c007b0a454ae8815e8e333c9bdd17",
+    "source": "OASIS Standard, 27 April 2021; copyright OASIS Open 2021, original notices retained in downloaded schemas."
+  },
+  "OpenDocument-v1.3-schema.rng": {
+    "url": "https://raw.githubusercontent.com/tdf/odftoolkit/master/validator/src/main/resources/schema/odf1.3/OpenDocument-v1.3-schema.rng",
+    "sha256": "40bad03efdbb02825230d357da0aa6ac679934c5bf56c6281752c0c24d58e4e6",
+    "source": "OASIS Standard, 27 April 2021; copyright OASIS Open 2021, original notices retained in downloaded schemas."
+  }
+}

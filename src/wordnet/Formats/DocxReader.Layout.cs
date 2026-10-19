@@ -15,6 +15,7 @@ internal sealed partial class DocxReader
     private void EndSection(XElement element, List<DocumentBlock> blocks, bool paragraphBoundary = false)
     {
         var settings = new PageSettings();
+        double gutter = 0;
         settings.EvenAndOdd = evenAndOdd;
         if (finalSection != null)
             foreach (var story in finalSection.Stories) settings.Stories.Add(story.Key, story.Value);
@@ -35,8 +36,8 @@ internal sealed partial class DocxReader
                 if (property.Attribute(W + "header") != null) settings.HeaderDistance = Integer(property, W + "header", 0, 31680) / 20.0;
                 if (property.Attribute(W + "footer") != null) settings.FooterDistance = Integer(property, W + "footer", 0, 31680) / 20.0;
                 settings.Left = Margin("left"); settings.Right = Margin("right"); settings.Top = Margin("top"); settings.Bottom = Margin("bottom");
-                if (property.Attribute(W + "gutter") != null && Integer(property, W + "gutter", 0, 31680) != 0)
-                    context.Loss("Docx.Gutter", "Binding gutters are not retained.");
+                if (property.Attribute(W + "gutter") != null && (gutter = Integer(property, W + "gutter", 0, 31680) / 20.0) != 0)
+                    context.Loss("Docx.Gutter", "Binding gutters use additional left-margin space for explicit columns; other binding behavior is not retained.");
                 double Margin(string name)
                 {
                     int value = Integer(property, W + name, name is "top" or "bottom" ? -31680 : 0, 31680);
@@ -53,8 +54,23 @@ internal sealed partial class DocxReader
             }
             else if (property.Name == W + "cols")
             {
-                int count = property.Attribute(W + "num") == null ? 1 : Integer(property, W + "num", 1, 64);
-                if (property.HasElements || (string?)property.Attribute(W + "equalWidth") is "0" or "false" || count > 3)
+                bool explicitWidths = (string?)property.Attribute(W + "equalWidth") is "0" or "false" or "off";
+                int count = explicitWidths || property.Attribute(W + "num") == null ? 1 : Integer(property, W + "num", 1, 64);
+                if (explicitWidths)
+                {
+                    XElement[] columns = property.Elements(W + "col").ToArray();
+                    if (columns.Length == 0) throw new InvalidDataException("Docx.Columns: Missing explicit column definitions.");
+                    if (columns.Length > 3 || property.Elements().Count() != columns.Length)
+                        context.Loss("Docx.Columns", "Unsupported explicit column shapes use one body column.");
+                    else
+                    {
+                        settings.Columns = columns.Length;
+                        foreach (XElement column in columns)
+                            settings.ExplicitColumns.Add(new BodyColumn(Integer(column, W + "w", 1, 31680) / 20.0,
+                                column.Attribute(W + "space") == null ? 0 : Integer(column, W + "space", 0, 31680) / 20.0));
+                    }
+                }
+                else if (property.HasElements || count > 3)
                     context.Loss("Docx.Columns", "Only one to three equal-width body columns are supported.");
                 else settings.Columns = count;
                 if (property.Attribute(W + "space") != null) settings.ColumnGap = Integer(property, W + "space", 0, 31680) / 20.0;
@@ -90,6 +106,7 @@ internal sealed partial class DocxReader
             }
             else context.Loss("Docx.PageLayout", "Section features such as headers, footers, columns and page numbering are not retained.");
         }
+        if (settings.ExplicitColumns.Count != 0) settings.Left += gutter;
         settings.Validate();
         if (!paragraphBoundary && !element.HasElements && sectionCount == 0) return;
         if (++sectionCount > context.Options.MaximumPages) throw new InvalidDataException("Limit.Pages: Too many sections.");

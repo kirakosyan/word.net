@@ -51,6 +51,11 @@ internal static class Program
             ("plain.doc", DocumentFormat.Doc), ("digital.pdf", DocumentFormat.Pdf), ("plain.epub", DocumentFormat.Epub),
             ("plain.mobi", DocumentFormat.Mobi), ("plain.azw3", DocumentFormat.Azw3), ("sample.md", DocumentFormat.Markdown)
         };
+        if (args[0] == "fuzz")
+        {
+            seeds.Add(("Odt/text.odt", DocumentFormat.Odt));
+            seeds.Add(("Odt/table-image.odt", DocumentFormat.Odt));
+        }
         string docx = Path.Combine(output, args[0] + "-seed.docx"), text = Path.Combine(output, args[0] + "-seed.txt");
         File.WriteAllText(text, "Qualification heading\nEnglish printed text 12345.", new UTF8Encoding(false));
         CreateDocx(docx);
@@ -226,11 +231,13 @@ internal static class Program
         inputs[DocumentFormat.Docx] = Convert(inputs[DocumentFormat.Text], DocumentFormat.Text, DocumentFormat.Docx);
         inputs[DocumentFormat.Html] = Encoding.UTF8.GetBytes("<p>Wordnet conversion test</p><p>English printed text 12345.</p>");
         inputs[DocumentFormat.Rtf] = Encoding.ASCII.GetBytes(@"{\rtf1\ansi Wordnet conversion test\par English printed text 12345.\par}");
+        inputs[DocumentFormat.Odt] = Convert(inputs[DocumentFormat.Docx], DocumentFormat.Docx, DocumentFormat.Odt);
         var pairs = (from source in inputs.Keys from target in Enum.GetValues<DocumentFormat>() where converter.CanConvert(source, target) select (Source: source, Target: target)).ToArray();
-        if (pairs.Length != 36 || pairs.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf) != 28
+        if (pairs.Length != 38 || pairs.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt) != 28
             || pairs.Count(p => p.Source is DocumentFormat.Html or DocumentFormat.Rtf) != 4
-            || pairs.Count(p => p.Target is DocumentFormat.Html or DocumentFormat.Rtf) != 4)
-            throw new InvalidOperationException("Expected the original 28 conversion directions and eight HTML/RTF exchanges with Word.");
+            || pairs.Count(p => p.Target is DocumentFormat.Html or DocumentFormat.Rtf) != 4
+            || pairs.Count(p => p.Source == DocumentFormat.Odt || p.Target == DocumentFormat.Odt) != 2)
+            throw new InvalidOperationException("Expected the original 28 directions, eight HTML/RTF exchanges with Word and two DOCX/ODT exchanges.");
         var measurements = new System.Collections.Concurrent.ConcurrentBag<Measurement>();
         Parallel.For(0, iterations, new ParallelOptions { MaxDegreeOfParallelism = 4 }, iteration =>
         {

@@ -19,6 +19,8 @@ internal sealed class DocumentCloner
         var target = new DocumentModel { Title = source.Title, Author = source.Author };
         target.Blocks.AddRange(source.Blocks.Select(Block)); target.FinalSection = Section(source.FinalSection);
         target.Notes.AddRange(source.Notes.Select(Note));
+        foreach (var pair in source.Review.Revisions) target.Review.Revisions.Add(pair.Key, Review(pair.Value));
+        foreach (var pair in source.Review.Comments) target.Review.Comments.Add(pair.Key, Review(pair.Value));
         return target;
     }
     internal DocumentBlock Block(DocumentBlock source)
@@ -28,7 +30,7 @@ internal sealed class DocumentCloner
         DocumentBlock result;
         if (source is ParagraphBlock p)
         {
-            var paragraph = new ParagraphBlock { RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
+            var paragraph = new ParagraphBlock { Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
             if (p.List != null)
             {
                 paragraph.List = p.List.Copy();
@@ -109,7 +111,12 @@ internal sealed class DocumentCloner
         if (image?.Anchor != null) image.Anchor = Anchor(image.Anchor);
         return new TextRun(r.Text, r.Bold, r.Italic, r.Code, r.Link, r.FontSize, r.Color, image, r.Appearance.Copy(), r.FieldInstruction,
             r.Note == null ? null : Note(r.Note), box, r.Bookmark, Control(r.Control))
-        { FieldCache = r.FieldCache?.Select(Run).ToList() };
+        { FieldCache = r.FieldCache?.Select(Run).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
+    }
+    private ReviewRecord Review(ReviewRecord source)
+    {
+        var result = new ReviewRecord { Id = source.Id, Author = source.Author, Date = source.Date, Deletion = source.Deletion, Initials = source.Initials };
+        result.Body.AddRange(source.Body.Select(p => (ParagraphBlock)Block(p))); return result;
     }
     private PageSettings? Section(PageSettings? source)
     {
@@ -137,7 +144,7 @@ internal sealed class DocumentCloner
     private TemplateControl? Control(TemplateControl? source)
     {
         if (source == null) return null;
-        if (!controls.TryGetValue(source, out TemplateControl? copy)) { copy = new TemplateControl(source.Tag); controls.Add(source, copy); }
+        if (!controls.TryGetValue(source, out TemplateControl? copy)) { copy = new TemplateControl(source.Tag) { Executable = source.Executable }; controls.Add(source, copy); }
         return copy;
     }
     private static NotePolicy Policy(NotePolicy p) => new NotePolicy { Format = p.Format, Start = p.Start, Restart = p.Restart };

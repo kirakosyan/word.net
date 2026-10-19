@@ -1,5 +1,28 @@
 # Conversion tests and qualification
 
+## Pending P1 qualification
+
+The required suite is **957** cases (855 baseline plus 102 P1 cases, including review regressions).
+The P1 branch adds independent OOXML/ODF fixtures and regressions for unequal-column
+flow, report preprocessing, paragraph repeats, review preservation/decisions/recording
+and matching-structure comparison. Unicode 17 conformance executes all **766 grapheme**
+and **1,944 word** cases, with SHA-256 checks on the original test files. These execute
+inside two suite cases, not as extra converter cases.
+
+`eng/verify-odt.py` uses pinned OASIS 1.3 schemas and LibreOfficeDev 26.8 build
+`2c87e51eeaa2b413ff4ae097b2705eea1995d8e5`. Six independent output checks retain
+text/order, list starts/nine levels, two master geometries and stories, merged cells,
+exact raster hashes and 60 × 30 pt frame geometry within 0.5 pt, plus styled headers,
+cell numbering and section transitions on list paragraphs. Local artifacts and
+`verification.json` are under ignored `artifacts/p1-odt`; original synthetic fixtures,
+generators, schema pins and conformance pins are committed.
+
+Final PR-head source/package results are recorded on the PR. Local runtime execution
+is Linux x64 on .NET 8/10; Framework is not run on Linux. Other supported native and
+actual Framework guest qualification belongs to the corresponding CI lanes.
+Compilation alone does not qualify those runtimes. Historical results below are
+separate from this pending implementation.
+
 ## P0 merged delivery — PR #83, 2026-10-19
 
 PR [#83](https://github.com/kirakosyan/word.net/pull/83) merged as `6cf54fd2a406880feb18abb1ee495b8c77bcc3e8`, with tree equality to final reviewed head `e8e6cbfada0f261d3153934f730ec3b3f42be870`. All fifteen review threads are resolved. All final-head push/PR checks pass: [PR CI](https://github.com/kirakosyan/word.net/actions/runs/39287800867), [push CI](https://github.com/kirakosyan/word.net/actions/runs/39287792368), and their two Android compilation runs. This evidence belongs to that tested head/merge-ref tree; it does not publish or qualify a new exact-main package for release.

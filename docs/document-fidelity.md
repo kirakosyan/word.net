@@ -1,5 +1,20 @@
 # Formatting and image profile
 
+## Pending P1 column and exchange profile
+
+DOCX preserves one to three explicit body-column widths/gaps in twips. Widths must
+be positive; their sum plus gaps must fill the body area within two twips.
+Fixed-page text is remeasured when crossing widths; tables, notes and column-relative
+anchors use active geometry. Default/equal-column behavior remains. Invalid geometry
+fails before output copying. A nested table cannot split across unequal widths;
+unsupported cases fail explicitly. Final-column balancing and arbitrary Word
+pagination parity remain outside this profile.
+
+[ODT](odt.md) exchanges a bounded ODF 1.3 profile with DOCX, retaining semantic
+structure/geometry with explicit losses. [Review preservation](review-workflows.md)
+is opt-in; default accepted-state conversion and Strict review-loss rejection remain.
+These pending additions do not change historical or published qualification.
+
 The current implementation preserves
 the original targets and adds net462. The enterprise preview separates native import
 into `wordnet.Ocr` and adds managed OFL resources in `wordnet.Fonts`.

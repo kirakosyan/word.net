@@ -1,0 +1,32 @@
+[
+  {
+    "file": "text.odt",
+    "sha256": "50f1feca909fa19bbb38aee93f5649f8451becc8a6d792b1b432bd832b133b09",
+    "license": "MIT",
+    "generator": "eng/generate-odt-fixtures.py"
+  },
+  {
+    "file": "list.odt",
+    "sha256": "3e523e946b5b9f409f87a3ac80ff0a52f787de48f3fea7651735868a40946055",
+    "license": "MIT",
+    "generator": "eng/generate-odt-fixtures.py"
+  },
+  {
+    "file": "table-image.odt",
+    "sha256": "2f0c2be7db17bd03e55ae8e1e43b3ae510c91611aef67dcaef4e4b4ddb45bf2c",
+    "license": "MIT",
+    "generator": "eng/generate-odt-fixtures.py"
+  },
+  {
+    "file": "nine-levels.odt",
+    "sha256": "28cb419e397cd2129ca66d7bed4aa0be186b559440f74c46be92e6dcad912a2b",
+    "license": "MIT",
+    "generator": "eng/generate-odt-fixtures.py"
+  },
+  {
+    "file": "masters.odt",
+    "sha256": "09180de85df931b2905c79aedc55b8ce6d22d3dd598219ceb2c3829dbd4706a7",
+    "license": "MIT",
+    "generator": "eng/generate-odt-fixtures.py"
+  }
+]

@@ -17,4 +17,5 @@ WordDocument report = AutomationRecipes.Populate(File.ReadAllBytes(Path.Combine(
     cancellationToken: cancellation.Token);
 AutomationRecipes.Export(invoice, outputDirectory, "invoice", Console.Out, cancellation.Token);
 AutomationRecipes.Export(report, outputDirectory, "report", Console.Out, cancellation.Token);
+P1Recipes.Run(outputDirectory, templates, cancellation.Token);
 Console.WriteLine("Saved invoice.docx, invoice.pdf, report.docx and report.pdf to " + outputDirectory);

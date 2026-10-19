@@ -28,7 +28,7 @@ public sealed partial class WordDocument
     {
         Guard.NotNull(source, nameof(source));
         if (!source.CanRead) throw new ArgumentException("The source must be readable.", nameof(source));
-        if (format == DocumentFormat.Xps || (format < DocumentFormat.Doc || format > DocumentFormat.Rtf)) throw new NotSupportedException("Editing.InputFormat: This format has no supported document reader.");
+        if (format == DocumentFormat.Xps || !EditingFormat(format)) throw new NotSupportedException("Editing.InputFormat: This format has no supported document reader.");
         options ??= new ConversionOptions();
         var context = new ConversionContext(options, cancellationToken) { Destination = DocumentFormat.Docx, Editing = true };
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
@@ -45,7 +45,7 @@ public sealed partial class WordDocument
     /// <summary>Gets immutable snapshots of body paragraphs, including table cells and text boxes.</summary>
     public IReadOnlyList<DocumentParagraph> Paragraphs
     {
-        get { lock (gate) return model.BodyParagraphs.Select(p => new DocumentParagraph(p.Runs.Where(r => r.Bookmark == null).Select(Snapshot), p.HeadingLevel)).ToList().AsReadOnly(); }
+        get { lock (gate) return model.BodyParagraphs.Select(p => new DocumentParagraph(p.Runs.Where(r => r.Bookmark == null && (r.Revision == null || !model.Review.Revisions[r.Revision].Deletion)).Select(Snapshot), p.HeadingLevel)).ToList().AsReadOnly(); }
     }
     /// <summary>Gets the most recently committed session diagnostics.</summary>
     public IReadOnlyList<ConversionDiagnostic> Diagnostics { get { lock (gate) return diagnostics; } }
@@ -132,10 +132,11 @@ public sealed partial class WordDocument
     {
         Guard.NotNull(destination, nameof(destination));
         if (!destination.CanWrite) throw new ArgumentException("The destination must be writable.", nameof(destination));
-        if ((format < DocumentFormat.Doc || format > DocumentFormat.Rtf)) throw new ArgumentOutOfRangeException(nameof(format));
+        if (!EditingFormat(format)) throw new ArgumentOutOfRangeException(nameof(format));
         lock (gate)
         {
             using var operation = BeginOperation();
+            if (format != DocumentFormat.Docx && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
             var context = Context(saveOptions ?? options, cancellationToken); context.Destination = format;
             DocumentModel copy = new DocumentCloner(context).Copy(model); Admit(copy, context);
             context.Phase = DiagnosticPhase.Destination; FidelityChecks.Destination(copy, format, context);
@@ -147,15 +148,16 @@ public sealed partial class WordDocument
         }
     }
 
-    private DocumentEditResult Edit(Func<DocumentModel, ConversionContext, int> edit, CancellationToken cancellationToken)
+    private DocumentEditResult Edit(Func<DocumentModel, ConversionContext, int> edit, CancellationToken cancellationToken, bool reviewAware = false)
     {
         lock (gate)
         {
             using var operation = BeginOperation();
+            if (model.Review.HasHistory && !reviewAware) throw new NotSupportedException("Review.ProtectedHistory: Resolve retained history before ordinary editing or template operations.");
             ConversionContext context = Context(options, cancellationToken);
             DocumentModel copy = new DocumentCloner(context).Copy(model);
             int changes = edit(copy, context); NormalizeNotes(copy); Admit(copy, context); context.CheckCancellation();
-            ConversionResult result = context.Result(0); model = copy; diagnostics = result.Diagnostics;
+            ConversionResult result = context.Result(0); model = copy; diagnostics = result.Diagnostics; version++;
             return new DocumentEditResult(changes, diagnostics);
         }
     }
@@ -192,9 +194,16 @@ public sealed partial class WordDocument
     }
     private static void Admit(DocumentModel model, ConversionContext context)
     {
-        context.CheckCancellation(); context.CheckCharacters(checked(model.CharacterCount + model.Title.Length + model.Author.Length));
+        context.CheckCancellation();
+        long reviewMetadata = model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
+            + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));
+        if ((long)model.CharacterCount + model.Title.Length + model.Author.Length + reviewMetadata > context.Options.MaximumCharacters)
+            throw new InvalidDataException("Limit.Characters: Document and review metadata exceed the aggregate character limit.");
+        model.Review.Validate(model, context);
         var images = new ConversionContext(context.Options, context.CancellationToken);
-        long bytes = model.CharacterCount * 2L; int nodes = 0;
+        long bytes = model.CharacterCount * 2L + reviewMetadata * 2;
+        int nodes = checked((model.Review.Revisions.Count + model.Review.Comments.Count) * 2
+            + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => p.Runs.Count + 1)));
         foreach (ParagraphBlock p in model.Paragraphs)
         {
             context.CheckCancellation(); nodes = checked(nodes + p.Runs.Count + 1);
@@ -203,6 +212,9 @@ public sealed partial class WordDocument
         if (bytes + nodes * 64L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Edited document exceeds aggregate resource limits.");
         foreach (TableBlock table in model.Tables) TableValidation.Validate(table, context);
     }
+    private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Pdf
+        or DocumentFormat.Markdown or DocumentFormat.Text or DocumentFormat.Azw3 or DocumentFormat.Epub or DocumentFormat.Mobi
+        or DocumentFormat.Xps or DocumentFormat.Html or DocumentFormat.Rtf;
     private static void AddRuns(List<TextRun> destination, IEnumerable<DocumentText> runs, ConversionContext context)
     {
         int characters = 0, count = 0;

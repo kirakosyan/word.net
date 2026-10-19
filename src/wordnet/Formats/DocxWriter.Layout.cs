@@ -20,7 +20,10 @@ internal sealed partial class DocxWriter
         NoteProperties("endnotePr", settings.Endnotes); NoteProperties("footnotePr", settings.Footnotes);
         if (settings.PageNumberStart.HasValue || settings.PageNumberFormat != "decimal") section.Add(new XElement(W + "pgNumType", new XAttribute(W + "fmt", settings.PageNumberFormat),
             settings.PageNumberStart.HasValue ? new XAttribute(W + "start", settings.PageNumberStart.Value) : null));
-        if (settings.Columns != 1) section.Add(new XElement(W + "cols", new XAttribute(W + "num", settings.Columns), new XAttribute(W + "space", Twips(settings.ColumnGap)), new XAttribute(W + "equalWidth", true)));
+        if (settings.ExplicitColumns.Count != 0)
+            section.Add(new XElement(W + "cols", new XAttribute(W + "num", settings.Columns), new XAttribute(W + "equalWidth", false),
+                settings.ExplicitColumns.Select(column => new XElement(W + "col", new XAttribute(W + "w", Twips(column.Width)), new XAttribute(W + "space", Twips(column.Gap))))));
+        else if (settings.Columns != 1) section.Add(new XElement(W + "cols", new XAttribute(W + "num", settings.Columns), new XAttribute(W + "space", Twips(settings.ColumnGap)), new XAttribute(W + "equalWidth", true)));
         if (settings.DifferentFirstPage) section.Add(new XElement(W + "titlePg"));
         section.AddFirst(settings.Stories.OrderBy(p => p.Key.StartsWith("header-", StringComparison.Ordinal) ? 0 : 1).Select(story =>
             new XElement(W + (story.Key.StartsWith("header-", StringComparison.Ordinal) ? "headerReference" : "footerReference"),

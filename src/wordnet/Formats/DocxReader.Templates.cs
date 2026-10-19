@@ -36,12 +36,24 @@ internal sealed partial class DocxReader
         if (element.Element(W + "sdtContent") is XElement content) ReadBlocks(content, blocks);
         TemplateControl? control = ReadControl(element);
         if (control != null)
+        {
+            if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
+                && (blocks.Count == start || blocks.Skip(start).Any(b => b is not ParagraphBlock)
+                || contentHasSection(element))) control.Executable = false;
             foreach (DocumentBlock block in blocks.Skip(start))
             {
-                if (block.Control != null) context.Loss("Template.NestedBlockControls", "Nested controls sharing a block are outside the editable template profile.");
+                if (block.Control != null)
+                {
+                    if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) || block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal))
+                    { block.Control.Executable = false; control.Executable = false; }
+                    context.Loss("Template.NestedBlockControls", "Nested controls sharing a block are outside the editable template profile.");
+                }
                 else block.Control = control;
             }
+        }
         return true;
+
+        static bool contentHasSection(XElement wrapper) => wrapper.Descendants(W + "sectPr").Any();
     }
     private bool ReadInlineControl(XElement element, List<TextRun> runs, TextStyle inherited, string? link)
     {

@@ -42,7 +42,7 @@ public sealed partial class WordDocument
         long expansion = m.CharacterCount;
         long structuralExpansion = 0;
         string prefix = UniquePrefix(m) + "t";
-        Blocks(m.Blocks, root, 0);
+        Blocks(m.Blocks, root, 0, true);
         foreach (List<DocumentBlock> story in m.Blocks.Select(b => b.Section).Concat(new[] { m.FinalSection }).Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct()) Blocks(story, root, 0);
         var referenced = new HashSet<DocumentNote>(DocumentModel.Expand(m.Blocks).OfType<ParagraphBlock>().SelectMany(p => p.Runs).Where(r => r.Note != null).Select(r => r.Note!));
         m.Notes.RemoveAll(n => !referenced.Contains(n));
@@ -50,14 +50,52 @@ public sealed partial class WordDocument
         ValidateRanges(m);
         return changes;
 
-        void Blocks(List<DocumentBlock> blocks, object? scope, int depth)
+        void Blocks(List<DocumentBlock> blocks, object? scope, int depth, bool body = false)
         {
             for (int i = 0; i < blocks.Count; i++)
             {
                 c.CheckCancellation(); DocumentBlock block = blocks[i];
                 if (block.Control != null)
                 {
+                    if (!block.Control.Executable) throw new NotSupportedException("Template.ControlStructure: Invalid region boundaries cannot be executed.");
                     (string kind, string path) = Tag(block.Control.Tag);
+                    if (kind == "repeat")
+                    {
+                        if (!body) throw new NotSupportedException("Template.RepeatRegion: Paragraph regions are supported only in the body.");
+                        int end = i + 1;
+                        while (end < blocks.Count && ReferenceEquals(blocks[end].Control, block.Control)) end++;
+                        if (blocks.Skip(end).Any(b => ReferenceEquals(b.Control, block.Control))
+                            || blocks.Skip(i).Take(end - i).Any(b => b is not ParagraphBlock || !ReferenceEquals(b.Section, block.Section)))
+                            throw new NotSupportedException("Template.RepeatRegion: A body repeat requires contiguous paragraphs in one section.");
+                        if (depth >= Math.Min(policy.MaximumDepth, c.Options.MaximumNestingDepth)) throw new InvalidDataException("Limit.TemplateDepth: Repeated regions exceed the nesting limit.");
+                        if (!Value(path, scope, out object? sequence)) { i = end - 1; continue; }
+                        if (sequence != null && sequence is not List<object?>) throw new InvalidDataException("Template.Collection: A repeat requires an array value.");
+                        var source = new DocumentModel(); source.Blocks.AddRange(blocks.Skip(i).Take(end - i));
+                        TextRun[] content = source.Paragraphs.SelectMany(p => p.Runs).ToArray();
+                        if (content.Any(r => r.Box != null)) throw new NotSupportedException("Template.RepeatRegion: Positioned objects cannot be repeated in body regions.");
+                        var starts = new HashSet<string>(content.Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/')).Select(r => r.Bookmark!), StringComparer.Ordinal);
+                        var ends = new HashSet<string>(content.Where(r => r.Bookmark != null && Starts(r.Bookmark, '/')).Select(r => r.Bookmark!.Substring(1)), StringComparer.Ordinal);
+                        if (!starts.SetEquals(ends)) throw new NotSupportedException("Template.RepeatBookmarks: Bookmark ranges cannot cross a repeat-region boundary.");
+                        source.Notes.AddRange(content.Where(r => r.Note != null).Select(r => r.Note!).Distinct());
+                        var generated = new List<DocumentBlock>();
+                        foreach (object? item in sequence as List<object?> ?? new List<object?>())
+                        {
+                            c.CheckCancellation();
+                            rows = checked(rows + source.Blocks.Count);
+                            if (rows > policy.MaximumRows) throw new InvalidDataException("Limit.TemplateRows: Generated blocks and rows exceed the configured limit.");
+                            expansion += source.CharacterCount;
+                            structuralExpansion += source.Paragraphs.Sum(p => (p.Runs.Count + 1) * 64L)
+                                + source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Image != null).Sum(r => (long)r.Image!.Bytes.Length);
+                            LimitExpansion();
+                            DocumentModel clone = new DocumentCloner(c).Copy(source);
+                            foreach (DocumentBlock child in clone.Blocks) { child.Control = null; child.Section = block.Section; }
+                            Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
+                            m.Notes.AddRange(clone.Notes); Blocks(clone.Blocks, item, depth + 1, true);
+                            foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1);
+                            generated.AddRange(clone.Blocks);
+                        }
+                        blocks.RemoveRange(i, end - i); blocks.InsertRange(i, generated); i += generated.Count - 1; changes++; continue;
+                    }
                     if (!Value(path, scope, out object? value)) continue;
                     if (kind == "if")
                     {

@@ -1,5 +1,24 @@
 # wordnet implementation and delivery status
 
+## Pending P1 delivery — issues #48–#63
+
+The owner assigned the next P2 chart/equation and typography tracks (#64–#73) and
+the revised integrated checkpoint #82. Encryption and digital signatures (#74–#81)
+were explicitly cancelled on 2026-10-19 and closed as not planned, not completed.
+Those features remain absent. P2 implementation/evidence belongs to its separate PR.
+
+The owner requested all sixteen P1 leaf issues from roadmap #45. This branch implements
+columns (#48), bounded reporting/body repeats (#49–#52), ODF package/mapping/exchange
+(#53–#57), and review identity/preservation/decisions/recording/Unicode/comparison
+(#58–#63), following their hard dependencies. It is pending PR review and unpublished;
+no issue is closed or package released by this source change.
+
+Concrete profiles are in [report preprocessing](report-preprocessing.md), [ODT](odt.md)
+and [review workflows](review-workflows.md). Qualification and platform limits are in
+[testing](testing.md). After a later merge, reconcile each leaf and roadmap #45 using
+exact final-head checks; keep any unmet acceptance gate open. Historical evidence
+below remains tied to its original revisions.
+
 ## P0 adoption delivery — merged PR #83, 2026-10-19
 
 PR [#83](https://github.com/kirakosyan/word.net/pull/83) merged as `6cf54fd2a406880feb18abb1ee495b8c77bcc3e8`; its tree matches reviewed head `e8e6cbfada0f261d3153934f730ec3b3f42be870`. All fifteen review threads were answered and resolved and all final-head push/PR checks passed. Issues [#46](https://github.com/kirakosyan/word.net/issues/46) and [#47](https://github.com/kirakosyan/word.net/issues/47) are complete and closed; roadmap [#45](https://github.com/kirakosyan/word.net/issues/45) retains the remaining unassigned work, beginning with #48. The broader #46–#52 adoption checkpoint is still incomplete; no P1 task is started by this reconciliation.
@@ -94,8 +113,9 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 1. Preserve the [verified 1.2.0 release evidence](release-1.2.0-readiness.md).
    All three packages are published and publicly verified. The next unassigned
-   follow-up is #48 from [roadmap #45](https://github.com/kirakosyan/word.net/issues/45);
-   further work requires owner assignment. The bucket 5
+   checkpoint is review and reconciliation of P1 issues #48–#63 in
+   [PR #85](https://github.com/kirakosyan/word.net/pull/85). Later implementation
+   requires owner assignment. The bucket 5
    [merged design slices](later-design-decisions.md) remain bounded by their
    individual implementation and policy gates.
    [Bucket 4 limits](interoperability.md) remain explicit: native
