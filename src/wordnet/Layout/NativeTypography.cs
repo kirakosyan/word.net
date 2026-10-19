@@ -32,7 +32,7 @@ internal abstract class TypographySession : IDisposable
     internal abstract ShapedWord Shape(string text, int font, bool rtl);
     public abstract void Dispose();
 }
-internal static class NativeTypography
+internal static partial class NativeTypography
 {
     internal static bool Arabic(char c) => c is >= '\u0600' and <= '\u06ff' or >= '\u0750' and <= '\u077f' or >= '\u08a0' and <= '\u08ff';
     internal static bool Rtl(string value) => value.Any(c => Arabic(c) && char.IsLetter(c));
@@ -50,6 +50,7 @@ internal static class NativeTypography
     internal static void Prepare(DocumentModel model, ConversionContext context)
     {
         if (!context.Typography.Enabled || model.TypographyPrepared) return;
+        if (context.Typography.ExtendedBidi) { PrepareExtended(model, context); return; }
         if (context.Destination == DocumentFormat.Xps) throw new NotSupportedException("Typography.Output: Native typography supports PDF and page previews.");
         FontSource[] sources = context.Options.Fonts.Sources.ToArray();
         if (sources.Length > 128 || sources.Any(s => s == null)) throw new ArgumentException("Configure at most 128 non-null font faces.");
@@ -113,8 +114,9 @@ internal static class NativeTypography
             return has(cluster);
         }
     }
-    internal static void Reorder(List<PositionedText> items, double left, bool rtl, TypographySession session)
+    internal static void Reorder(List<PositionedText> items, double left, bool rtl, TypographySession session, bool extended = false)
     {
+        if (extended) { ReorderExtended(items, left, rtl, session); return; }
         if (items.Any(i => i.Image != null || i.Box != null || i.Text.Any(c => c == '\t'))) throw new NotSupportedException("Typography.InlineObject: Mixed-direction lines containing drawings or tabs are outside the bounded profile.");
         int Class(PositionedText item) => Rtl(item.Text) ? 1 : item.Text.Any(char.IsLetter) ? 0 : item.Text.Any(c => c is >= '\u0660' and <= '\u0669' or >= '\u06f0' and <= '\u06f9') ? 3 : item.Text.Any(char.IsDigit) ? 2 : -1;
         int[] classes = items.Select(Class).ToArray(); int[] levels = new int[classes.Length]; int[] directions = new int[classes.Length];

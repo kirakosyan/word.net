@@ -5,6 +5,7 @@ namespace WordNet.Model;
 
 internal sealed class DocumentModel
 {
+    internal int ObjectCount { get; set; }
     internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
@@ -122,7 +123,7 @@ internal sealed class CellBorder
 internal sealed class TextRun
 {
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
-        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null)
+        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
     {
         this.text = text;
         Bold = bold;
@@ -135,10 +136,13 @@ internal sealed class TextRun
         Appearance = appearance ?? new RunAppearance();
         FieldInstruction = fieldInstruction; Note = note; Box = box; Bookmark = bookmark;
         Control = control;
+        Object = retainedObject;
     }
 
     private readonly string text;
-    internal string Text => Note == null ? text : "[" + Note.Label + "]";
+    internal string Text => Object?.Description ?? (Note == null ? text : "[" + Note.Label + "]");
+    internal DocumentObjectData? Object { get; }
+    internal int? BidiLevel { get; set; }
     internal bool Bold { get; }
     internal bool Italic { get; }
     internal bool Code { get; }
@@ -156,8 +160,8 @@ internal sealed class TextRun
     internal string? Revision { get; set; }
     internal string? Comment { get; set; }
     internal int CommentBoundary { get; set; }
-    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control)
-    { FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary };
+    internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control, Object)
+    { FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
 }
 
 internal sealed class TemplateControl

@@ -46,7 +46,15 @@ internal sealed class PdfTags
         this.context = context; Options = options;
         if (options.Accessibility is < PdfAccessibility.None or > PdfAccessibility.PdfUa1) throw new ArgumentOutOfRangeException(nameof(options));
         if (options.Conformance != PdfConformance.Pdf17) throw new NotSupportedException("Pdf.TagsConformance: Tagged PDF/A is outside the independently qualified profile.");
-        if (context.Typography.Enabled) throw new NotSupportedException("Pdf.TagsTypography: Combining native word carriers with PDF/UA is outside this initial profile.");
+        if (context.Typography.Enabled)
+        {
+            if (!context.Typography.ExtendedBidi) throw new NotSupportedException("Pdf.TagsTypography: Tagged native paragraphs require the qualified ExtendedBidi profile.");
+            bool hindi = model.Paragraphs.Any(p => p.Text.Any(c => NativeTypography.Devanagari(c)));
+            bool arabic = model.Paragraphs.Any(p => p.Text.Any(c => NativeTypography.Arabic(c) && char.IsLetter(c)));
+            string required = hindi ? "hi" : arabic ? "ar" : "";
+            if (hindi && arabic || string.IsNullOrEmpty(options.Language) || required.Length > 0 && !(options.Language!.Equals(required, StringComparison.OrdinalIgnoreCase) || options.Language.StartsWith(required + "-", StringComparison.OrdinalIgnoreCase)))
+                throw new NotSupportedException("Pdf.NativeLanguage: Supply the explicit document language (hi for Hindi, ar for Arabic). Mixed Arabic/Devanagari language spans require separate qualification.");
+        }
         if (options.Language == null || options.Language.Length > 64 || !Regex.IsMatch(options.Language, @"\A[A-Za-z]{2,3}(-[A-Za-z]{4})?(-[A-Za-z]{2}|-[0-9]{3})?\z", RegexOptions.CultureInvariant)) Missing("Pdf.Language", "Set Pdf.Language to a supported BCP 47 language[-Script][-Region] tag.");
         if (string.IsNullOrWhiteSpace(model.Title)) Missing("Pdf.Title", "Supply the document title before requesting accessible PDF.");
         if (model.Notes.Count > 0 || model.Paragraphs.Any(p => p.Runs.Any(r => r.Box != null || r.Note != null))) Missing("Pdf.SemanticFeature", "Footnote relationships and positioned text boxes are outside the initial accessibility profile; use ordinary PDF or simplify the source.");

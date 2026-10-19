@@ -1,5 +1,9 @@
 # Architecture and implementation status
 
+## Pending P2 implementation
+
+The pending P2 profile adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).
+
 ## Pending P1 implementation
 
 The owner-authorized P1 branch adds immutable explicit column geometry with active-width

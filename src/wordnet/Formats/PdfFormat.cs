@@ -53,7 +53,7 @@ internal static class PdfFormat
             }
             var fonts = context.FontData.Select(bytes => builder.AddTrueTypeFont(bytes)).ToArray();
             var native = new PdfNativeText(context);
-            var carrier = context.Typography.Enabled ? builder.AddTrueTypeFont(FixedLayout.FontBytes(0)) : null;
+            var carrier = pages.Any(p => p.Text.Any(t => t.NativeShape != null)) ? builder.AddTrueTypeFont(FixedLayout.FontBytes(0)) : null;
             foreach (FixedPage page in pages)
             {
                 context.CheckCancellation();
@@ -86,6 +86,12 @@ internal static class PdfFormat
                 if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 foreach (PositionedText text in page.Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1))
                 {
+                    if (tags != null && text.NativeShape != null)
+                    {
+                        string paint = text.Color ?? "000000";
+                        target.SetTextAndFillColor(Convert.ToByte(paint.Substring(0, 2), 16), Convert.ToByte(paint.Substring(2, 2), 16), Convert.ToByte(paint.Substring(4, 2), 16));
+                        native.DrawOutlines(target, text, page.Settings.Height);
+                    }
                     PdfTags.Node? semantic = tags?.Begin(target, text);
                     if (text.Image is DocumentImage image)
                     {
@@ -105,11 +111,15 @@ internal static class PdfFormat
                         if (text.Link != null) AddLink(text.Link, rectangle, semantic);
                         if (image.AlternativeText.Length > 0 && !context.PreviewIntermediate && tags == null) context.Loss("Pdf.ImageAlternativeText", "This PDF profile does not create accessibility tags for images.");
                     }
-                    else if (text.Text.Length > 0)
+                    else if (text.Text.Length > 0 || text.NativeShape != null)
                     {
                         string color = text.Color ?? "000000";
                         target.SetTextAndFillColor(Convert.ToByte(color.Substring(0, 2), 16), Convert.ToByte(color.Substring(2, 2), 16), Convert.ToByte(color.Substring(4, 2), 16));
-                        if (text.NativeShape != null) native.Draw(target, text, page.Settings.Height, carrier!);
+                        if (text.NativeShape != null)
+                        {
+                            if (tags == null) native.Draw(target, text, page.Settings.Height, carrier!);
+                            else PdfNativeText.DrawCarrier(target, text, page.Settings.Height, carrier!);
+                        }
                         else target.AddText(text.Text, text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), fonts[text.Font]);
                         if (text.Link != null)
                         {

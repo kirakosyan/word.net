@@ -37,7 +37,8 @@ internal static class PdfImport
             context.CheckCancellation();
             var page = ReadPage(pdf, p);
             OcrRecognition? recognition = null;
-            string text = ContentOrderTextExtractor.GetText(page);
+            string? logicalText = PdfActualText.Read(page, context);
+            string text = logicalText ?? ContentOrderTextExtractor.GetText(page);
             bool images = page.NumberOfImages > 0;
             var embeddedImages = page.GetImages().ToArray();
             bool scannedPage = embeddedImages.Any(i => i.BoundingBox.Width * i.BoundingBox.Height >= page.Width * page.Height * 0.5);
@@ -63,7 +64,7 @@ internal static class PdfImport
                 if (context.OcrMetadata.Enabled) { recognition = EnglishOcr.RecognizeWithMetadata(bitmap, options, context); text = recognition.Text; }
                 else text = EnglishOcr.Recognize(bitmap, options, context);
             }
-            else if (reconstruction.ReconstructLayout && PdfReconstruction.Read(page, reconstruction, context) is IReadOnlyList<DocumentBlock> recovered)
+            else if (logicalText == null && reconstruction.ReconstructLayout && PdfReconstruction.Read(page, reconstruction, context) is IReadOnlyList<DocumentBlock> recovered)
             {
                 Append(recovered); characters = checked(characters + text.Length); context.CheckCharacters(characters); continue;
             }

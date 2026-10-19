@@ -1,5 +1,9 @@
 # Creating, editing and filling documents
 
+## Pending P2 implementation
+
+The pending P2 API adds immutable `ChartDefinition`/`ChartSeries`, closed `EquationExpression`, versioned `Objects` snapshots and explicit create/update/remove methods. Ordinary edits retain objects only where supported; template execution and protected owner rewrites reject. See the [object API and limits](p2-objects-typography.md).
+
 ## Pending P1 report and review additions
 
 [ReportData](report-preprocessing.md) produces deeply read-only ordinary merge values

@@ -39,7 +39,7 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.2.0, )"
+          "wordnet.Fonts": "[1.2.1, )"
         }
       },
       "wordnet.fonts": {
@@ -51,7 +51,7 @@
           "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
           "PdfPig.Rendering.Skia": "[0.1.16.4, )",
           "SkiaSharp.NativeAssets.Linux": "[4.153.1, )",
-          "wordnet": "[1.2.0, )"
+          "wordnet": "[1.2.1, )"
         }
       },
       "AngleSharp": {

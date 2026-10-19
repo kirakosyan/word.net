@@ -59,6 +59,8 @@ public sealed partial class FontSource
 /// <summary>Configures font resolution without consulting installed fonts. Configure before conversion.</summary>
 public sealed class FontOptions
 {
+    /// <summary>Gets or sets the exact caller-supplied regular static MATH face for equation layout. No automatic math fallback is used.</summary>
+    public string? MathFamily { get; set; }
     /// <summary>Gets caller-supplied faces. Exact family and style matches take priority.</summary>
     public IList<FontSource> Sources { get; } = new List<FontSource>();
     /// <summary>Gets case-insensitive requested-family to replacement-family mappings.</summary>

@@ -18,6 +18,7 @@
     <PackageReference Include="wordnet.Ocr" VersionOverride="$(WordnetPackageVersion)" Condition="'$(WordnetPackageVersion)' != ''" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
     <PackageReference Include="DocumentFormat.OpenXml" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" PrivateAssets="all" />
     <!-- Keep the existing VSTest/TRX commands on every desktop framework. -->
     <PackageReference Include="xunit.v3.mtp-off" PrivateAssets="all" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />

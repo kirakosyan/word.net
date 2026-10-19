@@ -114,7 +114,7 @@ public sealed partial class WordDocument
     private static void ValidateReviewParagraph(ParagraphBlock paragraph)
     {
         if (paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.Comment != null || r.Bookmark != null || r.Control != null
-            || r.FieldInstruction != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null))
+            || r.FieldInstruction != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null))
             throw new NotSupportedException("Review.Range: Recording requires a history-free paragraph without structured ranges.");
     }
     /// <summary>Records a literal replacement with caller author/time; existing replacement APIs do not record history.</summary>

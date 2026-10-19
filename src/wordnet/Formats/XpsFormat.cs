@@ -44,14 +44,31 @@ internal static class XpsFormat
             string name = (p + 1).ToString(CultureInfo.InvariantCulture);
             Xml("Documents/1/Pages/" + name + ".fpage", new XElement(xps + "FixedPage", new XAttribute("Width", Number(pages[p].Settings.Width)), new XAttribute("Height", Number(pages[p].Settings.Height)), new XAttribute(XNamespace.Xml + "lang", "en-US"),
                 FixedShape.PaintOrder(pages[p].Shapes).SelectMany(Shape),
-                pages[p].Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1).Where(t => t.Image != null || t.Text.Length != 0)
-                    .Select(t => t.Image != null ? Image(t, imageNames[t.Image]) : new XElement(xps + "Glyphs", new XAttribute("FontUri", "/Resources/Fonts/" + FontName(t.Font)),
-                    new XAttribute("FontRenderingEmSize", Number(t.Size)), new XAttribute("OriginX", Number(t.X)), new XAttribute("OriginY", Number(t.Y)), new XAttribute("Fill", "#FF" + (t.Color ?? "000000")),
-                    new XAttribute("UnicodeString", t.Text[0] == '{' ? "{}" + t.Text : t.Text)))));
+                pages[p].Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1).Where(t => t.Image != null || t.Text.Length != 0 || t.NativeShape != null)
+                    .Select(t => t.Image != null ? Image(t, imageNames[t.Image]) : Text(t))));
             Xml("Documents/1/Pages/_rels/" + name + ".fpage.rels", new XElement(rel + "Relationships", Enumerable.Range(0, context.FontData.Length).Select(f => new XElement(rel + "Relationship", new XAttribute("Id", "f" + f.ToString(CultureInfo.InvariantCulture)),
                 new XAttribute("Type", "http://schemas.microsoft.com/xps/2005/06/required-resource"), new XAttribute("Target", "/Resources/Fonts/" + FontName(f))))
                 .Concat(imageNames.Select((image, i) => new XElement(rel + "Relationship", new XAttribute("Id", "i" + i.ToString(CultureInfo.InvariantCulture)),
                     new XAttribute("Type", "http://schemas.microsoft.com/xps/2005/06/required-resource"), new XAttribute("Target", image.Value))))));
+        }
+        XElement Text(PositionedText t)
+        {
+            var element = new XElement(xps + "Glyphs", new XAttribute("FontUri", "/Resources/Fonts/" + FontName(t.Font)),
+                new XAttribute("FontRenderingEmSize", Number(t.Size)), new XAttribute("OriginX", Number(t.X)), new XAttribute("OriginY", Number(t.Y)),
+                new XAttribute("Fill", "#FF" + (t.Color ?? "000000")));
+            if (t.NativeShape != null)
+            {
+                if (t.NativeShape.Glyphs.All(g => g.Glyph < 0))
+                {
+                    // Separate, invisible logical equation description; no invented visible glyphs.
+                    element.Add(new XAttribute("Opacity", "0"), new XAttribute("UnicodeString", t.Text.Length > 0 && t.Text[0] == '{' ? "{}" + t.Text : t.Text));
+                    return element;
+                }
+                string Metric(double n) => (n * 100 / t.NativeShape.Units).ToString("0.######", CultureInfo.InvariantCulture);
+                element.Add(new XAttribute("Indices", string.Join(";", t.NativeShape.Glyphs.Select(g => g.Glyph.ToString(CultureInfo.InvariantCulture) + "," + Metric(g.Advance) + "," + Metric(g.X) + "," + Metric(g.Y)))));
+            }
+            if (t.Text.Length > 0) element.Add(new XAttribute("UnicodeString", t.Text[0] == '{' ? "{}" + t.Text : t.Text));
+            return element;
         }
         System.Collections.Generic.IEnumerable<XElement> Shape(FixedShape shape)
         {

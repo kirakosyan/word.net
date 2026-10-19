@@ -1,5 +1,9 @@
 # Formatting and image profile
 
+## Pending P2 implementation
+
+The pending P2 branch preserves admitted body/cell chart graphs and OMML, renders the qualified vector subset and exposes explicit immutable editing/removal. Native bidi/Hindi/tagged profiles are opt-in. Objects with native/UA/PDF-A, advanced chart/math types and unknown/external graphs remain excluded. See [P2 fidelity and combinations](p2-objects-typography.md).
+
 ## Pending P1 column and exchange profile
 
 DOCX preserves one to three explicit body-column widths/gaps in twips. Widths must

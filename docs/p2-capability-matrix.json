@@ -1,0 +1,53 @@
+{
+  "status": "pending-p2-pr-unpublished",
+  "issues": [64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 82],
+  "unicodeVersion": "17.0.0",
+  "objects": {
+    "chartTypes": ["clustered-column", "ordinary-line"],
+    "equations": ["text", "row", "bar-fraction", "subscript", "superscript", "sub-superscript", "square-root", "indexed-root", "simple-delimiters"],
+    "owners": ["ordinary-body-paragraph", "ordinary-table-cell-paragraph"],
+    "docxPreservation": true,
+    "immutableCreationUpdateRemoval": true,
+    "chartWorkbook": "single-visible-plain-value-XLSX; caches must agree",
+    "managedPdfXpsSvg": true,
+    "editableLossOnFixedOutput": true,
+    "mathFont": "exact caller-supplied static embedding-permitted TrueType MATH 1.0 with Unicode cmap format 12",
+    "automaticItalicVariables": "Latin A-Z and a-z only",
+    "nativeTypographyCombination": false,
+    "pdfACombination": false,
+    "taggedPdfOrUaCombination": false,
+    "advancedTypesOrUnknownGraphs": false
+  },
+  "nativeParagraphs": {
+    "enabledByDefault": false,
+    "extendedBidiOptIn": true,
+    "balancedControlsRequired": true,
+    "defaultMaximumDirectionalDepth": 32,
+    "scripts": ["horizontal-Arabic-Latin", "opt-in-Hindi-Devanagari-Latin-U0900-U097F"],
+    "graphemes": "Unicode 17 extended, including Indic GB9c",
+    "provider": "matching wordnet.Ocr HarfBuzz provider",
+    "pdfAndPreviews": true,
+    "xps": false,
+    "pdfA": false,
+    "tablesStoriesFieldsDrawingsListsHistory": false,
+    "taggedPdfAndUa1": "ordinary paragraphs/headings/links with explicit title and hi/ar document language; Arabic+Devanagari language spans excluded",
+    "ocrLanguages": ["English-printed-text"]
+  },
+  "protection": {
+    "docxEncryption": false,
+    "pdfEncryption": false,
+    "passwordDecryption": false,
+    "docxDigitalSignatures": false,
+    "pdfDigitalSignatures": false,
+    "cancelledIssues": [74, 75, 76, 77, 78, 79, 80, 81],
+    "reason": "owner-cancelled-not-planned"
+  },
+  "integration": {
+    "recipe": "examples/WordNet.Automation/P2Recipes.cs",
+    "ordinaryReportWithEditableObjects": true,
+    "separateQualifiedNativeChapters": true,
+    "genericAllFeaturesFlag": false,
+    "packagePublication": false,
+    "newPlatformQualification": false
+  }
+}

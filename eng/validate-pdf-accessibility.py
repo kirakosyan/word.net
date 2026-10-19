@@ -14,9 +14,10 @@ import xml.etree.ElementTree as ET
 
 IMAGE = "verapdf/cli:v1.30.2@sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb"
 
-def validate(directory, output, flavour):
-    files = ["accessible-ua1.pdf", "accessible-multipage.pdf", "accessible-early-link.pdf", "accessible-negative.pdf"] if flavour == "ua1" else sorted(p.name for p in directory.glob("*.pdf"))
+def validate(directory, output, flavour, selected=None):
+    files = selected or (["accessible-ua1.pdf", "accessible-multipage.pdf", "accessible-early-link.pdf", "accessible-negative.pdf"] if flavour == "ua1" else sorted(p.name for p in directory.glob("*.pdf")))
     assert files, "Generate the PDF corpus first."
+    assert len(files) == len(set(files)) and all(Path(f).name == f and f.endswith('.pdf') and (directory / f).is_file() for f in files), "Expected unique local PDF filenames."
     environment = os.environ.copy()
     for key in ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY", "DOCKER_CERT_PATH"):
         environment.pop(key, None)
@@ -37,11 +38,11 @@ def validate(directory, output, flavour):
         for job in root.findall("./jobs/job"):
             report = job.find("validationReport"); assert report is not None
             reports[Path(job.findtext("item/name")).name] = report.get("isCompliant") == "true"
-        expected = {f: f != "accessible-negative.pdf" for f in files} if flavour == "ua1" else {f: True for f in files}
+        expected = {f: not f.endswith("-negative.pdf") for f in files} if flavour == "ua1" else {f: True for f in files}
         assert reports == expected, reports
         print("veraPDF 1.30.2 PDF/UA-1: all supported fixtures compliant; untagged negative control rejected." if flavour == "ua1" else f"veraPDF 1.30.2 PDF/A-2b: {len(files)}/{len(files)} compliant.")
     finally:
         run(["rm", "-f", name], stdout=subprocess.DEVNULL)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__); parser.add_argument("artifacts", type=Path); parser.add_argument("--output", type=Path, default=Path("artifacts/bucket4/ua/qualified.xml")); parser.add_argument("--flavour", choices=("ua1", "2b"), default="ua1"); args = parser.parse_args(); validate(args.artifacts, args.output, args.flavour)
+    parser = argparse.ArgumentParser(description=__doc__); parser.add_argument("artifacts", type=Path); parser.add_argument("--output", type=Path, default=Path("artifacts/bucket4/ua/qualified.xml")); parser.add_argument("--flavour", choices=("ua1", "2b"), default="ua1"); parser.add_argument("--files", nargs='+'); args = parser.parse_args(); validate(args.artifacts, args.output, args.flavour, args.files)

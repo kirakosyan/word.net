@@ -19,9 +19,10 @@ internal sealed class FixedShape
     {
         FixedShape[] all = shapes.ToArray();
         foreach (FixedShape fill in all.Where(s => s.Stroke == 0)) yield return fill;
+        foreach (FixedShape diagonal in all.Where(s => s.Stroke > 0 && s.Width != 0 && s.Height != 0)) yield return diagonal;
         // Sweep shared edges, including partial edges of spanning cells. The active
         // set is ordered by border weight/style/source order, with logarithmic updates.
-        foreach (var group in all.Where(s => s.Stroke > 0).GroupBy(s => (Vertical: s.Width == 0, Coordinate: s.Width == 0 ? s.X : s.Y)))
+        foreach (var group in all.Where(s => s.Stroke > 0 && (s.Width == 0 || s.Height == 0)).GroupBy(s => (Vertical: s.Width == 0, Coordinate: s.Width == 0 ? s.X : s.Y)))
         {
             var borders = group.Select((shape, index) => (Shape: shape, Index: index)).ToArray();
             var events = borders.SelectMany(b => new[] { (Position: group.Key.Vertical ? b.Shape.Y : b.Shape.X, Start: true, b.Index),

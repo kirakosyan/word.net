@@ -120,6 +120,8 @@ internal sealed partial class DocxReader
         if (reader.fields.Count != 0) throw new InvalidDataException("Docx.Field: Unclosed complex field.");
         if (package.PartNames.Any(name => !knownParts.Contains(name)))
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
+        document.ObjectCount = context.ObjectCount;
+        if (document.ObjectCount != 0) { ObjectSafety.Owners(document); context.Objects.Finish(document.CharacterCount, 0); }
         return document;
     }
 
@@ -321,8 +323,12 @@ internal sealed partial class DocxReader
                 if (type is not null and not "textWrapping" and not "page" and not "column") throw new InvalidDataException("Docx.Break: Invalid break type.");
                 Emit(runs, new TextRun(type == "page" ? "\f" : type == "column" ? "\v" : "\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
+            else if (child.Name == MathObjectFormat.M + "oMath" || child.Name == MathObjectFormat.M + "oMathPara")
+                Emit(runs, new TextRun("", retainedObject: ReadRetainedMath(child)));
             else if (child.Name == W + "drawing")
             {
+                DocumentObjectData? retained = ReadRetainedDrawing(child);
+                if (retained != null) { Emit(runs, new TextRun("", retainedObject: retained)); continue; }
                 XElement? box = child.Descendants(W + "txbxContent").FirstOrDefault();
                 if (box != null)
                 {

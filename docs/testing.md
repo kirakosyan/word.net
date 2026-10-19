@@ -1,8 +1,28 @@
 # Conversion tests and qualification
 
+## Pending P2 qualification
+
+The required suite is **1,014** cases: the 957-case P1 head plus 57 P2 cases.
+P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
+operations, managed chart/math geometry, native bidi/Hindi and native tagged/UA
+regressions. The two UAX #9 cases execute all **91,707** character cases and
+**770,241** abstract directional combinations against pinned Unicode 17 inputs;
+these are not counted as extra converter cases. Earlier UAX #29 cases remain.
+
+`WORDNET_P2_EVIDENCE` retains the generated corpus. The independent office driver,
+vector/MATH/reading verifier and pinned veraPDF UA check run in the Linux x64 CI lane,
+with schema/content/glyph assertions in every applicable source/packed suite.
+`eng/p2-requirements.txt` pins development tools. Font and UNO/compiler provenance
+is retained under `Fixtures/P2` and `eng/p2-tool-pins.json`; none is shipped in NuGet.
+The concrete reproduction, predeclared 0.5 pt geometry tolerance, exact subset and
+unsupported combinations are in [the P2 profile](p2-objects-typography.md).
+Final exact-head source/package/runtime checks are recorded on the P2 PR; historical
+P1 qualification below remains separate. No new platform or package publication
+is implied by these source changes.
+
 ## Pending P1 qualification
 
-The required suite is **957** cases (855 baseline plus 102 P1 cases, including review regressions).
+The P1 head required **957** cases (855 baseline plus 102 P1 cases, including review regressions).
 The P1 branch adds independent OOXML/ODF fixtures and regressions for unequal-column
 flow, report preprocessing, paragraph repeats, review preservation/decisions/recording
 and matching-structure comparison. Unicode 17 conformance executes all **766 grapheme**
