@@ -17,7 +17,9 @@ internal sealed partial class DocxReader
             catch (ArgumentException error) { throw new NotSupportedException("Object.Profile: Object metadata is outside the supported preservation profile.", error); }
         }
         try { return ReadValidated(); }
-        catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
+        catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict
+            && !context.Typography.Enabled && (context.PreviewIntermediate || context.Destination != DocumentFormat.Pdf
+                || context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17))
         {
             context.Loss("Object.UnsupportedLoss", "An out-of-profile chart or equation is omitted during conversion; its content and appearance are not retained.");
             return null;

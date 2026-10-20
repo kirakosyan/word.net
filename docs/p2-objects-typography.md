@@ -65,9 +65,10 @@ other unqualified appearances remain preservable only when the graph is admitted
 static export rejects those appearances. Unknown graph namespaces and other valid out-of-profile constructions fail session
 admission with `NotSupportedException`; malformed graphs, unsafe relationships,
 ambiguous IDs and cache/workbook mismatches raise `InvalidDataException`.
-Ordinary Lenient/BestEffort conversion can omit an unsupported chart/equation with
+Ordinary managed Lenient/BestEffort conversion can omit an unsupported chart/equation with
 `Object.UnsupportedLoss`. Strict conversion and document-session loading reject
-that loss. Malformed input, resource limits and unsafe relationships remain hard
+that loss. Native typography and tagged/UA/PDF-A destinations also reject unsupported
+objects before omission, preserving their separate combination boundaries. Malformed input, resource limits and unsafe relationships remain hard
 errors in every mode; admitted objects with unsupported visible appearance still
 reject static rendering. Word inline anchor/edit identifiers are harmless metadata.
 

@@ -218,6 +218,32 @@ public sealed partial class ObjectFoundationTests
         Assert.Contains(result.Diagnostics, d => d.Code == "Object.UnsupportedLoss");
     }
 
+    [Theory]
+    [InlineData(FidelityMode.Lenient, "native")]
+    [InlineData(FidelityMode.BestEffort, "native")]
+    [InlineData(FidelityMode.Lenient, "tagged")]
+    [InlineData(FidelityMode.BestEffort, "tagged")]
+    [InlineData(FidelityMode.Lenient, "ua")]
+    [InlineData(FidelityMode.BestEffort, "ua")]
+    [InlineData(FidelityMode.Lenient, "pdfa")]
+    [InlineData(FidelityMode.BestEffort, "pdfa")]
+    public void UnsupportedObjectLossCannotBypassNativeOrPdfConformanceBoundaries(FidelityMode mode, string profile)
+    {
+        var doc = WordDocument.Create(); doc.Title = "Object combination guard";
+        doc.AddParagraph("Report", headingLevel: 1, cancellationToken: TestContext.Current.CancellationToken);
+        doc.AddEquation(EquationExpression.Text("x"), cancellationToken: TestContext.Current.CancellationToken);
+        XNamespace m = MathObjectFormat.M;
+        byte[] source = Xml(SaveObjects(doc), "word/document.xml", xml => xml.Descendants(m + "oMath").Single().ReplaceNodes(new XElement(m + "nary", new XElement(m + "e", new XElement(m + "r", new XElement(m + "t", "x"))))));
+        var options = new ConversionOptions(mode); options.Pdf.Language = "en";
+        if (profile == "native") { options.Typography.Enabled = true; options.Typography.ExtendedBidi = true; }
+        else if (profile == "tagged") options.Pdf.Accessibility = PdfAccessibility.Tagged;
+        else if (profile == "ua") options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+        else options.Pdf.Conformance = PdfConformance.PdfA2b;
+        using var input = new MemoryStream(source); using var output = new MemoryStream(); output.Write(new byte[] { 7, 8, 9 }, 0, 3); output.Position = 0;
+        Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken));
+        Assert.Equal(new byte[] { 7, 8, 9 }, output.ToArray());
+    }
+
     [Fact]
     public void UnsupportedOfficeExtensionsCannotHideUnsafeChartRelationships()
     {
