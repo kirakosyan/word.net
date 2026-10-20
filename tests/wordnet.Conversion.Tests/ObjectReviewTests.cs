@@ -201,6 +201,23 @@ public sealed partial class ObjectFoundationTests
         var error = Assert.Throws<NotSupportedException>(() => Read(source)); Assert.StartsWith("Chart.Profile", error.Message, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("newline")]
+    [InlineData("tab")]
+    [InlineData("long")]
+    public void UnsupportedImportedDescriptionsUseTheInputProfileErrorContract(string kind)
+    {
+        byte[] source = Xml(Input(), "word/document.xml", xml =>
+        {
+            XNamespace wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+            xml.Descendants(wp + "docPr").First().SetAttributeValue("descr", kind == "long" ? new string('x', 4097) : kind == "tab" ? "x\ty" : "x\ny");
+        });
+        var error = Assert.Throws<NotSupportedException>(() => LoadObjects(source)); Assert.StartsWith("Object.Profile", error.Message, StringComparison.Ordinal);
+        using var input = new MemoryStream(source); using var output = new MemoryStream();
+        var result = new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Text, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Object.UnsupportedLoss");
+    }
+
     [Fact]
     public void UnsupportedOfficeExtensionsCannotHideUnsafeChartRelationships()
     {

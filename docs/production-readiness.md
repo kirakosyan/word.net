@@ -6,7 +6,7 @@ The 1.3.0 candidate includes the bounded P1/P2 profiles documented in the
 [release notes](releases/1.3.0.md). Production publication requires successful
 exact-main CI and immutable-package/minimum-runtime qualification, followed by the
 existing Trusted Publishing workflow. PR checks do not select the release artifact.
-The required suite is 1,039 cases without skips. Cryptographic features are absent;
+The required suite is 1,042 cases without skips. Cryptographic features are absent;
 advanced object/native/accessibility combinations and new platforms remain excluded.
 The dated 1.0/1.2.0 evidence below applies to those releases only.
 

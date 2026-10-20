@@ -11,7 +11,12 @@ internal sealed partial class DocxReader
 {
     private DocumentObjectData? ReadObjectForConversion(Func<DocumentObjectData?> read)
     {
-        try { return read(); }
+        DocumentObjectData? ReadValidated()
+        {
+            try { return read(); }
+            catch (ArgumentException error) { throw new NotSupportedException("Object.Profile: Object metadata is outside the supported preservation profile.", error); }
+        }
+        try { return ReadValidated(); }
         catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
         {
             context.Loss("Object.UnsupportedLoss", "An out-of-profile chart or equation is omitted during conversion; its content and appearance are not retained.");

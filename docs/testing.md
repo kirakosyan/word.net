@@ -2,7 +2,7 @@
 
 ## 1.3.0 candidate qualification
 
-The required suite is **1,039** cases: the 957-case P1 head plus 82 P2 cases, including 23 review regressions.
+The required suite is **1,042** cases: the 957-case P1 head plus 85 P2 cases, including 26 review regressions.
 P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
 operations, managed chart/math geometry, native bidi/Hindi and native tagged/UA
 regressions. The two UAX #9 cases execute all **91,707** character cases and
@@ -19,6 +19,11 @@ unsupported combinations are in [the P2 profile](p2-objects-typography.md).
 Final exact-head source/package/runtime checks are recorded on the P2 PR; historical
 P1 qualification below remains separate. No new platform or package publication
 is implied by these source changes.
+
+The final metadata-boundary regressions additionally cover newline, tab and
+length-plus-one chart descriptions. These valid out-of-profile DOCX values raise
+`NotSupportedException` during session load and produce explicit unsupported-object
+loss during permissive conversion; they never surface as caller argument errors.
 
 ### Review revision 5a5c26c — 2026-10-20
 
