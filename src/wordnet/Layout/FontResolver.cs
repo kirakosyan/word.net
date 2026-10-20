@@ -53,7 +53,7 @@ internal sealed class FontResolver
         }
         if (model.ObjectCount != 0 && model.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object?.Equation != null))
         {
-            FontSource? source = sources.SingleOrDefault(s => !s.Bold && !s.Italic && string.Equals(s.FamilyName, options.MathFamily, StringComparison.OrdinalIgnoreCase));
+            FontSource? source = sources.Where(s => !s.Bold && !s.Italic && string.Equals(s.FamilyName, options.MathFamily, StringComparison.OrdinalIgnoreCase)).OrderBy(s => System.Math.Abs(s.Weight - 400)).FirstOrDefault();
             if (source == null || string.IsNullOrWhiteSpace(options.MathFamily)) throw new NotSupportedException("Equation.Font: Configure Fonts.MathFamily and an exact caller-supplied static MATH face.");
             if (source.Bytes.Length * 8L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Equation.FontBudget: Math metrics and outlines exceed their operation allowance.");
             Math = new MathFont(source.Bytes, context);

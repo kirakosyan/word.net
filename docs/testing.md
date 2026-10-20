@@ -2,7 +2,7 @@
 
 ## Pending P2 qualification
 
-The required suite is **1,016** cases: the 957-case P1 head plus 59 P2 cases.
+The required suite is **1,039** cases: the 957-case P1 head plus 82 P2 cases, including 23 review regressions.
 P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
 operations, managed chart/math geometry, native bidi/Hindi and native tagged/UA
 regressions. The two UAX #9 cases execute all **91,707** character cases and

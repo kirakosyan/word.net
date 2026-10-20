@@ -80,6 +80,11 @@ internal static class ChartObjectFormat
     }
     internal static (ChartDefinition Definition, ObjectGraph Graph, bool Renderable) Read(DocxPackage package, string root, ConversionContext context)
     {
+        try { return ReadCore(package, root, context); }
+        catch (ArgumentException error) { throw new NotSupportedException("Chart.Profile: Chart text is outside the supported immutable chart profile.", error); }
+    }
+    private static (ChartDefinition Definition, ObjectGraph Graph, bool Renderable) ReadCore(DocxPackage package, string root, ConversionContext context)
+    {
         XElement types = package.ReadXml("[Content_Types].xml").Root ?? throw Invalid("ContentTypes");
         if (types.Name != DocxPackage.ContentTypes + "Types" || package.PartNames.Distinct(StringComparer.OrdinalIgnoreCase).Count() != package.PartNames.Count()) throw Invalid("ContentTypes");
         var overrides = new Dictionary<string, string>(StringComparer.Ordinal); var defaults = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -101,7 +106,7 @@ internal static class ChartObjectFormat
         var parts = new Dictionary<string, ObjectPart>(StringComparer.Ordinal); var documents = new Dictionary<string, XDocument>(StringComparer.Ordinal);
         var relations = new Dictionary<string, Dictionary<string, XElement>>(StringComparer.Ordinal);
         var visiting = new HashSet<string>(StringComparer.Ordinal); var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        string? workbookName = null; ObjectWorkbook? workbook = null;
+        string? workbookName = null; ObjectWorkbook? workbook = null; bool unsupportedNamespace = false;
         void Add(string name, string contentType, byte[] bytes)
         {
             if (parts.Count >= 32 || !insensitive.Add(name)) throw Invalid("PartLimit"); parts.Add(name, new ObjectPart(name, contentType, bytes));
@@ -125,7 +130,8 @@ internal static class ChartObjectFormat
                 XNamespace style = "http://schemas.microsoft.com/office/drawing/2012/chartStyle";
                 if (expected == "application/vnd.ms-office.chartstyle+xml" && xml.Root?.Name != style + "chartStyle"
                     || expected == "application/vnd.ms-office.chartcolorstyle+xml" && xml.Root?.Name != style + "colorStyle") throw Invalid("Root");
-                if (xml.Root == null || xml.Descendants().Any(e => e.Name.Namespace != C && e.Name.Namespace != A && e.Name.Namespace != style)) throw Invalid("Namespace");
+                if (xml.Root == null) throw Invalid("Root");
+                unsupportedNamespace |= xml.Descendants().Any(e => e.Name.Namespace != C && e.Name.Namespace != A && e.Name.Namespace != style);
             }
             string relName = DocxPackage.RelationshipPartName(name); var local = new Dictionary<string, XElement>(StringComparer.Ordinal); relations.Add(name, local);
             if (package.Contains(relName))
@@ -163,6 +169,7 @@ internal static class ChartObjectFormat
             string id = DocxPackage.RequiredAttribute(external[0], R + "id");
             if (!relations[root].TryGetValue(id, out XElement? edge) || Resolve(root, edge) != workbookName) throw Invalid("WorkbookOwner");
         }
+        if (unsupportedNamespace) throw new NotSupportedException("Chart.Namespace: Chart extensions are outside the supported preservation profile.");
         var parsed = Parse(space, workbook, context);
         bool simpleParts = parts.Values.All(p => p.ContentType is ChartType or WorkbookType or "application/vnd.openxmlformats-package.relationships+xml");
         return (parsed.Definition, new ObjectGraph(root, parts.Values, workbook?.Expansion ?? 0, workbook?.Entries ?? 0, workbook?.Characters ?? 0), parsed.Renderable && simpleParts);
@@ -224,6 +231,7 @@ internal static class ChartObjectFormat
             XElement? paint = kind == ChartKind.Line ? item.Element(C + "spPr")?.Element(A + "ln") : item.Element(C + "spPr");
             string? color = (string?)paint?.Element(A + "solidFill")?.Element(A + "srgbClr")?.Attribute("val");
             if (color == null) { renderable = false; color = "000000"; }
+            if (color.Length != 6 || color.Any(c => !Uri.IsHexDigit(c))) throw Invalid("Color");
             if (kind == ChartKind.Line && paint?.Attribute("w") is XAttribute weight && weight.Value != "12700") renderable = false;
             admitted.Add(new ChartSeries(name, color, points));
         }
@@ -244,6 +252,8 @@ internal static class ChartObjectFormat
     }
     private static string[] Strings(XElement holder, ObjectWorkbook? workbook)
     {
+        if (holder.Elements().Any(e => e.Name == C + "numRef" || e.Name == C + "numLit" || e.Name == C + "multiLvlStrRef"))
+            throw new NotSupportedException("Chart.Categories: Numeric and multilevel category caches are outside the supported profile.");
         XElement cache = Cache(holder, "strLit", "strRef", "strCache", workbook, out string? formula);
         int count = Count(cache.Element(C + "ptCount") ?? throw Invalid("CacheCount")); var result = Enumerable.Repeat("", count).ToArray(); var seen = new HashSet<int>();
         foreach (XElement point in cache.Elements(C + "pt"))

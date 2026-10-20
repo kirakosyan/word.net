@@ -324,11 +324,15 @@ internal sealed partial class DocxReader
                 Emit(runs, new TextRun(type == "page" ? "\f" : type == "column" ? "\v" : "\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == MathObjectFormat.M + "oMath" || child.Name == MathObjectFormat.M + "oMathPara")
-                Emit(runs, new TextRun("", retainedObject: ReadRetainedMath(child)));
+            {
+                DocumentObjectData? retained = ReadObjectForConversion(() => ReadRetainedMath(child));
+                if (retained != null) Emit(runs, new TextRun("", retainedObject: retained));
+            }
             else if (child.Name == W + "drawing")
             {
-                DocumentObjectData? retained = ReadRetainedDrawing(child);
+                DocumentObjectData? retained = ReadObjectForConversion(() => ReadRetainedDrawing(child));
                 if (retained != null) { Emit(runs, new TextRun("", retainedObject: retained)); continue; }
+                if (child.Descendants(ChartObjectFormat.C + "chart").Any()) continue;
                 XElement? box = child.Descendants(W + "txbxContent").FirstOrDefault();
                 if (box != null)
                 {

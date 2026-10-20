@@ -15,6 +15,11 @@ internal static class MathObjectFormat
     private static InvalidDataException Invalid(string code) => new InvalidDataException("Equation." + code + ": Invalid OMML expression.");
     internal static (EquationExpression Expression, bool Display, double Size, bool Renderable) Read(XElement source, ConversionContext context)
     {
+        try { return ReadCore(source, context); }
+        catch (ArgumentException error) { throw new NotSupportedException("Equation.Profile: Valid OMML text or delimiters exceed the supported expression profile.", error); }
+    }
+    private static (EquationExpression Expression, bool Display, double Size, bool Renderable) ReadCore(XElement source, ConversionContext context)
+    {
         int nodes = 0; long text = 0;
         foreach (XElement element in source.DescendantsAndSelf())
         {
@@ -39,7 +44,7 @@ internal static class MathObjectFormat
         }
         bool renderable = (string?)source.Element(M + "oMathParaPr")?.Element(M + "jc")?.Attribute(M + "val") is null or "center" or "centerGroup";
         double size = 12; var sizes = new HashSet<double>();
-        foreach (XElement properties in source.Descendants(W + "rPr"))
+        foreach (XElement properties in source.Descendants(W + "rPr").Where(p => !p.Ancestors(M + "ctrlPr").Any()))
             foreach (XElement property in properties.Elements())
             {
                 if (property.Name == W + "sz")
@@ -95,6 +100,7 @@ internal static class MathObjectFormat
                 if (hidden && degree.HasElements) throw Invalid("HiddenDegree");
                 return EquationExpression.Root(ParseRow(Child(node, "e")), degree.HasElements ? ParseRow(degree) : null);
             }
+            if (kind == "d" && node.Elements(M + "e").Count() > 1) throw new NotSupportedException("Equation.DelimiterArguments: Multiple delimiter arguments are outside the supported profile.");
             if (kind == "d") return EquationExpression.Delimiter(ParseRow(Child(node, "e")),
                 (string?)properties?.Element(M + "begChr")?.Attribute(M + "val") ?? "(", (string?)properties?.Element(M + "endChr")?.Attribute(M + "val") ?? ")");
             if (properties?.Element(M + "alnScr") != null) renderable = false;
@@ -133,7 +139,8 @@ internal static class MathObjectFormat
     };
     internal static XElement Write(EquationExpression expression, bool display, double size)
     {
-        XElement Row(string name, EquationExpression node) => new XElement(M + name, node.Kind == EquationKind.Row ? node.Children.Select(Node) : new[] { Node(node) });
+        IEnumerable<XElement> Nodes(EquationExpression node) => node.Kind == EquationKind.Row ? node.Children.SelectMany(Nodes) : new[] { Node(node) };
+        XElement Row(string name, EquationExpression node) => new XElement(M + name, Nodes(node));
         XElement Node(EquationExpression node)
         {
             if (node.Kind == EquationKind.Text) return new XElement(M + "r", new XElement(M + "rPr", new XElement(M + "sty", new XAttribute(M + "val", node.Italic ? "i" : "p"))),

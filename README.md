@@ -38,9 +38,9 @@ See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/
 
 PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions are not in published packages. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; ODT is limited to the two DOCX exchanges.
 
-## P2 implementation under review
+## 1.3.0 release candidate
 
-The separate P2 changes add bounded editable column/line charts and OMML equations,
+The 1.3.0 source adds bounded editable column/line charts and OMML equations,
 managed PDF/XPS/SVG rendering, and opt-in Unicode 17 bidi/Hindi paragraphs with a
 qualified ordinary PDF/UA-1 profile. Math needs an explicit caller MATH font; native
 text needs the optional provider and suitable caller fonts. Objects and native/UA
@@ -124,7 +124,7 @@ The shared layout profile includes section geometry, wrapping and pagination, ta
 
 PDF import reconstructs editable content; it does not recover arbitrary original tables, styles or pagination. OCR targets English printed text, with optional rotation/deskew and known two-column reading order. Handwriting is outside the profile.
 
-Password encryption/decryption and DOCX/PDF digital signatures are not implemented and are excluded from the current roadmap at the owner's request. Password-protected input and signed-document workflows remain unsupported; no confidentiality, signature-validity or signer-trust utility is provided. The pending P2 branch implements the bounded chart/equation subset described above; advanced charts and general mathematical layout remain unsupported. Default DOCX loads render revisions in their accepted state with diagnostics; Strict rejects revision/comment loss. The merged opt-in review profile preserves its declared subset separately. Complete Word pagination parity and arbitrary drawing/CSS behavior are not guaranteed.
+Password encryption/decryption and DOCX/PDF digital signatures are not implemented and are excluded from the current roadmap at the owner's request. Password-protected input and signed-document workflows remain unsupported; no confidentiality, signature-validity or signer-trust utility is provided. The 1.3.0 candidate implements the bounded chart/equation subset described above; advanced charts and general mathematical layout remain unsupported. Default DOCX loads render revisions in their accepted state with diagnostics; Strict rejects revision/comment loss. The merged opt-in review profile preserves its declared subset separately. Complete Word pagination parity and arbitrary drawing/CSS behavior are not guaranteed.
 
 See the [fidelity profile](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md), [DOC subset](https://github.com/kirakosyan/word.net/blob/main/docs/doc-format.md) and [interoperability guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md).
 

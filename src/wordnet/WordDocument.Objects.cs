@@ -53,10 +53,14 @@ public sealed partial class WordDocument
 
     /// <summary>Replaces one chart definition, rebuilding caches and workbook together. Stale or foreign handles fail atomically.</summary>
     public DocumentObject UpdateChart(DocumentObject handle, ChartDefinition definition, CancellationToken cancellationToken = default)
+        => UpdateChart(handle, definition, null, cancellationToken);
+
+    /// <summary>Replaces chart data and optionally its textual description; null retains the current description and empty clears it.</summary>
+    public DocumentObject UpdateChart(DocumentObject handle, ChartDefinition definition, string? description, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(definition, nameof(definition));
         return ChangeObject(handle, (old, c) => old.Chart == null ? throw new ArgumentException("Object.Kind: A chart handle is required.", nameof(handle))
-            : new DocumentObjectData(definition, ChartObjectFormat.Create(definition, c), old.Width, old.Height, old.Description, old.Id), cancellationToken);
+            : new DocumentObjectData(definition, ChartObjectFormat.Create(definition, c), old.Width, old.Height, description ?? old.Description, old.Id), cancellationToken);
     }
 
     /// <summary>Appends genuine OMML as an equation paragraph. Rendering separately requires a qualified caller math font.</summary>
@@ -72,16 +76,26 @@ public sealed partial class WordDocument
 
     /// <summary>Replaces an equation tree, retaining its size, display mode, identity and textual description.</summary>
     public DocumentObject UpdateEquation(DocumentObject handle, EquationExpression expression, CancellationToken cancellationToken = default)
+        => UpdateEquation(handle, expression, null, cancellationToken);
+
+    /// <summary>Replaces an equation tree and optionally its textual description; null retains the current description and empty clears it.</summary>
+    public DocumentObject UpdateEquation(DocumentObject handle, EquationExpression expression, string? description, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(expression, nameof(expression));
         return ChangeObject(handle, (old, c) => old.Equation == null ? throw new ArgumentException("Object.Kind: An equation handle is required.", nameof(handle))
-            : EquationData(expression, old.Display, old.FontSize, old.Description, old.Id, c), cancellationToken);
+            : EquationData(expression, old.Display, old.FontSize, description ?? old.Description, old.Id, c), cancellationToken);
     }
 
     /// <summary>Removes an entire placement and its privately retained graph, including embedded workbook data.</summary>
     public DocumentEditResult RemoveObject(DocumentObject handle, CancellationToken cancellationToken = default) => Edit((m, c) =>
     {
-        TextRun run = FindObject(m, handle); foreach (ParagraphBlock p in m.BodyParagraphs) if (p.Runs.Remove(run)) return 1;
+        TextRun run = FindObject(m, handle);
+        foreach (ParagraphBlock p in m.BodyParagraphs)
+            if (p.Runs.Remove(run))
+            {
+                if (p.RemoveWhenObjectEmpty && p.Runs.Count == 0) m.Blocks.Remove(p);
+                return 1;
+            }
         throw new ArgumentException("Object.Missing: Placement is unavailable.", nameof(handle));
     }, cancellationToken, objectAware: true);
 
@@ -108,7 +122,7 @@ public sealed partial class WordDocument
     private DocumentObject ObjectSnapshot(Guid id) => new DocumentObject(sessionId, version, model.BodyParagraphs.SelectMany(p => p.Runs).Single(r => r.Object?.Id == id).Object!);
     private static void AddObject(DocumentModel m, DocumentObjectData data)
     {
-        var p = new ParagraphBlock { Section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section };
+        var p = new ParagraphBlock { RemoveWhenObjectEmpty = true, Section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section };
         p.Runs.Add(new TextRun("", retainedObject: data)); m.Blocks.Add(p);
     }
     private static DocumentObjectData EquationData(EquationExpression expression, bool display, double size, string description, Guid id, ConversionContext c)

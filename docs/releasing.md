@@ -9,10 +9,12 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
-The [1.2.1 README patch](releases/1.2.1.md) is in preparation to correct NuGet's
-rendering of the OS icons. It needs a new version because published READMEs are
-immutable. The next dispatch must select successful final-main 1.2.1 CI; never
-rerun publication for 1.2.0 to update its README.
+The next candidate is [1.3.0](releases/1.3.0.md), including P1 and P2 with the
+cancelled cryptographic features explicitly absent. All three public package
+indexes now contain 1.2.1; their nuspec repository commit is
+`7a09ef6b5d7dfcec8ee9507741b2b78016f14761`. This public identity check does not replace
+that release's historical qualification. The next dispatch must select successful
+final-main 1.3.0 CI; never rerun publication for an existing version.
 
 Package README images must use Markdown syntax and a NuGet-allowed image host.
 Avoid HTML sizing/alignment tags: NuGet's renderer disables HTML. Validate the

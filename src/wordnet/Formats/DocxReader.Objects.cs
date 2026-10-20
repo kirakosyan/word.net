@@ -9,6 +9,15 @@ namespace WordNet.Formats;
 
 internal sealed partial class DocxReader
 {
+    private DocumentObjectData? ReadObjectForConversion(Func<DocumentObjectData?> read)
+    {
+        try { return read(); }
+        catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
+        {
+            context.Loss("Object.UnsupportedLoss", "An out-of-profile chart or equation is omitted during conversion; its content and appearance are not retained.");
+            return null;
+        }
+    }
     private readonly Dictionary<string, (ChartDefinition Definition, ObjectGraph Graph, bool Renderable)> chartGraphs = new Dictionary<string, (ChartDefinition, ObjectGraph, bool)>(StringComparer.Ordinal);
     private DocumentObjectData? ReadRetainedDrawing(XElement drawing)
     {
@@ -18,7 +27,9 @@ internal sealed partial class DocxReader
         XElement inline = drawing.Element(Wp + "inline") ?? throw new NotSupportedException("Chart.Anchor: Only inline body/cell charts are admitted.");
         if (drawing.Elements().Count() != 1 || inline.Elements().GroupBy(e => e.Name).Any(g => g.Count() > 1)
             || inline.Elements().Any(e => e.Name != Wp + "extent" && e.Name != Wp + "effectExtent" && e.Name != Wp + "docPr" && e.Name != Wp + "cNvGraphicFramePr" && e.Name != A + "graphic")
-            || inline.Attributes().Any(a => !a.IsNamespaceDeclaration && (a.Name.Namespace != XNamespace.None || a.Name.LocalName is not "distT" and not "distB" and not "distL" and not "distR" || a.Value != "0"))
+            || inline.Attributes().Any(a => !a.IsNamespaceDeclaration
+                && !(a.Name.NamespaceName == "http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" && a.Name.LocalName is "anchorId" or "editId" && a.Value.Length == 8 && a.Value.All(Uri.IsHexDigit))
+                && (a.Name.Namespace != XNamespace.None || a.Name.LocalName is not "distT" and not "distB" and not "distL" and not "distR" || a.Value != "0"))
             || inline.Element(Wp + "effectExtent")?.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Value != "0") == true)
             throw new NotSupportedException("Chart.Placement: Unsupported inline spacing, effects or wrapper metadata.");
         XElement? properties = inline.Element(Wp + "docPr");

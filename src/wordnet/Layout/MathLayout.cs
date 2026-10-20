@@ -50,7 +50,7 @@ internal sealed class MathLayout
         if (++work > 200000 || work * 128L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Equation.LayoutBudget: Math construction work exceeds its operation allowance.");
     }
     private double Constant(int n, double size) => font.Constants[n] * size / font.Units;
-    private double Script(double size, int level) => size * (level == 0 ? font.ScriptPercent / 100.0 : (double)font.ScriptScriptPercent / font.ScriptPercent);
+    private double Script(double size, int level) => level >= 2 ? size : size * (level == 0 ? font.ScriptPercent / 100.0 : (double)font.ScriptScriptPercent / font.ScriptPercent);
     private Box Build(EquationExpression node, double size, int level, bool display)
     {
         Charge();
@@ -124,10 +124,13 @@ internal sealed class MathLayout
             Box body = Build(node.Children[0], size, level, false); double rule = Constant(47, size), gap = Constant(display ? 46 : 45, size);
             double height = body.Visual.Ascent + body.Visual.Descent + gap + rule;
             Box root = Stretch(glyph(0x221a), size, height, 0);
-            double rootY = body.Visual.Descent - root.Visual.Descent, barY = -body.Visual.Ascent - gap - rule;
+            // Share an oversized variant's extra clearance above/below the radicand.
+            // The rule must meet the glyph's top, rather than a separately computed height.
+            double extra = Math.Max(0, root.Visual.Ascent + root.Visual.Descent - height);
+            double rootY = body.Visual.Descent - root.Visual.Descent + extra / 2, barY = rootY - root.Visual.Ascent;
             double before = 0; Box? degree = null;
             if (node.Children.Count == 2)
-            { degree = Build(node.Children[1], size * font.ScriptScriptPercent / 100, level + 2, false); before = Math.Max(0, degree.Visual.Width + Constant(49, size) + Constant(50, size)); }
+            { degree = Build(node.Children[1], Script(Script(size, level), level + 1), level + 2, false); before = Math.Max(0, degree.Visual.Width + Constant(49, size) + Constant(50, size)); }
             var result = new Box(); Put(result, root, before, rootY); Put(result, body, before + root.Visual.Width, 0);
             result.Visual.Shapes.Add(new FixedShape(before + root.Visual.Width - rule, barY, body.Visual.Width + rule, rule, "000000"));
             result.Visual.Ascent = Math.Max(result.Visual.Ascent, -barY + Constant(48, size));

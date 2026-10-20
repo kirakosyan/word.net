@@ -1,14 +1,15 @@
 # wordnet implementation and delivery status
 
-## Pending P2 delivery — #64–#73 and revised #82
+## 1.3.0 candidate — #64–#73 and revised #82
 
-The separate P2 branch implements validated chart/OMML graphs, DOCX preservation,
+The 1.3.0 candidate implements validated chart/OMML graphs, DOCX preservation,
 managed vectors and MATH metrics/layout, immutable object editing/removal, Unicode
 17 bidi and opt-in Hindi Devanagari, and a qualified ordinary native tagged/UA
 profile. The [profile](p2-objects-typography.md) and machine-readable
 [capability matrix](p2-capability-matrix.json) specify the limits and unsupported
 combinations. The executable P2 recipe composes a managed object report and exports
-separate native chapters. Package publication and new platform claims are excluded.
+separate native chapters. The owner authorized publication after review, issue
+reconciliation and exact-main production gates; new platform claims remain excluded.
 Crypto issues #74–#81 are owner-cancelled, closed as not planned and absent.
 Final source/package/CI evidence belongs to the P2 PR; no completion is inferred
 from successful compilation or the older P1 results.

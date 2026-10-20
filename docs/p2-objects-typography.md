@@ -28,7 +28,7 @@ Equation layout requires a caller-supplied, embedding-permitted static font with
 an admitted OpenType MATH 1.0 table and Unicode format-12 cmap. Fraction/script/root geometry uses actual MATH
 constants and qualified variants/assemblies; ordinary Latin metrics are not a
 fallback. The test math font is a pinned OFL development asset and is not bundled
-into production packages. Unsupported math and excessive construction work fail.
+into production packages. Unsupported math and excessive construction work fail. Script sizing stops at the font's scriptscript size; radical rules meet the selected glyph's actual top. Control-character formatting does not override visible equation run formatting.
 
 Creation/update APIs use immutable definitions and session/version handles.
 Mutations stage complete graphs/expressions and resource admission before commit;
@@ -43,14 +43,16 @@ paragraph extensions preserve logical Unicode separately from glyph order, keep
 clusters intact and reject unsupported stories/fields/objects/vertical layout.
 Tagged native output requires its own logical carrier/structure and independent
 validation. Neither native shaping nor tags alone establish general accessibility.
-No new platform, OCR language, package publication or release credential is included.
+No new platform or OCR language is qualified. Publication of the 1.3.0 candidate
+is gated separately by the exact-main release procedure; release credentials are unchanged.
 
 ## Public object editing
 
 `Objects` returns immutable snapshots with private session/version validity. Use
 `AddChart`, `UpdateChart`, `AddEquation`, `UpdateEquation` and `RemoveObject`;
 refresh handles after every successful edit. Removal deletes the entire placement
-and its workbook graph. Ordinary paragraph/table appends and metadata edits retain
+and its workbook graph. Removing a newly added object also removes its dedicated
+empty paragraph; imported paragraph/cell structure is retained. Ordinary paragraph/table appends and metadata edits retain
 objects; replacing an object owner, executing templates around it, restyling
 composition, review ranges and matching-structure comparison reject until aware.
 
@@ -60,15 +62,23 @@ Static rendering places the value title horizontally above the plot. It uses the
 documented canonical vector profile and does not claim pixel parity with every
 retained source style. Reversed/custom axes, visible column borders, marker/effect/data-label styling and
 other unqualified appearances remain preservable only when the graph is admitted;
-static export rejects those appearances. Unknown graph namespaces/relationship
-roles, external targets, ambiguous IDs and cache/workbook mismatches fail admission.
+static export rejects those appearances. Unknown graph namespaces and other valid out-of-profile constructions fail session
+admission with `NotSupportedException`; malformed graphs, unsafe relationships,
+ambiguous IDs and cache/workbook mismatches raise `InvalidDataException`.
+Ordinary Lenient/BestEffort conversion can omit an unsupported chart/equation with
+`Object.UnsupportedLoss`. Strict conversion and document-session loading reject
+that loss. Malformed input, resource limits and unsafe relationships remain hard
+errors in every mode; admitted objects with unsupported visible appearance still
+reject static rendering. Word inline anchor/edit identifiers are harmless metadata.
 
 Equations use the closed immutable `EquationExpression` factories. Size is in
 points. Public trees must also fit serialized OMML nesting, so very deep semantic
 trees may hit the XML limit first. Descriptions are separate session/export metadata;
 OMML has no ordinary alt-text field, so reloading derives a bounded textual
 expression description. Callers should update meaningful descriptions when editing
-business semantics. Images and thumbnail caches never stand in for these objects.
+business semantics. `UpdateChart` and `UpdateEquation` accept a `description` overload: null
+preserves the old description, an empty string clears it, and a new value updates
+it atomically with the content. Images and thumbnail caches never stand in for these objects.
 
 ```csharp
 var options = new ConversionOptions(FidelityMode.BestEffort);
@@ -141,6 +151,6 @@ The public [combined recipe](../examples/WordNet.Automation/README.md) produces
 an ordinary report with editable objects and separate native UA chapters. The
 [capability matrix](p2-capability-matrix.json) explicitly rejects unsupported
 combinations. Encryption/decryption and DOCX/PDF signatures are absent by owner
-request. These changes are pending review and unpublished. Exact final-head
+request. The 1.3.0 candidate remains unpublished until its release workflow completes. Exact final-head
 source/package/runtime evidence belongs to the PR; compilation alone does not
 qualify Framework, native architectures or a new platform.

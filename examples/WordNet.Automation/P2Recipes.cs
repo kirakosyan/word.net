@@ -22,8 +22,8 @@ internal static class P2Recipes
         objects.UpdateChart(chart, new ChartDefinition(ChartKind.ClusteredColumn, Quarters,
             new[] { new ChartSeries("Revenue", "2468AC", new double?[] { 12, 20, null, -5 }) }, "Quarterly report", categoryTitle: "Quarter", valueTitle: "Amount"), token);
         DocumentObject equation = objects.AddEquation(EquationExpression.Fraction(EquationExpression.Text("x"), EquationExpression.Text("2")),
-            description: "x divided by three", cancellationToken: token);
-        objects.UpdateEquation(equation, EquationExpression.Fraction(EquationExpression.Text("x"), EquationExpression.Text("3")), token);
+            description: "x divided by two", cancellationToken: token);
+        objects.UpdateEquation(equation, EquationExpression.Fraction(EquationExpression.Text("x"), EquationExpression.Text("3")), description: "x divided by three", cancellationToken: token);
         report.Append(objects, cancellationToken: token);
         Save(report, "p2-report.docx", DocumentFormat.Docx, options); Save(report, "p2-report.pdf", DocumentFormat.Pdf, options); Save(report, "p2-report.xps", DocumentFormat.Xps, options);
         using var source = new MemoryStream(); report.Save(source, DocumentFormat.Docx, options, token); source.Position = 0;

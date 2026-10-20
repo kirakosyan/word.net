@@ -1244,7 +1244,7 @@ internal static partial class FixedLayout
                 if (paragraph.Layout.LineSpacing is double spacing)
                 {
                     double requested = paragraph.Layout.MultipleLineSpacing ? line.Height * spacing : spacing;
-                    if (paragraph.Layout.ExactLineSpacing && paragraph.Runs.All(r => r.Text.Length == 0 && r.Image == null && r.Box == null && r.Note == null))
+                    if (paragraph.Layout.ExactLineSpacing && paragraph.Runs.All(r => r.Text.Length == 0 && r.Image == null && r.Box == null && r.Note == null && r.Object == null))
                     { line.Ascent = 0; line.Descent = requested; }
                     if (requested < line.Height && (paragraph.Layout.ExactLineSpacing || paragraph.Layout.MultipleLineSpacing))
                         context.Loss("Layout.LineSpacing", "Line spacing smaller than content height is expanded to avoid clipping or overlap.");

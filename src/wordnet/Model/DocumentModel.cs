@@ -53,6 +53,7 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal bool RemoveWhenObjectEmpty { get; set; }
     internal System.Guid Identity { get; set; } = System.Guid.NewGuid();
     internal bool? RightToLeft { get; set; }
     internal List<TextRun> Runs { get; } = new List<TextRun>();
