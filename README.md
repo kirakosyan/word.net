@@ -36,9 +36,9 @@ See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/
 
 ## P1 additions in merged source
 
-PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions are not in published packages. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; ODT is limited to the two DOCX exchanges.
+PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions are part of the 1.3.0 source profile; earlier 1.2.x packages exclude them. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; ODT is limited to the two DOCX exchanges.
 
-## 1.3.0 release candidate
+## 1.3.0 object and typography additions
 
 The 1.3.0 source adds bounded editable column/line charts and OMML equations,
 managed PDF/XPS/SVG rendering, and opt-in Unicode 17 bidi/Hindi paragraphs with a
@@ -46,7 +46,7 @@ qualified ordinary PDF/UA-1 profile. Math needs an explicit caller MATH font; na
 text needs the optional provider and suitable caller fonts. Objects and native/UA
 output have separate combination limits. See the [P2 profile](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md)
 and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/p2-capability-matrix.json).
-These changes remain under review in [PR #86](https://github.com/kirakosyan/word.net/pull/86), based on merged P1 source, and are unpublished.
+These changes are implemented in [PR #86](https://github.com/kirakosyan/word.net/pull/86), building on merged P0 and P1 work. See the [1.3.0 release record](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.3.0.md) for qualification and publication status.
 
 ## Quick start
 

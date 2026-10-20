@@ -1,6 +1,6 @@
 # Conversion tests and qualification
 
-## Pending P2 qualification
+## 1.3.0 candidate qualification
 
 The required suite is **1,039** cases: the 957-case P1 head plus 82 P2 cases, including 23 review regressions.
 P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
@@ -19,6 +19,24 @@ unsupported combinations are in [the P2 profile](p2-objects-typography.md).
 Final exact-head source/package/runtime checks are recorded on the P2 PR; historical
 P1 qualification below remains separate. No new platform or package publication
 is implied by these source changes.
+
+### Review revision 5a5c26c — 2026-10-20
+
+All eleven review findings have concrete fixes and 23 additional regressions.
+At `5a5c26ccfe3798d6994345feaa145f20f253913e`, six complete Linux x64 source,
+package and explicit Standard runs on .NET 8/10 each pass **1,039/1,039** with no
+failures/skips (6,234 passes). Locked restore, five-target Release build, formatting,
+API-compatible six-archive packaging and the executable recipes pass. The current
+NuGet audit reports no known vulnerable direct/transitive packages.
+
+Fresh independent Writer/Calc/Math edits and chart/MATH/logical-structure measurements
+pass. FontTools BoundsPen independently measures the exported radical glyph top and
+its adjoining SVG rule (error below 0.000001 pt). The package identity receipt checks
+all 11 DLL assets, exact source README, commit metadata and exclusion of development
+fonts/fixtures. Local reports remain under ignored `artifacts/review-*`; hosted final
+revision and exact-main evidence belongs to [PR #86](https://github.com/kirakosyan/word.net/pull/86).
+Subsequent documentation edits do not change the tested library; release packages
+still require new exact-main qualification under [releasing](releasing.md).
 
 ## Merged P1 qualification — PR #85, 2026-10-19
 

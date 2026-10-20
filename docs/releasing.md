@@ -1,6 +1,6 @@
 # Releasing wordnet
 
-The latest verified published desktop release is **1.2.0**, from commit `3202a1f`.
+The historical **1.2.0** desktop release was qualified at commit `3202a1f`.
 See the [release ledger](release-1.2.0-readiness.md). Later maintenance builds of main
 are separate artifacts and must not overwrite this version. Pack and verify
 `wordnet.Fonts`, `wordnet`, and `wordnet.Ocr` together with `eng/pack.ps1`; they share

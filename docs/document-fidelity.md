@@ -1,8 +1,8 @@
 # Formatting and image profile
 
-## Pending P2 implementation
+## 1.3.0 source profile
 
-The pending P2 branch preserves admitted body/cell chart graphs and OMML, renders the qualified vector subset and exposes explicit immutable editing/removal. Native bidi/Hindi/tagged profiles are opt-in. Objects with native/UA/PDF-A, advanced chart/math types and unknown/external graphs remain excluded. See [P2 fidelity and combinations](p2-objects-typography.md).
+The 1.3.0 source preserves admitted body/cell chart graphs and OMML, renders the qualified vector subset and exposes explicit immutable editing/removal. Native bidi/Hindi/tagged profiles are opt-in. Objects with native/UA/PDF-A, advanced chart/math types and unknown/external graphs remain excluded. See [P2 fidelity and combinations](p2-objects-typography.md).
 
 ## Merged P1 column and exchange profile
 

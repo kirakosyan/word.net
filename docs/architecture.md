@@ -1,8 +1,8 @@
 # Architecture and implementation status
 
-## Pending P2 implementation
+## 1.3.0 source profile
 
-The pending P2 profile adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).
+The 1.3.0 source profile adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).
 
 ## Merged P1 implementation
 
@@ -16,7 +16,7 @@ ReviewStore retains admitted plain-text revisions and classic comment intervals.
 Session/version handles, clone-before-commit decisions/recording and explicit detached
 views prevent implicit review decisions. Pinned Unicode 17 tables support grapheme
 validation and bounded matching-structure comparison. These features are merged and
-unpublished; P2 objects remain under review and cryptographic features are cancelled. No runtime dependency is added.
+unpublished; P2 objects are included in the 1.3.0 candidate and cryptographic features are cancelled. No runtime dependency is added.
 
 The merged bucket 4 profile extends the earlier 30 directions to 36 with HTML input and RTF exchanges.
 See [interoperability profiles](interoperability.md) for the supported 1.2.0 subset.
@@ -93,7 +93,7 @@ and strong-name variants are waived under the NuGet-only deployment decision.
 The model carries absolute font sizes/RGB colors, decimal/bullet lists, inline PNG/JPEG
 with physical dimensions, section geometry, paragraph spacing/indentation/pagination,
 multi-paragraph cells, spans, repeating headers and row controls. It also carries bounded multilevel numbering, drawings, notes and section labels;
-editable charts/equations remain deferred. DOCX revisions render their accepted state
+editable charts/equations use the bounded 1.3.0 profile above. DOCX revisions render their accepted state
 with an explicit fidelity warning in BestEffort/Lenient; Strict rejects revision
 and comment loss before output is copied. Detected
 losses are diagnosed. See the [fidelity profile](document-fidelity.md).
