@@ -39,8 +39,9 @@ internal sealed class FixedHeading
 
 internal sealed class PositionedText
 {
-    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false)
-    { SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
+    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null)
+    { Visual = visual; SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
+    internal ObjectVisual? Visual { get; }
     internal string Text { get; }
     internal double X { get; }
     internal double Y { get; }
@@ -55,9 +56,9 @@ internal sealed class PositionedText
     internal TextRun? SourceRun { get; }
     internal ShapedWord? NativeShape { get; }
     internal bool IsLabel { get; }
-    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel);
-    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel);
-    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel);
+    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel, Visual);
+    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual);
+    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual);
 }
 
 internal static partial class FixedLayout
@@ -162,6 +163,7 @@ internal static partial class FixedLayout
         // Per-call, bounded token measurements; repeated template runs avoid repeated parsing.
         var measurements = new Dictionary<(string Text, int Font, double Size), MeasuredText>();
         int cachedCharacters = 0;
+        int? shapingLevel = null;
         PdfPageBuilder metrics = measure.AddPage(Width, Height);
         PageSettings sourceSettings = model.Blocks.FirstOrDefault()?.Section ?? model.FinalSection ?? new PageSettings();
         PageSettings settings = sourceSettings;
@@ -923,6 +925,13 @@ internal static partial class FixedLayout
                     }
                     RememberExclusion(box.Anchor, bounds); continue;
                 }
+                if (item.Visual is ObjectVisual visual)
+                {
+                    double origin = item.X + settings.Left - line.PageLeft, baseline = top + line.Ascent + item.Y;
+                    destination.Text.AddRange(visual.Text.Select(t => t.At(origin + t.X, baseline + t.Y)));
+                    destination.Shapes.AddRange(visual.Shapes.Select(s => s.At(origin + s.X, baseline + s.Y)));
+                    continue;
+                }
                 PositionedText placed = item.At(item.X + settings.Left - line.PageLeft, top + line.Ascent + item.Y);
                 if (item.Image?.Anchor is DrawingAnchor anchor)
                 {
@@ -939,12 +948,14 @@ internal static partial class FixedLayout
         Line FitLine(Line line, double maximum)
         {
             if (line.Height <= maximum || context.EffectiveMode != FidelityMode.Lenient) return line;
+            if (line.Items.Any(t => t.Visual != null)) throw new NotSupportedException("Object.Frame: Object lines are never silently scaled.");
             context.ReportStrictRejection("Layout.TextScaledToFit", "An oversized line is reduced to fit printable space.");
             return ScaleLine(line, maximum / line.Height);
         }
 
         Line ScaleLine(Line line, double factor)
         {
+            if (line.Items.Any(t => t.Visual != null)) throw new NotSupportedException("Object.Frame: Object geometry is never silently scaled.");
             var scaled = new Line { PageLeft = line.PageLeft, FlowWidth = line.FlowWidth, BreakAfter = line.BreakAfter, Origin = line.Origin, Ascent = line.Ascent * factor, Descent = line.Descent * factor };
             scaled.Shapes.AddRange(line.Shapes.Select(s => new FixedShape(line.Origin + (s.X - line.Origin) * factor, s.Y * factor, s.Width * factor, s.Height * factor, s.Color, s.Stroke * factor, s.Style)));
             foreach (PositionedText item in line.Items)
@@ -1028,7 +1039,21 @@ internal static partial class FixedLayout
             Line line = NewLine(); x = left;
             foreach (TextRun run in runs)
             {
-                context.CheckCancellation();
+                context.CheckCancellation(); shapingLevel = run.BidiLevel;
+                if (run.Object is DocumentObjectData retained)
+                {
+                    if (paragraph.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed || sourceSettings.ExplicitColumns.Count != 0)
+                        throw new NotSupportedException("Object.Flow: Justification/distribution and explicit multi-column object flow are outside this profile.");
+                    ObjectVisual visual = retained.Chart != null ? ChartLayout.Create(retained, resolver.Resolve(new TextRun(""), false), Measure, context)
+                        : new MathLayout(resolver.Math!, resolver.MathIndex, data[resolver.MathIndex], context).Create(retained);
+                    if (visual.Width > width || visual.Ascent + visual.Descent > settings.Height - settings.Top - settings.Bottom)
+                        throw new NotSupportedException("Object.Frame: Object geometry exceeds printable space.");
+                    if (retained.Display && line.Items.Count != 0 || x > left && x + visual.Width > left + width) Finish(false);
+                    line.Items.Add(new PositionedText("", x, 0, 0, 0, sourceParagraph: paragraph, sourceRun: run, visual: visual));
+                    x += visual.Width; line.Ascent = Math.Max(line.Ascent, visual.Ascent); line.Descent = Math.Max(line.Descent, visual.Descent);
+                    if (retained.Display) Finish();
+                    continue;
+                }
                 if (run.Bookmark != null) { line.Items.Add(new PositionedText("", x, 0, 0, 0, field: run)); continue; }
                 if (run.Box != null || run.Image?.Anchor != null)
                 {
@@ -1065,7 +1090,7 @@ internal static partial class FixedLayout
                     runText = safe.ToString();
                 }
                 foreach (char character in runText)
-                    if (character is not '\n' and not '\t' and not '\f' and not '\v' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
+                    if (!(context.Typography.ExtendedBidi && (UnicodeBidi.Format(character) || character is '\u200c' or '\u200d')) && character is not '\n' and not '\t' and not '\f' and not '\v' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
                         throw new NotSupportedException("Layout.Glyph: The embedded font cannot represent a character.");
                 int tocLine = 0;
                 string? activeLink = run.Link;
@@ -1176,11 +1201,11 @@ internal static partial class FixedLayout
             }
             void Finish(bool lastLine = true)
             {
-                if (native != null && line.Items.Count > 0) NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native);
+                if (native != null && line.Items.Count > 0) NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native, context.Typography.ExtendedBidi);
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)
                 {
-                    PositionedText? last = line.Items.LastOrDefault(i => i.Image != null || i.Text.TrimEnd(' ').Length > 0);
-                    double end = last == null ? left : last.X + (last.Image?.Width ?? Measure(last.Text.TrimEnd(' '), last.Font, last.Size));
+                    PositionedText? last = line.Items.LastOrDefault(i => i.Visual != null || i.Image != null || i.Text.TrimEnd(' ').Length > 0);
+                    double end = last == null ? left : last.X + (last.Visual?.Width ?? last.Image?.Width ?? Measure(last.Text.TrimEnd(' '), last.Font, last.Size));
                     double shift = Math.Max(0, left + width - end) / (paragraph.Alignment == ParagraphAlignment.Center ? 2 : 1);
                     for (int i = 0; i < line.Items.Count; i++) line.Items[i] = line.Items[i].At(line.Items[i].X + shift, line.Items[i].Y);
                 }
@@ -1198,10 +1223,10 @@ internal static partial class FixedLayout
                         }
                         line.Items.Clear(); line.Items.AddRange(characters);
                     }
-                    PositionedText? last = line.Items.LastOrDefault(i => i.Image != null || i.Text.TrimEnd(' ').Length > 0);
+                    PositionedText? last = line.Items.LastOrDefault(i => i.Visual != null || i.Image != null || i.Text.TrimEnd(' ').Length > 0);
                     if (last != null)
                     {
-                        double end = last.X + (last.Image?.Width ?? Measure(last.Text.TrimEnd(' '), last.Font, last.Size));
+                        double end = last.X + (last.Visual?.Width ?? last.Image?.Width ?? Measure(last.Text.TrimEnd(' '), last.Font, last.Size));
                         int lastIndex = line.Items.IndexOf(last);
                         bool distributed = paragraph.Alignment == ParagraphAlignment.Distributed;
                         int gaps = distributed ? lastIndex : line.Items.Take(lastIndex).Sum(item => item.Text.Count(c => c == ' '));
@@ -1219,7 +1244,7 @@ internal static partial class FixedLayout
                 if (paragraph.Layout.LineSpacing is double spacing)
                 {
                     double requested = paragraph.Layout.MultipleLineSpacing ? line.Height * spacing : spacing;
-                    if (paragraph.Layout.ExactLineSpacing && paragraph.Runs.All(r => r.Text.Length == 0 && r.Image == null && r.Box == null && r.Note == null))
+                    if (paragraph.Layout.ExactLineSpacing && paragraph.Runs.All(r => r.Text.Length == 0 && r.Image == null && r.Box == null && r.Note == null && r.Object == null))
                     { line.Ascent = 0; line.Descent = requested; }
                     if (requested < line.Height && (paragraph.Layout.ExactLineSpacing || paragraph.Layout.MultipleLineSpacing))
                         context.Loss("Layout.LineSpacing", "Line spacing smaller than content height is expanded to avoid clipping or overlap.");
@@ -1247,7 +1272,7 @@ internal static partial class FixedLayout
             {
                 if (native != null)
                 {
-                    ShapedWord word = native.Shape(value, font, NativeTypography.Rtl(value));
+                    ShapedWord word = native.Shape(value, font, shapingLevel.HasValue ? shapingLevel.Value >= 0 && (shapingLevel.Value & 1) != 0 : NativeTypography.Rtl(value));
                     // Charge every shaping call; the ordinary measurement cache remains managed-only.
                     return new MeasuredText { Width = word.Width * size, Native = word };
                 }

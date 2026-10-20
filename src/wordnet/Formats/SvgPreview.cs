@@ -47,7 +47,7 @@ internal static class SvgPreview
                     new XAttribute("preserveAspectRatio", "none"), new XAttribute(xlink + "href", "data:" + image.MediaType + ";base64," + Convert.ToBase64String(image.Bytes)), new XElement(svg + "title", image.AlternativeText))));
                 root.Add(group); length += (long)image.Bytes.Length * 4 / 3; Check(); continue;
             }
-            if (item.Text.Length == 0) continue;
+            if (item.Text.Length == 0 && item.NativeShape == null) continue;
             RenderFontCache.Face face = context.RenderFonts.Get(item.Font); TrueTypeFont font = face.Font;
             var text = new XElement(svg + "g", new XAttribute("fill", "#" + (item.Color ?? "000000")), new XElement(svg + "title", item.Text));
             double x = item.X, scale = item.Size / font.GetUnitsPerEm();
@@ -57,6 +57,7 @@ internal static class SvgPreview
                 ShapedGlyph? shaped = item.NativeShape?.Glyphs[c];
                 int codepoint = shaped == null ? char.ConvertToUtf32(item.Text, c) : 32; if (codepoint > 0xffff) c++;
                 int glyph = shaped?.Glyph ?? 0;
+                if (glyph < 0) { x += shaped!.Advance * scale; continue; }
                 if (shaped == null && font.TableRegister.CMapTable?.TryGetGlyphIndex(codepoint, out glyph) != true) throw new NotSupportedException("Preview.Glyph: A preview glyph is unavailable.");
                 if (!face.SvgPaths.TryGetValue(glyph, out string? path))
                 {

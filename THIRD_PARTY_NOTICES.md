@@ -153,3 +153,23 @@ included in packages as `licenses/Unicode-3.0.txt`. Generator inputs and SHA-256
 are recorded in `tests/wordnet.Conversion.Tests/Fixtures/Unicode17/manifest.json`;
 the official conformance files retain their original notices. These tables do not
 add a shaping engine or language-specific dictionary segmentation.
+
+## P2 development assets and qualification tools
+
+The tests retain unmodified STIX Two Math source font at commit
+`bea1dc9a3cc2d8b57e412dfd0f448a84382dfe46` (`source/STIXTwoMath.input.ttf`),
+SIL OFL 1.1, with `Fixtures/P2/STIX-OFL.txt` and exact SHA-256 in
+`math-reference.json`. The unmodified Noto Sans Devanagari Regular face is from
+`notofonts/noto-fonts` commit `ffebf8c1ee449e544955a7e813c54f9b73848eac`, SIL OFL
+1.1, with its OFL and hash beside `devanagari-reference.json`. Neither font is
+included in production packages. Unicode 17 bidi data and conformance files retain
+the existing Unicode-3.0 notice and separate `bidi-manifest.json` hashes.
+
+FontTools 4.61.1 (MIT), uharfbuzz 0.53.0 (Apache-2.0), PyMuPDF 1.27.2.2
+(AGPL-3.0-or-later) and Pillow 12.3.0 (HPND) are development-only independent
+qualification tools, pinned in `eng/p2-requirements.txt`. They are not converter
+runtime dependencies or NuGet contents. The optional office driver uses LibreOffice
+Java 26.2.2 (MPL-2.0); a JRE-only development host may use Eclipse ECJ 3.40.0
+(EPL-2.0) to compile it. URLs/hashes are in `eng/p2-tool-pins.json`; downloaded jars
+remain ignored artifacts. The test-only System.Text.Json 10.0.12 reference-vector
+reader is MIT licensed and private to the test project, with reviewed lock files.

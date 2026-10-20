@@ -1,0 +1,45 @@
+{
+  "generator": "generate-p2-fixtures.py",
+  "license": "MIT synthetic inputs",
+  "producer": "XlsxWriter 3.2.9 (BSD-2-Clause)",
+  "files": {
+    "column.docx": {
+      "sha256": "a39b50ecb9e5d4d0f11ef0ac1988aa976c5ab6b6ffd3c832867130bac4150ad8",
+      "workbook_sha256": "ce0ed7a56a3c523246c315f03e8196f972a3c002134a3d31bdc14e60e5dde172",
+      "kind": "column",
+      "values": [
+        [
+          10,
+          0,
+          -2,
+          6
+        ],
+        [
+          -5,
+          8,
+          null,
+          4
+        ]
+      ]
+    },
+    "line.docx": {
+      "sha256": "08be401042d2df6ee8f31612fa8c067dc9401cd71499b843b2a180efdfb7afac",
+      "workbook_sha256": "ce0ed7a56a3c523246c315f03e8196f972a3c002134a3d31bdc14e60e5dde172",
+      "kind": "line",
+      "values": [
+        [
+          10,
+          0,
+          -2,
+          6
+        ],
+        [
+          -5,
+          8,
+          null,
+          4
+        ]
+      ]
+    }
+  }
+}

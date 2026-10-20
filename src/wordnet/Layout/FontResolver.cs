@@ -24,6 +24,8 @@ internal sealed class FontResolver
     private readonly char[] characters;
     private bool recording;
     internal List<byte[]> Data { get; } = new List<byte[]>();
+    internal int MathIndex { get; private set; } = -1;
+    internal MathFont? Math { get; private set; }
 
     internal FontResolver(DocumentModel model, ConversionContext context, bool recordUsage = false)
     {
@@ -48,6 +50,15 @@ internal sealed class FontResolver
                 if (paragraph.List.Definition != null) foreach (ListLevel level in paragraph.List.Definition) _ = Resolve(level.Appearance.WithText(level.Pattern), paragraph.HeadingLevel > 0);
             }
             foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
+        }
+        if (model.ObjectCount != 0 && model.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object?.Equation != null))
+        {
+            FontSource? source = sources.Where(s => !s.Bold && !s.Italic && string.Equals(s.FamilyName, options.MathFamily, StringComparison.OrdinalIgnoreCase)).OrderBy(s => System.Math.Abs(s.Weight - 400)).FirstOrDefault();
+            if (source == null || string.IsNullOrWhiteSpace(options.MathFamily)) throw new NotSupportedException("Equation.Font: Configure Fonts.MathFamily and an exact caller-supplied static MATH face.");
+            if (source.Bytes.Length * 8L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Equation.FontBudget: Math metrics and outlines exceed their operation allowance.");
+            Math = new MathFont(source.Bytes, context);
+            if (!sourceIndices.TryGetValue(source.Bytes, out int index)) { index = Data.Count; Data.Add(source.Bytes); sourceIndices.Add(source.Bytes, index); }
+            MathIndex = index;
         }
         recording = true;
     }
@@ -99,7 +110,7 @@ internal sealed class FontResolver
         return index;
 
         FontSource? Find(string name) => sources.Where(s => s.FamilyName.Equals(name, StringComparison.OrdinalIgnoreCase) && s.Bold == bold && s.Italic == italic)
-            .OrderBy(s => Math.Abs(s.Weight - (bold ? 700 : 400))).FirstOrDefault();
+            .OrderBy(s => System.Math.Abs(s.Weight - (bold ? 700 : 400))).FirstOrDefault();
         FontSource? Bundled(string name)
         {
             var bundled = BundledFonts.Read(name, bold, italic);

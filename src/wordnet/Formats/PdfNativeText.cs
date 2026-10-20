@@ -23,6 +23,11 @@ internal sealed class PdfNativeText
     internal PdfNativeText(ConversionContext context) { this.context = context; }
     internal void Draw(PdfPageBuilder target, PositionedText item, double pageHeight, PdfDocumentBuilder.AddedFont carrier)
     {
+        DrawOutlines(target, item, pageHeight);
+        DrawCarrier(target, item, pageHeight, carrier);
+    }
+    internal void DrawOutlines(PdfPageBuilder target, PositionedText item, double pageHeight)
+    {
         ShapedWord word = item.NativeShape!;
         RenderFontCache.Face font = context.RenderFonts.Get(item.Font);
         var ops = target.CurrentStream.Operations; double pen = 0, scale = item.Size / word.Units;
@@ -30,6 +35,7 @@ internal sealed class PdfNativeText
         foreach (ShapedGlyph glyph in word.Glyphs)
         {
             context.CheckCancellation();
+            if (glyph.Glyph < 0) { pen += glyph.Advance; continue; }
             IReadOnlyList<PdfSubpath> paths = font.Paths(glyph.Glyph);
             if (paths.Count > 0)
             {
@@ -53,11 +59,18 @@ internal sealed class PdfNativeText
             }
             pen += glyph.Advance;
         }
-        ops.Add(EndMarkedContent.Value); ops.Add(Push.Value);
+        ops.Add(EndMarkedContent.Value);
+    }
+    internal static void DrawCarrier(PdfPageBuilder target, PositionedText item, double pageHeight, PdfDocumentBuilder.AddedFont carrier)
+    {
+        if (item.Text.Length == 0) return;
+        ShapedWord word = item.NativeShape!;
+        var ops = target.CurrentStream.Operations;
+        ops.Add(Push.Value);
         ops.Add(new BeginMarkedContentWithProperties(NameToken.Create("Span"), new DictionaryToken(new Dictionary<NameToken, IToken> { [NameToken.Create("ActualText")] = Unicode(item.Text) })));
         var measured = target.MeasureText("?", item.Size, new PdfPoint(0, 0), carrier);
         double width = measured[measured.Count - 1].EndBaseLine.X;
-        ops.Add(new SetHorizontalScaling(word.Width * item.Size / width * 100)); target.SetTextRenderingMode(TextRenderingMode.Neither);
+        ops.Add(new SetHorizontalScaling(Math.Max(0.001, word.Width * item.Size) / width * 100)); target.SetTextRenderingMode(TextRenderingMode.Neither);
         target.AddText("?", item.Size, new PdfPoint(item.X, pageHeight - item.Y), carrier);
         ops.Add(EndMarkedContent.Value); ops.Add(Pop.Value);
     }

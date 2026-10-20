@@ -8,6 +8,14 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        if (model.ObjectCount != 0 && (context.Typography.Enabled || !context.PreviewIntermediate && format == DocumentFormat.Pdf
+            && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
+            throw new System.NotSupportedException("Object.Combination: Retained objects require managed ordinary PDF/XPS/preview rendering without native typography or PDF conformance claims.");
+        if (model.ObjectCount != 0 && format != DocumentFormat.Docx && !context.PreviewIntermediate)
+        {
+            context.Loss("Object.EditableOutputLoss", "This destination cannot retain editable chart or OMML semantics.");
+            if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) context.Loss("Object.VisualOutputLoss", "This destination retains object descriptions instead of chart/equation graphics.");
+        }
         // The ODT adapter diagnoses its own bounded mapping rather than inheriting ebook losses.
         if (format == DocumentFormat.Odt)
         {

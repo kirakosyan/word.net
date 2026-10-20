@@ -1,6 +1,6 @@
 # Bounded DOCX review workflows
 
-The P1 implementation is pending review and is not in the published packages.
+The P1 implementation merged in PR #85 and is not in the published packages.
 It adds separate opt-in APIs; ordinary converter loads keep their existing
 accepted-state diagnostics and Strict rejection of review loss.
 

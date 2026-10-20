@@ -1,0 +1,568 @@
+{
+  "source": "https://github.com/stipub/stixfonts",
+  "commit": "bea1dc9a3cc2d8b57e412dfd0f448a84382dfe46",
+  "path": "source/STIXTwoMath.input.ttf",
+  "sha256": "15896d9ad1576c35078b1019daa316a8d260f9655d18751b0006d8df9916d655",
+  "license": "SIL OFL 1.1; see STIX-OFL.txt",
+  "developmentOnly": true,
+  "referenceReader": "fontTools 4.61.1",
+  "units": 1000,
+  "constants": {
+    "ScriptPercentScaleDown": 70,
+    "ScriptScriptPercentScaleDown": 55,
+    "DelimitedSubFormulaMinHeight": 1325,
+    "DisplayOperatorMinHeight": 1800,
+    "MathLeading": 150,
+    "AxisHeight": 258,
+    "AccentBaseHeight": 480,
+    "FlattenedAccentBaseHeight": 656,
+    "SubscriptShiftDown": 210,
+    "SubscriptTopMax": 368,
+    "SubscriptBaselineDropMin": 160,
+    "SuperscriptShiftUp": 360,
+    "SuperscriptShiftUpCramped": 252,
+    "SuperscriptBottomMin": 120,
+    "SuperscriptBaselineDropMax": 230,
+    "SubSuperscriptGapMin": 150,
+    "SuperscriptBottomMaxWithSubscript": 380,
+    "SpaceAfterScript": 40,
+    "UpperLimitGapMin": 135,
+    "UpperLimitBaselineRiseMin": 300,
+    "LowerLimitGapMin": 135,
+    "LowerLimitBaselineDropMin": 670,
+    "StackTopShiftUp": 470,
+    "StackTopDisplayStyleShiftUp": 780,
+    "StackBottomShiftDown": 385,
+    "StackBottomDisplayStyleShiftDown": 690,
+    "StackGapMin": 150,
+    "StackDisplayStyleGapMin": 300,
+    "StretchStackTopShiftUp": 800,
+    "StretchStackBottomShiftDown": 590,
+    "StretchStackGapAboveMin": 68,
+    "StretchStackGapBelowMin": 68,
+    "FractionNumeratorShiftUp": 585,
+    "FractionNumeratorDisplayStyleShiftUp": 640,
+    "FractionDenominatorShiftDown": 585,
+    "FractionDenominatorDisplayStyleShiftDown": 640,
+    "FractionNumeratorGapMin": 68,
+    "FractionNumDisplayStyleGapMin": 150,
+    "FractionRuleThickness": 68,
+    "FractionDenominatorGapMin": 68,
+    "FractionDenomDisplayStyleGapMin": 150,
+    "SkewedFractionHorizontalGap": 350,
+    "SkewedFractionVerticalGap": 68,
+    "OverbarVerticalGap": 175,
+    "OverbarRuleThickness": 68,
+    "OverbarExtraAscender": 68,
+    "UnderbarVerticalGap": 175,
+    "UnderbarRuleThickness": 68,
+    "UnderbarExtraDescender": 68,
+    "RadicalVerticalGap": 85,
+    "RadicalDisplayStyleVerticalGap": 170,
+    "RadicalRuleThickness": 68,
+    "RadicalExtraAscender": 78,
+    "RadicalKernBeforeDegree": 65,
+    "RadicalKernAfterDegree": -335,
+    "RadicalDegreeBottomRaisePercent": 55
+  },
+  "glyphs": {
+    "120": {
+      "id": 279,
+      "advance": 479,
+      "box": [
+        -2,
+        0,
+        482,
+        473
+      ]
+    },
+    "102": {
+      "id": 260,
+      "advance": 307,
+      "box": [
+        18,
+        0,
+        379,
+        713
+      ]
+    },
+    "119909": {
+      "id": 3354,
+      "advance": 559,
+      "box": [
+        23,
+        -10,
+        540,
+        479
+      ]
+    },
+    "119891": {
+      "id": 3331,
+      "advance": 577,
+      "box": [
+        10,
+        -225,
+        571,
+        711
+      ]
+    },
+    "8730": {
+      "id": 1657,
+      "advance": 794,
+      "box": [
+        18,
+        -265,
+        829,
+        922
+      ]
+    },
+    "40": {
+      "id": 1064,
+      "advance": 357,
+      "box": [
+        45,
+        -196,
+        327,
+        736
+      ]
+    },
+    "41": {
+      "id": 1065,
+      "advance": 357,
+      "box": [
+        30,
+        -196,
+        312,
+        736
+      ]
+    },
+    "50": {
+      "id": 1139,
+      "advance": 495,
+      "box": [
+        38,
+        0,
+        464,
+        644
+      ]
+    }
+  },
+  "variants": {
+    "1064": {
+      "variants": [
+        [
+          1064,
+          933
+        ],
+        [
+          1301,
+          1187
+        ],
+        [
+          1302,
+          1427
+        ],
+        [
+          1303,
+          1667
+        ],
+        [
+          1304,
+          1907
+        ],
+        [
+          1305,
+          2145
+        ],
+        [
+          1306,
+          2385
+        ],
+        [
+          1307,
+          2625
+        ],
+        [
+          1308,
+          2865
+        ],
+        [
+          1309,
+          3101
+        ],
+        [
+          1310,
+          3341
+        ],
+        [
+          1311,
+          3581
+        ],
+        [
+          1312,
+          3821
+        ]
+      ],
+      "assembly": {
+        "italic": 0,
+        "parts": [
+          [
+            4862,
+            0,
+            250,
+            1273,
+            0
+          ],
+          [
+            4861,
+            1000,
+            1000,
+            1252,
+            1
+          ],
+          [
+            4860,
+            250,
+            0,
+            1273,
+            0
+          ]
+        ]
+      }
+    },
+    "1065": {
+      "variants": [
+        [
+          1065,
+          933
+        ],
+        [
+          1313,
+          1187
+        ],
+        [
+          1314,
+          1427
+        ],
+        [
+          1315,
+          1667
+        ],
+        [
+          1316,
+          1907
+        ],
+        [
+          1317,
+          2145
+        ],
+        [
+          1318,
+          2385
+        ],
+        [
+          1319,
+          2625
+        ],
+        [
+          1320,
+          2865
+        ],
+        [
+          1321,
+          3101
+        ],
+        [
+          1322,
+          3341
+        ],
+        [
+          1323,
+          3581
+        ],
+        [
+          1324,
+          3821
+        ]
+      ],
+      "assembly": {
+        "italic": 0,
+        "parts": [
+          [
+            4865,
+            0,
+            250,
+            1273,
+            0
+          ],
+          [
+            4864,
+            1000,
+            1000,
+            1252,
+            1
+          ],
+          [
+            4863,
+            250,
+            0,
+            1273,
+            0
+          ]
+        ]
+      }
+    },
+    "1066": {
+      "variants": [
+        [
+          1066,
+          933
+        ],
+        [
+          1325,
+          1187
+        ],
+        [
+          1326,
+          1427
+        ],
+        [
+          1327,
+          1667
+        ],
+        [
+          1328,
+          1907
+        ],
+        [
+          1329,
+          2146
+        ],
+        [
+          1330,
+          2386
+        ],
+        [
+          1331,
+          2626
+        ],
+        [
+          1332,
+          2866
+        ],
+        [
+          1333,
+          3102
+        ],
+        [
+          1334,
+          3342
+        ],
+        [
+          1335,
+          3582
+        ],
+        [
+          1336,
+          3822
+        ]
+      ],
+      "assembly": {
+        "italic": 0,
+        "parts": [
+          [
+            4868,
+            0,
+            1200,
+            1275,
+            0
+          ],
+          [
+            4867,
+            1000,
+            1000,
+            1001,
+            1
+          ],
+          [
+            4866,
+            1200,
+            0,
+            1275,
+            0
+          ]
+        ]
+      }
+    },
+    "1067": {
+      "variants": [
+        [
+          1067,
+          933
+        ],
+        [
+          1337,
+          1187
+        ],
+        [
+          1338,
+          1427
+        ],
+        [
+          1339,
+          1667
+        ],
+        [
+          1340,
+          1907
+        ],
+        [
+          1341,
+          2146
+        ],
+        [
+          1342,
+          2386
+        ],
+        [
+          1343,
+          2626
+        ],
+        [
+          1344,
+          2866
+        ],
+        [
+          1345,
+          3102
+        ],
+        [
+          1346,
+          3342
+        ],
+        [
+          1347,
+          3582
+        ],
+        [
+          1348,
+          3822
+        ]
+      ],
+      "assembly": {
+        "italic": 0,
+        "parts": [
+          [
+            4871,
+            0,
+            1200,
+            1275,
+            0
+          ],
+          [
+            4870,
+            1000,
+            1000,
+            1001,
+            1
+          ],
+          [
+            4869,
+            1200,
+            0,
+            1275,
+            0
+          ]
+        ]
+      }
+    },
+    "1657": {
+      "variants": [
+        [
+          1657,
+          1188
+        ],
+        [
+          1658,
+          1855
+        ],
+        [
+          1659,
+          2371
+        ],
+        [
+          1660,
+          2892
+        ]
+      ],
+      "assembly": {
+        "italic": 0,
+        "parts": [
+          [
+            1661,
+            200,
+            200,
+            1905,
+            0
+          ],
+          [
+            1664,
+            650,
+            650,
+            651,
+            1
+          ],
+          [
+            1662,
+            550,
+            0,
+            642,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "italics": {
+    "3331": 20,
+    "3354": 10
+  },
+  "kerns": {
+    "260": {
+      "0": {
+        "heights": [],
+        "values": [
+          82
+        ]
+      },
+      "2": {
+        "heights": [],
+        "values": [
+          25
+        ]
+      }
+    },
+    "279": {
+      "2": {
+        "heights": [],
+        "values": [
+          35
+        ]
+      }
+    },
+    "3331": {
+      "2": {
+        "heights": [
+          156,
+          283
+        ],
+        "values": [
+          -199,
+          -148,
+          16
+        ]
+      }
+    },
+    "3354": {}
+  }
+}

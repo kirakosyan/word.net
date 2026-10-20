@@ -1,0 +1,14 @@
+{
+  "libreOfficeJava": {
+    "url": "https://repo.maven.apache.org/maven2/org/libreoffice/libreoffice/26.2.2/libreoffice-26.2.2.jar",
+    "sha256": "37b94f944cb35fdbdb586d08df65419b42f1bd2363e143958dbae63ca15c23b3",
+    "license": "MPL-2.0",
+    "developmentOnly": true
+  },
+  "fallbackJavaCompiler": {
+    "url": "https://repo.maven.apache.org/maven2/org/eclipse/jdt/ecj/3.40.0/ecj-3.40.0.jar",
+    "sha256": "05cc22a24e7982970f63a405fc6c820bc80b806f27f3c5a6236fc475f8f7152b",
+    "license": "EPL-2.0",
+    "developmentOnly": true
+  }
+}

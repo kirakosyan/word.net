@@ -92,7 +92,7 @@ public sealed class EnterprisePdfOptionsTests
         Assert.Equal(first, second);
         using PdfDocument pdf = PdfDocument.Open(first);
         Assert.Equal("Enterprise archival å ø æ é €", pdf.GetPage(1).Text);
-        Assert.StartsWith("wordnet 1.2.1", pdf.Information.Producer, StringComparison.Ordinal);
+        Assert.StartsWith("wordnet 1.3.0", pdf.Information.Producer, StringComparison.Ordinal);
         Assert.True(pdf.TryGetXmpMetadata(out var metadata));
         XDocument xmp = metadata.GetXDocument();
         XNamespace aid = "http://www.aiim.org/pdfa/ns/id/", schema = "http://ns.adobe.com/xap/1.0/";

@@ -10,7 +10,7 @@ Generated files use the `p1-` prefix. Regenerate the independent template and ma
 with `python3 eng/generate-p1-templates.py`. These APIs are pending review and are
 separate from the published packages.
 
-Generate an invoice and a two-section operations report using the public `WordDocument` API. Each recipe produces editable DOCX and selectable-text PDF, without Office automation, remote fetching or `wordnet.Ocr`.
+Generate an invoice and a two-section operations report using the public `WordDocument` API. Each recipe produces editable DOCX and selectable-text PDF, using managed export without Office automation or remote fetching. The combined example references the optional provider for its explicit P2 native paths.
 
 ## Run
 
@@ -50,3 +50,20 @@ DOCX retains editable PAGE/NUMPAGES instructions and their template caches; an o
 The regression suite compiles the same recipe source against every desktop test target. It independently validates DOCX schemas, table rows and image bytes with Open XML SDK, and reads PDF text, page counts, headers/footers and images with PdfPig. It covers empty/long invoices, missing data, expansion/output limits, cancellation before/between saves and after staging, cleanup failures, cumulative diagnostics, sub-cent rounding, repeated table headers and replacement of sentinel-filled outputs.
 
 See [editing and templates](../../docs/editing-and-templates.md), [comparison methodology](../../docs/comparison.md) and [test evidence](../../docs/testing.md).
+
+## P2 object and native chapter recipe
+
+Supply explicit local font paths to run the unpublished P2 recipe as well:
+
+```sh
+dotnet run --project examples/WordNet.Automation -c Release -- artifacts/p2-sample tests/wordnet.Conversion.Tests/Fixtures/P2/STIXTwoMath.ttf tests/wordnet.Conversion.Tests/Fixtures/P2/NotoSansDevanagari-Regular.ttf tests/wordnet.Conversion.Tests/Fixtures/Interoperability/NotoSansArabic-Regular.ttf
+```
+
+`P2Recipes.Run` updates both chart caches and real workbook cells, updates a real
+OMML denominator, appends the objects to the populated report and exports
+`p2-report.docx`, PDF, XPS and SVG pages. It writes separate `p2-hi-IN-ua.pdf` and
+`p2-ar-ua.pdf` ordinary chapters with explicit languages and checks that attempting
+to combine retained objects with native/UA output leaves a sentinel stream untouched.
+The test fonts are development assets with retained notices; callers choose their own
+embedding-permitted fonts. No font is fetched by the recipe. Encryption/decryption
+and DOCX/PDF digital signatures are absent. See the [P2 profile](../../docs/p2-objects-typography.md).

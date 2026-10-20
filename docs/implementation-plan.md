@@ -1,23 +1,41 @@
 # wordnet implementation and delivery status
 
-## Pending P1 delivery — issues #48–#63
+## 1.3.0 candidate — #64–#73 and revised #82
+
+The 1.3.0 candidate implements validated chart/OMML graphs, DOCX preservation,
+managed vectors and MATH metrics/layout, immutable object editing/removal, Unicode
+17 bidi and opt-in Hindi Devanagari, and a qualified ordinary native tagged/UA
+profile. The [profile](p2-objects-typography.md) and machine-readable
+[capability matrix](p2-capability-matrix.json) specify the limits and unsupported
+combinations. The executable P2 recipe composes a managed object report and exports
+separate native chapters. The owner authorized publication after review, issue
+reconciliation and exact-main production gates; new platform claims remain excluded.
+Crypto issues #74–#81 are owner-cancelled, closed as not planned and absent.
+Final source/package/CI evidence belongs to the P2 PR; no completion is inferred
+from successful compilation or the older P1 results.
+
+## Merged P1 delivery — issues #48–#63, PR #85
 
 The owner assigned the next P2 chart/equation and typography tracks (#64–#73) and
 the revised integrated checkpoint #82. Encryption and digital signatures (#74–#81)
 were explicitly cancelled on 2026-10-19 and closed as not planned, not completed.
 Those features remain absent. P2 implementation/evidence belongs to its separate PR.
 
-The owner requested all sixteen P1 leaf issues from roadmap #45. This branch implements
+The owner requested all sixteen P1 leaf issues from roadmap #45. PR #85 implements
 columns (#48), bounded reporting/body repeats (#49–#52), ODF package/mapping/exchange
 (#53–#57), and review identity/preservation/decisions/recording/Unicode/comparison
-(#58–#63), following their hard dependencies. It is pending PR review and unpublished;
-no issue is closed or package released by this source change.
+(#58–#63), following their hard dependencies. It merged on 2026-10-19 as
+`73f935732a788c69a934edfa5d71f42635e02031`, with tree equality to reviewed head
+`d733a755663d776c4fa119ef18e599f3f3559b78`. All fifteen review threads are resolved,
+all final-head CI jobs passed, and all sixteen issues closed automatically. P1 is
+merged source and remains unpublished. P2 PR #86 now targets `main`; its history
+already includes P1, so the retarget preserves only the P2 diff.
 
 Concrete profiles are in [report preprocessing](report-preprocessing.md), [ODT](odt.md)
 and [review workflows](review-workflows.md). Qualification and platform limits are in
-[testing](testing.md). After a later merge, reconcile each leaf and roadmap #45 using
-exact final-head checks; keep any unmet acceptance gate open. Historical evidence
-below remains tied to its original revisions.
+[testing](testing.md). Each leaf and roadmaps #45/#32 record the merged evidence
+and residual profile limits. Historical evidence below remains tied to its original
+revisions.
 
 ## P0 adoption delivery — merged PR #83, 2026-10-19
 
@@ -112,10 +130,11 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Remaining work
 
 1. Preserve the [verified 1.2.0 release evidence](release-1.2.0-readiness.md).
-   All three packages are published and publicly verified. The next unassigned
-   checkpoint is review and reconciliation of P1 issues #48–#63 in
-   [PR #85](https://github.com/kirakosyan/word.net/pull/85). Later implementation
-   requires owner assignment. The bucket 5
+   All three packages are published and publicly verified. P1 issues #48–#63 merged
+   in [PR #85](https://github.com/kirakosyan/word.net/pull/85). The assigned next
+   checkpoint is qualification/review of P2 #64–#73 and revised #82 in
+   [PR #86](https://github.com/kirakosyan/word.net/pull/86); cryptographic features
+   #74–#81 are cancelled. The bucket 5
    [merged design slices](later-design-decisions.md) remain bounded by their
    individual implementation and policy gates.
    [Bucket 4 limits](interoperability.md) remain explicit: native

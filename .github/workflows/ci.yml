@@ -49,6 +49,7 @@ jobs:
       - name: Run .NET 10 conversion and robustness tests
         env:
           WORDNET_ODT_EVIDENCE: ${{ github.workspace }}/artifacts/p1-odt
+          WORDNET_P2_EVIDENCE: ${{ github.workspace }}/artifacts/p2-objects
         run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net10.0 --no-build --no-restore --logger "trx;LogFileName=net10.trx" --results-directory artifacts/test-results
       - name: Run .NET Framework conversion and robustness tests
         if: runner.os == 'Windows' && runner.arch == 'X64'
@@ -105,6 +106,27 @@ jobs:
             artifacts/p1-odt/*.docx
             artifacts/p1-odt/office/*.docx
             artifacts/p1-odt/verification.json
+          if-no-files-found: error
+      - name: Qualify P2 chart/math editing, vectors and native accessibility
+        if: matrix.os == 'ubuntu-24.04'
+        env:
+          LIBREOFFICE_VERSION: 4:24.2.7-0ubuntu0.24.04.7
+        run: |
+          sudo apt-get install -y --no-install-recommends "libreoffice-calc=$LIBREOFFICE_VERSION" "libreoffice-math=$LIBREOFFICE_VERSION"
+          python3 -m venv artifacts/p2-venv
+          artifacts/p2-venv/bin/pip install -r eng/p2-requirements.txt
+          python3 eng/verify-p2-office.py artifacts/p2-objects
+          artifacts/p2-venv/bin/python eng/verify-p2.py artifacts/p2-objects --office-edited
+          python3 eng/validate-pdf-accessibility.py artifacts/p2-objects --output artifacts/p2-objects/ua-verification.xml --files native-hindi.pdf native-arabic.pdf native-hindi-link.pdf native-hindi-negative.pdf native-arabic-negative.pdf
+          dotnet run --project examples/WordNet.Automation -c Release --no-build --no-restore -- artifacts/p2-sample tests/wordnet.Conversion.Tests/Fixtures/P2/STIXTwoMath.ttf tests/wordnet.Conversion.Tests/Fixtures/P2/NotoSansDevanagari-Regular.ttf tests/wordnet.Conversion.Tests/Fixtures/Interoperability/NotoSansArabic-Regular.ttf
+      - name: Retain P2 independent qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: p2-objects-typography
+          path: |
+            artifacts/p2-objects/**
+            artifacts/p2-sample/**
           if-no-files-found: error
       - name: Require complete office measurements and retained defect verdicts
         if: matrix.os == 'ubuntu-24.04'

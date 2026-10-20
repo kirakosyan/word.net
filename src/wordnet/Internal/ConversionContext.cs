@@ -9,6 +9,9 @@ namespace WordNet.Internal;
 
 internal sealed class ConversionContext
 {
+    private WordNet.Model.ObjectBudget? objects;
+    internal WordNet.Model.ObjectBudget Objects => objects ??= new WordNet.Model.ObjectBudget(this);
+    internal int ObjectCount => objects?.Placements ?? 0;
     internal string PageNumberFormat { get; set; } = "decimal";
     private readonly List<ConversionDiagnostic> diagnostics = new List<ConversionDiagnostic>();
     private readonly Dictionary<string, ConversionDiagnostic> codes = new Dictionary<string, ConversionDiagnostic>(StringComparer.Ordinal);

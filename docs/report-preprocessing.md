@@ -4,7 +4,7 @@ The additive `ReportData.Prepare(data, plan, options, cancellationToken)` API
 snapshots named input once, then stages collection operations and named computed
 values. It returns ordinary immutable merge data through `Values`; pass that to
 existing `WordDocument.Merge`. Caller objects and document sessions are untouched.
-This P1 implementation is pending review, separate from published packages.
+This P1 implementation merged in PR #85 and is separate from published packages.
 
 Plans use immutable DTOs, ASCII identifier paths and explicit expression nodes.
 There is no expression language, callback, database access or formula execution.

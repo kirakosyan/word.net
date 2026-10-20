@@ -120,7 +120,7 @@ public static class DocumentComparison
             foreach (ParagraphBlock paragraph in copy.Paragraphs)
             {
                 if (!body.Contains(paragraph) || paragraph.Control != null || paragraph.Runs.Any(r => r.FieldInstruction != null || r.Control != null
-                    || r.Bookmark != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null)) continue;
+                    || r.Bookmark != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null)) continue;
                 for (int i = 0; i < paragraph.Runs.Count; i++) paragraph.Runs[i] = paragraph.Runs[i].WithText("");
             }
             using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(copy, stream, context); return stream.ToArray();

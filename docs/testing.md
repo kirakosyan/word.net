@@ -1,8 +1,66 @@
 # Conversion tests and qualification
 
-## Pending P1 qualification
+## 1.3.0 candidate qualification
 
-The required suite is **957** cases (855 baseline plus 102 P1 cases, including review regressions).
+The required suite is **1,050** cases: the 957-case P1 head plus 93 P2 cases, including 34 review regressions.
+P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
+operations, managed chart/math geometry, native bidi/Hindi and native tagged/UA
+regressions. The two UAX #9 cases execute all **91,707** character cases and
+**770,241** abstract directional combinations against pinned Unicode 17 inputs;
+these are not counted as extra converter cases. Earlier UAX #29 cases remain.
+
+`WORDNET_P2_EVIDENCE` retains the generated corpus. The independent office driver,
+vector/MATH/reading verifier and pinned veraPDF UA check run in the Linux x64 CI lane,
+with schema/content/glyph assertions in every applicable source/packed suite.
+`eng/p2-requirements.txt` pins development tools. Font and UNO/compiler provenance
+is retained under `Fixtures/P2` and `eng/p2-tool-pins.json`; none is shipped in NuGet.
+The concrete reproduction, predeclared 0.5 pt geometry tolerance, exact subset and
+unsupported combinations are in [the P2 profile](p2-objects-typography.md).
+Final exact-head source/package/runtime checks are recorded on the P2 PR; historical
+P1 qualification below remains separate. No new platform or package publication
+is implied by these source changes.
+
+The final metadata-boundary regressions additionally cover newline, tab and
+length-plus-one chart descriptions. These valid out-of-profile DOCX values raise
+`NotSupportedException` during session load and produce explicit unsupported-object
+loss during permissive conversion; they never surface as caller argument errors.
+
+Eight additional end-to-end negatives verify that ordinary unsupported-object losses
+cannot bypass native typography or PDF tagged/UA/A combination rejection, in either
+Lenient or BestEffort mode. Expandable sentinel streams ensure that an output-stream
+capacity error cannot masquerade as a correct feature rejection.
+
+### Review revision 5a5c26c — 2026-10-20
+
+All eleven review findings have concrete fixes and 23 additional regressions.
+At `5a5c26ccfe3798d6994345feaa145f20f253913e`, six complete Linux x64 source,
+package and explicit Standard runs on .NET 8/10 each pass **1,039/1,039** with no
+failures/skips (6,234 passes). Locked restore, five-target Release build, formatting,
+API-compatible six-archive packaging and the executable recipes pass. The current
+NuGet audit reports no known vulnerable direct/transitive packages.
+
+Fresh independent Writer/Calc/Math edits and chart/MATH/logical-structure measurements
+pass. FontTools BoundsPen independently measures the exported radical glyph top and
+its adjoining SVG rule (error below 0.000001 pt). The package identity receipt checks
+all 11 DLL assets, exact source README, commit metadata and exclusion of development
+fonts/fixtures. Local reports remain under ignored `artifacts/review-*`; hosted final
+revision and exact-main evidence belongs to [PR #86](https://github.com/kirakosyan/word.net/pull/86).
+Subsequent documentation edits do not change the tested library; release packages
+still require new exact-main qualification under [releasing](releasing.md).
+
+## Merged P1 qualification — PR #85, 2026-10-19
+
+PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged as
+`73f935732a788c69a934edfa5d71f42635e02031`. Its tree is identical to reviewed
+head `d733a755663d776c4fa119ef18e599f3f3559b78`; all fifteen review threads are
+resolved. Final-head [CI 39313440331](https://github.com/kirakosyan/word.net/actions/runs/39313440331)
+and [Android compilation 39313440362](https://github.com/kirakosyan/word.net/actions/runs/39313440362)
+passed. All five desktop source/performance jobs, four packed jobs and both actual
+Framework 4.7.2 source/package jobs passed. Six complete local Linux x64 runs
+(source, packed and explicit Standard on .NET 8/10) each passed **957/957** with
+zero failures/skips. These are merged-source checks, not package publication.
+
+The P1 head required **957** cases (855 baseline plus 102 P1 cases, including review regressions).
 The P1 branch adds independent OOXML/ODF fixtures and regressions for unequal-column
 flow, report preprocessing, paragraph repeats, review preservation/decisions/recording
 and matching-structure comparison. Unicode 17 conformance executes all **766 grapheme**
@@ -21,7 +79,7 @@ Final PR-head source/package results are recorded on the PR. Local runtime execu
 is Linux x64 on .NET 8/10; Framework is not run on Linux. Other supported native and
 actual Framework guest qualification belongs to the corresponding CI lanes.
 Compilation alone does not qualify those runtimes. Historical results below are
-separate from this pending implementation.
+separate from this merged implementation.
 
 ## P0 merged delivery — PR #83, 2026-10-19
 

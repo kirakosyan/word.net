@@ -39,9 +39,9 @@ public sealed partial class WordDocument
     }
 
     /// <summary>Gets or sets supported title metadata.</summary>
-    public string Title { get { lock (gate) return model.Title; } set => Edit((m, c) => { CheckText(value, c); m.Title = value; return 1; }, default); }
+    public string Title { get { lock (gate) return model.Title; } set => Edit((m, c) => { CheckText(value, c); m.Title = value; return 1; }, default, objectAware: true); }
     /// <summary>Gets or sets supported author metadata.</summary>
-    public string Author { get { lock (gate) return model.Author; } set => Edit((m, c) => { CheckText(value, c); m.Author = value; return 1; }, default); }
+    public string Author { get { lock (gate) return model.Author; } set => Edit((m, c) => { CheckText(value, c); m.Author = value; return 1; }, default, objectAware: true); }
     /// <summary>Gets immutable snapshots of body paragraphs, including table cells and text boxes.</summary>
     public IReadOnlyList<DocumentParagraph> Paragraphs
     {
@@ -62,7 +62,7 @@ public sealed partial class WordDocument
         {
             var p = new ParagraphBlock { HeadingLevel = headingLevel, Section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section };
             AddRuns(p.Runs, runs, c); m.Blocks.Add(p); return 1;
-        }, cancellationToken);
+        }, cancellationToken, objectAware: true);
     }
     /// <summary>Appends many text paragraphs in one atomic, bounded operation without cloning the document per paragraph.</summary>
     public void AddParagraphs(IEnumerable<string> paragraphs, TextFormatting? formatting = null, int headingLevel = 0, CancellationToken cancellationToken = default)
@@ -82,7 +82,7 @@ public sealed partial class WordDocument
                 AddRuns(paragraph.Runs, new[] { new DocumentText(text, formatting) }, c); m.Blocks.Add(paragraph);
             }
             return count;
-        }, cancellationToken);
+        }, cancellationToken, objectAware: true);
     }
 
     /// <summary>Appends a simple editable table with one paragraph per cell.</summary>
@@ -109,7 +109,7 @@ public sealed partial class WordDocument
             }
             if (table.Rows.Count == 0) throw new ArgumentException("A table must contain rows.", nameof(rows));
             m.Blocks.Add(table); return 1;
-        }, cancellationToken);
+        }, cancellationToken, objectAware: true);
     }
     /// <summary>Appends a caller-supplied inline image as a paragraph.</summary>
     public void AddImage(TemplateImage image, CancellationToken cancellationToken = default) => AddParagraph(new[] { new DocumentText(image) }, cancellationToken: cancellationToken);
@@ -122,9 +122,9 @@ public sealed partial class WordDocument
         {
             ParagraphBlock[] paragraphs = m.BodyParagraphs.ToArray();
             if (index < 0 || index >= paragraphs.Length) throw new ArgumentOutOfRangeException(nameof(index));
-            if (paragraphs[index].Runs.Any(r => r.Bookmark != null || r.FieldInstruction != null || r.Note != null || r.Box != null || r.Control != null)) throw new NotSupportedException("Editing.ProtectedParagraph: Use range-aware editing for structured paragraphs.");
+            if (paragraphs[index].Runs.Any(r => r.Bookmark != null || r.FieldInstruction != null || r.Note != null || r.Box != null || r.Control != null || r.Object != null)) throw new NotSupportedException("Editing.ProtectedParagraph: Use range-aware editing for structured paragraphs.");
             paragraphs[index].Runs.Clear(); AddRuns(paragraphs[index].Runs, runs, c); return 1;
-        }, cancellationToken);
+        }, cancellationToken, objectAware: true);
     }
 
     /// <summary>Saves supported output with diagnostics. Validation failures leave the destination untouched.</summary>
@@ -148,12 +148,13 @@ public sealed partial class WordDocument
         }
     }
 
-    private DocumentEditResult Edit(Func<DocumentModel, ConversionContext, int> edit, CancellationToken cancellationToken, bool reviewAware = false)
+    private DocumentEditResult Edit(Func<DocumentModel, ConversionContext, int> edit, CancellationToken cancellationToken, bool reviewAware = false, bool objectAware = false)
     {
         lock (gate)
         {
             using var operation = BeginOperation();
             if (model.Review.HasHistory && !reviewAware) throw new NotSupportedException("Review.ProtectedHistory: Resolve retained history before ordinary editing or template operations.");
+            if (!objectAware && model.ObjectCount != 0) throw new NotSupportedException("Object.ProtectedOwner: Use explicit object operations; ordinary editing/templates cannot rewrite retained object owners.");
             ConversionContext context = Context(options, cancellationToken);
             DocumentModel copy = new DocumentCloner(context).Copy(model);
             int changes = edit(copy, context); NormalizeNotes(copy); Admit(copy, context); context.CheckCancellation();
@@ -200,6 +201,7 @@ public sealed partial class WordDocument
         if ((long)model.CharacterCount + model.Title.Length + model.Author.Length + reviewMetadata > context.Options.MaximumCharacters)
             throw new InvalidDataException("Limit.Characters: Document and review metadata exceed the aggregate character limit.");
         model.Review.Validate(model, context);
+        ObjectBudget? objects = null;
         var images = new ConversionContext(context.Options, context.CancellationToken);
         long bytes = model.CharacterCount * 2L + reviewMetadata * 2;
         int nodes = checked((model.Review.Revisions.Count + model.Review.Comments.Count) * 2
@@ -207,9 +209,12 @@ public sealed partial class WordDocument
         foreach (ParagraphBlock p in model.Paragraphs)
         {
             context.CheckCancellation(); nodes = checked(nodes + p.Runs.Count + 1);
+            foreach (TextRun run in p.Runs) if (run.Object != null) (objects ??= new ObjectBudget(context)).Place(run.Object);
             foreach (TextRun run in p.Runs) if (run.Image != null) { bytes = checked(bytes + run.Image.Bytes.Length); images.ReserveImagePixels(run.Image.PixelsWide, run.Image.PixelsHigh); }
         }
         if (bytes + nodes * 64L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Edited document exceeds aggregate resource limits.");
+        model.ObjectCount = objects?.Placements ?? 0;
+        if (objects != null) { ObjectSafety.Owners(model); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
         foreach (TableBlock table in model.Tables) TableValidation.Validate(table, context);
     }
     private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Pdf

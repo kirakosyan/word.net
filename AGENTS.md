@@ -25,8 +25,13 @@ package ID are `wordnet`. Keep namespace spelling consistent across all targets 
   XPS is output-only. Scanned-PDF OCR is required for the first converter release.
 - First-release OCR is English printed text only; handwriting and additional OCR
   languages are deferred. Preserve Unicode support for ordinary document text.
-- Prioritize core content. Password-protected documents and editable charts/equations
-  remain deferred. The owner-authorized P1 implementation permits bounded ODF 1.3
+- Prioritize core content. Password encryption/decryption and DOCX/PDF signatures
+  are cancelled by the owner (#74–#81) and remain unsupported. The owner-authorized
+  P2 implementation permits the bounded chart/OMML preservation, static rendering
+  and immutable public editing stages in #64–#70, and qualified ordinary native
+  bidi/Devanagari/tagged paragraphs in #71–#73. Each stage needs its independent
+  acceptance evidence before a support claim; unsupported object types, native
+  stories, conformance combinations and platforms remain rejected. The P1 implementation permits bounded ODF 1.3
   DOCX exchange and opt-in DOCX body/cell text revisions with classic comments,
   explicit decisions/recording and matching-structure text comparison. Moves,
   property/structural revisions, modern comments and history in other stories/formats

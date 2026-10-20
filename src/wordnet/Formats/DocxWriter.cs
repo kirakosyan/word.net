@@ -28,6 +28,7 @@ internal sealed partial class DocxWriter
     internal static void Write(DocumentModel document, Stream output, ConversionContext context)
     {
         var writer = new DocxWriter(context) { model = document };
+        ObjectOutputBudget(document, context);
         if (DocumentReferences.HasFields(document)) _ = DocumentReferences.Refresh(document, context, paginate: false);
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
@@ -92,6 +93,7 @@ internal sealed partial class DocxWriter
 
         writer.WriteNotes(document, archive, types);
         writer.WriteResources(archive, types);
+        writer.WriteObjects(archive, types);
         if (writer.relationships.Count > 0)
         {
             WritePart(archive, "word/_rels/document.xml.rels", new XElement(DocxPackage.Relationships + "Relationships", writer.relationships));
@@ -186,6 +188,7 @@ internal sealed partial class DocxWriter
 
     private XElement Run(TextRun run)
     {
+        if (run.Object != null) return RetainedObject(run.Object);
         if (run.Comment != null)
         {
             int id = ReviewId(commentIds, run.Comment);

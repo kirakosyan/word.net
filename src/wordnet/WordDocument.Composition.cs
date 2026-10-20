@@ -38,6 +38,7 @@ public sealed partial class WordDocument
             Remap(incoming, prefix, m.Notes.Count == 0 ? 0 : m.Notes.Max(n => n.PartId));
             if (style == CompositionStyle.UseDestination)
             {
+                if (incoming.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object != null)) throw new NotSupportedException("Object.Restyle: Object composition retains source appearance only.");
                 var prototypes = m.BodyParagraphs.GroupBy(p => p.HeadingLevel).ToDictionary(g => g.Key, g => g.First());
                 foreach (ParagraphBlock paragraph in incoming.BodyParagraphs)
                     if (prototypes.TryGetValue(paragraph.HeadingLevel, out ParagraphBlock? prototype))
@@ -66,7 +67,7 @@ public sealed partial class WordDocument
             foreach (var pair in incoming.Review.Revisions) m.Review.Revisions.Add(pair.Key, pair.Value);
             foreach (var pair in incoming.Review.Comments) m.Review.Comments.Add(pair.Key, pair.Value);
             return incoming.Blocks.Count;
-        }, cancellationToken, true);
+        }, cancellationToken, true, objectAware: true);
     }
 
     private static string UniquePrefix(DocumentModel m)
@@ -130,7 +131,7 @@ public sealed partial class WordDocument
                 List<TextRun>? cache = r.FieldCache?.Select(cached => new TextRun(cached.Text, cached.Bold, cached.Italic, cached.Code,
                     cached.Link != null && Starts(cached.Link, '#') && bookmarks.TryGetValue(cached.Link.Substring(1), out string? destination) ? "#" + destination : cached.Link,
                     cached.FontSize, cached.Color, cached.Image, cached.Appearance.Copy())).ToList();
-                paragraph.Runs[i] = new TextRun(r.Text, r.Bold, r.Italic, r.Code, link, r.FontSize, r.Color, r.Image, r.Appearance, field, r.Note, r.Box, bookmark, r.Control)
+                paragraph.Runs[i] = new TextRun(r.Text, r.Bold, r.Italic, r.Code, link, r.FontSize, r.Color, r.Image, r.Appearance, field, r.Note, r.Box, bookmark, r.Control, r.Object?.Remap())
                 {
                     FieldCache = cache,
                     Revision = r.Revision == null ? null : prefix + "r" + r.Revision,

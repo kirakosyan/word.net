@@ -1,5 +1,9 @@
 # Interoperability, typography and import
 
+## 1.3.0 source profile
+
+The 1.3.0 source adds `Typography.ExtendedBidi`, `Typography.Devanagari`, caller `Fonts.MathFamily` and qualified ordinary native tagged/UA output. Earlier typography exclusions below describe the legacy profile; the new opt-in subset, exact language/font requirements and remaining combination rejections are specified in [P2 objects and typography](p2-objects-typography.md).
+
 Bucket 4 merged in PR #37 as `44c9e3629f95ed2c984a325a384174303550cb53`, completing #20, #21, #22, #23, #25, #26 and #27 within the profiles below. These APIs are
 included in published 1.2.0; see the [release evidence](release-1.2.0-readiness.md).
 Earlier package and PR qualifications retain their historical scope.

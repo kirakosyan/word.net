@@ -2,6 +2,35 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
+      "HarfBuzzSharp": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "FNlv2OCprGHp3EcaZ9Fc2O3ojl7sGHg418Ey+8g/UwKkPGgBUfdWuhdVOH8pB0wkVkMsFOZH7dr4iOFtVrB88Q==",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Win32": "14.2.1.301",
+          "HarfBuzzSharp.NativeAssets.macOS": "14.2.1.301"
+        }
+      },
+      "HarfBuzzSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "NHHoxkjGkU6BnWyksKjM7TrIReXzpgXuss+ahhUgby0oJuYR9/HaxkfezYe3abpmWDN1PYWM5SBZWob3TzpkKA=="
+      },
+      "HarfBuzzSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "14.2.1.301",
+        "contentHash": "mL1atDEKtJSqutOFjLP/hiA8rTGqOQCHBpfkG3rXnTFJCqN94oAKhR8a7+bhxxxvSgj4soJXUBICSYGte5odNA=="
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "YTojWeWIhnpF7uC8vpMxB5wRONKkDB2t3r/nNPA3DL2pgj9fqMXRevA/rIanYazWnco4jo1ufgp3HkXuh1Tz8A=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "Transitive",
+        "resolved": "4.153.1",
+        "contentHash": "Yqg6rChTVh0BUE8QQxtOA3uUBnihfgID4yex/AvDa0+os2bVcBjmI3Qj9tnOB+R1hd/Jry1Gwl8qw5JI9HZG8Q=="
+      },
       "wordnet": {
         "type": "Project",
         "dependencies": {
@@ -10,17 +39,32 @@
           "OpenMcdf": "[3.3.0, )",
           "PdfPig": "[0.1.16, )",
           "PdfPig.Filters.Dct.JpegLibrary": "[0.1.16.1, )",
-          "wordnet.Fonts": "[1.2.0, )"
+          "wordnet.Fonts": "[1.3.0, )"
         }
       },
       "wordnet.fonts": {
         "type": "Project"
+      },
+      "wordnet.ocr": {
+        "type": "Project",
+        "dependencies": {
+          "HarfBuzzSharp.NativeAssets.Linux": "[14.2.1.301, )",
+          "PdfPig.Rendering.Skia": "[0.1.16.4, )",
+          "SkiaSharp.NativeAssets.Linux": "[4.153.1, )",
+          "wordnet": "[1.3.0, )"
+        }
       },
       "AngleSharp": {
         "type": "CentralTransitive",
         "requested": "[1.8.4, )",
         "resolved": "1.8.4",
         "contentHash": "lbwt3oqjyxI6x01NT0kRqnudE+gxLqRAs/X49/iVWyguj6OtRfYCanV1mL+jYZgeeAqnGqWzqi7+s5gdtBF1Ag=="
+      },
+      "HarfBuzzSharp.NativeAssets.Linux": {
+        "type": "CentralTransitive",
+        "requested": "[14.2.1.301, )",
+        "resolved": "14.2.1.301",
+        "contentHash": "z9+VeNETkwp+raqhEfS+6aAfDl1MLxZxmE9GE/edhTIIwkXhZbPn0JUfhpqqjNy1Q0rQrZCzaJ2VNgVbQR+2MQ=="
       },
       "Markdig": {
         "type": "CentralTransitive",
@@ -48,6 +92,64 @@
         "dependencies": {
           "PdfPig": "0.1.16"
         }
+      },
+      "PdfPig.Filters.Jbig2.PdfboxJbig2": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.2, )",
+        "resolved": "0.1.16.2",
+        "contentHash": "14X7BepMrqbzT3Pj6P6GjhWkBILRWk8b2QIfjgIjiHE72pw16pQ1ReDWD6LLtOpJpIYVSr3l1nFVb8zO4UZMCw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "PdfPig.Filters.Jpx.OpenJpeg": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.1, )",
+        "resolved": "0.1.16.1",
+        "contentHash": "xh2rTwiwHFpLnVf2exGsLCuG+LwleZImeYCyKXaYK3aU161t4z15kdYkHyZJRnsboJMkN7o/y1YQUmstnFcCdw==",
+        "dependencies": {
+          "PdfPig": "0.1.16"
+        }
+      },
+      "PdfPig.Rendering.Skia": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.16.4, )",
+        "resolved": "0.1.16.4",
+        "contentHash": "pfxHKlDKG4oAAAomDDEv/rj9IAnLLCO9xBbvZ+KStxJy4/4MyasaunDr6hLbgjNuCDHS9d3+nywX91YVTTuc0g==",
+        "dependencies": {
+          "PdfPig": "0.1.16",
+          "PdfPig.Filters.Dct.JpegLibrary": "0.1.16.1",
+          "PdfPig.Filters.Jbig2.PdfboxJbig2": "0.1.16.1",
+          "PdfPig.Filters.Jpx.OpenJpeg": "0.1.16",
+          "SkiaSharp": "3.119.4",
+          "SkiaSharp.HarfBuzz": "3.119.4"
+        }
+      },
+      "SkiaSharp": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "TghYLOUaP3q6rTjQw7U9uQaaXh8lEs9rfA1U7/VtmyAptVDtj/SmjtcWzFWmcC/VMWxe3QgbV9uyvqDL7ySFtQ==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "4.153.1",
+          "SkiaSharp.NativeAssets.macOS": "4.153.1"
+        }
+      },
+      "SkiaSharp.HarfBuzz": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "57/8+VBQPSltb5MKYIlm0mn7BSoCci7Yq2ffIJSr5nK1fM0NAIIpO6SQVmUXTP9BpZBxa/oaje5odQHyjAJBlQ==",
+        "dependencies": {
+          "HarfBuzzSharp": "14.2.1.301",
+          "SkiaSharp": "4.153.1"
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux": {
+        "type": "CentralTransitive",
+        "requested": "[4.153.1, )",
+        "resolved": "4.153.1",
+        "contentHash": "DlBk91MARPfARK5kqd1K6+u6UuUQx+8Rsc+Pwi2dVO7X+S3LsLwqJq1gULLdpIgW2zmcqZ87O6TMfdWkwBXfkQ=="
       }
     }
   }

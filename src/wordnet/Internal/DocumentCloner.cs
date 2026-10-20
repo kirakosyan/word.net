@@ -16,7 +16,7 @@ internal sealed class DocumentCloner
     internal DocumentCloner(ConversionContext context) { this.context = context; }
     internal DocumentModel Copy(DocumentModel source)
     {
-        var target = new DocumentModel { Title = source.Title, Author = source.Author };
+        var target = new DocumentModel { Title = source.Title, Author = source.Author, ObjectCount = source.ObjectCount };
         target.Blocks.AddRange(source.Blocks.Select(Block)); target.FinalSection = Section(source.FinalSection);
         target.Notes.AddRange(source.Notes.Select(Note));
         foreach (var pair in source.Review.Revisions) target.Review.Revisions.Add(pair.Key, Review(pair.Value));
@@ -30,7 +30,7 @@ internal sealed class DocumentCloner
         DocumentBlock result;
         if (source is ParagraphBlock p)
         {
-            var paragraph = new ParagraphBlock { Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
+            var paragraph = new ParagraphBlock { RemoveWhenObjectEmpty = p.RemoveWhenObjectEmpty, Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
             if (p.List != null)
             {
                 paragraph.List = p.List.Copy();
@@ -110,7 +110,7 @@ internal sealed class DocumentCloner
         DocumentImage? image = r.Image?.Scaled(1);
         if (image?.Anchor != null) image.Anchor = Anchor(image.Anchor);
         return new TextRun(r.Text, r.Bold, r.Italic, r.Code, r.Link, r.FontSize, r.Color, image, r.Appearance.Copy(), r.FieldInstruction,
-            r.Note == null ? null : Note(r.Note), box, r.Bookmark, Control(r.Control))
+            r.Note == null ? null : Note(r.Note), box, r.Bookmark, Control(r.Control), r.Object)
         { FieldCache = r.FieldCache?.Select(Run).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
     }
     private ReviewRecord Review(ReviewRecord source)

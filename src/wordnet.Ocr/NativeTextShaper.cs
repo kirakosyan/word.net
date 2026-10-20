@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using HarfBuzzSharp;
 using WordNet.Internal;
@@ -32,7 +33,9 @@ internal sealed class NativeTextShaper : TypographySession
             try { face = new Face(blob, 0); font = new Font(face); font.SetFunctionsOpenType(); font.SetScale(face.UnitsPerEm, face.UnitsPerEm); entry = (blob, face, font); fonts.Add(index, entry); }
             catch { font?.Dispose(); face?.Dispose(); blob.Dispose(); throw; }
         }
-        using var buffer = new HarfBuzzSharp.Buffer(); buffer.AddUtf16(text); buffer.GuessSegmentProperties(); buffer.Direction = rtl ? Direction.RightToLeft : Direction.LeftToRight; entry.Font.Shape(buffer);
+        using var buffer = new HarfBuzzSharp.Buffer(); buffer.AddUtf16(text); buffer.GuessSegmentProperties(); buffer.Direction = rtl ? Direction.RightToLeft : Direction.LeftToRight;
+        if (context.Typography.Devanagari && text.Any(c => NativeTypography.Devanagari(c))) { buffer.Script = Script.Devanagari; buffer.Language = new Language("hi"); }
+        entry.Font.Shape(buffer);
         context.CheckCancellation(); var infos = buffer.GlyphInfos; var positions = buffer.GlyphPositions;
         work = checked(work + infos.Length); if (work > context.Typography.MaximumGlyphs) throw new InvalidDataException("Limit.TypographyGlyphs: Shaping exceeds the per-pass glyph work budget.");
         var glyphs = new ShapedGlyph[infos.Length];
