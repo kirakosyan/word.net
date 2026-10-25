@@ -199,6 +199,9 @@ limits are unchanged. The conversion matrix now has 40 enabled directions.
 
 ## Evidence and release boundary
 
+See the [validation receipt](roadmap-99-validation.md) for exact executed checks,
+before/after reductions and the complete retained comparison failures.
+
 The measurement receipt distinguishes the published package, frozen pre-change source,
 and modified source. All failures remain visible at the original comparison tolerances.
 The fixture generator's independent line-box arithmetic was updated from the former

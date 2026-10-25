@@ -15,6 +15,9 @@ reference comparisons retain one or more failures under the existing tolerances.
 No thresholds were relaxed. Source and public-package fidelity verdicts agree.
 Reference software is test-only; no runtime dependency or platform claim is added.
 
+The subsequent implementation measurements are recorded separately in the
+[roadmap validation receipt](roadmap-99-validation.md); this baseline remains unchanged.
+
 ## Current findings
 
 | Minimal fixture | Current observation in both modes | Candidate implementation |

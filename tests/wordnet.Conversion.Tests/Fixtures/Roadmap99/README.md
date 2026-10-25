@@ -16,3 +16,10 @@ read with PyMuPDF. The bold baseline still differs by about 0.251 pt from that r
 the fixture does not erase or relax the comparison runner's 0.25 pt threshold.
 `MixedMetricsTests` separately verifies the declared actual-font line-box policy in
 PDF and XPS at its existing 0.03 pt coordinate allowance.
+
+`row-note-reservation.docx` is an original MIT reduction of the thirteen-line
+`RoadmapLayoutTests` multiple-note fixture to ten filler paragraphs. The frozen baseline
+leaves the first footnote on page 1 while its row moves to page 2. Current source and the
+independent reference keep both references and notes on page 1. Exact before/after/reference
+text and geometry are retained in `docs/measurements/roadmap-99-final.json`. The existing
+thirteen-line test separately exercises the new aggregate reservation when the row moves.
