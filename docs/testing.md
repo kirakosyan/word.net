@@ -1,5 +1,12 @@
 # Conversion tests and qualification
 
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
 ## Released 1.3.0 qualification
 
 The required suite is **1,050** cases: the 957-case P1 head plus 93 P2 cases, including 34 review regressions.

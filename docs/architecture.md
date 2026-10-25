@@ -1,5 +1,12 @@
 # Architecture and implementation status
 
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
 ## Released 1.3.0 profile
 
 Release 1.3.0 adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).

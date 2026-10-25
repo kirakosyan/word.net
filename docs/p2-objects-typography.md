@@ -1,5 +1,12 @@
 # Bounded P2 objects and typography
 
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
 The work in #64–#73 and the revised integrated checkpoint #82 ships in 1.3.0,
 building on P1 PR #85. Encryption/decryption and DOCX/PDF signatures
 (#74–#81) were cancelled and are absent. The staged design in

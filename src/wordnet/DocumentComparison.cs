@@ -39,10 +39,10 @@ public sealed class ComparisonOptions
     /// <summary>Gets or sets the total visited-cell cap, default 4,000,000.</summary>
     public int MaximumSteps { get; set; } = 4000000;
 }
-/// <summary>Deterministic text comparison of matching history-free document structures.</summary>
-public static class DocumentComparison
+/// <summary>Deterministic bounded text and plain paragraph/row comparison of history-free documents.</summary>
+public static partial class DocumentComparison
 {
-    /// <summary>Creates a reviewed copy without changing either input. Structural/property differences and existing history fail.</summary>
+    /// <summary>Creates a reviewed copy without changing either input. Plain paragraph/row insertion and deletion are supported; other structural/property differences and existing history fail.</summary>
     public static WordDocument Compare(WordDocument original, WordDocument revised, ComparisonOptions comparisonOptions,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
     {
@@ -58,7 +58,7 @@ public static class DocumentComparison
         long characters = (long)left.CharacterCount + right.CharacterCount;
         if (characters > options.MaximumCharacters || characters * 4 > options.MaximumExpandedBytes) throw new InvalidDataException("Comparison.ResourceLimit: Combined inputs exceed the comparison allowance.");
         byte[] leftStructure = Structure(left), rightStructure = Structure(right);
-        if (!leftStructure.SequenceEqual(rightStructure)) throw new NotSupportedException("Comparison.Structure: Body topology, protected-story content and non-text properties must match.");
+        if (!leftStructure.SequenceEqual(rightStructure)) return CompareStructure(left, right, comparisonOptions, options, context);
         ParagraphBlock[] a = left.BodyParagraphs.ToArray(), b = right.BodyParagraphs.ToArray(); int tokenCount = 0, work = 0;
         for (int paragraph = 0; paragraph < a.Length; paragraph++)
         {

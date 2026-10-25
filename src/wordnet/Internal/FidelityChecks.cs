@@ -8,9 +8,19 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        if (format is DocumentFormat.Docx or DocumentFormat.Pdf or DocumentFormat.Xps)
+            foreach (ParagraphBlock paragraph in model.Paragraphs)
+            {
+                using var location = context.At(paragraph.Location);
+                foreach (TextRun run in paragraph.Runs.Where(r => r.FieldInstruction != null && ScalarFields.Candidate(r.FieldInstruction)))
+                    model.FieldResults[run] = ScalarFields.Render(run, model, context);
+            }
         if (model.ObjectCount != 0 && (context.Typography.Enabled || !context.PreviewIntermediate && format == DocumentFormat.Pdf
-            && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
-            throw new System.NotSupportedException("Object.Combination: Retained objects require managed ordinary PDF/XPS/preview rendering without native typography or PDF conformance claims.");
+            && context.Options.Pdf.Accessibility != PdfAccessibility.None && context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+            throw new System.NotSupportedException("Object.Combination: Native typography with objects and combined archival/accessibility profiles remain unsupported.");
+        if (model.ObjectCount != 0 && !context.PreviewIntermediate && format == DocumentFormat.Pdf && context.Options.Pdf.Accessibility != PdfAccessibility.None)
+            foreach (TextRun run in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Object != null))
+                _ = ObjectAlternatives.Describe(run.Object!, context);
         if (model.ObjectCount != 0 && format != DocumentFormat.Docx && !context.PreviewIntermediate)
         {
             context.Loss("Object.EditableOutputLoss", "This destination cannot retain editable chart or OMML semantics.");

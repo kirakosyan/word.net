@@ -19,14 +19,19 @@ internal static partial class NativeTypography
     private static void PrepareExtended(DocumentModel model, ConversionContext context)
     {
         if (context.Destination == DocumentFormat.Xps) throw new NotSupportedException("Typography.Output: Native typography supports PDF and previews.");
-        if (model.Tables.Any() || model.Notes.Count != 0 || model.Paragraphs.Count() != model.Blocks.OfType<ParagraphBlock>().Count()
-            || model.Review.HasHistory || model.ObjectCount != 0 || model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Any(s => s?.Stories.Values.Any(v => v.Count > 0) == true))
-            throw new NotSupportedException("Typography.Structure: Extended typography requires ordinary body paragraphs without tables, stories, objects or history.");
+        if (model.Notes.Count != 0 || model.Review.HasHistory || model.ObjectCount != 0)
+            throw new NotSupportedException("Typography.Structure: Notes, objects and history remain outside extended typography.");
+        PageSettings[] sections = model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null).Distinct().Cast<PageSettings>().ToArray();
+        if (sections.SelectMany(s => s.Stories.Values).SelectMany(s => s).Any(b => b is not ParagraphBlock))
+            throw new NotSupportedException("Typography.Story: Native headers and footers require ordinary paragraphs.");
+        if (model.Tables.Any() && (sections.Any(s => s.Columns != 1) || model.Tables.Any(t => t.Control != null || t.RowControls.Count != 0
+            || t.Rows.SelectMany(r => r).Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock)))))
+            throw new NotSupportedException("Typography.Table: Native tables require one-column pages and simple, unmerged cells without nested tables or controls.");
         FontSource[] sources = context.Options.Fonts.Sources.ToArray();
         if (sources.Length > 128 || sources.Any(s => s == null) || sources.Sum(s => (long)s.Bytes.Length) > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TypographyFonts: Caller font count/bytes exceed the operation allowance.");
         var coverage = new Dictionary<byte[], Func<string, bool>>(); var bundled = Enumerable.Range(0, 4).Select(FixedLayout.FontBytes).ToArray();
-        foreach (ParagraphBlock p in model.Blocks.Cast<ParagraphBlock>())
+        foreach (ParagraphBlock p in model.Paragraphs)
         {
             context.CheckCancellation();
             if (p.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed)

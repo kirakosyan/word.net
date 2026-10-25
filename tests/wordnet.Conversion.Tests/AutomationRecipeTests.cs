@@ -32,7 +32,7 @@ public sealed class AutomationRecipeTests
     [Theory]
     [InlineData(2, true, 1)]
     [InlineData(0, false, 1)]
-    [InlineData(100, true, 4)]
+    [InlineData(100, true, 3)]
     public void InvoiceRetainsEditableRowsCallerLogoTotalsAndRealPageFields(int count, bool terms, int pages)
     {
         byte[] template = Template("invoice"), logo = Logo(); Schema(template);

@@ -22,6 +22,10 @@ public sealed partial class WordConverter : IDocumentConverter
 {
     /// <inheritdoc />
     public bool CanConvert(DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
+        destinationFormat == DocumentFormat.Pdf && sourceFormat is DocumentFormat.Html or DocumentFormat.Odt ||
+        CanExchangeWithWord(sourceFormat, destinationFormat);
+
+    private static bool CanExchangeWithWord(DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
         sourceFormat == DocumentFormat.Odt || destinationFormat == DocumentFormat.Odt
         ? sourceFormat == DocumentFormat.Docx && destinationFormat == DocumentFormat.Odt || sourceFormat == DocumentFormat.Odt && destinationFormat == DocumentFormat.Docx
         :

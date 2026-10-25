@@ -74,6 +74,8 @@ internal static class DocumentReferences
             if (model.FieldResults.TryGetValue(run, out string? existing)) return existing;
             if (run.FieldInstruction == null) return run.Text;
             string kind = DocumentFields.Kind(run.FieldInstruction);
+            if (ScalarFields.Candidate(run.FieldInstruction))
+            { string scalar = ScalarFields.Render(run, model, context); model.FieldResults[run] = scalar; return scalar; }
             if (kind is not "REF" and not "PAGEREF" and not "TOC") return run.Text;
             if (!visiting.Add(run) || visiting.Count > context.Options.MaximumNestingDepth) return Cached(run);
             string[] args = Arguments(run.FieldInstruction);

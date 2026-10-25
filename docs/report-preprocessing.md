@@ -1,5 +1,12 @@
 # Bounded report preprocessing
 
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
 The additive `ReportData.Prepare(data, plan, options, cancellationToken)` API
 snapshots named input once, then stages collection operations and named computed
 values. It returns ordinary immutable merge data through `Values`; pass that to

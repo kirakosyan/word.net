@@ -74,6 +74,7 @@ internal sealed partial class DocxReader
             && WordNet.Layout.RunCoalescer.Combine(result.Select(r => r.Run).ToList()).Count <= 1;
         if (!toc && (multipleParagraphs || !plain))
         {
+            if (ScalarFields.Candidate(instruction)) context.Loss("Field.UnsupportedUsedCachedResult", "Scalar fields require a single plain cached result; structured or nested fields remain unsupported.");
             context.Report("Field.UnsupportedUsedCachedResult", "A field with structured or formatted cached content retains its original runs and paragraph structure.");
             foreach (var cached in result) Emit(cached.Target, cached.Run);
             return;
@@ -108,7 +109,14 @@ internal sealed partial class DocxReader
         else if (kind == "separate" && fields.Count > 0) fields.Peek().Separated = true;
         else if (kind == "end" && fields.Count > 0)
         {
-            FieldCapture field = fields.Pop(); EmitField(runs, field.Instruction.ToString(), field.Result);
+            FieldCapture field = fields.Pop();
+            if (fields.Count > 0 && !fields.Peek().Separated)
+            {
+                // Preserve the presence of nested instructions so a scalar parent cannot
+                // accidentally evaluate a different expression after silently dropping them.
+                fields.Peek().Instruction.Append('{').Append(field.Instruction).Append('}');
+            }
+            else EmitField(runs, field.Instruction.ToString(), field.Result);
         }
         else throw new InvalidDataException("Docx.Field: Unbalanced field boundary.");
     }

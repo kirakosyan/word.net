@@ -1,0 +1,59 @@
+{
+  "provenance": "Original MIT explicit-size/zero-after-spacing reduction of the published comparison corpus. Expected vertical line boxes calculated independently with fontTools; office values extracted with PyMuPDF. No comparison thresholds changed.",
+  "inputSha256": "4d1a41cec2066fe7b485dcde24092a2758cc505c71202ffe82d147d9fad399b6",
+  "officePdfSha256": "70ca4c4ac81558ab76414f9c3eab50b556d529a0385724eed8d296f24faf6836",
+  "legacyTopBaselines": [
+    84,
+    102,
+    120,
+    138
+  ],
+  "officeTopBaselines": [
+    83.75079345703125,
+    98.75079345703125,
+    112.25079345703125,
+    123.80078125
+  ],
+  "lines": [
+    {
+      "text": "FONT STUDY SHORT",
+      "fontPath": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "units": 1000,
+      "ascent": 1069,
+      "descent": -293,
+      "lineGap": 0,
+      "expectedTopBaseline": 83.759
+    },
+    {
+      "text": "Regular face",
+      "fontPath": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "units": 1000,
+      "ascent": 1069,
+      "descent": -293,
+      "lineGap": 0,
+      "expectedTopBaseline": 98.741
+    },
+    {
+      "text": "Bold face",
+      "fontPath": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+      "fontSha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "units": 2048,
+      "ascent": 1825,
+      "descent": -443,
+      "lineGap": 87,
+      "expectedTopBaseline": 111.999888671875
+    },
+    {
+      "text": "Italic face",
+      "fontPath": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+      "fontSha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+      "units": 2048,
+      "ascent": 1705,
+      "descent": -615,
+      "lineGap": 0,
+      "expectedTopBaseline": 123.770640625
+    }
+  ]
+}

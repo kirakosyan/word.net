@@ -233,11 +233,11 @@ internal static class Program
         inputs[DocumentFormat.Rtf] = Encoding.ASCII.GetBytes(@"{\rtf1\ansi Wordnet conversion test\par English printed text 12345.\par}");
         inputs[DocumentFormat.Odt] = Convert(inputs[DocumentFormat.Docx], DocumentFormat.Docx, DocumentFormat.Odt);
         var pairs = (from source in inputs.Keys from target in Enum.GetValues<DocumentFormat>() where converter.CanConvert(source, target) select (Source: source, Target: target)).ToArray();
-        if (pairs.Length != 38 || pairs.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt) != 28
-            || pairs.Count(p => p.Source is DocumentFormat.Html or DocumentFormat.Rtf) != 4
+        if (pairs.Length != 40 || pairs.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt) != 28
+            || pairs.Count(p => p.Source is DocumentFormat.Html or DocumentFormat.Rtf) != 5
             || pairs.Count(p => p.Target is DocumentFormat.Html or DocumentFormat.Rtf) != 4
-            || pairs.Count(p => p.Source == DocumentFormat.Odt || p.Target == DocumentFormat.Odt) != 2)
-            throw new InvalidOperationException("Expected the original 28 directions, eight HTML/RTF exchanges with Word and two DOCX/ODT exchanges.");
+            || pairs.Count(p => p.Source == DocumentFormat.Odt || p.Target == DocumentFormat.Odt) != 3)
+            throw new InvalidOperationException("Expected the original 28 directions, eight HTML/RTF exchanges with Word, two DOCX/ODT exchanges and direct HTML/ODT PDF output.");
         var measurements = new System.Collections.Concurrent.ConcurrentBag<Measurement>();
         Parallel.For(0, iterations, new ParallelOptions { MaxDegreeOfParallelism = 4 }, iteration =>
         {

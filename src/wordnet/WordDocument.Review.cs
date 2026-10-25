@@ -28,12 +28,14 @@ public sealed class DocumentReviewItem
 {
     internal DocumentReviewItem(Guid session, long version, ReviewRecord record, bool comment, string? revisionText = null)
     {
-        Session = session; Version = version; Id = record.Id; Author = record.Author; Date = record.Date; IsDeletion = record.Deletion; IsComment = comment;
+        Session = session; Version = version; Id = record.Id; Author = record.Author; Date = record.Date; IsDeletion = record.Deletion; IsComment = comment; Structure = record.Structure;
         Initials = record.Initials; Text = revisionText ?? string.Join("\n", record.Body.Select(p => p.Text));
     }
     internal Guid Session { get; }
     internal long Version { get; }
     internal string Id { get; }
+    /// <summary>Gets "paragraph", "row", or an empty string for a text revision/comment.</summary>
+    public string Structure { get; }
     /// <summary>Gets the imported/caller author without attribution inference.</summary>
     public string Author { get; }
     /// <summary>Gets the optional imported date; absence remains absence.</summary>
@@ -89,6 +91,9 @@ public sealed partial class WordDocument
             {
                 var texts = model.BodyParagraphs.SelectMany(p => p.Runs).Where(r => r.Revision != null).GroupBy(r => r.Revision!, StringComparer.Ordinal)
                     .ToDictionary(g => g.Key, g => string.Concat(g.Select(r => r.Text)), StringComparer.Ordinal);
+                foreach (ParagraphBlock p in model.Blocks.OfType<ParagraphBlock>()) if (p.StructuralRevision != null) texts[p.StructuralRevision] = p.Text;
+                foreach (TableBlock table in model.Blocks.OfType<TableBlock>()) foreach (var pair in table.RowRevisions)
+                    texts[pair.Value] = string.Join("\t", table.Rows[pair.Key].Select(c => string.Join("\n", c.Paragraphs.Select(p => p.Text))));
                 return model.Review.Revisions.Values.Select(r => new DocumentReviewItem(sessionId, version, r, false, texts[r.Id])).ToList().AsReadOnly();
             }
         }
@@ -113,7 +118,7 @@ public sealed partial class WordDocument
     }
     private static void ValidateReviewParagraph(ParagraphBlock paragraph)
     {
-        if (paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.Comment != null || r.Bookmark != null || r.Control != null
+        if (paragraph.StructuralRevision != null || paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.Comment != null || r.Bookmark != null || r.Control != null
             || r.FieldInstruction != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null))
             throw new NotSupportedException("Review.Range: Recording requires a history-free paragraph without structured ranges.");
     }
@@ -208,6 +213,44 @@ public sealed partial class WordDocument
     private static void Decide(DocumentModel model, IEnumerable<string> ids, ReviewDecision decision, ConversionContext context)
     {
         var selected = new HashSet<string>(ids, StringComparer.Ordinal);
+        for (int index = model.Blocks.Count - 1; index >= 0; index--)
+        {
+            context.CheckCancellation(); DocumentBlock block = model.Blocks[index];
+            if (block is ParagraphBlock p && p.StructuralRevision != null && selected.Contains(p.StructuralRevision))
+            {
+                if (model.Review.Revisions[p.StructuralRevision].Deletion == (decision == ReviewDecision.Accept))
+                { Consume(new[] { p }); model.Blocks.RemoveAt(index); }
+                else p.StructuralRevision = null;
+            }
+            if (block is TableBlock table)
+                for (int row = table.Rows.Count - 1; row >= 0; row--)
+                    if (table.RowRevisions.TryGetValue(row, out string? revision) && selected.Contains(revision))
+                    {
+                        if (model.Review.Revisions[revision].Deletion == (decision == ReviewDecision.Accept))
+                        {
+                            Consume(table.Rows[row].SelectMany(c => c.Paragraphs)); table.Rows.RemoveAt(row);
+                            if (row < table.HeaderRowCount) table.HeaderRowCount--;
+                            Shift(table.RowRevisions, row); Shift(table.RowControls, row); Shift(table.RowLefts, row); Shift(table.RowHeights, row);
+                            int[] keep = table.NonSplittingRows.Where(r => r != row).Select(r => r > row ? r - 1 : r).ToArray();
+                            table.NonSplittingRows.Clear(); table.NonSplittingRows.UnionWith(keep);
+                        }
+                        else table.RowRevisions.Remove(row);
+                    }
+        }
+        void Consume(IEnumerable<ParagraphBlock> paragraphs)
+        {
+            foreach (ParagraphBlock p in paragraphs)
+                foreach (TextRun run in p.Runs)
+                {
+                    if (run.Comment != null) throw new NotSupportedException("Review.CommentIntersection: Remove comments explicitly before consuming a structural owner.");
+                    if (run.Revision != null) selected.Add(run.Revision);
+                }
+        }
+        static void Shift<T>(Dictionary<int, T> values, int removed)
+        {
+            KeyValuePair<int, T>[] saved = values.ToArray(); values.Clear();
+            foreach (var pair in saved) if (pair.Key != removed) values.Add(pair.Key > removed ? pair.Key - 1 : pair.Key, pair.Value);
+        }
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
             context.CheckCancellation(); var open = new HashSet<string>(StringComparer.Ordinal);

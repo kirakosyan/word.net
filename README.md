@@ -48,6 +48,14 @@ output have separate combination limits. See the [P2 profile](https://github.com
 and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/p2-capability-matrix.json).
 These changes shipped from [PR #86](https://github.com/kirakosyan/word.net/pull/86), building on P0 and P1 work. See the [1.3.0 release record](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.3.0.md) for qualification and publication status.
 
+## Unpublished roadmap #99 changes
+
+The current branch adds report chart binding, bounded scalar fields, structural paragraph/row
+comparison, direct HTML/ODT-to-PDF conversion, corrected managed line/row metrics, opt-in final
+column balancing, and qualified native-table/story and object-PDF combinations. These changes
+are **not in the published 1.3.0 packages**. See the [source profile](docs/roadmap-99-implementation.md)
+for APIs, limits and independent evidence; source conversion support now has 40 directions.
+
 ## Quick start
 
 Convert a DOCX document to PDF and inspect any reported fidelity losses. Stage output before replacing an existing file:

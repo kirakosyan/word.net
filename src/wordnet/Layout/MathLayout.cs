@@ -34,7 +34,7 @@ internal sealed class MathLayout
         Box box = Build(item.Equation!, item.FontSize, 0, item.Display);
         string description = item.Description;
         if (description.Length == 0 && item.Equation!.NodeCount <= 256 && item.Equation.Characters <= 2048) description = MathObjectFormat.Description(item.Equation);
-        if (description.Length > 0)
+        if (description.Length > 0 && !(context.Destination == DocumentFormat.Pdf && !context.PreviewIntermediate && context.Options.Pdf.Accessibility != PdfAccessibility.None))
         {
             context.Objects.Render(description.Length, 1);
             // Exactly one logical carrier for the expression; visible math glyphs are artifacts.

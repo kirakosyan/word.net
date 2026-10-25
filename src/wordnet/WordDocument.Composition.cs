@@ -91,6 +91,8 @@ public sealed partial class WordDocument
             var records = store.Values.ToArray(); store.Clear();
             foreach (ReviewRecord record in records) { record.Id = prefix + "r" + record.Id; store.Add(record.Id, record); }
         }
+        foreach (TableBlock table in source.Tables)
+            foreach (int row in table.RowRevisions.Keys.ToArray()) table.RowRevisions[row] = prefix + "r" + table.RowRevisions[row];
         var bookmarks = source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/'))
             .Select(r => r.Bookmark!).Distinct().Select((name, i) => (Name: name, NewName: prefix + "b" + i.ToString(CultureInfo.InvariantCulture))).ToDictionary(x => x.Name, x => x.NewName, StringComparer.Ordinal);
         foreach (TextRun run in source.Paragraphs.SelectMany(p => p.Runs))
@@ -108,6 +110,7 @@ public sealed partial class WordDocument
         foreach (ParagraphBlock paragraph in source.Paragraphs)
         {
             paragraph.Identity = Guid.NewGuid();
+            if (paragraph.StructuralRevision != null) paragraph.StructuralRevision = prefix + "r" + paragraph.StructuralRevision;
             if (paragraph.List != null && isolateCounters) paragraph.List.Id = prefix + paragraph.List.Id;
             for (int i = 0; i < paragraph.Runs.Count; i++)
             {

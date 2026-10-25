@@ -104,6 +104,16 @@ internal sealed partial class DocxReader
         }
         return false;
     }
+    private string? ReadStructuralRevision(XElement? properties, string kind)
+    {
+        XElement[] markers = properties?.Elements().Where(e => e.Name == W + "ins" || e.Name == W + "del").ToArray() ?? Array.Empty<XElement>();
+        if (markers.Length == 0) return null;
+        if (!context.PreserveReview) throw new NotSupportedException("Review.Structure: Structural revisions require explicit supported-history preservation and a review decision.");
+        if (markers.Length != 1 || markers[0].HasElements) throw new InvalidDataException("Review.Structure: Invalid structural marker.");
+        ReviewRecord record = ReviewMetadata(markers[0]); record.Structure = kind;
+        if (review.Revisions.ContainsKey(record.Id)) throw new InvalidDataException("Review.Id: Duplicate structural revision identifier.");
+        review.Revisions.Add(record.Id, record); return record.Id;
+    }
     private void ValidateReviewSource(XElement root)
     {
         if (!context.PreserveReview) return;
@@ -112,7 +122,12 @@ internal sealed partial class DocxReader
             if (element.Name.Namespace == W && (element.Name.LocalName.EndsWith("Change", StringComparison.Ordinal)
                 || element.Name.LocalName.StartsWith("move", StringComparison.Ordinal) || element.Name.LocalName.StartsWith("customXml", StringComparison.Ordinal) && element.Name.LocalName.Contains("Range")))
                 throw new NotSupportedException("Review.Unsupported: Move, property and structural history is outside the preservation profile.");
-        if (root.Descendants(W + "ins").Concat(root.Descendants(W + "del")).Any(e => !e.Ancestors(W + "p").Any() || e.Parent?.Name == W + "r" || e.Parent?.Name == W + "rPr" || e.Parent?.Name == W + "trPr"))
-            throw new NotSupportedException("Review.Unsupported: Structural revisions are unsupported.");
+        foreach (XElement marker in root.Descendants(W + "ins").Concat(root.Descendants(W + "del")))
+        {
+            bool paragraphMark = marker.Parent?.Name == W + "rPr" && marker.Parent.Parent?.Name == W + "pPr" && marker.Parent.Parent.Parent?.Parent?.Name == W + "body";
+            bool rowMark = marker.Parent?.Name == W + "trPr" && marker.Parent.Parent?.Parent?.Parent?.Name == W + "body";
+            if (paragraphMark || rowMark) continue;
+            if (marker.Parent?.Name != W + "p") throw new NotSupportedException("Review.Unsupported: Only plain paragraph marks and simple body rows support structural revisions.");
+        }
     }
 }

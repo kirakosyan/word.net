@@ -1,5 +1,12 @@
 # Interoperability, typography and import
 
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
 ## Released 1.3.0 profile
 
 Release 1.3.0 adds `Typography.ExtendedBidi`, `Typography.Devanagari`, caller `Fonts.MathFamily` and qualified ordinary native tagged/UA output. Earlier typography exclusions below describe the legacy profile; the new opt-in subset, exact language/font requirements and remaining combination rejections are specified in [P2 objects and typography](p2-objects-typography.md).

@@ -68,7 +68,7 @@ public sealed class TableLayoutTests
     [Fact]
     public void RepeatingHeaderMovesWithFirstBodyRow()
     {
-        string filler = string.Concat(Enumerable.Range(0, 7).Select(i => P("Filler" + i.ToString(CultureInfo.InvariantCulture))));
+        string filler = string.Concat(Enumerable.Range(0, 8).Select(i => P("Filler" + i.ToString(CultureInfo.InvariantCulture))));
         string rows = "<w:tr><w:trPr><w:tblHeader/></w:trPr>" + Cell("<w:gridSpan w:val='3'/>", P("Header")) + "</w:tr>"
             + "<w:tr>" + Cell("<w:gridSpan w:val='3'/>", P("Body") + P("Second")) + "</w:tr>";
         byte[] input = TestDocuments.Docx(TestDocuments.Body(filler + "<w:tbl>" + Grid + rows + "</w:tbl>" + SmallPage));

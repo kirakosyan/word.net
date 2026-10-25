@@ -1,5 +1,12 @@
 # wordnet implementation and delivery status
 
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
 ## Released 1.3.0 — #64–#73 and revised #82
 
 Release 1.3.0 implements validated chart/OMML graphs, DOCX preservation,

@@ -143,11 +143,11 @@ public sealed partial class ReviewWorkflowTests
         Assert.Equal(Save(compared), Save(DocumentComparison.Compare(original, revised, options, Policy(), TestContext.Current.CancellationToken)));
     }
     [Fact]
-    public void ComparisonRejectsHistoryStructureAndWorkExhaustionWithoutMutation()
+    public void ComparisonRejectsHistoryAndWorkExhaustionWithoutMutation()
     {
         WordDocument original = Load(Input(P("Original"))), revised = Load(Input(P("Revised"))); byte[] before = Save(original);
         Assert.Throws<InvalidDataException>(() => DocumentComparison.Compare(original, revised, new ComparisonOptions("Author", Time) { Granularity = ComparisonGranularity.Grapheme, MaximumSteps = 2 }, Policy(), TestContext.Current.CancellationToken));
-        Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(original, Load(Input(P("Extra") + P("Paragraph"))), new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken));
+        Assert.NotEmpty(DocumentComparison.Compare(original, Load(Input(P("Extra") + P("Paragraph"))), new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken).Revisions);
         Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(original, Load(Input(Revisions)), new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken));
         Assert.Equal(before, Save(original));
     }

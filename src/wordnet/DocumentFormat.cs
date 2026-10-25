@@ -39,6 +39,6 @@ public enum DocumentFormat
 
     /// <summary>Rich Text Format; bounded Word exchanges with Unicode, formatting, lists, tables and raster images.</summary>
     Rtf = 11,
-    /// <summary>Bounded ODF 1.3 text package; exchanges only with DOCX.</summary>
+    /// <summary>Bounded ODF 1.3 text package; DOCX exchange and PDF export.</summary>
     Odt = 12,
 }

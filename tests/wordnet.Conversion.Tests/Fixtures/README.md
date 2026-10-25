@@ -166,3 +166,12 @@ reader/writer round trip to determine those values. Apache POI's separate verifi
 checks the original section operands. Synthetic TSV coordinates check paragraph boundaries
 inside opt-in OCR columns; the existing independent raster corpus checks default native
 line order versus explicitly requested column order. No additional binary fixture is needed.
+
+## Roadmap #99 metric correction — 2026-10-25
+
+The independent `generate_layout_corpus.py` reference now computes vertical line boxes
+from the pinned font's horizontal metrics through fontTools instead of the former
+1.0/.5-em policy. Adjacent table rows share an edge. The original input DOCX is unchanged;
+the reference PDF/hash and two reviewed enterprise rasters changed intentionally.
+Glyph comparison remains 0.03 points for this declared-policy corpus. This reference is
+separate from the untouched 24-document independent office comparison and its tolerances.
