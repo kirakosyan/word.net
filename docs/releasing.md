@@ -110,6 +110,9 @@ Upgrade the SDK and affected locks together in a separately validated change.
    can change the archive hash). Create Git tag `v<version>` and a GitHub release at the
    tested commit, using committed notes, package files, minimum-runtime evidence and
    links to CI/publication runs. Set the GitHub prerelease flag only for prerelease versions.
+9. Complete [post-publication cleanup](../AGENTS.md#post-publication-cleanup) before
+   reporting completion: preserve verified evidence, shut down temporary guests, remove
+   disposable release VMs and unused release Docker images, and report retained resources.
 
 Ordinary commits, PRs and tags do not publish. An explicit workflow dispatch is required.
 If `main` changes before dispatch, use the new commit's successful CI run; do not reuse

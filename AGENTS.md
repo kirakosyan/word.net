@@ -123,6 +123,35 @@ Report what built, what ran, what was skipped, and platform/tooling limits. No r
 conversion/OCR cases may remain pending in the first functional converter release.
 Publishing packages and changing release credentials are separate from creating a scaffold.
 
+## Post-publication cleanup
+
+After publishing and verifying the public packages and GitHub release, complete cleanup
+before reporting the release task finished:
+
+- Archive and verify qualification reports, logs, hashes and CI/publication references
+  outside VM disks and Docker volumes before deleting them. Attach only non-sensitive
+  evidence to the release; keep customer files and credentials out of public artifacts.
+- Gracefully shut down release VMs and emulators. Stop and remove temporary qualification
+  and helper containers, including guest-filesystem tools. Verify no guest or helper
+  process still holds the virtual disks before removing them.
+- Remove disposable VM definitions, virtual disks, snapshots, installation media,
+  downloads, temporary VM credentials and staging files provisioned for wordnet release
+  qualification. Retain these only when the user explicitly asks to keep them. Preserve
+  unrelated or user-managed VMs and data.
+- Remove Docker images pulled or built solely for this release work once they are unused
+  by retained containers and are not shared with other work. Remove exclusively owned
+  temporary networks and volumes too. Identify resources by exact names/IDs; never use
+  global Docker system/image/volume pruning or force removal of shared images.
+- Before recursive filesystem removal on Windows, resolve and verify every absolute target
+  stays within its intended release work directory, including explicitly named directories
+  outside the checkout. Use PowerShell `Remove-Item -LiteralPath`; never pass computed
+  Windows paths to another shell for deletion.
+- If the agent started Docker Desktop or its engine solely for release qualification,
+  shut it down after cleanup when no unrelated workloads use it. Do not interrupt a shared
+  Docker service.
+- Verify the final VM/container/image state. Report what was removed, what was retained
+  and why, and any cleanup failure. Stopping a VM alone does not complete cleanup.
+
 <!-- headroom:rtk-instructions -->
 ## RTK (Rust Token Killer)
 
