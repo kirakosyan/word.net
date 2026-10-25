@@ -84,3 +84,29 @@ foreach ($id in @('wordnet.Fonts', 'wordnet.Ocr')) {
     } finally { $archive.Dispose() }
     Write-Host "Validated companion package: $path"
 }
+
+# Log only hashes and public package-entry names. These receipts allow independent
+# comparison with repository-signed NuGet archives without exposing credentials or
+# relying on a second authenticated artifact download.
+foreach ($id in @('wordnet.Fonts', 'wordnet', 'wordnet.Ocr')) {
+    $path = (Resolve-Path -LiteralPath (Join-Path $PackageDirectory "$id.$Version.nupkg")).Path
+    $archive = [IO.Compression.ZipFile]::OpenRead($path)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    $entries = [ordered]@{}
+    try {
+        foreach ($entry in ($archive.Entries | Sort-Object FullName)) {
+            if ($entry.FullName.EndsWith('/')) { continue }
+            $stream = $entry.Open()
+            try { $entries[$entry.FullName] = [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-', '').ToLowerInvariant() }
+            finally { $stream.Dispose() }
+        }
+    } finally { $sha.Dispose(); $archive.Dispose() }
+    $receipt = [ordered]@{
+        package = "$id.$Version.nupkg"
+        version = $Version
+        commit = $Commit
+        archiveSha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+        entries = $entries
+    }
+    Write-Host ('Release.Payload: ' + ($receipt | ConvertTo-Json -Depth 4 -Compress))
+}
