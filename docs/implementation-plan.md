@@ -138,16 +138,14 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Preserve the [verified 1.2.0 release evidence](release-1.2.0-readiness.md).
-   All three packages are published and publicly verified. P1 issues #48–#63 merged
-   in [PR #85](https://github.com/kirakosyan/word.net/pull/85). The assigned next
-   checkpoint is qualification/review of P2 #64–#73 and revised #82 in
-   [PR #86](https://github.com/kirakosyan/word.net/pull/86); cryptographic features
-   #74–#81 are cancelled. The bucket 5
-   [merged design slices](later-design-decisions.md) remain bounded by their
-   individual implementation and policy gates.
-   [Bucket 4 limits](interoperability.md) remain explicit: native
-   typography/UA combinations, complex table semantics and approximate reconstruction.
+1. Preserve historical 1.2.x and 1.3.0 release evidence. Roadmap #99 numbered issues
+   #87–#98 are implemented in [PR #100](https://github.com/kirakosyan/word.net/pull/100),
+   with all 15 review findings corrected and 1,139 required cases. Complete exact-main
+   1.4.0 package qualification and publication under the owner's explicit authorization.
+   The unnumbered P3 proposal remains planning; STYLEREF remains a separate design stage.
+   Bucket 5 [design records](later-design-decisions.md) retain their individual policy
+   gates. The [1.4.0 profile](roadmap-99-implementation.md) lists remaining combinations.
+
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
    input campaigns and production-like resource measurements. The bounded binary
    [DOC profile](doc-format.md), ebook CSS and complex PDF reading order retain limits.

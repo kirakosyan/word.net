@@ -9,8 +9,10 @@ combinations. The [1.4.0 release notes](releases/1.4.0.md) record compatibility 
 qualification requirements. Earlier release receipts below remain historical evidence.
 
 The P1 implementation merged in PR #85 and ships in 1.3.0 with `DocumentFormat.Odt = 12`.
-`CanConvert` enables exactly DOCX → ODT and ODT → DOCX. ODT document sessions,
-same-format conversion, DOC/ODT and other ODT exchanges remain unsupported.
+`CanConvert` enables DOCX → ODT, ODT → DOCX and, since 1.4.0, direct ODT → PDF.
+ODT document sessions, same-format conversion, DOC/ODT and other ODT exchanges
+remain unsupported. Direct PDF export uses the same bounded ODF reader and shared
+layout without an intermediate DOCX.
 
 ```csharp
 using var source = File.OpenRead("input.odt");
