@@ -1,5 +1,15 @@
 # wordnet implementation and delivery status
 
+## Roadmap #102 / issue #103 - baseline findings pending PR review
+
+The owner authorized the first evidence task only. The
+[fidelity baseline](fidelity-103-baseline.md) separates selected clean source from
+public 1.4.0, retains every comparison failure and supplies twelve reduced contrasts
+for issues #104-#107. It distinguishes reproduced fallback/placement differences,
+unproven inheritance/implicit-sizing defects, source omissions and the existing note
+reservation policy. No converter behavior, package version or support scope changes.
+The remaining roadmap tasks are unimplemented by this PR; publication is not authorized.
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in

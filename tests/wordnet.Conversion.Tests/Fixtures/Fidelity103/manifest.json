@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Independently authored OOXML contrasts, MIT. No document-library serializer, customer data or proprietary resources.",
+  "generator": "eng/generate-fidelity-reductions.py",
+  "generatorSha256": "e8a7d82c1243c2193500770f60272de0e0834f32190b0cd90fb71a949fce8465",
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+      "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+      "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+      "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+      "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+      "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+      "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+      "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+      "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    }
+  ],
+  "documents": [
+    {
+      "id": "defaults-omitted",
+      "category": "report",
+      "path": "defaults-omitted.docx",
+      "sha256": "da43b9afb178cdb7f3d6e7ee19e05a47e32bcadb1b02dde22f92f83342360d75",
+      "requiredText": [
+        "Default policy first line",
+        "Default policy second line"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Source omits size and spacing; distinguish fallback policy from a style-inheritance defect."
+    },
+    {
+      "id": "defaults-explicit11",
+      "category": "report",
+      "path": "defaults-explicit11.docx",
+      "sha256": "80da3608cc15b143fbcb1581cf58e4fd16239c0f93d47a8b08b59d1818ac27af",
+      "requiredText": [
+        "Default policy first line",
+        "Default policy second line"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Control with direct 11-point font and zero paragraph spacing."
+    },
+    {
+      "id": "defaults-docdefaults11",
+      "category": "report",
+      "path": "defaults-docdefaults11.docx",
+      "sha256": "ebdc1129e067f106c04117e1a6cbfb86b00bbf4df86edbd558df08b0ff8e7d55",
+      "requiredText": [
+        "Default policy first line",
+        "Default policy second line"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Document-default inheritance should agree with the direct-format control."
+    },
+    {
+      "id": "defaults-style-chain11",
+      "category": "report",
+      "path": "defaults-style-chain11.docx",
+      "sha256": "b7a7b700a53eb699dd5180e5754a7e7d86aa3a26614735f0cd39bcdbccb9560b",
+      "requiredText": [
+        "Default policy first line",
+        "Default policy second line"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Two-level style inheritance should agree with explicit formatting."
+    },
+    {
+      "id": "spacing-explicit",
+      "category": "report",
+      "path": "spacing-explicit.docx",
+      "sha256": "3bc1817706745107f842ac48079f31367b62ae997d29c167494101c73ebb1ce9",
+      "requiredText": [
+        "Spacing first line",
+        "Spacing second line",
+        "Spacing third line"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Explicit 6-point after-spacing and one-line spacing independent of fallback policy."
+    },
+    {
+      "id": "spacing-inherited",
+      "category": "report",
+      "path": "spacing-inherited.docx",
+      "sha256": "aa415f6f16642198e6e31b584a8125eb2b3e7738dbe010a38e65ac423258b0a1",
+      "requiredText": [
+        "Spacing first line",
+        "Spacing second line",
+        "Spacing third line"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Inherited spacing should agree with the direct-format control."
+    },
+    {
+      "id": "wrap-explicit11",
+      "category": "report",
+      "path": "wrap-explicit11.docx",
+      "sha256": "da967b7fd887514fc21cf2f05e1cfcfb4cd2b9c358a36f3b06eb9faaf28fba9c",
+      "requiredText": [
+        "EXAMPLE ENGINEERING",
+        "Service notice with positioned logo.",
+        "End of notice."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Existing independently authored anchor with only size/spacing made explicit; isolate wrapping from defaults."
+    },
+    {
+      "id": "table-implicit",
+      "category": "report",
+      "path": "table-implicit.docx",
+      "sha256": "e86c77956b82df883ea2b74d60c0f79314b35f9d531c110db4c768aa83bafd1e",
+      "requiredText": [
+        "Description with several short words",
+        "7",
+        "Second row",
+        "8"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Identical table with only tblLayout differing; separate implicit sizing from row splitting."
+    },
+    {
+      "id": "table-autofit",
+      "category": "report",
+      "path": "table-autofit.docx",
+      "sha256": "c361bacef0fb6eca95f149f4a59395bcc4245262942bcdd1fc252d911e760078",
+      "requiredText": [
+        "Description with several short words",
+        "7",
+        "Second row",
+        "8"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Identical table with only tblLayout differing; separate implicit sizing from row splitting."
+    },
+    {
+      "id": "table-fixed",
+      "category": "report",
+      "path": "table-fixed.docx",
+      "sha256": "e5e8bbafdf23dcc68d2d773f1fef8f28419ef3e1e4f836064e8a3d41ca50031b",
+      "requiredText": [
+        "Description with several short words",
+        "7",
+        "Second row",
+        "8"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Identical table with only tblLayout differing; separate implicit sizing from row splitting."
+    },
+    {
+      "id": "notes-marked",
+      "category": "report",
+      "path": "notes-marked.docx",
+      "sha256": "17a8777a409c778e7d1631a5fffd4e5596b99a9ba9a6834957dd844c2cba08be",
+      "requiredText": [
+        "Body with a marked note.",
+        "Note line 01 with explicit metrics."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Explicit body/note markers distinguish omitted-source semantics from reservation/continuation behavior. Long-note page expectation follows the bounded reservation profile, not an office measurement."
+    },
+    {
+      "id": "notes-continuation",
+      "category": "report",
+      "path": "notes-continuation.docx",
+      "sha256": "10e9ff4287baa49caee7366a016c62d372a7e5b4f33f4fd4011a0d3eb6264f9c",
+      "requiredText": [
+        "Body with a marked note.",
+        "Note line 01 with explicit metrics.",
+        "Note line 02 with explicit metrics.",
+        "Note line 03 with explicit metrics.",
+        "Note line 04 with explicit metrics.",
+        "Note line 05 with explicit metrics.",
+        "Note line 06 with explicit metrics.",
+        "Note line 07 with explicit metrics.",
+        "Note line 08 with explicit metrics.",
+        "Note line 09 with explicit metrics.",
+        "Note line 10 with explicit metrics.",
+        "Note line 11 with explicit metrics.",
+        "Note line 12 with explicit metrics.",
+        "Note line 13 with explicit metrics.",
+        "Note line 14 with explicit metrics.",
+        "Note line 15 with explicit metrics.",
+        "Note line 16 with explicit metrics.",
+        "Note line 17 with explicit metrics.",
+        "Note line 18 with explicit metrics.",
+        "Note line 19 with explicit metrics.",
+        "Note line 20 with explicit metrics.",
+        "Note line 21 with explicit metrics.",
+        "Note line 22 with explicit metrics.",
+        "Note line 23 with explicit metrics.",
+        "Note line 24 with explicit metrics.",
+        "Note line 25 with explicit metrics.",
+        "Note line 26 with explicit metrics.",
+        "Note line 27 with explicit metrics.",
+        "Note line 28 with explicit metrics.",
+        "Note line 29 with explicit metrics.",
+        "Note line 30 with explicit metrics.",
+        "Note line 31 with explicit metrics.",
+        "Note line 32 with explicit metrics.",
+        "Note line 33 with explicit metrics.",
+        "Note line 34 with explicit metrics.",
+        "Note line 35 with explicit metrics.",
+        "Note line 36 with explicit metrics.",
+        "Note line 37 with explicit metrics.",
+        "Note line 38 with explicit metrics.",
+        "Note line 39 with explicit metrics.",
+        "Note line 40 with explicit metrics.",
+        "Note line 41 with explicit metrics.",
+        "Note line 42 with explicit metrics.",
+        "Note line 43 with explicit metrics.",
+        "Note line 44 with explicit metrics.",
+        "Note line 45 with explicit metrics.",
+        "Note line 46 with explicit metrics.",
+        "Note line 47 with explicit metrics.",
+        "Note line 48 with explicit metrics.",
+        "Note line 49 with explicit metrics.",
+        "Note line 50 with explicit metrics.",
+        "Note line 51 with explicit metrics.",
+        "Note line 52 with explicit metrics.",
+        "Note line 53 with explicit metrics.",
+        "Note line 54 with explicit metrics.",
+        "Note line 55 with explicit metrics.",
+        "Note line 56 with explicit metrics.",
+        "Note line 57 with explicit metrics.",
+        "Note line 58 with explicit metrics.",
+        "Note line 59 with explicit metrics.",
+        "Note line 60 with explicit metrics."
+      ],
+      "knownLosses": [],
+      "expectedPages": 3,
+      "references": [],
+      "expectationBasis": "authored-source-expectations; exact reference verdicts retained separately",
+      "hypothesis": "Explicit body/note markers distinguish omitted-source semantics from reservation/continuation behavior. Long-note page expectation follows the bounded reservation profile, not an office measurement."
+    }
+  ]
+}

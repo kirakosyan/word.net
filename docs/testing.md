@@ -1,5 +1,16 @@
 # Conversion tests and qualification
 
+## Issue #103 fidelity refresh - pending PR review
+
+The [new baseline receipt](fidelity-103-baseline.md) measures clean source
+`ec7816b` and independently restored public 1.4.0 against all 24 original references
+plus 12 independent OOXML contrasts. All original authored/editable/diagnostic gates
+pass; all strict reference failures remain retained. It also records the new probes'
+warning, glyph-tokenization and note-policy differences. Thirteen comparison controls,
+six evidence-tool tests and twelve independent schema validations passed locally.
+This is Linux x64 measurement evidence, not new engine support or release qualification;
+full library suites and other runtimes belong to their own exact-head CI results.
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in

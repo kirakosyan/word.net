@@ -1,5 +1,11 @@
 # Reproducible business-document comparison
 
+The [issue #103 refresh](fidelity-103-baseline.md) records the selected clean source
+and independently restored public 1.4.0 measurements, plus twelve separate reduced
+contrasts. `eng/refresh-fidelity-baseline.py` captures references and retains original
+verdicts; `eng/test-fidelity-baseline.py` checks evidence identity/completeness and
+deterministic fixture generation. The original corpus and tolerances below are unchanged.
+
 The twenty-four independent MIT-authored examples in
 `tests/wordnet.Conversion.Tests/Fixtures/Comparison` cover three invoices, contracts,
 reports and letterheads in the original twelve-case cohort, plus twelve P0 cases
