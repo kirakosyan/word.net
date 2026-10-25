@@ -1,6 +1,6 @@
 # Creating, editing and filling documents
 
-## 1.3.0 source profile
+## Released 1.3.0 profile
 
 The 1.3.0 API adds immutable `ChartDefinition`/`ChartSeries`, closed `EquationExpression`, versioned `Objects` snapshots and explicit create/update/remove methods. Ordinary edits retain objects only where supported; template execution and protected owner rewrites reject. See the [object API and limits](p2-objects-typography.md).
 

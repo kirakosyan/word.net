@@ -1,6 +1,6 @@
 # Conversion tests and qualification
 
-## 1.3.0 candidate qualification
+## Released 1.3.0 qualification
 
 The required suite is **1,050** cases: the 957-case P1 head plus 93 P2 cases, including 34 review regressions.
 P2 adds independent OOXML/XLSX, MATH font metrics/variants/assemblies, editable object
@@ -16,9 +16,9 @@ with schema/content/glyph assertions in every applicable source/packed suite.
 is retained under `Fixtures/P2` and `eng/p2-tool-pins.json`; none is shipped in NuGet.
 The concrete reproduction, predeclared 0.5 pt geometry tolerance, exact subset and
 unsupported combinations are in [the P2 profile](p2-objects-typography.md).
-Final exact-head source/package/runtime checks are recorded on the P2 PR; historical
-P1 qualification below remains separate. No new platform or package publication
-is implied by these source changes.
+Completed exact-main source/package/runtime and publication checks are linked from the
+[1.3.0 release record](releases/1.3.0.md). Historical P1 and review-head qualification
+below remains separate; these results do not qualify additional platforms.
 
 The final metadata-boundary regressions additionally cover newline, tab and
 length-plus-one chart descriptions. These valid out-of-profile DOCX values raise

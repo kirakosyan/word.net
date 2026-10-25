@@ -1,6 +1,6 @@
 # DOCX and ODT exchange
 
-The P1 implementation merged in PR #85 and adds `DocumentFormat.Odt = 12`; it is unpublished.
+The P1 implementation merged in PR #85 and ships in 1.3.0 with `DocumentFormat.Odt = 12`.
 `CanConvert` enables exactly DOCX → ODT and ODT → DOCX. ODT document sessions,
 same-format conversion, DOC/ODT and other ODT exchanges remain unsupported.
 

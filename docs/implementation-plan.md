@@ -1,20 +1,21 @@
 # wordnet implementation and delivery status
 
-## 1.3.0 candidate — #64–#73 and revised #82
+## Released 1.3.0 — #64–#73 and revised #82
 
-The 1.3.0 candidate implements validated chart/OMML graphs, DOCX preservation,
+Release 1.3.0 implements validated chart/OMML graphs, DOCX preservation,
 managed vectors and MATH metrics/layout, immutable object editing/removal, Unicode
 17 bidi and opt-in Hindi Devanagari, and a qualified ordinary native tagged/UA
 profile. The [profile](p2-objects-typography.md) and machine-readable
 [capability matrix](p2-capability-matrix.json) specify the limits and unsupported
 combinations. The executable P2 recipe composes a managed object report and exports
-separate native chapters. The owner authorized publication after review, issue
+separate native chapters. Publication completed on 2026-10-20 after review, issue
 reconciliation and exact-main production gates; new platform claims remain excluded.
+The [release record](releases/1.3.0.md) identifies the tag, public packages and evidence.
 Crypto issues #74–#81 are owner-cancelled, closed as not planned and absent.
-Final source/package/CI evidence belongs to the P2 PR; no completion is inferred
+Final source/package/CI evidence belongs to the release record and P2 PR; no completion is inferred
 from successful compilation or the older P1 results.
 
-## Merged P1 delivery — issues #48–#63, PR #85
+## P1 delivery — issues #48–#63, PR #85
 
 The owner assigned the next P2 chart/equation and typography tracks (#64–#73) and
 the revised integrated checkpoint #82. Encryption and digital signatures (#74–#81)
@@ -28,8 +29,8 @@ columns (#48), bounded reporting/body repeats (#49–#52), ODF package/mapping/e
 `73f935732a788c69a934edfa5d71f42635e02031`, with tree equality to reviewed head
 `d733a755663d776c4fa119ef18e599f3f3559b78`. All fifteen review threads are resolved,
 all final-head CI jobs passed, and all sixteen issues closed automatically. P1 is
-merged source and remains unpublished. P2 PR #86 now targets `main`; its history
-already includes P1, so the retarget preserves only the P2 diff.
+included in the published 1.3.0 packages alongside P2 PR #86. The dated
+qualification below describes the earlier P1 source checkpoint.
 
 Concrete profiles are in [report preprocessing](report-preprocessing.md), [ODT](odt.md)
 and [review workflows](review-workflows.md). Qualification and platform limits are in
@@ -37,7 +38,7 @@ and [review workflows](review-workflows.md). Qualification and platform limits a
 and residual profile limits. Historical evidence below remains tied to its original
 revisions.
 
-## P0 adoption delivery — merged PR #83, 2026-10-19
+## Historical P0 adoption delivery — merged PR #83, 2026-10-19
 
 PR [#83](https://github.com/kirakosyan/word.net/pull/83) merged as `6cf54fd2a406880feb18abb1ee495b8c77bcc3e8`; its tree matches reviewed head `e8e6cbfada0f261d3153934f730ec3b3f42be870`. All fifteen review threads were answered and resolved and all final-head push/PR checks passed. Issues [#46](https://github.com/kirakosyan/word.net/issues/46) and [#47](https://github.com/kirakosyan/word.net/issues/47) are complete and closed; roadmap [#45](https://github.com/kirakosyan/word.net/issues/45) retains the remaining unassigned work, beginning with #48. The broader #46–#52 adoption checkpoint is still incomplete; no P1 task is started by this reconciliation.
 
