@@ -53,6 +53,7 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal string? StructuralRevision { get; set; }
     internal bool RemoveWhenObjectEmpty { get; set; }
     internal System.Guid Identity { get; set; } = System.Guid.NewGuid();
     internal bool? RightToLeft { get; set; }
@@ -77,6 +78,7 @@ internal sealed class TableBlock : DocumentBlock
     internal double? WidthPercent { get; set; }
     internal bool AutoFit { get; set; }
     internal bool LayoutExplicit { get; set; }
+    internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();

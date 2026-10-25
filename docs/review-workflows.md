@@ -1,6 +1,13 @@
 # Bounded DOCX review workflows
 
-The P1 implementation merged in PR #85 and is not in the published packages.
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
+The P1 implementation merged in PR #85 and ships in 1.3.0.
 It adds separate opt-in APIs; ordinary converter loads keep their existing
 accepted-state diagnostics and Strict rejection of review loss.
 

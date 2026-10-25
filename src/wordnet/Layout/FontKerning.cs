@@ -10,13 +10,15 @@ internal sealed partial class FontKerning
     private readonly Dictionary<uint, short> pairs = new Dictionary<uint, short>();
     private readonly Gpos? positioning;
     internal double UnitsPerEm { get; } = 1000;
+    internal double Ascent { get; private set; } = 1000;
+    internal double Descent { get; private set; } = 500;
 
-    internal FontKerning(byte[] font)
+    internal FontKerning(byte[] font, bool metricsOnly = false)
     {
         if (font.Length < 12) throw new InvalidDataException("Font.Invalid: Truncated SFNT header.");
         int tables = U16(font, 4);
         if (tables > (font.Length - 12) / 16) throw new InvalidDataException("Font.Invalid: Truncated table directory.");
-        int start = 0, end = 0, gpos = 0, gposLength = 0, gdef = 0, gdefLength = 0;
+        int start = 0, end = 0, gpos = 0, gposLength = 0, gdef = 0, gdefLength = 0, horizontal = 0, os2 = 0;
         for (int i = 0; i < tables; i++)
         {
             int entry = 12 + i * 16;
@@ -24,10 +26,22 @@ internal sealed partial class FontKerning
             if (offset > font.Length - length) throw new InvalidDataException("Font.Invalid: Table exceeds font data.");
             uint tag = (uint)U32(font, entry);
             if (tag == 0x68656164 && length >= 20) UnitsPerEm = Math.Max(1, U16(font, offset + 18));
+            if (tag == 0x68686561 && length >= 10) horizontal = offset;
+            if (tag == 0x4f532f32 && length >= 74) os2 = offset;
             if (tag == 0x6b65726e) { start = offset; end = offset + length; }
             if (tag == 0x47504f53) { gpos = offset; gposLength = length; }
             if (tag == 0x47444546) { gdef = offset; gdefLength = length; }
         }
+        // OpenType USE_TYPO_METRICS selects sTypoAscender/Descender/LineGap;
+        // otherwise use the horizontal header metrics of the actual selected face.
+        int metrics = os2 != 0 && (U16(font, os2 + 62) & 128) != 0 ? os2 + 68 : horizontal == 0 ? 0 : horizontal + 4;
+        if (metrics != 0)
+        {
+            int ascent = unchecked((short)U16(font, metrics)), descent = unchecked((short)U16(font, metrics + 2)), gap = unchecked((short)U16(font, metrics + 4));
+            if (ascent <= 0 || descent > 0 || gap < 0) throw new InvalidDataException("Font.Metrics: Invalid horizontal line metrics.");
+            Ascent = ascent + gap / 2.0; Descent = -descent + gap / 2.0;
+        }
+        if (metricsOnly) return;
         if (gposLength > 0) positioning = new Gpos(font, gpos, gposLength, gdef, gdefLength);
         if (end - start < 4 || U16(font, start) != 0) return;
         int count = U16(font, start + 2), cursor = start + 4;

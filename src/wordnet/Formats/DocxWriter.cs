@@ -141,6 +141,7 @@ internal sealed partial class DocxWriter
             XElement? following = properties.Elements().FirstOrDefault(e => e.Name == W + "spacing" || e.Name == W + "ind" || e.Name == W + "jc");
             if (following == null) properties.Add(direction); else following.AddBeforeSelf(direction);
         }
+        if (paragraph.StructuralRevision != null) properties.Add(new XElement(W + "rPr", Revision(paragraph.StructuralRevision)));
         if (properties.HasElements) element.Add(properties);
 
         TemplateControl? currentControl = null;
@@ -307,11 +308,12 @@ internal sealed partial class DocxWriter
         {
             context.CheckCancellation();
             var row = new XElement(W + "tr");
-            if (index < table.HeaderRowCount || table.NonSplittingRows.Contains(index) || table.RowHeights.ContainsKey(index))
+            if (index < table.HeaderRowCount || table.NonSplittingRows.Contains(index) || table.RowHeights.ContainsKey(index) || table.RowRevisions.ContainsKey(index))
             {
                 row.Add(new XElement(W + "trPr", table.NonSplittingRows.Contains(index) ? new XElement(W + "cantSplit") : null,
                     table.RowHeights.TryGetValue(index, out var height) ? new XElement(W + "trHeight", new XAttribute(W + "val", Twips(height.Height)), new XAttribute(W + "hRule", height.Exact ? "exact" : "atLeast")) : null,
-                    index < table.HeaderRowCount ? new XElement(W + "tblHeader") : null));
+                    index < table.HeaderRowCount ? new XElement(W + "tblHeader") : null,
+                    table.RowRevisions.TryGetValue(index, out string? rowRevision) ? Revision(rowRevision) : null));
             }
 
             foreach (TableCell cell in table.Rows[index])

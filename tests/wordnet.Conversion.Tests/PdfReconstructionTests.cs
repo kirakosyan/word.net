@@ -25,7 +25,8 @@ public sealed class PdfReconstructionTests
         Assert.Contains(result.Diagnostics, d => d.Code == "Pdf.Reconstruction"); Assert.Contains(result.Diagnostics, d => d.Code == "Pdf.ReconstructionProfile");
         byte[] pdf = new WordConverter().ConvertToPdf(word, new ConversionOptions(FidelityMode.BestEffort)); using PdfDocument parsed = PdfDocument.Open(pdf);
         Assert.Equal(500, parsed.GetPage(1).Width); Assert.Equal(700, parsed.GetPage(1).Height);
-        Assert.Equal(40, parsed.GetPage(1).Letters[0].StartBaseLine.X, 2); Assert.Equal(640, parsed.GetPage(1).Letters[0].StartBaseLine.Y, 2);
+        Assert.Equal(40, parsed.GetPage(1).Letters[0].StartBaseLine.X, 2); // DOCX positions are quantized to one twip (0.05 pt).
+        Assert.InRange(Math.Abs(640 - parsed.GetPage(1).Letters[0].StartBaseLine.Y), 0, 0.025);
     }
 
     [Fact]

@@ -18,6 +18,7 @@ internal sealed partial class DocxReader
         internal StringBuilder Instruction { get; } = new StringBuilder();
         internal List<(List<TextRun> Target, TextRun Run)> Result { get; } = new List<(List<TextRun>, TextRun)>();
         internal bool Separated { get; set; }
+        internal bool NestedInstruction { get; set; }
     }
 
     private void Emit(List<TextRun> runs, TextRun run)
@@ -26,8 +27,14 @@ internal sealed partial class DocxReader
         else if (fields.All(f => f.Separated)) fields.Peek().Result.Add((runs, run));
     }
 
-    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result)
+    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result, bool nestedInstruction = false)
     {
+        if (nestedInstruction)
+        {
+            context.Report("Field.UnsupportedUsedCachedResult", "A nested field instruction retains its cached runs without creating a live field.");
+            foreach (var cached in result) Emit(cached.Target, cached.Run);
+            return;
+        }
         if (context.Editing && DocumentFields.Kind(instruction) == "MERGEFIELD")
         {
             if (result.Any(r => r.Run.Image != null || r.Run.Box != null || r.Run.Bookmark != null || r.Run.Note != null || r.Run.FieldInstruction != null || r.Run.Control != null)
@@ -108,7 +115,12 @@ internal sealed partial class DocxReader
         else if (kind == "separate" && fields.Count > 0) fields.Peek().Separated = true;
         else if (kind == "end" && fields.Count > 0)
         {
-            FieldCapture field = fields.Pop(); EmitField(runs, field.Instruction.ToString(), field.Result);
+            FieldCapture field = fields.Pop();
+            if (fields.Count > 0 && !fields.Peek().Separated)
+            {
+                fields.Peek().NestedInstruction = true;
+            }
+            else EmitField(runs, field.Instruction.ToString(), field.Result, field.NestedInstruction);
         }
         else throw new InvalidDataException("Docx.Field: Unbalanced field boundary.");
     }

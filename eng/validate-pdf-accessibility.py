@@ -38,9 +38,9 @@ def validate(directory, output, flavour, selected=None):
         for job in root.findall("./jobs/job"):
             report = job.find("validationReport"); assert report is not None
             reports[Path(job.findtext("item/name")).name] = report.get("isCompliant") == "true"
-        expected = {f: not f.endswith("-negative.pdf") for f in files} if flavour == "ua1" else {f: True for f in files}
+        expected = {f: not f.endswith("-negative.pdf") for f in files}
         assert reports == expected, reports
-        print("veraPDF 1.30.2 PDF/UA-1: all supported fixtures compliant; untagged negative control rejected." if flavour == "ua1" else f"veraPDF 1.30.2 PDF/A-2b: {len(files)}/{len(files)} compliant.")
+        print("veraPDF 1.30.2 PDF/UA-1: all supported fixtures compliant; untagged negative control rejected." if flavour == "ua1" else f"veraPDF 1.30.2 PDF/A-2b: {sum(expected.values())} positive files compliant; {len(files) - sum(expected.values())} negative controls rejected.")
     finally:
         run(["rm", "-f", name], stdout=subprocess.DEVNULL)
 

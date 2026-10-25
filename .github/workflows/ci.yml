@@ -50,6 +50,7 @@ jobs:
         env:
           WORDNET_ODT_EVIDENCE: ${{ github.workspace }}/artifacts/p1-odt
           WORDNET_P2_EVIDENCE: ${{ github.workspace }}/artifacts/p2-objects
+          WORDNET_ROADMAP_EVIDENCE: ${{ github.workspace }}/artifacts/roadmap-99/new-features
         run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net10.0 --no-build --no-restore --logger "trx;LogFileName=net10.trx" --results-directory artifacts/test-results
       - name: Run .NET Framework conversion and robustness tests
         if: runner.os == 'Windows' && runner.arch == 'X64'
@@ -119,6 +120,19 @@ jobs:
           artifacts/p2-venv/bin/python eng/verify-p2.py artifacts/p2-objects --office-edited
           python3 eng/validate-pdf-accessibility.py artifacts/p2-objects --output artifacts/p2-objects/ua-verification.xml --files native-hindi.pdf native-arabic.pdf native-hindi-link.pdf native-hindi-negative.pdf native-arabic-negative.pdf
           dotnet run --project examples/WordNet.Automation -c Release --no-build --no-restore -- artifacts/p2-sample tests/wordnet.Conversion.Tests/Fixtures/P2/STIXTwoMath.ttf tests/wordnet.Conversion.Tests/Fixtures/P2/NotoSansDevanagari-Regular.ttf tests/wordnet.Conversion.Tests/Fixtures/Interoperability/NotoSansArabic-Regular.ttf
+      - name: Qualify roadmap table stories and separate object PDF profiles
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          artifacts/p2-venv/bin/python eng/verify-roadmap-99.py artifacts/roadmap-99/new-features
+          python3 eng/validate-pdf-accessibility.py artifacts/roadmap-99/new-features --output artifacts/roadmap-99/ua-verification.xml --files objects-ua.pdf native-hindi-table.pdf native-arabic-table.pdf native-hindi-table-footer.pdf native-arabic-table-footer.pdf objects-ua-negative.pdf
+          python3 eng/validate-pdf-accessibility.py artifacts/roadmap-99/new-features --flavour 2b --output artifacts/roadmap-99/pdfa-verification.xml --files objects-pdfa.pdf objects-pdfa-negative.pdf
+      - name: Retain roadmap independent qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-99-qualification
+          path: artifacts/roadmap-99/**
+          if-no-files-found: error
       - name: Retain P2 independent qualification evidence
         if: always() && matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

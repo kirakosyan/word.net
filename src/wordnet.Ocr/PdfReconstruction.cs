@@ -6,6 +6,7 @@ using System.Text;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Core;
 using WordNet.Internal;
+using WordNet.Layout;
 using WordNet.Model;
 
 namespace WordNet.Ocr;
@@ -22,7 +23,31 @@ internal static class PdfReconstruction
         internal double[] X = Array.Empty<double>(), Y = Array.Empty<double>();
     }
 
-    internal static IReadOnlyList<DocumentBlock>? Read(Page page, PdfImportOptions options, ConversionContext context)
+    internal sealed class FontMetrics
+    {
+        private readonly ConversionContext context;
+        private FontResolver? resolver;
+        private FontKerning[]? metrics;
+        internal FontMetrics(ConversionContext context) => this.context = context;
+        internal (double Ascent, double Descent) Measure(ParagraphBlock paragraph)
+        {
+            if (resolver == null)
+            {
+                var fontModel = new DocumentModel(); var styles = new ParagraphBlock(); fontModel.Blocks.Add(styles);
+                for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun("", bold: (style & 1) != 0, italic: (style & 2) != 0));
+                resolver = new FontResolver(fontModel, context);
+                metrics = resolver.Data.Select(bytes => new FontKerning(bytes, metricsOnly: true)).ToArray();
+            }
+            double ascent = 0, descent = 0;
+            foreach (TextRun run in paragraph.Runs)
+            {
+                FontKerning face = metrics![resolver.Resolve(run, false)]; double size = run.FontSize ?? 12;
+                ascent = Math.Max(ascent, size * face.Ascent / face.UnitsPerEm); descent = Math.Max(descent, size * face.Descent / face.UnitsPerEm);
+            }
+            return (ascent, descent);
+        }
+    }
+    internal static IReadOnlyList<DocumentBlock>? Read(Page page, PdfImportOptions options, ConversionContext context, FontMetrics fontMetrics)
     {
         context.CheckCancellation();
         Letter[] letters = page.Letters.ToArray(); var images = page.GetImages().ToArray();
@@ -51,10 +76,10 @@ internal static class PdfReconstruction
         var blocks = new List<(int Column, double Top, double Left, double Bottom, DocumentBlock Block)>(); var tableLetters = new HashSet<Letter>();
         if (grid != null)
         {
-            TableBlock? table = Table(grid, letters, tableLetters, context);
+            TableBlock? table = Table(grid, letters, tableLetters, context, fontMetrics.Measure);
             if (table != null && !images.Any(i => Overlap(i.BoundingBox, grid.X[0], grid.Y[grid.Y.Length - 1], grid.X[grid.X.Length - 1], grid.Y[0])))
-                // The layout engine reserves six points between rows and after a table.
-                blocks.Add((0, page.Height - grid.Y[0], grid.X[0], page.Height - grid.Y[grid.Y.Length - 1] + (table.Rows.Count + 1) * 6, table));
+                // The layout engine reserves six points after a table; adjacent rows share an edge.
+                blocks.Add((0, page.Height - grid.Y[0], grid.X[0], page.Height - grid.Y[grid.Y.Length - 1] + 6, table));
             else { tableLetters.Clear(); Ambiguous(context, "An incomplete/overlapping grid remains prose without inferred editable table structure."); }
         }
         for (int column = 0; column < options.Columns; column++)
@@ -77,10 +102,10 @@ internal static class PdfReconstruction
                 double bodyLeft = group.Count > 1 ? group[1].Left : first.Left;
                 paragraph.Layout.Left = Math.Max(0, bodyLeft - columnLeft);
                 paragraph.Layout.FirstLine = first.Left - bodyLeft;
-                double top = Math.Max(0, page.Height - first.Baseline - first.Size);
+                double top = Math.Max(0, page.Height - first.Baseline - fontMetrics.Measure(Paragraph(new[] { first }, context)).Ascent);
                 paragraph.Layout.After = 0;
                 if (group.Count > 1) { paragraph.Layout.LineSpacing = group.Zip(group.Skip(1), (a, b) => a.Baseline - b.Baseline).Average(); paragraph.Layout.MultipleLineSpacing = false; }
-                double bottom = page.Height - group[group.Count - 1].Baseline + Math.Max(12, group[group.Count - 1].Size) * .5;
+                double bottom = page.Height - group[group.Count - 1].Baseline + fontMetrics.Measure(Paragraph(new[] { group[group.Count - 1] }, context)).Descent;
                 blocks.Add((column, top, first.Left, bottom, paragraph));
             }
         }
@@ -110,7 +135,7 @@ internal static class PdfReconstruction
             var paragraph = new ParagraphBlock { Layout = new ParagraphLayout { After = 0 } }; paragraph.Runs.Add(new TextRun("", image: mapped));
             int column = Math.Min(options.Columns - 1, (int)Math.Floor(Math.Max(0, left) * options.Columns / page.Width));
             paragraph.Layout.Left = Math.Max(0, left - page.Width * column / options.Columns);
-            blocks.Add((column, Math.Max(0, top), left, Math.Max(0, top) + Math.Max(12, height) + 6, paragraph));
+            blocks.Add((column, Math.Max(0, top), left, Math.Max(0, top) + height, paragraph));
         }
         // Page-relative anchors belong to a flow paragraph without adding another line.
         TextRun[] anchors = blocks.Where(b => b.Block is ParagraphBlock p && p.Runs.Count == 1 && p.Runs[0].Image?.Anchor != null)
@@ -200,7 +225,7 @@ internal static class PdfReconstruction
         }
         return candidates.SingleOrDefault();
     }
-    private static TableBlock? Table(Grid grid, Letter[] letters, HashSet<Letter> used, ConversionContext context)
+    private static TableBlock? Table(Grid grid, Letter[] letters, HashSet<Letter> used, ConversionContext context, Func<ParagraphBlock, (double Ascent, double Descent)> metrics)
     {
         int columns = grid.X.Length - 1, rows = grid.Y.Length - 1; long count = (long)columns * rows;
         if (count > 100000 || count > context.Options.MaximumCharacters) throw new InvalidDataException("Limit.PdfReconstruction: Grid cell count exceeds structural admission.");
@@ -223,7 +248,7 @@ internal static class PdfReconstruction
                 List<Letter>? content = buckets[row * columns + column];
                 if (content == null || content.Count == 0) { used.Clear(); return null; }
                 used.UnionWith(content); var cell = new TableCell(Paragraph(Lines(content), context)) { CellWidth = grid.X[column + 1] - grid.X[column], Padding = new CellPadding() };
-                cell.Paragraphs[0].Layout.Before = Math.Max(0, grid.Y[row] - content.Max(l => l.StartBaseLine.Y) - content.Max(l => l.PointSize)); cell.Paragraphs[0].Layout.After = 0;
+                cell.Paragraphs[0].Layout.Before = Math.Max(0, grid.Y[row] - content.Max(l => l.StartBaseLine.Y) - metrics(cell.Paragraphs[0]).Ascent); cell.Paragraphs[0].Layout.After = 0;
                 cells.Add(cell);
             }
             table.Rows.Add(cells); table.RowHeights[row] = (grid.Y[row] - grid.Y[row + 1], false);

@@ -16,14 +16,14 @@ public sealed partial class OdtTests
     private static byte[] Fixture(string name) => File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Odt", name + ".odt"));
     private static ConversionContext Context() => new ConversionContext(new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
     [Fact]
-    public void PublicOdtGateAddsExactlyTheDocxPairAndKeepsSessionEditingExplicit()
+    public void PublicOdtGateAddsDocxExchangeAndPdfExportAndKeepsSessionEditingExplicit()
     {
         var converter = new WordConverter();
         for (int value = 0; value <= 12; value++)
         {
             DocumentFormat format = (DocumentFormat)value;
             Assert.Equal(format == DocumentFormat.Docx, converter.CanConvert(format, DocumentFormat.Odt));
-            Assert.Equal(format == DocumentFormat.Docx, converter.CanConvert(DocumentFormat.Odt, format));
+            Assert.Equal(format is DocumentFormat.Docx or DocumentFormat.Pdf, converter.CanConvert(DocumentFormat.Odt, format));
         }
         Assert.False(converter.CanConvert((DocumentFormat)999, DocumentFormat.Docx));
         using var source = new MemoryStream(Fixture("text"));

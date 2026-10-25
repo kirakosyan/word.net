@@ -9,12 +9,12 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
-The next candidate is [1.3.0](releases/1.3.0.md), including P1 and P2 with the
-cancelled cryptographic features explicitly absent. All three public package
-indexes now contain 1.2.1; their nuspec repository commit is
-`7a09ef6b5d7dfcec8ee9507741b2b78016f14761`. This public identity check does not replace
-that release's historical qualification. The next dispatch must select successful
-final-main 1.3.0 CI; never rerun publication for an existing version.
+The current published release is [1.3.0](releases/1.3.0.md), including P1 and P2
+with the cancelled cryptographic features explicitly absent. The roadmap #99 changes
+are unpublished; **1.4.0 is the proposed next minor version**, subject to release review.
+The project files still identify 1.3.0 and must be updated together before preparing a
+new release. Select successful CI from the exact final-main commit for the new version;
+never rerun publication for an existing version. Historical receipts remain unchanged.
 
 Package README images must use Markdown syntax and a NuGet-allowed image host.
 Avoid HTML sizing/alignment tags: NuGet's renderer disables HTML. Validate the

@@ -1,7 +1,14 @@
 # Bounded P2 objects and typography
 
-The owner assigned #64–#73 and the revised integrated checkpoint #82. This work is
-unpublished and builds on merged P1 PR #85. Encryption/decryption and DOCX/PDF signatures
+## Unpublished roadmap #99 extension
+
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
+The work in #64–#73 and the revised integrated checkpoint #82 ships in 1.3.0,
+building on P1 PR #85. Encryption/decryption and DOCX/PDF signatures
 (#74–#81) were cancelled and are absent. The staged design in
 [charts and equations](design/charts-equations.md) remains the implementation contract.
 
@@ -43,8 +50,8 @@ paragraph extensions preserve logical Unicode separately from glyph order, keep
 clusters intact and reject unsupported stories/fields/objects/vertical layout.
 Tagged native output requires its own logical carrier/structure and independent
 validation. Neither native shaping nor tags alone establish general accessibility.
-No new platform or OCR language is qualified. Publication of the 1.3.0 candidate
-is gated separately by the exact-main release procedure; release credentials are unchanged.
+No new platform or OCR language is qualified. The [1.3.0 release record](releases/1.3.0.md)
+links the completed exact-main qualification and public-package verification.
 
 ## Public object editing
 
@@ -152,6 +159,6 @@ The public [combined recipe](../examples/WordNet.Automation/README.md) produces
 an ordinary report with editable objects and separate native UA chapters. The
 [capability matrix](p2-capability-matrix.json) explicitly rejects unsupported
 combinations. Encryption/decryption and DOCX/PDF signatures are absent by owner
-request. The 1.3.0 candidate remains unpublished until its release workflow completes. Exact final-head
-source/package/runtime evidence belongs to the PR; compilation alone does not
+request. Version 1.3.0 is published; its [release record](releases/1.3.0.md) links exact-main
+source/package/runtime evidence. Compilation alone does not
 qualify Framework, native architectures or a new platform.

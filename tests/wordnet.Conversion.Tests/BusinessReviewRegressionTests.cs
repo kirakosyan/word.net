@@ -91,7 +91,7 @@ public sealed partial class BusinessFidelityTests
     [InlineData(DocumentFormat.Xps)]
     public void LenientRowsBleedImagesAndTextBoxesRetainContent(DocumentFormat format)
     {
-        string table = Table(Cell(P("Row")), 4000).Replace("<w:tr>", "<w:tr><w:trPr><w:trHeight w:val='300' w:hRule='exact'/></w:trPr>");
+        string table = Table(Cell(P("Row")), 4000).Replace("<w:tr>", "<w:tr><w:trPr><w:trHeight w:val='280' w:hRule='exact'/></w:trPr>");
         string image = AnchorImage("none", false).Replace("relativeFrom='margin'", "relativeFrom='page'").Replace("<wp:posOffset>0</wp:posOffset>", "<wp:posOffset>-127000</wp:posOffset>");
         byte[] input = FidelityDocuments.Docx("color-grid.png", table + image + TextBox(P("First") + Table(Cell(P("Table text")), 1000), 15) + Page);
         byte[] output = ExportMode(input, format, FidelityMode.Lenient, out ConversionResult result);

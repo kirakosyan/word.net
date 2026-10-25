@@ -18,6 +18,10 @@ public enum FidelityMode
 /// <summary>Conversion policy and immutable resource bounds. Configure export settings before concurrent use.</summary>
 public sealed class ConversionOptions
 {
+    /// <summary>Gets or sets opt-in balancing of final multicolumn pages containing ordinary managed body paragraphs.
+    /// Tables, notes, keeps, explicit breaks, fields, links, lists, controls, tagged/native output and shared continuous-section pages are rejected.</summary>
+    public bool BalanceFinalColumns { get; set; }
+
     /// <summary>Gets or sets optional Arabic/Latin shaping and base direction.</summary>
     public TypographyOptions Typography { get; set; } = new TypographyOptions();
     /// <summary>Gets or sets safe HTML input resources. Configure before concurrent use.</summary>

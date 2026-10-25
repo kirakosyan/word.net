@@ -20,6 +20,7 @@ internal static partial class DocFormat
             internal StringBuilder Instruction { get; } = new StringBuilder();
             internal List<(ParagraphBlock Target, TextRun Run)> Runs { get; } = new List<(ParagraphBlock, TextRun)>();
             internal bool Separated { get; set; }
+            internal bool NestedInstruction { get; set; }
         }
         internal BinaryFields(ConversionContext context) => this.context = context;
         internal int Count => stack.Count;
@@ -51,7 +52,9 @@ internal static partial class DocFormat
                 {
                     Flush(); if (stack.Count == 0) throw new InvalidDataException("Doc.Fields: Unexpected field end.");
                     BinaryField field = stack.Pop(); string instruction = field.Instruction.ToString();
-                    if (!DocumentFields.Supported(instruction))
+                    if (stack.Count > 0 && !stack.Peek().Separated)
+                    { stack.Peek().NestedInstruction = true; continue; }
+                    if (field.NestedInstruction || !DocumentFields.Supported(instruction))
                     {
                         context.Report("Field.UnsupportedUsedCachedResult", "An unsupported binary Word field uses its cached result.");
                         foreach (var cached in field.Runs) AddRun(cached.Target, cached.Run);
@@ -70,7 +73,8 @@ internal static partial class DocFormat
                                 run.FontSize, run.Color, run.Image, run.Appearance));
                         }
                     }
-                    else if (field.Runs.Select(r => r.Target).Distinct().Skip(1).Any())
+                    else if (field.Runs.Select(r => r.Target).Distinct().Skip(1).Any()
+                        || ScalarFields.Candidate(instruction) && (field.Runs.Any(r => r.Run.FieldInstruction != null) || WordNet.Layout.RunCoalescer.Combine(field.Runs.Select(r => r.Run).ToList()).Count > 1))
                     {
                         context.Report("Field.UnsupportedUsedCachedResult", "A binary Word field spanning paragraphs retains its cached result in place.");
                         foreach (var cached in field.Runs) AddRun(cached.Target, cached.Run);

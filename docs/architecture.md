@@ -1,8 +1,15 @@
 # Architecture and implementation status
 
-## 1.3.0 source profile
+## Unpublished roadmap #99 extension
 
-The 1.3.0 source profile adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).
+The current source extends the released 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
+new APIs, changed layout policy, rejected combinations and new validation from the
+released behavior and historical qualification recorded below. No new package is published.
+
+## Released 1.3.0 profile
+
+Release 1.3.0 adds immutable admitted chart-part graphs and OMML expression trees to object runs. Cloning shares immutable bytes; composition remaps placements, DOCX writing rebuilds owner names/relationships, and fixed layout emits managed chart/math primitives. Native ordinary text retains logical carriers independently of visual glyph order. See [P2 boundaries and capability matrix](p2-objects-typography.md).
 
 ## Merged P1 implementation
 
@@ -15,8 +22,7 @@ ODT remains outside document-session loading/saving. See [ODT](odt.md),
 ReviewStore retains admitted plain-text revisions and classic comment intervals.
 Session/version handles, clone-before-commit decisions/recording and explicit detached
 views prevent implicit review decisions. Pinned Unicode 17 tables support grapheme
-validation and bounded matching-structure comparison. These features are merged and
-unpublished; P2 objects are included in the 1.3.0 candidate and cryptographic features are cancelled. No runtime dependency is added.
+validation and bounded matching-structure comparison. These features and P2 objects ship in 1.3.0; cryptographic features are cancelled. No runtime dependency is added.
 
 The merged bucket 4 profile extends the earlier 30 directions to 36 with HTML input and RTF exchanges.
 See [interoperability profiles](interoperability.md) for the supported 1.2.0 subset.

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.30.2" buildDate="2026-06-03T10:43:00Z"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.30.2" buildDate="2026-06-03T10:46:00Z"></releaseDetails>
+    <releaseDetails id="apps" version="1.30.2" buildDate="2026-06-03T10:55:00Z"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="43378">
+        <name>/tmp/objects-ua.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="106" failedRules="0" passedChecks="394" failedChecks="0"></details>
+      </validationReport>
+      <duration start="1792932647719" finish="1792932649104">00:00:01.385</duration>
+    </job>
+    <job>
+      <item size="1021033">
+        <name>/tmp/native-hindi-table.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="106" failedRules="0" passedChecks="10600" failedChecks="0"></details>
+      </validationReport>
+      <duration start="1792932649172" finish="1792932650635">00:00:01.463</duration>
+    </job>
+    <job>
+      <item size="1269494">
+        <name>/tmp/native-arabic-table.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="106" failedRules="0" passedChecks="11020" failedChecks="0"></details>
+      </validationReport>
+      <duration start="1792932650650" finish="1792932651052">00:00:00.402</duration>
+    </job>
+    <job>
+      <item size="1021795">
+        <name>/tmp/native-hindi-table-footer.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="106" failedRules="0" passedChecks="10600" failedChecks="0"></details>
+      </validationReport>
+      <duration start="1792932651067" finish="1792932651457">00:00:00.390</duration>
+    </job>
+    <job>
+      <item size="1265882">
+        <name>/tmp/native-arabic-table-footer.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="106" failedRules="0" passedChecks="11020" failedChecks="0"></details>
+      </validationReport>
+      <duration start="1792932651471" finish="1792932651741">00:00:00.270</duration>
+    </job>
+    <job>
+      <item size="43137">
+        <name>/tmp/objects-ua-negative.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="102" failedRules="4" passedChecks="373" failedChecks="20">
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="30" status="failed" failedChecks="2" tags="lang,alt-text">
+            <description>Natural language for text in ActualText attribute in Span Marked Content shall be determined</description>
+            <object>SEMarkedContent</object>
+            <test>tag != 'Span' || ActualText == null || Lang != null || inheritedLang != null || gContainsCatalogLang == true</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[15]{mcid:4}/contentItem[0]{mcid:4}</context>
+              <errorMessage>Natural language for text in ActualText attribute in Span Marked Content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[24]{mcid:5}/contentItem[0]{mcid:5}</context>
+              <errorMessage>Natural language for text in ActualText attribute in Span Marked Content cannot be determined</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="22" status="failed" failedChecks="2" tags="structure,lang">
+            <description>Natural language for text in Alt attribute shall be determined</description>
+            <object>PDStructElem</object>
+            <test>Alt == null || containsLang == true || parentLang != null || gContainsCatalogLang == true</test>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](22 0 obj PDStructTreeRoot)/K[0](25 0 obj SEDocument Document)/K[1](28 0 obj SEP P)/K[0](29 0 obj SEFigure Figure)</context>
+              <errorMessage>Natural language for text in Alt attribute cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/StructTreeRoot[0](22 0 obj PDStructTreeRoot)/K[0](25 0 obj SEDocument Document)/K[2](30 0 obj SEP P)/K[0](31 0 obj SEFormula Formula)</context>
+              <errorMessage>Natural language for text in Alt attribute cannot be determined</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="33" status="failed" failedChecks="1" tags="lang,metadata">
+            <description>Natural language for document metadata shall be determined</description>
+            <object>XMPLangAlt</object>
+            <test>xDefault == false || gContainsCatalogLang == true</test>
+            <check status="failed">
+              <context>root/document[0]/metadata[0](24 0 obj PDMetadata)/XMPPackage[0]/Properties[1](http://purl.org/dc/elements/1.1/ - dc:title)</context>
+              <errorMessage>Natural language for document metadata cannot be determined</errorMessage>
+            </check>
+          </rule>
+          <rule specification="ISO 14289-1:2014" clause="7.2" testNumber="34" status="failed" failedChecks="15" tags="lang,text">
+            <description>Natural language for text in page content shall be determined</description>
+            <object>SETextItem</object>
+            <test>gContainsCatalogLang == true || Lang != null</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[1]{mcid:0}/contentItem[0]{mcid:0}</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[2]{mcid:1}/contentItem[0]{mcid:1}</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[2]{mcid:1}/contentItem[1]{mcid:1}</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[3]{mcid:2}/contentItem[0]{mcid:2}</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[4]{mcid:3}/contentItem[0]{mcid:3}</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[5]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[6]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[7]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[8]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[9]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[10]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[11]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[12]/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[15]{mcid:4}/contentItem[0]{mcid:4}/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+            <check status="failed">
+              <context>root/document[0]/pages[0](18 0 obj PDPage)/contentStream[0](19 0 obj PDSemanticContentStream)/content[24]{mcid:5}/contentItem[0]{mcid:5}/contentItem[0]</context>
+              <errorMessage>Natural language for text in page content cannot be determined</errorMessage>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+      <duration start="1792932651750" finish="1792932651780">00:00:00.030</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="6" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="5" nonCompliant="1" failedJobs="0">6</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1792932647621" finish="1792932651832">00:00:04.211</duration>
+  </batchSummary>
+</report>

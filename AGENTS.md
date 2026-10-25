@@ -39,6 +39,15 @@ package ID are `wordnet`. Keep namespace spelling consistent across all targets 
 - Declare support only for implemented and verified capabilities. Compatibility metadata,
   successful compilation, and skipped tests are not proof of working conversions.
 
+## Roadmap #99 source extension
+
+The owner authorized implementation of numbered issues #87–#98, with a PR and no package
+publication. The unpublished source profile in `docs/roadmap-99-implementation.md` extends
+some of the released 1.3.0 boundaries above: plain structural paragraph/row revisions,
+bounded native tables/stories, separate managed-object accessibility/archive output,
+scalar fields, chart binding and direct HTML/ODT PDF export. Keep the new subset limits
+explicit; do not treat this as permission to expand other combinations or platforms.
+
 ## Engineering quality
 
 - Keep the public API small, documented, and independent of platform/provider types.

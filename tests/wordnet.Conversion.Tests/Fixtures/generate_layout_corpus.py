@@ -10,6 +10,7 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reference_kerning import ReferenceShaper
+from fontTools.ttLib import TTFont as MetricsFont
 
 root = Path(__file__).parent
 fonts = root.parents[2] / 'src/wordnet/Resources/Fonts'
@@ -46,15 +47,28 @@ def text(value, x, top, size=11, font='Noto', height=792):
         pdf.drawString(x + dx, height - top + dy, character)
 pdf.setFillColorRGB(0x33 / 255, 0x66 / 255, 0x99 / 255)
 title_width = shaper.shape('Quarterly report', 'NotoBold', 18)[1]
-text('Quarterly report', 72 + (480 - title_width) / 2, 100, 18, 'NotoBold')
+# Derive vertical placement independently from pinned OpenType hhea metrics.
+# The former reference used the legacy 1.0/.5-em line box and a six-point row gap.
+face = MetricsFont(fonts / 'NotoSans-Regular.ttf')
+units = face['head'].unitsPerEm
+ascent = face['hhea'].ascent / units
+descent = -face['hhea'].descent / units
+leading = ascent + descent
+origin = 72 + 10
+text('Quarterly report', 72 + (480 - title_width) / 2, origin + ascent * 18, 18, 'NotoBold')
 pdf.setFillColorRGB(0, 0, 0)
-text('Indented body.', 108, 135, 12)
-text('Wide cell', 72, 158); text('Second line', 72, 180.5); text('Right', 312, 158)
-text('Vertical', 72, 203); text('Group', 72, 225.5); text('A', 192, 203); text('B', 312, 203)
-text('C', 192, 225.5); text('D', 312, 225.5)
-text('End first section', 72, 255, 12)
+origin += leading * 18 + 8 + 6
+text('Indented body.', 108, origin + ascent * 12, 12)
+origin += leading * 12 + 6
+text('Wide cell', 72, origin + ascent * 11); text('Second line', 72, origin + leading * 11 + 6 + ascent * 11); text('Right', 312, origin + ascent * 11)
+origin += leading * 22 + 6
+text('Vertical', 72, origin + ascent * 11); text('Group', 72, origin + leading * 11 + 6 + ascent * 11)
+text('A', 192, origin + ascent * 11); text('B', 312, origin + ascent * 11)
+text('C', 192, origin + leading * 11 + ascent * 11); text('D', 312, origin + leading * 11 + ascent * 11)
+origin += leading * 22 + 6 + 6
+text('End first section', 72, origin + ascent * 12, 12)
 pdf.showPage(); pdf.setPageSize((792, 612)); pdf.setFont('Noto', 12)
-text('Landscape section', 36, 48, 12, height=612); pdf.save()
+text('Landscape section', 36, 36 + ascent * 12, 12, height=612); pdf.save()
 shaper.close()
 manifest = {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in ['layout-corpus.docx', 'layout-reference.pdf']}
 (root / 'layout-corpus.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

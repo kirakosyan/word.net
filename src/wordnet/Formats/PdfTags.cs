@@ -97,10 +97,11 @@ internal sealed class PdfTags
                 foreach (TextRun run in paragraph.Runs)
                 {
                     if (run.Bookmark != null || run.Image?.Decorative == true) continue;
-                    string role = run.Image != null ? "Figure" : run.Link != null ? "Link" : "Span";
+                    string role = run.Object?.Equation != null ? "Formula" : run.Object != null || run.Image != null ? "Figure" : run.Link != null ? "Link" : "Span";
                     Node owner = run.Image != null && run.Link != null ? Add("Link", p) : p;
                     Node node = Add(role, owner); runs.Add(run, node); if (run.Link != null) (owner == p ? node : owner).LinkDescription = run.Image?.AlternativeText ?? run.Text;
                     if (run.Image != null) { node.Alt = run.Image.AlternativeText; if (string.IsNullOrWhiteSpace(node.Alt)) Missing("Pdf.ImageAlt", "Provide meaningful image alternative text; the initial profile does not infer whether an image is decorative."); }
+                    if (run.Object != null) node.Alt = ObjectAlternatives.Describe(run.Object, context);
                 }
             }
             else if (block is TableBlock table)

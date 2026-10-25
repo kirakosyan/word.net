@@ -259,6 +259,7 @@ internal sealed partial class DocxReader
             ReadParagraphProperties(properties, style);
         }
         var paragraph = new ParagraphBlock { RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
         return paragraph;
     }
@@ -299,7 +300,8 @@ internal sealed partial class DocxReader
                 fields.Push(new FieldCapture { Separated = true });
                 ReadInlines(child, runs, inherited, link);
                 FieldCapture field = fields.Pop();
-                EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result);
+                if (fields.Count > 0 && !fields.Peek().Separated) fields.Peek().NestedInstruction = true;
+                else EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result, field.NestedInstruction);
                 continue;
             }
 
@@ -424,7 +426,7 @@ internal sealed partial class DocxReader
                         if (rule is not "atLeast" and not "exact" and not "auto") throw new InvalidDataException("Docx.RowHeight: Invalid height rule.");
                         if (rule != "auto") table.RowHeights.Add(table.Rows.Count, (Integer(height, W + "val", 0, 31680) / 20.0, rule == "exact"));
                     }
-                    if (rowChild.Elements().Any(property => property.Name != W + "trHeight" && property.Name != W + "tblHeader" && property.Name != W + "cantSplit" && property.Name != W + "gridBefore" && property.Name != W + "gridAfter"))
+                    if (rowChild.Elements().Any(property => property.Name != W + "trHeight" && property.Name != W + "tblHeader" && property.Name != W + "cantSplit" && property.Name != W + "gridBefore" && property.Name != W + "gridAfter" && !(context.PreserveReview && (property.Name == W + "ins" || property.Name == W + "del"))))
                     {
                         context.Loss("Docx.TableFormatting", "Table row formatting is not retained.");
                     }
@@ -476,6 +478,8 @@ internal sealed partial class DocxReader
             }
 
             XElement? rowProperties = child.Element(W + "trPr");
+            string? rowRevision = ReadStructuralRevision(rowProperties, "row");
+            if (rowRevision != null) table.RowRevisions.Add(table.Rows.Count, rowRevision);
             Omitted("gridBefore", true); Omitted("gridAfter", false);
             table.Rows.Add(cells);
             void Omitted(string name, bool before)
@@ -602,6 +606,7 @@ internal sealed partial class DocxReader
                 if (property.Elements().Any(e => e.Name != W + "numId" && e.Name != W + "ilvl")) context.Loss("Docx.ListRevision", "Numbering revisions are not retained.");
             }
             else if (ReadLayoutProperty(property, style.Layout)) { }
+            else if (context.PreserveReview && property.Name == W + "rPr" && property.Elements().All(e => e.Name == W + "ins" || e.Name == W + "del")) { }
             else if (property.Name != W + "pStyle" && property.Name != W + "sectPr")
             {
                 context.Loss("Docx.ParagraphFormatting", "Paragraph formatting such as spacing, paragraph-mark styling or page controls is not retained.");

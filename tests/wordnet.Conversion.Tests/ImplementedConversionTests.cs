@@ -96,7 +96,9 @@ public sealed class ImplementedConversionTests
         supported.Add((DocumentFormat.Rtf, DocumentFormat.Docx));
         supported.Add((DocumentFormat.Docx, DocumentFormat.Odt));
         supported.Add((DocumentFormat.Odt, DocumentFormat.Docx));
-        Assert.Equal(38, supported.Count);
+        supported.Add((DocumentFormat.Html, DocumentFormat.Pdf));
+        supported.Add((DocumentFormat.Odt, DocumentFormat.Pdf));
+        Assert.Equal(40, supported.Count);
 #if NET8_0_OR_GREATER
         DocumentFormat[] formats = Enum.GetValues<DocumentFormat>();
 #else

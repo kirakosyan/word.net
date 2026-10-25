@@ -12,6 +12,7 @@ internal sealed class ReviewRecord
     internal string Author { get; set; } = "";
     internal DateTimeOffset? Date { get; set; }
     internal bool Deletion { get; set; }
+    internal string Structure { get; set; } = "";
     internal string Initials { get; set; } = "";
     internal List<ParagraphBlock> Body { get; } = new List<ParagraphBlock>();
 }
@@ -41,6 +42,27 @@ internal sealed class ReviewStore
         var revisionOwners = new Dictionary<string, ParagraphBlock>(StringComparer.Ordinal);
         var comments = new Dictionary<string, (ParagraphBlock Paragraph, int Offset, bool Ended, bool Referenced)>(StringComparer.Ordinal);
         var body = new HashSet<ParagraphBlock>(SupportedParagraphs(model.Blocks));
+        foreach (DocumentBlock block in model.Blocks)
+        {
+            if (block is ParagraphBlock p && p.StructuralRevision != null)
+            {
+                Structural(p.StructuralRevision, "paragraph"); ReviewRecord owner = Revisions[p.StructuralRevision];
+                if (p.Control != null || p.List != null || p.Runs.Any(r => r.Image != null || r.Box != null || r.Object != null || r.Note != null || r.Control != null || r.FieldInstruction != null || r.Bookmark != null || r.Link != null || r.Comment != null
+                    || r.Text.Length != 0 && (r.Revision == null || !Revisions.TryGetValue(r.Revision, out ReviewRecord? child) || child.Deletion != owner.Deletion)))
+                    throw new NotSupportedException("Review.Structure: Only whole plain paragraphs with matching tracked text support paragraph-mark decisions; split/join revisions are unsupported.");
+            }
+            if (block is TableBlock t) foreach (var pair in t.RowRevisions)
+            {
+                if (pair.Key < 0 || pair.Key >= t.Rows.Count || t.Rows[pair.Key].Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock)))
+                    throw new NotSupportedException("Review.Structure: Only simple body rows support structural revisions.");
+                Structural(pair.Value, "row");
+            }
+        }
+        void Structural(string id, string kind)
+        {
+            if (!Revisions.TryGetValue(id, out ReviewRecord? record) || record.Structure != kind || !revisions.Add(id))
+                throw new InvalidDataException("Review.Structure: Invalid structural revision owner.");
+        }
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
             context.CheckCancellation(); int offset = 0; var closed = new HashSet<string>(StringComparer.Ordinal); string? current = null;
@@ -55,8 +77,9 @@ internal sealed class ReviewStore
                 if (run.Revision != null)
                 {
                     if (!body.Contains(paragraph) || !Revisions.TryGetValue(run.Revision, out ReviewRecord? revision)) throw new InvalidDataException("Review.Range: Unresolved or cross-story revision.");
-                    if (run.Image != null || run.Box != null || run.FieldInstruction != null || run.Note != null || run.Control != null || run.Bookmark != null || run.Comment != null || run.Link != null)
+                    if (run.Object != null || run.Image != null || run.Box != null || run.FieldInstruction != null || run.Note != null || run.Control != null || run.Bookmark != null || run.Comment != null || run.Link != null)
                         throw new NotSupportedException("Review.Range: Revisions support plain body/cell text only.");
+                    if (revision.Structure.Length != 0) throw new InvalidDataException("Review.Structure: A structural identifier cannot own text runs.");
                     if (revisionOwners.TryGetValue(run.Revision, out ParagraphBlock? owner) && !ReferenceEquals(owner, paragraph))
                         throw new InvalidDataException("Review.Range: Revision ranges cannot cross paragraphs.");
                     revisionOwners[run.Revision] = paragraph;

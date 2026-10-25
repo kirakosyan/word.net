@@ -30,7 +30,7 @@ internal sealed class DocumentCloner
         DocumentBlock result;
         if (source is ParagraphBlock p)
         {
-            var paragraph = new ParagraphBlock { RemoveWhenObjectEmpty = p.RemoveWhenObjectEmpty, Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
+            var paragraph = new ParagraphBlock { StructuralRevision = p.StructuralRevision, RemoveWhenObjectEmpty = p.RemoveWhenObjectEmpty, Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
             if (p.List != null)
             {
                 paragraph.List = p.List.Copy();
@@ -73,6 +73,7 @@ internal sealed class DocumentCloner
                 LeftIndent = table.LeftIndent
             };
             copy.ColumnWidths.AddRange(table.ColumnWidths); copy.NonSplittingRows.UnionWith(table.NonSplittingRows);
+            foreach (var item in table.RowRevisions) copy.RowRevisions.Add(item.Key, item.Value);
             foreach (var item in table.RowLefts) copy.RowLefts.Add(item.Key, item.Value);
             foreach (var item in table.RowHeights) copy.RowHeights.Add(item.Key, item.Value);
             foreach (var item in table.RowControls) copy.RowControls.Add(item.Key, Control(item.Value)!);
@@ -115,7 +116,7 @@ internal sealed class DocumentCloner
     }
     private ReviewRecord Review(ReviewRecord source)
     {
-        var result = new ReviewRecord { Id = source.Id, Author = source.Author, Date = source.Date, Deletion = source.Deletion, Initials = source.Initials };
+        var result = new ReviewRecord { Id = source.Id, Author = source.Author, Date = source.Date, Deletion = source.Deletion, Structure = source.Structure, Initials = source.Initials };
         result.Body.AddRange(source.Body.Select(p => (ParagraphBlock)Block(p))); return result;
     }
     private PageSettings? Section(PageSettings? source)

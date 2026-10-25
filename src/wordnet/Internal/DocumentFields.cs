@@ -11,10 +11,11 @@ internal static class DocumentFields
     internal static string Kind(string instruction)
     {
         string value = instruction.Trim(); int length = 0;
+        if (value.Length > 0 && value[0] == '=') return "=";
         while (length < value.Length && !char.IsWhiteSpace(value[length])) length++;
         return value.Substring(0, length).ToUpperInvariant();
     }
-    internal static bool Supported(string instruction) => Kind(instruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES" or "DATE" or "TIME" or "TITLE" or "AUTHOR" or "HYPERLINK" or "REF" or "PAGEREF" or "SEQ" or "TOC";
+    internal static bool Supported(string instruction) => Kind(instruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES" or "DATE" or "TIME" or "TITLE" or "AUTHOR" or "HYPERLINK" or "REF" or "PAGEREF" or "SEQ" or "TOC" or "DOCPROPERTY" or "IF" or "=";
     internal static bool NeedsPages(DocumentModel model) => model.Paragraphs.Any(p => p.Runs.Any(r => r.FieldInstruction != null && Kind(r.FieldInstruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES"));
 
     internal static string Render(TextRun run, DocumentModel model, int page, int pages, int sectionPages, ConversionContext context)
@@ -22,6 +23,7 @@ internal static class DocumentFields
         if (model.FieldResults.TryGetValue(run, out string? calculated)) return calculated;
         if (run.Note != null) return run.Note.Label;
         if (run.FieldInstruction == null) return run.Text;
+        if (ScalarFields.Candidate(run.FieldInstruction)) return ScalarFields.Render(run, model, context);
         switch (Kind(run.FieldInstruction))
         {
             case "PAGE": return ListCounter.Number(page, context.PageNumberFormat);
