@@ -83,6 +83,19 @@ public sealed class ChartDataBinding
 
 public sealed partial class WordDocument
 {
+    private static bool ControlledOwner(IEnumerable<DocumentBlock> blocks, ParagraphBlock owner, bool controlled)
+    {
+        foreach (DocumentBlock block in blocks)
+        {
+            bool inherited = controlled || block.Control != null;
+            if (ReferenceEquals(block, owner)) return inherited;
+            if (block is TableBlock table)
+                for (int row = 0; row < table.Rows.Count; row++)
+                    foreach (TableCell cell in table.Rows[row])
+                        if (ControlledOwner(cell.Blocks, owner, inherited || table.RowControls.ContainsKey(row))) return true;
+        }
+        return false;
+    }
     /// <summary>Binds immutable report rows to one stable chart, rebuilding semantic values, caches and workbook atomically.</summary>
     /// <remarks>Bindings retain type, colours, axes, title, description and dimensions. Object repeat/control owners remain unsupported.</remarks>
     public DocumentObject BindChart(DocumentObject handle, ReportData data, ChartDataBinding binding, CancellationToken cancellationToken = default)
@@ -94,7 +107,7 @@ public sealed partial class WordDocument
             TextRun run = FindObject(model, handle);
             ParagraphBlock owner = model.BodyParagraphs.Single(p => p.Runs.Contains(run));
             if (owner.Control != null || owner.Runs.Any(r => r.Control != null)
-                || model.Tables.Any(t => t.RowControls.Count != 0 && t.Rows.SelectMany(r => r).Any(c => c.Paragraphs.Contains(owner))))
+                || ControlledOwner(model.Blocks, owner, false))
                 throw new NotSupportedException("Chart.BindingOwner: Chart owners in template controls or repeat rows are unsupported.");
             return ChangeObject(handle, (old, context) =>
             {

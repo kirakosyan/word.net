@@ -9,6 +9,59 @@ namespace WordNet.Tests;
 
 public sealed class RoadmapLayoutTests
 {
+    [Theory]
+    [InlineData(FidelityMode.Strict)]
+    [InlineData(FidelityMode.BestEffort)]
+    [InlineData(FidelityMode.Lenient)]
+    public void BalancingNeverScalesTextToMakeAProbeFit(FidelityMode mode)
+    {
+        using var input = new MemoryStream(Input(P("First") + P("Second"), "<w:cols w:num='2'/>")); using var output = new MemoryStream();
+        ConversionResult result = new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Pdf,
+            new ConversionOptions(mode) { BalanceFinalColumns = true }, TestContext.Current.CancellationToken);
+        using var pdf = PdfDocument.Open(output.ToArray()); Assert.Equal(1, pdf.NumberOfPages);
+        Assert.All(pdf.GetPage(1).Letters, l => Assert.Equal(11, l.PointSize, 3));
+        Assert.DoesNotContain(result.Diagnostics, d => d.Code == "Layout.TextScaledToFit");
+        Assert.Equal("FirstSecond", pdf.GetPage(1).Text);
+    }
+
+    [Fact]
+    public void SixteenSectionsBalanceIndependentlyWithoutChangingPageCountOrSizes()
+    {
+        string section = Page.Replace("{0}", "<w:cols w:num='2' w:space='400'/>");
+        var body = new System.Text.StringBuilder();
+        for (int i = 0; i < 16; i++)
+        {
+            for (int line = 0; line < 6 + i % 3 * 2; line++)
+            {
+                string p = P("Section " + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + " line " + line.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                if (line == 5 + i % 3 * 2 && i < 15) p = p.Replace("</w:pPr>", section + "</w:pPr>");
+                body.Append(p);
+            }
+        }
+        byte[] input = TestDocuments.Docx(TestDocuments.Body(body + section));
+        using var pdf = PdfDocument.Open(Export(input, true)); using var sequential = PdfDocument.Open(Export(input));
+        Assert.Equal(16, pdf.NumberOfPages); Assert.Equal(sequential.NumberOfPages, pdf.NumberOfPages);
+        for (int i = 1; i <= 16; i++)
+        {
+            var page = pdf.GetPage(i); Assert.Equal(sequential.GetPage(i).Text, page.Text);
+            Assert.Equal(400, page.Width); Assert.Equal(300, page.Height); Assert.All(page.Letters, l => Assert.Equal(11, l.PointSize, 3));
+            Assert.Equal(page.Letters.Where(l => l.StartBaseLine.X < 210).Min(l => l.StartBaseLine.Y), page.Letters.Where(l => l.StartBaseLine.X >= 210).Min(l => l.StartBaseLine.Y), 3);
+        }
+    }
+
+    [Fact]
+    public void HeaderNoteReservationDoesNotSubtractItsOwnHeightTwice()
+    {
+        string notes = "<w:footnotes xmlns:w='" + TestDocuments.W + "'><w:footnote w:id='1'>" + P(string.Join("</w:t><w:br/><w:t>", Enumerable.Range(0, 8).Select(i => "Note " + i.ToString(System.Globalization.CultureInfo.InvariantCulture)))) + "</w:footnote></w:footnotes>";
+        string header = P("Header").Replace("</w:r>", "<w:footnoteReference w:id='1'/></w:r>");
+        string table = "<w:tbl><w:tblGrid><w:gridCol w:w='6000'/></w:tblGrid><w:tr><w:trPr><w:tblHeader/><w:trHeight w:val='1800'/></w:trPr><w:tc>" + header
+            + "</w:tc></w:tr><w:tr><w:tc>" + P("Body") + "</w:tc></w:tr></w:tbl>";
+        byte[] input = TestDocuments.Docx(TestDocuments.Body(table + Page.Replace("{0}", "")), "<Relationship Id='notes' Type='" + TestDocuments.R + "/footnotes' Target='footnotes.xml'/>", extra: new KeyValuePair<string, string>("word/footnotes.xml", notes));
+        using var pdf = PdfDocument.Open(Export(input)); string text = string.Concat(pdf.GetPages().Select(p => p.Text));
+        Assert.Contains("Header", pdf.GetPage(1).Text, StringComparison.Ordinal); Assert.Contains("Body", pdf.GetPage(1).Text, StringComparison.Ordinal);
+        for (int i = 0; i < 8; i++) Assert.Contains("Note " + i.ToString(System.Globalization.CultureInfo.InvariantCulture), text, StringComparison.Ordinal);
+    }
+
     private const string Page = "<w:sectPr><w:pgSz w:w='8000' w:h='6000'/><w:pgMar w:top='600' w:bottom='600' w:left='600' w:right='600'/>{0}</w:sectPr>";
     private static string P(string text, string properties = "") => "<w:p><w:pPr><w:spacing w:after='0'/>" + properties + "</w:pPr><w:r><w:rPr><w:rFonts w:ascii='Noto Sans' w:hAnsi='Noto Sans'/><w:sz w:val='22'/></w:rPr><w:t>" + text + "</w:t></w:r></w:p>";
     private static byte[] Input(string body, string columns = "") => TestDocuments.Docx(TestDocuments.Body(body + Page.Replace("{0}", columns)));

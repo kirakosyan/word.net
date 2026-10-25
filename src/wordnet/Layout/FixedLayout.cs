@@ -24,6 +24,8 @@ internal sealed class FixedPage
     internal int PageNumber { get; set; } = 1;
     internal bool ParityBlank { get; set; }
     internal double BodyBottom { get; set; }
+    internal double MaximumAscent { get; set; }
+    internal double MaximumDescent { get; set; }
     internal int NoteCount { get; set; }
     internal List<FixedHeading> Headings { get; } = new List<FixedHeading>();
 }
@@ -150,7 +152,7 @@ internal static partial class FixedLayout
         static Dictionary<PageSettings, int> Counts(List<FixedPage> result) => result.SelectMany(p => p.Sections).Distinct().ToDictionary(s => s, s => result.Count(p => p.Sections.Contains(s)));
     }
 
-    private static List<FixedPage> CreateCore(DocumentModel model, ConversionContext context, int totalPages, Dictionary<PageSettings, int>? sectionTotals, Dictionary<int, double>? balancedBottoms = null)
+    private static List<FixedPage> CreateCore(DocumentModel model, ConversionContext context, int totalPages, Dictionary<PageSettings, int>? sectionTotals, Dictionary<PageSettings, (int Page, double Bottom)>? balancedBottoms = null)
     {
         NativeTypography.Prepare(model, context);
         using var native = NativeTypography.Open(context);
@@ -481,7 +483,7 @@ internal static partial class FixedLayout
                 if (groupNotes.Length != 0)
                 {
                     double noteHeight = Math.Min(pageHeight * .4, groupNotes.SelectMany(NoteLines).Sum(l => l.Height)) + 12;
-                    capacity = Math.Min(capacity, pageHeight - headerHeight - noteHeight);
+                    capacity = Math.Min(capacity, pageHeight - (r >= table.HeaderRowCount ? headerHeight : 0) - noteHeight);
                 }
                 if (height <= capacity) ReserveNotes(reservation, height, () => TablePage(r >= table.HeaderRowCount));
                 if (height > capacity)
@@ -895,6 +897,8 @@ internal static partial class FixedLayout
 
         void Place(Line line, double top)
         {
+            pages[pages.Count - 1].MaximumAscent = Math.Max(pages[pages.Count - 1].MaximumAscent, line.Ascent);
+            pages[pages.Count - 1].MaximumDescent = Math.Max(pages[pages.Count - 1].MaximumDescent, line.Descent);
             pages[pages.Count - 1].BodyBottom = Math.Max(pages[pages.Count - 1].BodyBottom, top + line.Height);
             PlaceOn(pages[pages.Count - 1], line, top);
         }
@@ -987,7 +991,7 @@ internal static partial class FixedLayout
 
         Line FitLine(Line line, double maximum)
         {
-            if (line.Height <= maximum || context.EffectiveMode != FidelityMode.Lenient) return line;
+            if (line.Height <= maximum || context.EffectiveMode != FidelityMode.Lenient || balancedBottoms != null) return line;
             if (line.Items.Any(t => t.Visual != null)) throw new NotSupportedException("Object.Frame: Object lines are never silently scaled.");
             context.ReportStrictRejection("Layout.TextScaledToFit", "An oversized line is reduced to fit printable space.");
             return ScaleLine(line, maximum / line.Height);
@@ -1015,7 +1019,8 @@ internal static partial class FixedLayout
         {
             double width = sourceSettings.ColumnWidth(columnIndex);
             settings = settings.Copy(); settings.Left = sourceSettings.ColumnLeft(columnIndex); settings.Right = settings.Width - settings.Left - width;
-            if (balancedBottoms != null && balancedBottoms.TryGetValue(pages.Count, out double bottom)) settings.Bottom = settings.Height - bottom;
+            if (balancedBottoms != null && balancedBottoms.TryGetValue(sourceSettings, out var frame)
+                && pages.Count(p => p.Sections.Contains(sourceSettings)) == frame.Page) settings.Bottom = settings.Height - frame.Bottom;
         }
 
         void AdvanceColumn()
@@ -1114,7 +1119,7 @@ internal static partial class FixedLayout
                 }
                 int font = resolver.Resolve(run, paragraph.HeadingLevel > 0);
                 double size = run.FontSize ?? baseSize;
-                if (context.EffectiveMode == FidelityMode.Lenient && size * 1.5 > settings.Height - settings.Top - settings.Bottom)
+                if (balancedBottoms == null && context.EffectiveMode == FidelityMode.Lenient && size * 1.5 > settings.Height - settings.Top - settings.Bottom)
                 {
                     size = (settings.Height - settings.Top - settings.Bottom) / 1.5;
                     context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");

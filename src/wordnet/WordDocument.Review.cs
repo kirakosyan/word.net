@@ -213,6 +213,15 @@ public sealed partial class WordDocument
     private static void Decide(DocumentModel model, IEnumerable<string> ids, ReviewDecision decision, ConversionContext context)
     {
         var selected = new HashSet<string>(ids, StringComparer.Ordinal);
+        // A whole-paragraph change has a mark and separate tracked text identifiers.
+        // Decide that unit together whichever exposed item the caller selects.
+        foreach (ParagraphBlock paragraph in model.Blocks.OfType<ParagraphBlock>())
+            if (paragraph.StructuralRevision != null && (selected.Contains(paragraph.StructuralRevision)
+                || paragraph.Runs.Any(r => r.Revision != null && selected.Contains(r.Revision))))
+            {
+                selected.Add(paragraph.StructuralRevision);
+                foreach (TextRun run in paragraph.Runs) if (run.Revision != null) selected.Add(run.Revision);
+            }
         for (int index = model.Blocks.Count - 1; index >= 0; index--)
         {
             context.CheckCancellation(); DocumentBlock block = model.Blocks[index];
@@ -223,6 +232,7 @@ public sealed partial class WordDocument
                 else p.StructuralRevision = null;
             }
             if (block is TableBlock table)
+            {
                 for (int row = table.Rows.Count - 1; row >= 0; row--)
                     if (table.RowRevisions.TryGetValue(row, out string? revision) && selected.Contains(revision))
                     {
@@ -236,6 +246,8 @@ public sealed partial class WordDocument
                         }
                         else table.RowRevisions.Remove(row);
                     }
+                if (table.Rows.Count == 0) model.Blocks.RemoveAt(index);
+            }
         }
         void Consume(IEnumerable<ParagraphBlock> paragraphs)
         {

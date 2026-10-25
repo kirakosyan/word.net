@@ -300,7 +300,8 @@ internal sealed partial class DocxReader
                 fields.Push(new FieldCapture { Separated = true });
                 ReadInlines(child, runs, inherited, link);
                 FieldCapture field = fields.Pop();
-                EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result);
+                if (fields.Count > 0 && !fields.Peek().Separated) fields.Peek().NestedInstruction = true;
+                else EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result, field.NestedInstruction);
                 continue;
             }
 

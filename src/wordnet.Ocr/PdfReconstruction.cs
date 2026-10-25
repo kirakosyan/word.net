@@ -23,7 +23,31 @@ internal static class PdfReconstruction
         internal double[] X = Array.Empty<double>(), Y = Array.Empty<double>();
     }
 
-    internal static IReadOnlyList<DocumentBlock>? Read(Page page, PdfImportOptions options, ConversionContext context)
+    internal sealed class FontMetrics
+    {
+        private readonly ConversionContext context;
+        private FontResolver? resolver;
+        private FontKerning[]? metrics;
+        internal FontMetrics(ConversionContext context) => this.context = context;
+        internal (double Ascent, double Descent) Measure(ParagraphBlock paragraph)
+        {
+            if (resolver == null)
+            {
+                var fontModel = new DocumentModel(); var styles = new ParagraphBlock(); fontModel.Blocks.Add(styles);
+                for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun("", bold: (style & 1) != 0, italic: (style & 2) != 0));
+                resolver = new FontResolver(fontModel, context);
+                metrics = resolver.Data.Select(bytes => new FontKerning(bytes, metricsOnly: true)).ToArray();
+            }
+            double ascent = 0, descent = 0;
+            foreach (TextRun run in paragraph.Runs)
+            {
+                FontKerning face = metrics![resolver.Resolve(run, false)]; double size = run.FontSize ?? 12;
+                ascent = Math.Max(ascent, size * face.Ascent / face.UnitsPerEm); descent = Math.Max(descent, size * face.Descent / face.UnitsPerEm);
+            }
+            return (ascent, descent);
+        }
+    }
+    internal static IReadOnlyList<DocumentBlock>? Read(Page page, PdfImportOptions options, ConversionContext context, FontMetrics fontMetrics)
     {
         context.CheckCancellation();
         Letter[] letters = page.Letters.ToArray(); var images = page.GetImages().ToArray();
@@ -32,19 +56,6 @@ internal static class PdfReconstruction
         { Ambiguous(context, "Rotated or bidirectional text uses the existing content-order fallback."); return null; }
         var section = new PageSettings { Width = page.Width, Height = page.Height, Left = 0, Right = 0, Top = 0, Bottom = 0, Columns = options.Columns, ColumnGap = 0 };
         section.Validate();
-        var fontModel = new DocumentModel(); var styles = new ParagraphBlock(); fontModel.Blocks.Add(styles);
-        for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun("", bold: (style & 1) != 0, italic: (style & 2) != 0));
-        var resolver = new FontResolver(fontModel, context); var metrics = resolver.Data.Select(bytes => new FontKerning(bytes)).ToArray();
-        (double Ascent, double Descent) Metrics(ParagraphBlock paragraph)
-        {
-            double ascent = 0, descent = 0;
-            foreach (TextRun run in paragraph.Runs)
-            {
-                FontKerning face = metrics[resolver.Resolve(run, false)]; double size = run.FontSize ?? 12;
-                ascent = Math.Max(ascent, size * face.Ascent / face.UnitsPerEm); descent = Math.Max(descent, size * face.Descent / face.UnitsPerEm);
-            }
-            return (ascent, descent);
-        }
         var segments = new List<(PdfPoint From, PdfPoint To)>(); int elements = letters.Length + images.Length;
         foreach (var path in page.Paths)
             foreach (PdfSubpath subpath in path)
@@ -65,7 +76,7 @@ internal static class PdfReconstruction
         var blocks = new List<(int Column, double Top, double Left, double Bottom, DocumentBlock Block)>(); var tableLetters = new HashSet<Letter>();
         if (grid != null)
         {
-            TableBlock? table = Table(grid, letters, tableLetters, context, Metrics);
+            TableBlock? table = Table(grid, letters, tableLetters, context, fontMetrics.Measure);
             if (table != null && !images.Any(i => Overlap(i.BoundingBox, grid.X[0], grid.Y[grid.Y.Length - 1], grid.X[grid.X.Length - 1], grid.Y[0])))
                 // The layout engine reserves six points after a table; adjacent rows share an edge.
                 blocks.Add((0, page.Height - grid.Y[0], grid.X[0], page.Height - grid.Y[grid.Y.Length - 1] + 6, table));
@@ -91,10 +102,10 @@ internal static class PdfReconstruction
                 double bodyLeft = group.Count > 1 ? group[1].Left : first.Left;
                 paragraph.Layout.Left = Math.Max(0, bodyLeft - columnLeft);
                 paragraph.Layout.FirstLine = first.Left - bodyLeft;
-                double top = Math.Max(0, page.Height - first.Baseline - Metrics(Paragraph(new[] { first }, context)).Ascent);
+                double top = Math.Max(0, page.Height - first.Baseline - fontMetrics.Measure(Paragraph(new[] { first }, context)).Ascent);
                 paragraph.Layout.After = 0;
                 if (group.Count > 1) { paragraph.Layout.LineSpacing = group.Zip(group.Skip(1), (a, b) => a.Baseline - b.Baseline).Average(); paragraph.Layout.MultipleLineSpacing = false; }
-                double bottom = page.Height - group[group.Count - 1].Baseline + Metrics(Paragraph(new[] { group[group.Count - 1] }, context)).Descent;
+                double bottom = page.Height - group[group.Count - 1].Baseline + fontMetrics.Measure(Paragraph(new[] { group[group.Count - 1] }, context)).Descent;
                 blocks.Add((column, top, first.Left, bottom, paragraph));
             }
         }

@@ -46,9 +46,13 @@ streamed unequal-column flow. Page/margin/column/paragraph origins, cropping, im
 paint order and strict physical-page bounds retain their existing contracts.
 
 `ConversionOptions.BalanceFinalColumns = true` opts into balancing final multicolumn
-pages. It minimizes the final frame height without increasing physical page count, using
-at most 16 bisection passes per section, a 0.01-point stopping interval, at most 16 column
-sections, 1,000 body blocks and 200,000 characters. Earlier full pages retain their frames.
+pages. It searches for a shorter final frame without increasing physical page count, using
+at most 16 whole-document bisection probes across all sections and one final layout,
+a 0.01-point stopping interval, at most 16 column sections, 1,000 body blocks and
+200,000 characters. Probes retain full line sizes in every fidelity mode. The search
+uses unscaled line metrics as its lower bound; coupled section/page limits can produce
+a conservative result, and the original layout is retained if final page allocation changes.
+Earlier full pages retain their frames.
 Equal and explicitly unequal widths are supported. The option rejects tables, notes,
 keeps, explicit page/column breaks, body fields/links/lists/controls, images/objects, tagged
 output, native typography and continuous
@@ -139,8 +143,11 @@ The bounded evaluator supports:
 
 - `DOCPROPERTY Title` and `DOCPROPERTY Author` (names are case-insensitive and may be quoted).
 - `IF` with two invariant decimal operands or two quoted strings, one of `= <> < > <= >=`,
-  and two quoted result strings. String comparison is ordinal and case-insensitive.
+  and two quoted result strings. String comparison is ordinal and case-sensitive;
+  wildcard patterns are outside this profile.
 - `=` formulas containing checked decimal literals, unary signs, parentheses and `+ - * /`.
+  Display uses at most 15 significant digits, with insignificant trailing zeros removed;
+  this bounded display policy does not implement Word numeric-picture switches.
 - Optional trailing `\* MERGEFORMAT`; no other formatting switches are inferred.
 
 Evaluation uses the current document metadata and the existing managed body, cell and
@@ -149,11 +156,13 @@ remain plain scalar text. No date type or date-format switch is admitted.
 
 Instructions are limited to 4,096 characters, 256 tokens, and expression depth 16 or the
 smaller configured nesting limit. Missing properties, unsupported syntax, overflow and
-division by zero use `Field.UnsupportedUsedCachedResult`: Strict rejects, permissive modes
-retain the source cache with a diagnostic. No script, macro, spreadsheet engine, cell
-reference, external lookup, date inference or culture-sensitive number conversion runs.
-Nested scalar/structured field instructions are explicitly rejected rather than partially
-executed. Existing page, reference, sequence and table-of-contents evaluation is retained.
+division by zero use the informational `Field.UnsupportedUsedCachedResult` diagnostic
+and retain the source cache in every fidelity mode, including Strict. No script, macro,
+spreadsheet engine, cell reference, external lookup, date inference or culture-sensitive number conversion runs.
+Nested instructions and formatted or multiparagraph scalar caches remain cached text.
+Nested instructions are flattened without emitting a synthetic live field or hyperlink;
+their discarded instruction fragments are never partially evaluated. Existing page, reference,
+sequence and table-of-contents evaluation is retained.
 
 `STYLEREF` remains a separate staged design: an initial profile would resolve an explicit
 paragraph style identifier within the current section, select the nearest preceding
@@ -171,7 +180,8 @@ properties and repeated headers must match; merged/nested/controlled/individuall
 rows, object-bearing content, lists and formatting revisions remain rejected.
 
 Alignment admits at most 10,000 combined blocks/rows (or the smaller token allowance),
-interns exact signatures for constant-time cell comparisons, and uses a bounded
+serializes each document once for its block/row signatures, interns exact signatures
+for constant-time cell comparisons, and uses a bounded
 longest-common-subsequence table. It preserves the earliest equal
 matches, and chooses deletion first on equal costs. Structural items share the configured
 token/work allowance and the expanded-memory budget. Unmatched content appearing on both
@@ -183,8 +193,12 @@ separate unique identifiers, and row markers inside `w:trPr`. `DocumentReviewIte
 is `paragraph`, `row`, or empty for a text record/comment. The importer preserves only
 whole-paragraph structural changes; partial paragraph split/join semantics remain rejected.
 Accept/reject views restore the supported revised/original structures. Consuming a
-structural owner also consumes its owned text records; intersecting comments require an
-explicit removal decision. Input sessions are unchanged and edits invalidate old handles.
+structural owner also consumes its owned text records. Selecting its text revision
+likewise decides the whole paragraph, and consuming the final row removes the empty
+table. Intersecting comments require an explicit removal decision. Without review
+preservation, BestEffort conversion retains its structural-mark omission diagnostic;
+with preservation, unsupported story/nested owners fail explicitly as `Review.Unsupported`.
+Input sessions are unchanged and edits invalidate old handles.
 
 ## Direct PDF conversion (#97)
 
@@ -193,6 +207,8 @@ bounded reader, the shared document model, and the PDF writer directly. No tempo
 or external conversion process is used. Lists, supported tables, page settings, ordinary
 stories and bounded embedded/caller-resolved images follow the existing input profiles.
 Unsupported source semantics keep their diagnostic codes/locations and Strict atomicity.
+PDF import lazily resolves and parses its four managed font metric faces once per
+import, sharing them across pages without loading kerning tables.
 Preflight still distinguishes predicted losses from actual conversion and independent
 validation. Stream ownership, current stream position, cancellation and byte/page/text
 limits are unchanged. The conversion matrix now has 40 enabled directions.
@@ -200,7 +216,9 @@ limits are unchanged. The conversion matrix now has 40 enabled directions.
 ## Evidence and release boundary
 
 See the [validation receipt](roadmap-99-validation.md) for exact executed checks,
-before/after reductions and the complete retained comparison failures.
+before/after reductions and the complete retained comparison failures. The
+[review corrections and release assessment](roadmap-99-review.md) supplement that
+historical receipt.
 
 The measurement receipt distinguishes the published package, frozen pre-change source,
 and modified source. All failures remain visible at the original comparison tolerances.

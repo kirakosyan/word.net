@@ -32,6 +32,7 @@ internal static class PdfImport
         PdfImportOptions reconstruction = (context.Options.PdfImport ?? throw new ArgumentException("PDF input options must not be null.")).Snapshot();
         if (reconstruction.ReconstructLayout && pdf.TryGetForm(out _))
         { context.Report("Pdf.ReconstructionAmbiguity", "PDF form fields use the existing content-order fallback; editable form semantics are not inferred.", DiagnosticSeverity.Warning); reconstruction.ReconstructLayout = false; }
+        var fontMetrics = new PdfReconstruction.FontMetrics(context);
         for (int p = 1; p <= pdf.NumberOfPages; p++)
         {
             context.CheckCancellation();
@@ -64,7 +65,7 @@ internal static class PdfImport
                 if (context.OcrMetadata.Enabled) { recognition = EnglishOcr.RecognizeWithMetadata(bitmap, options, context); text = recognition.Text; }
                 else text = EnglishOcr.Recognize(bitmap, options, context);
             }
-            else if (logicalText == null && reconstruction.ReconstructLayout && PdfReconstruction.Read(page, reconstruction, context) is IReadOnlyList<DocumentBlock> recovered)
+            else if (logicalText == null && reconstruction.ReconstructLayout && PdfReconstruction.Read(page, reconstruction, context, fontMetrics) is IReadOnlyList<DocumentBlock> recovered)
             {
                 Append(recovered); characters = checked(characters + text.Length); context.CheckCharacters(characters); continue;
             }

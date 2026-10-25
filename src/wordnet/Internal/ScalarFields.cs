@@ -30,13 +30,17 @@ internal static class ScalarFields
                 Token yes = parser.Take(), no = parser.Take();
                 if (!yes.Quoted || !no.Quoted) throw new FormatException();
                 int order;
-                if (left.Quoted && right.Quoted) order = StringComparer.OrdinalIgnoreCase.Compare(left.Value, right.Value);
+                if (left.Quoted && right.Quoted)
+                {
+                    if (right.Value.Contains('*') || right.Value.Contains('?')) throw new FormatException();
+                    order = StringComparer.Ordinal.Compare(left.Value, right.Value);
+                }
                 else if (!left.Quoted && !right.Quoted) order = Number(left.Value).CompareTo(Number(right.Value));
                 else throw new FormatException();
                 bool condition = comparison switch { "=" => order == 0, "<>" => order != 0, "<" => order < 0, ">" => order > 0, "<=" => order <= 0, ">=" => order >= 0, _ => throw new FormatException() };
                 result = condition ? yes.Value : no.Value;
             }
-            else if (kind == "=") result = parser.Expression(0).ToString(CultureInfo.InvariantCulture);
+            else if (kind == "=") result = decimal.Parse(parser.Expression(0).ToString("G15", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture).ToString("0.############################", CultureInfo.InvariantCulture);
             else throw new FormatException();
             if (parser.Peek == "\\*")
             {
@@ -49,7 +53,7 @@ internal static class ScalarFields
         }
         catch (Exception error) when (error is FormatException or OverflowException or DivideByZeroException)
         {
-            context.Loss("Field.UnsupportedUsedCachedResult", "A field outside the bounded scalar grammar, missing property or arithmetic error retains its cached result.");
+            context.Report("Field.UnsupportedUsedCachedResult", "A field outside the bounded scalar grammar, missing property or arithmetic error retains its cached result.");
             return run.Text;
         }
     }

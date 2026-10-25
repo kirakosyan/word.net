@@ -20,10 +20,13 @@ public sealed class ScalarFieldTests
     [InlineData("DOCPROPERTY Title", "Quarterly")]
     [InlineData("DOCPROPERTY \"Author\" \\* MERGEFORMAT", "Analyst")]
     [InlineData("IF 12.5 >= -2 \"yes\" \"no\"", "yes")]
-    [InlineData("IF \"North\" = \"north\" \"match\" \"different\"", "match")]
+    [InlineData("IF \"North\" = \"north\" \"match\" \"different\"", "different")]
     [InlineData("IF 0 <> 0 \"yes\" \"no\"", "no")]
     [InlineData("= (2 + 3) * -4 / 2", "-10")]
     [InlineData("=1+2*3", "7")]
+    [InlineData("= 2.50 + 2.50", "5")]
+    [InlineData("= 1.5 * 2", "3")]
+    [InlineData("= 10 / 3", "3.33333333333333")]
     [InlineData("= 1.25 + 2.5 \\* MERGEFORMAT", "3.75")]
     public void EditableCachesAndPdfXpsContainCalculatedValues(string instruction, string expected)
     {
@@ -48,6 +51,7 @@ public sealed class ScalarFieldTests
 
     [Theory]
     [InlineData("DOCPROPERTY Missing")]
+    [InlineData("IF \"Apple\" = \"A*\" \"yes\" \"no\"")]
     [InlineData("DOCPROPERTY Title unexpected")]
     [InlineData("IF 1 = 1 \"missing false branch\"")]
     [InlineData("IF \"1\" = 1 \"mixed\" \"types\"")]
@@ -56,24 +60,24 @@ public sealed class ScalarFieldTests
     [InlineData("= SUM(ABOVE)")]
     [InlineData("= 1 \\# 0.00")]
     [InlineData("IF { DOCPROPERTY Title } = \"x\" \"yes\" \"no\"")]
-    public void UnsupportedAndArithmeticErrorsAreExplicitAndDoNotWriteStrictOutput(string instruction)
+    public void UnsupportedAndArithmeticErrorsRetainTheirCacheInEveryMode(string instruction)
     {
         var converter = new WordConverter(); using var source = new MemoryStream(Source(instruction));
         DocumentInspection report = converter.Inspect(source, DocumentFormat.Docx, DocumentFormat.Pdf, cancellationToken: TestContext.Current.CancellationToken);
-        Assert.True(report.WouldRejectStrict); Assert.Contains(report.Diagnostics, d => d.Code == "Field.UnsupportedUsedCachedResult" && d.Severity == DiagnosticSeverity.Warning);
-        source.Position = 0; using var sentinel = new MemoryStream(); sentinel.WriteByte(42);
-        Assert.Throws<NotSupportedException>(() => converter.Convert(source, sentinel, DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(), TestContext.Current.CancellationToken));
-        Assert.Equal(new byte[] { 42 }, sentinel.ToArray());
-        source.Position = 0; using var permissive = new MemoryStream();
-        ConversionResult result = converter.Convert(source, permissive, DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
-        Assert.Contains(result.Diagnostics, d => d.Code == "Field.UnsupportedUsedCachedResult" && d.Severity == DiagnosticSeverity.Warning);
-        using PdfDocument pdf = PdfDocument.Open(permissive.ToArray()); Assert.Equal("stale", pdf.GetPage(1).Text);
+        Assert.False(report.WouldRejectStrict); Assert.Contains(report.Diagnostics, d => d.Code == "Field.UnsupportedUsedCachedResult" && d.Severity == DiagnosticSeverity.Info);
+        foreach (FidelityMode mode in new[] { FidelityMode.Strict, FidelityMode.BestEffort, FidelityMode.Lenient })
+        {
+            source.Position = 0; using var output = new MemoryStream();
+            ConversionResult result = converter.Convert(source, output, DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(mode), TestContext.Current.CancellationToken);
+            Assert.Contains(result.Diagnostics, d => d.Code == "Field.UnsupportedUsedCachedResult" && d.Severity == DiagnosticSeverity.Info);
+            using PdfDocument pdf = PdfDocument.Open(output.ToArray()); Assert.Equal("stale", pdf.GetPage(1).Text);
+        }
     }
 
     [Fact]
     public void DeepAndLongFormulasCannotExceedTheClosedGrammar()
     {
-        UnsupportedAndArithmeticErrorsAreExplicitAndDoNotWriteStrictOutput("= " + new string('(', 17) + "1" + new string(')', 17));
-        UnsupportedAndArithmeticErrorsAreExplicitAndDoNotWriteStrictOutput("= " + string.Join("+", Enumerable.Repeat("1", 257)));
+        UnsupportedAndArithmeticErrorsRetainTheirCacheInEveryMode("= " + new string('(', 17) + "1" + new string(')', 17));
+        UnsupportedAndArithmeticErrorsRetainTheirCacheInEveryMode("= " + string.Join("+", Enumerable.Repeat("1", 257)));
     }
 }

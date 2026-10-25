@@ -33,11 +33,13 @@ public static partial class DocumentComparison
         if (Global(left) != Global(right)) throw new NotSupportedException("Comparison.Structure: Metadata, section geometry and protected stories must match.");
         TableBlock[] oldTables = left.Blocks.OfType<TableBlock>().ToArray(), newTables = right.Blocks.OfType<TableBlock>().ToArray();
         if (oldTables.Length != newTables.Length) throw new NotSupportedException("Comparison.Structure: Table insertion/deletion is outside the structural profile.");
+        // Serialize each input once; signatures retain the writer's canonical XML.
+        Dictionary<DocumentBlock, XElement> oldElements = Elements(left), newElements = Elements(right);
         int work = 0, items = 0;
         for (int t = 0; t < oldTables.Length; t++)
         {
             TableBlock a = oldTables[t], b = newTables[t];
-            XElement ax = Element(a), bx = Element(b);
+            XElement ax = oldElements[a], bx = newElements[b];
             XElement[] ar = ax.Elements(W + "tr").ToArray(), br = bx.Elements(W + "tr").ToArray();
             ax.Elements(W + "tr").Remove(); bx.Elements(W + "tr").Remove();
             if (!XNode.DeepEquals(ax, bx) || a.HeaderRowCount != b.HeaderRowCount || !ar.Take(a.HeaderRowCount).Select(Key).SequenceEqual(br.Take(b.HeaderRowCount).Select(Key)))
@@ -55,7 +57,7 @@ public static partial class DocumentComparison
             }
             a.Rows.Clear(); a.Rows.AddRange(rows); foreach (var pair in changes) a.RowRevisions.Add(pair.Key, pair.Value);
         }
-        string[] aKeys = Keys(left, oldTables), bKeys = Keys(right, newTables);
+        string[] aKeys = Keys(left, oldTables, oldElements), bKeys = Keys(right, newTables, newElements);
         var blocks = new List<DocumentBlock>();
         PageSettings? section = left.Blocks.FirstOrDefault()?.Section ?? left.FinalSection;
         foreach (var pair in Align(aKeys, bKeys))
@@ -78,8 +80,8 @@ public static partial class DocumentComparison
             string id = "comparison-" + left.Review.Revisions.Count.ToString(System.Globalization.CultureInfo.InvariantCulture);
             left.Review.Revisions.Add(id, new ReviewRecord { Id = id, Author = comparison.Author, Date = comparison.Timestamp, Deletion = deletion, Structure = structure }); return id;
         }
-        string[] Keys(DocumentModel document, TableBlock[] tables) => document.Blocks.Select(b => b is TableBlock table
-            ? "table:" + Array.IndexOf(tables, table).ToString(System.Globalization.CultureInfo.InvariantCulture) : Key(Element(b))).ToArray();
+        string[] Keys(DocumentModel document, TableBlock[] tables, Dictionary<DocumentBlock, XElement> elements) => document.Blocks.Select(b => b is TableBlock table
+            ? "table:" + Array.IndexOf(tables, table).ToString(System.Globalization.CultureInfo.InvariantCulture) : Key(elements[b])).ToArray();
         List<(int A, int B)> Align(string[] a, string[] b)
         {
             items = checked(items + a.Length + b.Length);
@@ -118,12 +120,11 @@ public static partial class DocumentComparison
             DocumentModel copy = new DocumentCloner(context).Copy(source); copy.FinalSection ??= copy.Blocks.FirstOrDefault()?.Section; copy.Blocks.Clear();
             using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(copy, stream, context); return Convert.ToBase64String(stream.ToArray());
         }
-        XElement Element(DocumentBlock block)
+        Dictionary<DocumentBlock, XElement> Elements(DocumentModel document)
         {
-            var document = new DocumentModel(); DocumentBlock copy = new DocumentCloner(context).Block(block); copy.Section = null;
-            // Signatures exclude newly attached review records, which have no bearing on alignment.
-            if (copy is TableBlock table) table.RowRevisions.Clear();
-            document.Blocks.Add(copy); return Body(document).Element(W + "body")!.Elements().First();
+            XElement[] elements = Body(document).Element(W + "body")!.Elements().Where(e => e.Name != W + "sectPr").ToArray();
+            if (elements.Length != document.Blocks.Count) throw new NotSupportedException("Comparison.Structure: The body requires one canonical element per block.");
+            return document.Blocks.Select((block, i) => new { block, element = elements[i] }).ToDictionary(p => p.block, p => p.element);
         }
         XElement Body(DocumentModel document)
         {

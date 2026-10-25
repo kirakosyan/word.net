@@ -38,6 +38,29 @@ public sealed class ChartBindingTests
     private static byte[] Save(WordDocument document, DocumentFormat format = DocumentFormat.Docx)
     { using var output = new MemoryStream(); document.Save(output, format, cancellationToken: TestContext.Current.CancellationToken); return output.ToArray(); }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ControlledTableAndNestedRowOwnersAreRejectedBeforeBinding(bool nested)
+    {
+        byte[] saved = Save(Document()); using var bytes = new MemoryStream(); bytes.Write(saved, 0, saved.Length); bytes.Position = 0;
+        using (var zip = new ZipArchive(bytes, ZipArchiveMode.Update, true))
+        {
+            XNamespace w = TestDocuments.W;
+            ZipArchiveEntry entry = zip.GetEntry("word/document.xml")!; XDocument xml;
+            using (Stream part = entry.Open()) xml = XDocument.Load(part);
+            XElement body = xml.Root!.Element(w + "body")!, paragraph = body.Elements(w + "p").Single(); paragraph.Remove();
+            XElement table = new XElement(w + "tbl", new XElement(w + "tr", new XElement(w + "tc", paragraph)));
+            XElement content = nested ? new XElement(w + "tr", new XElement(w + "tc", table, new XElement(w + "p"))) : table;
+            XElement control = new XElement(w + "sdt", new XElement(w + "sdtPr", new XElement(w + "tag", new XAttribute(w + "val", "repeat:Rows"))), new XElement(w + "sdtContent", content));
+            body.AddFirst(nested ? new XElement(w + "tbl", control) : control);
+            entry.Delete(); using Stream write = zip.CreateEntry("word/document.xml").Open(); xml.Save(write);
+        }
+        bytes.Position = 0;
+        NotSupportedException error = Assert.Throws<NotSupportedException>(() => WordDocument.Load(bytes, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken));
+        Assert.StartsWith("Object.Owner:", error.Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void GroupedReportBindsRealChartCachesWorkbookAndRenderedData()
     {

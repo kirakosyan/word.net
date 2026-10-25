@@ -18,6 +18,7 @@ internal sealed partial class DocxReader
         internal StringBuilder Instruction { get; } = new StringBuilder();
         internal List<(List<TextRun> Target, TextRun Run)> Result { get; } = new List<(List<TextRun>, TextRun)>();
         internal bool Separated { get; set; }
+        internal bool NestedInstruction { get; set; }
     }
 
     private void Emit(List<TextRun> runs, TextRun run)
@@ -26,8 +27,14 @@ internal sealed partial class DocxReader
         else if (fields.All(f => f.Separated)) fields.Peek().Result.Add((runs, run));
     }
 
-    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result)
+    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result, bool nestedInstruction = false)
     {
+        if (nestedInstruction)
+        {
+            context.Report("Field.UnsupportedUsedCachedResult", "A nested field instruction retains its cached runs without creating a live field.");
+            foreach (var cached in result) Emit(cached.Target, cached.Run);
+            return;
+        }
         if (context.Editing && DocumentFields.Kind(instruction) == "MERGEFIELD")
         {
             if (result.Any(r => r.Run.Image != null || r.Run.Box != null || r.Run.Bookmark != null || r.Run.Note != null || r.Run.FieldInstruction != null || r.Run.Control != null)
@@ -74,7 +81,6 @@ internal sealed partial class DocxReader
             && WordNet.Layout.RunCoalescer.Combine(result.Select(r => r.Run).ToList()).Count <= 1;
         if (!toc && (multipleParagraphs || !plain))
         {
-            if (ScalarFields.Candidate(instruction)) context.Loss("Field.UnsupportedUsedCachedResult", "Scalar fields require a single plain cached result; structured or nested fields remain unsupported.");
             context.Report("Field.UnsupportedUsedCachedResult", "A field with structured or formatted cached content retains its original runs and paragraph structure.");
             foreach (var cached in result) Emit(cached.Target, cached.Run);
             return;
@@ -112,11 +118,9 @@ internal sealed partial class DocxReader
             FieldCapture field = fields.Pop();
             if (fields.Count > 0 && !fields.Peek().Separated)
             {
-                // Preserve the presence of nested instructions so a scalar parent cannot
-                // accidentally evaluate a different expression after silently dropping them.
-                fields.Peek().Instruction.Append('{').Append(field.Instruction).Append('}');
+                fields.Peek().NestedInstruction = true;
             }
-            else EmitField(runs, field.Instruction.ToString(), field.Result);
+            else EmitField(runs, field.Instruction.ToString(), field.Result, field.NestedInstruction);
         }
         else throw new InvalidDataException("Docx.Field: Unbalanced field boundary.");
     }

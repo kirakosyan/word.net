@@ -13,7 +13,7 @@ internal sealed partial class FontKerning
     internal double Ascent { get; private set; } = 1000;
     internal double Descent { get; private set; } = 500;
 
-    internal FontKerning(byte[] font)
+    internal FontKerning(byte[] font, bool metricsOnly = false)
     {
         if (font.Length < 12) throw new InvalidDataException("Font.Invalid: Truncated SFNT header.");
         int tables = U16(font, 4);
@@ -41,6 +41,7 @@ internal sealed partial class FontKerning
             if (ascent <= 0 || descent > 0 || gap < 0) throw new InvalidDataException("Font.Metrics: Invalid horizontal line metrics.");
             Ascent = ascent + gap / 2.0; Descent = -descent + gap / 2.0;
         }
+        if (metricsOnly) return;
         if (gposLength > 0) positioning = new Gpos(font, gpos, gposLength, gdef, gdefLength);
         if (end - start < 4 || U16(font, start) != 0) return;
         int count = U16(font, start + 2), cursor = start + 4;

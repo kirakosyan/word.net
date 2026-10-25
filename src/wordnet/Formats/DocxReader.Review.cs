@@ -108,7 +108,14 @@ internal sealed partial class DocxReader
     {
         XElement[] markers = properties?.Elements().Where(e => e.Name == W + "ins" || e.Name == W + "del").ToArray() ?? Array.Empty<XElement>();
         if (markers.Length == 0) return null;
-        if (!context.PreserveReview) throw new NotSupportedException("Review.Structure: Structural revisions require explicit supported-history preservation and a review decision.");
+        if (!context.PreserveReview)
+        {
+            context.Loss("Revisions.Accepted", "Structural revision marks are omitted in the accepted-state conversion profile.");
+            return null;
+        }
+        XElement? owner = kind == "paragraph" ? properties?.Parent?.Parent : properties?.Parent;
+        bool bodyOwner = kind == "paragraph" ? owner?.Parent?.Name == W + "body" : owner?.Parent?.Parent?.Name == W + "body";
+        if (!bodyOwner) throw new NotSupportedException("Review.Unsupported: Structural revisions require top-level body paragraphs or simple body table rows; story and nested owners are unsupported.");
         if (markers.Length != 1 || markers[0].HasElements) throw new InvalidDataException("Review.Structure: Invalid structural marker.");
         ReviewRecord record = ReviewMetadata(markers[0]); record.Structure = kind;
         if (review.Revisions.ContainsKey(record.Id)) throw new InvalidDataException("Review.Id: Duplicate structural revision identifier.");
