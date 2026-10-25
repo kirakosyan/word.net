@@ -1,0 +1,12 @@
+{
+  "version": "1.4.0",
+  "profile": "bounded-roadmap-99",
+  "conversionDirections": 40,
+  "requiredTests": 1139,
+  "documentation": "roadmap-99-implementation.md",
+  "releaseNotes": "releases/1.4.0.md",
+  "additions": ["direct-html-pdf", "direct-odt-pdf", "immutable-chart-binding", "bounded-scalar-fields", "body-paragraph-and-simple-row-comparison", "opt-in-final-column-balancing", "native-simple-tables-and-paragraph-stories", "separate-managed-object-accessible-and-archival-pdf"],
+  "excluded": ["styleref-evaluation", "complex-structural-revisions", "native-object-combinations", "combined-pdfa-and-accessibility", "encryption-and-signatures", "android-and-macos-release-support", "roadmap-99-p3"],
+  "historicalIndependentReferenceFailures": 24,
+  "unrestrictedRenderingParityClaim": false
+}

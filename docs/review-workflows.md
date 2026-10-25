@@ -1,11 +1,12 @@
 # Bounded DOCX review workflows
 
-## Unpublished roadmap #99 extension
+## 1.4.0 roadmap #99 profile
 
-The current source extends the released 1.3.0 profiles with the bounded changes in
-[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
-new APIs, changed layout policy, rejected combinations and new validation from the
-released behavior and historical qualification recorded below. No new package is published.
+Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md): direct HTML/ODT PDF export,
+chart binding, scalar fields, structural comparison and qualified layout/native/object
+combinations. The [1.4.0 release notes](releases/1.4.0.md) record compatibility and
+qualification requirements. Earlier release receipts below remain historical evidence.
 
 The P1 implementation merged in PR #85 and ships in 1.3.0.
 It adds separate opt-in APIs; ordinary converter loads keep their existing
@@ -28,8 +29,10 @@ Preservation supports plain run insertions/deletions in body paragraphs and tabl
 cells, plus classic comment intervals within one paragraph, including crossing
 intervals. Authors, initials and optional dates survive; absent dates remain absent.
 DOCX contains actual `w:ins`, `w:del`/`w:delText`, comment parts and marker references.
-Clone/save/append remap identifiers. Moves, property/structural revisions, modern
-comments, field/control ranges, text boxes and other stories reject preservation.
+Clone/save/append remap identifiers. Version 1.4.0 additionally preserves whole-body-
+paragraph and simple body-table-row insertion/deletion marks in its bounded profile.
+Moves, property revisions, complex structural revisions, modern comments, field/control
+ranges, text boxes and other stories reject preservation.
 Malformed duplicate/orphan identifiers and ranges are invalid data.
 Classic comment paragraphs resolve numbering and list-linked styles. Extended
 author-identity parts can be safely omitted with an informational diagnostic;
@@ -71,13 +74,17 @@ Recording requires a history-free, unstructured paragraph; other paragraphs may
 retain history. New attribution/time always come from the caller.
 
 `DocumentComparison.Compare(original, revised, new ComparisonOptions(author, time))`
-creates a third session. Inputs must be history-free, with matching paragraph/cell
-topology and supported non-text properties; equivalent adjacent run boundaries are
-coalesced. Word or Grapheme granularity uses pinned Unicode 17 tables, preserving
+creates a third session. Inputs must be history-free with supported non-text properties.
+Matching paragraph/cell topology uses the existing text comparison; 1.4.0 also admits
+bounded ordinary paragraph and simple table-row alignment in one section. Equivalent
+adjacent run boundaries are coalesced. Word or Grapheme granularity uses pinned Unicode 17 tables, preserving
 punctuation, whitespace and logical text. Equal tokens require matching formatting and retain it;
 deleted tokens use original formatting and inserted tokens revised formatting.
-Deletion wins ambiguous ties. Structural/property changes and unsupported structured
-stories/ranges fail explicitly; there is no move inference or formatting comparison.
+Deletion wins ambiguous ties. Unqualified structural/property changes and unsupported
+structured stories/ranges fail explicitly; there is no move inference or formatting
+comparison. Selecting the mark or text of a whole-paragraph insertion/deletion decides
+that complete unit. Consuming the final tracked row removes its empty table. See the
+[structural profile](roadmap-99-implementation.md#structural-comparison-96).
 
 Limits include 10,000 review records, 1 MiB review text, 1,024-character authors,
 100,000 combined tokens across changed paragraphs and 4,000,000 comparison/range steps, further

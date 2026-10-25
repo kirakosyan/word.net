@@ -1,9 +1,9 @@
 # Production qualification — 1.0 history
 
-## 1.3.0 candidate
+## 1.4.0 release qualification
 
-The 1.3.0 candidate includes the bounded P1/P2 profiles documented in the
-[release notes](releases/1.3.0.md). Production publication requires successful
+Version 1.4.0 includes the bounded P1/P2 and roadmap #99 profiles documented in the
+[release notes](releases/1.4.0.md). Production publication requires successful
 exact-main CI and immutable-package/minimum-runtime qualification, followed by the
 existing Trusted Publishing workflow. PR checks do not select the release artifact.
 The required suite is 1,050 cases without skips. Cryptographic features are absent;

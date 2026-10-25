@@ -1,15 +1,18 @@
 # DOCX and ODT exchange
 
-## Unpublished roadmap #99 extension
+## 1.4.0 roadmap #99 profile
 
-The current source extends the released 1.3.0 profiles with the bounded changes in
-[roadmap-99-implementation.md](roadmap-99-implementation.md). That document distinguishes
-new APIs, changed layout policy, rejected combinations and new validation from the
-released behavior and historical qualification recorded below. No new package is published.
+Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
+[roadmap-99-implementation.md](roadmap-99-implementation.md): direct HTML/ODT PDF export,
+chart binding, scalar fields, structural comparison and qualified layout/native/object
+combinations. The [1.4.0 release notes](releases/1.4.0.md) record compatibility and
+qualification requirements. Earlier release receipts below remain historical evidence.
 
 The P1 implementation merged in PR #85 and ships in 1.3.0 with `DocumentFormat.Odt = 12`.
-`CanConvert` enables exactly DOCX → ODT and ODT → DOCX. ODT document sessions,
-same-format conversion, DOC/ODT and other ODT exchanges remain unsupported.
+`CanConvert` enables DOCX → ODT, ODT → DOCX and, since 1.4.0, direct ODT → PDF.
+ODT document sessions, same-format conversion, DOC/ODT and other ODT exchanges
+remain unsupported. Direct PDF export uses the same bounded ODF reader and shared
+layout without an intermediate DOCX.
 
 ```csharp
 using var source = File.OpenRead("input.odt");

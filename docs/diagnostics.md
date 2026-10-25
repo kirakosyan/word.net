@@ -1,5 +1,16 @@
 # Conversion diagnostics
 
+## 1.4.0 additions and compatibility
+
+`Field.UnsupportedUsedCachedResult` is informational when scalar evaluation falls back
+to an intact cache, including Strict mode. Nested instructions are flattened to cached
+runs instead of emitted as an invalid live field. `Revisions.Accepted` reports omitted
+review history without preservation; preserved story/nested structural marks fail with
+`Review.Unsupported`. `Chart.BindingOwner`, `Layout.BalanceProfile` and
+`Layout.BalanceLimit` keep unsupported owners and balancing combinations explicit.
+Balancing never shrinks text to make a candidate frame fit. See the
+[complete profile](roadmap-99-implementation.md) and [release notes](releases/1.4.0.md).
+
 ## 1.3.0 source profile
 
 The 1.3.0 diagnostics include `Object.*` graph/owner/combination/editable-output losses, `Chart.*` cache/range/appearance/label-fit failures, `Equation.*` OMML/MATH/font/geometry limits, `Typography.Bidi*` balanced-control and resource checks, and `Pdf.NativeLanguage` for unsupported native language metadata. `Object.UnsupportedLoss` records omission of a valid out-of-profile chart/equation during ordinary Lenient/BestEffort conversion. Strict conversion, session loading, native typography and tagged/UA/PDF-A destinations reject that loss. Malformed graphs, unsafe relationships, unsupported admitted-object render constructions and UA combination failures remain hard errors in Lenient mode. See [P2 contracts](p2-objects-typography.md).
