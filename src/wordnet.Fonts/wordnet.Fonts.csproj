@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>wordnet.Fonts</AssemblyName>
     <RootNamespace>WordNet.Fonts</RootNamespace>
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -11,7 +11,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageId>wordnet.Fonts</PackageId>
     <Description>OFL-licensed Liberation, Carlito and Caladea fallback font resources for wordnet.</Description>
-    <PackageReleaseNotes>Bounded reporting and columns, DOCX/ODT exchange and review workflows, editable charts and OMML equations, Unicode 17 bidi and opt-in Hindi/native accessible PDF. Includes object fidelity review fixes. Cryptographic features remain unsupported. See the 1.3.0 release notes and documented profile limits.</PackageReleaseNotes>
+    <PackageReleaseNotes>Direct HTML/ODT PDF export, immutable report chart binding, bounded scalar fields and structural comparison, improved font/table/note layout, final-column balancing, and qualified native table/story and separate managed-object PDF profiles. Includes roadmap review corrections. See the 1.4.0 release notes for compatibility and profile limits.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT AND OFL-1.1</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

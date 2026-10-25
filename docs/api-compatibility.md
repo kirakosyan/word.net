@@ -1,5 +1,17 @@
 # API and support policy
 
+## 1.4.0 compatibility
+
+All three package versions advance together to 1.4.0. Chart-data binding, scalar fields,
+structural review/comparison and direct HTML/ODT PDF export are additive. Package
+validation compares every target against published 1.3.0. AssemblyVersion remains
+1.0.0.0 and all five core/OCR assets remain. Font/table/note corrections can change
+pagination; cached unsupported scalar fields keep informational diagnostics in Strict,
+and whole-paragraph review decisions cascade across the mark/text unit. See the
+[release notes](releases/1.4.0.md) for migration and combination limits.
+
+Earlier version-specific sections below are historical policy and qualification.
+
 The public namespace is `WordNet`; package and assembly names are `wordnet`.
 Every library build retains matching public APIs for
 `net462;net472;netstandard2.0;net8.0;net10.0`. Platform/provider objects never appear in public

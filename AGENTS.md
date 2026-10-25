@@ -41,8 +41,9 @@ package ID are `wordnet`. Keep namespace spelling consistent across all targets 
 
 ## Roadmap #99 source extension
 
-The owner authorized implementation of numbered issues #87–#98, with a PR and no package
-publication. The unpublished source profile in `docs/roadmap-99-implementation.md` extends
+The owner authorized implementation of numbered issues #87–#98, initially with a PR and no package
+publication, then authorized merging and 1.4.0 publication after exact-commit release
+gates. The 1.4.0 source profile in `docs/roadmap-99-implementation.md` extends
 some of the released 1.3.0 boundaries above: plain structural paragraph/row revisions,
 bounded native tables/stories, separate managed-object accessibility/archive output,
 scalar fields, chart binding and direct HTML/ODT PDF export. Keep the new subset limits

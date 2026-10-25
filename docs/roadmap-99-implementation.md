@@ -1,7 +1,7 @@
-# Roadmap #99: unpublished source changes
+# Roadmap #99: 1.4.0 profile
 
-These changes extend the released 1.3.0 profiles. They are source changes pending review,
-not a new NuGet release. The original release receipt remains in [1.3.0](releases/1.3.0.md).
+These 1.4.0 changes extend the released 1.3.0 profiles. See the
+[1.4.0 release notes](releases/1.4.0.md) for compatibility and release qualification. The original release receipt remains in [1.3.0](releases/1.3.0.md).
 The release/source baseline, including unsuccessful fidelity checks, is retained in
 [comparison-1.3.0.md](comparison-1.3.0.md).
 
@@ -106,9 +106,10 @@ repeated headers and page stories remain artifacts in tagged output. Wrapping do
 split a shaping cluster. Native columns, notes, review history, objects, table controls,
 merged cells, nested tables and structured story content remain outside this extension.
 
-The new combinations have local Linux x64 execution evidence. Existing platform claims
-for previously released paragraph profiles are unchanged; compilation alone does not
-qualify these new combinations on another architecture.
+The new combinations run in the full source and package desktop suites. Release
+qualification requires Windows/Linux x64/ARM64 and the actual Framework 4.7.2
+configuration; compilation alone does not qualify an architecture. See the
+[release evidence requirements](releases/1.4.0.md).
 
 ## Object PDF profiles (#94)
 
@@ -135,7 +136,7 @@ The source combination matrix is deliberately narrower than the Cartesian produc
 | Bounded MATH equation | Yes | Description + bounded logical expression | Same + required title/language | Separately validated | Rejected | Rejected |
 
 The released [P2 matrix](p2-capability-matrix.json) remains the 1.3.0 receipt; this table
-identifies the unpublished extension instead of retroactively changing that release.
+identifies the 1.4.0 extension instead of retroactively changing that release.
 
 ## Scalar fields (#95)
 
@@ -227,6 +228,6 @@ fixed-ratio policy to the pinned font's actual metrics; unchanged glyph and rast
 thresholds continue to apply. Raster baseline updates are reviewed artifacts, not evidence
 that arbitrary documents match an independent renderer.
 
-No package publishing, release tagging, deployment or main-branch merge is part of this
-work. The unnumbered P3 proposal in #99 remains a later planning item; the request covers
-the numbered child issues #87–#98.
+The implementation covers numbered child issues #87–#98. The owner subsequently
+authorized merging and 1.4.0 publication after successful release gates. The unnumbered
+P3 proposal in #99 remains a later planning item and is not part of 1.4.0.

@@ -9,12 +9,12 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
-The current published release is [1.3.0](releases/1.3.0.md), including P1 and P2
-with the cancelled cryptographic features explicitly absent. The roadmap #99 changes
-are unpublished; **1.4.0 is the proposed next minor version**, subject to release review.
-The project files still identify 1.3.0 and must be updated together before preparing a
-new release. Select successful CI from the exact final-main commit for the new version;
-never rerun publication for an existing version. Historical receipts remain unchanged.
+The active release line is [1.4.0](releases/1.4.0.md), covering the bounded roadmap #99
+profile on top of [published 1.3.0](releases/1.3.0.md). All three project versions
+advance together. Select successful CI from the exact final-main commit for the new
+version; verify public indexes before dispatch and never republish an existing version.
+Historical receipts remain unchanged. Publication is a separate explicit action after
+all source, immutable-package and actual-minimum-runtime gates pass.
 
 Package README images must use Markdown syntax and a NuGet-allowed image host.
 Avoid HTML sizing/alignment tags: NuGet's renderer disables HTML. Validate the

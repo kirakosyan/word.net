@@ -36,7 +36,7 @@ See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/
 
 ## P1 additions in 1.3.0
 
-PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions ship in 1.3.0; earlier 1.2.x packages exclude them. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; ODT is limited to the two DOCX exchanges.
+PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions ship in 1.3.0; earlier 1.2.x packages exclude them. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; 1.3.0 limits ODT to the two DOCX exchanges; 1.4.0 also exports ODT directly to PDF.
 
 ## 1.3.0 object and typography additions
 
@@ -48,13 +48,20 @@ output have separate combination limits. See the [P2 profile](https://github.com
 and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/p2-capability-matrix.json).
 These changes shipped from [PR #86](https://github.com/kirakosyan/word.net/pull/86), building on P0 and P1 work. See the [1.3.0 release record](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.3.0.md) for qualification and publication status.
 
-## Unpublished roadmap #99 changes
+## 1.4.0 report and layout additions
 
-The current branch adds report chart binding, bounded scalar fields, structural paragraph/row
-comparison, direct HTML/ODT-to-PDF conversion, corrected managed line/row metrics, opt-in final
-column balancing, and qualified native-table/story and object-PDF combinations. These changes
-are **not in the published 1.3.0 packages**. See the [source profile](docs/roadmap-99-implementation.md)
-for APIs, limits and independent evidence; source conversion support now has 40 directions.
+Version 1.4.0 adds report chart binding, bounded scalar fields, structural paragraph/row
+comparison, direct HTML/ODT-to-PDF conversion, corrected managed line/row metrics, opt-in
+final-column balancing, and qualified native-table/story and object-PDF combinations.
+There are 40 enabled conversion directions. These additions are absent from 1.3.x.
+See the [profile and limits](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-99-implementation.md)
+and [1.4.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.4.0.md).
+
+Font metrics and table/note placement corrections can change pagination. Unsupported
+scalar instructions retain cached results with informational diagnostics, including in
+Strict mode. Whole-paragraph review decisions include the paragraph mark and its text.
+Independent comparison failures remain recorded; this release makes no universal
+rendering-parity claim.
 
 ## Quick start
 
@@ -114,7 +121,7 @@ See the [recipe instructions](https://github.com/kirakosyan/word.net/blob/main/e
 
 ## Supported formats
 
-Each earlier bidirectional exchange below works with both DOC and DOCX. ODT is limited to DOCX. At least one side of a conversion must be DOC or DOCX; XPS is output-only.
+Each earlier bidirectional exchange below works with both DOC and DOCX. ODT exchanges with DOCX and exports directly to PDF; HTML also exports directly to PDF. Other pairs require DOC or DOCX on one side. XPS is output-only.
 
 | Format | Implemented profile |
 | --- | --- |
@@ -127,6 +134,7 @@ Each earlier bidirectional exchange below works with both DOC and DOCX. ODT is l
 | MOBI / AZW3 ↔ Word | Unencrypted MOBI 6 and standalone KF8 profiles; no DRM or hybrid containers |
 | Word → XPS | Positioned text, embedded fonts, raster images and shared fixed-page layout |
 | DOCX ↔ ODT | Bounded ODF 1.3 text/styles/lists/masters/tables/inline PNG/JPEG; explicit feature/style losses |
+| HTML / ODT → PDF | Direct bounded reader-to-layout pipeline; supported text, lists, tables, images and page settings |
 
 The shared layout profile includes section geometry, wrapping and pagination, table widths/merges/repeated headers, bounded drawings, notes and page fields. Optional profiles cover Arabic typography, semantic PDF/UA and previews. These capabilities have specific combination and fidelity limits.
 
@@ -195,7 +203,7 @@ Linux requires Tesseract, fontconfig and the documented fonts. Run Framework tes
 | [Architecture](https://github.com/kirakosyan/word.net/blob/main/docs/architecture.md) | Engine boundaries, providers and resource contracts |
 | [Diagnostics](https://github.com/kirakosyan/word.net/blob/main/docs/diagnostics.md) | Fidelity reports and preflight remediation |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Delivered work and remaining scope |
-| [Release ledger](https://github.com/kirakosyan/word.net/blob/main/docs/release-1.2.0-readiness.md) | Published packages and exact-artifact evidence |
+| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.4.0.md) | Published packages and exact-artifact evidence |
 | [Contributing](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md) | Engineering and validation requirements |
 
 ## License
