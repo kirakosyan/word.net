@@ -1,5 +1,9 @@
 # wordnet implementation and delivery status
 
+## Roadmap #102 P1 — source implementation under review
+
+The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. No merge, release or publication is performed by this task. Post-merge issue/roadmap reconciliation remains required after review and merge.
+
 ## Roadmap #102 / issue #103 - merged baseline findings
 
 The owner authorized the first evidence task and its merge in
@@ -11,8 +15,7 @@ for issues #104-#107. It distinguishes reproduced fallback/placement differences
 unproven inheritance/implicit-sizing defects, source omissions and the existing note
 reservation policy. No converter behavior, package version or support scope changes.
 Issue #103 is accepted and reconciled in roadmap #102 and historical roadmap #32.
-The remaining roadmap tasks are unimplemented; #104 is the next unassigned item and
-requires separate owner authorization. Publication is not authorized by this delivery.
+That evidence-only delivery left subsequent tasks unimplemented. The later owner-authorized P1 work is recorded above; P2–P6 remain outside this task. Publication is not authorized by the P1 request.
 The CI follow-up makes fixture-content verification portable across ZIP encodings,
 with archive hashes and the original measured receipt preserved.
 Review corrections protect measured fixtures from generation, isolate the public

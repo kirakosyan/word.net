@@ -123,7 +123,7 @@ public sealed class PageLayoutTests
         var letters = pdf.GetPage(1).Letters;
         Assert.Equal(126, letters[0].StartBaseLine.X, 3);
         Assert.Equal(72, letters[9].StartBaseLine.X, 3);
-        Assert.Equal(12 * 1.362 + 12, letters[0].StartBaseLine.Y - letters[9].StartBaseLine.Y, 3);
+        Assert.Equal(11 * 1.362 + 12, letters[0].StartBaseLine.Y - letters[9].StartBaseLine.Y, 3);
     }
 
     [Theory]
@@ -168,7 +168,7 @@ public sealed class PageLayoutTests
         string small = Letter.Replace("w:h='15840'", "w:h='4320'").Replace("w:top='1440'", "w:top='720'").Replace("w:bottom='1440'", "w:bottom='720'");
         string body = string.Concat(Enumerable.Range(0, 5).Select(i => Paragraph("Filler" + i.ToString(CultureInfo.InvariantCulture))))
             + Paragraph("Heading", "<w:keepNext/>") + Paragraph("Following") + small;
-        using PdfDocument pdf = PdfDocument.Open(Convert(Document(body), DocumentFormat.Docx, DocumentFormat.Pdf, strict: true));
+        using PdfDocument pdf = PdfDocument.Open(Convert(ExplicitLayoutFixture.LegacyMetrics(Document(body)), DocumentFormat.Docx, DocumentFormat.Pdf, strict: true));
         Assert.Equal(2, pdf.NumberOfPages);
         Assert.DoesNotContain("Heading", pdf.GetPage(1).Text, StringComparison.Ordinal);
         Assert.Equal("HeadingFollowing", pdf.GetPage(2).Text);
@@ -193,7 +193,7 @@ public sealed class PageLayoutTests
         string body = P("Filler") + P("Filler") + P("Filler") + P("Filler")
             + Paragraph("One", "<w:keepNext/><w:spacing w:after='0'/>")
             + Paragraph("Two", "<w:keepNext/><w:spacing w:after='480'/>") + P("Three") + small;
-        using PdfDocument pdf = PdfDocument.Open(Convert(Document(body), DocumentFormat.Docx, DocumentFormat.Pdf, strict: true));
+        using PdfDocument pdf = PdfDocument.Open(Convert(ExplicitLayoutFixture.LegacyMetrics(Document(body)), DocumentFormat.Docx, DocumentFormat.Pdf, strict: true));
         Assert.Equal(2, pdf.NumberOfPages);
         Assert.Equal("OneTwoThree", pdf.GetPage(2).Text);
         static string P(string text) => Paragraph(text);

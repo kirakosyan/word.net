@@ -153,7 +153,7 @@ public sealed class AdditionalFormatTests
         using PdfDocument pdf = PdfDocument.Open(Convert(docx, DocumentFormat.Docx, DocumentFormat.Pdf, BestEffort));
         double[] baselines = pdf.GetPage(1).Letters.Select(l => l.StartBaseLine.Y).Distinct().OrderByDescending(y => y).ToArray();
         Assert.Equal(2, baselines.Length);
-        Assert.Equal(2 * 12 * 1.362, baselines[0] - baselines[1], 3);
+        Assert.Equal(2 * 11 * 1.362, baselines[0] - baselines[1], 3);
     }
 
     [Theory]

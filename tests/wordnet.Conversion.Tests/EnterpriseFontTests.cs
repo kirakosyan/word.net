@@ -21,7 +21,7 @@ public sealed class EnterpriseFontTests
         using var font = File.OpenRead(Path.Combine(TestDocuments.FixtureDirectory, "Enterprise", "gpos-pair.ttf"));
         FontSource face = Assert.Single(FontSource.FromStream(font));
         var options = new ConversionOptions(); options.Fonts.Sources.Add(face);
-        string run(string text) => "<w:r><w:rPr><w:rFonts w:ascii='" + face.FamilyName + "'/></w:rPr><w:t>" + text + "</w:t></w:r>";
+        string run(string text) => "<w:r><w:rPr><w:rFonts w:ascii='" + face.FamilyName + "'/><w:sz w:val='24'/></w:rPr><w:t>" + text + "</w:t></w:r>";
         using PdfDocument split = PdfDocument.Open(new WordConverter().ConvertToPdf(TestDocuments.Docx(TestDocuments.Body("<w:p>" + run("A") + run("V") + "</w:p>")), options));
         using PdfDocument combined = PdfDocument.Open(new WordConverter().ConvertToPdf(Text(face.FamilyName, "AV"), options));
         Assert.Equal(combined.GetPage(1).Text, split.GetPage(1).Text);
@@ -197,5 +197,5 @@ public sealed class EnterpriseFontTests
     }
 
     private static byte[] Text(string family, string text) => TestDocuments.Docx(TestDocuments.Body("<w:p><w:r><w:rPr><w:rFonts w:ascii='" + family
-        + "'/></w:rPr><w:t xml:space='preserve'>" + text + "</w:t></w:r></w:p>"));
+        + "'/><w:sz w:val='24'/></w:rPr><w:t xml:space='preserve'>" + text + "</w:t></w:r></w:p>"));
 }

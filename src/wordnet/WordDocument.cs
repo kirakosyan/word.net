@@ -196,7 +196,9 @@ public sealed partial class WordDocument
     private static void Admit(DocumentModel model, ConversionContext context)
     {
         context.CheckCancellation();
-        long reviewMetadata = model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
+        CustomPropertyValues.Validate(model, context);
+        long reviewMetadata = model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
+            + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));
         if ((long)model.CharacterCount + model.Title.Length + model.Author.Length + reviewMetadata > context.Options.MaximumCharacters)
             throw new InvalidDataException("Limit.Characters: Document and review metadata exceed the aggregate character limit.");

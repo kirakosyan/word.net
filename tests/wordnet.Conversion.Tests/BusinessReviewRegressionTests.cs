@@ -108,7 +108,7 @@ public sealed partial class BusinessFidelityTests
         string filler = string.Concat(Enumerable.Repeat(P("Filler"), 9));
         string keep = "<w:p><w:pPr><w:keepNext/></w:pPr><w:r><w:t>Keep</w:t></w:r></w:p>";
         string following = image.Replace("<w:p>", "<w:p><w:pPr><w:keepLines/></w:pPr>").Replace("</w:p>", "<w:r><w:t>A</w:t><w:br/><w:t>B</w:t><w:br/><w:t>C</w:t><w:br/><w:t>D</w:t></w:r></w:p>");
-        using PdfDocument pdf = PdfDocument.Open(Export(FidelityDocuments.Docx("color-grid.png", filler + keep + following + Page), DocumentFormat.Pdf));
+        using PdfDocument pdf = PdfDocument.Open(Export(ExplicitLayoutFixture.LegacyMetrics(FidelityDocuments.Docx("color-grid.png", filler + keep + following + Page)), DocumentFormat.Pdf));
         Assert.Equal(2, pdf.NumberOfPages); Assert.Single(pdf.GetPage(2).GetImages()); Assert.Contains("Keep", pdf.GetPage(2).Text, StringComparison.Ordinal);
     }
 

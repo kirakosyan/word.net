@@ -123,6 +123,7 @@ internal static partial class FixedLayout
         DiagnosticPhase previousPhase = context.Phase;
         context.Phase = DiagnosticPhase.Layout;
         bool references = DocumentReferences.HasFields(model);
+        bool styleReferences = StyleReferences.HasFields(model);
         if (references) _ = DocumentReferences.Refresh(model, context);
         List<FixedPage> pages = CreateCore(model, context, 1, null);
         if (DocumentFields.NeedsPages(model))
@@ -134,15 +135,17 @@ internal static partial class FixedLayout
             if (pages.Count != expected || current.Count != sections.Count || current.Any(p => !sections.TryGetValue(p.Key, out int count) || count != p.Value))
                 pages = CreateCore(model, context, pages.Count, current);
         }
-        if (references)
+        if (references || styleReferences)
         {
             bool stable = false;
             for (int pass = 0; pass < 4; pass++)
             {
-                if (!DocumentReferences.Refresh(model, context)) { stable = true; break; }
+                bool changed = styleReferences && StyleReferences.Refresh(model, pages, context);
+                if (references) changed |= DocumentReferences.Refresh(model, context);
+                if (!changed) { stable = true; break; }
                 pages = CreateCore(model, context, pages.Count, Counts(pages));
             }
-            if (!stable && DocumentReferences.Refresh(model, context))
+            if (!stable && ((styleReferences && StyleReferences.Refresh(model, pages, context)) | (references && DocumentReferences.Refresh(model, context))))
                 context.Loss("Field.LayoutDidNotConverge", "Calculated references did not stabilize within four layout passes.");
         }
         if (context.Options.BalanceFinalColumns) pages = BalanceColumns(model, context, pages);
@@ -154,6 +157,7 @@ internal static partial class FixedLayout
 
     private static List<FixedPage> CreateCore(DocumentModel model, ConversionContext context, int totalPages, Dictionary<PageSettings, int>? sectionTotals, Dictionary<PageSettings, (int Page, double Bottom)>? balancedBottoms = null)
     {
+        context.PhysicalPage = 0;
         NativeTypography.Prepare(model, context);
         using var native = NativeTypography.Open(context);
         using var measure = new PdfDocumentBuilder();
@@ -226,7 +230,7 @@ internal static partial class FixedLayout
                                 member.HeadingLevel > 0 ? 26 - member.HeadingLevel * 2 : 12, false);
                             required += next == blockIndex || member.Layout.KeepTogether || member.Layout.KeepWithNext ? measured.Sum(l => l.Height) : measured[0].Height;
                             if (!member.Layout.KeepWithNext || required > settings.Height - settings.Top - settings.Bottom) break;
-                            required += (member.Layout.After ?? 6); next++;
+                            required += (member.Layout.After ?? member.FallbackAfter ?? 6); next++;
                         }
                         counter = savedCounter;
                         if (required <= settings.Height - settings.Top - settings.Bottom) NewPageIfNeeded(required);
@@ -235,7 +239,7 @@ internal static partial class FixedLayout
                     y += paragraph.Layout.Before ?? 0;
                     _ = Lines(paragraph, settings.Left, settings.Width - settings.Left - settings.Right,
                         paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 12, false, Flow);
-                    y += paragraph.Layout.After ?? 6;
+                    y += paragraph.Layout.After ?? paragraph.FallbackAfter ?? 6;
                     continue;
 
                     void Flow(Line original)
@@ -278,7 +282,7 @@ internal static partial class FixedLayout
                 if (paragraph.Layout.KeepWithNext)
                 {
                     int index = blockIndex + 1;
-                    double after = paragraph.Layout.After ?? 6;
+                    double after = paragraph.Layout.After ?? paragraph.FallbackAfter ?? 6;
                     while (index < model.Blocks.Count && model.Blocks[index] is ParagraphBlock following
                         && ReferenceEquals(block.Section, following.Section) && !following.Layout.PageBreakBefore)
                     {
@@ -288,7 +292,7 @@ internal static partial class FixedLayout
                         // Once the group exceeds a page, no later member can make it fit.
                         // Bound the lookahead instead of rescanning arbitrarily long keep chains.
                         if (!following.Layout.KeepWithNext || totalHeight > settings.Height - settings.Top - settings.Bottom) break;
-                        after = following.Layout.After ?? 6;
+                        after = following.Layout.After ?? following.FallbackAfter ?? 6;
                         index++;
                     }
                 }
@@ -311,7 +315,7 @@ internal static partial class FixedLayout
                     Place(line, y); y += line.Height;
                     if (line.BreakAfter == '\f') AddPage(); else if (line.BreakAfter == '\v') AdvanceColumn();
                 }
-                y += paragraph.Layout.After ?? 6;
+                y += paragraph.Layout.After ?? paragraph.FallbackAfter ?? 6;
             }
             else if (block is TableBlock table)
             {
@@ -347,6 +351,7 @@ internal static partial class FixedLayout
             context.PageNumberFormat = sourceSettings.PageNumberFormat;
             int sectionIndex = sectionIndices.TryGetValue(sourceSettings, out int previous) ? previous + 1 : 1;
             sectionIndices[sourceSettings] = sectionIndex;
+            context.PhysicalPage = pageIndex + 1;
             renderPage = page.PageNumber; renderSectionPages = sectionPages[sourceSettings];
             AddStory("header-", sourceSettings.HeaderDistance, atEnd: false);
             AddStory("footer-", sourceSettings.Height - sourceSettings.FooterDistance, atEnd: true);
@@ -394,7 +399,15 @@ internal static partial class FixedLayout
             double header = 0, footer = 0;
             foreach (var story in source.Stories)
             {
+                int savedPhysicalPage = context.PhysicalPage;
                 double height = StoryLines(story.Value).Sum(l => l.Height);
+                foreach (int candidate in model.StyleResults.Keys.Select(k => k.Page).Distinct())
+                {
+                    context.PhysicalPage = candidate;
+                    context.ReserveFieldWork(story.Value.Count);
+                    height = Math.Max(height, StoryLines(story.Value).Sum(l => l.Height));
+                }
+                context.PhysicalPage = savedPhysicalPage;
                 if (story.Key.StartsWith("header-", StringComparison.Ordinal)) header = Math.Max(header, height);
                 else footer = Math.Max(footer, height);
             }
@@ -439,7 +452,7 @@ internal static partial class FixedLayout
         {
             using var location = context.At(paragraph.Location);
             List<Line> lines = Lines(paragraph, left, width, 12, false);
-            if (lines.Count > 0) { lines[0].Ascent += paragraph.Layout.Before ?? 0; lines[lines.Count - 1].Descent += paragraph.Layout.After ?? 6; }
+            if (lines.Count > 0) { lines[0].Ascent += paragraph.Layout.Before ?? 0; lines[lines.Count - 1].Descent += paragraph.Layout.After ?? paragraph.FallbackAfter ?? 6; }
             target.AddRange(lines);
         }
 
@@ -619,7 +632,7 @@ internal static partial class FixedLayout
             if (depth > 0 && table.HeaderRowCount > 0) context.Loss("Table.NestedHeaders", "Nested-table headers are rendered once; repetition inside a split parent row is not supported.");
             if (depth > context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Nested table exceeds the depth limit.");
             double[] widths = TableSizing.Columns(table, availableWidth, ContentWidths, context);
-            bool fixedGrid = !table.AutoFit && !table.WidthPercent.HasValue && !table.Rows.SelectMany(c => c).Any(c => c.WidthPercent.HasValue);
+            bool fixedGrid = (!table.AutoFit || !table.LayoutExplicit && context.Typography.Enabled) && !table.WidthPercent.HasValue && !table.Rows.SelectMany(c => c).Any(c => c.WidthPercent.HasValue);
             double[] edges = new double[widths.Length + 1];
             for (int i = 0; i < widths.Length; i++) edges[i + 1] = edges[i] + widths[i];
             for (int r = 0; r < table.Rows.Count; r++)
@@ -659,7 +672,7 @@ internal static partial class FixedLayout
                             if (paragraph.Layout.Before is double before && before > 0) preparedCell.Lines.Add(new Line { Descent = before });
                             preparedCell.Lines.AddRange(Lines(paragraph, left + padding.Left, width - padding.Left - padding.Right,
                                 paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 11, false));
-                            double after = paragraph.Layout.After ?? (p + 1 < blocks.Length ? 6 : 0);
+                            double after = paragraph.Layout.After ?? paragraph.FallbackAfter ?? (p + 1 < blocks.Length ? 6 : 0);
                             if (after > 0) preparedCell.Lines.Add(new Line { Descent = after });
                         }
                     }
@@ -694,17 +707,32 @@ internal static partial class FixedLayout
             return rows;
         }
 
+        string ManagedText(string text, int font)
+        {
+            if (context.EffectiveMode == FidelityMode.Strict || native != null) return text;
+            var safe = new StringBuilder(text.Length);
+            foreach (char c in text)
+            {
+                if (c is '\n' or '\t' or '\f' or '\v' || !(c >= '\u0590' && c <= '\u0dff') && !char.IsSurrogate(c) && maps[font] != null && maps[font]!.TryGetGlyphIndex(c, out int glyph) && glyph != 0) safe.Append(c);
+                else { safe.Append('?'); context.ReportStrictRejection("Font.MissingGlyph", "An unsupported glyph or shaping requirement uses a visible fallback character."); }
+            }
+            return safe.ToString();
+        }
+
         (double Minimum, double Preferred) ContentWidths(TableCell cell)
         {
             double minimum = 1, preferred = 1;
             foreach (ParagraphBlock paragraph in cell.Paragraphs)
             {
+                using var location = context.At(paragraph.Location);
                 double line = 0;
                 foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs))
                 {
+                    shapingLevel = run.BidiLevel;
                     if (run.Image != null) { minimum = Math.Max(minimum, run.Image.Width); line += run.Image.Width; continue; }
                     int font = resolver.Resolve(run, paragraph.HeadingLevel > 0); double size = run.FontSize ?? 11;
-                    foreach (string word in run.Text.Split(' ', '\n', '\t'))
+                    context.ReserveFieldWork(run.Text.Length);
+                    foreach (string word in ManagedText(DocumentFields.Render(run, model, 1, totalPages, totalPages, context), font).Split(' ', '\n', '\t'))
                     {
                         double width = Measure(word, font, size); minimum = Math.Max(minimum, word.Length == 0 ? 0 : word.Max(c => Measure(c.ToString(), font, size)));
                         line += width + Measure(" ", font, size);
@@ -802,7 +830,8 @@ internal static partial class FixedLayout
         {
             var lines = new List<Line>();
             int labelFont = resolver.Resolve(new TextRun(""), false);
-            double labelWidth = Measure(note.Label + " ", labelFont, 9);
+            string label = note.Label + (note.ExplicitReferenceMark ? "" : " ");
+            double labelWidth = Measure(label, labelFont, 9);
             ListCounter bodyCounter = counter; counter = new ListCounter();
             foreach (DocumentBlock block in note.Blocks)
             {
@@ -814,7 +843,7 @@ internal static partial class FixedLayout
             }
             if (lines.Count == 0) lines.Add(new Line { PageLeft = settings.Left, Ascent = 9, Descent = 4.5 });
             Line first = lines[0];
-            first.Items.Insert(0, new PositionedText(note.Label + " ", sourceSettings.ExplicitColumns.Count == 0 ? sourceSettings.Left : settings.Left, 0, 9, labelFont));
+            first.Items.Insert(0, new PositionedText(label, sourceSettings.ExplicitColumns.Count == 0 ? sourceSettings.Left : settings.Left, 0, 9, labelFont));
             counter = bodyCounter; return lines;
         }
 
@@ -865,8 +894,14 @@ internal static partial class FixedLayout
                 ListCounter advanced = counter;
                 if (found) counter = preparedOrigins[paragraph].Counter.Copy();
                 if (hasAnchors) preparedOrigins[paragraph] = (pages.Count, y, settings.Left, settings.Width - settings.Left - settings.Right, anchored, counter.Copy());
-                lines = Lines(paragraph, settings.Left, settings.Width - settings.Left - settings.Right,
-                    paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 12, false);
+                double savedY = y;
+                try
+                {
+                    y += paragraph.Layout.Before ?? 0;
+                    lines = Lines(paragraph, settings.Left, settings.Width - settings.Left - settings.Right,
+                        paragraph.HeadingLevel > 0 ? 26 - paragraph.HeadingLevel * 2 : 12, false);
+                }
+                finally { y = savedY; }
                 prepared[paragraph] = lines;
                 if (found) counter = advanced;
             }
@@ -1042,6 +1077,7 @@ internal static partial class FixedLayout
 
         List<Line> Lines(ParagraphBlock paragraph, double left, double width, double baseSize, bool header, Action<Line>? ready = null)
         {
+            baseSize = paragraph.FallbackFontSize ?? baseSize;
             context.PageNumberFormat = sourceSettings.PageNumberFormat;
             var result = new List<Line>();
             double tabOrigin = left;
@@ -1125,16 +1161,7 @@ internal static partial class FixedLayout
                     context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                 }
                 string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages[pages.Count - 1].PageNumber : renderPage, totalPages, renderSectionPages, context);
-                if (context.EffectiveMode != FidelityMode.Strict && native == null)
-                {
-                    var safe = new StringBuilder(runText.Length);
-                    foreach (char c in runText)
-                    {
-                        if (c is '\n' or '\t' or '\f' or '\v' || !(c >= '\u0590' && c <= '\u0dff') && !char.IsSurrogate(c) && maps[font] != null && maps[font]!.TryGetGlyphIndex(c, out int glyph) && glyph != 0) safe.Append(c);
-                        else { safe.Append('?'); context.ReportStrictRejection("Font.MissingGlyph", "An unsupported glyph or shaping requirement uses a visible fallback character."); }
-                    }
-                    runText = safe.ToString();
-                }
+                runText = ManagedText(runText, font);
                 foreach (char character in runText)
                     if (!(context.Typography.ExtendedBidi && (UnicodeBidi.Format(character) || character is '\u200c' or '\u200d')) && character is not '\n' and not '\t' and not '\f' and not '\v' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
                         throw new NotSupportedException("Layout.Glyph: The embedded font cannot represent a character.");
@@ -1255,7 +1282,7 @@ internal static partial class FixedLayout
             {
                 if (line.Height == 0)
                 {
-                    TextRun prototype = runs.FirstOrDefault(r => r.Image == null && r.Box == null) ?? new TextRun("");
+                    TextRun prototype = runs.FirstOrDefault(r => r.Image == null && r.Box == null) ?? paragraph.Mark ?? new TextRun("");
                     int face = resolver.Resolve(prototype, paragraph.HeadingLevel > 0); double pointSize = prototype.FontSize ?? baseSize;
                     line.Ascent = pointSize * kerning[face].Ascent / kerning[face].UnitsPerEm;
                     line.Descent = pointSize * kerning[face].Descent / kerning[face].UnitsPerEm;

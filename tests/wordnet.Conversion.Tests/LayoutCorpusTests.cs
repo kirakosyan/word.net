@@ -11,7 +11,7 @@ public sealed class LayoutCorpusTests
     [InlineData(DocumentFormat.Doc)]
     public void RenderedSectionsAndMergedTablesMatchIndependentReference(DocumentFormat source)
     {
-        byte[] input = ConversionAcceptanceTests.Fixture("layout-corpus.docx");
+        byte[] input = ExplicitLayoutFixture.LegacyMetrics(ConversionAcceptanceTests.Fixture("layout-corpus.docx"));
         if (source == DocumentFormat.Doc) input = Convert(input, DocumentFormat.Docx, source);
         using PdfDocument actual = PdfDocument.Open(Convert(input, source, DocumentFormat.Pdf));
         using PdfDocument expected = PdfDocument.Open(ConversionAcceptanceTests.Fixture("layout-reference.pdf"));

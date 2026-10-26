@@ -19,17 +19,19 @@ internal sealed partial class DocxReader
         internal List<(List<TextRun> Target, TextRun Run)> Result { get; } = new List<(List<TextRun>, TextRun)>();
         internal bool Separated { get; set; }
         internal bool NestedInstruction { get; set; }
+        internal bool RetainTree { get; set; } = true;
+        internal Dictionary<int, TextRun> Children { get; } = new Dictionary<int, TextRun>();
     }
 
     private void Emit(List<TextRun> runs, TextRun run)
     {
         if (fields.Count == 0) runs.Add(run);
-        else if (fields.All(f => f.Separated)) fields.Peek().Result.Add((runs, run));
+        else if (fields.Peek().Separated) fields.Peek().Result.Add((runs, run));
     }
 
-    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result, bool nestedInstruction = false)
+    private void EmitField(List<TextRun> runs, string instruction, List<(List<TextRun> Target, TextRun Run)> result, bool nestedInstruction = false, Dictionary<int, TextRun>? children = null)
     {
-        if (nestedInstruction)
+        if (nestedInstruction && (!ScalarFields.Candidate(instruction) || children == null || children.Count == 0))
         {
             context.Report("Field.UnsupportedUsedCachedResult", "A nested field instruction retains its cached runs without creating a live field.");
             foreach (var cached in result) Emit(cached.Target, cached.Run);
@@ -88,7 +90,8 @@ internal sealed partial class DocxReader
         if (toc && multipleParagraphs)
             foreach (List<TextRun> target in result.Select(r => r.Target).Distinct().Skip(1)) replacedTocParagraphs.Add(target);
         Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(string.Concat(result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
-            first.FontSize, first.Color, appearance: first.Appearance, fieldInstruction: instruction));
+            first.FontSize, first.Color, appearance: first.Appearance, fieldInstruction: instruction)
+        { FieldChildren = children?.Count > 0 ? children : null });
     }
 
     private void PruneTocParagraphs(List<DocumentBlock> blocks)
@@ -105,6 +108,22 @@ internal sealed partial class DocxReader
                 foreach (PositionedBox box in paragraph.Runs.Where(r => r.Box != null).Select(r => r.Box!)) PruneTocParagraphs(box.Blocks);
     }
 
+    private void CaptureChild(string instruction, FieldCapture field)
+    {
+        FieldCapture parent = fields.Peek(); parent.NestedInstruction = true;
+        bool plain = field.Result.All(r => r.Run.Image == null && r.Run.Box == null && r.Run.Note == null && r.Run.FieldInstruction == null
+                && r.Run.Bookmark == null && r.Run.Object == null && r.Run.Control == null && r.Run.Revision == null && r.Run.Comment == null)
+            && field.Result.Select(r => r.Target).Distinct().Count() <= 1
+            && WordNet.Layout.RunCoalescer.Combine(field.Result.Select(r => r.Run).ToList()).Count <= 1;
+        if (!plain || !field.RetainTree || !ScalarFields.Candidate(instruction)) { parent.RetainTree = false; return; }
+        int offset = parent.Instruction.Length;
+        parent.Instruction.Append('\ufffc');
+        TextRun first = field.Result.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
+        parent.Children.Add(offset, new TextRun(string.Concat(field.Result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
+            first.FontSize, first.Color, appearance: first.Appearance.Copy(), fieldInstruction: instruction)
+        { FieldChildren = field.Children });
+    }
+
     private void FieldBoundary(string? kind, List<TextRun> runs)
     {
         if (kind == "begin")
@@ -112,15 +131,15 @@ internal sealed partial class DocxReader
             if (fields.Count >= context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Fields exceed the nesting limit.");
             fields.Push(new FieldCapture());
         }
-        else if (kind == "separate" && fields.Count > 0) fields.Peek().Separated = true;
+        else if (kind == "separate" && fields.Count > 0 && !fields.Peek().Separated) fields.Peek().Separated = true;
         else if (kind == "end" && fields.Count > 0)
         {
             FieldCapture field = fields.Pop();
             if (fields.Count > 0 && !fields.Peek().Separated)
             {
-                fields.Peek().NestedInstruction = true;
+                CaptureChild(field.Instruction.ToString(), field);
             }
-            else EmitField(runs, field.Instruction.ToString(), field.Result, field.NestedInstruction);
+            else EmitField(runs, field.Instruction.ToString(), field.Result, field.NestedInstruction, field.RetainTree ? field.Children : null);
         }
         else throw new InvalidDataException("Docx.Field: Unbalanced field boundary.");
     }

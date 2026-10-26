@@ -1,5 +1,10 @@
 # Conversion diagnostics
 
+## Pending P1 diagnostics
+
+The [P1 profile](roadmap-102-p1.md) retains `Field.UnsupportedUsedCachedResult` for missing/unsupported typed values, pictures and nested/STYLEREF semantics. Malformed custom-property parts fail with `Docx.CustomProperties`; unsupported/linked property types use `Docx.CustomPropertyType` loss reporting. `Metadata.CustomProperties` explains non-DOCX metadata output; `Table.NativeImplicitGrid` explains the unchanged native table policy. Unsupported note-marker placement uses `Notes.ReferenceMark`. Aggregate property, lookup and result limits fail before output copying; `Field.LayoutDidNotConverge` remains the bounded pagination-convergence loss. Supported running headers may report an informational cached result from their initial pagination pass.
+
+
 ## 1.4.0 additions and compatibility
 
 `Field.UnsupportedUsedCachedResult` is informational when scalar evaluation falls back

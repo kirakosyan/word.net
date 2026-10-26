@@ -130,7 +130,7 @@ public sealed partial class DocumentFidelityTests
     public void InlineImagesPaginateWithoutClippingOrOverlap()
     {
         string body = string.Concat(Enumerable.Repeat(FidelityDocuments.ImageParagraph(1524000, 3810000), 3));
-        using PdfDocument pdf = PdfDocument.Open(Convert(FidelityDocuments.Docx("color-grid.png", body), DocumentFormat.Docx, DocumentFormat.Pdf));
+        using PdfDocument pdf = PdfDocument.Open(Convert(ExplicitLayoutFixture.LegacyMetrics(FidelityDocuments.Docx("color-grid.png", body)), DocumentFormat.Docx, DocumentFormat.Pdf));
         Assert.Equal(2, pdf.NumberOfPages);
         var first = pdf.GetPage(1).GetImages().OrderByDescending(i => i.BoundingBox.Top).ToArray();
         Assert.Equal(2, first.Length); Assert.Single(pdf.GetPage(2).GetImages());

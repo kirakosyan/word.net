@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "status": "source implementation pending PR review; absent from published 1.4.0",
+  "frameworks": [
+    "net462",
+    "net472",
+    "netstandard2.0",
+    "net8.0",
+    "net10.0"
+  ],
+  "issues": [
+    {
+      "issue": 104,
+      "implemented": "DOCX absent-value policy, style inheritance/direct precedence and paragraph style identity",
+      "tests": "P1LayoutTests",
+      "limits": "11 pt/zero after fallback; no arbitrary theme/script support"
+    },
+    {
+      "issue": 105,
+      "implemented": "Paragraph mark metrics, spacing policy and paragraph-relative before-spacing exclusions",
+      "tests": "P1LayoutTests; existing page/column/wrap regressions",
+      "limits": "Nonempty too-small exact/auto lines still expand with diagnostics; contextual/automatic spacing unsupported"
+    },
+    {
+      "issue": 106,
+      "implemented": "Bounded managed implicit autofit with content-safe sizing",
+      "tests": "P1LayoutTests; existing nested/fixed/table pagination regressions",
+      "limits": "Glyph-boundary long-word wrapping; native implicit grids retain prior policy; no floating tables"
+    },
+    {
+      "issue": 107,
+      "implemented": "Conventional note marker separator handling and continuation evidence",
+      "tests": "P1LayoutTests; existing note ownership/restart/row movement tests",
+      "limits": "Existing 40 percent reservation unchanged; no arbitrary separator design or note tables"
+    },
+    {
+      "issue": 108,
+      "implemented": "Immutable typed custom properties, atomic session editing and DOCX/DOCPROPERTY",
+      "tests": "P1FieldTests",
+      "limits": "1024 properties; ordinal-ignore-case names; no linked/unsupported variant types"
+    },
+    {
+      "issue": 109,
+      "implemented": "Invariant bounded numeric/date field pictures",
+      "tests": "P1FieldTests; existing merge tests",
+      "limits": "Exact token matrix in roadmap-102-p1.md; UTC explicit dates; cached unsupported patterns"
+    },
+    {
+      "issue": 110,
+      "implemented": "Bounded retained nested typed scalar IF tree and safe DOCX serialization",
+      "tests": "P1FieldTests; existing field/review regressions",
+      "limits": "16 depth, 256 nodes, 4096 chars and 256 tokens per instruction; no general expression/spreadsheet language"
+    },
+    {
+      "issue": 111,
+      "implemented": "Managed STYLEREF headers/footers using stable style IDs/names and bounded pagination refresh",
+      "tests": "P1StyleReferenceTests",
+      "limits": "Ordinary body paragraphs in owning section; optional last-match switch; no native fields or numbering switches"
+    }
+  ],
+  "qualification": {
+    "source": "See roadmap-102-p1.md validation ledger",
+    "publication": "not requested; no package versions changed",
+    "historicalEvidence": "fidelity-103-baseline.json unchanged",
+    "freshReferenceFailures": "Retained at unchanged tolerances; not universal office parity"
+  }
+}

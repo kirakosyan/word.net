@@ -8,6 +8,9 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        CustomPropertyValues.Validate(model, context);
+        if (format != DocumentFormat.Docx && model.CustomProperties.Count != 0)
+            context.Report("Metadata.CustomProperties", "Custom properties can supply displayed fields; only DOCX preserves their editable metadata.");
         if (format is DocumentFormat.Docx or DocumentFormat.Pdf or DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs)
             {

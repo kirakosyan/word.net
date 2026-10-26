@@ -1,5 +1,10 @@
 # Formatting and image profile
 
+## Pending roadmap #102 P1 source profile
+
+See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes are pending review and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
+
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in

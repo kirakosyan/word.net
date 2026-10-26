@@ -1,5 +1,10 @@
 # API and support policy
 
+## Pending P1 API additions
+
+The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets. Existing signatures and package versions remain unchanged; publication and runtime qualification are separate gates.
+
+
 ## 1.4.0 compatibility
 
 All three package versions advance together to 1.4.0. Chart-data binding, scalar fields,

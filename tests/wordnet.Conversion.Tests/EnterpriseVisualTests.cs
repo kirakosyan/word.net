@@ -16,7 +16,7 @@ public sealed class EnterpriseVisualTests
     public void ManagedPdfMatchesReviewedRasterBaseline(string name)
     {
         string root = Path.Combine(TestDocuments.FixtureDirectory, "Enterprise");
-        byte[] input = File.ReadAllBytes(Path.Combine(root, name + ".docx"));
+        byte[] input = ExplicitLayoutFixture.LegacyMetrics(File.ReadAllBytes(Path.Combine(root, name + ".docx")));
         byte[] output = new WordConverter().ConvertToPdf(input, new ConversionOptions(FidelityMode.Lenient)
         { Clock = () => new DateTimeOffset(2026, 10, 15, 12, 0, 0, TimeSpan.Zero) });
         using PdfDocument pdf = PdfDocument.Open(output, SkiaRenderingParsingOptions.Instance);
