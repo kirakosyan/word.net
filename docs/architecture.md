@@ -1,6 +1,6 @@
 # Architecture and implementation status
 
-## Pending roadmap #102 P1 implementation
+## Merged roadmap #102 P1 implementation
 
 The [P1 source profile](roadmap-102-p1.md) adds immutable typed custom-property snapshots, bounded retained scalar-field trees and paragraph style identities. Field evaluation stays local and deterministic; running headers resolve after body pagination with bounded reservation passes. DOCX absent-value layout policy is separate from source-explicit formatting. Managed implicit tables reuse bounded sizing and safe text measurement. No runtime dependency or target framework changes.
 

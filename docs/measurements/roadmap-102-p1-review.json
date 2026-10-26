@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-26",
+  "scope": "PR133 final review qualification; merged source, absent from public 1.4.0",
+  "pullRequest": 133,
+  "reviewedHead": "db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562",
+  "mergedCommit": "2a944ac9101598bc3be2d856e5bad116123998a3",
+  "mergeTreeMatchesReviewedHead": true,
+  "resolvedReviewThreads": 15,
+  "checks": [
+    {
+      "id": 121864495739,
+      "name": "minimum-framework-package / Actual Framework 4.7.2 / package",
+      "conclusion": "success"
+    },
+    {
+      "id": 121862283002,
+      "name": "minimum-framework-package / Actual Framework 4.7.2 / package",
+      "conclusion": "success"
+    },
+    {
+      "id": 121860484295,
+      "name": "minimum-framework-source / Actual Framework 4.7.2 / source",
+      "conclusion": "success"
+    },
+    {
+      "id": 121860484141,
+      "name": "Packed assets / windows-2022",
+      "conclusion": "success"
+    },
+    {
+      "id": 121860484139,
+      "name": "Packed assets / windows-11-arm",
+      "conclusion": "success"
+    },
+    {
+      "id": 121860484129,
+      "name": "Packed assets / ubuntu-24.04-arm",
+      "conclusion": "success"
+    },
+    {
+      "id": 121860484110,
+      "name": "Packed assets / ubuntu-24.04",
+      "conclusion": "success"
+    },
+    {
+      "id": 121858358558,
+      "name": "Packed assets / ubuntu-24.04",
+      "conclusion": "success"
+    },
+    {
+      "id": 121858358050,
+      "name": "minimum-framework-source / Actual Framework 4.7.2 / source",
+      "conclusion": "success"
+    },
+    {
+      "id": 121858357556,
+      "name": "Packed assets / windows-2022",
+      "conclusion": "success"
+    },
+    {
+      "id": 121858357491,
+      "name": "Packed assets / ubuntu-24.04-arm",
+      "conclusion": "success"
+    },
+    {
+      "id": 121858357473,
+      "name": "Packed assets / windows-11-arm",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850834548,
+      "name": "compile",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850834301,
+      "name": "windows-11-arm / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850834153,
+      "name": "windows-2022 / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850834075,
+      "name": "ubuntu-24.04-arm / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850834021,
+      "name": "ubuntu-24.04 / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850833660,
+      "name": "Single-core PDF performance and memory",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850814242,
+      "name": "Single-core PDF performance and memory",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850814166,
+      "name": "ubuntu-24.04 / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850814073,
+      "name": "windows-11-arm / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850813814,
+      "name": "windows-2022 / .NET 8 and 10",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850813559,
+      "name": "compile",
+      "conclusion": "success"
+    },
+    {
+      "id": 121850813512,
+      "name": "ubuntu-24.04-arm / .NET 8 and 10",
+      "conclusion": "success"
+    }
+  ],
+  "hostedRuns": [
+    {
+      "id": 40402236761,
+      "event": "push",
+      "head": "db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562",
+      "conclusion": "success",
+      "url": "https://github.com/kirakosyan/word.net/actions/runs/40402236761",
+      "artifacts": [
+        {
+          "id": 12690471088,
+          "name": "nuget-packages",
+          "digest": "sha256:6022af0c3b79696692132307d48ee52544385768321f066d55532e9db9b9fcc6",
+          "expired": false
+        },
+        {
+          "id": 12689984801,
+          "name": "minimum-framework472-package",
+          "digest": "sha256:ed1a5be2a70c026fb08608bfcf875b40e2d52a06fb06fc646729a13ca776ae3a",
+          "expired": false
+        },
+        {
+          "id": 12689619794,
+          "name": "minimum-framework472-source",
+          "digest": "sha256:8929f019dd2e46a73fa7db44988294d940bc8216019c980f02b1849d60c947a4",
+          "expired": false
+        }
+      ]
+    },
+    {
+      "id": 40402242896,
+      "event": "pull_request",
+      "head": "db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562",
+      "conclusion": "success",
+      "url": "https://github.com/kirakosyan/word.net/actions/runs/40402242896",
+      "artifacts": [
+        {
+          "id": 12691093148,
+          "name": "minimum-framework472-source",
+          "digest": "sha256:ec9247e44196bab4b76e44b996836e09853bb70c49a0ebdc45f01f95f592c42b",
+          "expired": false
+        },
+        {
+          "id": 12690824292,
+          "name": "minimum-framework472-package",
+          "digest": "sha256:eb45787b1c2c18e96eb4b5982e8ec7a4cedcac2156fd860f70da18b61af6a2bd",
+          "expired": false
+        },
+        {
+          "id": 12690127375,
+          "name": "nuget-packages",
+          "digest": "sha256:1da30af6a47a9dbd2ee62f74aefed6a02679399b40098629d75cbe0536a6ff91",
+          "expired": false
+        }
+      ]
+    }
+  ],
+  "hostedReceiptInspection": "GitHub workflow conclusions and artifact metadata verified. Signed archive downloads returned Forbidden; raw hosted receipts were not independently reopened locally. The workflow validates runtime, provenance, required counts and owned VM cleanup.",
+  "local": {
+    "os": "Linux x64",
+    "sdk": "10.0.401",
+    "buildTargets": [
+      "net462",
+      "net472",
+      "netstandard2.0",
+      "net8.0",
+      "net10.0"
+    ],
+    "releaseBuildWarnings": 0,
+    "releaseBuildErrors": 0,
+    "lockedRestore": "passed",
+    "format": "passed; SDK workspace-loading advisory",
+    "corePackageAndApiValidation": "passed",
+    "focusedP1": {
+      "passed": 83,
+      "reviewRegressions": 26
+    },
+    "fullSuites": [
+      {
+        "runtime": "8.0.33",
+        "required": 1222,
+        "passed": 1222,
+        "failed": 0,
+        "skipped": 0,
+        "englishOcr": "prepared in the process launching tests",
+        "reportSha256": "876c3087ded2ffb19c8b473a22a66294dc0238779eb1a56116637da025f164c2"
+      },
+      {
+        "runtime": "10.0.12",
+        "required": 1222,
+        "passed": 1222,
+        "failed": 0,
+        "skipped": 0,
+        "englishOcr": "prepared in the process launching tests",
+        "reportSha256": "45802e7b98e863568db7da76c1052aeecdca87e92136ff06413e8fec4f4db250"
+      }
+    ]
+  },
+  "limitations": [
+    "No actual Framework4.6.2 qualification",
+    "No new Android/macOS release support; Android checks compile only",
+    "No publication, package-version, dependency or target-framework changes",
+    "Original 1196-case measurements and all strict reference failures remain dated and unchanged"
+  ]
+}

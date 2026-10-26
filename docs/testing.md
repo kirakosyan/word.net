@@ -1,8 +1,8 @@
 # Conversion tests and qualification
 
-## Pending roadmap #102 P1 tests
+## Merged roadmap #102 P1 qualification
 
-The [P1 evidence/profile](roadmap-102-p1.md#evidence-and-remaining-qualification) adds independent OOXML/property schema, pinned-font/default/mark coordinates, demanding autofit/row splitting, conventional note continuation, typed pictures under two cultures, nested-field safety and running-header page/section/variant checks. Existing historical raster/coordinate inputs receive explicit legacy settings in detached copies; their committed originals and tolerances stay unchanged. Actual final runtime results are recorded in the P1 profile, separately from dated release qualification below.
+The [P1 evidence/profile](roadmap-102-p1.md#evidence-and-remaining-qualification) adds independent OOXML/property schema, pinned-font/default/mark coordinates, demanding autofit/row splitting, conventional note continuation, typed pictures under two cultures, nested-field safety and running-header page/section/variant checks. Existing historical raster/coordinate inputs receive explicit legacy settings in detached copies; their committed originals and tolerances stay unchanged. The final reviewed head passes 1,222/1,222 locally on both Linux x64 modern runtimes and all 24 hosted checks, including desktop source/package/Standard and actual Framework 4.7.2 source/package gates. [Merge qualification](roadmap-102-p1.md#final-review-and-merge-qualification--2026-10-26) and the [exact receipt](measurements/roadmap-102-p1-review.json) distinguish those results and raw-hosted-report inspection limits from dated release evidence below. No new package was published.
 
 
 ## Issue #103 fidelity refresh - merged evidence
