@@ -1,13 +1,13 @@
 # Formatting and image profile
 
-## Planned P2 control preservation
+## P2 control preservation — source under review
 
-The [C0 contract](content-controls-design.md) specifies a future bounded typed-control
-profile and [independent acceptance cases](content-controls-acceptance.json). It
-adds no admitted control type or preservation/rendering behavior. Unsupported
-owners, nested/unknown behavior, editing locks, static output and local XML binding
-must pass each executable leaf's evidence gates before a support claim. Current
-tagged-template and cache/loss behavior remains documented below.
+The [P2 source profile](content-controls.md) preserves bounded typed DOCX controls,
+provides atomic edits and explicit local XML operations, and renders ordinary
+managed static PDF/XPS display with diagnosed glyph fallback and a bounded single
+underline policy. Unknown/nested/story/table wrappers, richer inherited formatting,
+retained review/objects and native/tagged/archive combinations remain rejected.
+This under-review source is separate from public 1.4.0 and dated qualification.
 
 ## Merged roadmap #102 P1 source profile
 

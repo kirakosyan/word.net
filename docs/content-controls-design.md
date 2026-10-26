@@ -1,14 +1,21 @@
 # Typed content-control contract — roadmap #102 C0
 
-**Status: proposed design for #112; no executable typed-control capability.**
-This ADR starts the owner-authorized P2 queue after P1 merged in
-[PR #133](https://github.com/kirakosyan/word.net/pull/133), commit
-`2a944ac9101598bc3be2d856e5bad116123998a3`. Its tree equals qualified review head
-`db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562`; see the
-[P1 receipt](measurements/roadmap-102-p1-review.json). Accept and reconcile C0 before
-starting C1, and each executable leaf before its queue successor. Names below are
-API sketches, unavailable in source and public packages. C0 changes no binary,
-conversion behavior, dependency, package version or platform qualification.
+**Status: design and bounded implementation under review in [PR #134](https://github.com/kirakosyan/word.net/pull/134).**
+The owner subsequently authorized all P2 issues #112–#117 as one batch, superseding
+this ADR's original per-leaf scheduling gate. Implementation follows the same
+technical dependencies; each leaf keeps independent acceptance evidence. See the
+[current source/API profile](content-controls.md) and
+[acceptance map](content-controls-acceptance.json). Public 1.4.0 excludes these
+additions; no package is published by this task.
+
+P1 merged in [PR #133](https://github.com/kirakosyan/word.net/pull/133), commit
+`2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to qualified head
+`db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562`; its
+[P1 receipt](measurements/roadmap-102-p1-review.json) remains historical evidence.
+The final source profile records implementation refinements: schema-canonical GUID
+casing, admitted stores surviving explicit detach, copied paragraph-input bounds,
+and the bounded managed underline policy. These changes add no dependency, target
+framework, publication or platform claim.
 
 ## Context and decision
 
@@ -32,7 +39,7 @@ There is no unvalidated raw-XML escape hatch or automatic downgrade to template
 execution. Callers wanting the existing cache interpretation use the existing
 entry point and its diagnostics.
 
-| Stage | Planned admitted capability | Acceptance gate |
+| Stage | Bounded capability in PR #134 | Acceptance gate |
 | --- | --- | --- |
 | C0 #112 | This contract and the [acceptance matrix](content-controls-acceptance.json) | Design/specification/link review only |
 | C1 #113 | Common store/owners/handles/locks/placeholders and `w14:checkbox` | Independent checkbox preservation, edit and display evidence |
@@ -41,7 +48,7 @@ entry point and its diagnostics.
 | C4 #116 | `w:richText`, including an omitted type declaration | Formatted inline/paragraph replacement evidence |
 | C5 #117 | Local binding for admitted scalar controls, including narrow `w:text` | Safe XML graph, singleton paths and both explicit directions |
 
-Later kinds must fail in earlier preservation stages. C5 owns the minimal plain-text
+The original stages were designed to reject not-yet-implemented kinds. In this complete batch, C5 owns the minimal plain-text
 scalar adapter required by #117; rich text containing only text is still rich text
 and cannot stand in for `w:text` binding.
 
@@ -108,10 +115,10 @@ only by its typed setter. Existing review/object protections remain in force;
 typed preservation combined with retained review/object stores is unqualified and
 rejected initially. Independent acceptance is needed to widen any of these gates.
 
-Sketch only, with existing `ConversionResult`/`DocumentEditResult` result contracts:
+The implemented API uses existing `ConversionResult`/`DocumentEditResult` result contracts. See [usage](content-controls.md) for a complete example:
 
 ```csharp
-// Planned names. This is not compilable against current wordnet.
+// Source API in PR #134; absent from public 1.4.0.
 var document = WordDocument.LoadWithControls(input, controlLoadOptions,
     out ConversionResult loaded, conversionOptions, cancellationToken);
 IReadOnlyList<DocumentContentControl> controls = document.ContentControls;
@@ -121,7 +128,9 @@ DocumentEditResult edited = document.SetControlChecked(checkbox, true, cancellat
 document.SetControlSelection(selectionHandle, storedValue, cancellationToken);
 document.SetControlComboText(comboHandle, literalText, cancellationToken);
 document.SetControlDate(dateHandle, explicitDateValue, cancellationToken);
-document.ReplaceControlContent(richHandle, detachedContent, cancellationToken);
+document.ReplaceControlContent(inlineRichHandle, copiedRuns, cancellationToken);
+document.ReplaceControlParagraphs(blockRichHandle, copiedParagraphs, cancellationToken);
+document.SetControlText(plainTextHandle, literalText, cancellationToken);
 document.ShowControlPlaceholder(handle, cancellationToken);
 var display = document.CreateControlDisplayView(out ConversionResult losses, cancellationToken);
 ```
@@ -246,11 +255,11 @@ case-insensitively; require one store per ID and reject missing/duplicate stores
 unsafe part paths, external relationships and unresolved references. This bounded
 profile requires storeItemID and explicit mappings for every prefixed path;
 it does not search arbitrary parts or use a consumer's closest-match heuristic.
-Unreferenced/out-of-profile parts keep existing explicit fidelity diagnostics.
+Admitted local custom XML stores, including unbound stores within a control session, are retained so explicit detachment cannot delete caller XML data. Out-of-profile parts keep explicit fidelity diagnostics.
 DTD/entities, remote schema/resource resolution and processing instructions are
 rejected; schema URIs are inert metadata and never fetched.
 
-Planned operations are `ApplyControlBindings(handles, token)` (XML to controls),
+Implemented operations are `ApplyControlBindings(handles, token)` (XML to controls),
 `WriteBackControlBindings(handles, token)` (controls to XML), and explicit unlocked
 `DetachControlBindings(handles, token)`. Loading, saving and ordinary edits never
 silently synchronize. All selected bindings are validated before either side
@@ -306,7 +315,7 @@ initial profile. Other writers report `Control.OutputLoss`: Strict rejects befor
 copying output; explicit BestEffort/Lenient flatten the display in a working copy.
 The explicit display view reports the same loss and retains no binding data.
 
-Proposed codes are unavailable until the implementing leaf: `Control.Unsupported`,
+The implementing source profile documents the actual code catalog. The original design families are: `Control.Unsupported`,
 `Malformed`, `DuplicateId`, `ProtectedOwner`, `Locked`, `StaleHandle`,
 `TemplateExecution`, `BindingDirty`; `Binding.Store`, `Path`, `Type`, `Conflict`;
 and `Limit.Controls` for hard rejection. `Control.IdAssigned`, `CacheRefreshed`,
@@ -317,7 +326,7 @@ custom XML, cached/display text, values or secrets. Existing template diagnostic
 stay unchanged for ordinary loads. Malformed/security/resource failures do not
 become Lenient success.
 
-| Planned ceiling | Bound per operation/document |
+| Design ceiling | Bound per operation/document |
 | --- | --- |
 | Controls / glossary entries | 1,024 / 128 |
 | Tag, alias and glossary entry name | 256 UTF-16 units each |
@@ -359,30 +368,30 @@ evidence remain separate gates, with counts and any unavailable lanes explicit.
 No skipped placeholder tests count as acceptance. Q1 consolidates evidence and
 does not defer each leaf's independent proof.
 
-C0 validates specification references, links, matrix completeness and consistency
-with current copy/version/stream/resource contracts. It adds no engine test or
-runtime qualification. See the [implementation plan](implementation-plan.md).
+The initial C0-only increment validated specification references, links, matrix completeness and consistency
+with current copy/version/stream/resource contracts. Its original design commit added no engine test or
+runtime qualification; the separately authorized runtime batch has its own evidence in the source profile. See the [implementation plan](implementation-plan.md).
 Full form UI, PDF forms, legacy form fields/ActiveX, repeating sections, building
 block galleries, picture controls, arbitrary nested controls/owners, property or
 structural revisions, control composition, encryption/signatures, extra OCR
 languages and new platform claims are deferred or excluded.
 
-## C0 validation — 2026-10-26
+## Historical C0-only validation — 2026-10-26, commit 31e4259
 
 Validated JSON syntax, 34 unique case IDs, all shared-case references, exact
 technical dependencies versus queue predecessors, five-target identity and the
-explicit unimplemented/unexecuted flags. The planned fixture directory does not
-exist and the required source suite remains 1,222. Checked 201 local/file-mapped
+explicit unimplemented/unexecuted flags. At that commit the planned fixture directory did not
+exist and the required source suite remained 1,222. Checked 201 local/file-mapped
 links and anchors across the affected guides, all 11 primary reference URLs
 (HTTP 200), the official Part 1 ZIP hash and diff whitespace. Current source review
 covered template dispatch, DocumentText copying, Edit's clone/admit/version
 transaction, review/object handles and conversion resource/stream guarantees.
-No engine test, control fixture or new runtime/package qualification was added.
+No engine test, control fixture or new runtime/package qualification was added by that initial design-only commit. Subsequent implementation/evidence belongs to the source profile, not this dated receipt.
 
 ## Specification basis
 
 Reviewed 2026-10-26; these sources define markup, while the bounds above are this
-library's proposed subset decisions:
+library's bounded subset decisions:
 
 - [ECMA-376 publication](https://ecma-international.org/publications-and-standards/standards/ecma-376/), Part 1 fifth edition December 2016, §17.5.2 and §22.5; Parts 2/3 for packaging/compatibility. The inspected official Part 1 ZIP SHA-256 is `9d0bcad9cf06054785b03762fcfadbf6bab7e54a5f9d69434e34b7fd464d4129`.
 - [sdtPr and its child types](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.sdtproperties?view=openxml-3.0.1), [stable IDs](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.sdtid?view=openxml-3.0.1), [locks](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.lock?view=openxml-3.0.1).

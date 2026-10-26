@@ -1,26 +1,27 @@
 # wordnet implementation and delivery status
 
-## Roadmap #102 P2 — C0 design proposed, runtime unimplemented
+## Roadmap #102 P2 — full batch source under review in PR #134
 
-After accepting/reconciling #104–#111, the owner authorized starting P2 #112–#117.
-The [C0 ADR](content-controls-design.md) defines typed-control owners, IDs,
-placeholder/value state, session handles, locks, template collisions, output loss,
-resource limits and explicit local XML synchronization. Its
-[acceptance matrix](content-controls-acceptance.json) has eight shared and 26
-leaf-specific planned cases, all unimplemented/unexecuted. The sketches add no
-public symbol, runtime dependency or conversion claim. #112 stays open pending
-design review/merge; #113–#117 remain queued behind accepted predecessors. This
-PR also carries the P1 documentation reconciliation commit; the P1 source merge
-and its qualification below are separate from the proposed design and docs.
+The owner subsequently requested all P2 issues #112–#117, superseding the original
+C0-only scheduling gate. [PR #134](https://github.com/kirakosyan/word.net/pull/134)
+now contains the design plus checkbox/list/date/rich-text preservation/editing and
+explicit bounded local XML binding. The [source profile](content-controls.md) and
+[acceptance map](content-controls-acceptance.json) define admitted owners, IDs,
+handles/locks, placeholders, formatting, literal tags, output and resource limits.
+Each leaf retains independent fixtures and acceptance evidence; source/package/
+runtime qualification and publication stay separate. All issues remain open
+pending review/merge and subsequent reconciliation. Public packages remain 1.4.0;
+no dependency, target, platform, tag or publication change is authorized here.
 
-Validation for C0 is specification/current-contract review, matrix/JSON integrity,
-links and diff/status consistency. No new engine tests or runtime qualification
-are claimed by this documentation-only increment. Public packages remain 1.4.0;
-publication and P3–P6 remain outside the current authorization.
+The P1 documentation reconciliation is included as its own commit, preserving all
+historical receipt identities and failed reference verdicts. C0's 34 planned-case
+receipt remains dated; executable tests and exact counts belong to the P2 source
+validation ledger, not to the old design-only result. Full checks are being run
+before reporting this batch complete. P3–P6 remain planning.
 
 ## Roadmap #102 P1 — merged source, PR #133
 
-The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 start is authorized; its next leaf is design-only #112, with executable #113–#117 gated on accepted predecessors.
+The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 start is authorized; its full #112–#117 batch is now under review in PR #134.
 
 ## Roadmap #102 / issue #103 - merged baseline findings
 
@@ -181,9 +182,8 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Remaining work
 
 1. Preserve historical release evidence, including the published [1.4.0 profile](roadmap-99-implementation.md).
-   Roadmap #102 P1 (#104–#111) is merged source beyond that release. Start authorized
-   P2 with #112’s design contract; accept/reconcile each leaf before the next executable
-   control stage. P3–P6 and #99’s unnumbered proposal remain planning. Bucket 5
+   Roadmap #102 P1 (#104–#111) is merged source beyond that release. Complete the owner-authorized
+   P2 #112–#117 batch and reconcile each leaf after review/merge. P3–P6 and #99’s unnumbered proposal remain planning. Bucket 5
    [design records](later-design-decisions.md) retain their separate policy gates.
 
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed

@@ -20,6 +20,7 @@ public sealed partial class WordDocument
         DocumentModel? snapshot = null; IReadOnlyList<ConversionDiagnostic> sourceDiagnostics = Array.Empty<ConversionDiagnostic>();
         if (!self) lock (source.gate)
         {
+            if (source.model.Controls.HasControls) throw new NotSupportedException("Control.ProtectedOwner: Create an explicit display view before appending a typed-control source.");
             Admit(source.model, new ConversionContext(options, cancellationToken));
             snapshot = new DocumentCloner(new ConversionContext(options, cancellationToken)).Copy(source.model); sourceDiagnostics = source.diagnostics;
         }

@@ -80,10 +80,15 @@ internal sealed partial class DocxWriter
         WritePart(archive, "_rels/.rels", rootRelationships);
         WritePart(archive, "word/document.xml", new XElement(W + "document",
             new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
-            new XAttribute(XNamespace.Xmlns + "r", DocxPackage.DocumentRelationships.NamespaceName), body));
+            new XAttribute(XNamespace.Xmlns + "r", DocxPackage.DocumentRelationships.NamespaceName),
+            document.Controls.Items.Values.Any(d => d.Kind == ContentControlKind.Checkbox) ? new object[] {
+                new XAttribute(XNamespace.Xmlns + "w14", ControlValues.W14.NamespaceName),
+                new XAttribute(XNamespace.Xmlns + "mc", "http://schemas.openxmlformats.org/markup-compatibility/2006"),
+                new XAttribute(XName.Get("Ignorable", "http://schemas.openxmlformats.org/markup-compatibility/2006"), "w14") } : null, body));
 
         writer.WriteStories(document, archive, types);
         writer.WriteReview(archive, types);
+        writer.WriteTypedParts(archive, types);
         if (writer.usedStyles.Count > 0)
         {
             types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/styles.xml"),
@@ -151,16 +156,18 @@ internal sealed partial class DocxWriter
         if (markProperties != null) properties.Add(markProperties);
         if (properties.HasElements) element.Add(properties);
 
-        TemplateControl? currentControl = null;
+        TemplateControl? currentControl = null; int? currentTypedControl = null;
         XElement parent = element;
         string? currentRevision = null; XElement? revisionParent = null;
         foreach (TextRun run in paragraph.Runs)
         {
             context.CheckCancellation();
-            if (!ReferenceEquals(currentControl, run.Control))
+            if (!ReferenceEquals(currentControl, run.Control) || currentTypedControl != run.TypedControlId)
             {
-                currentControl = run.Control; parent = element;
-                if (currentControl != null)
+                currentControl = run.Control; currentTypedControl = run.TypedControlId; parent = element;
+                if (currentTypedControl is int typedId)
+                { XElement wrapper = TypedControl(typedId, null); element.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!; }
+                else if (currentControl != null)
                 {
                     XElement wrapper = Control(currentControl, null); element.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!;
                 }
@@ -357,13 +364,13 @@ internal sealed partial class DocxWriter
         DocumentBlock? first = null, last = null; XElement? group = null;
         foreach (DocumentBlock block in blocks)
         {
-            if (first != null && (block.Control == null || !ReferenceEquals(first.Control, block.Control)))
+            if (first != null && (!HasControl(block) || !SameControl(first, block)))
             { yield return (first, last!, group!); first = null; group = null; }
             if (first != null && includeSections && !ReferenceEquals(last!.Section, block.Section))
                 AttachSection(group!.Element(W + "sdtContent")!, last.Section ?? new PageSettings());
             XElement element = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
-            if (block.Control == null) { yield return (block, block, element); continue; }
-            if (first == null) { first = block; group = Control(block.Control, element); }
+            if (!HasControl(block)) { yield return (block, block, element); continue; }
+            if (first == null) { first = block; group = BlockControl(block, element); }
             else group!.Element(W + "sdtContent")!.Add(element);
             last = block;
         }

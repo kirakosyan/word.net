@@ -90,6 +90,7 @@ internal sealed partial class DocxReader
             throw new InvalidDataException("Docx.Body: Exactly one document body is required.");
         }
 
+        reader.PrepareTypedControls(source);
         var document = new DocumentModel();
         reader.ValidateReviewSource(bodies[0]);
         reader.ReadBlocks(bodies[0], document.Blocks);
@@ -125,6 +126,7 @@ internal sealed partial class DocxReader
         if (package.PartNames.Any(name => !knownParts.Contains(name)))
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         document.ObjectCount = context.ObjectCount;
+        reader.FinishTypedControls(document);
         if (document.ObjectCount != 0) { ObjectSafety.Owners(document); context.Objects.Finish(document.CharacterCount, 0); }
         return document;
     }
@@ -729,7 +731,7 @@ internal sealed partial class DocxReader
                     throw new InvalidDataException("Docx.Color: Expected six RGB hexadecimal digits or auto.");
                 style.Color = value == "auto" ? null : value.ToUpperInvariant();
                 style.HasColor = true;
-                if (property.Attributes().Any(a => a.Name != W + "val")) context.Loss("Docx.ThemeColor", "Theme color uses its stored RGB fallback.");
+                if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val")) context.Loss("Docx.ThemeColor", "Theme color uses its stored RGB fallback.");
             }
             else if (property.Name == W + "lang")
                 context.Report("Docx.LanguageMetadata", "Language/proofing metadata is not retained; Unicode text is preserved.");

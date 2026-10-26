@@ -1,14 +1,14 @@
 # Conversion diagnostics
 
-## Proposed P2 diagnostics — unavailable
+## P2 control diagnostics — source under review
 
-The [C0 design](content-controls-design.md#output-diagnostics-and-limits) reserves
-planned `Control.*`, `Binding.*` and `Limit.Controls` outcomes for owner/type/lock/
-handle, template collision, explicit binding, static display and export-loss
-behavior. These codes are not emitted by this design change. Existing template
-diagnostics remain current; opted-in preservation is planned to reject unknown
-behavior in every fidelity mode, with explicit information for admitted cache
-refresh/glyph fallback and Strict loss for other editable destinations.
+The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents
+hard `Control.*`, `Binding.*` and `Limit.Controls` failures, informational ID/cache/
+glyph/GUID/style/static/binding-state outcomes and explicit export loss. Unknown
+preservation behavior rejects in every mode. Dirty bindings block DOCX save until
+an explicit decision. Namespace declarations are no longer misreported as theme
+color attributes. Diagnostics carry locations/codes without control/XML values.
+This source is under review and absent from public 1.4.0.
 
 ## Merged roadmap #102 P1 diagnostics
 

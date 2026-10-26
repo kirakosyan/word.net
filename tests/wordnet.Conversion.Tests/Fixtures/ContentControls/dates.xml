@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:sdt><w:sdtPr><w:id w:val="20"/><w:date w:fullDate="2024-02-29T00:00:00Z"><w:dateFormat w:val="yyyy-MM-dd"/><w:lid w:val="EN-us"/><w:storeMappedDataAs w:val="date"/><w:calendar w:val="gregorian"/></w:date></w:sdtPr><w:sdtContent><w:p><w:r><w:t>2024-02-29</w:t></w:r></w:p></w:sdtContent></w:sdt>
+    <w:p><w:sdt><w:sdtPr><w:id w:val="21"/><w:date w:fullDate="2026-01-01T00:30:00+02:00"><w:dateFormat w:val="yyyy-MM-dd HH:mm"/><w:lid w:val="en-GB"/><w:storeMappedDataAs w:val="dateTime"/><w:calendar w:val="gregorian"/></w:date></w:sdtPr><w:sdtContent><w:r><w:t>old instant cache</w:t></w:r></w:sdtContent></w:sdt></w:p>
+  </w:body>
+</w:document>

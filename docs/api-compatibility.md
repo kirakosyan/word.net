@@ -1,13 +1,13 @@
 # API and support policy
 
-## Proposed P2 controls API — unavailable
+## P2 controls API — source under review
 
-The [C0 sketches](content-controls-design.md#sessions-and-explicit-edits) propose a
-separate DOCX `LoadWithControls` entry point, immutable session/version handles and
-explicit typed edits. They are not public APIs in this source or any package.
-Existing Load/ReviewLoadOptions overloads remain unchanged. Each executable leaf
-must preserve all five target APIs and the existing copy, cancellation, stream and
-atomicity contracts; C0 performs no binary/package validation or support expansion.
+The [P2 source API](content-controls.md) adds `LoadWithControls`, detached
+session/version control snapshots, explicit typed setters, rich replacements,
+placeholder/display views and existing-local-binding apply/write-back/detach.
+Existing Load/ReviewLoadOptions metadata and all five targets remain. No provider
+or XML/SDK type enters the public API. Source review, binary/package validation
+and actual runtime qualification remain separate from public 1.4.0 availability.
 
 ## Merged roadmap #102 P1 API additions
 

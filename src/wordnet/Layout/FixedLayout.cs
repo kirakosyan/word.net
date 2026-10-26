@@ -1051,6 +1051,11 @@ internal static partial class FixedLayout
                     placed = placed.WithText(DocumentFields.Render(item.Field, model, destination.PageNumber, totalPages,
                         sectionTotals != null && sectionTotals.TryGetValue(sourceSettings, out int count) ? count : totalPages, context));
                 destination.Text.Add(placed);
+                if (placed.SourceRun is TextRun displayRun && displayRun.ControlDisplay && displayRun.Appearance.Underline && placed.Text.Length != 0 && !context.Typography.Enabled)
+                {
+                    double advance = Measure(placed.Text, placed.Font, placed.Size);
+                    if (advance > 0) destination.Shapes.Add(new FixedShape(placed.X, placed.Y + placed.Size * 0.1, advance, 0, placed.Color ?? "000000", Math.Max(0.5, placed.Size / 16)));
+                }
             }
         }
 

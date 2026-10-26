@@ -1,13 +1,12 @@
 # Creating, editing and filling documents
 
-## Planned typed controls
+## Opt-in typed controls — source under review
 
-The [proposed C0 contract](content-controls-design.md) separates typed checkbox,
-list, date and rich-text state from existing tagged template execution. Its API
-examples are unavailable sketches. The design specifies explicit handles/edits,
-editing locks, placeholder/value separation and later local XML apply/write-back;
-it does not add those operations. Continue using the existing template workflows
-below. Runtime #113–#117 requires each predecessor's accepted evidence.
+See [typed-control usage](content-controls.md) for the opt-in DOCX entry point,
+immutable handles, explicit checkbox/list/date/rich/plain edits, placeholders and
+local XML operations. Typed tags never execute; ordinary content/template edits
+require a detached display view. Existing template-only loading below is unchanged.
+The implementation is under review in PR #134 and absent from public 1.4.0.
 
 ## Merged typed properties and field workflows
 

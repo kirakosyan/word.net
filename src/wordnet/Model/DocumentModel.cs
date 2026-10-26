@@ -6,6 +6,7 @@ namespace WordNet.Model;
 internal sealed class DocumentModel
 {
     internal int ObjectCount { get; set; }
+    internal ContentControlStore Controls { get; set; } = new ContentControlStore();
     internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
@@ -49,6 +50,7 @@ internal sealed class DocumentModel
 
 internal abstract class DocumentBlock
 {
+    internal int? TypedControlId { get; set; }
     internal TemplateControl? Control { get; set; }
     internal SourceLocation? Location { get; set; }
     internal PageSettings? Section { get; set; }
@@ -135,6 +137,8 @@ internal sealed class CellBorder
 
 internal sealed class TextRun
 {
+    internal int? TypedControlId { get; set; }
+    internal bool ControlDisplay { get; set; }
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
         double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
     {
@@ -177,12 +181,12 @@ internal sealed class TextRun
     // Every semantic run rebuild must retain the complete field/history carrier.
     internal TextRun RetainMetadata(TextRun source)
     {
-        FieldChildren = source.FieldChildren; FieldCache = source.FieldCache;
+        ControlDisplay = source.ControlDisplay; TypedControlId = source.TypedControlId; FieldChildren = source.FieldChildren; FieldCache = source.FieldCache;
         Revision = source.Revision; Comment = source.Comment; CommentBoundary = source.CommentBoundary; BidiLevel = source.BidiLevel;
         return this;
     }
     internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control, Object)
-    { FieldChildren = FieldChildren, FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
+    { ControlDisplay = ControlDisplay, TypedControlId = TypedControlId, FieldChildren = FieldChildren, FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
 }
 
 internal sealed class TemplateControl

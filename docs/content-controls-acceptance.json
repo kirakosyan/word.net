@@ -1,13 +1,12 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "roadmap": 102,
   "designIssue": 112,
-  "status": "proposed acceptance plan; cases are unimplemented and unexecuted",
-  "runtimeImplemented": false,
+  "status": "Implemented in PR #134; acceptance pending review/merge; local and hosted execution are recorded separately",
+  "runtimeImplemented": true,
   "acceptedSourceBaseline": "2a944ac9101598bc3be2d856e5bad116123998a3",
   "contract": "content-controls-design.md",
-  "plannedFixtureRoot": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls",
-  "evidencePolicy": "Every listed fixture/case is a future requirement, not existing test evidence. C0 validates this plan only. Record actual independent results, provenance, skips and unavailable tools per executable leaf.",
+  "evidencePolicy": "Case-to-test mappings identify executable evidence. Historical C0 plan remains in commit 31e4259. Counts, outcomes, runtime and tooling limits belong to the P2 qualification receipt; mappings alone do not assert execution or platform qualification.",
   "frameworks": [
     "net462",
     "net472",
@@ -20,88 +19,142 @@
     {
       "id": "G01",
       "kind": "mixed",
-      "plannedFixture": "identity-and-owners",
       "assertion": "Preserve signed IDs/tags/aliases and order; assign missing IDs deterministically with information; reject duplicate/exhausted IDs, unknown types/properties, malformed values, nested controls and unsupported owners before returning a session.",
       "independentOracles": [
         "authored OOXML manifest",
         "direct XML and relationship inspection",
         "Office2010+ schema validation"
-      ]
+      ],
+      "fixtureScenario": "identity-and-owners",
+      "tests": [
+        "ContentControlFoundationTests.MissingIdsAreAssignedAfterReservingAllExplicitIdsAndTagsNeedNotBeUnique",
+        "ContentControlBoundaryTests.DuplicateIdsFailAndMultipleCharactersCannotMasqueradeAsACheckbox",
+        "ContentControlBoundaryTests.TableRowAndHeaderStoryOwnersAreExplicitlyRejected",
+        "ContentControlBoundaryTests.UnknownBehaviorAndInvalidLocksNeverBecomeLenientPreservation"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G02",
       "kind": "mixed",
-      "plannedFixture": "all-four-locks",
       "assertion": "Exercise absent/unlocked/sdtLocked/contentLocked/sdtContentLocked with every typed setter and placeholder/apply/detach operation; failed edits keep original model/version/diagnostics. No bypass via Replace/Append/Merge.",
       "independentOracles": [
         "lock truth table in ADR",
         "unchanged serialized semantic snapshot"
-      ]
+      ],
+      "fixtureScenario": "all-four-locks",
+      "tests": [
+        "ContentControlFoundationTests.LocksEnforceEditingWithoutChangingTheSource",
+        "ContentControlFoundationTests.LockedPlaceholderResetCannotRewriteContent",
+        "ContentControlAcceptanceEdgeTests.ContentLocksProtectEveryTypedValueMutation",
+        "ContentControlBindingTests.BindingDirectionsRespectLocksAndForeignOrStaleHandles"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G03",
       "kind": "negative",
-      "plannedFixture": "foreign-stale-and-noop-handles",
       "assertion": "Foreign, stale and wrong-kind handles fail; committed metadata/typed edits, including zero-change commits, invalidate old handles; failed/cancelled calls and Save do not. Detached snapshots remain unchanged.",
       "independentOracles": [
         "public API observations",
         "direct XML before/after"
-      ]
+      ],
+      "fixtureScenario": "foreign-stale-and-noop-handles",
+      "tests": [
+        "ContentControlFoundationTests.ForeignStaleAndWrongKindHandlesFailAndMetadataCommitsInvalidateSnapshots",
+        "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
+        "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G04",
       "kind": "mixed",
-      "plannedFixture": "typed-template-tag-collisions",
       "assertion": "Typed merge/image/if/repeat tags never execute. Duplicate tags return separate handles. Merge rejects before caller getters/JSON evaluation; explicit display view removes typed tags and leaves original and unrelated legacy template behavior intact.",
       "independentOracles": [
         "caller getter counter",
         "expected text/order manifest",
         "direct XML"
-      ]
+      ],
+      "fixtureScenario": "typed-template-tag-collisions",
+      "tests": [
+        "ContentControlFoundationTests.TypedTagsNeverExecuteAndOrdinaryOwnerRewritesRejectBeforeCallerGetters",
+        "ContentControlRichTextTests.TypedDisplayViewRemovesOnlyTypedTagsAndLeavesAnExternalMergeFieldExecutable"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G05",
       "kind": "mixed",
-      "plannedFixture": "snapshot-save-and-copy-boundaries",
       "assertion": "Metadata edits/save retain typed state, formatting and neighboring nested fields/bookmarks; mutate caller formatting/collections after input and verify detachment. Ordinary Replace/bookmark/Append/retained-review/object combinations reject atomically.",
       "independentOracles": [
         "independent raw XML for field boundaries and controls",
         "schema validation",
         "public snapshot expectations"
-      ]
+      ],
+      "fixtureScenario": "snapshot-save-and-copy-boundaries",
+      "tests": [
+        "ContentControlRichTextTests.FormattedSnapshotsAndBlockAppearanceAreDetachedAndSchemaValidated",
+        "ContentControlRichTextTests.ParagraphInputsCopyCallerCollectionsAndFormattingBeforeReplacement",
+        "ContentControlAcceptanceEdgeTests.NestedScalarTreesOutsideRichOwnersSurviveTypedReplacementAndSchemaValidation",
+        "ContentControlAcceptanceEdgeTests.RetainedObjectsAndRecordingCannotBypassTypedOwnerProtection"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G06",
       "kind": "resource",
-      "plannedFixture": "cancellation-and-aggregate-limits",
       "assertion": "Exercise pre-cancel and traversal/enumeration cancellation, count/depth/characters/bytes/work at limit and limit+1, many small metadata entries and checked overflow. No pre-copy failure writes caller output; streams stay open. Final-copy I/O behavior follows caller-stream contract.",
       "independentOracles": [
         "counted/cancelling caller streams",
         "sentinel output bytes",
         "semantic before/after snapshots"
-      ]
+      ],
+      "fixtureScenario": "cancellation-and-aggregate-limits",
+      "tests": [
+        "ContentControlBoundaryTests.ControlCountAndPerListItemLimitsHaveRealBoundaryCases",
+        "ContentControlBoundaryTests.AggregateItemsAndMetadataStringsAreBounded",
+        "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched",
+        "ContentControlFoundationTests.ReadAndWriteLeaveCallerStreamsOpenAndPreCopyFailureUntouched",
+        "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
+        "ContentControlBindingTests.PathDepthLengthNamespaceAndAggregateXmlNodeLimitsAreEnforced"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G07",
       "kind": "mixed",
-      "plannedFixture": "output-policy",
       "assertion": "DOCX retains editable state; managed PDF/XPS has selectable static value/placeholder and information. Strict non-DOCX editable loss rejects before copy; BestEffort/Lenient/display-view flatten explicitly. Native/tagged/archive/unqualified combinations reject.",
       "independentOracles": [
         "Office2010+ schema validation",
         "independent PDF/XPS text and coordinates",
         "diagnostic code/severity expectations"
-      ]
+      ],
+      "fixtureScenario": "output-policy",
+      "tests": [
+        "ContentControlFoundationTests.CheckboxPreservesIdentityStateGlyphMetadataAndSelectableDisplay",
+        "ContentControlFoundationTests.OtherDestinationsRejectStrictBeforeCopyAndDiscloseExplicitFlattening",
+        "ContentControlBoundaryTests.NativeAndConformanceCombinationsStayUnsupportedBeforeOutputCopy",
+        "ContentControlAcceptanceEdgeTests.UnsupportedUnderlineCombinationsRejectStaticOutputExplicitly"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     },
     {
       "id": "G08",
       "kind": "positive",
-      "plannedFixture": "pinned-display-and-provenance",
       "assertion": "Record authored fixture provenance, font hashes/licenses, expected text/order/coordinates and diagnostic policy. Keep independent failures and unavailable consumer/UI tools explicit; do not qualify a platform by compilation or a self round trip.",
       "independentOracles": [
         "manifest/specification expectations",
         "independent fixed-page reader",
         "font coverage metadata"
-      ]
+      ],
+      "fixtureScenario": "pinned-display-and-provenance",
+      "tests": [
+        "ContentControlFoundationTests.CheckboxPreservesIdentityStateGlyphMetadataAndSelectableDisplay",
+        "ContentControlFoundationTests.MissingGlyphUsesAsciiOnlyInFixedDisplay",
+        "ContentControlAcceptanceEdgeTests.StaticUnderlineHasIndependentStrokeGeometryAndDoesNotPaintAdjacentText"
+      ],
+      "status": "executable; consult qualification receipt for actual outcome"
     }
   ],
   "stages": [
@@ -112,7 +165,7 @@
       "requiresAcceptedIssues": [
         112
       ],
-      "runtimeImplemented": false,
+      "runtimeImplemented": true,
       "requiredSharedCases": [
         "G01",
         "G02",
@@ -127,46 +180,68 @@
         {
           "id": "C1-01",
           "kind": "positive",
-          "plannedFixture": "checkbox-inline-block",
           "assertion": "Preserve checked/unchecked and omitted-state defaults, signed ID, tag/alias, original optional glyph/font declarations and neighboring Unicode text through independent DOCX inspection. Verify emitted property order and required Office2010 namespace/markup-compatibility declarations.",
           "independentOracles": [
             "authored XML/state manifest",
             "Office2010+ schema validation"
-          ]
+          ],
+          "fixtureScenario": "checkbox-inline-block",
+          "tests": [
+            "ContentControlFoundationTests.CheckboxPreservesIdentityStateGlyphMetadataAndSelectableDisplay",
+            "ContentControlFoundationTests.OmittedCheckboxStateAndGlyphDeclarationsKeepTheirAbsence"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C1-02",
           "kind": "mixed",
-          "plannedFixture": "checkbox-glyphs",
           "assertion": "Both checkbox states render correctly with pinned glyph coverage; a deliberately unavailable glyph/font yields selectable [x]/[ ] with Control.GlyphFallback while editable DOCX retains its declaration. Mismatched source cache refresh is informational.",
           "independentOracles": [
             "font cmap coverage",
             "independent PDF/XPS extraction/coordinates",
             "direct DOCX XML"
-          ]
+          ],
+          "fixtureScenario": "checkbox-glyphs",
+          "tests": [
+            "ContentControlFoundationTests.MissingGlyphUsesAsciiOnlyInFixedDisplay",
+            "ContentControlFoundationTests.CheckboxPreservesIdentityStateGlyphMetadataAndSelectableDisplay"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C1-03",
           "kind": "negative",
-          "plannedFixture": "checkbox-malformed",
           "assertion": "Reject invalid Boolean/hex, surrogate/non-BMP code, multiple content characters and retained deleted runs, without output or session mutation.",
           "independentOracles": [
             "specification-derived malformed XML",
             "sentinel outputs"
-          ]
+          ],
+          "fixtureScenario": "checkbox-malformed",
+          "tests": [
+            "ContentControlBoundaryTests.InvalidCheckboxStateAndGlyphsFailInEveryFidelityMode",
+            "ContentControlBoundaryTests.DuplicateIdsFailAndMultipleCharactersCannotMasqueradeAsACheckbox",
+            "ContentControlBoundaryTests.RichControlsRejectStructuralHistoryObjectAndBoundaryContent"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C1-04",
           "kind": "mixed",
-          "plannedFixture": "placeholder-glossary",
           "assertion": "Retain cache-only placeholder versus actual value and a bounded local glossary reference/entry/relationship; explicit set clears placeholder and explicit reset restores authored text. Reject missing/duplicate/rich/external glossary entries and aggregate expansion.",
           "independentOracles": [
             "direct OPC graph inspection",
             "schema validation",
             "independent displayed text"
-          ]
+          ],
+          "fixtureScenario": "placeholder-glossary",
+          "tests": [
+            "ContentControlListTests.LocalGlossaryAndCacheOnlyPlaceholdersSurviveExplicitSelectionAndReset",
+            "ContentControlBoundaryTests.MissingOrRichGlossaryEntriesFailInsteadOfDroppingThePlaceholderRelationship"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         }
-      ]
+      ],
+      "status": "implemented under review; original technical dependencies retained"
     },
     {
       "issue": 114,
@@ -176,7 +251,7 @@
         112,
         113
       ],
-      "runtimeImplemented": false,
+      "runtimeImplemented": true,
       "requiredSharedCases": [
         "G01",
         "G02",
@@ -191,56 +266,83 @@
         {
           "id": "C2-01",
           "kind": "positive",
-          "plannedFixture": "ordered-dropdown-and-combo",
           "assertion": "Preserve item order, explicit/omitted display labels, Unicode stored values, selected label and optional lastValue; a stored empty value remains distinct from no selection and placeholder.",
           "independentOracles": [
             "independently authored XML/item manifest",
             "schema validation",
             "independent PDF/XPS text"
-          ]
+          ],
+          "fixtureScenario": "ordered-dropdown-and-combo",
+          "tests": [
+            "ContentControlListTests.OrderedItemsStoredValuesFreeTextAndCellOwnersRemainEditable"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C2-02",
           "kind": "mixed",
-          "plannedFixture": "membership-and-free-text",
           "assertion": "Dropdown selection accepts exact ordinal member values only. Combo permits bounded literal nonmember text. Unbound lastValue is not an index/selection authority. Invalid selection leaves model/version unchanged. Reject free text colliding with an item label or bound member value; empty combo text canonicalizes to no selection.",
           "independentOracles": [
             "expected stored-value/display mapping",
             "raw XML inspection",
             "public snapshots"
-          ]
+          ],
+          "fixtureScenario": "membership-and-free-text",
+          "tests": [
+            "ContentControlListTests.InvalidSelectionAndAmbiguousComboTextAreAtomic",
+            "ContentControlListTests.MultipleInlineEditsDoNotUseStaleRunSliceOffsets"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C2-03",
           "kind": "mixed",
-          "plannedFixture": "empty-missing-and-ambiguous",
           "assertion": "Exercise zero items, null selection, empty stored value with nonempty label, placeholder, unmatched nonempty cache and absent displayText fallback. A dropdown nonmember stays explicitly unresolved; an unbound combo nonmember is literal free text; duplicate values/labels and empty effective labels fail.",
           "independentOracles": [
             "source state manifest",
             "independent XML reader"
-          ]
+          ],
+          "fixtureScenario": "empty-missing-and-ambiguous",
+          "tests": [
+            "ContentControlListTests.DuplicateMissingAndEmptyItemIdentityIsRejected",
+            "ContentControlListTests.UnmatchedDropdownCacheIsUnresolvedAndNeverSelectsItemZero",
+            "ContentControlListTests.OmittedLabelsUseValuesAndAnEmptyListCanStayEmpty"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C2-04",
           "kind": "resource",
-          "plannedFixture": "list-item-budgets",
           "assertion": "Exercise 256 items/control, 4096 aggregate, item/tag string and aggregate byte/work boundaries; invalid late item enumeration cannot partially commit.",
           "independentOracles": [
             "counted caller enumeration",
             "sentinel before/after XML"
-          ]
+          ],
+          "fixtureScenario": "list-item-budgets",
+          "tests": [
+            "ContentControlBoundaryTests.ControlCountAndPerListItemLimitsHaveRealBoundaryCases",
+            "ContentControlBoundaryTests.AggregateItemsAndMetadataStringsAreBounded"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C2-05",
           "kind": "negative",
-          "plannedFixture": "scalar-list-structure",
-          "assertion": "Reject multiple formatting sets/paragraphs, nested controls, rich item payload and dataBinding until C5; retain surrounding legacy merge/condition behavior on the ordinary entry point.",
+          "assertion": "Reject multiple formatting sets/paragraphs, nested controls, rich item payload; scalar dataBinding is now admitted by C5; retain surrounding legacy merge/condition behavior on the ordinary entry point.",
           "independentOracles": [
             "schema and source structure",
             "existing independent template expectations"
-          ]
+          ],
+          "fixtureScenario": "scalar-list-structure",
+          "tests": [
+            "ContentControlBoundaryTests.ScalarControlsRequireOneFormattingSetAndAtMostOneParagraph",
+            "ContentControlFoundationTests.OrdinaryCachedConversionRemainsIndependentOfTypedTemplateTags",
+            "ContentControlBindingTests.LocalGraphsArePreservedWithoutImplicitApplyThenAllScalarKindsApplyExplicitly"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         }
-      ]
+      ],
+      "status": "implemented under review; original technical dependencies retained"
     },
     {
       "issue": 115,
@@ -251,7 +353,7 @@
         113,
         109
       ],
-      "runtimeImplemented": false,
+      "runtimeImplemented": true,
       "requiredSharedCases": [
         "G01",
         "G02",
@@ -266,57 +368,86 @@
         {
           "id": "C3-01",
           "kind": "positive",
-          "plannedFixture": "gregorian-date-only",
           "assertion": "Explicit DateOnly mode preserves canonical midnight fullDate and Y/M/D across leap day, year 1/year 9999, save/reload with same policy, placeholder/null/empty and en-US/en-GB case variants. No clock/text inference.",
           "independentOracles": [
             "XML dateTime/date lexical expectations",
             "schema validation",
             "independent PDF/XPS text"
-          ]
+          ],
+          "fixtureScenario": "gregorian-date-only",
+          "tests": [
+            "ContentControlDateTests.CalendarDatesRoundTripWithExplicitPolicyAndNoHiddenTimeTruncation",
+            "ContentControlAcceptanceEdgeTests.DateLoadPolicyIsCapturedAndPlaceholdersDoNotExposeAnOldTypedValue"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C3-02",
           "kind": "positive",
-          "plannedFixture": "offset-instant-and-cultures",
           "assertion": "Explicit-offset instants display deterministically in UTC across offset date boundaries, under two host cultures/timezones and supplied fixed values; retain original date/storage metadata and diagnose cache refresh.",
           "independentOracles": [
             "independent UTC date calculations",
             "raw XML",
             "fixed-output reader"
-          ]
+          ],
+          "fixtureScenario": "offset-instant-and-cultures",
+          "tests": [
+            "ContentControlDateTests.InstantDisplayUsesUtcAndInvariantPicturesWithoutClockOrTextInference"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C3-03",
           "kind": "negative",
-          "plannedFixture": "malformed-and-unsupported-dates",
           "assertion": "Reject invalid leap days/ranges, offset-less instants, DateOnly non-midnight/offset input, unsupported calendars/locales, absent/unsupported mask and DateOnly time tokens without partial mutation or date truncation.",
           "independentOracles": [
             "specification-derived negative lexical cases",
             "unchanged semantic snapshot"
-          ]
+          ],
+          "fixtureScenario": "malformed-and-unsupported-dates",
+          "tests": [
+            "ContentControlDateTests.MalformedOrImplicitZoneDatesAreRejected",
+            "ContentControlDateTests.CalendarModeRejectsImportedTimesAndOffsetsRatherThanChangingTheirDate",
+            "ContentControlDateTests.UnsupportedCalendarsLocalesAndPicturesFailPreservation",
+            "ContentControlDateTests.DateOnlyPicturesRejectTimeTokensButPermitQuotedTimeLetters"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C3-04",
           "kind": "mixed",
-          "plannedFixture": "date-mask-and-missing-cache",
           "assertion": "Exercise every admitted F2 date token/literal, missing fullDate with literal unresolved cache, explicit null and authored placeholder reset. Keep ordinary DATE/TIME and legacy merge behavior unchanged.",
           "independentOracles": [
             "published F2 token expectations",
             "independent XML/PDF/XPS text",
             "existing field regressions"
-          ]
+          ],
+          "fixtureScenario": "date-mask-and-missing-cache",
+          "tests": [
+            "ContentControlDateTests.MissingDateKeepsLiteralCacheAndPlaceholderStateWithoutInferringAValue",
+            "ContentControlDateTests.DateOnlyPicturesRejectTimeTokensButPermitQuotedTimeLetters",
+            "P1FieldTests.PicturesAreInvariantAndDoNotConsultTheClock"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C3-05",
           "kind": "resource",
-          "plannedFixture": "date-format-budgets",
           "assertion": "Enforce 128-character picture, 64 tokens, 1024 displayed units and aggregate work/output bounds, with cancellation before commit.",
           "independentOracles": [
             "independently calculated lengths/token totals",
             "sentinel output"
-          ]
+          ],
+          "fixtureScenario": "date-format-budgets",
+          "tests": [
+            "ContentControlDateTests.DatePictureLengthAndTokenBudgetsHaveAdmittedAndRejectedBoundaries",
+            "ContentControlDateTests.UnsupportedCalendarsLocalesAndPicturesFailPreservation",
+            "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         }
-      ]
+      ],
+      "status": "implemented under review; original technical dependencies retained"
     },
     {
       "issue": 116,
@@ -326,7 +457,7 @@
         112,
         113
       ],
-      "runtimeImplemented": false,
+      "runtimeImplemented": true,
       "requiredSharedCases": [
         "G01",
         "G02",
@@ -341,47 +472,72 @@
         {
           "id": "C4-01",
           "kind": "positive",
-          "plannedFixture": "formatted-inline-and-block-rich-text",
           "assertion": "Preserve explicit richText and omitted-type controls with Unicode, bold/italic/underline/font/size/color and ordinary paragraph spacing/alignment/heading role; replace from copied caller values and verify detached snapshots.",
           "independentOracles": [
             "authored OOXML appearance/paragraph manifest",
             "schema validation",
             "independent fixed-page text/coordinates"
-          ]
+          ],
+          "fixtureScenario": "formatted-inline-and-block-rich-text",
+          "tests": [
+            "ContentControlRichTextTests.FormattedSnapshotsAndBlockAppearanceAreDetachedAndSchemaValidated",
+            "ContentControlRichTextTests.ReplacementCreatesRealParagraphsAndPreservesControlIdentityAndSurroundingFields",
+            "ContentControlAcceptanceEdgeTests.StaticUnderlineHasIndependentStrokeGeometryAndDoesNotPaintAdjacentText"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C4-02",
           "kind": "mixed",
-          "plannedFixture": "rich-owner-boundaries",
           "assertion": "Preserve adjacent nested fields, closed bookmarks and separate controls exactly; reject fields/bookmarks inside or crossing owners and unsupported paragraph formatting. Late invalid replacement is atomic.",
           "independentOracles": [
             "raw XML boundary/order assertions",
             "schema validation",
             "unchanged non-owner text/style manifest"
-          ]
+          ],
+          "fixtureScenario": "rich-owner-boundaries",
+          "tests": [
+            "ContentControlRichTextTests.CrossedBookmarksAndFieldsInsideControlsAreRejectedWhileAdjacentNestedFieldsRemainLive",
+            "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
+            "ContentControlAcceptanceEdgeTests.NestedScalarTreesOutsideRichOwnersSurviveTypedReplacementAndSchemaValidation"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C4-03",
           "kind": "negative",
-          "plannedFixture": "rich-unsupported-content",
           "assertion": "Reject tables, revisions/comments, object/image-bearing content, nested controls, section changes and unsupported stories; no silent fragment flattening or control-tag execution.",
           "independentOracles": [
             "source tree inspection",
             "expected rejection/unchanged model"
-          ]
+          ],
+          "fixtureScenario": "rich-unsupported-content",
+          "tests": [
+            "ContentControlBoundaryTests.RichControlsRejectStructuralHistoryObjectAndBoundaryContent",
+            "ContentControlBoundaryTests.TableRowAndHeaderStoryOwnersAreExplicitlyRejected",
+            "ContentControlAcceptanceEdgeTests.RetainedObjectsAndRecordingCannotBypassTypedOwnerProtection"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C4-04",
           "kind": "resource",
-          "plannedFixture": "rich-empty-and-expanded-content",
           "assertion": "Distinguish empty value from authored placeholder; bound runs/paragraphs/characters/structure/bytes and cancellation during enumeration; locked/stale replacement preserves session/version/diagnostics.",
           "independentOracles": [
             "counted caller inputs",
             "independent before/after XML",
             "sentinel destination"
-          ]
+          ],
+          "fixtureScenario": "rich-empty-and-expanded-content",
+          "tests": [
+            "ContentControlRichTextTests.InlineEmptyAndBlockEmptyAreValuesRatherThanPlaceholders",
+            "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
+            "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         }
-      ]
+      ],
+      "status": "implemented under review; original technical dependencies retained"
     },
     {
       "issue": 117,
@@ -393,7 +549,7 @@
         115,
         116
       ],
-      "runtimeImplemented": false,
+      "runtimeImplemented": true,
       "requiredSharedCases": [
         "G01",
         "G02",
@@ -408,90 +564,148 @@
         {
           "id": "C5-01",
           "kind": "positive",
-          "plannedFixture": "local-store-graph",
           "assertion": "Preserve local customXml/itemProps/relationships/storeItemID and namespace mappings by infoset/part identity, including case-insensitive GUID matching and multiple distinct stores. No implicit XML synchronization on load/save.",
           "independentOracles": [
             "direct ZIP/OPC graph inspection",
             "independent XML parser",
             "schema validation"
-          ]
+          ],
+          "fixtureScenario": "local-store-graph",
+          "tests": [
+            "ContentControlBindingTests.LocalGraphsArePreservedWithoutImplicitApplyThenAllScalarKindsApplyExplicitly",
+            "ContentControlBindingTests.DetachmentRemovesTheMappingWithoutDeletingLocalXmlAndReloadsStrictly",
+            "ContentControlAcceptanceEdgeTests.LocalStoreCountIsBoundedWithoutDroppingUnboundAdmittedData"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-02",
           "kind": "mixed",
-          "plannedFixture": "singleton-paths",
           "assertion": "Apply/write back namespaced and empty-namespace child paths, redundant [1] only for actual singleton, and final attributes. Reject zero/multiple matches, undeclared/duplicate mappings and missing targets without creating nodes.",
           "independentOracles": [
             "independent explicit node/value expectations",
             "safe XML parser"
-          ]
+          ],
+          "fixtureScenario": "singleton-paths",
+          "tests": [
+            "ContentControlBindingTests.ArbitraryOrUnresolvedPathsAreRejectedWithoutXPathExecution",
+            "ContentControlBindingTests.RedundantFirstPredicatesDoNotHideAmbiguousChildrenAndPrefixesMustBeExplicit",
+            "ContentControlAcceptanceEdgeTests.XmlPathsAndNamespaceMapsHavePositiveAndNegativeBoundaryCases"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-03",
           "kind": "negative",
-          "plannedFixture": "unsafe-paths-and-parts",
           "assertion": "Reject external/escaping relationships, missing/duplicate store IDs, DTD/entities/PIs, //, .., wildcards, unions, functions, arbitrary predicates/indices and namespace updates. Never invoke resolver/network/script.",
           "independentOracles": [
             "authored malformed/unsafe package manifest",
             "counted disabled resolver",
             "sentinel output"
-          ]
+          ],
+          "fixtureScenario": "unsafe-paths-and-parts",
+          "tests": [
+            "ContentControlBindingTests.ExternalUnsafeAndDuplicateStoreGraphsFailInLenientMode",
+            "ContentControlBindingTests.DtdEntitiesAndProcessingInstructionsAreNeverFetched",
+            "ContentControlBindingTests.ArbitraryOrUnresolvedPathsAreRejectedWithoutXPathExecution"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-04",
           "kind": "mixed",
-          "plannedFixture": "typed-binding-values",
           "assertion": "Apply/write back checkbox true/false/1/0, exact dropdown stored values, combo member/free text, DateOnly/date and instant/dateTime, and literal w:text with multiline policy. Reject incompatible lexical types, null/placeholder/unresolved write-back and date text storage inference. Reject combo nonmember XML values colliding with an existing item label.",
           "independentOracles": [
             "independent typed lexical/display table",
             "schema validation",
             "PDF/XPS text"
-          ]
+          ],
+          "fixtureScenario": "typed-binding-values",
+          "tests": [
+            "ContentControlBindingTests.LocalGraphsArePreservedWithoutImplicitApplyThenAllScalarKindsApplyExplicitly",
+            "ContentControlBindingTests.BooleanBindingsUseOnlyXmlSchemaLexicalValuesAndCanonicalWriteBack",
+            "ContentControlBindingTests.DateBindingModesAndPlainTextMultilineAreExplicit"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-05",
           "kind": "negative",
-          "plannedFixture": "rich-binding-and-markup-injection",
           "assertion": "Reject richText dataBinding rather than pretending plain rich content is a bound w:text. Strings containing XML, merge tags or code remain escaped literal text; reject structured/mixed element target overwrite.",
           "independentOracles": [
             "direct XML text/attribute assertions",
             "independent displayed text",
             "source element-tree comparison"
-          ]
+          ],
+          "fixtureScenario": "rich-binding-and-markup-injection",
+          "tests": [
+            "ContentControlBindingTests.RichTextBindingsAndStructuredXmlTargetsAreRejectedRatherThanInterpretedAsMarkup",
+            "ContentControlBindingTests.DirtySaveRequiresAnExplicitDecisionAndWriteBackEscapesLiteralAttributeData"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-06",
           "kind": "mixed",
-          "plannedFixture": "directions-dirty-save-and-locks",
           "assertion": "Explicit Apply replaces control values, explicit WriteBack changes XML and explicit unlocked Detach removes mapping. Dirty DOCX save rejects until an explicit decision; unchanged unevaluated graph is disclosed. Locked/stale/late-invalid multi-control work cannot partially commit.",
           "independentOracles": [
             "before/after control and customXml manifests",
             "raw relationship inspection",
             "diagnostic expectations"
-          ]
+          ],
+          "fixtureScenario": "directions-dirty-save-and-locks",
+          "tests": [
+            "ContentControlBindingTests.DirtySaveRequiresAnExplicitDecisionAndWriteBackEscapesLiteralAttributeData",
+            "ContentControlBindingTests.BindingDirectionsRespectLocksAndForeignOrStaleHandles",
+            "ContentControlBindingTests.MultiControlApplyRefreshesInlineSliceLocationsAndLateFailuresRollBackAllOwners",
+            "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-07",
           "kind": "negative",
-          "plannedFixture": "shared-target-conflicts",
           "assertion": "Write-back requires all controls sharing a target; reject divergent converted values regardless of enumeration order. Identical converted values succeed once, without last-writer-wins or unrelated changes.",
           "independentOracles": [
             "independent target-group value table",
             "XML before/after comparison"
-          ]
+          ],
+          "fixtureScenario": "shared-target-conflicts",
+          "tests": [
+            "ContentControlBindingTests.SharedTargetWriteBackRequiresEveryControlAndRejectsDivergentValuesAtomically"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         },
         {
           "id": "C5-08",
           "kind": "resource",
-          "plannedFixture": "xml-store-and-walk-limits",
           "assertion": "Exercise store/entry/node/attribute/namespace/path/depth/UTF-16/expanded-byte/work ceilings individually and in aggregate, including many small parts, malformed late stores, repeated binding walks and cancellation.",
           "independentOracles": [
             "independent size/node counters",
             "sentinel session/version/output"
-          ]
+          ],
+          "fixtureScenario": "xml-store-and-walk-limits",
+          "tests": [
+            "ContentControlBindingTests.PathDepthLengthNamespaceAndAggregateXmlNodeLimitsAreEnforced",
+            "ContentControlAcceptanceEdgeTests.XmlPathsAndNamespaceMapsHavePositiveAndNegativeBoundaryCases",
+            "ContentControlAcceptanceEdgeTests.LocalStoreCountIsBoundedWithoutDroppingUnboundAdmittedData",
+            "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
+          ],
+          "status": "executable; consult qualification receipt for actual outcome"
         }
-      ]
+      ],
+      "status": "implemented under review; original technical dependencies retained"
     }
   ],
-  "fixtureStatus": "planned; fixture directory and executable cases are not created by C0"
+  "fixtureStatus": "Independently authored OOXML/XML fixtures plus bounded package generators; see fixture README and test methods.",
+  "sourceProfile": "content-controls.md",
+  "fixtureRoot": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls",
+  "authorization": "Owner requested all P2 issues as one batch; this supersedes the original per-issue scheduling gate without changing technical dependencies.",
+  "executionReceipt": "measurements/roadmap-102-p2.json",
+  "evidenceLimits": [
+    "Resource regressions sample positive/negative count, item, store, path, namespace, aggregate node, character and output bounds; they are not exhaustive CPU/RSS, checked-overflow or every numeric-ceiling benchmarks.",
+    "Culture and explicitly captured date policy are tested; no consumer UI refresh/Word appearance parity is claimed.",
+    "Independent Office2010 schema validation, PDF text/coordinates and XPS XML assertions validate this managed subset. Windows Framework and other architecture execution remain separate hosted/release gates.",
+    "G08 provenance uses existing pinned bundled open-license fonts and authored fixtures; no new font or platform qualification."
+  ]
 }

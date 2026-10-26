@@ -1,16 +1,15 @@
 # Conversion tests and qualification
 
-## P2 C0 acceptance plan — no runtime results
+## P2 controls acceptance and qualification
 
-The [proposed ADR](content-controls-design.md) and
-[matrix](content-controls-acceptance.json) define eight shared and 26 leaf-specific
-future cases for #113–#117. No control fixture or engine test is created/enabled by
-C0; `eng/required-tests.txt` remains 1,222. Future evidence needs authored OOXML and
-provenance, independent schemas/part relationships, typed state/atomicity assertions,
-pinned glyphs and independent selectable PDF/XPS text/coordinates. C5 also requires
-safe XML/path negatives and explicit synchronization/conflict checks. Design checks
-are separate from all runtime results below; no matching self round trip or skipped
-case can qualify a leaf. See the ADR for per-leaf cross-target/package requirements.
+The [source profile](content-controls.md), [acceptance map](content-controls-acceptance.json)
+and [authored fixture provenance](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/README.md)
+track #112–#117 independently. Tests validate live DOCX state/parts with the Open XML
+SDK and raw XML, public snapshots/atomicity, pinned-font selectable PDF/XPS text,
+underline coordinates, local XML directions/conflicts, malformed input and bounds.
+Complete-suite counts and exact runtime/package results are recorded after execution;
+no earlier P1 result qualifies this new code. Hosted/actual-minimum-runtime and public
+package availability remain distinct from local source verification.
 
 ## Merged roadmap #102 P1 qualification
 

@@ -1,12 +1,14 @@
 # Architecture and implementation status
 
-## Proposed P2 control store
+## P2 control store — source under review
 
-The [C0 ADR](content-controls-design.md) proposes a private typed-control store
-separate from executable TemplateControl tags, with shared cloning/admission,
-versioned snapshots and atomic typed edits. It is design-only: no new store,
-reader/writer behavior, binding engine or dependency is implemented here. The
-[acceptance plan](content-controls-acceptance.json) gates each executable leaf.
+The [P2 source profile](content-controls.md) uses a private typed-control store
+separate from executable TemplateControl tags. Owner IDs survive shared cloning;
+serialized transactions validate handles/locks and admit metadata, parts, display
+and work before commit. XML binding uses a bounded singleton child/attribute walker,
+never a general XPath engine or implicit synchronization. DOCX emits admitted
+schema-ordered control metadata/parts; managed static output resolves checkbox
+fallback and bounded underline strokes. No dependency or target change is added.
 
 ## Merged roadmap #102 P1 implementation
 

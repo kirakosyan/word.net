@@ -39,9 +39,9 @@ public sealed partial class WordDocument
     }
 
     /// <summary>Gets or sets supported title metadata.</summary>
-    public string Title { get { lock (gate) return model.Title; } set => Edit((m, c) => { CheckText(value, c); m.Title = value; return 1; }, default, objectAware: true); }
+    public string Title { get { lock (gate) return model.Title; } set => Edit((m, c) => { CheckText(value, c); m.Title = value; return 1; }, default, objectAware: true, controlAware: true); }
     /// <summary>Gets or sets supported author metadata.</summary>
-    public string Author { get { lock (gate) return model.Author; } set => Edit((m, c) => { CheckText(value, c); m.Author = value; return 1; }, default, objectAware: true); }
+    public string Author { get { lock (gate) return model.Author; } set => Edit((m, c) => { CheckText(value, c); m.Author = value; return 1; }, default, objectAware: true, controlAware: true); }
     /// <summary>Gets immutable snapshots of body paragraphs, including table cells and text boxes.</summary>
     public IReadOnlyList<DocumentParagraph> Paragraphs
     {
@@ -139,20 +139,23 @@ public sealed partial class WordDocument
             if (format != DocumentFormat.Docx && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
             var context = Context(saveOptions ?? options, cancellationToken); context.Destination = format;
             DocumentModel copy = new DocumentCloner(context).Copy(model); Admit(copy, context);
-            context.Phase = DiagnosticPhase.Destination; FidelityChecks.Destination(copy, format, context);
+            context.Phase = DiagnosticPhase.Destination; bool hadControls = copy.Controls.HasControls;
+            ControlDisplay.Destination(copy, format, context); if (hadControls) Admit(copy, context); FidelityChecks.Destination(copy, format, context);
             context.Phase = DiagnosticPhase.Write;
             using var output = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
             Write(copy, output, format, context); output.Position = 0;
+            if (format == DocumentFormat.Docx && copy.Controls.HasControls) ControlDisplay.CheckArchive(output, context);
             Transfer(output, destination, context, context.Options.MaximumOutputBytes);
             return context.Result(output.Length);
         }
     }
 
-    private DocumentEditResult Edit(Func<DocumentModel, ConversionContext, int> edit, CancellationToken cancellationToken, bool reviewAware = false, bool objectAware = false)
+    private DocumentEditResult Edit(Func<DocumentModel, ConversionContext, int> edit, CancellationToken cancellationToken, bool reviewAware = false, bool objectAware = false, bool controlAware = false)
     {
         lock (gate)
         {
             using var operation = BeginOperation();
+            if (model.Controls.HasControls && !controlAware) throw new NotSupportedException("Control.ProtectedOwner: Use typed operations or an explicit display view before ordinary content/template editing.");
             if (model.Review.HasHistory && !reviewAware) throw new NotSupportedException("Review.ProtectedHistory: Resolve retained history before ordinary editing or template operations.");
             if (!objectAware && model.ObjectCount != 0) throw new NotSupportedException("Object.ProtectedOwner: Use explicit object operations; ordinary editing/templates cannot rewrite retained object owners.");
             ConversionContext context = Context(options, cancellationToken);
@@ -197,7 +200,8 @@ public sealed partial class WordDocument
     {
         context.CheckCancellation();
         CustomPropertyValues.Validate(model, context);
-        long reviewMetadata = model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
+        long controlMetadata = model.Controls.Admit(model, context);
+        long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
             + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
             + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));
