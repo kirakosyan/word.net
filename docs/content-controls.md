@@ -4,7 +4,7 @@ PR [#134](https://github.com/kirakosyan/word.net/pull/134) implements #112–#11
 one owner-authorized batch. This is source under review, absent from public
 1.4.0; it does not publish packages. The [design record](content-controls-design.md)
 and [acceptance map](content-controls-acceptance.json) describe the contract and
-independent gates. Qualification results are recorded separately after execution.
+independent gates. The [qualification receipt](measurements/roadmap-102-p2.json) records actual local execution separately from pending hosted/runtime gates.
 
 ## Load, inspect and edit
 
@@ -232,3 +232,30 @@ is a fidelity loss for implicit destination flattening and information for the
 explicit display-view operation. Diagnostics never include tag/alias, XML or
 control values. No arbitrary scripting, forms UI, legacy ActiveX/forms, extra OCR
 language, encryption/signature or new platform claim is introduced.
+
+## Local qualification — 2026-10-26
+
+Qualified source commit `6f091129b0cccbc70be306a75d51215b64a64102` passes the complete
+**1,355/1,355** cases on each of Linux x64 .NET 8.0.33 and 10.0.12, with zero
+failures/skips and English OCR prepared in the launching PowerShell process.
+The 133 new P2 cases cover all 34 mapped acceptance groups with independent
+Office2010 schema, OPC/XML, PDF text/baseline and XPS stroke assertions. The two
+runs use America/Los_Angeles and UTC respectively; date tests also exercise two
+host cultures and a captured interpretation policy.
+
+Locked restore, all-five-target Release build (zero warnings/errors), formatting
+verification and core pack/API compatibility validation pass. Package inspection
+confirms the five DLL/XML pairs match the qualified build, five symbol assets,
+MIT/dependency notices and no test/customer/credential payload. These validation
+archives retain the unchanged version 1.4.0 and are **not** the public packages.
+The [receipt](measurements/roadmap-102-p2.json) records source/test trees, TRX,
+fixture/font/archive hashes, per-class counts and tooling limits. The following
+receipt/docs commit does not change the qualified source/test trees.
+
+No Framework test host runs on this Linux machine. Hosted Windows/Linux x64/ARM64,
+exact-package/explicit-Standard and actual-minimum-runtime checks remain separate
+and pending for the new PR head. No consumer Word/UI appearance or refresh, pixel
+parity, Android/macOS execution, new platform or publication is claimed. Resource
+regressions cover selected independent/aggregate ceilings, not every possible
+threshold or hard CPU/RSS isolation. Historical reference failure verdicts and
+qualification receipts remain unchanged.

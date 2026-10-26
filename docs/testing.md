@@ -7,9 +7,16 @@ and [authored fixture provenance](../tests/wordnet.Conversion.Tests/Fixtures/Con
 track #112–#117 independently. Tests validate live DOCX state/parts with the Open XML
 SDK and raw XML, public snapshots/atomicity, pinned-font selectable PDF/XPS text,
 underline coordinates, local XML directions/conflicts, malformed input and bounds.
-Complete-suite counts and exact runtime/package results are recorded after execution;
-no earlier P1 result qualifies this new code. Hosted/actual-minimum-runtime and public
-package availability remain distinct from local source verification.
+The [P2 receipt](measurements/roadmap-102-p2.json) records qualified source commit
+`6f091129b0cccbc70be306a75d51215b64a64102`: **1,355/1,355** cases pass on each of
+Linux x64 .NET 8.0.33 and 10.0.12, including all **133 new P2 cases**, zero failures/skips,
+with English OCR prepared in the launching process. All 34 groups have mapped passing
+methods. Locked restore, five-target zero-warning Release build, format verification,
+core pack/API compatibility and package-content checks pass. Two host timezones and
+two date-test cultures are covered. See the [qualification limits](content-controls.md#local-qualification--2026-10-26)
+for unexecuted Framework/platform/consumer lanes and resource sampling bounds.
+Hosted/actual-minimum-runtime and public package availability remain distinct from
+local source verification; no P1 result qualifies this new code.
 
 ## Merged roadmap #102 P1 qualification
 

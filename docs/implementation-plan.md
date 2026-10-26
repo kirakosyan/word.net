@@ -16,8 +16,14 @@ no dependency, target, platform, tag or publication change is authorized here.
 The P1 documentation reconciliation is included as its own commit, preserving all
 historical receipt identities and failed reference verdicts. C0's 34 planned-case
 receipt remains dated; executable tests and exact counts belong to the P2 source
-validation ledger, not to the old design-only result. Full checks are being run
-before reporting this batch complete. P3–P6 remain planning.
+[qualification receipt](measurements/roadmap-102-p2.json), not to the old design-only result.
+Qualified source `6f091129b0cccbc70be306a75d51215b64a64102` passes **1,355/1,355**
+cases on each local Linux x64 modern runtime, zero failures/skips, including 133 P2
+cases and English OCR. Locked restore, all-five-target zero-warning Release build,
+format verification, core pack/API compatibility and package inspection pass.
+Windows/ARM64/Framework, exact-package/Standard and actual-minimum-runtime execution
+remain separate pending hosted gates; the final receipt/docs follow-up preserves
+qualified source/test trees. P3–P6 remain planning.
 
 ## Roadmap #102 P1 — merged source, PR #133
 

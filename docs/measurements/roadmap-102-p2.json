@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "roadmap": 102,
+  "priority": "P2",
+  "issues": [
+    112,
+    113,
+    114,
+    115,
+    116,
+    117
+  ],
+  "pullRequest": "https://github.com/kirakosyan/word.net/pull/134",
+  "recordedUtc": "2026-10-26T23:54:59.543700+00:00",
+  "status": "Implemented source under review; no merge or publication claim",
+  "source": {
+    "acceptedP1Merge": "2a944ac9101598bc3be2d856e5bad116123998a3",
+    "historicalDesign": "31e4259e824f13025b3520b15f95694bdce36a0a",
+    "qualifiedCommit": "6f091129b0cccbc70be306a75d51215b64a64102",
+    "sourceTree": "a044af36eb95a622ef5a0c7bb403360f3738ba46",
+    "testsTree": "bcc166c6aefa5cbd1cf69d1c639e8a344afd308b",
+    "requiredTests": 1355,
+    "documentationFollowup": "This receipt and final documentation are a separate docs-only commit; qualified source/test trees remain unchanged."
+  },
+  "environment": {
+    "os": "Linux x64",
+    "sdk": "10.0.401",
+    "executedRuntimes": [
+      "8.0.33",
+      "10.0.12"
+    ],
+    "frameworksBuilt": [
+      "net462",
+      "net472",
+      "netstandard2.0",
+      "net8.0",
+      "net10.0"
+    ]
+  },
+  "runs": [
+    {
+      "framework": "net8.0",
+      "runtime": "8.0.33",
+      "timezone": "America/Los_Angeles",
+      "ocr": "English prepared in the same launching PowerShell process; Linux x64 libtesseract.so.5",
+      "counters": {
+        "total": 1355,
+        "executed": 1355,
+        "passed": 1355,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "p2Cases": 133,
+      "p2ClassCases": {
+        "ContentControlAcceptanceEdgeTests": 16,
+        "ContentControlBindingTests": 33,
+        "ContentControlBoundaryTests": 29,
+        "ContentControlDateTests": 19,
+        "ContentControlFoundationTests": 18,
+        "ContentControlListTests": 11,
+        "ContentControlRichTextTests": 7
+      },
+      "trx": "artifacts/p2-controls/p2-net8-qualified.trx",
+      "sha256": "c0ac509833ae40f4d90645ae11fed40b6fc142fee26196bbf03c78bc140de6a3",
+      "times": {
+        "creation": "2026-10-26T16:51:11.8690290-07:00",
+        "queuing": "2026-10-26T16:51:11.8690291-07:00",
+        "start": "2026-10-26T16:51:05.0770994-07:00",
+        "finish": "2026-10-26T16:54:49.1676496-07:00"
+      }
+    },
+    {
+      "framework": "net10.0",
+      "runtime": "10.0.12",
+      "timezone": "UTC",
+      "ocr": "English prepared in the same launching PowerShell process; Linux x64 libtesseract.so.5",
+      "counters": {
+        "total": 1355,
+        "executed": 1355,
+        "passed": 1355,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "p2Cases": 133,
+      "p2ClassCases": {
+        "ContentControlAcceptanceEdgeTests": 16,
+        "ContentControlBindingTests": 33,
+        "ContentControlBoundaryTests": 29,
+        "ContentControlDateTests": 19,
+        "ContentControlFoundationTests": 18,
+        "ContentControlListTests": 11,
+        "ContentControlRichTextTests": 7
+      },
+      "trx": "artifacts/p2-controls/p2-net10-qualified.trx",
+      "sha256": "223ddbaf5ef3dcf232002559de8c9a7df030ed8b8de896a2b44c2e68efcf8c16",
+      "times": {
+        "creation": "2026-10-26T23:51:14.0230333+00:00",
+        "queuing": "2026-10-26T23:51:14.0230334+00:00",
+        "start": "2026-10-26T23:51:05.1099076+00:00",
+        "finish": "2026-10-26T23:54:54.5937516+00:00"
+      }
+    }
+  ],
+  "checks": {
+    "lockedRestore": {
+      "result": "passed",
+      "log": "/tmp/wordnet-tools/p2-restore.log",
+      "sha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce"
+    },
+    "allTargetReleaseBuild": {
+      "result": "passed",
+      "log": "/tmp/wordnet-tools/p2-build-qualified.log",
+      "sha256": "84ea4445e4395b9c5d89ab50075b7e5988abec33c61902c3fd956301653381f3"
+    },
+    "formatVerification": {
+      "result": "passed",
+      "log": "/tmp/wordnet-tools/p2-format-qualified.log",
+      "sha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c"
+    },
+    "corePackAndApiCompatibility": {
+      "result": "passed",
+      "log": "/tmp/wordnet-tools/p2-pack-qualified.log",
+      "sha256": "3f95a206fab90d1bb77abfa925ad2225eae1ba31ad9f304002fa636f15596427"
+    }
+  },
+  "formatWorkspaceAdvisory": "SDK emitted a workspace-loading advisory; format verification exited 0 and Release build had zero warnings/errors.",
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "acceptanceMap": {
+    "path": "docs/content-controls-acceptance.json",
+    "sha256": "9b4649877a129be1d7543e6007bdf501f9da2822c973b895bcb93e65d1049a17",
+    "sharedGroups": 8,
+    "leafGroups": 26,
+    "mappedTestMethodsPresentAndPassingOnBothRuntimes": true
+  },
+  "independentOracles": [
+    "DocumentFormat.OpenXml 3.5.1 Office2010 schema validation of generated editable DOCX",
+    "Direct ZIP/OPC/XML relationship, namespace, stored value, field/bookmark and escaping assertions",
+    "PdfPig 0.1.16 selectable text, font sizes and baseline coordinates",
+    "Direct XPS Glyphs and underline stroke geometry against authored point expectations"
+  ],
+  "fixtures": [
+    {
+      "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/README.md",
+      "sha256": "1da9d2cedfb159ab41cc82e5aff9a39dd403b7c686c39921d7c5084e0234a49a"
+    },
+    {
+      "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/checkbox.xml",
+      "sha256": "7e9d62c10d08474bb28e1077a40bfbdd8902c362ff1d110176a8dade99565e9c"
+    },
+    {
+      "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/choices.xml",
+      "sha256": "2e320e513219e1767002829b13b503e7b819e9cbdaa90a131cde39db8c0c9322"
+    },
+    {
+      "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/dates.xml",
+      "sha256": "25bdbb317fd1feca66356c2663cea9eab859fa679f6799a7df839f85cd8050df"
+    },
+    {
+      "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/rich.xml",
+      "sha256": "f546f8b0918ae2bc135fb6147f7234245774f41a668107e3b345431206a498fa"
+    },
+    {
+      "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/store.xml",
+      "sha256": "cf435bf0961361238df99219d8b4055d966b382626af73f1ef4be5c0294eda4b"
+    }
+  ],
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "license": "SIL OFL; existing bundled Noto Sans; no font dependency change"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "license": "SIL OFL; existing bundled Noto Sans; no font dependency change"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "license": "SIL OFL; existing bundled Noto Sans; no font dependency change"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "license": "SIL OFL; existing bundled Noto Sans; no font dependency change"
+    }
+  ],
+  "packages": [
+    {
+      "archive": "artifacts/packages/wordnet.1.4.0.nupkg",
+      "sha256": "8d8b127bb1888cd0fe5c3afd23ec408913c5540fd40dc6cba504029e932cf646",
+      "entries": 20,
+      "purpose": "Local validation only; not public 1.4.0 archives; not published"
+    },
+    {
+      "archive": "artifacts/packages/wordnet.1.4.0.snupkg",
+      "sha256": "ddc72968ae0e6ff7f3deac4b244506369548d12f9d244039abd539b8db4c386d",
+      "entries": 9,
+      "purpose": "Local validation only; not public 1.4.0 archives; not published"
+    }
+  ],
+  "packageInspection": [
+    "Five expected DLL/XML framework pairs match the qualified build",
+    "Five portable PDBs in the symbols archive",
+    "MIT license, third-party notices and font provenance retained",
+    "No fixtures, tests, tools, customer data or credentials packaged",
+    "Package compatibility validation against the configured 1.3.0 baseline passes; dependency/target/version files unchanged"
+  ],
+  "limitations": [
+    "Local execution is Linux x64 only; Framework targets compiled but were not executed on this non-Windows host.",
+    "Hosted source, package, explicit Standard, Windows/ARM64 and actual-minimum-runtime gates are pending for the new PR head; earlier P1 results do not qualify P2.",
+    "No Android/macOS execution, consumer Word/office UI refresh behavior, pixel parity, new platform or package publication claim.",
+    "Managed ordinary PDF/XPS static text only; native/tagged/archive, retained objects/history, unsupported stories/nesting/kinds/formatting reject explicitly.",
+    "Resource regressions measure selected individual/aggregate boundaries, not exhaustive every-ceiling, checked-overflow or CPU/RSS isolation benchmarks.",
+    "Original fidelity/reference receipts and failed comparison verdicts remain unchanged."
+  ],
+  "developmentRegressionsFixed": [
+    "Schema property ordering and list/date child retention",
+    "Namespace-only color declarations and schema-canonical store GUID casing",
+    "Inline owner offsets after grouped edits",
+    "Independent XPS point conversion and external nested field tree assertions",
+    "Malformed control text/PI and inherited inline paragraph formatting rejection",
+    "Date picture length/token positive and negative boundaries"
+  ]
+}
