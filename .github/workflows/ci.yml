@@ -80,6 +80,7 @@ jobs:
           artifacts/comparison-venv/bin/pip install -r eng/comparison-requirements.txt
           python3 eng/prepare-comparison-poi.py
           artifacts/comparison-venv/bin/python eng/test-comparison.py
+          artifacts/comparison-venv/bin/python eng/test-fidelity-baseline.py
           artifacts/comparison-venv/bin/python eng/run-comparison.py --poi-classpath artifacts/comparison-poi
       - name: Capture independent office references for the P0 corpus
         if: matrix.os == 'ubuntu-24.04'
