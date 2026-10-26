@@ -1,14 +1,18 @@
 # wordnet implementation and delivery status
 
-## Roadmap #102 / issue #103 - baseline findings pending PR review
+## Roadmap #102 / issue #103 - merged baseline findings
 
-The owner authorized the first evidence task only. The
+The owner authorized the first evidence task and its merge in
+[PR #131](https://github.com/kirakosyan/word.net/pull/131) as `ab3843880572f811d84b410e437c86b80f8ff59f`.
+The
 [fidelity baseline](fidelity-103-baseline.md) separates selected clean source from
 public 1.4.0, retains every comparison failure and supplies twelve reduced contrasts
 for issues #104-#107. It distinguishes reproduced fallback/placement differences,
 unproven inheritance/implicit-sizing defects, source omissions and the existing note
 reservation policy. No converter behavior, package version or support scope changes.
-The remaining roadmap tasks are unimplemented by this PR; publication is not authorized.
+Issue #103 is accepted and reconciled in roadmap #102 and historical roadmap #32.
+The remaining roadmap tasks are unimplemented; #104 is the next unassigned item and
+requires separate owner authorization. Publication is not authorized by this delivery.
 The CI follow-up makes fixture-content verification portable across ZIP encodings,
 with archive hashes and the original measured receipt preserved.
 Review corrections protect measured fixtures from generation, isolate the public

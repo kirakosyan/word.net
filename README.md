@@ -268,7 +268,7 @@ Linux requires Tesseract, fontconfig and the documented fonts. Run Framework tes
 | [Diagnostics](https://github.com/kirakosyan/word.net/blob/main/docs/diagnostics.md) | Fidelity reports and preflight remediation |
 | [Testing](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) | Build/test setup, independent validation and platform evidence |
 | [Comparison harness](https://github.com/kirakosyan/word.net/blob/main/docs/comparison.md) | Reproducible corpus and optional licensed reference comparisons |
-| [Current fidelity baseline](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-103-baseline.md) | Separate source/public-package measurements, retained failures and reduced reproductions |
+| [Current fidelity baseline](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-103-baseline.md) | Merged source/public-package evidence, retained failures and reduced reproductions |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Delivered work and remaining scope |
 | [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.4.0.md) | Published packages and exact-artifact evidence |
 | [Release procedure](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) | Package qualification and manual publishing |

@@ -1,6 +1,7 @@
 # Reproducible business-document comparison
 
-The [issue #103 refresh](fidelity-103-baseline.md) records the selected clean source
+The [issue #103 refresh](fidelity-103-baseline.md), merged in
+[PR #131](https://github.com/kirakosyan/word.net/pull/131), records the selected clean source
 and independently restored public 1.4.0 measurements, plus twelve separate reduced
 contrasts. `eng/refresh-fidelity-baseline.py` captures references and retains original
 verdicts; `eng/test-fidelity-baseline.py` checks evidence identity/completeness and
