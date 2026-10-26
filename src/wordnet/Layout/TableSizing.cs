@@ -9,13 +9,15 @@ internal static class TableSizing
 {
     internal static double[] Columns(TableBlock table, double available, Func<TableCell, (double Minimum, double Preferred)> measure, ConversionContext context)
     {
+        bool autoFit = table.AutoFit || table.ManagedImplicitAutoFit && !context.Typography.Enabled;
+        if (table.ManagedImplicitAutoFit && context.Typography.Enabled) context.Report("Table.NativeImplicitGrid", "The qualified native table profile retains its existing implicit fixed-grid policy.");
         int count = table.Rows.Max(r => r.Sum(c => c.ColumnSpan));
         bool relative = table.WidthPercent.HasValue || table.Rows.SelectMany(r => r).Any(c => c.WidthPercent.HasValue);
         double total = table.WidthPercent.HasValue ? available * table.WidthPercent.Value / 100
             : table.Width ?? (table.ColumnWidths.Count > 0 ? table.ColumnWidths.Sum() : available);
         var widths = Enumerable.Range(0, count).Select(c => c < table.ColumnWidths.Count ? table.ColumnWidths[c] : total / count).ToArray();
-        if (!table.AutoFit && !relative) return widths;
-        if (table.AutoFit && !table.Width.HasValue && !table.WidthPercent.HasValue) total = available;
+        if (!autoFit && !relative) return widths;
+        if (autoFit && !table.Width.HasValue && !table.WidthPercent.HasValue) total = available;
         total = Math.Min(available, total);
         var minima = Enumerable.Repeat(1.0, count).ToArray();
         var preferred = new double[count];
@@ -25,7 +27,7 @@ internal static class TableSizing
             foreach (TableCell cell in row)
             {
                 context.CheckCancellation();
-                var content = table.AutoFit ? measure(cell) : (Minimum: 1.0, Preferred: 1.0);
+                var content = autoFit ? measure(cell) : (Minimum: 1.0, Preferred: 1.0);
                 double requested = cell.WidthPercent.HasValue ? total * cell.WidthPercent.Value / 100 : cell.CellWidth ?? content.Preferred;
                 for (int c = column; c < column + cell.ColumnSpan; c++)
                 {

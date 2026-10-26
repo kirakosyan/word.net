@@ -210,6 +210,7 @@ internal sealed partial class DocxReader
         string? layout = (string?)properties?.Element(W + "tblLayout")?.Attribute(W + "type");
         if (layout is not null and not "fixed" and not "autofit") throw new InvalidDataException("Docx.TableLayout: Invalid layout type.");
         table.AutoFit = layout == "autofit";
+        table.ManagedImplicitAutoFit = layout == null;
         table.LayoutExplicit = layout != null;
         if (properties?.Element(W + "tblInd") is XElement indent)
         {

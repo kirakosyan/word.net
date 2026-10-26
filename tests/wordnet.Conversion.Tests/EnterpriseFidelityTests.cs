@@ -57,7 +57,7 @@ public sealed class EnterpriseFidelityTests
         string paragraph = "<w:p><w:pPr>" + (kind == "indent" ? "<w:ind w:left='30000'/>" : "")
             + "</w:pPr><w:r><w:rPr>" + (kind == "font" ? "<w:sz w:val='3276'/>" : "")
             + "</w:rPr><w:t>Enterprise geometry</w:t></w:r></w:p>";
-        if (kind == "cell") paragraph = "<w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w='20'/></w:tblGrid><w:tr><w:tc><w:tcPr>"
+        if (kind == "cell") paragraph = "<w:tbl><w:tblPr><w:tblLayout w:type='fixed'/></w:tblPr><w:tblGrid><w:gridCol w:w='20'/></w:tblGrid><w:tr><w:tc><w:tcPr>"
             + "<w:tcW w:type='dxa' w:w='20'/><w:tcMar><w:left w:type='dxa' w:w='200'/><w:right w:type='dxa' w:w='200'/></w:tcMar></w:tcPr>" + paragraph + "</w:tc></w:tr></w:tbl>";
         using var input = new MemoryStream(TestDocuments.Docx(TestDocuments.Body(paragraph))); using var output = new MemoryStream();
         ConversionResult result = new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);

@@ -196,7 +196,10 @@ public sealed partial class WordDocument
     private static void Admit(DocumentModel model, ConversionContext context)
     {
         context.CheckCancellation();
-        long reviewMetadata = model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
+        CustomPropertyValues.Validate(model, context);
+        long reviewMetadata = model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
+            + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
+            + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));
         if ((long)model.CharacterCount + model.Title.Length + model.Author.Length + reviewMetadata > context.Options.MaximumCharacters)
             throw new InvalidDataException("Limit.Characters: Document and review metadata exceed the aggregate character limit.");
@@ -204,7 +207,7 @@ public sealed partial class WordDocument
         ObjectBudget? objects = null;
         var images = new ConversionContext(context.Options, context.CancellationToken);
         long bytes = model.CharacterCount * 2L + reviewMetadata * 2;
-        int nodes = checked((model.Review.Revisions.Count + model.Review.Comments.Count) * 2
+        int nodes = checked(model.Styles.Count * 2 + (model.Review.Revisions.Count + model.Review.Comments.Count) * 2
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => p.Runs.Count + 1)));
         foreach (ParagraphBlock p in model.Paragraphs)
         {

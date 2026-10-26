@@ -114,6 +114,10 @@ internal sealed partial class DocxReader
             }
         }
         document.Title = reader.title; document.Author = reader.author;
+        foreach (var property in reader.customProperties) document.CustomProperties.Add(property.Key, property.Value);
+        CustomPropertyValues.Validate(document, context);
+        foreach (var pair in reader.styles.Where(p => (string?)p.Value.Attribute(W + "type") == "paragraph"))
+            document.Styles.Add(pair.Key, (string?)pair.Value.Element(W + "name")?.Attribute(W + "val") ?? pair.Key);
         foreach (var pair in reader.review.Revisions) document.Review.Revisions.Add(pair.Key, pair.Value);
         foreach (var pair in reader.review.Comments) document.Review.Comments.Add(pair.Key, pair.Value);
         if (context.PreserveReview) document.Review.Validate(document, context);
@@ -142,6 +146,7 @@ internal sealed partial class DocxReader
             XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.AuxiliaryPart: Missing root.");
             using var location = context.At(XmlSourceLocation.Create(root, path));
             knownParts.Add(path);
+            if (type == DocxPackage.DocumentRelationships.NamespaceName + "/custom-properties") ReadCustomProperties(root);
             if (metadata)
             {
                 XNamespace dc = "http://purl.org/dc/elements/1.1/";
@@ -166,7 +171,7 @@ internal sealed partial class DocxReader
             throw new InvalidDataException("Docx.Styles: Invalid style namespace.");
         }
 
-        var defaults = new TextStyle();
+        var defaults = new TextStyle { Layout = defaultLayout.Copy() };
         ReadParagraphProperties(root.Element(W + "docDefaults")?.Element(W + "pPrDefault")?.Element(W + "pPr"), defaults);
         defaultAlignment = defaults.Alignment;
         defaultLayout = defaults.Layout.Copy();
@@ -181,8 +186,10 @@ internal sealed partial class DocxReader
             }
 
             styles.Add(id, style);
+            if (styles.Count > context.Options.MaximumCharacters) throw new InvalidDataException("Limit.Styles: Too many styles.");
             if ((string?)style.Attribute(W + "type") == "paragraph" && IsTrue((string?)style.Attribute(W + "default")))
             {
+                if (defaultStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last paragraph style marked default is used, following the document format default-style rule.");
                 defaultStyle = id;
             }
         }
@@ -258,7 +265,14 @@ internal sealed partial class DocxReader
             listLevel.ApplyLayout(style.Layout);
             ReadParagraphProperties(properties, style);
         }
-        var paragraph = new ParagraphBlock { RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        var mark = style.Copy();
+        XElement? markProperties = properties?.Element(W + "rPr");
+        if (markProperties != null && context.PreserveReview)
+            markProperties = new XElement(W + "rPr", markProperties.Elements().Where(e => e.Name != W + "ins" && e.Name != W + "del"));
+        ReadRunProperties(markProperties, mark);
+        string? retainedStyle = styleId ?? defaultStyle;
+        if (retainedStyle != null && (!styles.TryGetValue(retainedStyle, out XElement? retainedDefinition) || (string?)retainedDefinition.Attribute(W + "type") != "paragraph")) retainedStyle = null;
+        var paragraph = new ParagraphBlock { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
         return paragraph;
@@ -297,11 +311,12 @@ internal sealed partial class DocxReader
             }
             if (child.Name == W + "fldSimple")
             {
+                if (fields.Count >= context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Fields exceed the nesting limit.");
                 fields.Push(new FieldCapture { Separated = true });
                 ReadInlines(child, runs, inherited, link);
                 FieldCapture field = fields.Pop();
-                if (fields.Count > 0 && !fields.Peek().Separated) fields.Peek().NestedInstruction = true;
-                else EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result, field.NestedInstruction);
+                if (fields.Count > 0 && !fields.Peek().Separated) CaptureChild(DocxPackage.RequiredAttribute(child, W + "instr"), field);
+                else EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result, field.NestedInstruction, field.RetainTree ? field.Children : null);
                 continue;
             }
 
@@ -354,7 +369,12 @@ internal sealed partial class DocxReader
                 Emit(runs, new TextRun("", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
                     appearance: inherited.Appearance.Copy(), note: note));
             }
-            else if (child.Name == W + "footnoteRef" || child.Name == W + "endnoteRef") { }
+            else if (child.Name == W + "footnoteRef" || child.Name == W + "endnoteRef")
+            {
+                if (noteReferenceMark || runs.Any(r => r.Text.Length != 0 || r.Image != null || r.FieldInstruction != null))
+                    context.Loss("Notes.ReferenceMark", "Only one leading note reference mark is retained; unsupported placement uses a leading label.");
+                noteReferenceMark = true;
+            }
             else if (child.Name == W + "hyperlink")
             {
                 string? id = (string?)child.Attribute(DocxPackage.DocumentRelationships + "id");
@@ -606,7 +626,7 @@ internal sealed partial class DocxReader
                 if (property.Elements().Any(e => e.Name != W + "numId" && e.Name != W + "ilvl")) context.Loss("Docx.ListRevision", "Numbering revisions are not retained.");
             }
             else if (ReadLayoutProperty(property, style.Layout)) { }
-            else if (context.PreserveReview && property.Name == W + "rPr" && property.Elements().All(e => e.Name == W + "ins" || e.Name == W + "del")) { }
+            else if (property.Name == W + "rPr") { /* Paragraph mark is resolved separately from text runs. */ }
             else if (property.Name != W + "pStyle" && property.Name != W + "sectPr")
             {
                 context.Loss("Docx.ParagraphFormatting", "Paragraph formatting such as spacing, paragraph-mark styling or page controls is not retained.");
@@ -621,7 +641,7 @@ internal sealed partial class DocxReader
             return;
         }
 
-        foreach (XElement property in properties.Elements())
+        foreach (XElement property in properties.Elements().OrderBy(p => p.Name == W + "rStyle" ? 0 : 1))
         {
             if (property.Name == W + "b")
             {

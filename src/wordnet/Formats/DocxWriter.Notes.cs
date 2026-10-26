@@ -20,6 +20,8 @@ internal sealed partial class DocxWriter
                 new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml." + kind + "s+xml")));
             var root = new XElement(W + (kind + "s"), new XElement(W + kind, new XAttribute(W + "id", -1), new XAttribute(W + "type", "separator"),
                 new XElement(W + "p", new XElement(W + "r", new XElement(W + "separator")))));
+            root.Add(new XElement(W + kind, new XAttribute(W + "id", -2), new XAttribute(W + "type", "continuationSeparator"),
+                new XElement(W + "p", new XElement(W + "r", new XElement(W + "continuationSeparator")))));
             int initialRelations = relationships.Count;
             foreach (DocumentNote note in notes)
             {
@@ -29,6 +31,7 @@ internal sealed partial class DocxWriter
                 if (first != null)
                 {
                     var reference = new XElement(W + "r", new XElement(W + (kind + "Ref")));
+                    if (!note.ExplicitReferenceMark) reference.Add(new XElement(W + "t", new XAttribute(XNamespace.Xml + "space", "preserve"), " "));
                     if (first.Element(W + "pPr") is XElement properties) properties.AddAfterSelf(reference); else first.AddFirst(reference);
                 }
                 root.Add(element);

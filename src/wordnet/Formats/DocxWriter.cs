@@ -76,6 +76,7 @@ internal sealed partial class DocxWriter
             types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/docProps/core.xml"), new XAttribute("ContentType", "application/vnd.openxmlformats-package.core-properties+xml")));
             WritePart(archive, "docProps/core.xml", new XElement(core + "coreProperties", new XElement(dc + "title", document.Title), new XElement(dc + "creator", document.Author)));
         }
+        writer.WriteCustomProperties(archive, types, rootRelationships);
         WritePart(archive, "_rels/.rels", rootRelationships);
         WritePart(archive, "word/document.xml", new XElement(W + "document",
             new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
@@ -117,15 +118,17 @@ internal sealed partial class DocxWriter
     {
         var element = new XElement(W + "p");
         var properties = new XElement(W + "pPr");
-        string? style = paragraph.IsCodeBlock ? "WordnetCodeBlock"
-            : paragraph.HeadingLevel > 0 ? "Heading" + paragraph.HeadingLevel.ToString(CultureInfo.InvariantCulture) : null;
+        string? style = (paragraph.StyleId != null && model.Styles.ContainsKey(paragraph.StyleId) ? paragraph.StyleId : null) ?? (paragraph.IsCodeBlock ? "WordnetCodeBlock"
+            : paragraph.HeadingLevel > 0 ? "Heading" + paragraph.HeadingLevel.ToString(CultureInfo.InvariantCulture) : null);
         if (style != null)
         {
             usedStyles.Add(style);
             properties.Add(new XElement(W + "pStyle", new XAttribute(W + "val", style)));
         }
 
-        ParagraphLayoutProperties(properties, paragraph.Layout);
+        ParagraphLayout resolvedLayout = paragraph.Layout.Copy();
+        resolvedLayout.After ??= paragraph.FallbackAfter;
+        ParagraphLayoutProperties(properties, resolvedLayout);
         if (paragraph.List != null)
         {
             XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "tabs" || e.Name == W + "spacing" || e.Name == W + "ind");
@@ -141,7 +144,11 @@ internal sealed partial class DocxWriter
             XElement? following = properties.Elements().FirstOrDefault(e => e.Name == W + "spacing" || e.Name == W + "ind" || e.Name == W + "jc");
             if (following == null) properties.Add(direction); else following.AddBeforeSelf(direction);
         }
-        if (paragraph.StructuralRevision != null) properties.Add(new XElement(W + "rPr", Revision(paragraph.StructuralRevision)));
+        if (paragraph.StyleId != null && paragraph.HeadingLevel > 0)
+            properties.Add(new XElement(W + "outlineLvl", new XAttribute(W + "val", paragraph.HeadingLevel - 1)));
+        XElement? markProperties = paragraph.Mark == null ? null : Run(paragraph.Mark).Element(W + "rPr");
+        if (paragraph.StructuralRevision != null) { markProperties ??= new XElement(W + "rPr"); markProperties.AddFirst(Revision(paragraph.StructuralRevision)); }
+        if (markProperties != null) properties.Add(markProperties);
         if (properties.HasElements) element.Add(properties);
 
         TemplateControl? currentControl = null;
@@ -158,7 +165,7 @@ internal sealed partial class DocxWriter
                     XElement wrapper = Control(currentControl, null); element.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!;
                 }
             }
-            XElement runElement = Run(run);
+            XElement[] runElements = run.FieldChildren != null ? ComplexField(run, paragraph.FallbackFontSize).ToArray() : new[] { Run(run, paragraph.FallbackFontSize) };
             if (run.Revision != currentRevision)
             {
                 currentRevision = run.Revision; revisionParent = null;
@@ -166,28 +173,28 @@ internal sealed partial class DocxWriter
             }
             if (revisionParent != null)
             {
-                if (model.Review.Revisions[run.Revision!].Deletion) foreach (XElement text in runElement.Descendants(W + "t")) text.Name = W + "delText";
-                revisionParent.Add(runElement); continue;
+                if (model.Review.Revisions[run.Revision!].Deletion) foreach (XElement text in runElements.SelectMany(e => e.Descendants(W + "t"))) text.Name = W + "delText";
+                revisionParent.Add(runElements); continue;
             }
             if (run.Link == null)
             {
-                parent.Add(runElement);
+                parent.Add(runElements);
             }
-            else if ((run.Link.Length > 0 && run.Link[0] == '#')) parent.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElement));
+            else if ((run.Link.Length > 0 && run.Link[0] == '#')) parent.Add(new XElement(W + "hyperlink", new XAttribute(W + "anchor", run.Link.Substring(1)), runElements));
             else
             {
                 string id = "rLink" + relationships.Count.ToString(CultureInfo.InvariantCulture);
                 XElement relationship = Relationship(id, "hyperlink", run.Link);
                 relationship.Add(new XAttribute("TargetMode", "External"));
                 relationships.Add(relationship);
-                parent.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElement));
+                parent.Add(new XElement(W + "hyperlink", new XAttribute(DocxPackage.DocumentRelationships + "id", id), runElements));
             }
         }
 
         return element;
     }
 
-    private XElement Run(TextRun run)
+    private XElement Run(TextRun run, double? fallbackFontSize = null)
     {
         if (run.Object != null) return RetainedObject(run.Object);
         if (run.Comment != null)
@@ -217,11 +224,11 @@ internal sealed partial class DocxWriter
                 for (int i = 0; i < lines.Length; i++)
                 {
                     if (i > 0) field.Add(new XElement(W + "r", new XElement(W + "br")));
-                    XElement content = Run(new TextRun(lines[i], run.Bold, run.Italic, run.Code, fontSize: run.FontSize, color: run.Color, appearance: run.Appearance));
+                    XElement content = Run(new TextRun(lines[i], run.Bold, run.Italic, run.Code, fontSize: (run.FontSize ?? fallbackFontSize), color: run.Color, appearance: run.Appearance));
                     field.Add(i < targets.Count ? new XElement(W + "hyperlink", new XAttribute(W + "anchor", targets[i]), content) : content);
                 }
             }
-            else field.Add(Run(new TextRun(result, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, run.Image, run.Appearance)));
+            else field.Add(Run(new TextRun(result, run.Bold, run.Italic, run.Code, run.Link, (run.FontSize ?? fallbackFontSize), run.Color, run.Image, run.Appearance)));
             return field;
         }
         var element = new XElement(W + "r");
@@ -245,7 +252,7 @@ internal sealed partial class DocxWriter
         }
         if (appearance.Strike) properties.Add(new XElement(W + "strike"));
         if (run.Color != null) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color)));
-        if (run.FontSize.HasValue) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(run.FontSize.Value * 2)))));
+        if ((run.FontSize ?? fallbackFontSize) is double pointSize) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(pointSize * 2)))));
         if (appearance.Underline) properties.Add(new XElement(W + "u", new XAttribute(W + "val", "single")));
         if (appearance.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", appearance.Background)));
         if (appearance.VerticalAlignment != null) properties.Add(new XElement(W + "vertAlign", new XAttribute(W + "val", appearance.VerticalAlignment)));
@@ -378,8 +385,11 @@ internal sealed partial class DocxWriter
         foreach (string id in usedStyles.OrderBy(value => value, StringComparer.Ordinal))
         {
             var style = new XElement(W + "style", new XAttribute(W + "type", id == "WordnetCode" ? "character" : "paragraph"),
-                new XAttribute(W + "styleId", id), new XElement(W + "name", new XAttribute(W + "val", id)));
-            if (id.StartsWith("Heading", StringComparison.Ordinal))
+                new XAttribute(W + "styleId", id), new XElement(W + "name", new XAttribute(W + "val", model.Styles.TryGetValue(id, out string? sourceName) ? sourceName : id)));
+            if (id == "WordnetCodeBlock" || id == "WordnetCode")
+                style.Add(new XElement(W + "rPr", new XElement(W + "rFonts", new XAttribute(W + "ascii", "Consolas"), new XAttribute(W + "hAnsi", "Consolas"))));
+            else if (model.Styles.ContainsKey(id)) { /* Appearance is resolved into direct properties. */ }
+            else if (id.StartsWith("Heading", StringComparison.Ordinal))
             {
                 int level = id[id.Length - 1] - '0';
                 style.Add(new XElement(W + "pPr", new XElement(W + "outlineLvl", new XAttribute(W + "val", level - 1))));

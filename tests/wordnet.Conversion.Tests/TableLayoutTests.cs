@@ -50,7 +50,7 @@ public sealed class TableLayoutTests
         string paragraphs = string.Concat(Enumerable.Range(0, 35).Select(i => P("Entry" + i.ToString("D2", CultureInfo.InvariantCulture))));
         string rows = "<w:tr><w:trPr><w:tblHeader/></w:trPr>" + Cell("<w:gridSpan w:val='3'/>", P("Header")) + "</w:tr>"
             + "<w:tr>" + Cell("<w:gridSpan w:val='3'/>", paragraphs) + "</w:tr>";
-        byte[] input = Docx(rows, SmallPage);
+        byte[] input = ExplicitLayoutFixture.LegacyMetrics(Docx(rows, SmallPage));
         if (source == DocumentFormat.Doc) input = Convert(input, DocumentFormat.Docx, source);
         using PdfDocument pdf = PdfDocument.Open(Convert(input, source, DocumentFormat.Pdf));
         Assert.True(pdf.NumberOfPages >= 4);
@@ -71,8 +71,8 @@ public sealed class TableLayoutTests
         string filler = string.Concat(Enumerable.Range(0, 8).Select(i => P("Filler" + i.ToString(CultureInfo.InvariantCulture))));
         string rows = "<w:tr><w:trPr><w:tblHeader/></w:trPr>" + Cell("<w:gridSpan w:val='3'/>", P("Header")) + "</w:tr>"
             + "<w:tr>" + Cell("<w:gridSpan w:val='3'/>", P("Body") + P("Second")) + "</w:tr>";
-        byte[] input = TestDocuments.Docx(TestDocuments.Body(filler + "<w:tbl>" + Grid + rows + "</w:tbl>" + SmallPage));
-        using PdfDocument pdf = PdfDocument.Open(Convert(input, DocumentFormat.Docx, DocumentFormat.Pdf, strict: true));
+        byte[] input = TestDocuments.Docx(TestDocuments.Body(filler + "<w:tbl><w:tblPr><w:tblLayout w:type='fixed'/></w:tblPr>" + Grid + rows + "</w:tbl>" + SmallPage));
+        using PdfDocument pdf = PdfDocument.Open(Convert(ExplicitLayoutFixture.LegacyMetrics(input), DocumentFormat.Docx, DocumentFormat.Pdf, strict: true));
         Assert.Equal(2, pdf.NumberOfPages);
         Assert.DoesNotContain("Header", pdf.GetPage(1).Text, StringComparison.Ordinal);
         Assert.Equal("HeaderBodySecond", pdf.GetPage(2).Text);
@@ -148,7 +148,7 @@ public sealed class TableLayoutTests
 
     private static string P(string text, string properties = "") => "<w:p><w:pPr>" + properties + "</w:pPr><w:r><w:t>" + text + "</w:t></w:r></w:p>";
     private static string Cell(string properties, string content) => "<w:tc><w:tcPr>" + properties + "</w:tcPr>" + content + "</w:tc>";
-    private static byte[] Docx(string rows, string section = "") => TestDocuments.Docx(TestDocuments.Body("<w:tbl>" + Grid + rows + "</w:tbl>" + section));
+    private static byte[] Docx(string rows, string section = "") => TestDocuments.Docx(TestDocuments.Body("<w:tbl><w:tblPr><w:tblLayout w:type='fixed'/></w:tblPr>" + Grid + rows + "</w:tbl>" + section));
     private static byte[] Convert(byte[] bytes, DocumentFormat from, DocumentFormat to, bool strict = false)
     {
         using var input = new MemoryStream(bytes); using var output = new MemoryStream();

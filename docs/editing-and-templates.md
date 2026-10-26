@@ -1,5 +1,10 @@
 # Creating, editing and filling documents
 
+## Pending typed properties and field workflows
+
+See [the P1 usage and token matrix](roadmap-102-p1.md#typed-custom-properties-108) for immutable custom-property snapshots, atomic updates and DOCPROPERTY lookup. The same profile specifies numeric/date pictures, retained nested scalar IF fields and managed running headers. Legacy merge formatting remains unchanged. These additions are source changes under review, absent from public 1.4.0.
+
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in

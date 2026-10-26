@@ -9,10 +9,15 @@ internal sealed class DocumentModel
     internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
+    internal Dictionary<string, string> Styles { get; } = new Dictionary<string, string>(System.StringComparer.Ordinal);
+    internal Dictionary<string, DocumentProperty> CustomProperties { get; } = new Dictionary<string, DocumentProperty>(System.StringComparer.OrdinalIgnoreCase);
     internal bool TypographyPrepared { get; set; }
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
     internal PageSettings? FinalSection { get; set; }
     internal List<DocumentNote> Notes { get; } = new List<DocumentNote>();
+    internal HashSet<TextRun> UnresolvedStyleReferences { get; } = new HashSet<TextRun>();
+    internal Dictionary<PageSettings, List<int>> StylePages { get; } = new Dictionary<PageSettings, List<int>>();
+    internal Dictionary<(TextRun Run, int Page), string> StyleResults { get; } = new Dictionary<(TextRun, int), string>();
     internal Dictionary<TextRun, string> FieldResults { get; } = new Dictionary<TextRun, string>();
     internal Dictionary<string, (int Page, string Label, double X, double Y)> BookmarkPages { get; } = new Dictionary<string, (int, string, double, double)>(System.StringComparer.Ordinal);
     internal Dictionary<TextRun, List<string>> TocTargets { get; } = new Dictionary<TextRun, List<string>>();
@@ -53,6 +58,10 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal double? FallbackFontSize { get; set; }
+    internal double? FallbackAfter { get; set; }
+    internal string? StyleId { get; set; }
+    internal TextRun? Mark { get; set; }
     internal string? StructuralRevision { get; set; }
     internal bool RemoveWhenObjectEmpty { get; set; }
     internal System.Guid Identity { get; set; } = System.Guid.NewGuid();
@@ -77,6 +86,7 @@ internal sealed class TableBlock : DocumentBlock
     internal double? Width { get; set; }
     internal double? WidthPercent { get; set; }
     internal bool AutoFit { get; set; }
+    internal bool ManagedImplicitAutoFit { get; set; }
     internal bool LayoutExplicit { get; set; }
     internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
@@ -159,12 +169,20 @@ internal sealed class TextRun
     internal PositionedBox? Box { get; }
     internal string? Bookmark { get; }
     internal TemplateControl? Control { get; }
+    internal Dictionary<int, TextRun>? FieldChildren { get; set; }
     internal List<TextRun>? FieldCache { get; set; }
     internal string? Revision { get; set; }
     internal string? Comment { get; set; }
     internal int CommentBoundary { get; set; }
+    // Every semantic run rebuild must retain the complete field/history carrier.
+    internal TextRun RetainMetadata(TextRun source)
+    {
+        FieldChildren = source.FieldChildren; FieldCache = source.FieldCache;
+        Revision = source.Revision; Comment = source.Comment; CommentBoundary = source.CommentBoundary; BidiLevel = source.BidiLevel;
+        return this;
+    }
     internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control, Object)
-    { FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
+    { FieldChildren = FieldChildren, FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
 }
 
 internal sealed class TemplateControl
@@ -196,6 +214,7 @@ internal sealed class CellPadding
 
 internal sealed class DocumentNote
 {
+    internal bool ExplicitReferenceMark { get; set; }
     internal string Id { get; set; } = "";
     internal bool Endnote { get; set; }
     internal int PartId { get; set; }

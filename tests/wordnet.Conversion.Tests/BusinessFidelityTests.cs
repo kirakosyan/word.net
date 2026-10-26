@@ -288,7 +288,7 @@ public sealed partial class BusinessFidelityTests
         byte[] input = Docx(P("Body") + box + Page);
         using PdfDocument pdf = PdfDocument.Open(Export(input, DocumentFormat.Pdf, out ConversionResult result), SkiaRenderingParsingOptions.Instance); pdf.AddSkiaPageFactory();
         Assert.Equal("BodyBox firstBox second", pdf.GetPage(1).Text); Assert.DoesNotContain(result.Diagnostics, d => d.Code == "Shape.TextBoxFlattened");
-        var letters = pdf.GetPage(1).Letters; Assert.Equal(207.2, letters[4].StartBaseLine.X, 2); Assert.Equal(184.4 - 12 * .069, letters[4].StartBaseLine.Y, 2);
+        var letters = pdf.GetPage(1).Letters; Assert.Equal(207.2, letters[4].StartBaseLine.X, 2); Assert.Equal(196.4 - 11 * 1.069, letters[4].StartBaseLine.Y, 2);
         using SKBitmap raster = pdf.GetPageAsSKBitmap(1, 1, SKColors.White); Assert.Equal(SKColors.Cyan, raster.GetPixel(330, 170)); SaveRaster(raster, "positioned-text-box");
         byte[] word = Export(input, DocumentFormat.Docx); Schema(word); Assert.Equal(2, Part(word, "word/document.xml").Descendants(W + "txbxContent").Single().Elements(W + "p").Count());
     }
@@ -361,7 +361,7 @@ public sealed partial class BusinessFidelityTests
         }
         byte[] input = memory.ToArray(); Schema(input);
         using PdfDocument pdf = PdfDocument.Open(Export(input, DocumentFormat.Pdf));
-        Assert.Equal(48, pdf.GetPage(1).Letters[0].StartBaseLine.X, 3); Assert.Equal(300 - 40 - 12 * 1.069, pdf.GetPage(1).Letters[0].StartBaseLine.Y, 3);
+        Assert.Equal(48, pdf.GetPage(1).Letters[0].StartBaseLine.X, 3); Assert.Equal(300 - 40 - 11 * 1.069, pdf.GetPage(1).Letters[0].StartBaseLine.Y, 3);
         Schema(Export(input, DocumentFormat.Docx));
     }
 

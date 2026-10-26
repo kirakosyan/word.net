@@ -8,6 +8,19 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+            foreach (ParagraphBlock paragraph in model.Paragraphs)
+                for (int i = 0; i < paragraph.Runs.Count; i++)
+                {
+                    TextRun run = paragraph.Runs[i];
+                    if (run.FieldChildren == null) continue;
+                    using var location = context.At(paragraph.Location);
+                    context.Loss("Field.NestedOutput", "This destination retains a nested field's complete cached text without executable nested instructions.");
+                    paragraph.Runs[i] = new TextRun(run.Text, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, appearance: run.Appearance.Copy());
+                }
+        CustomPropertyValues.Validate(model, context);
+        if (format != DocumentFormat.Docx && model.CustomProperties.Count != 0)
+            context.Report("Metadata.CustomProperties", "Custom properties can supply displayed fields; only DOCX preserves their editable metadata.");
         if (format is DocumentFormat.Docx or DocumentFormat.Pdf or DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs)
             {

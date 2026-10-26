@@ -28,7 +28,7 @@ public sealed class ProductionReviewTests
     public void WordDefaultTableCanOverhangTextMarginsInsidePhysicalPage(DocumentFormat source, DocumentFormat target)
     {
         string grid = "<w:tblGrid>" + string.Concat(Enumerable.Repeat("<w:gridCol w:w='3192'/>", 3)) + "</w:tblGrid>";
-        byte[] input = Docx("<w:tbl>" + grid + Row(Cell("Alpha") + Cell("Beta") + Cell("Gamma")) + "</w:tbl>" + Letter);
+        byte[] input = Docx("<w:tbl><w:tblPr><w:tblLayout w:type='fixed'/></w:tblPr>" + grid + Row(Cell("Alpha") + Cell("Beta") + Cell("Gamma")) + "</w:tbl>" + Letter);
         if (source == DocumentFormat.Doc) input = Convert(input, DocumentFormat.Docx, source);
         byte[] output = Convert(input, source, target);
         if (target == DocumentFormat.Pdf)
@@ -48,7 +48,7 @@ public sealed class ProductionReviewTests
     [Fact]
     public void TableOutsidePhysicalPageFailsBeforeWriting()
     {
-        byte[] input = Docx("<w:tbl><w:tblGrid><w:gridCol w:w='12000'/></w:tblGrid>" + Row(Cell("Wide")) + "</w:tbl>" + Letter);
+        byte[] input = Docx("<w:tbl><w:tblPr><w:tblLayout w:type='fixed'/></w:tblPr><w:tblGrid><w:gridCol w:w='12000'/></w:tblGrid>" + Row(Cell("Wide")) + "</w:tbl>" + Letter);
         using var source = new MemoryStream(input); using var output = new MemoryStream(); output.WriteByte(42);
         Assert.Contains("Layout.TableWidth", Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Pdf)).Message, StringComparison.Ordinal);
         Assert.Equal(new byte[] { 42 }, output.ToArray());

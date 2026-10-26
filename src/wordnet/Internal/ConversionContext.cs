@@ -12,6 +12,7 @@ internal sealed class ConversionContext
     private WordNet.Model.ObjectBudget? objects;
     internal WordNet.Model.ObjectBudget Objects => objects ??= new WordNet.Model.ObjectBudget(this);
     internal int ObjectCount => objects?.Placements ?? 0;
+    internal int PhysicalPage { get; set; }
     internal string PageNumberFormat { get; set; } = "decimal";
     private readonly List<ConversionDiagnostic> diagnostics = new List<ConversionDiagnostic>();
     private readonly Dictionary<string, ConversionDiagnostic> codes = new Dictionary<string, ConversionDiagnostic>(StringComparer.Ordinal);
@@ -22,6 +23,13 @@ internal sealed class ConversionContext
     internal byte[][] FontData { get; set; } = Array.Empty<byte[]>();
     private WordNet.Layout.RenderFontCache? renderFonts;
     internal WordNet.Layout.RenderFontCache RenderFonts => renderFonts ??= new WordNet.Layout.RenderFontCache(this);
+    private long fieldWork;
+    internal void ReserveFieldWork(int count)
+    {
+        fieldWork = checked(fieldWork + count);
+        if (fieldWork > System.Math.Max(4096L, Options.MaximumCharacters * 64L))
+            throw new InvalidDataException("Limit.FieldWork: Aggregate field/layout measurement work exceeded.");
+    }
     private long outlinePoints;
     internal void ReserveOutlinePoints(int count) { outlinePoints = checked(outlinePoints + count); if (outlinePoints > Options.MaximumExpandedBytes / 64) throw new InvalidDataException("Limit.FontOutlines: Expanded outline cache exceeds its point budget."); }
     internal int? PageCount { get; set; }

@@ -72,6 +72,10 @@ Strict mode. Whole-paragraph review decisions include the paragraph mark and its
 Independent comparison failures remain recorded; this release makes no universal
 rendering-parity claim.
 
+## Pending roadmap #102 P1 source changes
+
+The current development branch implements [the bounded P1 profile](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p1.md): DOCX defaults/mark metrics, implicit managed table autofit, conventional note spacing, typed custom properties, field pictures, nested scalar IF fields and managed STYLEREF running headers. These changes are under PR review and are absent from published 1.4.0. Default sizing/spacing and implicit autofit can change pagination; explicit fixed tables and explicit text formatting keep their policies.
+
 ## Quick start
 
 Convert a DOCX document to PDF and inspect any reported fidelity losses. Stage output before replacing an existing file:

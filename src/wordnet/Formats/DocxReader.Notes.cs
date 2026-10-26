@@ -10,6 +10,7 @@ namespace WordNet.Formats;
 
 internal sealed partial class DocxReader
 {
+    private bool noteReferenceMark;
     private readonly Dictionary<string, DocumentNote> notes = new Dictionary<string, DocumentNote>(StringComparer.Ordinal);
     private readonly HashSet<string> noteIds = new HashSet<string>(StringComparer.Ordinal);
 
@@ -39,13 +40,17 @@ internal sealed partial class DocxReader
                 if (!noteIds.Add(kind + ":" + label)) throw new InvalidDataException("Docx.Notes: Duplicate note identifier.");
 
                 var reader = new DocxReader(context, package.ReadRelationships(path))
-                { package = package, mainPart = path, knownParts = knownParts, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle };
+                { package = package, mainPart = path, knownParts = knownParts, defaultAlignment = defaultAlignment, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle };
                 foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
                 foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);
                 foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);
                 var blocks = new List<DocumentBlock>(); reader.ReadBlocks(note, blocks);
                 if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed note field.");
-                var semantic = new DocumentNote { Id = kind + ":" + label, PartId = id, Endnote = kind == "endnotes" };
+                XElement? firstParagraph = note.Elements(W + "p").FirstOrDefault();
+                if (note.Descendants(W + (kind == "footnotes" ? "footnoteRef" : "endnoteRef")).Any(mark => !ReferenceEquals(mark.Ancestors(W + "p").FirstOrDefault(), firstParagraph)))
+                    context.Loss("Notes.ReferenceMark", "A note reference mark outside the first ordinary paragraph uses a generated leading label.");
+                foreach (ParagraphBlock paragraph in DocumentModel.Expand(blocks).OfType<ParagraphBlock>()) paragraph.FallbackFontSize = null;
+                var semantic = new DocumentNote { ExplicitReferenceMark = reader.noteReferenceMark, Id = kind + ":" + label, PartId = id, Endnote = kind == "endnotes" };
                 semantic.Blocks.AddRange(blocks); notes.Add(semantic.Id, semantic);
             }
         }

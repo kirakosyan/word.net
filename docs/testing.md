@@ -1,5 +1,10 @@
 # Conversion tests and qualification
 
+## Pending roadmap #102 P1 tests
+
+The [P1 evidence/profile](roadmap-102-p1.md#evidence-and-remaining-qualification) adds independent OOXML/property schema, pinned-font/default/mark coordinates, demanding autofit/row splitting, conventional note continuation, typed pictures under two cultures, nested-field safety and running-header page/section/variant checks. Existing historical raster/coordinate inputs receive explicit legacy settings in detached copies; their committed originals and tolerances stay unchanged. Actual final runtime results are recorded in the P1 profile, separately from dated release qualification below.
+
+
 ## Issue #103 fidelity refresh - merged evidence
 
 [PR #131](https://github.com/kirakosyan/word.net/pull/131) merged on 2026-10-26 as
