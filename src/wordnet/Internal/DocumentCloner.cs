@@ -71,6 +71,7 @@ internal sealed class DocumentCloner
                 Width = table.Width,
                 WidthPercent = table.WidthPercent,
                 AutoFit = table.AutoFit,
+                ManagedImplicitAutoFit = table.ManagedImplicitAutoFit,
                 LayoutExplicit = table.LayoutExplicit,
                 LeftIndent = table.LeftIndent
             };

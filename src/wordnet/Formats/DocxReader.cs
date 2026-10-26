@@ -189,7 +189,7 @@ internal sealed partial class DocxReader
             if (styles.Count > context.Options.MaximumCharacters) throw new InvalidDataException("Limit.Styles: Too many styles.");
             if ((string?)style.Attribute(W + "type") == "paragraph" && IsTrue((string?)style.Attribute(W + "default")))
             {
-                if (defaultStyle != null) throw new InvalidDataException("Docx.Styles: Multiple default paragraph styles.");
+                if (defaultStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last paragraph style marked default is used, following the document format default-style rule.");
                 defaultStyle = id;
             }
         }
@@ -272,7 +272,7 @@ internal sealed partial class DocxReader
         ReadRunProperties(markProperties, mark);
         string? retainedStyle = styleId ?? defaultStyle;
         if (retainedStyle != null && (!styles.TryGetValue(retainedStyle, out XElement? retainedDefinition) || (string?)retainedDefinition.Attribute(W + "type") != "paragraph")) retainedStyle = null;
-        var paragraph = new ParagraphBlock { FallbackFontSize = 11, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, fontSize: mark.FontSize, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        var paragraph = new ParagraphBlock { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
         return paragraph;

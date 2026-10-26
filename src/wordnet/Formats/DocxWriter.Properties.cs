@@ -19,9 +19,15 @@ internal sealed partial class DocxWriter
         foreach (DocumentProperty property in model.CustomProperties.Values.OrderBy(p => p.Name, StringComparer.Ordinal))
         {
             context.CheckCancellation();
+            string display = CustomPropertyValues.Display(property);
             string type = property.Type switch { DocumentPropertyType.Text => "lpwstr", DocumentPropertyType.Boolean => "bool", DocumentPropertyType.Number => "decimal", _ => "filetime" };
+            if (property.Value is decimal number)
+            {
+                if (number == decimal.Truncate(number) && number >= int.MinValue && number <= int.MaxValue) type = "i4";
+                else if (decimal.Parse(number.ToString("G15", System.Globalization.CultureInfo.InvariantCulture), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture) == number) type = "r8";
+            }
             root.Add(new XElement(cp + "property", new XAttribute("fmtid", "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}"),
-                new XAttribute("pid", id++), new XAttribute("name", property.Name), new XElement(vt + type, CustomPropertyValues.Display(property))));
+                new XAttribute("pid", id++), new XAttribute("name", property.Name), new XElement(vt + type, display)));
         }
         relations.Add(Relationship("rCustom", "custom-properties", "docProps/custom.xml"));
         types.Add(new XElement(DocxPackage.ContentTypes + "Override", new XAttribute("PartName", "/docProps/custom.xml"),

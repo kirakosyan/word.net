@@ -32,15 +32,14 @@ Resolve document defaults, the selected/default paragraph style and its `basedOn
 chain, character style, then absolute direct run properties. Character styles are
 applied before direct properties regardless of element enumeration order. Existing
 bold/italic toggle interpretation remains covered by the earlier regressions.
-Absent values remain absent in the semantic model until rendering: ordinary DOCX
+Absent values remain absent in the semantic model until rendering: ordinary DOCX body/cell/story
 paragraphs use deterministic 11 pt and zero after-spacing. This replaces the earlier
 context-dependent 12 pt body / 11 pt cell policy and implicit 6 pt after-spacing.
-Other readers and newly composed sessions keep their existing policies. This is an
+Notes without a source size retain their 9 pt context size, and headings retain their existing contextual size. Other readers and newly composed sessions keep their existing policies. This is an
 explicit fallback policy, not a claim that every office editor selects these values.
 
 Explicit sizes, inherited values and explicit zero before/after spacing win. Zero,
-negative or malformed font sizes fail; duplicate style IDs/default paragraph styles
-and cycles fail. Traversal uses the existing nesting bound. Theme/script properties
+negative or malformed font sizes fail; duplicate style IDs and cycles fail. Multiple paragraph defaults use the last declaration with an informational diagnostic. Traversal uses the existing nesting bound. Theme/script properties
 outside the profile retain their diagnostics. DOCX output materializes admitted
 appearance and retains paragraph style IDs/names, without inventing source identities
 or claiming preservation of arbitrary style graphs.
@@ -71,7 +70,7 @@ No-fit content retains existing diagnostics/failure and staged output behavior.
 The qualified native implicit-table profile retains its earlier fixed-grid policy,
 with informational `Table.NativeImplicitGrid`; new managed sizing does not qualify
 new native combinations. Floating tables and other unsupported native structures
-remain outside the profile. Binary DOC export diagnoses autofit/relative-width loss.
+remain outside the profile. Binary DOC export diagnoses explicit autofit/relative-width loss. Omitted layout remains unchanged in the shared model for DOC, ODT and HTML; only managed fixed-page sizing opts into implicit autofit.
 
 ## Conventional notes (#107)
 
@@ -101,11 +100,11 @@ retain cached fields with `Field.UnsupportedUsedCachedResult`.
 | --- | --- | --- |
 | `string` | `vt:lpwstr` | Original Unicode text |
 | `bool` | `vt:bool` | `true` / `false` |
-| `decimal` | `vt:decimal`; input also checked `i4`/`i8` | Invariant decimal |
+| `decimal` | `i4` for in-range integers, `r8` for 15-digit exact display, otherwise lossless `decimal`; input also checked `i8` | Invariant decimal |
 | `DateTimeOffset` | `vt:filetime` with explicit offset | UTC ISO instant |
 
 Duplicate names (ignoring case), duplicate IDs and malformed admitted values fail.
-Unsupported types and linked properties are diagnosed and omitted; their unresolved
+Finite `r8` values are admitted only when the decimal projection preserves their binary64 numeric value. Unsupported types and linked properties are informationally diagnosed and omitted; their unresolved
 fields keep caches. Only DOCX preserves custom-property metadata; other exports
 report informational `Metadata.CustomProperties`. This is not arbitrary OPC editing.
 
@@ -158,8 +157,7 @@ evaluation, 4096 instruction characters and 256 tokens per node, plus aggregate 
 and output bounds. OOXML builds an acyclic tree; evaluation also detects repeated
 nodes. Unsupported/missing children preserve the whole outer cache, never partially
 execute flattened fragments. Structured or unsupported instruction trees outside
-retention keep cached runs with diagnostics. Duplicate separators, unbalanced ends
-and unclosed fields fail atomically. DOCX writes admitted nested instructions as
+retention keep cached runs with diagnostics. Repeated separators are ignored with `Field.DuplicateSeparator`; genuinely unbalanced ends and unclosed fields fail atomically. DOCX writes admitted nested instructions as
 complex field boundaries; no internal placeholder is serialized into instructions.
 
 ## Evidence and remaining qualification
@@ -243,3 +241,29 @@ fonts and test-only Pillow requirements for fresh references. Keep their nonzero
 strict-fidelity exit codes and every failed verdict. Raw local artifacts live under
 ignored `artifacts/p1-*`; the committed receipt preserves identities, coordinates and
 verdicts without bundling generated packages or external tool binaries.
+
+
+## PR #133 review corrections
+
+All fifteen inline findings have dedicated fixes and regression coverage. Semantic
+run copies retain field trees through inline controls, conditions, repeats and both
+composition policies. Nested field codes never reach DOC with internal placeholders:
+Strict rejects `Field.NestedOutput`, while best effort exports intact cached text.
+Paragraph-mark revisions precede mark formatting in schema order; mark color/code are
+retained. Generated code styles preserve their monospace definition after reload.
+
+Composition merges style identities with collision remapping and rewrites admitted
+running-header references to stable IDs. It imports matching/new custom properties;
+conflicting typed values fail atomically with `Composition.CustomPropertyConflict`.
+Style catalog names/IDs participate in session aggregate admission. Unequal-column
+continuations retain mark/default metrics. Duplicate paragraph defaults follow the
+specified last-wins rule, and repeated separators remain tolerated with diagnostics.
+
+Running-header reservation is confined to its owning section and distinct result
+vectors. Static STYLEREF story heights are cached per section during each layout pass;
+unrelated stories are not remeasured across the document's pages. Lookup/output work
+is charged before expansion, and final unresolved diagnostics are emitted after
+convergence. An 80-page/eight-section control checks this under an isolated low layout
+budget. The source suite now requires 1,222 cases, including 26 review regressions.
+Earlier 1,196-case receipts and geometry observations above remain dated evidence;
+final reviewed-head/merge qualification is recorded separately after execution.

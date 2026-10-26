@@ -35,6 +35,7 @@ public sealed partial class WordDocument
                 foreach (DocumentBlock block in m.Blocks) block.Section ??= originalGeometry;
             }
             string prefix = UniquePrefix(m);
+            MergeMetadata(m, incoming, prefix, c);
             Remap(incoming, prefix, m.Notes.Count == 0 ? 0 : m.Notes.Max(n => n.PartId));
             if (style == CompositionStyle.UseDestination)
             {
@@ -43,6 +44,7 @@ public sealed partial class WordDocument
                 foreach (ParagraphBlock paragraph in incoming.BodyParagraphs)
                     if (prototypes.TryGetValue(paragraph.HeadingLevel, out ParagraphBlock? prototype))
                     {
+                        paragraph.StyleId = prototype.StyleId; paragraph.Mark = prototype.Mark; paragraph.FallbackFontSize = prototype.FallbackFontSize; paragraph.FallbackAfter = prototype.FallbackAfter;
                         paragraph.Layout = prototype.Layout.Copy(); paragraph.Alignment = prototype.Alignment; paragraph.IsCodeBlock = prototype.IsCodeBlock;
                         TextRun? appearance = prototype.Runs.FirstOrDefault(r => r.Image == null && r.Bookmark == null);
                         if (appearance == null) continue;
@@ -74,6 +76,7 @@ public sealed partial class WordDocument
     {
         var identifiers = new HashSet<string>(m.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Bookmark != null).Select(r => r.Bookmark!), StringComparer.Ordinal);
         identifiers.UnionWith(m.Paragraphs.Where(p => p.List != null).Select(p => p.List!.Id));
+        identifiers.UnionWith(m.Styles.Keys);
         identifiers.UnionWith(m.Review.Revisions.Keys); identifiers.UnionWith(m.Review.Comments.Keys);
         foreach (TextRun run in m.Paragraphs.SelectMany(p => p.Runs).Where(r => r.FieldInstruction != null))
         {
@@ -136,6 +139,7 @@ public sealed partial class WordDocument
                     cached.FontSize, cached.Color, cached.Image, cached.Appearance.Copy())).ToList();
                 paragraph.Runs[i] = new TextRun(r.Text, r.Bold, r.Italic, r.Code, link, r.FontSize, r.Color, r.Image, r.Appearance, field, r.Note, r.Box, bookmark, r.Control, r.Object?.Remap())
                 {
+                    FieldChildren = r.FieldChildren,
                     FieldCache = cache,
                     Revision = r.Revision == null ? null : prefix + "r" + r.Revision,
                     Comment = r.Comment == null ? null : prefix + "r" + r.Comment,
@@ -146,5 +150,5 @@ public sealed partial class WordDocument
     }
     private static TextRun Restyle(TextRun r, TextRun appearance) => new TextRun(r.Text, appearance.Bold, appearance.Italic, appearance.Code, r.Link,
         appearance.FontSize, appearance.Color, r.Image, appearance.Appearance.Copy(), r.FieldInstruction, r.Note, r.Box, r.Bookmark, r.Control)
-    { FieldCache = r.FieldCache?.Select(cached => Restyle(cached, appearance)).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
+    { FieldChildren = r.FieldChildren?.ToDictionary(p => p.Key, p => Restyle(p.Value, appearance)), FieldCache = r.FieldCache?.Select(cached => Restyle(cached, appearance)).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
 }

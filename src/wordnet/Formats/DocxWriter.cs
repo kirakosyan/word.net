@@ -118,7 +118,7 @@ internal sealed partial class DocxWriter
     {
         var element = new XElement(W + "p");
         var properties = new XElement(W + "pPr");
-        string? style = paragraph.StyleId ?? (paragraph.IsCodeBlock ? "WordnetCodeBlock"
+        string? style = (paragraph.StyleId != null && model.Styles.ContainsKey(paragraph.StyleId) ? paragraph.StyleId : null) ?? (paragraph.IsCodeBlock ? "WordnetCodeBlock"
             : paragraph.HeadingLevel > 0 ? "Heading" + paragraph.HeadingLevel.ToString(CultureInfo.InvariantCulture) : null);
         if (style != null)
         {
@@ -147,7 +147,7 @@ internal sealed partial class DocxWriter
         if (paragraph.StyleId != null && paragraph.HeadingLevel > 0)
             properties.Add(new XElement(W + "outlineLvl", new XAttribute(W + "val", paragraph.HeadingLevel - 1)));
         XElement? markProperties = paragraph.Mark == null ? null : Run(paragraph.Mark).Element(W + "rPr");
-        if (paragraph.StructuralRevision != null) { markProperties ??= new XElement(W + "rPr"); markProperties.Add(Revision(paragraph.StructuralRevision)); }
+        if (paragraph.StructuralRevision != null) { markProperties ??= new XElement(W + "rPr"); markProperties.AddFirst(Revision(paragraph.StructuralRevision)); }
         if (markProperties != null) properties.Add(markProperties);
         if (properties.HasElements) element.Add(properties);
 
@@ -386,7 +386,9 @@ internal sealed partial class DocxWriter
         {
             var style = new XElement(W + "style", new XAttribute(W + "type", id == "WordnetCode" ? "character" : "paragraph"),
                 new XAttribute(W + "styleId", id), new XElement(W + "name", new XAttribute(W + "val", model.Styles.TryGetValue(id, out string? sourceName) ? sourceName : id)));
-            if (model.Styles.ContainsKey(id)) { /* Appearance is resolved into direct properties. */ }
+            if (id == "WordnetCodeBlock" || id == "WordnetCode")
+                style.Add(new XElement(W + "rPr", new XElement(W + "rFonts", new XAttribute(W + "ascii", "Consolas"), new XAttribute(W + "hAnsi", "Consolas"))));
+            else if (model.Styles.ContainsKey(id)) { /* Appearance is resolved into direct properties. */ }
             else if (id.StartsWith("Heading", StringComparison.Ordinal))
             {
                 int level = id[id.Length - 1] - '0';

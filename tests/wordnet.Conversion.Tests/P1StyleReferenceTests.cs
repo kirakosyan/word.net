@@ -15,7 +15,7 @@ public sealed class P1StyleReferenceTests
     private static readonly XNamespace W = TestDocuments.W;
     private static string P(string text, bool styled = false, bool pageBreak = false) => "<w:p><w:pPr>" + (styled ? "<w:pStyle w:val='Topic'/>" : "") + (pageBreak ? "<w:pageBreakBefore/>" : "") + "</w:pPr><w:r><w:rPr><w:rFonts w:ascii='Noto Sans' w:hAnsi='Noto Sans'/></w:rPr><w:t>" + text + "</w:t></w:r></w:p>";
     private static string Section(string references, string properties = "") => "<w:sectPr>" + references + "<w:pgSz w:w='8000' w:h='6000'/><w:pgMar w:top='1000' w:bottom='600' w:left='600' w:right='600' w:header='200' w:footer='200'/>" + properties + "</w:sectPr>";
-    private static byte[] Source(string body, string instruction, bool variants = false, string? extraStyles = null)
+    internal static byte[] Source(string body, string instruction, bool variants = false, string? extraStyles = null)
     {
         string styles = "<w:styles xmlns:w='" + TestDocuments.W + "'><w:style w:type='paragraph' w:styleId='Topic'><w:name w:val='Running Topic'/><w:rPr><w:sz w:val='22'/></w:rPr></w:style>" + extraStyles + "</w:styles>";
         string relations = "", references = ""; var parts = new Dictionary<string, string>();

@@ -131,7 +131,11 @@ internal sealed partial class DocxReader
             if (fields.Count >= context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Fields exceed the nesting limit.");
             fields.Push(new FieldCapture());
         }
-        else if (kind == "separate" && fields.Count > 0 && !fields.Peek().Separated) fields.Peek().Separated = true;
+        else if (kind == "separate" && fields.Count > 0)
+        {
+            if (fields.Peek().Separated) context.Report("Field.DuplicateSeparator", "A repeated field separator is ignored without changing the result destination.");
+            fields.Peek().Separated = true;
+        }
         else if (kind == "end" && fields.Count > 0)
         {
             FieldCapture field = fields.Pop();

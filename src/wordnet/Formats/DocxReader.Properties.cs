@@ -26,7 +26,7 @@ internal sealed partial class DocxReader
             context.CheckCancellation();
             string name = DocxPackage.RequiredAttribute(element, "name");
             if (element.Name != cp + "property" || !names.Add(name) || !ids.Add(Integer(element, "pid", 2, int.MaxValue))
-                || (string?)element.Attribute("fmtid") != "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" || element.Elements().Count() != 1)
+                || !string.Equals((string?)element.Attribute("fmtid"), "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}", StringComparison.OrdinalIgnoreCase) || element.Elements().Count() != 1)
                 throw new InvalidDataException("Docx.CustomProperties: Invalid or duplicate property.");
             if (names.Count > 1024) throw new InvalidDataException("Limit.CustomProperties: Too many properties.");
             XElement value = element.Elements().Single();
@@ -36,8 +36,9 @@ internal sealed partial class DocxReader
                 if (element.Attribute("linkTarget") == null && value.Name.Namespace == vt && !value.HasElements)
                     property = value.Name.LocalName switch
                     {
-                        "lpwstr" => new DocumentProperty(name, value.Value),
+                        "lpwstr" or "lpstr" => new DocumentProperty(name, value.Value),
                         "bool" => new DocumentProperty(name, System.Xml.XmlConvert.ToBoolean(value.Value)),
+                        "r8" => ReadFloatingProperty(name, value.Value),
                         "decimal" => new DocumentProperty(name, decimal.Parse(value.Value, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture)),
                         "i4" => new DocumentProperty(name, (decimal)int.Parse(value.Value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture)),
                         "i8" => new DocumentProperty(name, (decimal)long.Parse(value.Value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture)),
@@ -47,8 +48,21 @@ internal sealed partial class DocxReader
             }
             catch (Exception error) when (error is FormatException or OverflowException or ArgumentException)
             { throw new InvalidDataException("Docx.CustomProperties: Invalid property value.", error); }
-            if (property == null) context.Loss("Docx.CustomPropertyType", "Linked or unsupported custom-property types are omitted; their fields retain safe caches.");
+            if (property == null) context.Report("Docx.CustomPropertyType", "Linked or unsupported custom-property types are omitted; their fields retain safe caches.");
             else customProperties.Add(name, property);
         }
     }
+    private static DocumentProperty? ReadFloatingProperty(string name, string lexical)
+    {
+        double number = System.Xml.XmlConvert.ToDouble(lexical);
+        if (double.IsNaN(number) || double.IsInfinity(number)) return null;
+        try
+        {
+            decimal admitted = checked((decimal)number);
+            // Admit only projections preserving the original binary64 numeric value.
+            return double.Parse(admitted.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture) == number ? new DocumentProperty(name, admitted) : null;
+        }
+        catch (OverflowException) { return null; }
+    }
+
 }

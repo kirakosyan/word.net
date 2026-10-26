@@ -14,7 +14,7 @@ internal static class StyleReferences
     internal static bool Refresh(DocumentModel model, List<FixedPage> pages, ConversionContext context)
     {
         var previous = new Dictionary<(TextRun, int), string>(model.StyleResults);
-        model.StyleResults.Clear();
+        model.StyleResults.Clear(); model.UnresolvedStyleReferences.Clear(); model.StylePages.Clear();
         if (context.Typography.Enabled) return false;
         var body = new HashSet<ParagraphBlock>(model.Blocks.OfType<ParagraphBlock>());
         var starts = new Dictionary<ParagraphBlock, int>();
@@ -26,10 +26,13 @@ internal static class StyleReferences
         var groups = starts.Where(p => p.Key.StyleId != null && p.Key.Runs.All(r => r.FieldInstruction == null && r.Image == null && r.Box == null && r.Note == null && r.Object == null))
             .GroupBy(p => (p.Key.Section, p.Key.StyleId!)).ToDictionary(g => g.Key, g => g.OrderBy(p => positions[p.Key]).ToArray());
         var lookup = new Dictionary<(PageSettings, string, int, bool), string>();
-        long work = 0;
+        long work = 0, expanded = 0;
+        var paragraphText = new Dictionary<ParagraphBlock, string>();
         for (int i = 0; i < pages.Count; i++)
         {
             FixedPage page = pages[i]; PageSettings section = page.SourceSettings;
+            if (!model.StylePages.TryGetValue(section, out List<int>? sectionPages)) { sectionPages = new List<int>(); model.StylePages.Add(section, sectionPages); }
+            sectionPages.Add(i + 1);
             foreach (TextRun run in section.Stories.Values.SelectMany(DocumentModel.Expand).OfType<ParagraphBlock>().SelectMany(p => p.Runs).Where(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "STYLEREF").Distinct())
             {
                 context.CheckCancellation();
@@ -50,16 +53,32 @@ internal static class StyleReferences
                     var onPage = candidates.Where(p => p.Value == i).ToArray();
                     ParagraphBlock? chosen = onPage.Length > 0 ? (last ? onPage[onPage.Length - 1].Key : onPage[0].Key)
                         : candidates.LastOrDefault(p => p.Value < i).Key ?? candidates.FirstOrDefault(p => p.Value > i).Key;
-                    result = chosen?.Text ?? run.Text;
+                    if (chosen == null) result = run.Text;
+                    else if (!paragraphText.TryGetValue(chosen, out result)) { result = chosen.Text; paragraphText.Add(chosen, result); }
                     context.CheckCharacters(result.Length); lookup.Add(key, result);
                 }
+                expanded = checked(expanded + result.Length);
+                if (expanded > context.Options.MaximumCharacters || expanded * 2 + (model.StyleResults.Count + 1) * 64L > context.Options.MaximumExpandedBytes)
+                    throw new System.IO.InvalidDataException("Limit.FieldResults: Running-header results exceed aggregate limits.");
                 model.StyleResults[(run, i + 1)] = result;
-                void Cached() => context.Report("Field.UnsupportedUsedCachedResult", "An unresolved or unsupported running-header style reference retains its cache.");
+                void Cached() => model.UnresolvedStyleReferences.Add(run);
             }
         }
-        long expanded = model.StyleResults.Values.Sum(s => (long)s.Length);
-        if (expanded > context.Options.MaximumCharacters || expanded * 2 + model.StyleResults.Count * 64L > context.Options.MaximumExpandedBytes)
-            throw new System.IO.InvalidDataException("Limit.FieldResults: Running-header results exceed aggregate limits.");
         return previous.Count != model.StyleResults.Count || model.StyleResults.Any(p => !previous.TryGetValue(p.Key, out string? value) || value != p.Value);
     }
+    internal static void ReportUnresolved(DocumentModel model, ConversionContext context)
+    {
+        var resolved = new HashSet<TextRun>(model.StyleResults.Keys.Select(k => k.Run));
+        foreach (ParagraphBlock paragraph in model.Paragraphs)
+            foreach (TextRun run in paragraph.Runs.Where(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "STYLEREF"))
+            {
+                context.CheckCancellation();
+                if (!resolved.Contains(run) || model.UnresolvedStyleReferences.Contains(run))
+                {
+                    using var location = context.At(paragraph.Location);
+                    context.Report("Field.UnsupportedUsedCachedResult", "An unresolved or unsupported style reference retains its cache in the final layout.");
+                }
+            }
+    }
+
 }

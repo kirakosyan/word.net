@@ -149,6 +149,7 @@ internal static partial class FixedLayout
                 context.Loss("Field.LayoutDidNotConverge", "Calculated references did not stabilize within four layout passes.");
         }
         if (context.Options.BalanceFinalColumns) pages = BalanceColumns(model, context, pages);
+        if (styleReferences) StyleReferences.ReportUnresolved(model, context);
         context.Phase = previousPhase;
         return pages;
 
@@ -177,6 +178,7 @@ internal static partial class FixedLayout
         settings.Validate();
         var pages = new List<FixedPage> { new FixedPage { Settings = settings, SourceSettings = sourceSettings } };
         var counter = new ListCounter();
+        var storyHeights = new Dictionary<(PageSettings Section, List<DocumentBlock> Story), double>();
         int renderPage = 0, renderSectionPages = totalPages;
         double y = 0;
         settings = ReserveStories(sourceSettings); pages[0].Settings = settings;
@@ -252,6 +254,10 @@ internal static partial class FixedLayout
                             // The line crossing a column boundary must be measured again at its actual destination width.
                             var remaining = new ParagraphBlock
                             {
+                                FallbackFontSize = paragraph.FallbackFontSize,
+                                FallbackAfter = paragraph.FallbackAfter,
+                                Mark = paragraph.Mark,
+                                StyleId = paragraph.StyleId,
                                 Alignment = paragraph.Alignment,
                                 RightToLeft = paragraph.RightToLeft,
                                 HeadingLevel = paragraph.HeadingLevel,
@@ -399,15 +405,34 @@ internal static partial class FixedLayout
             double header = 0, footer = 0;
             foreach (var story in source.Stories)
             {
-                int savedPhysicalPage = context.PhysicalPage;
-                double height = StoryLines(story.Value).Sum(l => l.Height);
-                foreach (int candidate in model.StyleResults.Keys.Select(k => k.Page).Distinct())
+                TextRun[] referencesInStory = DocumentModel.Expand(story.Value).OfType<ParagraphBlock>().SelectMany(p => p.Runs)
+                    .Where(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "STYLEREF").ToArray();
+                bool cacheable = referencesInStory.Length > 0 && !DocumentModel.Expand(story.Value).OfType<ParagraphBlock>().SelectMany(p => p.Runs)
+                    .Any(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) is "PAGE" or "NUMPAGES" or "SECTIONPAGES");
+                double height;
+                if (!cacheable || !storyHeights.TryGetValue((source, story.Value), out height))
                 {
-                    context.PhysicalPage = candidate;
-                    context.ReserveFieldWork(story.Value.Count);
-                    height = Math.Max(height, StoryLines(story.Value).Sum(l => l.Height));
+                    int savedPhysicalPage = context.PhysicalPage;
+                    try
+                    {
+                        height = StoryLines(story.Value).Sum(l => l.Height);
+                        var measured = new HashSet<string>(StringComparer.Ordinal);
+                        if (referencesInStory.Length > 0 && model.StylePages.TryGetValue(source, out List<int>? candidates))
+                            foreach (int candidate in candidates)
+                            {
+                                context.CheckCancellation();
+                                var values = referencesInStory.Select(r => model.StyleResults.TryGetValue((r, candidate), out string? value) ? value : r.Text).ToArray();
+                                int characters = checked(values.Sum(v => v.Length));
+                                context.ReserveFieldWork(checked(characters + referencesInStory.Length));
+                                string signature = string.Concat(values.Select(v => v.Length.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + v));
+                                if (!measured.Add(signature)) continue;
+                                context.PhysicalPage = candidate;
+                                height = Math.Max(height, StoryLines(story.Value).Sum(l => l.Height));
+                            }
+                        if (cacheable) storyHeights[(source, story.Value)] = height;
+                    }
+                    finally { context.PhysicalPage = savedPhysicalPage; }
                 }
-                context.PhysicalPage = savedPhysicalPage;
                 if (story.Key.StartsWith("header-", StringComparison.Ordinal)) header = Math.Max(header, height);
                 else footer = Math.Max(footer, height);
             }
@@ -603,6 +628,11 @@ internal static partial class FixedLayout
                                     ParagraphBlock? source = part.Items.Select(p => p.SourceParagraph).FirstOrDefault(p => p != null);
                                     var fragment = new ParagraphBlock
                                     {
+                                        FallbackFontSize = source?.FallbackFontSize,
+                                        FallbackAfter = source?.FallbackAfter,
+                                        Mark = source?.Mark,
+                                        StyleId = source?.StyleId,
+                                        HeadingLevel = source?.HeadingLevel ?? 0,
                                         Alignment = source?.Alignment ?? ParagraphAlignment.Left,
                                         RightToLeft = source?.RightToLeft,
                                         Layout = source?.Layout.Copy() ?? new ParagraphLayout()
@@ -632,7 +662,7 @@ internal static partial class FixedLayout
             if (depth > 0 && table.HeaderRowCount > 0) context.Loss("Table.NestedHeaders", "Nested-table headers are rendered once; repetition inside a split parent row is not supported.");
             if (depth > context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Nested table exceeds the depth limit.");
             double[] widths = TableSizing.Columns(table, availableWidth, ContentWidths, context);
-            bool fixedGrid = (!table.AutoFit || !table.LayoutExplicit && context.Typography.Enabled) && !table.WidthPercent.HasValue && !table.Rows.SelectMany(c => c).Any(c => c.WidthPercent.HasValue);
+            bool fixedGrid = !table.AutoFit && (!table.ManagedImplicitAutoFit || context.Typography.Enabled) && !table.WidthPercent.HasValue && !table.Rows.SelectMany(c => c).Any(c => c.WidthPercent.HasValue);
             double[] edges = new double[widths.Length + 1];
             for (int i = 0; i < widths.Length; i++) edges[i + 1] = edges[i] + widths[i];
             for (int r = 0; r < table.Rows.Count; r++)

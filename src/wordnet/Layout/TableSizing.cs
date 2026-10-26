@@ -9,8 +9,8 @@ internal static class TableSizing
 {
     internal static double[] Columns(TableBlock table, double available, Func<TableCell, (double Minimum, double Preferred)> measure, ConversionContext context)
     {
-        bool autoFit = table.AutoFit && (table.LayoutExplicit || !context.Typography.Enabled);
-        if (table.AutoFit && !autoFit) context.Report("Table.NativeImplicitGrid", "The qualified native table profile retains its existing implicit fixed-grid policy.");
+        bool autoFit = table.AutoFit || table.ManagedImplicitAutoFit && !context.Typography.Enabled;
+        if (table.ManagedImplicitAutoFit && context.Typography.Enabled) context.Report("Table.NativeImplicitGrid", "The qualified native table profile retains its existing implicit fixed-grid policy.");
         int count = table.Rows.Max(r => r.Sum(c => c.ColumnSpan));
         bool relative = table.WidthPercent.HasValue || table.Rows.SelectMany(r => r).Any(c => c.WidthPercent.HasValue);
         double total = table.WidthPercent.HasValue ? available * table.WidthPercent.Value / 100

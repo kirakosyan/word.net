@@ -49,6 +49,7 @@ internal sealed partial class DocxReader
                 XElement? firstParagraph = note.Elements(W + "p").FirstOrDefault();
                 if (note.Descendants(W + (kind == "footnotes" ? "footnoteRef" : "endnoteRef")).Any(mark => !ReferenceEquals(mark.Ancestors(W + "p").FirstOrDefault(), firstParagraph)))
                     context.Loss("Notes.ReferenceMark", "A note reference mark outside the first ordinary paragraph uses a generated leading label.");
+                foreach (ParagraphBlock paragraph in DocumentModel.Expand(blocks).OfType<ParagraphBlock>()) paragraph.FallbackFontSize = null;
                 var semantic = new DocumentNote { ExplicitReferenceMark = reader.noteReferenceMark, Id = kind + ":" + label, PartId = id, Endnote = kind == "endnotes" };
                 semantic.Blocks.AddRange(blocks); notes.Add(semantic.Id, semantic);
             }

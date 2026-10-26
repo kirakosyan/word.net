@@ -71,7 +71,7 @@ internal sealed partial class DocxReader
         foreach (TextRun run in cached)
         {
             if (run.Control != null && control != null) context.Loss("Template.NestedInlineControls", "Nested controls sharing inline text are outside the editable template profile.");
-            Emit(runs, new TextRun(run.Text, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, run.Image, run.Appearance, run.FieldInstruction, run.Note, run.Box, run.Bookmark, run.Control ?? control) { FieldCache = run.FieldCache });
+            Emit(runs, new TextRun(run.Text, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, run.Image, run.Appearance, run.FieldInstruction, run.Note, run.Box, run.Bookmark, run.Control ?? control, run.Object).RetainMetadata(run));
         }
         return true;
     }

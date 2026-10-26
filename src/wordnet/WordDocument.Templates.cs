@@ -334,8 +334,8 @@ public sealed partial class WordDocument
         return Starts(path, '!') ? !truth : truth;
     }
     private static TextRun Clean(TextRun r, string text, string? field) => new TextRun(text, r.Bold, r.Italic, r.Code, r.Link, r.FontSize, r.Color,
-        r.Image, r.Appearance.Copy(), field, r.Note, r.Box, r.Bookmark)
-    { FieldCache = r.FieldCache };
+        r.Image, r.Appearance.Copy(), field, r.Note, r.Box, r.Bookmark, retainedObject: r.Object)
+    .RetainMetadata(r);
     private static TextRun BoundText(TextRun r, string text) => new TextRun(text, r.Bold, r.Italic, r.Code, r.Link, r.FontSize, r.Color, appearance: r.Appearance.Copy());
     private static void ValidateRanges(DocumentModel model)
     {

@@ -15,6 +15,8 @@ internal sealed class DocumentModel
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();
     internal PageSettings? FinalSection { get; set; }
     internal List<DocumentNote> Notes { get; } = new List<DocumentNote>();
+    internal HashSet<TextRun> UnresolvedStyleReferences { get; } = new HashSet<TextRun>();
+    internal Dictionary<PageSettings, List<int>> StylePages { get; } = new Dictionary<PageSettings, List<int>>();
     internal Dictionary<(TextRun Run, int Page), string> StyleResults { get; } = new Dictionary<(TextRun, int), string>();
     internal Dictionary<TextRun, string> FieldResults { get; } = new Dictionary<TextRun, string>();
     internal Dictionary<string, (int Page, string Label, double X, double Y)> BookmarkPages { get; } = new Dictionary<string, (int, string, double, double)>(System.StringComparer.Ordinal);
@@ -84,6 +86,7 @@ internal sealed class TableBlock : DocumentBlock
     internal double? Width { get; set; }
     internal double? WidthPercent { get; set; }
     internal bool AutoFit { get; set; }
+    internal bool ManagedImplicitAutoFit { get; set; }
     internal bool LayoutExplicit { get; set; }
     internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
@@ -171,6 +174,13 @@ internal sealed class TextRun
     internal string? Revision { get; set; }
     internal string? Comment { get; set; }
     internal int CommentBoundary { get; set; }
+    // Every semantic run rebuild must retain the complete field/history carrier.
+    internal TextRun RetainMetadata(TextRun source)
+    {
+        FieldChildren = source.FieldChildren; FieldCache = source.FieldCache;
+        Revision = source.Revision; Comment = source.Comment; CommentBoundary = source.CommentBoundary; BidiLevel = source.BidiLevel;
+        return this;
+    }
     internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control, Object)
     { FieldChildren = FieldChildren, FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
 }

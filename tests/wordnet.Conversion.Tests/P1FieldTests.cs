@@ -55,7 +55,7 @@ public sealed class P1FieldTests
         XNamespace vt = "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes";
         XElement[] properties = Xml(bytes, "docProps/custom.xml").Root!.Elements().ToArray();
         Assert.Equal(PropertyNames, properties.Select(p => (string?)p.Attribute("name")));
-        Assert.Equal("123.45", properties[0].Element(vt + "decimal")!.Value);
+        Assert.Equal("123.45", properties[0].Element(vt + "r8")!.Value);
         Assert.Equal("true", properties[2].Element(vt + "bool")!.Value);
         Assert.Equal("2026-10-26T12:30:00.0000000Z", properties[3].Element(vt + "filetime")!.Value);
         using var input = new MemoryStream(bytes); WordDocument reloaded = WordDocument.Load(input, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
@@ -208,7 +208,7 @@ public sealed class P1FieldTests
     [Fact]
     public void MalformedFieldBoundariesFailBeforeOutput()
     {
-        using var input = new MemoryStream(TestDocuments.Docx(TestDocuments.Body("<w:p>" + Begin + Code("IF 1 = 1 \"yes\" \"no\"") + Separate + Separate + End + "</w:p>")));
+        using var input = new MemoryStream(TestDocuments.Docx(TestDocuments.Body("<w:p>" + Begin + Code("IF 1 = 1 \"yes\" \"no\"") + Separate + End + End + "</w:p>")));
         using var output = new MemoryStream(); output.WriteByte(42);
         Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(), cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(new byte[] { 42 }, output.ToArray());

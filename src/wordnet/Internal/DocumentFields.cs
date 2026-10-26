@@ -28,7 +28,6 @@ internal static class DocumentFields
         {
             case "STYLEREF":
                 if (context.PhysicalPage > 0 && model.StyleResults.TryGetValue((run, context.PhysicalPage), out string? running)) { context.ReserveFieldWork(running.Length); return running; }
-                context.Report("Field.UnsupportedUsedCachedResult", "A page-sensitive style reference retains its cache until an admitted managed header/footer lookup resolves.");
                 return run.Text;
             case "PAGE": return ListCounter.Number(page, context.PageNumberFormat);
             case "NUMPAGES": return pages.ToString(CultureInfo.InvariantCulture);
