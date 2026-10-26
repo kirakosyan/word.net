@@ -9,6 +9,8 @@ for issues #104-#107. It distinguishes reproduced fallback/placement differences
 unproven inheritance/implicit-sizing defects, source omissions and the existing note
 reservation policy. No converter behavior, package version or support scope changes.
 The remaining roadmap tasks are unimplemented by this PR; publication is not authorized.
+The CI follow-up makes fixture-content verification portable across ZIP encodings,
+with archive hashes and the original measured receipt preserved.
 
 ## 1.4.0 roadmap #99 profile
 

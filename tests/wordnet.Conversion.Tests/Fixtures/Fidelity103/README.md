@@ -13,6 +13,14 @@ the hypothesis for each contrast. It is separate from the unchanged original
 24-document corpus. The long-note three-page expectation describes the existing
 bounded reservation policy, not an independent reference result.
 
+ZIP producer metadata and deflate bytes can vary across operating systems and zlib
+versions. The guard tests require repeated generation on one host to be byte-identical,
+then compare every uncompressed XML/image byte with the measured packages. Both
+generated and committed archive hashes are checked against their own manifests;
+all other manifest fields must agree. The committed manifest must also match the
+historical measurement receipt. Preserve these measured archives and hashes when
+regenerating on another host; archive-byte differences alone are not content drift.
+
 The contrasts cover omitted/direct/document-default/based-on styling, explicit and
 inherited paragraph spacing, explicit-format image wrapping, implicit/autofit/fixed
 tables and marked/continued notes. They are probes, not twelve new supported-feature

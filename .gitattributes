@@ -28,6 +28,7 @@ eng/generate-p1-templates.py text eol=lf
 eng/generate-unicode-tables.py text eol=lf
 eng/generate-bidi-tables.py text eol=lf
 eng/generate-p2-fixtures.py text eol=lf
+eng/generate-fidelity-reductions.py text eol=lf
 eng/EditP2Objects.java text eol=lf
 
 # Preserve byte-identical official Unicode conformance data, including its comments.

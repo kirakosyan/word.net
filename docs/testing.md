@@ -11,6 +11,12 @@ six evidence-tool tests and twelve independent schema validations passed locally
 This is Linux x64 measurement evidence, not new engine support or release qualification;
 full library suites and other runtimes belong to their own exact-head CI results.
 
+The CI follow-up has eight evidence-tool tests. Regeneration checks exact package
+part bytes across OS/zlib encodings, verifies each archive's own manifest hash, and
+keeps the committed inputs tied to the historical receipt. Changed/missing XML or
+image parts still fail. The generator is checked out with LF endings so its recorded
+source hash remains stable on Windows and Unix.
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
