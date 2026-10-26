@@ -119,4 +119,20 @@ public sealed class ContentControlBoundaryTests
             using var output = new MemoryStream(); output.WriteByte(3); Assert.Throws<NotSupportedException>(() => document.Save(output, DocumentFormat.Pdf, policy, TestContext.Current.CancellationToken)); Assert.Equal(new byte[] { 3 }, output.ToArray());
         }
     }
+    [Fact]
+    public void MalformedTextAndInstructionsOutsideTextNodesCannotBeSilentlyDropped()
+    {
+        string[] runs = { "<w:r>Lost<w:t>Kept</w:t></w:r>", "<w:r><?control hidden?><w:t>Kept</w:t></w:r>" };
+        foreach (string content in runs)
+            Assert.Throws<InvalidDataException>(() => LoadBody("<w:p>" + Control(1, "<w:richText/>", "", content: content) + "</w:p>"));
+        string paragraph = "<w:sdt><w:sdtPr><w:id w:val='1'/><w:richText/></w:sdtPr><w:sdtContent><w:p>Lost" + Run("Kept") + "</w:p></w:sdtContent></w:sdt>";
+        Assert.Throws<InvalidDataException>(() => LoadBody(paragraph));
+    }
+    [Fact]
+    public void InlineOwnersRejectUnsupportedInheritedParagraphFormatting()
+    {
+        string body = "<w:p><w:pPr><w:ind w:left='720'/></w:pPr>" + Control(1, "<w:richText/>", "Kept") + "</w:p>";
+        Assert.Throws<NotSupportedException>(() => LoadBody(body, new ConversionOptions(FidelityMode.Lenient)));
+    }
+
 }

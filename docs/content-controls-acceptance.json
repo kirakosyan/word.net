@@ -30,7 +30,8 @@
         "ContentControlFoundationTests.MissingIdsAreAssignedAfterReservingAllExplicitIdsAndTagsNeedNotBeUnique",
         "ContentControlBoundaryTests.DuplicateIdsFailAndMultipleCharactersCannotMasqueradeAsACheckbox",
         "ContentControlBoundaryTests.TableRowAndHeaderStoryOwnersAreExplicitlyRejected",
-        "ContentControlBoundaryTests.UnknownBehaviorAndInvalidLocksNeverBecomeLenientPreservation"
+        "ContentControlBoundaryTests.UnknownBehaviorAndInvalidLocksNeverBecomeLenientPreservation",
+        "ContentControlBoundaryTests.MalformedTextAndInstructionsOutsideTextNodesCannotBeSilentlyDropped"
       ],
       "status": "executable; consult qualification receipt for actual outcome"
     },
@@ -499,7 +500,8 @@
           "tests": [
             "ContentControlRichTextTests.CrossedBookmarksAndFieldsInsideControlsAreRejectedWhileAdjacentNestedFieldsRemainLive",
             "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
-            "ContentControlAcceptanceEdgeTests.NestedScalarTreesOutsideRichOwnersSurviveTypedReplacementAndSchemaValidation"
+            "ContentControlAcceptanceEdgeTests.NestedScalarTreesOutsideRichOwnersSurviveTypedReplacementAndSchemaValidation",
+            "ContentControlBoundaryTests.InlineOwnersRejectUnsupportedInheritedParagraphFormatting"
           ],
           "status": "executable; consult qualification receipt for actual outcome"
         },

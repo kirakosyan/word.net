@@ -211,7 +211,7 @@ internal sealed partial class DocxReader
             if (e.Ancestors(W + "pPr").Any()) continue;
             if (e.Name == W + "p" || e.Name == W + "r")
             {
-                if (e.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "rsidR" && a.Name != W + "rsidRPr" && a.Name != W + "rsidP")) throw new NotSupportedException("Control.Unsupported: Unsupported text-owner attributes.");
+                Attributes(e, W + "rsidR", W + "rsidRPr", W + "rsidP");
                 if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
                 if (e.Elements(W + (e.Name == W + "p" ? "pPr" : "rPr")).Count() > 1) throw new InvalidDataException("Control.Malformed: Duplicate text property containers.");
             }
@@ -283,7 +283,7 @@ internal sealed partial class DocxReader
         {
             ControlOwner owner = owners[data.Id]; owner.Refresh(data.Id, context);
             using var location = context.At(owner.Content.First().Location);
-            if (!data.Inline) foreach (ParagraphBlock p in owner.Content) ValidateTypedParagraph(p);
+            foreach (ParagraphBlock p in owner.Content) ValidateTypedParagraph(p);
             TextRun prototype = owner.Runs.FirstOrDefault() ?? new TextRun("");
             var style = new TextStyle { Bold = prototype.Bold, Italic = prototype.Italic, Code = prototype.Code, FontSize = prototype.FontSize, Color = prototype.Color, Appearance = prototype.Appearance.Copy() };
             ReadRunProperties(data.Properties.Element(W + "rPr"), style);
