@@ -11,6 +11,11 @@ reservation policy. No converter behavior, package version or support scope chan
 The remaining roadmap tasks are unimplemented by this PR; publication is not authorized.
 The CI follow-up makes fixture-content verification portable across ZIP encodings,
 with archive hashes and the original measured receipt preserved.
+Review corrections protect measured fixtures from generation, isolate the public
+consumer's dependency graph, select listed stable NuGet versions, validate explicit
+runner-side POI jars before expensive work, and commit summary/audit/environment
+derivation. Ligature, note-markup and table-convergence confounds are explicit in
+the handoff; improved probes require a separate measured cohort.
 
 ## 1.4.0 roadmap #99 profile
 

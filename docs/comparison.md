@@ -5,6 +5,12 @@ and independently restored public 1.4.0 measurements, plus twelve separate reduc
 contrasts. `eng/refresh-fidelity-baseline.py` captures references and retains original
 verdicts; `eng/test-fidelity-baseline.py` checks evidence identity/completeness and
 deterministic fixture generation. The original corpus and tolerances below are unchanged.
+The review fixes keep generation under `artifacts/`, protect the measured fixtures,
+use portable stored ZIPs for new scratch output, and validate explicitly located
+runner-side POI jars before measuring. The refresh runner selects listed stable
+NuGet releases and restores a consumer without source transitive pins. Its
+`--summarize` mode reproduces the historical tables without re-measuring inputs;
+new runs record their own summary, raw-evidence audit and observed environment.
 
 The twenty-four independent MIT-authored examples in
 `tests/wordnet.Conversion.Tests/Fixtures/Comparison` cover three invoices, contracts,

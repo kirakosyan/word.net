@@ -5,11 +5,16 @@ This is an evidence-only change awaiting PR review: no converter, API, dependenc
 target framework, fidelity tolerance or published package is changed.
 
 The selected source is clean commit `ec7816bf4eabe7a7784d2fb11cb0e9b8e1d6fabd`.
-The public NuGet indexes independently reported **1.4.0** as the latest stable core
-version at capture time, and matching core/fonts archives were downloaded. The
-package worker was restored into a fresh cache from those archives and their public
-dependency graph, then restored again in locked mode. It is not a source worker with
-two DLLs substituted. OCR package availability is recorded, but OCR is not exercised
+The public flat-container indexes reported **1.4.0** as the highest stable core
+version at capture time, and matching core/fonts archives were downloaded. Those
+indexes include unlisted versions; the corrected runner now selects the latest
+**listed** stable release from NuGet registration metadata instead. The historical
+package worker was restored into a fresh cache, then restored again in locked mode.
+It inherited central transitive pins; the recorded versions happen to match the
+1.4.0 public nuspec minimums. That receipt does not prove isolation from repository
+pins for future versions. The corrected runner writes minimal consumer props with
+transitive pinning disabled and only BenchmarkDotNet pinned. It restores the public
+dependency graph separately. OCR package availability is recorded, but OCR is not exercised
 by this managed DOCX-export comparison. This task did not publish those packages.
 
 The [machine-readable receipt](measurements/fidelity-103-baseline.json) contains
@@ -56,10 +61,10 @@ next issue. The full machine receipt also retains every original ranked finding.
 
 | Rank / issue | Reproduction and current finding | Status and next starting point |
 | --- | --- | --- |
-| 1 / L1 [#104](https://github.com/kirakosyan/word.net/issues/104) | `mixed-fonts-short` still differs by 22.666 pt where glyph sequences match. `defaults-omitted` visibly differs; explicit 11 pt/zero-spacing, document-default and based-on-style controls have identical source snapshots and pass the independent raster policy. | **Fallback-policy difference reproduced; an inheritance defect is unproven in these controls.** Inspect `DocxReader.cs` resolution and `FixedLayout.cs` omitted-size/after-spacing policy before changing already-working inheritance. |
+| 1 / L1 [#104](https://github.com/kirakosyan/word.net/issues/104) | `mixed-fonts-short` still differs by 22.666 pt where glyph sequences match. `defaults-omitted` visibly differs; explicit 11 pt/zero-spacing, document-default and based-on-style controls have identical source snapshots and pass the independent raster policy. Their `first`/`fi` glyph sequences do not align, so none supplies a reduced glyph-displacement measurement for the 22.666 pt finding. | **Raster evidence reproduces a fallback-policy difference; an inheritance defect is unproven.** Before attributing a metric defect in #104, author and independently measure a separate ligature-free `one`/`two`/`three` cohort. Preserve this historical cohort and its failed verdicts. Inspect resolution/default policy only after obtaining that quantitative control. |
 | 2 / L2 [#105](https://github.com/kirakosyan/word.net/issues/105) | Original left-logo displacement remains 60.100 pt. `wrap-explicit11` reduces it to 1.324 pt, still above 0.25 pt. Explicit and inherited 6 pt spacing controls agree and pass raster checks. | **Residual placement difference reproduced; general spacing-inheritance failure is unproven.** Inspect anchor-paragraph mark formatting, then `FixedLayout.cs` line placement and `DocxReader.Drawings.cs` exclusions. The explicit anchor mark produces `Docx.ParagraphFormatting`; do not claim that input is fully supported. |
-| 3 / L3 [#106](https://github.com/kirakosyan/word.net/issues/106) | Long-table ledger/inventory retain matching per-page text with 7.793/9.586 pt maximum displacement. The small implicit/autofit/fixed table controls have identical source snapshots, 0.100 pt reference displacement and passing rasters. | **Earlier per-page content mismatch remains resolved in these cases; implicit-autofit divergence is unproven by this small table.** Keep `TableSizing.cs` as the candidate location, but obtain a width-demanding counterexample before attributing a bug or changing policy. |
-| 4 / L4 [#107](https://github.com/kirakosyan/word.net/issues/107) | The original short notes omit an explicit note marker. `notes-marked` supplies markers and still differs in label/text spacing. The 60-line continuation preserves every line once: source starts pages 2/3 at lines 21/41; the reference starts page 2 at line 41. | **Label/appearance and policy differences reproduced; dropped or duplicated note text is not reproduced.** The source's documented 40% note reservation explains three pages versus the reference's two. Inspect note-label spacing and admitted run appearance before treating this as a reservation bug. |
+| 3 / L3 [#106](https://github.com/kirakosyan/word.net/issues/106) | Long-table ledger/inventory retain matching per-page text with 7.793/9.586 pt maximum displacement. The small implicit/autofit/fixed controls have agreeing explicit table/grid/cell widths and only two short rows; their convergence (0.100 pt displacement, passing rasters) is expected by construction. | **These controls cannot distinguish width-demanding autofit or row splitting.** The old manifest hypothesis overstates that purpose; new scratch manifests call them convergence controls. Obtain a width-demanding counterexample and a genuinely splitting row before attributing a `TableSizing.cs` defect in #106. |
+| 4 / L4 [#107](https://github.com/kirakosyan/word.net/issues/107) | `notes-marked` supplies markers but omits the conventional preserved-space run after `footnoteRef` and the separator/continuationSeparator notes. Its label/text spacing is therefore confounded by unusual source markup. The 60-line continuation retains every line once: source pages 2/3 start at lines 21/41; the reference's page 2 starts at line 41. | **No converter-caused label-spacing defect is established, and no dropped/duplicated note text is reproduced.** #107 needs a separately captured control with conventional spacing/separator markup before attribution. The source's documented 40% note reservation explains three pages versus the reference's two; do not infer a reservation bug from that policy difference. |
 
 Additional findings outside these four slices remain visible, including the nested
 invoice (124.900 pt) and column report (172.393 pt), and exact text/glyph differences
@@ -68,17 +73,24 @@ claims or silently added implementation scope.
 
 ## Do not confuse measurement causes
 
-- **Page-unit rounding:** source A4 is 595.3 x 841.9 pt; the reference is approximately
-  595.303937 x 841.889764 pt. The height difference exceeds the unchanged 0.01 pt
-  geometry tolerance. This independently fails all documents even when other checks pass.
+- **Reference-side page-unit rounding:** 595.3 x 841.9 pt exactly matches the authored
+  `11906` x `16838` twips divided by 20. LibreOffice quantizes to 1/100 mm, producing
+  210.01 x 297.00 mm (approximately 595.303937 x 841.889764 pt). The reference-side
+  height change exceeds the unchanged 0.01 pt tolerance and fails all documents.
+  The source matches its input; this is not a wordnet page-size defect for #104–#107.
 - **Glyph tokenization:** the direct/default/style and spacing reductions contain
   `first`. The source extracts separate `f`, `i` glyphs while the reference extracts
   one `fi` glyph. The existing comparison deliberately refuses to align unlike glyph
   sequences. Its reported maximum of zero is **not** a placement pass; text and raster
-  results remain separately visible. No ligature normalization or tolerance change was made.
+  results remain separately visible. Those controls do not quantify the original
+  22.666 pt discrepancy. Ligature-free quantitative controls belong to a new #104
+  measurement, not a rewrite of the current evidence. No tolerance was changed.
 - **Source omissions:** the original short-font inputs omit size/spacing, and the
   original short-note parts omit explicit note markers. These are distinct from
   corruption or a failed inheritance algorithm. The reduced controls expose them.
+  The marked-note controls also omit the conventional space after the reference mark
+  and separator/continuationSeparator notes, so their label-spacing result does not
+  isolate converter behavior from source markup and office footnote-area policy.
 - **Diagnosed losses:** `wrap-explicit11` reports `Docx.ParagraphFormatting` on the
   anchor-only paragraph. Both note controls report `Formatting.RunAppearance` for
   superscript appearance. Their expected-warning checks fail visibly in both modes.
@@ -108,32 +120,66 @@ managed allocations, process RSS/high-water RSS and output sizes remain in the r
 Use a clean checkout at the chosen source commit, SDK/runtime and dependencies from
 [the comparison procedure](comparison.md). The new runner is read-only with respect
 to converter sources and refuses an initially dirty or different selected checkout.
-Prepare the pinned POI jars first. Use an empty evidence output directory:
+Run the following **from the runner checkout** (shown as `/runner/wordnet`), which
+contains the new scripts. `/clean/wordnet` is a separate clean measured checkout at
+`ec7816b`; it does not contain these scripts. Prepare the POI jars in the runner
+checkout and pass their location explicitly. Use an empty evidence output directory:
 
 ```sh
-python eng/generate-fidelity-reductions.py
-python eng/prepare-comparison-poi.py
+python eng/generate-fidelity-reductions.py --output artifacts/fidelity-103/reductions
+python eng/prepare-comparison-poi.py artifacts/comparison-poi
 python eng/test-fidelity-baseline.py
 python eng/refresh-fidelity-baseline.py --repository /clean/wordnet \
   --commit ec7816bf4eabe7a7784d2fb11cb0e9b8e1d6fabd \
   --output /evidence/new-run --iterations 3 \
+  --poi-classpath /runner/wordnet/artifacts/comparison-poi \
   --reductions /runner/wordnet/tests/wordnet.Conversion.Tests/Fixtures/Fidelity103/manifest.json
 ```
 
-The runner selects the latest stable **public** package at execution time and records
-its indexes. A future run may select a newer package; use this receipt's immutable
+The optional generation step writes scratch copies only. The measurement command
+above deliberately uses the **committed measured** manifest and archives, not the
+scratch copies. The generator now refuses fixture-directory output, defaults to
+`artifacts/fidelity-103/reductions`, and uses stored ZIP parts with fixed producer
+metadata. New scratch archives are byte-identical across OS/zlib versions; their
+hashes and generator identity differ from the historical deflated archives. The
+guards compare exact part bytes and check each manifest's own hashes without
+changing the measured receipt. New scratch table hypotheses also state the actual
+convergence-only scope. Use a scratch manifest for a new cohort/receipt when
+changing probes; do not substitute it into this historical evidence.
+
+The runner validates every pinned POI jar **before** network or build work. It selects
+the latest listed stable public package from paginated NuGet registration metadata,
+retains the listing responses/hashes, and restores a consumer without source
+transitive pins. A future run may select a newer package; use this receipt's immutable
 archive hashes for the historical identity. It captures all 24 originals plus the 12
 contrasts using unchanged comparison machinery, and independently restores the public
 consumer. It does not modify the production dependency lock files.
 
-Executed validation: clean source and fresh package-worker Release builds with no
+Historical executed validation: clean source and fresh package-worker Release builds with no
 warnings/errors; fresh and locked public-consumer restore; all 13 existing comparison
 controls; six evidence-guard/generator tests; 12/12 reduced DOCX packages validated
 with Open XML SDK 3.5.1, Office 2013 schema; reference/loaded-binary/public-asset/hash
 and complete-failure-retention audits. Representative original/reduced renderings were
 visually inspected. The first executed runner was archived by its exact hash; added
 binary-identity guards were then exercised against every retained raw result. CI now
-runs the six new guard tests alongside the existing comparison controls.
+runs twenty evidence-guard tests alongside the thirteen comparison controls.
+
+Reproduce every published summary count and timing minimum/median/maximum without
+rerunning conversions or changing the receipt:
+
+```sh
+python eng/refresh-fidelity-baseline.py --summarize docs/measurements/fidelity-103-baseline.json
+```
+
+The current runner also writes `summary`, verifies retained raw-report/reference/
+package-asset hashes for `audit`, and records observed host/runtime information in
+`environment` on every new measurement. It explicitly reports the separate Open XML
+schema validator as **not run** instead of claiming the historical manual validation.
+The historical `runnerSha256` identifies the original executed script; the separate
+`finalVerifierImplementationSha256` identifies the later verifier used for that audit.
+Those historical bytes, timestamps and manual schema/environment receipts remain
+unchanged. The summary command reproduces derived numbers, not an earlier host or
+timing sample; a fresh run records its own current tool identity and observations.
 
 The local evidence root is `artifacts/issue103/`: it retains raw reports, PDFs, editable
 DOCs, rasters, public indexes/archives, exact executed tooling, validation logs and

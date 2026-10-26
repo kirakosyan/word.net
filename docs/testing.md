@@ -11,11 +11,13 @@ six evidence-tool tests and twelve independent schema validations passed locally
 This is Linux x64 measurement evidence, not new engine support or release qualification;
 full library suites and other runtimes belong to their own exact-head CI results.
 
-The CI follow-up has eight evidence-tool tests. Regeneration checks exact package
-part bytes across OS/zlib encodings, verifies each archive's own manifest hash, and
-keeps the committed inputs tied to the historical receipt. Changed/missing XML or
-image parts still fail. The generator is checked out with LF endings so its recorded
-source hash remains stable on Windows and Unix.
+The review follow-up has twenty evidence-tool tests. Scratch generation protects
+measured fixtures and uses stored ZIP parts with fixed metadata; guards compare
+exact historical part bytes and each manifest's own archive hashes. Other controls
+cover duplicate IDs at the expected count, early pinned-POI validation, listed stable
+NuGet selection (including gzip/pagination), an offline restore with conflicting
+source pins, summary reproduction, and rejection of changed raw/reference/compact
+evidence. Unexecuted schema checks stay explicit. The generator uses LF checkout.
 
 ## 1.4.0 roadmap #99 profile
 
