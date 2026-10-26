@@ -50,7 +50,7 @@ public sealed class TableLayoutTests
         string paragraphs = string.Concat(Enumerable.Range(0, 35).Select(i => P("Entry" + i.ToString("D2", CultureInfo.InvariantCulture))));
         string rows = "<w:tr><w:trPr><w:tblHeader/></w:trPr>" + Cell("<w:gridSpan w:val='3'/>", P("Header")) + "</w:tr>"
             + "<w:tr>" + Cell("<w:gridSpan w:val='3'/>", paragraphs) + "</w:tr>";
-        byte[] input = Docx(rows, SmallPage);
+        byte[] input = ExplicitLayoutFixture.LegacyMetrics(Docx(rows, SmallPage));
         if (source == DocumentFormat.Doc) input = Convert(input, DocumentFormat.Docx, source);
         using PdfDocument pdf = PdfDocument.Open(Convert(input, source, DocumentFormat.Pdf));
         Assert.True(pdf.NumberOfPages >= 4);

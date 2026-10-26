@@ -177,5 +177,69 @@ separate.
 24 original corpus documents and emitted P1 probes, recording hashes, diagnostics,
 page/text changes and coordinates. Its source-to-source differences are not independent
 rendering verdicts. Fresh office comparisons, runtime checks and final counts are
-recorded separately in the validation section once executed. No Windows/ARM64,
+recorded separately in the local validation section below. No Windows/ARM64,
 minimum-Framework or published-package qualification is inferred from Linux execution.
+
+## Local validation — 2026-10-26
+
+All five targets build in Release with zero warnings/errors. Locked restore and local
+core pack pass; API validation runs during packing. Package inspection verifies five
+DLL/XML pairs, MIT licensing and absence of test/tool assets. Formatting verification
+passes; the SDK reports a workspace-loading advisory on this Linux host. Dependency
+versions, lock files, package versions and target frameworks are unchanged.
+
+The complete Linux x64 suites pass **1,196/1,196 on .NET 8.0.33** and
+**1,196/1,196 on .NET 10.0.12**, each with zero failures/skips and English OCR prepared
+in the launching PowerShell process. There are **57 new P1 cases**. Thirteen comparison
+controls and twenty historical-evidence guards pass. TRX counters, individual outcomes
+and hashes were independently checked. Source implementation belongs to tree `210f9a7`;
+the final historical table-control input also explicitly pins its previous spacing.
+This local source validation does not execute Windows, ARM64 or Framework runtimes.
+Those remain distinct CI gates; no Android/macOS release support or publication is added.
+
+The [receipt](measurements/roadmap-102-p1.json) retains both workers' binary hashes,
+36 before/after measurements, all 36 fresh reference verdicts, pinned fonts,
+reference executable/PDF identities, unchanged thresholds and runtime report hashes.
+Fresh references use office build `26.8.1.1 bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1`;
+the downloaded test-only archive SHA-256 is
+`30903df3b9f61360d9660cd707de48cd2831469114492a5008ed58a0ac77d044`.
+These are new observations, separate from the immutable #103 historical receipt.
+The independent binary-DOC reader was unavailable in this fresh measurement; no new
+editable-DOC corpus-reader result is inferred from generated files alone.
+
+| Independent glyph comparison | Unchanged parent (pt) | Candidate (pt) |
+| --- | ---: | ---: |
+| Ligature-free omitted defaults | 15.775 | 0.100 |
+| Document-default size | 11.982 | 0.298 |
+| Default paragraph style / based-on style | 11.982 | 0.100 |
+| Original short mixed fonts | 22.666 | 0.261 |
+| Original left floating logo | 60.100 | 1.512 |
+| Original ledger long table | 7.826 | 5.500 |
+| Original inventory long table | 9.696 | 5.500 |
+
+All 24 originals and 12 probes pass authored text/order and page-count checks.
+All **36 strict aggregate reference failures remain failures** at the original
+thresholds (including **0.25 pt** glyph displacement). Original reference per-page
+text passes 19/24; glyph placement passes 6/24 and raster passes 11/24. For the new
+probes, reference per-page text passes 10/12 and glyph placement 3/12; no probe passes
+the raster policy. Conventional notes retain five source pages versus two reference
+pages under the unchanged reservation policy. Running-header ID/name policy and
+implicit sizing retain documented reference differences. Passing individual metric
+controls does not establish universal layout, font, accessibility or platform parity.
+
+To reproduce source-to-source geometry after building the parent and candidate
+benchmark workers, emit the independent test inputs using
+`WORDNET_ROADMAP_EVIDENCE=/absolute/evidence` on the focused P1 test run, then run:
+
+```sh
+python eng/measure-p1-layout.py \
+  --before-worker /absolute/parent/tools/wordnet.Benchmarks/bin/Release/net10.0/wordnet.Benchmarks.dll \
+  --after-worker tools/wordnet.Benchmarks/bin/Release/net10.0/wordnet.Benchmarks.dll \
+  --probes /absolute/evidence --output artifacts/p1-measurements
+```
+
+Use `eng/capture-office-comparison.py` and `eng/run-comparison.py` with the pinned
+fonts and test-only Pillow requirements for fresh references. Keep their nonzero
+strict-fidelity exit codes and every failed verdict. Raw local artifacts live under
+ignored `artifacts/p1-*`; the committed receipt preserves identities, coordinates and
+verdicts without bundling generated packages or external tool binaries.
