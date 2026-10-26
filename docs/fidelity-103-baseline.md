@@ -1,7 +1,8 @@
 # Fidelity baseline refresh - issue #103
 
 Measured on 2026-10-25 for roadmap [#102](https://github.com/kirakosyan/word.net/issues/102).
-This is an evidence-only change awaiting PR review: no converter, API, dependency,
+This evidence-only delivery merged in [PR #131](https://github.com/kirakosyan/word.net/pull/131)
+on 2026-10-26 as `ab3843880572f811d84b410e437c86b80f8ff59f` (reviewed head `09825b6`). No converter, API, dependency,
 target framework, fidelity tolerance or published package is changed.
 
 The selected source is clean commit `ec7816bf4eabe7a7784d2fb11cb0e9b8e1d6fabd`.

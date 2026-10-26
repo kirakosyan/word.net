@@ -1,6 +1,15 @@
 # Conversion tests and qualification
 
-## Issue #103 fidelity refresh - pending PR review
+## Issue #103 fidelity refresh - merged evidence
+
+[PR #131](https://github.com/kirakosyan/word.net/pull/131) merged on 2026-10-26 as
+`ab3843880572f811d84b410e437c86b80f8ff59f`, with tree equality to reviewed head `09825b6`. All thirteen
+review threads are resolved. Final-head [push CI](https://github.com/kirakosyan/word.net/actions/runs/40331031493),
+including source/package/Standard and actual Framework 4.7.2 source/package jobs,
+passed; both Android API compilation runs also passed. The identical-tree
+[PR CI](https://github.com/kirakosyan/word.net/actions/runs/40331042390) was retrying
+an Ubuntu package-download timeout at merge. This qualifies the tested source tree
+separately from historical measurements, pending CI and public-package availability.
 
 The [new baseline receipt](fidelity-103-baseline.md) measures clean source
 `ec7816b` and independently restored public 1.4.0 against all 24 original references
