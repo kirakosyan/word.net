@@ -1,5 +1,15 @@
 # Conversion diagnostics
 
+## Proposed P2 diagnostics — unavailable
+
+The [C0 design](content-controls-design.md#output-diagnostics-and-limits) reserves
+planned `Control.*`, `Binding.*` and `Limit.Controls` outcomes for owner/type/lock/
+handle, template collision, explicit binding, static display and export-loss
+behavior. These codes are not emitted by this design change. Existing template
+diagnostics remain current; opted-in preservation is planned to reject unknown
+behavior in every fidelity mode, with explicit information for admitted cache
+refresh/glyph fallback and Strict loss for other editable destinations.
+
 ## Merged roadmap #102 P1 diagnostics
 
 The [P1 profile](roadmap-102-p1.md) retains `Field.UnsupportedUsedCachedResult` for missing/unsupported typed values, pictures and nested/STYLEREF semantics. Malformed custom-property parts fail with `Docx.CustomProperties`; unsupported/linked property types use informational `Docx.CustomPropertyType` reporting. `Metadata.CustomProperties` explains non-DOCX metadata output; `Table.NativeImplicitGrid` explains the unchanged native table policy. Unsupported note-marker placement uses `Notes.ReferenceMark`. Aggregate property, lookup and result limits fail before output copying; `Field.LayoutDidNotConverge` remains the bounded pagination-convergence loss. Successful running headers no longer report cached-field diagnostics from intermediate measurement passes; only unresolved final-layout fields report them. `Field.NestedOutput` rejects live nested fields outside DOCX/PDF/XPS in Strict; best effort exports their whole cache. `Composition.CustomPropertyConflict` rejects unequal document-wide property values before append commits.

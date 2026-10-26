@@ -1,5 +1,14 @@
 # API and support policy
 
+## Proposed P2 controls API — unavailable
+
+The [C0 sketches](content-controls-design.md#sessions-and-explicit-edits) propose a
+separate DOCX `LoadWithControls` entry point, immutable session/version handles and
+explicit typed edits. They are not public APIs in this source or any package.
+Existing Load/ReviewLoadOptions overloads remain unchanged. Each executable leaf
+must preserve all five target APIs and the existing copy, cancellation, stream and
+atomicity contracts; C0 performs no binary/package validation or support expansion.
+
 ## Merged roadmap #102 P1 API additions
 
 The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets. Existing signatures and package versions remain unchanged; publication and runtime qualification are separate gates.

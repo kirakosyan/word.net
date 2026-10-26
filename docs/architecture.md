@@ -1,5 +1,13 @@
 # Architecture and implementation status
 
+## Proposed P2 control store
+
+The [C0 ADR](content-controls-design.md) proposes a private typed-control store
+separate from executable TemplateControl tags, with shared cloning/admission,
+versioned snapshots and atomic typed edits. It is design-only: no new store,
+reader/writer behavior, binding engine or dependency is implemented here. The
+[acceptance plan](content-controls-acceptance.json) gates each executable leaf.
+
 ## Merged roadmap #102 P1 implementation
 
 The [P1 source profile](roadmap-102-p1.md) adds immutable typed custom-property snapshots, bounded retained scalar-field trees and paragraph style identities. Field evaluation stays local and deterministic; running headers resolve after body pagination with bounded reservation passes. DOCX absent-value layout policy is separate from source-explicit formatting. Managed implicit tables reuse bounded sizing and safe text measurement. No runtime dependency or target framework changes.

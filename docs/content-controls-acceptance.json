@@ -1,0 +1,497 @@
+{
+  "schemaVersion": 1,
+  "roadmap": 102,
+  "designIssue": 112,
+  "status": "proposed acceptance plan; cases are unimplemented and unexecuted",
+  "runtimeImplemented": false,
+  "acceptedSourceBaseline": "2a944ac9101598bc3be2d856e5bad116123998a3",
+  "contract": "content-controls-design.md",
+  "plannedFixtureRoot": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls",
+  "evidencePolicy": "Every listed fixture/case is a future requirement, not existing test evidence. C0 validates this plan only. Record actual independent results, provenance, skips and unavailable tools per executable leaf.",
+  "frameworks": [
+    "net462",
+    "net472",
+    "netstandard2.0",
+    "net8.0",
+    "net10.0"
+  ],
+  "executionPolicy": "Use AGENTS.md required full English-OCR modern-runtime checks; compatible Windows Framework plus exact-package/Standard and actual-minimum-runtime qualification remain distinct. No Android/macOS release claim.",
+  "sharedCases": [
+    {
+      "id": "G01",
+      "kind": "mixed",
+      "plannedFixture": "identity-and-owners",
+      "assertion": "Preserve signed IDs/tags/aliases and order; assign missing IDs deterministically with information; reject duplicate/exhausted IDs, unknown types/properties, malformed values, nested controls and unsupported owners before returning a session.",
+      "independentOracles": [
+        "authored OOXML manifest",
+        "direct XML and relationship inspection",
+        "Office2010+ schema validation"
+      ]
+    },
+    {
+      "id": "G02",
+      "kind": "mixed",
+      "plannedFixture": "all-four-locks",
+      "assertion": "Exercise absent/unlocked/sdtLocked/contentLocked/sdtContentLocked with every typed setter and placeholder/apply/detach operation; failed edits keep original model/version/diagnostics. No bypass via Replace/Append/Merge.",
+      "independentOracles": [
+        "lock truth table in ADR",
+        "unchanged serialized semantic snapshot"
+      ]
+    },
+    {
+      "id": "G03",
+      "kind": "negative",
+      "plannedFixture": "foreign-stale-and-noop-handles",
+      "assertion": "Foreign, stale and wrong-kind handles fail; committed metadata/typed edits, including zero-change commits, invalidate old handles; failed/cancelled calls and Save do not. Detached snapshots remain unchanged.",
+      "independentOracles": [
+        "public API observations",
+        "direct XML before/after"
+      ]
+    },
+    {
+      "id": "G04",
+      "kind": "mixed",
+      "plannedFixture": "typed-template-tag-collisions",
+      "assertion": "Typed merge/image/if/repeat tags never execute. Duplicate tags return separate handles. Merge rejects before caller getters/JSON evaluation; explicit display view removes typed tags and leaves original and unrelated legacy template behavior intact.",
+      "independentOracles": [
+        "caller getter counter",
+        "expected text/order manifest",
+        "direct XML"
+      ]
+    },
+    {
+      "id": "G05",
+      "kind": "mixed",
+      "plannedFixture": "snapshot-save-and-copy-boundaries",
+      "assertion": "Metadata edits/save retain typed state, formatting and neighboring nested fields/bookmarks; mutate caller formatting/collections after input and verify detachment. Ordinary Replace/bookmark/Append/retained-review/object combinations reject atomically.",
+      "independentOracles": [
+        "independent raw XML for field boundaries and controls",
+        "schema validation",
+        "public snapshot expectations"
+      ]
+    },
+    {
+      "id": "G06",
+      "kind": "resource",
+      "plannedFixture": "cancellation-and-aggregate-limits",
+      "assertion": "Exercise pre-cancel and traversal/enumeration cancellation, count/depth/characters/bytes/work at limit and limit+1, many small metadata entries and checked overflow. No pre-copy failure writes caller output; streams stay open. Final-copy I/O behavior follows caller-stream contract.",
+      "independentOracles": [
+        "counted/cancelling caller streams",
+        "sentinel output bytes",
+        "semantic before/after snapshots"
+      ]
+    },
+    {
+      "id": "G07",
+      "kind": "mixed",
+      "plannedFixture": "output-policy",
+      "assertion": "DOCX retains editable state; managed PDF/XPS has selectable static value/placeholder and information. Strict non-DOCX editable loss rejects before copy; BestEffort/Lenient/display-view flatten explicitly. Native/tagged/archive/unqualified combinations reject.",
+      "independentOracles": [
+        "Office2010+ schema validation",
+        "independent PDF/XPS text and coordinates",
+        "diagnostic code/severity expectations"
+      ]
+    },
+    {
+      "id": "G08",
+      "kind": "positive",
+      "plannedFixture": "pinned-display-and-provenance",
+      "assertion": "Record authored fixture provenance, font hashes/licenses, expected text/order/coordinates and diagnostic policy. Keep independent failures and unavailable consumer/UI tools explicit; do not qualify a platform by compilation or a self round trip.",
+      "independentOracles": [
+        "manifest/specification expectations",
+        "independent fixed-page reader",
+        "font coverage metadata"
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "issue": 113,
+      "key": "C1",
+      "queuePredecessor": 112,
+      "requiresAcceptedIssues": [
+        112
+      ],
+      "runtimeImplemented": false,
+      "requiredSharedCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "cases": [
+        {
+          "id": "C1-01",
+          "kind": "positive",
+          "plannedFixture": "checkbox-inline-block",
+          "assertion": "Preserve checked/unchecked and omitted-state defaults, signed ID, tag/alias, original optional glyph/font declarations and neighboring Unicode text through independent DOCX inspection. Verify emitted property order and required Office2010 namespace/markup-compatibility declarations.",
+          "independentOracles": [
+            "authored XML/state manifest",
+            "Office2010+ schema validation"
+          ]
+        },
+        {
+          "id": "C1-02",
+          "kind": "mixed",
+          "plannedFixture": "checkbox-glyphs",
+          "assertion": "Both checkbox states render correctly with pinned glyph coverage; a deliberately unavailable glyph/font yields selectable [x]/[ ] with Control.GlyphFallback while editable DOCX retains its declaration. Mismatched source cache refresh is informational.",
+          "independentOracles": [
+            "font cmap coverage",
+            "independent PDF/XPS extraction/coordinates",
+            "direct DOCX XML"
+          ]
+        },
+        {
+          "id": "C1-03",
+          "kind": "negative",
+          "plannedFixture": "checkbox-malformed",
+          "assertion": "Reject invalid Boolean/hex, surrogate/non-BMP code, multiple content characters and retained deleted runs, without output or session mutation.",
+          "independentOracles": [
+            "specification-derived malformed XML",
+            "sentinel outputs"
+          ]
+        },
+        {
+          "id": "C1-04",
+          "kind": "mixed",
+          "plannedFixture": "placeholder-glossary",
+          "assertion": "Retain cache-only placeholder versus actual value and a bounded local glossary reference/entry/relationship; explicit set clears placeholder and explicit reset restores authored text. Reject missing/duplicate/rich/external glossary entries and aggregate expansion.",
+          "independentOracles": [
+            "direct OPC graph inspection",
+            "schema validation",
+            "independent displayed text"
+          ]
+        }
+      ]
+    },
+    {
+      "issue": 114,
+      "key": "C2",
+      "queuePredecessor": 113,
+      "requiresAcceptedIssues": [
+        112,
+        113
+      ],
+      "runtimeImplemented": false,
+      "requiredSharedCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "cases": [
+        {
+          "id": "C2-01",
+          "kind": "positive",
+          "plannedFixture": "ordered-dropdown-and-combo",
+          "assertion": "Preserve item order, explicit/omitted display labels, Unicode stored values, selected label and optional lastValue; a stored empty value remains distinct from no selection and placeholder.",
+          "independentOracles": [
+            "independently authored XML/item manifest",
+            "schema validation",
+            "independent PDF/XPS text"
+          ]
+        },
+        {
+          "id": "C2-02",
+          "kind": "mixed",
+          "plannedFixture": "membership-and-free-text",
+          "assertion": "Dropdown selection accepts exact ordinal member values only. Combo permits bounded literal nonmember text. Unbound lastValue is not an index/selection authority. Invalid selection leaves model/version unchanged. Reject free text colliding with an item label or bound member value; empty combo text canonicalizes to no selection.",
+          "independentOracles": [
+            "expected stored-value/display mapping",
+            "raw XML inspection",
+            "public snapshots"
+          ]
+        },
+        {
+          "id": "C2-03",
+          "kind": "mixed",
+          "plannedFixture": "empty-missing-and-ambiguous",
+          "assertion": "Exercise zero items, null selection, empty stored value with nonempty label, placeholder, unmatched nonempty cache and absent displayText fallback. A dropdown nonmember stays explicitly unresolved; an unbound combo nonmember is literal free text; duplicate values/labels and empty effective labels fail.",
+          "independentOracles": [
+            "source state manifest",
+            "independent XML reader"
+          ]
+        },
+        {
+          "id": "C2-04",
+          "kind": "resource",
+          "plannedFixture": "list-item-budgets",
+          "assertion": "Exercise 256 items/control, 4096 aggregate, item/tag string and aggregate byte/work boundaries; invalid late item enumeration cannot partially commit.",
+          "independentOracles": [
+            "counted caller enumeration",
+            "sentinel before/after XML"
+          ]
+        },
+        {
+          "id": "C2-05",
+          "kind": "negative",
+          "plannedFixture": "scalar-list-structure",
+          "assertion": "Reject multiple formatting sets/paragraphs, nested controls, rich item payload and dataBinding until C5; retain surrounding legacy merge/condition behavior on the ordinary entry point.",
+          "independentOracles": [
+            "schema and source structure",
+            "existing independent template expectations"
+          ]
+        }
+      ]
+    },
+    {
+      "issue": 115,
+      "key": "C3",
+      "queuePredecessor": 114,
+      "requiresAcceptedIssues": [
+        112,
+        113,
+        109
+      ],
+      "runtimeImplemented": false,
+      "requiredSharedCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "cases": [
+        {
+          "id": "C3-01",
+          "kind": "positive",
+          "plannedFixture": "gregorian-date-only",
+          "assertion": "Explicit DateOnly mode preserves canonical midnight fullDate and Y/M/D across leap day, year 1/year 9999, save/reload with same policy, placeholder/null/empty and en-US/en-GB case variants. No clock/text inference.",
+          "independentOracles": [
+            "XML dateTime/date lexical expectations",
+            "schema validation",
+            "independent PDF/XPS text"
+          ]
+        },
+        {
+          "id": "C3-02",
+          "kind": "positive",
+          "plannedFixture": "offset-instant-and-cultures",
+          "assertion": "Explicit-offset instants display deterministically in UTC across offset date boundaries, under two host cultures/timezones and supplied fixed values; retain original date/storage metadata and diagnose cache refresh.",
+          "independentOracles": [
+            "independent UTC date calculations",
+            "raw XML",
+            "fixed-output reader"
+          ]
+        },
+        {
+          "id": "C3-03",
+          "kind": "negative",
+          "plannedFixture": "malformed-and-unsupported-dates",
+          "assertion": "Reject invalid leap days/ranges, offset-less instants, DateOnly non-midnight/offset input, unsupported calendars/locales, absent/unsupported mask and DateOnly time tokens without partial mutation or date truncation.",
+          "independentOracles": [
+            "specification-derived negative lexical cases",
+            "unchanged semantic snapshot"
+          ]
+        },
+        {
+          "id": "C3-04",
+          "kind": "mixed",
+          "plannedFixture": "date-mask-and-missing-cache",
+          "assertion": "Exercise every admitted F2 date token/literal, missing fullDate with literal unresolved cache, explicit null and authored placeholder reset. Keep ordinary DATE/TIME and legacy merge behavior unchanged.",
+          "independentOracles": [
+            "published F2 token expectations",
+            "independent XML/PDF/XPS text",
+            "existing field regressions"
+          ]
+        },
+        {
+          "id": "C3-05",
+          "kind": "resource",
+          "plannedFixture": "date-format-budgets",
+          "assertion": "Enforce 128-character picture, 64 tokens, 1024 displayed units and aggregate work/output bounds, with cancellation before commit.",
+          "independentOracles": [
+            "independently calculated lengths/token totals",
+            "sentinel output"
+          ]
+        }
+      ]
+    },
+    {
+      "issue": 116,
+      "key": "C4",
+      "queuePredecessor": 115,
+      "requiresAcceptedIssues": [
+        112,
+        113
+      ],
+      "runtimeImplemented": false,
+      "requiredSharedCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "cases": [
+        {
+          "id": "C4-01",
+          "kind": "positive",
+          "plannedFixture": "formatted-inline-and-block-rich-text",
+          "assertion": "Preserve explicit richText and omitted-type controls with Unicode, bold/italic/underline/font/size/color and ordinary paragraph spacing/alignment/heading role; replace from copied caller values and verify detached snapshots.",
+          "independentOracles": [
+            "authored OOXML appearance/paragraph manifest",
+            "schema validation",
+            "independent fixed-page text/coordinates"
+          ]
+        },
+        {
+          "id": "C4-02",
+          "kind": "mixed",
+          "plannedFixture": "rich-owner-boundaries",
+          "assertion": "Preserve adjacent nested fields, closed bookmarks and separate controls exactly; reject fields/bookmarks inside or crossing owners and unsupported paragraph formatting. Late invalid replacement is atomic.",
+          "independentOracles": [
+            "raw XML boundary/order assertions",
+            "schema validation",
+            "unchanged non-owner text/style manifest"
+          ]
+        },
+        {
+          "id": "C4-03",
+          "kind": "negative",
+          "plannedFixture": "rich-unsupported-content",
+          "assertion": "Reject tables, revisions/comments, object/image-bearing content, nested controls, section changes and unsupported stories; no silent fragment flattening or control-tag execution.",
+          "independentOracles": [
+            "source tree inspection",
+            "expected rejection/unchanged model"
+          ]
+        },
+        {
+          "id": "C4-04",
+          "kind": "resource",
+          "plannedFixture": "rich-empty-and-expanded-content",
+          "assertion": "Distinguish empty value from authored placeholder; bound runs/paragraphs/characters/structure/bytes and cancellation during enumeration; locked/stale replacement preserves session/version/diagnostics.",
+          "independentOracles": [
+            "counted caller inputs",
+            "independent before/after XML",
+            "sentinel destination"
+          ]
+        }
+      ]
+    },
+    {
+      "issue": 117,
+      "key": "C5",
+      "queuePredecessor": 116,
+      "requiresAcceptedIssues": [
+        113,
+        114,
+        115,
+        116
+      ],
+      "runtimeImplemented": false,
+      "requiredSharedCases": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "cases": [
+        {
+          "id": "C5-01",
+          "kind": "positive",
+          "plannedFixture": "local-store-graph",
+          "assertion": "Preserve local customXml/itemProps/relationships/storeItemID and namespace mappings by infoset/part identity, including case-insensitive GUID matching and multiple distinct stores. No implicit XML synchronization on load/save.",
+          "independentOracles": [
+            "direct ZIP/OPC graph inspection",
+            "independent XML parser",
+            "schema validation"
+          ]
+        },
+        {
+          "id": "C5-02",
+          "kind": "mixed",
+          "plannedFixture": "singleton-paths",
+          "assertion": "Apply/write back namespaced and empty-namespace child paths, redundant [1] only for actual singleton, and final attributes. Reject zero/multiple matches, undeclared/duplicate mappings and missing targets without creating nodes.",
+          "independentOracles": [
+            "independent explicit node/value expectations",
+            "safe XML parser"
+          ]
+        },
+        {
+          "id": "C5-03",
+          "kind": "negative",
+          "plannedFixture": "unsafe-paths-and-parts",
+          "assertion": "Reject external/escaping relationships, missing/duplicate store IDs, DTD/entities/PIs, //, .., wildcards, unions, functions, arbitrary predicates/indices and namespace updates. Never invoke resolver/network/script.",
+          "independentOracles": [
+            "authored malformed/unsafe package manifest",
+            "counted disabled resolver",
+            "sentinel output"
+          ]
+        },
+        {
+          "id": "C5-04",
+          "kind": "mixed",
+          "plannedFixture": "typed-binding-values",
+          "assertion": "Apply/write back checkbox true/false/1/0, exact dropdown stored values, combo member/free text, DateOnly/date and instant/dateTime, and literal w:text with multiline policy. Reject incompatible lexical types, null/placeholder/unresolved write-back and date text storage inference. Reject combo nonmember XML values colliding with an existing item label.",
+          "independentOracles": [
+            "independent typed lexical/display table",
+            "schema validation",
+            "PDF/XPS text"
+          ]
+        },
+        {
+          "id": "C5-05",
+          "kind": "negative",
+          "plannedFixture": "rich-binding-and-markup-injection",
+          "assertion": "Reject richText dataBinding rather than pretending plain rich content is a bound w:text. Strings containing XML, merge tags or code remain escaped literal text; reject structured/mixed element target overwrite.",
+          "independentOracles": [
+            "direct XML text/attribute assertions",
+            "independent displayed text",
+            "source element-tree comparison"
+          ]
+        },
+        {
+          "id": "C5-06",
+          "kind": "mixed",
+          "plannedFixture": "directions-dirty-save-and-locks",
+          "assertion": "Explicit Apply replaces control values, explicit WriteBack changes XML and explicit unlocked Detach removes mapping. Dirty DOCX save rejects until an explicit decision; unchanged unevaluated graph is disclosed. Locked/stale/late-invalid multi-control work cannot partially commit.",
+          "independentOracles": [
+            "before/after control and customXml manifests",
+            "raw relationship inspection",
+            "diagnostic expectations"
+          ]
+        },
+        {
+          "id": "C5-07",
+          "kind": "negative",
+          "plannedFixture": "shared-target-conflicts",
+          "assertion": "Write-back requires all controls sharing a target; reject divergent converted values regardless of enumeration order. Identical converted values succeed once, without last-writer-wins or unrelated changes.",
+          "independentOracles": [
+            "independent target-group value table",
+            "XML before/after comparison"
+          ]
+        },
+        {
+          "id": "C5-08",
+          "kind": "resource",
+          "plannedFixture": "xml-store-and-walk-limits",
+          "assertion": "Exercise store/entry/node/attribute/namespace/path/depth/UTF-16/expanded-byte/work ceilings individually and in aggregate, including many small parts, malformed late stores, repeated binding walks and cancellation.",
+          "independentOracles": [
+            "independent size/node counters",
+            "sentinel session/version/output"
+          ]
+        }
+      ]
+    }
+  ],
+  "fixtureStatus": "planned; fixture directory and executable cases are not created by C0"
+}

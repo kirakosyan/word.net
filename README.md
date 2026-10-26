@@ -76,6 +76,11 @@ rendering-parity claim.
 
 Merged [PR #133](https://github.com/kirakosyan/word.net/pull/133) implements [the bounded P1 profile](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p1.md): DOCX defaults/mark metrics, implicit managed table autofit, conventional note spacing, typed custom properties, field pictures, nested scalar IF fields and managed STYLEREF running headers. These source changes are absent from published 1.4.0; no new package has been published. Default sizing/spacing and implicit autofit can change pagination; explicit fixed tables and explicit text formatting keep their policies.
 
+P2 content-control work starts with the [proposed C0 contract](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls-design.md)
+and independent acceptance plan for #112. Typed checkbox/list/date/rich-text
+editing and local XML binding remain unimplemented; existing tagged templates
+keep their documented behavior. The design adds no package capability.
+
 ## Quick start
 
 Convert a DOCX document to PDF and inspect any reported fidelity losses. Stage output before replacing an existing file:

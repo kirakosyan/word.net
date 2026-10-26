@@ -1,8 +1,17 @@
 # Formatting and image profile
 
-## Pending roadmap #102 P1 source profile
+## Planned P2 control preservation
 
-See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes are pending review and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
+The [C0 contract](content-controls-design.md) specifies a future bounded typed-control
+profile and [independent acceptance cases](content-controls-acceptance.json). It
+adds no admitted control type or preservation/rendering behavior. Unsupported
+owners, nested/unknown behavior, editing locks, static output and local XML binding
+must pass each executable leaf's evidence gates before a support claim. Current
+tagged-template and cache/loss behavior remains documented below.
+
+## Merged roadmap #102 P1 source profile
+
+See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes merged in PR #133 and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
 
 
 ## 1.4.0 roadmap #99 profile
@@ -30,7 +39,8 @@ pagination parity remain outside this profile.
 [ODT](odt.md) exchanges a bounded ODF 1.3 profile with DOCX, retaining semantic
 structure/geometry with explicit losses. [Review preservation](review-workflows.md)
 is opt-in; default accepted-state conversion and Strict review-loss rejection remain.
-These pending additions do not change historical or published qualification.
+These additions do not change dated historical qualification; their released scope
+is recorded separately in the 1.3.0 profile.
 
 The current implementation preserves
 the original targets and adds net462. The enterprise preview separates native import

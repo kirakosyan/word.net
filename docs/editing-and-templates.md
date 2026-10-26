@@ -1,5 +1,14 @@
 # Creating, editing and filling documents
 
+## Planned typed controls
+
+The [proposed C0 contract](content-controls-design.md) separates typed checkbox,
+list, date and rich-text state from existing tagged template execution. Its API
+examples are unavailable sketches. The design specifies explicit handles/edits,
+editing locks, placeholder/value separation and later local XML apply/write-back;
+it does not add those operations. Continue using the existing template workflows
+below. Runtime #113–#117 requires each predecessor's accepted evidence.
+
 ## Merged typed properties and field workflows
 
 See [the P1 usage and token matrix](roadmap-102-p1.md#typed-custom-properties-108) for immutable custom-property snapshots, atomic updates and DOCPROPERTY lookup. The same profile specifies numeric/date pictures, retained nested scalar IF fields and managed running headers. Legacy merge formatting remains unchanged. These additions merged in PR #133 and remain absent from public 1.4.0.

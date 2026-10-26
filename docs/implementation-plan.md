@@ -1,5 +1,23 @@
 # wordnet implementation and delivery status
 
+## Roadmap #102 P2 — C0 design proposed, runtime unimplemented
+
+After accepting/reconciling #104–#111, the owner authorized starting P2 #112–#117.
+The [C0 ADR](content-controls-design.md) defines typed-control owners, IDs,
+placeholder/value state, session handles, locks, template collisions, output loss,
+resource limits and explicit local XML synchronization. Its
+[acceptance matrix](content-controls-acceptance.json) has eight shared and 26
+leaf-specific planned cases, all unimplemented/unexecuted. The sketches add no
+public symbol, runtime dependency or conversion claim. #112 stays open pending
+design review/merge; #113–#117 remain queued behind accepted predecessors. This
+PR also carries the P1 documentation reconciliation commit; the P1 source merge
+and its qualification below are separate from the proposed design and docs.
+
+Validation for C0 is specification/current-contract review, matrix/JSON integrity,
+links and diff/status consistency. No new engine tests or runtime qualification
+are claimed by this documentation-only increment. Public packages remain 1.4.0;
+publication and P3–P6 remain outside the current authorization.
+
 ## Roadmap #102 P1 — merged source, PR #133
 
 The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 start is authorized; its next leaf is design-only #112, with executable #113–#117 gated on accepted predecessors.

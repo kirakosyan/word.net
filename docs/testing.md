@@ -1,5 +1,17 @@
 # Conversion tests and qualification
 
+## P2 C0 acceptance plan — no runtime results
+
+The [proposed ADR](content-controls-design.md) and
+[matrix](content-controls-acceptance.json) define eight shared and 26 leaf-specific
+future cases for #113–#117. No control fixture or engine test is created/enabled by
+C0; `eng/required-tests.txt` remains 1,222. Future evidence needs authored OOXML and
+provenance, independent schemas/part relationships, typed state/atomicity assertions,
+pinned glyphs and independent selectable PDF/XPS text/coordinates. C5 also requires
+safe XML/path negatives and explicit synchronization/conflict checks. Design checks
+are separate from all runtime results below; no matching self round trip or skipped
+case can qualify a leaf. See the ADR for per-leaf cross-target/package requirements.
+
 ## Merged roadmap #102 P1 qualification
 
 The [P1 evidence/profile](roadmap-102-p1.md#evidence-and-remaining-qualification) adds independent OOXML/property schema, pinned-font/default/mark coordinates, demanding autofit/row splitting, conventional note continuation, typed pictures under two cultures, nested-field safety and running-header page/section/variant checks. Existing historical raster/coordinate inputs receive explicit legacy settings in detached copies; their committed originals and tolerances stay unchanged. The final reviewed head passes 1,222/1,222 locally on both Linux x64 modern runtimes and all 24 hosted checks, including desktop source/package/Standard and actual Framework 4.7.2 source/package gates. [Merge qualification](roadmap-102-p1.md#final-review-and-merge-qualification--2026-10-26) and the [exact receipt](measurements/roadmap-102-p1-review.json) distinguish those results and raw-hosted-report inspection limits from dated release evidence below. No new package was published.
