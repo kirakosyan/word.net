@@ -148,7 +148,7 @@ internal sealed class DocumentCloner
     private TemplateControl? Control(TemplateControl? source)
     {
         if (source == null) return null;
-        if (!controls.TryGetValue(source, out TemplateControl? copy)) { copy = new TemplateControl(source.Tag) { Executable = source.Executable }; controls.Add(source, copy); }
+        if (!controls.TryGetValue(source, out TemplateControl? copy)) { copy = new TemplateControl(source.Tag) { Executable = source.Executable, Id = source.Id, Alias = source.Alias }; controls.Add(source, copy); }
         return copy;
     }
     private static NotePolicy Policy(NotePolicy p) => new NotePolicy { Format = p.Format, Start = p.Start, Restart = p.Restart };

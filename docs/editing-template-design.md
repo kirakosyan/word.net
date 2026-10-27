@@ -5,6 +5,10 @@ add an opt-in typed-control path in PR #134. Existing template-only loading belo
 keeps its contract; typed tags never silently acquire executable template meaning.
 The new source is merged and absent from published 1.4.0.
 
+Draft PR #135 extends the existing `Merge` contract to bounded mixed body regions
+without adding public API. See the [usage profile](editing-and-templates.md#mixed-report-regions--source-under-review)
+for cloning, atomicity, ownership and limits.
+
 This records the implementation contract for roadmap #32, bucket 3 (#11–#15),
 before implementation. The existing converter and all five targets remain compatible.
 

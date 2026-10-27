@@ -202,6 +202,7 @@ public sealed partial class WordDocument
         context.CheckCancellation();
         CustomPropertyValues.Validate(model, context);
         long controlMetadata = model.Controls.Admit(model, context);
+        controlMetadata = checked(controlMetadata + TemplateControls(model).Distinct().Sum(control => (long)control.Tag.Length + (control.Alias?.Length ?? 0) + 32));
         if (model.HasControlDisplay)
             foreach (ControlGlyph glyph in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.ControlGlyph != null).Select(r => r.ControlGlyph!).Distinct())
             { context.CheckCancellation(); controlMetadata = checked(controlMetadata + glyph.Text.Length + glyph.Font.Length + 32); }

@@ -30,6 +30,7 @@ public sealed partial class WordDocument
             foreach (ConversionDiagnostic d in sourceDiagnostics) c.Inherit(d);
             if (incoming.Blocks.Count == 0) return 0;
             m.HasControlDisplay |= incoming.HasControlDisplay;
+            int nextControlId = 1; RemapTemplateControlIds(incoming, TemplateControlIds(m), ref nextControlId, c);
             ValidateRanges(incoming);
             if (m.Blocks.Count > 0)
             {
@@ -88,6 +89,25 @@ public sealed partial class WordDocument
         int i = 1;
         while (identifiers.Any(n => n.StartsWith("wn" + i.ToString(CultureInfo.InvariantCulture) + "_", StringComparison.Ordinal))) i++;
         return "wn" + i.ToString(CultureInfo.InvariantCulture) + "_";
+    }
+    private static IEnumerable<TemplateControl> TemplateControls(DocumentModel model)
+    {
+        foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
+        {
+            if (block.Control != null) yield return block.Control;
+            if (block is TableBlock table) foreach (TemplateControl control in table.RowControls.Values) yield return control;
+            if (block is ParagraphBlock paragraph) foreach (TextRun run in paragraph.Runs) if (run.Control != null) yield return run.Control;
+        }
+    }
+    private static HashSet<int> TemplateControlIds(DocumentModel model) => new HashSet<int>(TemplateControls(model).Where(control => control.Id.HasValue).Select(control => control.Id!.Value));
+    private static void RemapTemplateControlIds(DocumentModel source, HashSet<int> used, ref int next, ConversionContext context)
+    {
+        foreach (TemplateControl control in TemplateControls(source).Distinct())
+        {
+            context.CheckCancellation(); if (!control.Id.HasValue) continue;
+            while (used.Contains(next)) { context.CheckCancellation(); next = checked(next + 1); }
+            control.Id = next; used.Add(next); next = checked(next + 1);
+        }
     }
     internal static void Remap(DocumentModel source, string prefix, int lastNoteId, bool isolateCounters = true, bool isolateExternalReferences = true)
     {

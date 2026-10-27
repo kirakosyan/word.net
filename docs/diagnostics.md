@@ -1,5 +1,14 @@
 # Conversion diagnostics
 
+## Mixed report regions — source under review
+
+PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
+`Template.RepeatReferences` for references, counters or notes that cannot safely
+be cloned across a region boundary. Unresolved link or field-structure diagnostics
+also prevent mixed-region execution. Expansion and reference work use existing
+`Limit.*` bounds; unsupported object ownership and retained revisions remain hard
+errors. These checks are pending review and are not part of public 1.4.0.
+
 ## P2 control diagnostics — merged source
 
 The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents

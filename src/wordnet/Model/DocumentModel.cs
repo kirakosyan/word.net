@@ -193,6 +193,8 @@ internal sealed class TextRun
 
 internal sealed class TemplateControl
 {
+    internal int? Id { get; set; }
+    internal string? Alias { get; set; }
     internal TemplateControl(string tag) { Tag = tag; }
     internal string Tag { get; }
     internal bool Executable { get; set; } = true;

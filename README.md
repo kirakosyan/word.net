@@ -78,6 +78,8 @@ Merged [PR #133](https://github.com/kirakosyan/word.net/pull/133) implements [th
 
 P2 [PR #134](https://github.com/kirakosyan/word.net/pull/134) adds opt-in typed DOCX checkbox/list/date/rich-text editing and explicit local XML binding. See the [source profile and limits](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls.md). This source is merged and absent from public 1.4.0; existing template loading keeps its behavior.
 
+Draft [PR #135](https://github.com/kirakosyan/word.net/pull/135) starts P3 with bounded mixed paragraph/table body repeats; its [template profile](https://github.com/kirakosyan/word.net/blob/codex/roadmap-102-p3-reports/docs/editing-and-templates.md#mixed-report-regions--source-under-review) describes the supported region and explicit limits. This work is under review and is not in the published package.
+
 ## Quick start
 
 Convert a DOCX document to PDF and inspect any reported fidelity losses. Stage output before replacing an existing file:

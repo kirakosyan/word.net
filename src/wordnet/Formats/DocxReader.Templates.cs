@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -24,10 +25,21 @@ internal sealed partial class DocxReader
         string? tag = (string?)element.Element(W + "sdtPr")?.Element(W + "tag")?.Attribute(W + "val");
         if (tag == null || !(tag.StartsWith("merge:", StringComparison.Ordinal) || tag.StartsWith("image:", StringComparison.Ordinal)
             || tag.StartsWith("if:", StringComparison.Ordinal) || tag.StartsWith("repeat:", StringComparison.Ordinal))) return null;
+        if (element.Element(W + "sdtPr")!.Elements().Where(p => p.Name == W + "tag" || p.Name == W + "id" || p.Name == W + "alias").GroupBy(p => p.Name).Any(g => g.Count() > 1))
+            throw new InvalidDataException("Template.ControlId: Duplicate control identity or tag metadata is unsupported.");
         if (element.Element(W + "sdtPr")?.Elements().Any(p => p.Name != W + "tag" && p.Name != W + "id" && p.Name != W + "alias") == true)
             context.Loss("Template.ControlProperties", "Control-specific validation, locking, data bindings and appearance are outside the editable tagged-control profile.");
         if (tag.Length > 256) throw new InvalidDataException("Template.TagLength: A control tag exceeds the supported length.");
-        return new TemplateControl(tag);
+        var control = new TemplateControl(tag);
+        if (element.Element(W + "sdtPr")?.Element(W + "id") is XElement id)
+        {
+            string value = DocxPackage.RequiredAttribute(id, W + "val");
+            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsed)) throw new InvalidDataException("Template.ControlId: A control ID must be a signed 32-bit integer.");
+            control.Id = parsed;
+        }
+        control.Alias = (string?)element.Element(W + "sdtPr")?.Element(W + "alias")?.Attribute(W + "val");
+        if (control.Alias?.Length > 256) throw new InvalidDataException("Template.TagLength: A control alias exceeds the supported length.");
+        return control;
     }
     private bool ReadBlockControl(XElement element, List<DocumentBlock> blocks)
     {
@@ -38,8 +50,11 @@ internal sealed partial class DocxReader
         TemplateControl? control = ReadControl(element);
         if (control != null)
         {
+            if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && blocks.Skip(start).OfType<TableBlock>().Any()
+                && element.Descendants(W + "sdt").Concat(new[] { element }).Any(n => !AdmittedMixedControl(n)))
+                throw new NotSupportedException("Template.RepeatRegion: Mixed regions cannot contain unknown or behavior-bearing controls.");
             if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
-                && (blocks.Count == start || blocks.Skip(start).Any(b => b is not ParagraphBlock)
+                && (blocks.Count == start || blocks.Skip(start).OfType<TableBlock>().Any(t => t.Rows.SelectMany(r => r).SelectMany(c => c.Blocks).Any(b => b is TableBlock))
                 || contentHasSection(element))) control.Executable = false;
             foreach (DocumentBlock block in blocks.Skip(start))
             {
@@ -55,6 +70,14 @@ internal sealed partial class DocxReader
         return true;
 
         static bool contentHasSection(XElement wrapper) => wrapper.Descendants(W + "sectPr").Any();
+        static bool AdmittedMixedControl(XElement wrapper)
+        {
+            XElement? properties = wrapper.Element(W + "sdtPr");
+            string? nestedTag = (string?)properties?.Element(W + "tag")?.Attribute(W + "val");
+            return nestedTag != null && (nestedTag.StartsWith("merge:", StringComparison.Ordinal) || nestedTag.StartsWith("image:", StringComparison.Ordinal)
+                || nestedTag.StartsWith("if:", StringComparison.Ordinal) || nestedTag.StartsWith("repeat:", StringComparison.Ordinal))
+                && properties!.Elements().All(p => p.Name == W + "tag" || p.Name == W + "id" || p.Name == W + "alias");
+        }
     }
     private bool ReadInlineControl(XElement element, List<TextRun> runs, TextStyle inherited, string? link)
     {

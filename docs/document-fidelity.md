@@ -1,5 +1,11 @@
 # Formatting and image profile
 
+## Mixed report regions — source under review
+
+Draft PR #135 repeats bounded same-section paragraph/table regions, with cloned
+identity and reference checks. It does not extend object, revision, nested-table or
+section support. See the [template profile](editing-and-templates.md#mixed-report-regions--source-under-review).
+
 ## P2 control preservation — merged source
 
 The [P2 source profile](content-controls.md) preserves bounded typed DOCX controls,
@@ -11,7 +17,7 @@ scaffolding is omitted informationally within the documented inactive-script
 subset; Word-generated glossary category/relationships remain rejected explicitly.
 Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
-This under-review source is separate from public 1.4.0 and dated qualification.
+This merged source is separate from public 1.4.0 and dated qualification.
 
 ## Merged roadmap #102 P1 source profile
 

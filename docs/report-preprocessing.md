@@ -45,7 +45,10 @@ with immutable `ReportExpression.Literal`, `Path`, `Binary`, `Round` or `Not`
 nodes. `ReportOptions` sets finite row/group/key/node/depth/work limits. Input
 rows are counted across collections; collection evaluation also bounds generated
 rows. No computed output may replace an existing root identifier.
-Unsupported body repeat structures remain non-executable. DOCX save can retain
+PR #135 adds bounded mixed paragraph/simple-table body repeats; see the
+[template profile](editing-and-templates.md#mixed-report-regions--source-under-review)
+for ownership, limits and the pending-source status. Other unsupported body repeat
+structures remain non-executable. DOCX save can retain
 their cached content while omitting the unsafe repeat tag with a
 `Template.ControlStructure` loss; it does not silently turn them into executable templates.
 

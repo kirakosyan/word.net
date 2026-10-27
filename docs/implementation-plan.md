@@ -1,5 +1,18 @@
 # wordnet implementation and delivery status
 
+## Roadmap #102 P3 — issue #118 under review
+
+[Draft PR #135](https://github.com/kirakosyan/word.net/pull/135) starts the
+roadmap's next bucket with bounded mixed paragraph/table body repeats and carries
+the P2 post-merge documentation reconciliation. See the
+[usage and explicit limits](editing-and-templates.md#mixed-report-regions--source-under-review).
+Issue #118 remains open pending review, final checks and merge; #119–#121 remain
+queued under the roadmap's one-accepted-issue-at-a-time ordering. No package or
+release is authorized by this work. Local Linux x64 .NET 8 and 10 suites each
+passed 1,408 cases with English OCR, no failures or skips; the five-target build,
+locked restore, format and local pack also passed. Hosted and Windows Framework
+execution remain separate pending evidence for this PR.
+
 ## Roadmap #102 P2 — merged source in PR #134
 
 [PR #134](https://github.com/kirakosyan/word.net/pull/134) merged as
@@ -29,7 +42,9 @@ for issues #104-#107. It distinguishes reproduced fallback/placement differences
 unproven inheritance/implicit-sizing defects, source omissions and the existing note
 reservation policy. No converter behavior, package version or support scope changes.
 Issue #103 is accepted and reconciled in roadmap #102 and historical roadmap #32.
-That evidence-only delivery left subsequent tasks unimplemented. The later owner-authorized P1 work is recorded above; P2 is now authorized to start with design-only #112; P3–P6 remain planning. Publication is not authorized by the P1 request.
+At that historical point the evidence-only delivery left subsequent tasks unimplemented.
+The later owner-authorized P1 and P2 work is recorded above, and P3 has since started
+with #118. Publication is not authorized by those implementation requests.
 The CI follow-up makes fixture-content verification portable across ZIP encodings,
 with archive hashes and the original measured receipt preserved.
 Review corrections protect measured fixtures from generation, isolate the public

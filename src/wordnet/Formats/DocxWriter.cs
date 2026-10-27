@@ -380,7 +380,9 @@ internal sealed partial class DocxWriter
     {
         if (!control.Executable) context.Loss("Template.ControlStructure", "An unsupported repeat tag is omitted while retaining its cached content.");
         return new XElement(W + "sdt",
-            new XElement(W + "sdtPr", control.Executable ? new XElement(W + "tag", new XAttribute(W + "val", control.Tag)) : null), new XElement(W + "sdtContent", content));
+            new XElement(W + "sdtPr", control.Alias == null ? null : new XElement(W + "alias", new XAttribute(W + "val", control.Alias)),
+                control.Id == null ? null : new XElement(W + "id", new XAttribute(W + "val", control.Id.Value)),
+                control.Executable ? new XElement(W + "tag", new XAttribute(W + "val", control.Tag)) : null), new XElement(W + "sdtContent", content));
     }
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);

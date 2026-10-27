@@ -1,5 +1,24 @@
 # Creating, editing and filling documents
 
+## Mixed report regions — source under review
+
+PR #135 extends body `repeat:Path` controls to one contiguous, same-section
+region of ordinary paragraphs and simple tables. Zero items remove the region;
+one or more items reproduce its blocks in order. Inline scalar, image and
+conditional controls and existing row repeats in those tables retain their item
+scope. Cloned bookmarks, notes, lists and retained template-control IDs are
+remapped; aliases survive. `KeepCached` retains unresolved controls with unique IDs.
+Composition also remaps retained template-control IDs.
+
+Nested tables, overlapping block controls, section breaks, positioned or retained
+objects and revisions are outside this profile. References and sequence counters
+crossing the region, shared notes and ambiguous control properties fail explicitly.
+Mixed regions also reject documents with unresolved link or field-structure losses,
+because their targets cannot be checked reliably. Generated blocks, rows, cells,
+images and metadata consume the existing limits before commit; cancellation and
+failures leave the original session unchanged. This source is pending review and is
+not included in the public 1.4.0 package.
+
 ## Opt-in typed controls — merged source
 
 See [typed-control usage](content-controls.md) for the opt-in DOCX entry point,
@@ -202,7 +221,7 @@ Content-control `w:tag/@w:val` values use this exact grammar:
 | `merge:Path` | One block paragraph or one adjacent inline control group; retains first-run appearance |
 | `image:Path` | Same scalar placements; replaces cached content with a caller `TemplateImage`, or empty content for null |
 | `if:Path`, `if:!Path` | Block or inline content; retains/removes it according to the value or its negation |
-| `repeat:Path` | A control wrapping exactly one table row; repeats for array items in source order |
+| `repeat:Path` | One table row, a body paragraph region, or (in PR #135) a mixed paragraph/simple-table body region; repeats for array items in source order |
 
 False values are null, false, numeric zero, an empty string or an empty array.
 Conditions can contain scalar fields/inline controls. Nesting controls that share

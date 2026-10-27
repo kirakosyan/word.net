@@ -1,5 +1,20 @@
 # Conversion tests and qualification
 
+## Mixed report regions — source under review
+
+The independently authored OOXML tests in
+`EditingTemplateTests.MixedReports.cs` exercise zero, one and multiple records,
+DOCX schema and content order, multipage selectable PDF, nested row repeats,
+inline images/conditions, identity remapping, boundary and resource failures,
+and cancellation. The image uses the existing `color-grid.png` fixture. These
+tests qualify this bounded source only; the P2 receipts below remain historical,
+and public 1.4.0 and platform qualification have not changed.
+On Linux x64 the full .NET 8 and .NET 10 conversion suites each passed 1,408/1,408
+with no skips and English OCR prepared in the test process. Locked restore,
+five-target Release build, formatting verification and local pack passed; the pack
+contains all five target assets and license notices. Framework execution requires
+a compatible Windows host and hosted checks for this PR remain separate.
+
 ## P2 controls acceptance and qualification
 
 The [source profile](content-controls.md), [acceptance map](content-controls-acceptance.json)
