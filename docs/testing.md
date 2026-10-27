@@ -27,6 +27,10 @@ negative controls, strict loading of inactive controls, legacy row-scope checks,
 fragment field/display-view checks, and independently inspected quarterly tables
 with consistent decimal scales. The statement fixture now uses stored ZIP entries
 with fixed metadata, avoiding compressor-dependent archive hashes.
+An exact-head hosted stress retry exposed a wall-clock timeout in PDF trailer ID
+matching; the bounded byte scan now avoids a time-limited regex and tests verify
+the digest, preserved byte offsets and malformed candidates. The earlier timed-out
+and failed stress runs remain distinct from the new head's qualification.
 
 ## P2 controls acceptance and qualification
 

@@ -1,7 +1,5 @@
 using System;
 using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace WordNet.Formats;
 
@@ -12,16 +10,33 @@ internal static class PdfIdentity
         // The writer's random trailer IDs are outside all content streams. Replace only
         // their hex digits at equal length, preserving every xref offset and stream length.
         int start = Math.Max(0, bytes.Length - 4096);
-        string tail = Encoding.ASCII.GetString(bytes, start, bytes.Length - start);
-        Match match = Regex.Match(tail, @"/ID\s*\[\s*<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*\]", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
-        if (!match.Success) throw new InvalidOperationException("Pdf.Identifier: The generated PDF trailer has no recognizable identifiers.");
+        int marker = -1, first = 0, firstLength = 0, second = 0, secondLength = 0;
+        for (int index = start; index + 3 <= bytes.Length; index++)
+        {
+            if (bytes[index] != '/' || bytes[index + 1] != 'I' || bytes[index + 2] != 'D') continue;
+            int cursor = index + 3; White(ref cursor);
+            if (!Take(ref cursor, '[')) continue;
+            White(ref cursor);
+            if (!Take(ref cursor, '<')) continue;
+            int a = cursor; while (cursor < bytes.Length && Hex(bytes[cursor])) cursor++;
+            int aLength = cursor - a; if (aLength == 0 || !Take(ref cursor, '>')) continue;
+            White(ref cursor); if (!Take(ref cursor, '<')) continue;
+            int b = cursor; while (cursor < bytes.Length && Hex(bytes[cursor])) cursor++;
+            int bLength = cursor - b; if (bLength == 0 || !Take(ref cursor, '>')) continue;
+            White(ref cursor); if (!Take(ref cursor, ']')) continue;
+            marker = index; first = a; firstLength = aLength; second = b; secondLength = bLength; break;
+        }
+        if (marker < 0) throw new InvalidOperationException("Pdf.Identifier: The generated PDF trailer has no recognizable identifiers.");
 #if NET8_0_OR_GREATER
-        string hex = Convert.ToHexString(SHA256.HashData(bytes.AsSpan(0, start + match.Index)));
+        string hex = Convert.ToHexString(SHA256.HashData(bytes.AsSpan(0, marker)));
 #else
         using var hash = SHA256.Create();
-        string hex = BitConverter.ToString(hash.ComputeHash(bytes, 0, start + match.Index)).Replace("-", "");
+        string hex = BitConverter.ToString(hash.ComputeHash(bytes, 0, marker)).Replace("-", "");
 #endif
-        for (int group = 1; group <= 2; group++)
-            for (int i = 0; i < match.Groups[group].Length; i++) bytes[start + match.Groups[group].Index + i] = (byte)hex[i % hex.Length];
+        for (int i = 0; i < firstLength; i++) bytes[first + i] = (byte)hex[i % hex.Length];
+        for (int i = 0; i < secondLength; i++) bytes[second + i] = (byte)hex[i % hex.Length];
+        void White(ref int position) { while (position < bytes.Length && bytes[position] < 128 && char.IsWhiteSpace((char)bytes[position])) position++; }
+        bool Take(ref int position, char value) { if (position >= bytes.Length || bytes[position] != value) return false; position++; return true; }
+        static bool Hex(byte value) => value is >= (byte)'0' and <= (byte)'9' or >= (byte)'A' and <= (byte)'F' or >= (byte)'a' and <= (byte)'f';
     }
 }
