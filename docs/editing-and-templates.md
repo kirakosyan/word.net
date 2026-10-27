@@ -1,6 +1,6 @@
 # Creating, editing and filling documents
 
-## Mixed report regions — source under review
+## Mixed report regions — merged source
 
 PR #135 extends body `repeat:Path` controls to one contiguous, same-section
 region of ordinary paragraphs and simple tables. Zero items remove the region;

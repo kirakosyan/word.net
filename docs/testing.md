@@ -1,6 +1,6 @@
 # Conversion tests and qualification
 
-## Mixed report regions — source under review
+## Mixed report regions — merged source
 
 The independently authored OOXML tests in
 `EditingTemplateTests.MixedReports.cs` exercise zero, one and multiple records,

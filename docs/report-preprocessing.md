@@ -46,14 +46,14 @@ nodes. `ReportOptions` sets finite row/group/key/node/depth/work limits. Input
 rows are counted across collections; collection evaluation also bounds generated
 rows. No computed output may replace an existing root identifier.
 PR #135 adds bounded mixed paragraph/simple-table body repeats; see the
-[template profile](editing-and-templates.md#mixed-report-regions--source-under-review)
+[template profile](editing-and-templates.md#mixed-report-regions--merged-source)
 for ownership, limits and the pending-source status. Other unsupported body repeat
 structures remain non-executable. DOCX save can retain
 their cached content while omitting the unsafe repeat tag with a
 `Template.ControlStructure` loss; it does not silently turn them into executable templates.
 The same PR adds explicit count/sum cross-tabs over caller-prepared records. It
 does not add spreadsheet formulas, an expression language or dynamic charting.
-See the [cross-tab contract](editing-and-templates.md#mixed-report-regions--source-under-review)
+See the [cross-tab contract](editing-and-templates.md#mixed-report-regions--merged-source)
 for ordering, null handling, budgets and layout failure.
 
 See the runnable [P1 recipes](../examples/WordNet.Automation/P1Recipes.cs) and

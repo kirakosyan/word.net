@@ -1,6 +1,6 @@
 # Conversion diagnostics
 
-## Mixed report regions — source under review
+## Mixed report regions — merged source
 
 PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
 `Template.RepeatReferences` for references, counters or notes that cannot safely
