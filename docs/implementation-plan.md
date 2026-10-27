@@ -13,17 +13,21 @@ runtime qualification and publication stay separate. All issues remain open
 pending review/merge and subsequent reconciliation. Public packages remain 1.4.0;
 no dependency, target, platform, tag or publication change is authorized here.
 
-The P1 documentation reconciliation is included as its own commit, preserving all
-historical receipt identities and failed reference verdicts. C0's 34 planned-case
-receipt remains dated; executable tests and exact counts belong to the P2 source
-[qualification receipt](measurements/roadmap-102-p2.json), not to the old design-only result.
-Qualified source `6f091129b0cccbc70be306a75d51215b64a64102` passes **1,355/1,355**
-cases on each local Linux x64 modern runtime, zero failures/skips, including 133 P2
-cases and English OCR. Locked restore, all-five-target zero-warning Release build,
-format verification, core pack/API compatibility and package inspection pass.
-Windows/ARM64/Framework, exact-package/Standard and actual-minimum-runtime execution
-remain separate pending hosted gates; the final receipt/docs follow-up preserves
-qualified source/test trees. P3–P6 remain planning.
+The P1 documentation reconciliation and original C0/initial-P2 receipts remain
+historical. The [review receipt](measurements/roadmap-102-p2-review.json) records all
+eight review corrections and qualified source `c15d3a8f0433f5e9ea3bc1d3efe57b88083b3872`: **1,390/1,390**
+cases pass on each local Linux x64 modern runtime, zero failures/skips, including
+168 control cases, 35 new review regressions and English OCR. Locked restore,
+all-five-target zero-warning Release build, formatting, core pack/API compatibility
+and package inspection pass. The final evidence/docs commit leaves the qualified
+source/test trees unchanged. The Word-generated glossary and active-script limits
+remain explicit; fixed-output constraints no longer prevent text exports/views.
+
+Previous head `e006a88` passed all 24 hosted check conclusions, including actual
+Framework source/package gates. Revised-head Windows/ARM64/Framework and
+exact-package/Standard execution remain separate pending hosted evidence; no old
+pass is inferred for changed code. PR #134 remains open, with linked issues awaiting
+merge/reconciliation. No package is published. P3–P6 remain planning.
 
 ## Roadmap #102 P1 — merged source, PR #133
 

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "roadmap": 102,
   "designIssue": 112,
-  "status": "Implemented in PR #134; mapped tests pass locally; acceptance pending review/merge",
+  "status": "Implemented in PR #134 with review corrections; mapped local tests pass; merge pending",
   "runtimeImplemented": true,
   "acceptedSourceBaseline": "2a944ac9101598bc3be2d856e5bad116123998a3",
   "contract": "content-controls-design.md",
@@ -37,7 +37,7 @@
         "ContentControlReviewTests.EditorMetadataStillRejectsMalformedOrDuplicateValues",
         "ContentControlReviewTests.ControlFreeLoadsRetainOrdinaryContentAndPermitNormalEditing"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G02",
@@ -54,7 +54,7 @@
         "ContentControlAcceptanceEdgeTests.ContentLocksProtectEveryTypedValueMutation",
         "ContentControlBindingTests.BindingDirectionsRespectLocksAndForeignOrStaleHandles"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G03",
@@ -71,7 +71,7 @@
         "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic",
         "ContentControlReviewTests.SnapshotReusePreservesFailedOperationsAndInvalidatesOnlyCommittedEdits"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G04",
@@ -87,7 +87,7 @@
         "ContentControlFoundationTests.TypedTagsNeverExecuteAndOrdinaryOwnerRewritesRejectBeforeCallerGetters",
         "ContentControlRichTextTests.TypedDisplayViewRemovesOnlyTypedTagsAndLeavesAnExternalMergeFieldExecutable"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G05",
@@ -106,7 +106,7 @@
         "ContentControlAcceptanceEdgeTests.RetainedObjectsAndRecordingCannotBypassTypedOwnerProtection",
         "ContentControlReviewTests.InheritedParagraphDirectionSurvivesSaveReloadAndSnapshotReplacement"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G06",
@@ -127,7 +127,7 @@
         "ContentControlBindingTests.PathDepthLengthNamespaceAndAggregateXmlNodeLimitsAreEnforced",
         "ContentControlReviewTests.DeferredGlyphProvenanceStaysWithinTightenedSessionBudgets"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G07",
@@ -147,7 +147,7 @@
         "ContentControlReviewTests.TextExportsAndDisplayViewsKeepUnicodeCheckboxesUntilFixedOutput",
         "ContentControlReviewTests.UnsupportedManagedUnderlinesCanStillFlattenToEditableAndTextViews"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     },
     {
       "id": "G08",
@@ -165,7 +165,7 @@
         "ContentControlAcceptanceEdgeTests.StaticUnderlineHasIndependentStrokeGeometryAndDoesNotPaintAdjacentText",
         "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues"
       ],
-      "status": "final revised-source execution pending; prior result is historical"
+      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
     }
   ],
   "stages": [
@@ -202,7 +202,7 @@
             "ContentControlFoundationTests.OmittedCheckboxStateAndGlyphDeclarationsKeepTheirAbsence",
             "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C1-02",
@@ -219,7 +219,7 @@
             "ContentControlFoundationTests.CheckboxPreservesIdentityStateGlyphMetadataAndSelectableDisplay",
             "ContentControlReviewTests.TextExportsAndDisplayViewsKeepUnicodeCheckboxesUntilFixedOutput"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C1-03",
@@ -235,7 +235,7 @@
             "ContentControlBoundaryTests.DuplicateIdsFailAndMultipleCharactersCannotMasqueradeAsACheckbox",
             "ContentControlBoundaryTests.RichControlsRejectStructuralHistoryObjectAndBoundaryContent"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C1-04",
@@ -252,7 +252,7 @@
             "ContentControlBoundaryTests.MissingOrRichGlossaryEntriesFailInsteadOfDroppingThePlaceholderRelationship",
             "ContentControlReviewTests.WordGeneratedGlossaryStructuresHaveAnExplicitRejection"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         }
       ],
       "status": "implemented under review; original technical dependencies retained"
@@ -290,7 +290,7 @@
           "tests": [
             "ContentControlListTests.OrderedItemsStoredValuesFreeTextAndCellOwnersRemainEditable"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C2-02",
@@ -306,7 +306,7 @@
             "ContentControlListTests.InvalidSelectionAndAmbiguousComboTextAreAtomic",
             "ContentControlListTests.MultipleInlineEditsDoNotUseStaleRunSliceOffsets"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C2-03",
@@ -322,7 +322,7 @@
             "ContentControlListTests.UnmatchedDropdownCacheIsUnresolvedAndNeverSelectsItemZero",
             "ContentControlListTests.OmittedLabelsUseValuesAndAnEmptyListCanStayEmpty"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C2-04",
@@ -337,7 +337,7 @@
             "ContentControlBoundaryTests.ControlCountAndPerListItemLimitsHaveRealBoundaryCases",
             "ContentControlBoundaryTests.AggregateItemsAndMetadataStringsAreBounded"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C2-05",
@@ -353,7 +353,7 @@
             "ContentControlFoundationTests.OrdinaryCachedConversionRemainsIndependentOfTypedTemplateTags",
             "ContentControlBindingTests.LocalGraphsArePreservedWithoutImplicitApplyThenAllScalarKindsApplyExplicitly"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         }
       ],
       "status": "implemented under review; original technical dependencies retained"
@@ -393,7 +393,7 @@
             "ContentControlDateTests.CalendarDatesRoundTripWithExplicitPolicyAndNoHiddenTimeTruncation",
             "ContentControlAcceptanceEdgeTests.DateLoadPolicyIsCapturedAndPlaceholdersDoNotExposeAnOldTypedValue"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C3-02",
@@ -408,7 +408,7 @@
           "tests": [
             "ContentControlDateTests.InstantDisplayUsesUtcAndInvariantPicturesWithoutClockOrTextInference"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C3-03",
@@ -425,7 +425,7 @@
             "ContentControlDateTests.UnsupportedCalendarsLocalesAndPicturesFailPreservation",
             "ContentControlDateTests.DateOnlyPicturesRejectTimeTokensButPermitQuotedTimeLetters"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C3-04",
@@ -442,7 +442,7 @@
             "ContentControlDateTests.DateOnlyPicturesRejectTimeTokensButPermitQuotedTimeLetters",
             "P1FieldTests.PicturesAreInvariantAndDoNotConsultTheClock"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C3-05",
@@ -458,7 +458,7 @@
             "ContentControlDateTests.UnsupportedCalendarsLocalesAndPicturesFailPreservation",
             "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         }
       ],
       "status": "implemented under review; original technical dependencies retained"
@@ -500,7 +500,7 @@
             "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues",
             "ContentControlReviewTests.ProofingLanguagesAloneDoNotRestrictOrdinaryUnicodeText"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C4-02",
@@ -520,7 +520,7 @@
             "ContentControlReviewTests.PendingClosedBlockBookmarksCannotBeDroppedOrMovedInsideTypedOwners",
             "ContentControlReviewTests.InheritedParagraphDirectionSurvivesSaveReloadAndSnapshotReplacement"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C4-03",
@@ -537,7 +537,7 @@
             "ContentControlAcceptanceEdgeTests.RetainedObjectsAndRecordingCannotBypassTypedOwnerProtection",
             "ContentControlReviewTests.InactiveScriptSlotAdmissionCannotSilentlyFlattenActiveScriptFormatting"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C4-04",
@@ -554,7 +554,7 @@
             "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
             "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         }
       ],
       "status": "implemented under review; original technical dependencies retained"
@@ -596,7 +596,7 @@
             "ContentControlBindingTests.DetachmentRemovesTheMappingWithoutDeletingLocalXmlAndReloadsStrictly",
             "ContentControlAcceptanceEdgeTests.LocalStoreCountIsBoundedWithoutDroppingUnboundAdmittedData"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-02",
@@ -612,7 +612,7 @@
             "ContentControlBindingTests.RedundantFirstPredicatesDoNotHideAmbiguousChildrenAndPrefixesMustBeExplicit",
             "ContentControlAcceptanceEdgeTests.XmlPathsAndNamespaceMapsHavePositiveAndNegativeBoundaryCases"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-03",
@@ -629,7 +629,7 @@
             "ContentControlBindingTests.DtdEntitiesAndProcessingInstructionsAreNeverFetched",
             "ContentControlBindingTests.ArbitraryOrUnresolvedPathsAreRejectedWithoutXPathExecution"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-04",
@@ -646,7 +646,7 @@
             "ContentControlBindingTests.BooleanBindingsUseOnlyXmlSchemaLexicalValuesAndCanonicalWriteBack",
             "ContentControlBindingTests.DateBindingModesAndPlainTextMultilineAreExplicit"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-05",
@@ -662,7 +662,7 @@
             "ContentControlBindingTests.RichTextBindingsAndStructuredXmlTargetsAreRejectedRatherThanInterpretedAsMarkup",
             "ContentControlBindingTests.DirtySaveRequiresAnExplicitDecisionAndWriteBackEscapesLiteralAttributeData"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-06",
@@ -680,7 +680,7 @@
             "ContentControlBindingTests.MultiControlApplyRefreshesInlineSliceLocationsAndLateFailuresRollBackAllOwners",
             "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-07",
@@ -694,7 +694,7 @@
           "tests": [
             "ContentControlBindingTests.SharedTargetWriteBackRequiresEveryControlAndRejectsDivergentValuesAtomically"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         },
         {
           "id": "C5-08",
@@ -711,7 +711,7 @@
             "ContentControlAcceptanceEdgeTests.LocalStoreCountIsBoundedWithoutDroppingUnboundAdmittedData",
             "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
           ],
-          "status": "final revised-source execution pending; prior result is historical"
+          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
         }
       ],
       "status": "implemented under review; original technical dependencies retained"
@@ -731,5 +731,5 @@
   ],
   "historicalExecutionReceipt": "measurements/roadmap-102-p2.json",
   "reviewedPreviousHead": "e006a8833b794dd791d7ba28a2cba896797a8097",
-  "reviewStatus": "Eight review findings implemented; final revised-source checks pending."
+  "reviewStatus": "Eight findings addressed; revised-source local checks pass; new hosted checks are separate."
 }

@@ -7,16 +7,20 @@ and [authored fixture provenance](../tests/wordnet.Conversion.Tests/Fixtures/Con
 track #112–#117 independently. Tests validate live DOCX state/parts with the Open XML
 SDK and raw XML, public snapshots/atomicity, pinned-font selectable PDF/XPS text,
 underline coordinates, local XML directions/conflicts, malformed input and bounds.
-The [P2 receipt](measurements/roadmap-102-p2.json) records qualified source commit
-`6f091129b0cccbc70be306a75d51215b64a64102`: **1,355/1,355** cases pass on each of
-Linux x64 .NET 8.0.33 and 10.0.12, including all **133 new P2 cases**, zero failures/skips,
-with English OCR prepared in the launching process. All 34 groups have mapped passing
-methods. Locked restore, five-target zero-warning Release build, format verification,
-core pack/API compatibility and package-content checks pass. Two host timezones and
-two date-test cultures are covered. See the [qualification limits](content-controls.md#local-qualification--2026-10-26)
-for unexecuted Framework/platform/consumer lanes and resource sampling bounds.
-Hosted/actual-minimum-runtime and public package availability remain distinct from
-local source verification; no P1 result qualifies this new code.
+The [review receipt](measurements/roadmap-102-p2-review.json) records qualified source
+`c15d3a8f0433f5e9ea3bc1d3efe57b88083b3872`: **1,390/1,390** pass on each local Linux x64 modern runtime,
+zero failures/skips with English OCR prepared in the launching process. All 168
+control cases, including 35 review regressions, pass; all 34 groups have mapped
+passing methods. Independent Word-shaped input/output schema validation covers
+all six kinds, and raw XML/PDF/XPS/text checks cover the reviewed behavior. Locked
+restore, five-target zero-warning Release build, formatting, core pack/API and
+archive inspection pass. No dependency or target is changed.
+
+See the [review qualification limits](content-controls.md#review-corrections-and-qualification--2026-10-27)
+for the explicit glossary/script subset and unexecuted local platform/consumer lanes.
+The [initial receipt](measurements/roadmap-102-p2.json) remains dated evidence of
+1,355 cases. Previous-head hosted checks passed, but new-head CI and public-package
+availability remain separate from this revised local source verification.
 
 ## Merged roadmap #102 P1 qualification
 

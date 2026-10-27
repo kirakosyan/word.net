@@ -4,7 +4,7 @@ PR [#134](https://github.com/kirakosyan/word.net/pull/134) implements #112–#11
 one owner-authorized batch. This is source under review, absent from public
 1.4.0; it does not publish packages. The [design record](content-controls-design.md)
 and [acceptance map](content-controls-acceptance.json) describe the contract and
-independent gates. The [qualification receipt](measurements/roadmap-102-p2.json) records actual local execution separately from pending hosted/runtime gates.
+independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) records current local execution; the [initial receipt](measurements/roadmap-102-p2.json) remains historical. Hosted/runtime gates are recorded separately.
 
 ## Load, inspect and edit
 
@@ -266,6 +266,30 @@ is a fidelity loss for implicit destination flattening and information for the
 explicit display-view operation. Diagnostics never include tag/alias, XML or
 control values. No arbitrary scripting, forms UI, legacy ActiveX/forms, extra OCR
 language, encryption/signature or new platform claim is introduced.
+
+## Review corrections and qualification — 2026-10-27
+
+All eight findings on PR #134 have concrete fixes or the requested explicit subset
+clarification. Final owner validation prevents body/cell bookmarks from being lost;
+Word-shaped editor scaffolding and paragraph direction are handled within the
+bounds above; fixed-output preparation is deferred; snapshots reuse a committed
+version; zero-control work and an unreachable post-write check are removed.
+
+Qualified source `c15d3a8f0433f5e9ea3bc1d3efe57b88083b3872` passes **1,390/1,390** cases on
+both local Linux x64 .NET 8.0.33 and 10.0.12, zero failures/skips, English OCR
+prepared in the launching process. The 168 control cases include **35 new review
+regressions**. All 34 acceptance groups map to passing methods on both runtimes.
+Locked restore, five-target Release build (zero warnings/errors), formatting,
+core pack/API compatibility and archive inspection pass. The [review receipt](measurements/roadmap-102-p2-review.json)
+records comment-to-fix/test mapping, source/test trees, counters and artifact hashes.
+Its final documentation follow-up preserves the qualified code/test trees.
+
+The previous head `e006a88` passed all 24 hosted check conclusions, including
+source/package/explicit-Standard, actual Framework and Android compilation jobs;
+those results do not qualify this revised code. Revised-head hosted checks remain
+separate pending evidence. No Framework execution occurs on this Linux host, and no
+new platform, general Word/consumer UI, native-control rendering, release or package
+publication is claimed. The original receipt and reference failures stay dated.
 
 ## Local qualification — 2026-10-26
 
