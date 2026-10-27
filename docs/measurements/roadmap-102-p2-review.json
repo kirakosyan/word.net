@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "roadmap": 102,
+  "priority": "P2",
+  "pullRequest": "https://github.com/kirakosyan/word.net/pull/134",
+  "recordedUtc": "2026-10-27T19:26:15.444943+00:00",
+  "status": "Eight review findings addressed; revised local source passes; new hosted checks separate; PR not merged",
+  "qualifiedSource": {
+    "commit": "c15d3a8f0433f5e9ea3bc1d3efe57b88083b3872",
+    "sourceTree": "6ee7ec214aa2a14ee70c366eef1567dfa1f599a9",
+    "testsTree": "f73a38e4e6dedee2e7e66f37d4f8ed7d96673dc5",
+    "requiredCases": 1390,
+    "documentationFollowup": "Final acceptance/receipt/status edits are docs-only and leave these source/test trees unchanged."
+  },
+  "historical": {
+    "previousHead": "e006a8833b794dd791d7ba28a2cba896797a8097",
+    "receipt": "docs/measurements/roadmap-102-p2.json",
+    "receiptSha256": "9a85c483d34f23bcc817e3a41d1be7b50751e41a0368ced08ee14377d1410dab",
+    "acceptanceMapAtPreviousHeadMatchesOriginalReceipt": true,
+    "hostedCheckConclusionsObserved": {
+      "checks": 24,
+      "allSuccessful": true,
+      "pushCi": 40423083699,
+      "prCi": 40423088818,
+      "android": [
+        40423083558,
+        40423088751
+      ],
+      "scope": "Old head only; conclusions/metadata inspected, raw hosted receipts not reopened; no inference for revised source."
+    }
+  },
+  "environment": {
+    "os": "Debian 13 Linux x64",
+    "sdk": "10.0.401",
+    "runtimes": [
+      "8.0.33",
+      "10.0.12"
+    ],
+    "ocr": "English Tesseract 5, matching x64, prepared in the same launching PowerShell process; no skips",
+    "frameworkTargetsCompiled": [
+      "net462",
+      "net472",
+      "netstandard2.0",
+      "net8.0",
+      "net10.0"
+    ]
+  },
+  "runs": [
+    {
+      "framework": "net8.0",
+      "runtime": "8.0.33",
+      "timezone": "America/Los_Angeles",
+      "counters": {
+        "total": 1390,
+        "executed": 1390,
+        "passed": 1390,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "p2Cases": 168,
+      "reviewCases": 35,
+      "p2ClassCases": {
+        "ContentControlAcceptanceEdgeTests": 16,
+        "ContentControlBindingTests": 33,
+        "ContentControlBoundaryTests": 29,
+        "ContentControlDateTests": 19,
+        "ContentControlFoundationTests": 18,
+        "ContentControlListTests": 11,
+        "ContentControlReviewTests": 35,
+        "ContentControlRichTextTests": 7
+      },
+      "englishOcrPreparedInLaunchingProcess": true,
+      "trx": "artifacts/p2-review/review-net8.trx",
+      "sha256": "4a9d16cb0d884de460e5f6635d01734ae4d65dcf8586c652216ac7a557bc7a75",
+      "times": {
+        "creation": "2026-10-27T12:20:52.1204435-07:00",
+        "queuing": "2026-10-27T12:20:52.1204436-07:00",
+        "start": "2026-10-27T12:20:48.0512302-07:00",
+        "finish": "2026-10-27T12:24:03.6859247-07:00"
+      }
+    },
+    {
+      "framework": "net10.0",
+      "runtime": "10.0.12",
+      "timezone": "UTC",
+      "counters": {
+        "total": 1390,
+        "executed": 1390,
+        "passed": 1390,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "p2Cases": 168,
+      "reviewCases": 35,
+      "p2ClassCases": {
+        "ContentControlAcceptanceEdgeTests": 16,
+        "ContentControlBindingTests": 33,
+        "ContentControlBoundaryTests": 29,
+        "ContentControlDateTests": 19,
+        "ContentControlFoundationTests": 18,
+        "ContentControlListTests": 11,
+        "ContentControlReviewTests": 35,
+        "ContentControlRichTextTests": 7
+      },
+      "englishOcrPreparedInLaunchingProcess": true,
+      "trx": "artifacts/p2-review/review-net10.trx",
+      "sha256": "75ec04f942c449a00e587b6a641ba0ca1190472e2c1c1379cd02d066048662ee",
+      "times": {
+        "creation": "2026-10-27T19:20:52.7456076+00:00",
+        "queuing": "2026-10-27T19:20:52.7456077+00:00",
+        "start": "2026-10-27T19:20:47.7307698+00:00",
+        "finish": "2026-10-27T19:23:57.5084860+00:00"
+      }
+    }
+  ],
+  "reviewFixes": [
+    {
+      "commentId": 4392861061,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861061",
+      "change": "Final owner-run validation after body/cell bookmark attachment prevents inference/edit/display from dropping marker runs.",
+      "tests": [
+        "ContentControlReviewTests.PendingClosedBlockBookmarksCannotBeDroppedOrMovedInsideTypedOwners"
+      ]
+    },
+    {
+      "commentId": 4392861074,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861074",
+      "change": "Bounded Word-shaped editor scaffolding is admitted with information; active unqualified script slots reject.",
+      "tests": [
+        "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues",
+        "ContentControlReviewTests.InactiveScriptSlotAdmissionCannotSilentlyFlattenActiveScriptFormatting",
+        "ContentControlReviewTests.ProofingLanguagesAloneDoNotRestrictOrdinaryUnicodeText",
+        "ContentControlReviewTests.EditorMetadataStillRejectsMalformedOrDuplicateValues"
+      ]
+    },
+    {
+      "commentId": 4392861081,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861081",
+      "change": "Text exports/views flatten Unicode without fixed preparation; PDF/XPS later prepares glyphs/underlines. Append/remapping and ordinary edits preserve correct deferred behavior and admission.",
+      "tests": [
+        "ContentControlReviewTests.TextExportsAndDisplayViewsKeepUnicodeCheckboxesUntilFixedOutput",
+        "ContentControlReviewTests.UnsupportedManagedUnderlinesCanStillFlattenToEditableAndTextViews",
+        "ContentControlReviewTests.DeferredGlyphProvenanceStaysWithinTightenedSessionBudgets"
+      ]
+    },
+    {
+      "commentId": 4392861090,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861090",
+      "change": "Explicit bidi is admitted so inherited paragraph direction can save/reload and survive paragraph snapshot replacement.",
+      "tests": [
+        "ContentControlReviewTests.InheritedParagraphDirectionSurvivesSaveReloadAndSnapshotReplacement"
+      ]
+    },
+    {
+      "commentId": 4392861097,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861097",
+      "change": "The initial relationship-free glossary subset remains; Word-generated category/related-part graphs are explicitly documented and tested rejections.",
+      "tests": [
+        "ContentControlReviewTests.WordGeneratedGlossaryStructuresHaveAnExplicitRejection"
+      ]
+    },
+    {
+      "commentId": 4392861108,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861108",
+      "change": "Zero-control preparation/finalization returns before bookmark/field scans and owner indexing.",
+      "tests": [
+        "ContentControlReviewTests.ControlFreeLoadsRetainOrdinaryContentAndPermitNormalEditing"
+      ]
+    },
+    {
+      "commentId": 4392861122,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861122",
+      "change": "Immutable snapshots are cached per committed version; failed/cancelled edits and Save retain cache, successful/no-op commits invalidate it.",
+      "tests": [
+        "ContentControlReviewTests.SnapshotReusePreservesFailedOperationsAndInvalidatesOnlyCommittedEdits"
+      ]
+    },
+    {
+      "commentId": 4392861136,
+      "url": "https://github.com/kirakosyan/word.net/pull/134#discussion_r4392861136",
+      "change": "Removed the unreachable no-binding check after writes; the selected-handle preflight still rejects before any write.",
+      "tests": [
+        "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic",
+        "ContentControlBindingTests.MultiControlApplyRefreshesInlineSliceLocationsAndLateFailuresRollBackAllOwners"
+      ]
+    }
+  ],
+  "checks": {
+    "lockedRestore": {
+      "result": "passed",
+      "log": "/tmp/wordnet-review/restore.log",
+      "sha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce"
+    },
+    "allTargetReleaseBuild": {
+      "result": "passed",
+      "log": "/tmp/wordnet-review/build-qualified.log",
+      "sha256": "abfbb60270ab0ae95a90fc911717a91e9e5e1a3b3732b26140d5d62e273c7e02"
+    },
+    "formatVerification": {
+      "result": "passed",
+      "log": "/tmp/wordnet-review/format-verify.log",
+      "sha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c"
+    },
+    "corePackApiCompatibility": {
+      "result": "passed",
+      "log": "/tmp/wordnet-review/pack.log",
+      "sha256": "3f95a206fab90d1bb77abfa925ad2225eae1ba31ad9f304002fa636f15596427"
+    }
+  },
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "formatAdvisory": "SDK workspace-loading advisory; format exit 0, zero build warnings/errors.",
+  "acceptanceMap": {
+    "path": "docs/content-controls-acceptance.json",
+    "sha256": "cac84e1c44a3846a90b891e7c252bca9e0ad46db750fbdd75aefac62295ac23c",
+    "groups": 34,
+    "mappedMethodsPresentAndPassingBothRuntimes": true
+  },
+  "independentOracles": [
+    "Open XML SDK 3.5.1 Office2010 schema validates authored Word-shaped input and editable outputs for all six kinds",
+    "Direct OPC/XML assertions for metadata, preserved IDs/content/primary appearance, direction and rejected bookmark/glossary boundaries",
+    "PdfPig 0.1.16 selectable output text, existing font/baseline assertions; XPS XML/stroke geometry",
+    "UTF-8 text/Markdown and AngleSharp HTML parsing verify Unicode glyphs independently of fixed-layout preparation"
+  ],
+  "newFixture": {
+    "path": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/word-editor.xml",
+    "sha256": "65a31d577b92aa1e93c440189d9da8c4c29044d0a8c4bab1f6d747122a2b8f7d",
+    "provenance": "Independently specification-authored Word-shaped editor scaffolding; MIT; not captured Word output or consumer/UI qualification"
+  },
+  "packages": [
+    {
+      "path": "artifacts/packages/wordnet.1.4.0.nupkg",
+      "sha256": "8ee9062696b9bf0b0a017c6b219e76ed1451577d5853161f8d71334d34956f4f",
+      "entries": 20,
+      "purpose": "Local API/package validation only; unchanged version, not published"
+    },
+    {
+      "path": "artifacts/packages/wordnet.1.4.0.snupkg",
+      "sha256": "c11d915cb8756cf7e115a2633dad12c83f95ccc61bdc6f8465379246a6e9333e",
+      "entries": 9,
+      "purpose": "Local API/package validation only; unchanged version, not published"
+    }
+  ],
+  "packageInspection": [
+    "All five DLL/XML pairs match the qualified build; five symbol PDBs",
+    "MIT license and existing dependency/font notices retained",
+    "No test/development/customer/credential payload; dependency/target/version files unchanged"
+  ],
+  "limits": [
+    "Word-generated glossary category/related-part graphs remain explicitly rejected; no general glossary extension is claimed.",
+    "Inactive script slots are admitted only for the documented Latin/default-script subset; unqualified active scripts fail explicitly, including Lenient.",
+    "Local execution is Linux x64 only. No Framework execution on Linux; Windows/Linux ARM64, exact-package/Standard and actual Framework runtime evidence require revised-head hosted checks.",
+    "No Word/office UI refresh, general Word compatibility or pixel-parity claim from authored fixtures/schema tests.",
+    "No new provider, dependency, platform, encryption/signature, release/tag or package publication.",
+    "Historical qualification/reference receipts, failed independent fidelity verdicts and thresholds remain unchanged."
+  ]
+}

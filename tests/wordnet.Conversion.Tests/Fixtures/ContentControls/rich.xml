@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:bookmarkStart w:id="0" w:name="outside"/><w:r><w:t>BEFORE</w:t></w:r><w:bookmarkEnd w:id="0"/><w:sdt><w:sdtPr><w:id w:val="30"/><w:tag w:val="if:Literal"/><w:richText/></w:sdtPr><w:sdtContent><w:r><w:rPr><w:b/><w:color w:val="FF0000"/></w:rPr><w:t>Bold</w:t></w:r><w:r><w:rPr><w:i/><w:color w:val="008000"/></w:rPr><w:t> Italic</w:t></w:r></w:sdtContent></w:sdt><w:fldSimple w:instr="DOCPROPERTY Outside"><w:r><w:t>CACHED</w:t></w:r></w:fldSimple></w:p>
+    <w:sdt><w:sdtPr><w:alias w:val="Paragraphs"/><w:id w:val="31"/></w:sdtPr><w:sdtContent><w:p><w:pPr><w:keepNext/><w:spacing w:before="120" w:after="80" w:line="360" w:lineRule="auto"/><w:jc w:val="center"/><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val="28"/><w:u w:val="single"/></w:rPr><w:t>First</w:t></w:r></w:p><w:p><w:r><w:t>Second</w:t></w:r></w:p></w:sdtContent></w:sdt>
+  </w:body>
+</w:document>

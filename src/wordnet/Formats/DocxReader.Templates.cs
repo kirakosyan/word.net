@@ -32,6 +32,7 @@ internal sealed partial class DocxReader
     private bool ReadBlockControl(XElement element, List<DocumentBlock> blocks)
     {
         if (!context.Editing || element.Name != W + "sdt") return false;
+        if (context.PreserveControls) return ReadTypedBlock(element, blocks);
         int start = blocks.Count;
         if (element.Element(W + "sdtContent") is XElement content) ReadBlocks(content, blocks);
         TemplateControl? control = ReadControl(element);
@@ -58,6 +59,7 @@ internal sealed partial class DocxReader
     private bool ReadInlineControl(XElement element, List<TextRun> runs, TextStyle inherited, string? link)
     {
         if (!context.Editing || element.Name != W + "sdt") return false;
+        if (context.PreserveControls) return ReadTypedInline(element, runs, inherited, link);
         if (fields.Count > 0)
         {
             if (ReadControl(element) != null) context.Loss("Template.FieldStructure", "Controls inside field results retain cached content without template execution.");

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<p:invoice xmlns:p="urn:wordnet:controls"><p:approved>true</p:approved><p:customer name="Ada &amp; Co"/><p:choice>b</p:choice><p:date>2024-02-29</p:date><p:instant>2026-01-01T00:30:00+02:00</p:instant><p:text>&lt;merge:Never&gt; &amp; literal</p:text><plain xmlns="">No namespace</plain></p:invoice>

@@ -1,6 +1,6 @@
 # Roadmap #102 P1 source profile
 
-This branch implements #104–#111 for review; see the [capability map](roadmap-102-p1-capabilities.json). It is not a package publication or a
+Merged [PR #133](https://github.com/kirakosyan/word.net/pull/133) implements #104–#111; see the [capability map](roadmap-102-p1-capabilities.json). It is not a package publication or a
 claim of qualification on an unexecuted runtime. Historical #103 receipts and
 reference thresholds remain unchanged.
 
@@ -266,4 +266,34 @@ is charged before expansion, and final unresolved diagnostics are emitted after
 convergence. An 80-page/eight-section control checks this under an isolated low layout
 budget. The source suite now requires 1,222 cases, including 26 review regressions.
 Earlier 1,196-case receipts and geometry observations above remain dated evidence;
-final reviewed-head/merge qualification is recorded separately after execution.
+final reviewed-head/merge qualification is recorded separately below.
+
+
+## Final review and merge qualification — 2026-10-26
+
+PR [#133](https://github.com/kirakosyan/word.net/pull/133) merged as `2a944ac9101598bc3be2d856e5bad116123998a3`;
+its tree equals reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562`. All fifteen review threads are answered
+and resolved. All **24 final-head checks** pass across [push CI](https://github.com/kirakosyan/word.net/actions/runs/40402236761),
+[PR CI](https://github.com/kirakosyan/word.net/actions/runs/40402242896) and both Android
+compilation runs. Desktop source and exact-package/explicit-Standard suites pass on
+Windows/Linux x64/ARM64; independent schema, reference-capture, bounded-profile,
+malformed-input, concurrency and performance gates pass. The reference-comparison
+step retains known fidelity failures by design; a successful workflow does not erase them.
+Both runs' actual Framework 4.7.2 source/package jobs validate runtime, provenance,
+required counts and owned VM cleanup. Actual Framework 4.6.2 remains unqualified.
+
+Local Linux x64 .NET **8.0.33** and **10.0.12** each pass **1,222/1,222** tests,
+zero failures/skips, with English OCR prepared in the process launching tests.
+The focused P1 suite contains 83 cases including 26 review regressions. Locked
+restore, five-target Release build (zero warnings/errors), formatting and core
+pack/API checks pass. Dependencies, lock files, versions and targets are unchanged.
+
+The [final review receipt](measurements/roadmap-102-p1-review.json) records exact
+commits, local report hashes, check identities and hosted artifact IDs/digests.
+Workflow conclusions and archive metadata were checked through GitHub. Signed
+archive downloads returned Forbidden, so raw hosted reports were not independently
+reopened locally; the workflow's validation steps supply those gate conclusions.
+The earlier 1,196-case runtime and fresh-office observations remain dated evidence,
+without silently replacing their failures or claiming they measure the review tree.
+These are merged-source/tooling results, separate from public 1.4.0 and any future
+release. No publication or new Android/macOS runtime claim is made.

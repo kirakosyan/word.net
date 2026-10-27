@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:sdt><w:sdtPr><w:id w:val="10"/><w:tag w:val="repeat:Literal"/><w:dropDownList w:lastValue="999"><w:listItem w:displayText="Display A" w:value="a"/><w:listItem w:displayText="Empty" w:value=""/><w:listItem w:displayText="B &amp; &lt;" w:value="b&lt;"/></w:dropDownList></w:sdtPr><w:sdtContent><w:r><w:t>Display A</w:t></w:r></w:sdtContent></w:sdt></w:p>
+    <w:tbl><w:tblPr><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="3600"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="3600" w:type="dxa"/></w:tcPr><w:sdt><w:sdtPr><w:id w:val="11"/><w:comboBox><w:listItem w:displayText="One" w:value="1"/><w:listItem w:displayText="Two" w:value="2"/></w:comboBox></w:sdtPr><w:sdtContent><w:p><w:r><w:t>custom</w:t></w:r></w:p></w:sdtContent></w:sdt></w:tc></w:tr></w:tbl>
+  </w:body>
+</w:document>

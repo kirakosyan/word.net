@@ -16,7 +16,7 @@ internal sealed class DocumentCloner
     internal DocumentCloner(ConversionContext context) { this.context = context; }
     internal DocumentModel Copy(DocumentModel source)
     {
-        var target = new DocumentModel { Title = source.Title, Author = source.Author, ObjectCount = source.ObjectCount };
+        var target = new DocumentModel { Title = source.Title, Author = source.Author, ObjectCount = source.ObjectCount, Controls = source.Controls.Copy(context), HasControlDisplay = source.HasControlDisplay };
         foreach (var property in source.CustomProperties) target.CustomProperties.Add(property.Key, property.Value);
         foreach (var style in source.Styles) target.Styles.Add(style.Key, style.Value);
         target.Blocks.AddRange(source.Blocks.Select(Block)); target.FinalSection = Section(source.FinalSection);
@@ -84,7 +84,7 @@ internal sealed class DocumentCloner
             result = copy;
         }
         blocks.Add(source, result);
-        result.Section = Section(source.Section); result.Location = source.Location; result.Control = Control(source.Control); return result;
+        result.TypedControlId = source.TypedControlId; result.Section = Section(source.Section); result.Location = source.Location; result.Control = Control(source.Control); return result;
     }
     internal TableCell Cell(TableCell source)
     {
@@ -115,7 +115,7 @@ internal sealed class DocumentCloner
         if (image?.Anchor != null) image.Anchor = Anchor(image.Anchor);
         return new TextRun(r.Text, r.Bold, r.Italic, r.Code, r.Link, r.FontSize, r.Color, image, r.Appearance.Copy(), r.FieldInstruction,
             r.Note == null ? null : Note(r.Note), box, r.Bookmark, Control(r.Control), r.Object)
-        { FieldChildren = r.FieldChildren?.ToDictionary(p => p.Key, p => Run(p.Value)), FieldCache = r.FieldCache?.Select(Run).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
+        { ControlDisplay = r.ControlDisplay, ControlGlyph = r.ControlGlyph, TypedControlId = r.TypedControlId, BidiLevel = r.BidiLevel, FieldChildren = r.FieldChildren?.ToDictionary(p => p.Key, p => Run(p.Value)), FieldCache = r.FieldCache?.Select(Run).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
     }
     private ReviewRecord Review(ReviewRecord source)
     {

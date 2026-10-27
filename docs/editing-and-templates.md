@@ -1,8 +1,20 @@
 # Creating, editing and filling documents
 
-## Pending typed properties and field workflows
+## Opt-in typed controls — source under review
 
-See [the P1 usage and token matrix](roadmap-102-p1.md#typed-custom-properties-108) for immutable custom-property snapshots, atomic updates and DOCPROPERTY lookup. The same profile specifies numeric/date pictures, retained nested scalar IF fields and managed running headers. Legacy merge formatting remains unchanged. These additions are source changes under review, absent from public 1.4.0.
+See [typed-control usage](content-controls.md) for the opt-in DOCX entry point,
+immutable handles, explicit checkbox/list/date/rich/plain edits, placeholders and
+local XML operations. Typed tags never execute; ordinary content/template edits
+require a detached display view. That view keeps original Unicode checkbox text;
+glyph fallback and managed underline restrictions run only at later PDF/XPS save.
+The source profile explicitly lists Word editor metadata, inactive-script bounds
+and the intentionally rejected Word-generated glossary graphs. Existing
+template-only loading below is unchanged.
+The implementation is under review in PR #134 and absent from public 1.4.0.
+
+## Merged typed properties and field workflows
+
+See [the P1 usage and token matrix](roadmap-102-p1.md#typed-custom-properties-108) for immutable custom-property snapshots, atomic updates and DOCPROPERTY lookup. The same profile specifies numeric/date pictures, retained nested scalar IF fields and managed running headers. Legacy merge formatting remains unchanged. These additions merged in PR #133 and remain absent from public 1.4.0.
 
 
 ## 1.4.0 roadmap #99 profile

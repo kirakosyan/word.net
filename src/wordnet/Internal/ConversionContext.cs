@@ -23,6 +23,12 @@ internal sealed class ConversionContext
     internal byte[][] FontData { get; set; } = Array.Empty<byte[]>();
     private WordNet.Layout.RenderFontCache? renderFonts;
     internal WordNet.Layout.RenderFontCache RenderFonts => renderFonts ??= new WordNet.Layout.RenderFontCache(this);
+    private long controlWork;
+    internal void ReserveControlWork(int count)
+    {
+        CheckCancellation(); controlWork = checked(controlWork + count);
+        if (controlWork > Math.Max(4096L, Options.MaximumCharacters * 64L)) throw new InvalidDataException("Limit.Controls: Aggregate control/XML traversal work exceeded.");
+    }
     private long fieldWork;
     internal void ReserveFieldWork(int count)
     {
@@ -39,6 +45,8 @@ internal sealed class ConversionContext
     internal bool Inspecting { get; set; }
     internal bool Editing { get; set; }
     internal bool PreserveReview { get; set; }
+    internal bool PreserveControls { get; set; }
+    internal ContentControlDateMode ControlDateMode { get; set; }
     internal bool HtmlImport { get; set; }
     internal bool PreviewIntermediate { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }

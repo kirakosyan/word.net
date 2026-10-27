@@ -1,6 +1,18 @@
 # API and support policy
 
-## Pending P1 API additions
+## P2 controls API — source under review
+
+The [P2 source API](content-controls.md) adds `LoadWithControls`, detached
+session/version control snapshots, explicit typed setters, rich replacements,
+placeholder/display views and existing-local-binding apply/write-back/detach.
+Snapshots are cached per committed version; failures/save keep them live and
+successful edits invalidate them. Display views retain Unicode text and defer
+managed glyph/underline preparation until PDF/XPS save.
+Existing Load/ReviewLoadOptions metadata and all five targets remain. No provider
+or XML/SDK type enters the public API. Source review, binary/package validation
+and actual runtime qualification remain separate from public 1.4.0 availability.
+
+## Merged roadmap #102 P1 API additions
 
 The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets. Existing signatures and package versions remain unchanged; publication and runtime qualification are separate gates.
 

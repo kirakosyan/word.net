@@ -1,6 +1,20 @@
 # Architecture and implementation status
 
-## Pending roadmap #102 P1 implementation
+## P2 control store — source under review
+
+The [P2 source profile](content-controls.md) uses a private typed-control store
+separate from executable TemplateControl tags. Owner IDs survive shared cloning;
+serialized transactions validate handles/locks and admit metadata, parts, display
+and work before commit. XML binding uses a bounded singleton child/attribute walker,
+never a general XPath engine or implicit synchronization. DOCX emits admitted
+schema-ordered control metadata/parts; managed static output resolves checkbox
+fallback and bounded underline strokes only for fixed output. Explicit display views
+keep Unicode text and bounded private render provenance until PDF/XPS save; text
+exports only flatten. Per-version immutable snapshot caching avoids repeated owner
+indexing, and final owner checks reject bookmarks attached after initial parsing.
+No dependency or target change is added.
+
+## Merged roadmap #102 P1 implementation
 
 The [P1 source profile](roadmap-102-p1.md) adds immutable typed custom-property snapshots, bounded retained scalar-field trees and paragraph style identities. Field evaluation stays local and deterministic; running headers resolve after body pagination with bounded reservation passes. DOCX absent-value layout policy is separate from source-explicit formatting. Managed implicit tables reuse bounded sizing and safe text measurement. No runtime dependency or target framework changes.
 

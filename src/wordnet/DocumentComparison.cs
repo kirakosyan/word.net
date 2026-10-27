@@ -146,6 +146,7 @@ public sealed partial class WordDocument
         lock (gate)
         {
             using var operation = BeginOperation();
+            if (model.Controls.HasControls) throw new NotSupportedException("Control.ProtectedOwner: Create an explicit display view before comparing typed-control sessions.");
             if (model.Review.HasHistory || diagnostics.Any(d => d.Code is "Revisions.Accepted" or "Comments.Ignored")) throw new NotSupportedException("Comparison.ExistingHistory: Supply explicit history-free snapshots.");
             Admit(model, context);
             return new DocumentCloner(context).Copy(model);

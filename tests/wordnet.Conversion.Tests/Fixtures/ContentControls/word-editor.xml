@@ -1,0 +1,14 @@
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="w14">
+  <w:body>
+    <w:sdt>
+      <w:sdtPr><w:rPr><w:rFonts w:ascii="Noto Sans" w:hAnsi="Noto Sans" w:eastAsia="East Asian Slot" w:cs="Complex Slot" w:hint="default"/><w:b/><w:bCs/><w:iCs w:val="0"/><w:sz w:val="28"/><w:szCs w:val="28"/><w:lang w:val="en-US" w:eastAsia="ja-JP" w:bidi="ar-SA"/></w:rPr><w:id w:val="81"/><w:richText/></w:sdtPr>
+      <w:sdtContent>
+        <w:p w:rsidR="00112233" w:rsidRPr="00223344" w:rsidP="00334455" w:rsidRDefault="00445566" w14:paraId="12345678" w14:textId="23456789">
+          <w:proofErr w:type="spellStart"/>
+          <w:r w:rsidR="00556677" w:rsidDel="00667788"><w:rPr><w:rFonts w:ascii="Noto Sans" w:hAnsi="Noto Sans" w:eastAsia="East Asian Slot" w:cs="Complex Slot" w:hint="default"/><w:b/><w:bCs/><w:iCs w:val="0"/><w:sz w:val="28"/><w:szCs w:val="28"/><w:lang w:val="en-US" w:eastAsia="ja-JP" w:bidi="ar-SA"/></w:rPr><w:t>Word-like text</w:t><w:lastRenderedPageBreak/></w:r>
+          <w:proofErr w:type="spellEnd"/>
+        </w:p>
+      </w:sdtContent>
+    </w:sdt>
+  </w:body>
+</w:document>

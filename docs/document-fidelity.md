@@ -1,8 +1,21 @@
 # Formatting and image profile
 
-## Pending roadmap #102 P1 source profile
+## P2 control preservation — source under review
 
-See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes are pending review and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
+The [P2 source profile](content-controls.md) preserves bounded typed DOCX controls,
+provides atomic edits and explicit local XML operations, and renders ordinary
+managed static PDF/XPS display with diagnosed glyph fallback and a bounded single
+underline policy at fixed-output save time. Text exports and explicit display views
+keep Unicode glyphs without the fixed-layout restrictions. Common Word editor
+scaffolding is omitted informationally within the documented inactive-script
+subset; Word-generated glossary category/relationships remain rejected explicitly.
+Unknown/nested/story/table wrappers, richer inherited formatting,
+retained review/objects and native/tagged/archive combinations remain rejected.
+This under-review source is separate from public 1.4.0 and dated qualification.
+
+## Merged roadmap #102 P1 source profile
+
+See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes merged in PR #133 and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
 
 
 ## 1.4.0 roadmap #99 profile
@@ -30,7 +43,8 @@ pagination parity remain outside this profile.
 [ODT](odt.md) exchanges a bounded ODF 1.3 profile with DOCX, retaining semantic
 structure/geometry with explicit losses. [Review preservation](review-workflows.md)
 is opt-in; default accepted-state conversion and Strict review-loss rejection remain.
-These pending additions do not change historical or published qualification.
+These additions do not change dated historical qualification; their released scope
+is recorded separately in the 1.3.0 profile.
 
 The current implementation preserves
 the original targets and adds net462. The enterprise preview separates native import

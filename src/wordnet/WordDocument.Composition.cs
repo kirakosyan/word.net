@@ -20,6 +20,7 @@ public sealed partial class WordDocument
         DocumentModel? snapshot = null; IReadOnlyList<ConversionDiagnostic> sourceDiagnostics = Array.Empty<ConversionDiagnostic>();
         if (!self) lock (source.gate)
         {
+            if (source.model.Controls.HasControls) throw new NotSupportedException("Control.ProtectedOwner: Create an explicit display view before appending a typed-control source.");
             Admit(source.model, new ConversionContext(options, cancellationToken));
             snapshot = new DocumentCloner(new ConversionContext(options, cancellationToken)).Copy(source.model); sourceDiagnostics = source.diagnostics;
         }
@@ -28,6 +29,7 @@ public sealed partial class WordDocument
             DocumentModel incoming = self ? new DocumentCloner(c).Copy(m) : snapshot!;
             foreach (ConversionDiagnostic d in sourceDiagnostics) c.Inherit(d);
             if (incoming.Blocks.Count == 0) return 0;
+            m.HasControlDisplay |= incoming.HasControlDisplay;
             ValidateRanges(incoming);
             if (m.Blocks.Count > 0)
             {
@@ -139,6 +141,8 @@ public sealed partial class WordDocument
                     cached.FontSize, cached.Color, cached.Image, cached.Appearance.Copy())).ToList();
                 paragraph.Runs[i] = new TextRun(r.Text, r.Bold, r.Italic, r.Code, link, r.FontSize, r.Color, r.Image, r.Appearance, field, r.Note, r.Box, bookmark, r.Control, r.Object?.Remap())
                 {
+                    ControlDisplay = r.ControlDisplay,
+                    ControlGlyph = r.ControlGlyph,
                     FieldChildren = r.FieldChildren,
                     FieldCache = cache,
                     Revision = r.Revision == null ? null : prefix + "r" + r.Revision,

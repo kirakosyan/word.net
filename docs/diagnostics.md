@@ -1,8 +1,22 @@
 # Conversion diagnostics
 
-## Pending P1 diagnostics
+## P2 control diagnostics — source under review
 
-The [P1 profile](roadmap-102-p1.md) retains `Field.UnsupportedUsedCachedResult` for missing/unsupported typed values, pictures and nested/STYLEREF semantics. Malformed custom-property parts fail with `Docx.CustomProperties`; unsupported/linked property types use `Docx.CustomPropertyType` loss reporting. `Metadata.CustomProperties` explains non-DOCX metadata output; `Table.NativeImplicitGrid` explains the unchanged native table policy. Unsupported note-marker placement uses `Notes.ReferenceMark`. Aggregate property, lookup and result limits fail before output copying; `Field.LayoutDidNotConverge` remains the bounded pagination-convergence loss. Successful running headers no longer report cached-field diagnostics from intermediate measurement passes; only unresolved final-layout fields report them.
+The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents
+hard `Control.*`, `Binding.*` and `Limit.Controls` failures, informational ID/cache/
+glyph/GUID/style/static/binding-state outcomes and explicit export loss.
+`Control.EditorMetadata` discloses omitted Word editor/proofing metadata and
+inactive script slots; `Control.ScriptFormatting` rejects unqualified active
+script-slot combinations. Managed underline restrictions and checkbox ASCII
+fallback apply at PDF/XPS preparation, including later saves of display views. Unknown
+preservation behavior rejects in every mode. Dirty bindings block DOCX save until
+an explicit decision. Namespace declarations are no longer misreported as theme
+color attributes. Diagnostics carry locations/codes without control/XML values.
+This source is under review and absent from public 1.4.0.
+
+## Merged roadmap #102 P1 diagnostics
+
+The [P1 profile](roadmap-102-p1.md) retains `Field.UnsupportedUsedCachedResult` for missing/unsupported typed values, pictures and nested/STYLEREF semantics. Malformed custom-property parts fail with `Docx.CustomProperties`; unsupported/linked property types use informational `Docx.CustomPropertyType` reporting. `Metadata.CustomProperties` explains non-DOCX metadata output; `Table.NativeImplicitGrid` explains the unchanged native table policy. Unsupported note-marker placement uses `Notes.ReferenceMark`. Aggregate property, lookup and result limits fail before output copying; `Field.LayoutDidNotConverge` remains the bounded pagination-convergence loss. Successful running headers no longer report cached-field diagnostics from intermediate measurement passes; only unresolved final-layout fields report them. `Field.NestedOutput` rejects live nested fields outside DOCX/PDF/XPS in Strict; best effort exports their whole cache. `Composition.CustomPropertyConflict` rejects unequal document-wide property values before append commits.
 
 
 ## 1.4.0 additions and compatibility

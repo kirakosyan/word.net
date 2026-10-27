@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="w14">
+  <w:body>
+    <w:p><w:r><w:t>Before </w:t></w:r><w:sdt><w:sdtPr><w:alias w:val="Approval"/><w:id w:val="42"/><w:tag w:val="merge:Ignored"/><w14:checkbox><w14:checked w14:val="0"/><w14:checkedState w14:val="0058" w14:font="Noto Sans"/><w14:uncheckedState w14:val="002D" w14:font="Noto Sans"/></w14:checkbox></w:sdtPr><w:sdtContent><w:r><w:rPr><w:rFonts w:ascii="Noto Sans" w:hAnsi="Noto Sans"/><w:sz w:val="24"/></w:rPr><w:t>-</w:t></w:r></w:sdtContent></w:sdt><w:r><w:t> after</w:t></w:r></w:p>
+  </w:body>
+</w:document>
