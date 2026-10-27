@@ -30,7 +30,10 @@ with fixed metadata, avoiding compressor-dependent archive hashes.
 An exact-head hosted stress retry exposed a wall-clock timeout in PDF trailer ID
 matching; the bounded byte scan now avoids a time-limited regex and tests verify
 the digest, preserved byte offsets and malformed candidates. The earlier timed-out
-and failed stress runs remain distinct from the new head's qualification.
+and failed stress runs remain distinct from the new head's qualification. The
+Linux x64 desktop-job deadline is 30 minutes because that lane also performs
+independent office checks and the full 64-by-200 gate; its workload and assertions
+are unchanged. Other desktop job deadlines remain 20 minutes.
 
 ## P2 controls acceptance and qualification
 
