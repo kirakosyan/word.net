@@ -53,6 +53,7 @@ internal abstract class DocumentBlock
 {
     internal int? TypedControlId { get; set; }
     internal TemplateControl? Control { get; set; }
+    internal TemplateControl? NestedControl { get; set; }
     internal SourceLocation? Location { get; set; }
     internal PageSettings? Section { get; set; }
 }

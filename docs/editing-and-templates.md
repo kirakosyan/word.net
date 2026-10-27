@@ -10,7 +10,17 @@ scope. Cloned bookmarks, notes, lists and retained template-control IDs are
 remapped; aliases survive. `KeepCached` retains unresolved controls with unique IDs.
 Composition also remaps retained template-control IDs.
 
-Nested tables, overlapping block controls, section breaks, positioned or retained
+One parent region may contain a child body repeat with a distinct path; at least
+one simple table must occur within the parent. Lookup searches the current item,
+then enclosing items from nearest to farthest, then the root, using the first
+complete path. Children can shadow parent values; no expressions or method calls
+are evaluated. Nested row repeats use the same scope order. Parent and child work
+shares the depth, row, character and byte budgets; empty collections remove their
+own region. Deeper block nesting and ambiguous same-path wrappers remain rejected.
+The runnable [customer statement](../examples/WordNet.Automation/P3Recipes.cs)
+prepares subtotals in caller code.
+
+Nested tables, other overlapping block controls, section breaks, positioned or retained
 objects and revisions are outside this profile. References and sequence counters
 crossing the region, shared notes and ambiguous control properties fail explicitly.
 Mixed regions also reject documents with unresolved link or field-structure losses,
@@ -18,6 +28,28 @@ because their targets cannot be checked reliably. Generated blocks, rows, cells,
 images and metadata consume the existing limits before commit; cancellation and
 failures leave the original session unchanged. This source is pending review and is
 not included in the public 1.4.0 package.
+
+`AddCrossTab(records, aggregation, includeTotals, token)` appends an editable
+table from explicit `CrossTabRecord` values. Keys are non-empty Unicode strings,
+ordered by first appearance using ordinal equality; null/empty keys fail, and the
+label `Total` is reserved when totals are requested. Count
+includes null values, sum ignores them, absent intersections are zero and decimal
+arithmetic is checked. Empty input produces a header; optional totals add a totals
+column and row. Limits are 100,000 input records, 64 column keys and 10,000 output
+cells, in addition to the conversion bounds. Conservative per-character column
+widths must fit the current body column; a table that does not fit fails with
+`Report.CrossTabLayout` instead of shrinking or dropping data. This conservative
+test can reject tables that a more sophisticated layout might fit.
+
+`InsertFragmentAtBookmark(name, fragment, token)` replaces a dedicated plain
+body bookmark paragraph with a private copy of a separately loaded DOCX or safe
+HTML session. Callers load sources explicitly; streams remain theirs. Source
+formatting is kept, colliding styles and list/bookmark/note/template-control IDs
+are remapped, and the destination section is used. Sections/stories, nested tables,
+typed controls, history, positioned/retained objects, fields and source load
+warnings are rejected. Internal links must resolve in the fragment. Target fields
+or links to the placeholder must be resolved before insertion. Both sessions are
+unchanged on failure; repeated insertions create independent identities.
 
 ## Opt-in typed controls — merged source
 
@@ -225,7 +257,8 @@ Content-control `w:tag/@w:val` values use this exact grammar:
 
 False values are null, false, numeric zero, an empty string or an empty array.
 Conditions can contain scalar fields/inline controls. Nesting controls that share
-the same block, row or run group is outside the profile and diagnosed on load.
+the same block, row or run group is outside the profile and diagnosed on load,
+except for the one-level mixed master-detail body repeats described above.
 Merge rejects these flattened nested constructs before executing any condition.
 Block controls inside cells are supported; cell-level table wrappers are diagnosed
 and cannot execute. Multi-block/multi-row control boundaries survive DOCX save/load,

@@ -43,6 +43,7 @@ public sealed partial class WordDocument
         long expansion = m.CharacterCount;
         long structuralExpansion = 0;
         long referenceWork = 0;
+        var parentScopes = new List<object?>();
         string prefix = UniquePrefix(m) + "t";
         Blocks(m.Blocks, root, 0, true);
         foreach (List<DocumentBlock> story in m.Blocks.Select(b => b.Section).Concat(new[] { m.FinalSection }).Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct()) Blocks(story, root, 0);
@@ -111,12 +112,13 @@ public sealed partial class WordDocument
                                 + TemplateControls(source).Distinct().Sum(control => ((long)control.Tag.Length + (control.Alias?.Length ?? 0)) * 2 + 64));
                             LimitExpansion();
                             DocumentModel clone = new DocumentCloner(c).Copy(source);
-                            foreach (DocumentBlock child in clone.Blocks) child.Control = null;
+                            foreach (DocumentBlock child in clone.Blocks) { child.Control = child.NestedControl; child.NestedControl = null; }
                             RemapTemplateControlIds(clone, controlIds, ref nextControlId, c);
                             Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
                             foreach (DocumentBlock child in clone.Blocks) child.Section = regionSection;
-                            m.Notes.AddRange(clone.Notes); Blocks(clone.Blocks, item, depth + 1, true);
-                            foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1);
+                            m.Notes.AddRange(clone.Notes); parentScopes.Add(scope);
+                            try { Blocks(clone.Blocks, item, depth + 1, true); foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1); }
+                            finally { parentScopes.RemoveAt(parentScopes.Count - 1); }
                             generated.AddRange(clone.Blocks);
                         }
                         blocks.RemoveRange(i, end - i); blocks.InsertRange(i, generated); i += generated.Count - 1; changes++; continue;
@@ -172,8 +174,9 @@ public sealed partial class WordDocument
                         DocumentModel clone = new DocumentCloner(c).Copy(source);
                         RemapTemplateControlIds(clone, controlIds, ref nextControlId, c);
                         Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max(), isolateCounters: false, isolateExternalReferences: false);
-                        m.Notes.AddRange(clone.Notes); Add(((TableBlock)clone.Blocks[0]).Rows[0], item, depth + 1);
-                        foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1);
+                        m.Notes.AddRange(clone.Notes); parentScopes.Add(scope);
+                        try { Add(((TableBlock)clone.Blocks[0]).Rows[0], item, depth + 1); foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1); }
+                        finally { parentScopes.RemoveAt(parentScopes.Count - 1); }
                     }
                     changes++;
                 }
@@ -280,7 +283,9 @@ public sealed partial class WordDocument
         bool Value(string path, object? scope, out object? value)
         {
             string key = Starts(path, '!') ? path.Substring(1) : path;
-            if (Lookup(scope, key, out value) || !ReferenceEquals(scope, root) && Lookup(root, key, out value)) return true;
+            if (Lookup(scope, key, out value)) return true;
+            for (int index = parentScopes.Count - 1; index >= 0; index--) if (Lookup(parentScopes[index], key, out value)) return true;
+            if (!ReferenceEquals(scope, root) && Lookup(root, key, out value)) return true;
             if (policy.MissingValues == MissingTemplateValue.Error) throw new InvalidDataException("Template.MissingValue: Required template data is missing.");
             c.Loss("Template.MissingValue", "Missing template data uses the explicitly selected fallback policy.");
             return policy.MissingValues == MissingTemplateValue.Empty;

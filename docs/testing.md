@@ -14,6 +14,13 @@ with no skips and English OCR prepared in the test process. Locked restore,
 five-target Release build, formatting verification and local pack passed; the pack
 contains all five target assets and license notices. Framework execution requires
 a compatible Windows host and hosted checks for this PR remain separate.
+These results precede the subsequent #119–#121 implementation. Master-detail,
+cross-tab and fragment tests additionally inspect schema-valid DOCX and PDF text
+and geometry, caller-prepared totals, identity remapping, malicious/missing
+resources, expansion limits and failure atomicity. The runnable statement fixture
+is independently authored by `eng/generate-p3-template.py` under MIT and has a
+recorded SHA-256 manifest. Final full-suite and hosted results for the batch must
+be reported separately from the earlier 1,408-case run.
 
 ## P2 controls acceptance and qualification
 

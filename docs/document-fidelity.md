@@ -2,8 +2,10 @@
 
 ## Mixed report regions — source under review
 
-Draft PR #135 repeats bounded same-section paragraph/table regions, with cloned
-identity and reference checks. It does not extend object, revision, nested-table or
+PR #135 repeats bounded same-section paragraph/table regions, including one
+master-detail level, with cloned identity and reference checks. Explicit cross-tabs
+reject non-fitting layouts, and fragments retain source formatting under the
+documented placement policy. It does not extend object, revision, nested-table or
 section support. See the [template profile](editing-and-templates.md#mixed-report-regions--source-under-review).
 
 ## P2 control preservation — merged source

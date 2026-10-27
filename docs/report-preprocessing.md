@@ -51,6 +51,10 @@ for ownership, limits and the pending-source status. Other unsupported body repe
 structures remain non-executable. DOCX save can retain
 their cached content while omitting the unsafe repeat tag with a
 `Template.ControlStructure` loss; it does not silently turn them into executable templates.
+The same PR adds explicit count/sum cross-tabs over caller-prepared records. It
+does not add spreadsheet formulas, an expression language or dynamic charting.
+See the [cross-tab contract](editing-and-templates.md#mixed-report-regions--source-under-review)
+for ordering, null handling, budgets and layout failure.
 
 See the runnable [P1 recipes](../examples/WordNet.Automation/P1Recipes.cs) and
 [template generator](../eng/generate-p1-templates.py): unsorted categories become

@@ -1,5 +1,14 @@
 # Architecture and implementation status
 
+## P3 reports — source under review
+
+PR #135 keeps a bounded second block-control owner for one nested master-detail
+region. Cloning remaps identities and lookup walks an explicit item-scope stack.
+Cross-tabs build bounded simple tables with a conservative fit check; fragment
+insertion snapshots a separate admitted session, remaps metadata and commits a
+dedicated bookmark replacement atomically. See the
+[source profile](editing-and-templates.md#mixed-report-regions--source-under-review).
+
 ## P2 control store — merged source
 
 The [P2 source profile](content-controls.md) uses a private typed-control store

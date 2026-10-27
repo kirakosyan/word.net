@@ -60,8 +60,11 @@ internal sealed partial class DocxReader
             {
                 if (block.Control != null)
                 {
+                    if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
+                        && control.Tag != block.Control.Tag && block.NestedControl == null && blocks.Skip(start).OfType<TableBlock>().Any())
+                    { block.NestedControl = block.Control; block.Control = control; continue; }
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) || block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal))
-                    { block.Control.Executable = false; control.Executable = false; }
+                    { block.Control.Executable = false; control.Executable = false; if (block.NestedControl != null) block.NestedControl.Executable = false; }
                     context.Loss("Template.NestedBlockControls", "Nested controls sharing a block are outside the editable template profile.");
                 }
                 else block.Control = control;

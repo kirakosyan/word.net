@@ -9,6 +9,14 @@ also prevent mixed-region execution. Expansion and reference work use existing
 `Limit.*` bounds; unsupported object ownership and retained revisions remain hard
 errors. These checks are pending review and are not part of public 1.4.0.
 
+Cross-tabs reject invalid keys with `Report.CrossTabKey`, oversized input or tables
+with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
+`Report.CrossTabLayout`; decimal arithmetic raises overflow. Fragment insertion
+uses `Fragment.SourceLoss`, `Fragment.SourceStructure`, `Fragment.Section`,
+`Fragment.Table`, `Fragment.Structure`, `Fragment.Reference` and
+`Fragment.Placeholder` to identify rejected sources or placement. Loading remains
+subject to the source reader's existing security and resource diagnostics.
+
 ## P2 control diagnostics — merged source
 
 The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents

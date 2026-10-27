@@ -1,17 +1,16 @@
 # wordnet implementation and delivery status
 
-## Roadmap #102 P3 — issue #118 under review
+## Roadmap #102 P3 — issues #118–#121 under review
 
-[Draft PR #135](https://github.com/kirakosyan/word.net/pull/135) starts the
-roadmap's next bucket with bounded mixed paragraph/table body repeats and carries
-the P2 post-merge documentation reconciliation. See the
+[PR #135](https://github.com/kirakosyan/word.net/pull/135) implements the
+roadmap's next bucket: bounded mixed/master-detail repeats, cross-tabs and fragment
+insertion. It also carries the P2 post-merge documentation reconciliation. See the
 [usage and explicit limits](editing-and-templates.md#mixed-report-regions--source-under-review).
-Issue #118 remains open pending review, final checks and merge; #119–#121 remain
-queued under the roadmap's one-accepted-issue-at-a-time ordering. No package or
-release is authorized by this work. Local Linux x64 .NET 8 and 10 suites each
-passed 1,408 cases with English OCR, no failures or skips; the five-target build,
-locked restore, format and local pack also passed. Hosted and Windows Framework
-execution remain separate pending evidence for this PR.
+The owner requested the entire bucket, superseding the issue-by-issue queue for this
+PR. Issues #118–#121 remain open pending independent acceptance, review, final
+checks and merge. No package or release is authorized by this work. The earlier
+1,408-case results in [testing.md](testing.md) qualify the initial #118 source;
+final batch and hosted results are recorded separately.
 
 ## Roadmap #102 P2 — merged source in PR #134
 
@@ -192,7 +191,7 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Remaining work
 
 1. Preserve historical release evidence, including the published [1.4.0 profile](roadmap-99-implementation.md).
-   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. Start P3 with #118; P4–P6 and #99’s unnumbered proposal remain planning. Bucket 5
+   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. P3 #118–#121 is under review; P4–P6 and #99’s unnumbered proposal remain planning. Bucket 5
    [design records](later-design-decisions.md) retain their separate policy gates.
 
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
