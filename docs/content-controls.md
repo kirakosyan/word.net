@@ -41,7 +41,8 @@ through copying. Continue staging files before replacement.
 ID, kind, literal tag/alias, owner, lock, placeholder/value state, display, checkbox
 state, selected stored value, combo free text, typed date, items, copied content
 and binding metadata/state. Formatting getters return copies. Snapshots stay
-readable after edits; reacquire them for mutations after **every** committed edit,
+readable after edits. The immutable collection is reused within a committed version;
+repeated reads do not re-index or re-copy the document. Reacquire handles for mutations after **every** committed edit,
 including metadata changes and zero-change operations. Foreign/stale/wrong-kind
 handles fail. Saving and failed operations do not invalidate handles.
 
@@ -61,7 +62,10 @@ control. Scalar controls have one formatting set and at most one paragraph;
 checkbox content, including placeholders, is one character. No row/cell/table
 wrappers, headers/footers, notes, boxes, section changes, nested controls, embedded
 objects or retained history inside a control. Crossing or enclosing field/bookmark
-ranges fail; independent fields/bookmarks wholly outside owners are retained.
+ranges fail; independent fields/bookmarks wholly outside owners are retained. A
+closed body/cell bookmark immediately preceding a block control can be attached
+to its first paragraph by the ordinary reader; final owner validation rejects that
+placement explicitly before typed inference or editing can remove it.
 
 | Kind | Explicit edit | Semantics and limits |
 | --- | --- | --- |
@@ -81,7 +85,24 @@ other admitted paragraph appearance. New ordinary paragraphs use the DOCX
 session; foreign snapshots materialize appearance/heading role with information,
 without importing foreign style identities. Unsupported inherited numbering,
 indent/tab definitions, code styles and richer run/paragraph properties reject.
-Fields/bookmarks/other controls outside a replacement remain intact.
+Fields/bookmarks/other controls outside a replacement remain intact. Explicit or
+style-inherited paragraph direction (`w:bidi`) survives DOCX save/reload and same-session
+paragraph snapshot replacement; this adds no native-control rendering claim.
+
+Common Word 2010+ paragraph/text IDs and revision-session attributes, proofing
+markers, cached `lastRenderedPageBreak` and bounded language metadata are admitted
+and omitted with informational `Control.EditorMetadata`. IDs/session attributes
+require their eight-hex-digit lexical form. These are editor metadata, distinct
+from the retained functional control `w:id`; actual revision markup stays rejected.
+Inactive `cs`/`eastAsia` font slots, `hint`, `szCs`, `bCs` and `iCs` are admitted for
+Latin-range text (letters/digits through U+024F and neutral punctuation/symbols)
+with that same information. Non-Latin letters/digits, later combining marks or
+supplementary characters with those script slots reject as
+`Control.ScriptFormatting`, rather than silently applying the primary appearance.
+Language metadata alone does not restrict ordinary Unicode text. Theme fonts and
+other unknown/active formatting remain outside this subset. The authored
+`word-editor.xml` fixture exercises this editor scaffolding for all six kinds;
+it is not captured Word output or a general Word compatibility qualification.
 
 List values and nonempty effective labels must each be unique; an omitted label
 uses its value. A dropdown nonmember cache stays explicitly unresolved, with
@@ -96,6 +117,12 @@ bbPlcHdr/content metadata. Missing, duplicate, unresolved built-in or richer ent
 fail. A control without a glossary reference can retain its original placeholder
 cache. Scalar placeholder formatting/size must fit its kind. Showing a placeholder
 clears a typed date/selection; it cannot be written back as a value.
+
+**Word-generated glossaries are rejected by this initial subset** when they include
+`w:category` or their own styles/settings/fontTable/webSettings relationships.
+Those parts are not read or silently discarded. Only the relationship-free,
+explicitly admitted local entries above qualify; default Word placeholder/template
+files commonly require a separately qualified glossary extension.
 
 ## Dates
 
@@ -172,7 +199,10 @@ engine is added. Fonts are explicit caller assets or existing embedded fonts.
 Single underline for control text uses bounded managed strokes at 0.1 em below
 its baseline and max(0.5 pt, em/16) thickness; font-specific Word decoration parity
 is not claimed. Underline with tab runs or justified/distributed paragraphs is
-outside this initial static profile and rejects. Other inherited run decoration
+outside this initial PDF/XPS static profile and rejects at fixed-output save time.
+Text/HTML/Markdown/other editable exports and display-view creation do not apply
+that managed-stroke restriction or parse glyph fonts. They retain the original
+Unicode checkbox text, including the default ☒/☐, without ASCII glyph fallback. Other inherited run decoration
 remains outside the admitted control profile. Native typography, tagged/archive
 PDF and retained-object/review combinations remain rejected pending separate
 qualification. Existing unexecuted legacy fields outside owners retain their
@@ -182,7 +212,10 @@ Other destinations reject editable loss in Strict and flatten display in explici
 BestEffort/Lenient with `Control.OutputLoss`. `CreateControlDisplayView(out result,
 token)` returns a separate ordinary-editing session with wrappers, typed tags,
 locks and local binding data removed; it reports that explicit loss informationally.
-The original, its locks and its handles are unchanged. Any remaining source
+A view retains only bounded private glyph/font provenance for later PDF/XPS
+preparation; its text is unchanged when it is created. Subsequent ordinary text
+edits take precedence over that provenance, and default source-preserving Append
+keeps the deferred display behavior. The original, its locks and its handles are unchanged. Any remaining source
 warnings keep the existing Strict-save policy.
 
 | Lock | Typed value/placeholder/application | Binding detach |
@@ -215,7 +248,8 @@ before copying to the caller. Additional ceilings are:
 | Detached paragraph input | 65,536 runs / 4,194,304 UTF-16 units before aggregate editing admission |
 
 Retained metadata, source caches, XML names/values and structure estimates join
-aggregate text/expanded-byte admission. Shared placeholder prototypes are counted
+aggregate text/expanded-byte admission, including private display-view glyph
+provenance. Shared placeholder prototypes are counted
 once with bounded references. Checkbox font parsing uses a shared operation cache
 with a conservative aggregate expanded-byte allowance. Replacement enumeration,
 cloning/parsing, path walks and writes check cancellation before commit. These
@@ -223,11 +257,11 @@ finite logical budgets do not claim hard CPU/RSS isolation.
 
 Hard failures use `Control.Malformed`, `DuplicateId`, `Unsupported`, `ProtectedOwner`,
 `Locked`, `StaleHandle`, `Kind`, `Selection`, `DateMode`, `DateFormat`, `DateValue`,
-`PlainText`, `Placeholder`, `UnderlineProfile`, `OutputProfile`, `BindingDirty`,
+`PlainText`, `Placeholder`, `ScriptFormatting`, `UnderlineProfile`, `OutputProfile`, `BindingDirty`,
 `Binding.Store/Path/Type/Conflict` and `Limit.Controls` (plus existing resource/package
 codes). Informational outcomes include `Control.IdAssigned`, `CacheRefreshed`,
 `ChoiceUnresolved`, `DateUnresolved`, `GlyphFallback`, `GuidNormalized`,
-`StyleMaterialized`, `StaticDisplay` and `BindingNotApplied`. `Control.OutputLoss`
+`StyleMaterialized`, `EditorMetadata`, `StaticDisplay` and `BindingNotApplied`. `Control.OutputLoss`
 is a fidelity loss for implicit destination flattening and information for the
 explicit display-view operation. Diagnostics never include tag/alias, XML or
 control values. No arbitrary scripting, forms UI, legacy ActiveX/forms, extra OCR

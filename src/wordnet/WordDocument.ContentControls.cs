@@ -13,6 +13,8 @@ namespace WordNet;
 
 public sealed partial class WordDocument
 {
+    private IReadOnlyList<DocumentContentControl>? controlSnapshots;
+    private long controlSnapshotsVersion = -1;
     /// <summary>Loads the bounded typed DOCX control profile with the default explicit-UTC date policy, leaving the input open.</summary>
     public static WordDocument LoadWithControls(Stream source, out ConversionResult result, ConversionOptions? options = null, CancellationToken cancellationToken = default) =>
         LoadWithControls(source, new ContentControlLoadOptions(), out result, options, cancellationToken);
@@ -32,15 +34,19 @@ public sealed partial class WordDocument
         DocumentModel loaded = DocxReader.Read(input, c); Admit(loaded, c); result = c.Result(0);
         return new WordDocument(loaded, options) { diagnostics = result.Diagnostics };
     }
-    /// <summary>Gets detached typed-control snapshots in source order. Successful edits invalidate their mutation handles.</summary>
+    /// <summary>Gets detached typed-control snapshots in source order, cached until a successful edit invalidates their mutation handles.</summary>
     public IReadOnlyList<DocumentContentControl> ContentControls
     {
         get
         {
             lock (gate)
             {
+                if (controlSnapshots != null && controlSnapshotsVersion == version) return controlSnapshots;
+                if (!model.Controls.HasControls) return Array.Empty<DocumentContentControl>();
                 var c = new ConversionContext(options, CancellationToken.None); var owners = ControlOwners.Index(model, c);
-                return new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, ControlContent(owners[d.Id], c))).ToList());
+                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, ControlContent(owners[d.Id], c))).ToList());
+                controlSnapshotsVersion = version;
+                return controlSnapshots;
             }
         }
     }
@@ -169,7 +175,7 @@ public sealed partial class WordDocument
             DocumentModel copy = new DocumentCloner(c).Copy(model);
             if (copy.Controls.HasControls)
             {
-                ControlDisplay.Glyphs(copy, c); ControlDisplay.Flatten(copy);
+                ControlDisplay.Flatten(copy, c);
                 c.Report("Control.OutputLoss", "An explicit detached display view removed typed controls, tags, locks and local binding data.");
             }
             Admit(copy, c); c.CheckCancellation(); result = c.Result(0);

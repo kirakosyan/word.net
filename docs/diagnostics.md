@@ -4,7 +4,11 @@
 
 The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents
 hard `Control.*`, `Binding.*` and `Limit.Controls` failures, informational ID/cache/
-glyph/GUID/style/static/binding-state outcomes and explicit export loss. Unknown
+glyph/GUID/style/static/binding-state outcomes and explicit export loss.
+`Control.EditorMetadata` discloses omitted Word editor/proofing metadata and
+inactive script slots; `Control.ScriptFormatting` rejects unqualified active
+script-slot combinations. Managed underline restrictions and checkbox ASCII
+fallback apply at PDF/XPS preparation, including later saves of display views. Unknown
 preservation behavior rejects in every mode. Dirty bindings block DOCX save until
 an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.

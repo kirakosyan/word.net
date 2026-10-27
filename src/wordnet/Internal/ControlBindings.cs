@@ -164,7 +164,6 @@ internal static class ControlBindings
             Write(group.Key, value!);
             foreach (ControlData data in group.Value) { data.BindingState = ContentControlBindingState.Synchronized; SetLastValue(data, value!); }
         }
-        if (selected.Any(d => d.Binding == null)) throw new ArgumentException("Binding.Store: A selected control has no binding.");
     }
     private static void SetLastValue(ControlData data, string value)
     {

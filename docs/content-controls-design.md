@@ -14,7 +14,10 @@ P1 merged in [PR #133](https://github.com/kirakosyan/word.net/pull/133), commit
 [P1 receipt](measurements/roadmap-102-p1-review.json) remains historical evidence.
 The final source profile records implementation refinements: schema-canonical GUID
 casing, admitted stores surviving explicit detach, copied paragraph-input bounds,
-and the bounded managed underline policy. These changes add no dependency, target
+the bounded managed underline policy, and subsequent review corrections to final
+owner validation, Word-shaped editor metadata, direction and deferred fixed-output
+preparation. See the source profile for the intentional Word-generated glossary
+rejection and inactive-script limits. These changes add no dependency, target
 framework, publication or platform claim.
 
 ## Context and decision

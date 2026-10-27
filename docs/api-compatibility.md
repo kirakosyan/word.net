@@ -5,6 +5,9 @@
 The [P2 source API](content-controls.md) adds `LoadWithControls`, detached
 session/version control snapshots, explicit typed setters, rich replacements,
 placeholder/display views and existing-local-binding apply/write-back/detach.
+Snapshots are cached per committed version; failures/save keep them live and
+successful edits invalidate them. Display views retain Unicode text and defer
+managed glyph/underline preparation until PDF/XPS save.
 Existing Load/ReviewLoadOptions metadata and all five targets remain. No provider
 or XML/SDK type enters the public API. Source review, binary/package validation
 and actual runtime qualification remain separate from public 1.4.0 availability.

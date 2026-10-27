@@ -8,7 +8,11 @@ serialized transactions validate handles/locks and admit metadata, parts, displa
 and work before commit. XML binding uses a bounded singleton child/attribute walker,
 never a general XPath engine or implicit synchronization. DOCX emits admitted
 schema-ordered control metadata/parts; managed static output resolves checkbox
-fallback and bounded underline strokes. No dependency or target change is added.
+fallback and bounded underline strokes only for fixed output. Explicit display views
+keep Unicode text and bounded private render provenance until PDF/XPS save; text
+exports only flatten. Per-version immutable snapshot caching avoids repeated owner
+indexing, and final owner checks reject bookmarks attached after initial parsing.
+No dependency or target change is added.
 
 ## Merged roadmap #102 P1 implementation
 

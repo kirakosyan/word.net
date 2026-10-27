@@ -5,7 +5,11 @@
 The [P2 source profile](content-controls.md) preserves bounded typed DOCX controls,
 provides atomic edits and explicit local XML operations, and renders ordinary
 managed static PDF/XPS display with diagnosed glyph fallback and a bounded single
-underline policy. Unknown/nested/story/table wrappers, richer inherited formatting,
+underline policy at fixed-output save time. Text exports and explicit display views
+keep Unicode glyphs without the fixed-layout restrictions. Common Word editor
+scaffolding is omitted informationally within the documented inactive-script
+subset; Word-generated glossary category/relationships remain rejected explicitly.
+Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
 This under-review source is separate from public 1.4.0 and dated qualification.
 

@@ -19,6 +19,7 @@ internal sealed partial class DocxReader
         if (!context.PreserveControls) return;
         typedControls.DateMode = context.ControlDateMode;
         XElement[] nodes = source.Descendants(W + "sdt").ToArray();
+        if (nodes.Length == 0) return;
         if (nodes.Length > 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
         var ids = new HashSet<int>();
         foreach (XElement node in nodes)
@@ -75,6 +76,7 @@ internal sealed partial class DocxReader
     private ControlData ReadTypedProperties(XElement properties, int id, bool inline)
     {
         Attributes(properties);
+        if (properties.Element(W + "rPr") is XElement defaults) ValidateTypedRunProperties(defaults);
         if (properties.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)) throw new InvalidDataException("Control.Malformed: Duplicate control properties.");
         XElement[] types = properties.Elements().Where(e => e.Name == W + "richText" || e.Name == W + "text" || e.Name == W + "dropDownList"
             || e.Name == W + "comboBox" || e.Name == W + "date" || e.Name == ControlValues.W14 + "checkbox").ToArray();
@@ -175,10 +177,11 @@ internal sealed partial class DocxReader
     }
     private static void Leaf(XElement element, params XName[] allowed)
     { Attributes(element, allowed); if (element.HasElements || !string.IsNullOrWhiteSpace(element.Value)) throw new InvalidDataException("Control.Malformed: Metadata must be a leaf property."); }
-    private static void ValidateTypedRunProperties(XElement rpr)
+    private void ValidateTypedRunProperties(XElement rpr)
     {
         Attributes(rpr);
         if (rpr.Elements().GroupBy(e => e.Name).Any(g => g.Count() > 1)) throw new InvalidDataException("Control.Malformed: Duplicate run properties.");
+        NormalizeTypedEditorRunProperties(rpr);
         foreach (XElement e in rpr.Elements())
         {
             if (e.Name == W + "rFonts")
@@ -198,10 +201,11 @@ internal sealed partial class DocxReader
     private void ValidateTypedContent(XElement content, ControlData data)
     {
         Attributes(content);
-        if (data.Inline && content.Elements().Any(e => e.Name != W + "r") || !data.Inline && content.Elements().Any(e => e.Name != W + "p"))
+        if (data.Inline && content.Elements().Any(e => e.Name != W + "r" && e.Name != W + "proofErr") || !data.Inline && content.Elements().Any(e => e.Name != W + "p"))
             throw new NotSupportedException("Control.ProtectedOwner: Controls admit formatted runs or ordinary paragraphs only.");
         if (!data.Inline && data.Kind != ContentControlKind.RichText && content.Elements(W + "p").Count() > 1)
             throw new NotSupportedException("Control.ProtectedOwner: Scalar controls admit at most one paragraph.");
+        var renderedBreaks = new List<XElement>();
         foreach (XElement e in content.Descendants())
         {
             context.ReserveControlWork(1);
@@ -211,17 +215,25 @@ internal sealed partial class DocxReader
             if (e.Ancestors(W + "pPr").Any()) continue;
             if (e.Name == W + "p" || e.Name == W + "r")
             {
-                Attributes(e, W + "rsidR", W + "rsidRPr", W + "rsidP");
-                if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
+                ValidateTypedTextOwnerAttributes(e);
+                if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" && child.Name != W + "proofErr" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br" && child.Name != W + "lastRenderedPageBreak")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
                 if (e.Elements(W + (e.Name == W + "p" ? "pPr" : "rPr")).Count() > 1) throw new InvalidDataException("Control.Malformed: Duplicate text property containers.");
             }
             else if (e.Name == W + "t") { Attributes(e, XNamespace.Xml + "space"); if (e.HasElements) throw new InvalidDataException("Control.Malformed: Text cannot contain XML markup."); }
             else if (e.Name == W + "tab") Leaf(e);
             else if (e.Name == W + "br") { Leaf(e, W + "type"); if ((string?)e.Attribute(W + "type") is string type && type != "textWrapping") throw new NotSupportedException("Control.ProtectedOwner: Page/column breaks cannot occur inside controls."); }
+            else if (e.Name == W + "proofErr")
+            {
+                Leaf(e, W + "type");
+                if ((string?)e.Attribute(W + "type") is not "spellStart" and not "spellEnd" and not "gramStart" and not "gramEnd") throw new InvalidDataException("Control.Malformed: Invalid proofing marker.");
+                ReportTypedEditorMetadata();
+            }
+            else if (e.Name == W + "lastRenderedPageBreak") { Leaf(e); renderedBreaks.Add(e); ReportTypedEditorMetadata(); }
             else throw new NotSupportedException("Control.ProtectedOwner: Controls cannot contain fields, bookmarks, tables, revisions, objects or nested controls.");
         }
+        foreach (XElement renderedBreak in renderedBreaks) renderedBreak.Remove();
     }
-    private static void ValidateTypedParagraphProperties(XElement ppr)
+    private void ValidateTypedParagraphProperties(XElement ppr)
     {
         Attributes(ppr);
         if (ppr.Elements().GroupBy(e => e.Name).Any(g => g.Count() > 1)) throw new InvalidDataException("Control.Malformed: Duplicate paragraph properties.");
@@ -230,7 +242,7 @@ internal sealed partial class DocxReader
             if (e.Name == W + "rPr") ValidateTypedRunProperties(e);
             else if (e.Name == W + "spacing") Leaf(e, W + "before", W + "after", W + "line", W + "lineRule");
             else if (e.Name == W + "pStyle" || e.Name == W + "jc" || e.Name == W + "outlineLvl") Leaf(e, W + "val");
-            else if (e.Name == W + "keepNext" || e.Name == W + "keepLines" || e.Name == W + "pageBreakBefore") { Leaf(e, W + "val"); _ = ControlValues.On(e, W); }
+            else if (e.Name == W + "keepNext" || e.Name == W + "keepLines" || e.Name == W + "pageBreakBefore" || e.Name == W + "bidi") { Leaf(e, W + "val"); _ = ControlValues.On(e, W); }
             else throw new NotSupportedException("Control.Unsupported: The paragraph properties are outside the admitted rich-text profile.");
         }
     }
@@ -278,11 +290,14 @@ internal sealed partial class DocxReader
     {
         if (!context.PreserveControls) return;
         document.Controls = typedControls;
+        if (!typedControls.HasControls) return;
         var owners = ControlOwners.Index(document, context);
         foreach (ControlData data in typedControls.Items.Values)
         {
             ControlOwner owner = owners[data.Id]; owner.Refresh(data.Id, context);
             using var location = context.At(owner.Content.First().Location);
+            // ReadBlocks can attach pending body/cell bookmark markers after the initial content validation.
+            ValidateTypedRuns(data, owner.Runs);
             foreach (ParagraphBlock p in owner.Content) ValidateTypedParagraph(p);
             TextRun prototype = owner.Runs.FirstOrDefault() ?? new TextRun("");
             var style = new TextStyle { Bold = prototype.Bold, Italic = prototype.Italic, Code = prototype.Code, FontSize = prototype.FontSize, Color = prototype.Color, Appearance = prototype.Appearance.Copy() };

@@ -145,3 +145,12 @@ internal sealed class ControlBinding
     internal ControlBinding Copy()
     { var copy = new ControlBinding { StoreId = StoreId, Path = Path }; foreach (var n in Namespaces) copy.Namespaces.Add(n.Key, n.Value); return copy; }
 }
+
+// Immutable display provenance, without an editable owner, tag, lock or XML binding.
+internal sealed class ControlGlyph
+{
+    internal ControlGlyph(string text, string font, bool isChecked) { Text = text; Font = font; Checked = isChecked; }
+    internal string Text { get; }
+    internal string Font { get; }
+    internal bool Checked { get; }
+}

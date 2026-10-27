@@ -5,7 +5,11 @@
 See [typed-control usage](content-controls.md) for the opt-in DOCX entry point,
 immutable handles, explicit checkbox/list/date/rich/plain edits, placeholders and
 local XML operations. Typed tags never execute; ordinary content/template edits
-require a detached display view. Existing template-only loading below is unchanged.
+require a detached display view. That view keeps original Unicode checkbox text;
+glyph fallback and managed underline restrictions run only at later PDF/XPS save.
+The source profile explicitly lists Word editor metadata, inactive-script bounds
+and the intentionally rejected Word-generated glossary graphs. Existing
+template-only loading below is unchanged.
 The implementation is under review in PR #134 and absent from public 1.4.0.
 
 ## Merged typed properties and field workflows

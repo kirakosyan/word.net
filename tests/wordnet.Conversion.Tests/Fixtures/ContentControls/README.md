@@ -30,3 +30,12 @@ use the existing embedded open-license Noto Sans; caller-font cases use existing
 licensed test fixtures. No interactive Word UI or pixel-parity qualification is
 inferred from these schema/semantic checks. The existing independent reference
 failures remain unchanged.
+
+- `word-editor.xml` was independently authored on 2026-10-27 from the same OOXML
+  specifications to reproduce common Word 2010+ editor scaffolding: paragraph/text
+  identities, revision-session attributes, proofing markers, a cached page marker,
+  script font/size/emphasis slots and language metadata. It is a specification-based
+  fixture, not output captured from Word or evidence of consumer UI qualification.
+  Tests admit inactive slots for Latin/default-script content with information and
+  explicitly reject active/unqualified script formatting. Primary run appearance
+  and edited values are independently schema/PDF/XPS checked for all six kinds.

@@ -139,7 +139,7 @@ public sealed partial class WordDocument
             if (format != DocumentFormat.Docx && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
             var context = Context(saveOptions ?? options, cancellationToken); context.Destination = format;
             DocumentModel copy = new DocumentCloner(context).Copy(model); Admit(copy, context);
-            context.Phase = DiagnosticPhase.Destination; bool hadControls = copy.Controls.HasControls;
+            context.Phase = DiagnosticPhase.Destination; bool hadControls = copy.Controls.HasControls || copy.HasControlDisplay;
             ControlDisplay.Destination(copy, format, context); if (hadControls) Admit(copy, context); FidelityChecks.Destination(copy, format, context);
             context.Phase = DiagnosticPhase.Write;
             using var output = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
@@ -162,6 +162,7 @@ public sealed partial class WordDocument
             DocumentModel copy = new DocumentCloner(context).Copy(model);
             int changes = edit(copy, context); NormalizeNotes(copy); Admit(copy, context); context.CheckCancellation();
             ConversionResult result = context.Result(0); model = copy; diagnostics = result.Diagnostics; version++;
+            controlSnapshots = null;
             return new DocumentEditResult(changes, diagnostics);
         }
     }
@@ -201,6 +202,9 @@ public sealed partial class WordDocument
         context.CheckCancellation();
         CustomPropertyValues.Validate(model, context);
         long controlMetadata = model.Controls.Admit(model, context);
+        if (model.HasControlDisplay)
+            foreach (ControlGlyph glyph in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.ControlGlyph != null).Select(r => r.ControlGlyph!).Distinct())
+            { context.CheckCancellation(); controlMetadata = checked(controlMetadata + glyph.Text.Length + glyph.Font.Length + 32); }
         long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
             + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
             + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
