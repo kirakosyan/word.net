@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using WordNet.Internal;
 using WordNet.Model;
@@ -50,13 +51,27 @@ public sealed partial class WordDocument
             if (start != 0 || end != placeholder.Runs.Count - 1 || end <= start
                 || placeholder.Runs.Skip(1).Take(end - 1).Any(r => r.Bookmark != null || r.Control != null || r.Note != null || r.Image != null || r.FieldInstruction != null || r.Link != null || r.Box != null || r.Object != null))
                 throw new NotSupportedException("Fragment.Placeholder: The bookmark must own the complete plain-text placeholder paragraph.");
-            if (m.Paragraphs.SelectMany(p => p.Runs).Any(r => r.FieldInstruction != null || r.FieldChildren != null || r.FieldCache != null
-                || r.Link != null && Starts(r.Link, '#') && string.Equals(r.Link.Substring(1), name, StringComparison.OrdinalIgnoreCase)))
-                throw new NotSupportedException("Fragment.Reference: Target fields or links to the placeholder require explicit resolution before insertion.");
+            var pending = new Stack<TextRun>(m.Paragraphs.SelectMany(p => p.Runs)); long work = 0;
+            while (pending.Count != 0)
+            {
+                c.CheckCancellation(); if (++work > Math.Max(4096L, c.Options.MaximumCharacters * 64L)) throw new InvalidDataException("Limit.FragmentWork: Reference traversal exceeds the work bound.");
+                TextRun run = pending.Pop();
+                if (run.Link != null && Starts(run.Link, '#') && string.Equals(run.Link.Substring(1), name, StringComparison.OrdinalIgnoreCase))
+                    throw new NotSupportedException("Fragment.Reference: Resolve links to the placeholder before insertion.");
+                if (run.FieldInstruction != null)
+                {
+                    Match reference = Regex.Match(run.FieldInstruction, "^\\s*(?:REF|PAGEREF)\\s+(?:\"([^\"]+)\"|(\\S+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
+                    if (reference.Success && string.Equals(reference.Groups[1].Success ? reference.Groups[1].Value : reference.Groups[2].Value, name, StringComparison.OrdinalIgnoreCase))
+                        throw new NotSupportedException("Fragment.Reference: Resolve fields referring to the placeholder before insertion.");
+                }
+                if (run.FieldChildren != null) foreach (TextRun child in run.FieldChildren.Values) pending.Push(child);
+                if (run.FieldCache != null) foreach (TextRun child in run.FieldCache) pending.Push(child);
+            }
             string prefix = UniquePrefix(m); int nextId = 1; RemapTemplateControlIds(incoming, TemplateControlIds(m), ref nextId, c);
             incoming.CustomProperties.Clear(); MergeMetadata(m, incoming, prefix, c);
             Remap(incoming, prefix, m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
             foreach (DocumentBlock block in incoming.Blocks) block.Section = placeholder.Section;
+            m.HasControlDisplay |= incoming.HasControlDisplay;
             m.Blocks.RemoveAt(matches[0].index); m.Blocks.InsertRange(matches[0].index, incoming.Blocks); m.Notes.AddRange(incoming.Notes);
             ValidateRanges(m); return incoming.Blocks.Count;
         }, cancellationToken);

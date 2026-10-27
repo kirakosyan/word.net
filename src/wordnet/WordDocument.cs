@@ -91,25 +91,30 @@ public sealed partial class WordDocument
         Guard.NotNull(rows, nameof(rows));
         _ = Edit((m, c) =>
         {
-            var table = new TableBlock { Section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section, HasHeaderRow = firstRowIsHeader };
-            int cells = 0, characters = 0;
-            foreach (IEnumerable<string> row in rows)
-            {
-                c.CheckCancellation(); var content = new List<TableCell>();
-                if (row == null) throw new ArgumentException("Rows cannot be null.", nameof(rows));
-                foreach (string text in row)
-                {
-                    CheckText(text, c); characters = checked(characters + text.Length); c.CheckCharacters(characters);
-                    if (++cells > c.Options.MaximumCharacters) throw new InvalidDataException("Limit.Structure: Too many cells.");
-                    if (cells * 128L + characters * 2L > c.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Table expansion exceeds aggregate resource limits.");
-                    var p = new ParagraphBlock(); p.Runs.Add(new TextRun(text)); content.Add(new TableCell(p));
-                }
-                if (content.Count == 0) throw new ArgumentException("Table rows must contain cells.", nameof(rows));
-                table.Rows.Add(content);
-            }
-            if (table.Rows.Count == 0) throw new ArgumentException("A table must contain rows.", nameof(rows));
+            TableBlock table = BuildSimpleTable(rows, m.FinalSection ?? m.Blocks.LastOrDefault()?.Section, firstRowIsHeader, c);
             m.Blocks.Add(table); return 1;
         }, cancellationToken, objectAware: true);
+    }
+
+    private static TableBlock BuildSimpleTable(IEnumerable<IEnumerable<string>> rows, PageSettings? section, bool header, ConversionContext c)
+    {
+        var table = new TableBlock { Section = section, HasHeaderRow = header }; int cells = 0, characters = 0;
+        foreach (IEnumerable<string> row in rows)
+        {
+            c.CheckCancellation(); var content = new List<TableCell>();
+            if (row == null) throw new ArgumentException("Rows cannot be null.", nameof(rows));
+            foreach (string text in row)
+            {
+                CheckText(text, c); characters = checked(characters + text.Length); c.CheckCharacters(characters);
+                if (++cells > c.Options.MaximumCharacters) throw new InvalidDataException("Limit.Structure: Too many cells.");
+                if (cells * 128L + characters * 2L > c.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Table expansion exceeds aggregate resource limits.");
+                var p = new ParagraphBlock(); p.Runs.Add(new TextRun(text)); content.Add(new TableCell(p));
+            }
+            if (content.Count == 0) throw new ArgumentException("Table rows must contain cells.", nameof(rows));
+            table.Rows.Add(content);
+        }
+        if (table.Rows.Count == 0) throw new ArgumentException("A table must contain rows.", nameof(rows));
+        return table;
     }
     /// <summary>Appends a caller-supplied inline image as a paragraph.</summary>
     public void AddImage(TemplateImage image, CancellationToken cancellationToken = default) => AddParagraph(new[] { new DocumentText(image) }, cancellationToken: cancellationToken);

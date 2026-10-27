@@ -4,7 +4,9 @@
 
 PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
 `Template.RepeatReferences` for references, counters or notes that cannot safely
-be cloned across a region boundary. Unresolved link or field-structure diagnostics
+be cloned across a region boundary. `Template.InactiveControl` reports a retained
+mixed wrapper that cannot execute; saving unsupported control structure reports
+`Template.ControlStructure`. Unresolved link or field-structure diagnostics
 also prevent mixed-region execution. Expansion and reference work use existing
 `Limit.*` bounds; unsupported object ownership and retained revisions remain hard
 errors. These checks are pending review and are not part of public 1.4.0.

@@ -50,9 +50,14 @@ internal sealed partial class DocxReader
         TemplateControl? control = ReadControl(element);
         if (control != null)
         {
-            if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && blocks.Skip(start).OfType<TableBlock>().Any()
+            bool hasTable = false;
+            for (int index = start; index < blocks.Count; index++) { context.CheckCancellation(); if (blocks[index] is TableBlock) { hasTable = true; break; } }
+            if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && hasTable
                 && element.Descendants(W + "sdt").Concat(new[] { element }).Any(n => !AdmittedMixedControl(n)))
-                throw new NotSupportedException("Template.RepeatRegion: Mixed regions cannot contain unknown or behavior-bearing controls.");
+            {
+                control.Executable = false;
+                context.Report("Template.InactiveControl", "Mixed regions with unknown or behavior-bearing controls cannot execute.");
+            }
             if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
                 && (blocks.Count == start || blocks.Skip(start).OfType<TableBlock>().Any(t => t.Rows.SelectMany(r => r).SelectMany(c => c.Blocks).Any(b => b is TableBlock))
                 || contentHasSection(element))) control.Executable = false;
@@ -61,7 +66,7 @@ internal sealed partial class DocxReader
                 if (block.Control != null)
                 {
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
-                        && control.Tag != block.Control.Tag && block.NestedControl == null && blocks.Skip(start).OfType<TableBlock>().Any())
+                        && control.Tag != block.Control.Tag && block.NestedControl == null && hasTable)
                     { block.NestedControl = block.Control; block.Control = control; continue; }
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) || block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal))
                     { block.Control.Executable = false; control.Executable = false; if (block.NestedControl != null) block.NestedControl.Executable = false; }

@@ -155,7 +155,9 @@ public sealed partial class EditingTemplateTests
         WordDocument destination = Load(Docx(inline)); WordDocument source = Load(Docx(inline)); destination.Append(source, cancellationToken: TestContext.Current.CancellationToken);
         byte[] word = Save(destination); Schema(word); Assert.Equal(2, Part(word, "word/document.xml").Descendants(W + "sdtPr").Select(e => (string?)e.Element(W + "id")?.Attribute(W + "val")).Distinct().Count());
         string unsupported = "<w:sdt><w:sdtPr><w:tag w:val='merge:Value'/><w:picture/></w:sdtPr><w:sdtContent><w:r><w:t>Cached</w:t></w:r></w:sdtContent></w:sdt>";
-        Assert.Throws<NotSupportedException>(() => Load(Docx(Region("<w:p>" + unsupported + "</w:p>" + MixedTable("<w:r><w:t>Cell</w:t></w:r>")))));
+        WordDocument invalid = Load(Docx(Region("<w:p>" + unsupported + "</w:p>" + MixedTable("<w:r><w:t>Cell</w:t></w:r>"))));
+        Assert.Contains(invalid.Diagnostics, d => d.Code == "Template.InactiveControl");
+        Assert.Throws<NotSupportedException>(() => invalid.Merge(new { Items = MixedOneItem }, cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -194,5 +196,18 @@ public sealed partial class EditingTemplateTests
         WordDocument document = Load(Docx(Region(P("Item") + MixedTable("<w:r><w:t>Cell</w:t></w:r>"))));
         document.Merge(new { Items = Array.Empty<object>() }, cancellationToken: TestContext.Current.CancellationToken); byte[] word = Save(document); Schema(word);
         Assert.Empty(Part(word, "word/document.xml").Descendants(W + "sdt")); Assert.Empty(document.Paragraphs);
+    }
+
+    [Fact]
+    public void UntaggedNestedControlsLoadInStrictModeButCannotExecute()
+    {
+        string nested = "<w:sdt><w:sdtPr/><w:sdtContent><w:r><w:t>Cached</w:t></w:r></w:sdtContent></w:sdt>";
+        byte[] input = Docx(Region("<w:p>" + nested + "</w:p>" + MixedTable("<w:r><w:t>Cell</w:t></w:r>")));
+        using var stream = new MemoryStream(input);
+        WordDocument doc = WordDocument.Load(stream, DocumentFormat.Docx, out var result, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Template.InactiveControl" && d.Severity == DiagnosticSeverity.Info);
+        Assert.Throws<NotSupportedException>(() => doc.Merge(new { Items = MixedOneItem }, cancellationToken: TestContext.Current.CancellationToken));
+        using var output = new MemoryStream(); doc.Save(output, DocumentFormat.Docx, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Empty(Part(output.ToArray(), "word/document.xml").Descendants(W + "tag"));
     }
 }

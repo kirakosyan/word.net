@@ -14,7 +14,8 @@ One parent region may contain a child body repeat with a distinct path; at least
 one simple table must occur within the parent. Lookup searches the current item,
 then enclosing items from nearest to farthest, then the root, using the first
 complete path. Children can shadow parent values; no expressions or method calls
-are evaluated. Nested row repeats use the same scope order. Parent and child work
+are evaluated. Existing nested row repeats keep item-then-root lookup rather than
+implicitly inheriting their enclosing row item. Parent and child work
 shares the depth, row, character and byte budgets; empty collections remove their
 own region. Deeper block nesting and ambiguous same-path wrappers remain rejected.
 The runnable [customer statement](../examples/WordNet.Automation/P3Recipes.cs)
@@ -31,13 +32,16 @@ not included in the public 1.4.0 package.
 
 `AddCrossTab(records, aggregation, includeTotals, token)` appends an editable
 table from explicit `CrossTabRecord` values. Keys are non-empty Unicode strings,
-ordered by first appearance using ordinal equality; null/empty keys fail, and the
+ordered by first appearance using ordinal equality; null/empty keys and control
+characters fail, and the
 label `Total` is reserved when totals are requested. Count
 includes null values, sum ignores them, absent intersections are zero and decimal
-arithmetic is checked. Empty input produces a header; optional totals add a totals
+arithmetic is checked. Sum cells and totals use the largest input decimal scale;
+count cells use integer formatting. Empty input produces a header; optional totals add a totals
 column and row. Limits are 100,000 input records, 64 column keys and 10,000 output
-cells, in addition to the conversion bounds. Conservative per-character column
-widths must fit the current body column; a table that does not fit fails with
+cells, in addition to the conversion bounds. Widths use the selected 11-point font
+metrics with padding and a safety allowance and must fit the current body column;
+a table that does not fit fails with
 `Report.CrossTabLayout` instead of shrinking or dropping data. This conservative
 test can reject tables that a more sophisticated layout might fit.
 
@@ -47,8 +51,9 @@ HTML session. Callers load sources explicitly; streams remain theirs. Source
 formatting is kept, colliding styles and list/bookmark/note/template-control IDs
 are remapped, and the destination section is used. Sections/stories, nested tables,
 typed controls, history, positioned/retained objects, fields and source load
-warnings are rejected. Internal links must resolve in the fragment. Target fields
-or links to the placeholder must be resolved before insertion. Both sessions are
+warnings are rejected. Internal links must resolve in the fragment. Target REF/PAGEREF
+fields or links to the placeholder must be resolved before insertion; unrelated
+fields remain intact. Both sessions are
 unchanged on failure; repeated insertions create independent identities.
 
 ## Opt-in typed controls — merged source

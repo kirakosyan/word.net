@@ -94,4 +94,44 @@ public sealed partial class EditingTemplateTests
         Assert.Throws<NotSupportedException>(() => doc.Merge(new { Parents = new[] { new { Children = new[] { new { Deep = MixedOneItem } } } } }, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(before, Save(doc));
     }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(0, 2)]
+    [InlineData(1, 0)]
+    [InlineData(1, 2)]
+    [InlineData(2, 2)]
+    public void MixedMasterDetailRejectsReferencesBetweenParentAndChild(int kind, int count)
+    {
+        string bookmark = "<w:bookmarkStart w:id='1' w:name='mark'/><w:r><w:t>Child</w:t></w:r><w:bookmarkEnd w:id='1'/>";
+        string parent = kind switch { 0 => Field("REF mark", "Child"), 1 => "<w:hyperlink w:anchor='mark'><w:r><w:t>Link</w:t></w:r></w:hyperlink>", _ => Field("SEQ Figure", "1") };
+        string child = kind == 2 ? Field("SEQ Figure", "2") : bookmark;
+        WordDocument doc = Load(Docx(Region("<w:p>" + parent + "</w:p>" + Region("<w:p>" + child + "</w:p>" + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "Lines"), "Customers")));
+        byte[] before = Save(doc); var failure = Assert.Throws<NotSupportedException>(() => doc.Merge(new { Customers = new[] { new { Lines = Enumerable.Range(0, count).ToArray() } } }, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Template.RepeatReferences:", failure.Message, StringComparison.Ordinal); Assert.Equal(before, Save(doc));
+    }
+
+    [Fact]
+    public void MixedMasterDetailRejectsNotesSharedAcrossChildBoundary()
+    {
+        string reference = "<w:p><w:r><w:footnoteReference w:id='7'/></w:r></w:p>";
+        string notes = "<w:footnotes xmlns:w='" + W + "'><w:footnote w:id='7'><w:p><w:r><w:t>Note</w:t></w:r></w:p></w:footnote></w:footnotes>";
+        string child = Region(reference + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "Lines");
+        byte[] input = TestDocuments.Docx(TestDocuments.Body(Region(reference + child, "Customers")), "<Relationship Id='notes' Type='" + TestDocuments.R + "/footnotes' Target='footnotes.xml'/>",
+            extra: new System.Collections.Generic.KeyValuePair<string, string>("word/footnotes.xml", notes));
+        WordDocument doc = Load(input); byte[] before = Save(doc);
+        var failure = Assert.Throws<NotSupportedException>(() => doc.Merge(new { Customers = new[] { new { Lines = MixedOneItem } } }, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Template.RepeatReferences:", failure.Message, StringComparison.Ordinal); Assert.Equal(before, Save(doc));
+    }
+
+    [Fact]
+    public void ExistingNestedRowsKeepItemThenRootLookup()
+    {
+        string row = "<w:tr>" + Cell("<w:p>" + ReportFieldXml("Name") + "</w:p>") + "</w:tr>";
+        string inner = "<w:tbl><w:tblGrid><w:gridCol w:w='4000'/></w:tblGrid>" + Control("repeat:Lines", row) + "</w:tbl>";
+        string outerRow = "<w:tr>" + Cell(inner + "<w:p/>") + "</w:tr>";
+        string table = "<w:tbl><w:tblGrid><w:gridCol w:w='4000'/></w:tblGrid>" + Control("repeat:Orders", outerRow) + "</w:tbl>";
+        WordDocument doc = Load(Docx(table)); doc.Merge(new { Name = "Root", Orders = new[] { new { Name = "Order", Lines = MixedOneItem } } }, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(doc.Paragraphs, p => p.Text == "Root"); Assert.DoesNotContain(doc.Paragraphs, p => p.Text == "Order");
+    }
 }

@@ -22,6 +22,12 @@ is independently authored by `eng/generate-p3-template.py` under MIT and has a
 recorded SHA-256 manifest. Final full-suite and hosted results for the batch must
 be reported separately from the earlier 1,408-case run.
 
+The PR #135 review follow-up adds parent/child boundary references and shared-note
+negative controls, strict loading of inactive controls, legacy row-scope checks,
+fragment field/display-view checks, and independently inspected quarterly tables
+with consistent decimal scales. The statement fixture now uses stored ZIP entries
+with fixed metadata, avoiding compressor-dependent archive hashes.
+
 ## P2 controls acceptance and qualification
 
 The [source profile](content-controls.md), [acceptance map](content-controls-acceptance.json)

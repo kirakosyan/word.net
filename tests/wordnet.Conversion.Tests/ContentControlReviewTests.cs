@@ -208,4 +208,16 @@ public sealed class ContentControlReviewTests
         Assert.Throws<InvalidDataException>(() => view.Save(output, DocumentFormat.Pdf, new ConversionOptions(maximumCharacters: 1), TestContext.Current.CancellationToken)); Assert.Equal(new byte[] { 5 }, output.ToArray());
         Assert.Equal("\u2610", view.Paragraphs[0].Text); Assert.Equal("[]", Compact(Pdf(view)));
     }
+
+    [Fact]
+    public void FragmentInsertionRetainsDisplayGlyphPreparationAndBudgets()
+    {
+        WordDocument document = LoadBody(Control(1, "<w14:checkbox/>", "\u2610", block: true));
+        WordDocument view = document.CreateControlDisplayView(out _, TestContext.Current.CancellationToken);
+        WordDocument target = WordDocument.Create(); target.AddParagraph("Insert", cancellationToken: TestContext.Current.CancellationToken);
+        target.AddBookmark("place", 0, 0, 6, TestContext.Current.CancellationToken); target.InsertFragmentAtBookmark("place", view, TestContext.Current.CancellationToken);
+        Assert.Equal("[]", Compact(Pdf(target)));
+        using var output = new MemoryStream(); output.WriteByte(5);
+        Assert.Throws<InvalidDataException>(() => target.Save(output, DocumentFormat.Pdf, new ConversionOptions(maximumCharacters: 1), TestContext.Current.CancellationToken)); Assert.Equal(new byte[] { 5 }, output.ToArray());
+    }
 }

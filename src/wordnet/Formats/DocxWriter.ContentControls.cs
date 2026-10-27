@@ -53,7 +53,7 @@ internal sealed partial class DocxWriter
     }
     private static bool HasControl(DocumentBlock block) => block.Control != null || block.TypedControlId.HasValue;
     private static bool SameControl(DocumentBlock a, DocumentBlock b) => a.TypedControlId == b.TypedControlId && ReferenceEquals(a.Control, b.Control);
-    private XElement BlockControl(DocumentBlock block, XElement element) => block.TypedControlId is int id ? TypedControl(id, element) : Control(block.Control!, element);
+    private XElement BlockControl(DocumentBlock block, XElement? element) => block.TypedControlId is int id ? TypedControl(id, element) : Control(block.Control!, element);
     private void WriteTypedParts(ZipArchive archive, XElement types)
     {
         int index = 0;

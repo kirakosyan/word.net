@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create a deterministic, independently authored MIT master-detail DOCX template."""
 from pathlib import Path
-from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
+from zipfile import ZipFile, ZipInfo, ZIP_STORED
 import hashlib
 import json
 
@@ -31,6 +31,7 @@ destination.mkdir(exist_ok=True)
 path = destination / 'p3-statement.docx'
 with ZipFile(path, 'w') as archive:
     for name, content in sorted(parts.items()):
-        entry = ZipInfo(name, (2000, 1, 1, 0, 0, 0)); entry.compress_type = ZIP_DEFLATED
+        entry = ZipInfo(name, (2000, 1, 1, 0, 0, 0)); entry.compress_type = ZIP_STORED
+        entry.create_system = 3; entry.external_attr = 0o600 << 16
         archive.writestr(entry, content.encode())
 (destination / 'p3-manifest.json').write_text(json.dumps({'file': path.name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'license': 'MIT', 'generator': 'eng/generate-p3-template.py'}, indent=2) + '\n')

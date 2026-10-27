@@ -370,7 +370,7 @@ internal sealed partial class DocxWriter
                 AttachSection(group!.Element(W + "sdtContent")!, last.Section ?? new PageSettings());
             XElement element = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
             if (!HasControl(block)) { yield return (block, block, element); continue; }
-            if (first == null) { first = block; group = BlockControl(block, block.NestedControl == null ? element : null!); }
+            if (first == null) { first = block; group = BlockControl(block, block.NestedControl == null ? element : null); }
             else if (block.NestedControl == null) group!.Element(W + "sdtContent")!.Add(element);
             if (block.NestedControl != null)
             {

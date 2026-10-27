@@ -44,6 +44,12 @@ public sealed partial class WordDocument
         long structuralExpansion = 0;
         long referenceWork = 0;
         var parentScopes = new List<object?>();
+        Dictionary<ParagraphBlock, TextRun[]>? originalRuns = null;
+        if (m.Blocks.Any(b => b.Control != null && b.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal)))
+        {
+            originalRuns = new Dictionary<ParagraphBlock, TextRun[]>();
+            foreach (ParagraphBlock paragraph in m.Paragraphs) { c.CheckCancellation(); originalRuns.Add(paragraph, paragraph.Runs.ToArray()); }
+        }
         string prefix = UniquePrefix(m) + "t";
         Blocks(m.Blocks, root, 0, true);
         foreach (List<DocumentBlock> story in m.Blocks.Select(b => b.Section).Concat(new[] { m.FinalSection }).Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct()) Blocks(story, root, 0);
@@ -53,7 +59,7 @@ public sealed partial class WordDocument
         ValidateRanges(m);
         return changes;
 
-        void Blocks(List<DocumentBlock> blocks, object? scope, int depth, bool body = false)
+        void Blocks(List<DocumentBlock> blocks, object? scope, int depth, bool body = false, bool prevalidated = false)
         {
             for (int i = 0; i < blocks.Count; i++)
             {
@@ -75,41 +81,35 @@ public sealed partial class WordDocument
                         if (!Value(path, scope, out object? sequence)) { i = end - 1; continue; }
                         if (sequence != null && sequence is not List<object?>) throw new InvalidDataException("Template.Collection: A repeat requires an array value.");
                         var source = new DocumentModel(); source.Blocks.AddRange(blocks.Skip(i).Take(end - i));
-                        if (source.Blocks.OfType<TableBlock>().Any() && c.Result(0).Diagnostics.Any(d => d.Code is "Link.UnsupportedTarget" or "Template.FieldStructure" or "Field.UnsupportedUsedCachedResult"))
+                        if (!prevalidated && source.Blocks.OfType<TableBlock>().Any() && c.Result(0).Diagnostics.Any(d => d.Code is "Link.UnsupportedTarget" or "Template.FieldStructure" or "Field.UnsupportedUsedCachedResult"))
                             throw new NotSupportedException("Template.RepeatReferences: A document with unresolved links or field structures cannot be safely repeated as a mixed region.");
+                        if (!prevalidated)
+                        {
+                            ValidateRegion(source.Blocks);
+                            foreach (var nested in source.Blocks.Where(b => b.NestedControl != null).GroupBy(b => b.NestedControl))
+                            {
+                                DocumentBlock[] children = nested.ToArray(); int first = source.Blocks.IndexOf(children[0]);
+                                if (!source.Blocks.Skip(first).Take(children.Length).SequenceEqual(children)) throw new NotSupportedException("Template.RepeatRegion: Nested regions must be contiguous.");
+                                ValidateRegion(children);
+                            }
+                        }
                         PageSettings? regionSection = block.Section;
                         foreach (DocumentBlock child in source.Blocks) child.Section = null;
                         TextRun[] content = source.Paragraphs.SelectMany(p => p.Runs).ToArray();
-                        if (content.Any(r => r.Box != null)) throw new NotSupportedException("Template.RepeatRegion: Positioned objects cannot be repeated in body regions.");
-                        var starts = new HashSet<string>(content.Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/')).Select(r => r.Bookmark!), StringComparer.Ordinal);
-                        var ends = new HashSet<string>(content.Where(r => r.Bookmark != null && Starts(r.Bookmark, '/')).Select(r => r.Bookmark!.Substring(1)), StringComparer.Ordinal);
-                        if (!starts.SetEquals(ends)) throw new NotSupportedException("Template.RepeatBookmarks: Bookmark ranges cannot cross a repeat-region boundary.");
                         source.Notes.AddRange(content.Where(r => r.Note != null).Select(r => r.Note!).Distinct());
-                        var regionParagraphs = new HashSet<ParagraphBlock>(source.Paragraphs);
-                        var regionRuns = regionParagraphs.SelectMany(p => p.Runs).ToArray();
-                        if (regionRuns.Any(r => r.Box != null || r.Object != null)) throw new NotSupportedException("Template.RepeatRegion: Positioned or retained objects cannot occur in a repeated region or its notes.");
-                        starts.UnionWith(regionRuns.Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/')).Select(r => r.Bookmark!));
-                        ends.UnionWith(regionRuns.Where(r => r.Bookmark != null && Starts(r.Bookmark, '/')).Select(r => r.Bookmark!.Substring(1)));
-                        if (!starts.SetEquals(ends)) throw new NotSupportedException("Template.RepeatBookmarks: Bookmark ranges cannot cross a repeat-region boundary.");
-                        var insideTargets = References(regionRuns, out HashSet<string> insideSequences);
-                        if (insideTargets.Any(target => !starts.Contains(target))) throw new NotSupportedException("Template.RepeatReferences: Internal references cannot leave a repeated region.");
-                        TextRun[] outsideRuns = m.Paragraphs.Where(p => !regionParagraphs.Contains(p)).SelectMany(p => p.Runs).ToArray();
-                        if (outsideRuns.Any(r => r.Note != null && source.Notes.Contains(r.Note))) throw new NotSupportedException("Template.RepeatReferences: A note cannot be shared across a repeated-region boundary.");
-                        var outsideTargets = References(outsideRuns, out HashSet<string> outsideSequences);
-                        var boundaryNames = new HashSet<string>(starts, StringComparer.OrdinalIgnoreCase);
-                        if (outsideTargets.Any(boundaryNames.Contains)) throw new NotSupportedException("Template.RepeatReferences: External references cannot enter a repeated region.");
-                        if (insideSequences.Overlaps(outsideSequences)) throw new NotSupportedException("Template.RepeatReferences: Sequence counters cannot cross a repeated-region boundary.");
+                        int itemRows = checked(source.Blocks.Count + source.Tables.Sum(t => t.Rows.Count)); int itemCharacters = source.CharacterCount;
+                        long itemStructure = checked(source.Paragraphs.Sum(p => (p.Runs.Count + 1L) * 64L)
+                            + source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Image != null).Sum(r => (long)r.Image!.Bytes.Length)
+                            + source.Tables.Sum(t => t.Rows.Sum(row => (row.Count + 1L) * 128L))
+                            + TemplateControls(source).Distinct().Sum(control => ((long)control.Tag.Length + (control.Alias?.Length ?? 0)) * 2 + 64));
                         var generated = new List<DocumentBlock>();
                         foreach (object? item in sequence as List<object?> ?? new List<object?>())
                         {
                             c.CheckCancellation();
-                            rows = checked(rows + source.Blocks.Count + source.Tables.Sum(t => t.Rows.Count));
+                            rows = checked(rows + itemRows);
                             if (rows > policy.MaximumRows) throw new InvalidDataException("Limit.TemplateRows: Generated blocks and rows exceed the configured limit.");
-                            expansion += source.CharacterCount;
-                            structuralExpansion = checked(structuralExpansion + source.Paragraphs.Sum(p => (p.Runs.Count + 1L) * 64L)
-                                + source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Image != null).Sum(r => (long)r.Image!.Bytes.Length)
-                                + source.Tables.Sum(t => t.Rows.Sum(row => (row.Count + 1L) * 128L))
-                                + TemplateControls(source).Distinct().Sum(control => ((long)control.Tag.Length + (control.Alias?.Length ?? 0)) * 2 + 64));
+                            expansion = checked(expansion + itemCharacters);
+                            structuralExpansion = checked(structuralExpansion + itemStructure);
                             LimitExpansion();
                             DocumentModel clone = new DocumentCloner(c).Copy(source);
                             foreach (DocumentBlock child in clone.Blocks) { child.Control = child.NestedControl; child.NestedControl = null; }
@@ -117,7 +117,7 @@ public sealed partial class WordDocument
                             Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
                             foreach (DocumentBlock child in clone.Blocks) child.Section = regionSection;
                             m.Notes.AddRange(clone.Notes); parentScopes.Add(scope);
-                            try { Blocks(clone.Blocks, item, depth + 1, true); foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1); }
+                            try { Blocks(clone.Blocks, item, depth + 1, true, true); foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1); }
                             finally { parentScopes.RemoveAt(parentScopes.Count - 1); }
                             generated.AddRange(clone.Blocks);
                         }
@@ -174,9 +174,8 @@ public sealed partial class WordDocument
                         DocumentModel clone = new DocumentCloner(c).Copy(source);
                         RemapTemplateControlIds(clone, controlIds, ref nextControlId, c);
                         Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max(), isolateCounters: false, isolateExternalReferences: false);
-                        m.Notes.AddRange(clone.Notes); parentScopes.Add(scope);
-                        try { Add(((TableBlock)clone.Blocks[0]).Rows[0], item, depth + 1); foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1); }
-                        finally { parentScopes.RemoveAt(parentScopes.Count - 1); }
+                        m.Notes.AddRange(clone.Notes); Add(((TableBlock)clone.Blocks[0]).Rows[0], item, depth + 1);
+                        foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1);
                     }
                     changes++;
                 }
@@ -284,7 +283,7 @@ public sealed partial class WordDocument
         {
             string key = Starts(path, '!') ? path.Substring(1) : path;
             if (Lookup(scope, key, out value)) return true;
-            for (int index = parentScopes.Count - 1; index >= 0; index--) if (Lookup(parentScopes[index], key, out value)) return true;
+            for (int index = parentScopes.Count - 1; index >= 0; index--) if (!ReferenceEquals(parentScopes[index], root) && Lookup(parentScopes[index], key, out value)) return true;
             if (!ReferenceEquals(scope, root) && Lookup(root, key, out value)) return true;
             if (policy.MissingValues == MissingTemplateValue.Error) throw new InvalidDataException("Template.MissingValue: Required template data is missing.");
             c.Loss("Template.MissingValue", "Missing template data uses the explicitly selected fallback policy.");
@@ -294,6 +293,27 @@ public sealed partial class WordDocument
         {
             if (expansion > c.Options.MaximumCharacters) throw new InvalidDataException("Limit.Characters: Template expansion exceeds the character limit.");
             if (expansion * 2 + structuralExpansion > c.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Template expansion exceeds the aggregate resource bound.");
+        }
+        void ValidateRegion(IEnumerable<DocumentBlock> region)
+        {
+            if (originalRuns == null) throw new InvalidDataException("Template.RepeatRegion: Missing original region context.");
+            var paragraphs = new HashSet<ParagraphBlock>(DocumentModel.Expand(region).OfType<ParagraphBlock>());
+            TextRun[] bodyRuns = paragraphs.SelectMany(p => originalRuns.TryGetValue(p, out TextRun[]? runs) ? (IEnumerable<TextRun>)runs : p.Runs).ToArray();
+            var notes = new HashSet<DocumentNote>(bodyRuns.Where(r => r.Note != null).Select(r => r.Note!));
+            paragraphs.UnionWith(notes.SelectMany(note => DocumentModel.Expand(note.Blocks).OfType<ParagraphBlock>()));
+            TextRun[] inside = paragraphs.SelectMany(p => originalRuns.TryGetValue(p, out TextRun[]? runs) ? (IEnumerable<TextRun>)runs : p.Runs).ToArray();
+            if (inside.Any(r => r.Box != null || r.Object != null)) throw new NotSupportedException("Template.RepeatRegion: Positioned or retained objects cannot occur in a repeated region or its notes.");
+            var starts = new HashSet<string>(inside.Where(r => r.Bookmark != null && !Starts(r.Bookmark, '/')).Select(r => r.Bookmark!), StringComparer.Ordinal);
+            var ends = new HashSet<string>(inside.Where(r => r.Bookmark != null && Starts(r.Bookmark, '/')).Select(r => r.Bookmark!.Substring(1)), StringComparer.Ordinal);
+            if (!starts.SetEquals(ends)) throw new NotSupportedException("Template.RepeatBookmarks: Bookmark ranges cannot cross a repeat-region boundary.");
+            var insideTargets = References(inside, out HashSet<string> insideSequences);
+            if (insideTargets.Any(target => !starts.Contains(target))) throw new NotSupportedException("Template.RepeatReferences: Internal references cannot leave a repeated region.");
+            TextRun[] outside = originalRuns.Where(pair => !paragraphs.Contains(pair.Key)).SelectMany(pair => pair.Value).ToArray();
+            if (outside.Any(r => r.Note != null && notes.Contains(r.Note))) throw new NotSupportedException("Template.RepeatReferences: A note cannot be shared across a repeated-region boundary.");
+            var outsideTargets = References(outside, out HashSet<string> outsideSequences);
+            var names = new HashSet<string>(starts, StringComparer.OrdinalIgnoreCase);
+            if (outsideTargets.Any(names.Contains)) throw new NotSupportedException("Template.RepeatReferences: External references cannot enter a repeated region.");
+            if (insideSequences.Overlaps(outsideSequences)) throw new NotSupportedException("Template.RepeatReferences: Sequence counters cannot cross a repeated-region boundary.");
         }
         HashSet<string> References(IEnumerable<TextRun> runs, out HashSet<string> sequences)
         {

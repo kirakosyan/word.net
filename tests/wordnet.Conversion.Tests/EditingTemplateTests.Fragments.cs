@@ -62,10 +62,15 @@ public sealed partial class EditingTemplateTests
         WordDocument externalImage = WordDocument.Load(externalInput, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
         Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("place", externalImage, TestContext.Current.CancellationToken)); Assert.True(externalInput.CanRead);
         WordDocument broken = Load(Docx("<w:p><w:hyperlink w:anchor='absent'><w:r><w:t>Link</w:t></w:r></w:hyperlink></w:p>"));
-        Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("place", broken, TestContext.Current.CancellationToken));
+        var unresolved = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("place", broken, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Fragment.Reference:", unresolved.Message, StringComparison.Ordinal);
         WordDocument fieldTarget = Load(Docx(Placeholder("place", 1) + "<w:p>" + ReportFieldXml("Value") + "</w:p>"));
-        WordDocument source = WordDocument.Create(); source.AddParagraph("Fragment", cancellationToken: TestContext.Current.CancellationToken); byte[] targetBefore = Save(fieldTarget);
-        Assert.Throws<NotSupportedException>(() => fieldTarget.InsertFragmentAtBookmark("place", source, TestContext.Current.CancellationToken)); Assert.Equal(targetBefore, Save(fieldTarget));
+        WordDocument source = WordDocument.Create(); source.AddParagraph("Fragment", cancellationToken: TestContext.Current.CancellationToken);
+        fieldTarget.InsertFragmentAtBookmark("place", source, TestContext.Current.CancellationToken); fieldTarget.Merge(new { Value = "Resolved" }, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(fieldTarget.Paragraphs, p => p.Text == "Resolved");
+        WordDocument referenceTarget = Load(Docx(Placeholder("place", 1) + "<w:p>" + Field("REF place", "Insert") + "</w:p>")); byte[] targetBefore = Save(referenceTarget);
+        var failure = Assert.Throws<NotSupportedException>(() => referenceTarget.InsertFragmentAtBookmark("place", source, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Fragment.Reference:", failure.Message, StringComparison.Ordinal); Assert.Equal(targetBefore, Save(referenceTarget));
         Assert.Equal(before, Save(target));
     }
 
