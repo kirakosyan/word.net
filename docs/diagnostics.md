@@ -1,6 +1,6 @@
 # Conversion diagnostics
 
-## P2 control diagnostics — source under review
+## P2 control diagnostics — merged source
 
 The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents
 hard `Control.*`, `Binding.*` and `Limit.Controls` failures, informational ID/cache/
@@ -12,7 +12,7 @@ fallback apply at PDF/XPS preparation, including later saves of display views. U
 preservation behavior rejects in every mode. Dirty bindings block DOCX save until
 an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.
-This source is under review and absent from public 1.4.0.
+This source is merged and absent from public 1.4.0.
 
 ## Merged roadmap #102 P1 diagnostics
 

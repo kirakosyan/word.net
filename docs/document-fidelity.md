@@ -1,6 +1,6 @@
 # Formatting and image profile
 
-## P2 control preservation — source under review
+## P2 control preservation — merged source
 
 The [P2 source profile](content-controls.md) preserves bounded typed DOCX controls,
 provides atomic edits and explicit local XML operations, and renders ordinary

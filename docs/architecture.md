@@ -1,6 +1,6 @@
 # Architecture and implementation status
 
-## P2 control store — source under review
+## P2 control store — merged source
 
 The [P2 source profile](content-controls.md) uses a private typed-control store
 separate from executable TemplateControl tags. Owner IDs survive shared cloning;

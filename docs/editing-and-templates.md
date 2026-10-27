@@ -1,6 +1,6 @@
 # Creating, editing and filling documents
 
-## Opt-in typed controls — source under review
+## Opt-in typed controls — merged source
 
 See [typed-control usage](content-controls.md) for the opt-in DOCX entry point,
 immutable handles, explicit checkbox/list/date/rich/plain edits, placeholders and
@@ -10,7 +10,7 @@ glyph fallback and managed underline restrictions run only at later PDF/XPS save
 The source profile explicitly lists Word editor metadata, inactive-script bounds
 and the intentionally rejected Word-generated glossary graphs. Existing
 template-only loading below is unchanged.
-The implementation is under review in PR #134 and absent from public 1.4.0.
+The implementation is merged in PR #134 and absent from public 1.4.0.
 
 ## Merged typed properties and field workflows
 

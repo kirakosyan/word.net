@@ -1,6 +1,6 @@
 # API and support policy
 
-## P2 controls API — source under review
+## P2 controls API — merged source
 
 The [P2 source API](content-controls.md) adds `LoadWithControls`, detached
 session/version control snapshots, explicit typed setters, rich replacements,

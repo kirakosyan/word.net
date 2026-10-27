@@ -1,37 +1,22 @@
 # wordnet implementation and delivery status
 
-## Roadmap #102 P2 — full batch source under review in PR #134
+## Roadmap #102 P2 — merged source in PR #134
 
-The owner subsequently requested all P2 issues #112–#117, superseding the original
-C0-only scheduling gate. [PR #134](https://github.com/kirakosyan/word.net/pull/134)
-now contains the design plus checkbox/list/date/rich-text preservation/editing and
-explicit bounded local XML binding. The [source profile](content-controls.md) and
-[acceptance map](content-controls-acceptance.json) define admitted owners, IDs,
-handles/locks, placeholders, formatting, literal tags, output and resource limits.
-Each leaf retains independent fixtures and acceptance evidence; source/package/
-runtime qualification and publication stay separate. All issues remain open
-pending review/merge and subsequent reconciliation. Public packages remain 1.4.0;
-no dependency, target, platform, tag or publication change is authorized here.
-
-The P1 documentation reconciliation and original C0/initial-P2 receipts remain
-historical. The [review receipt](measurements/roadmap-102-p2-review.json) records all
-eight review corrections and qualified source `c15d3a8f0433f5e9ea3bc1d3efe57b88083b3872`: **1,390/1,390**
-cases pass on each local Linux x64 modern runtime, zero failures/skips, including
-168 control cases, 35 new review regressions and English OCR. Locked restore,
-all-five-target zero-warning Release build, formatting, core pack/API compatibility
-and package inspection pass. The final evidence/docs commit leaves the qualified
-source/test trees unchanged. The Word-generated glossary and active-script limits
-remain explicit; fixed-output constraints no longer prevent text exports/views.
-
-Previous head `e006a88` passed all 24 hosted check conclusions, including actual
-Framework source/package gates. Revised-head Windows/ARM64/Framework and
-exact-package/Standard execution remain separate pending hosted evidence; no old
-pass is inferred for changed code. PR #134 remains open, with linked issues awaiting
-merge/reconciliation. No package is published. P3–P6 remain planning.
+[PR #134](https://github.com/kirakosyan/word.net/pull/134) merged as
+`b407ca44cc92733654ca92a91031c3db3186fb6c`, with tree equality to reviewed head
+`12358b18f988936b4c7eef3c8d918412a6ca255f`. All eight review threads are resolved;
+issues #112–#117 are closed with independent evidence. Both hosted CI runs passed,
+including source/package lanes and actual Framework 4.7.2 source/package checks.
+Android jobs establish compilation only. Local Linux x64 .NET 8/10 suites each passed
+1,390 cases with English OCR and no skips. The [profile](content-controls.md),
+[acceptance map](content-controls-acceptance.json) and [review receipt](measurements/roadmap-102-p2-review.json)
+retain exact bounds, source/test identities and dated historical evidence. This merged
+source is absent from public 1.4.0; no package was published. The owner's next bucket
+request starts P3 at #118, following the roadmap's issue-by-issue ordering.
 
 ## Roadmap #102 P1 — merged source, PR #133
 
-The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 start is authorized; its full #112–#117 batch is now under review in PR #134.
+The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 #112–#117 subsequently merged in PR #134.
 
 ## Roadmap #102 / issue #103 - merged baseline findings
 
@@ -192,8 +177,7 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Remaining work
 
 1. Preserve historical release evidence, including the published [1.4.0 profile](roadmap-99-implementation.md).
-   Roadmap #102 P1 (#104–#111) is merged source beyond that release. Complete the owner-authorized
-   P2 #112–#117 batch and reconcile each leaf after review/merge. P3–P6 and #99’s unnumbered proposal remain planning. Bucket 5
+   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. Start P3 with #118; P4–P6 and #99’s unnumbered proposal remain planning. Bucket 5
    [design records](later-design-decisions.md) retain their separate policy gates.
 
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed

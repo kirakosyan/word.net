@@ -19,8 +19,8 @@ archive inspection pass. No dependency or target is changed.
 See the [review qualification limits](content-controls.md#review-corrections-and-qualification--2026-10-27)
 for the explicit glossary/script subset and unexecuted local platform/consumer lanes.
 The [initial receipt](measurements/roadmap-102-p2.json) remains dated evidence of
-1,355 cases. Previous-head hosted checks passed, but new-head CI and public-package
-availability remain separate from this revised local source verification.
+1,355 cases. Final reviewed-head hosted checks subsequently passed before merge; public-package
+availability remains separate from this revised local source verification.
 
 ## Merged roadmap #102 P1 qualification
 
