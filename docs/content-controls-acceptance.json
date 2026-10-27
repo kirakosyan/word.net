@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "roadmap": 102,
   "designIssue": 112,
-  "status": "Implemented in PR #134 with review corrections; mapped local tests pass; merge pending",
+  "status": "Merged in PR #134; issue acceptance reconciled",
   "runtimeImplemented": true,
   "acceptedSourceBaseline": "2a944ac9101598bc3be2d856e5bad116123998a3",
   "contract": "content-controls-design.md",
@@ -37,7 +37,7 @@
         "ContentControlReviewTests.EditorMetadataStillRejectsMalformedOrDuplicateValues",
         "ContentControlReviewTests.ControlFreeLoadsRetainOrdinaryContentAndPermitNormalEditing"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G02",
@@ -54,7 +54,7 @@
         "ContentControlAcceptanceEdgeTests.ContentLocksProtectEveryTypedValueMutation",
         "ContentControlBindingTests.BindingDirectionsRespectLocksAndForeignOrStaleHandles"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G03",
@@ -71,7 +71,7 @@
         "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic",
         "ContentControlReviewTests.SnapshotReusePreservesFailedOperationsAndInvalidatesOnlyCommittedEdits"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G04",
@@ -87,7 +87,7 @@
         "ContentControlFoundationTests.TypedTagsNeverExecuteAndOrdinaryOwnerRewritesRejectBeforeCallerGetters",
         "ContentControlRichTextTests.TypedDisplayViewRemovesOnlyTypedTagsAndLeavesAnExternalMergeFieldExecutable"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G05",
@@ -106,7 +106,7 @@
         "ContentControlAcceptanceEdgeTests.RetainedObjectsAndRecordingCannotBypassTypedOwnerProtection",
         "ContentControlReviewTests.InheritedParagraphDirectionSurvivesSaveReloadAndSnapshotReplacement"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G06",
@@ -127,7 +127,7 @@
         "ContentControlBindingTests.PathDepthLengthNamespaceAndAggregateXmlNodeLimitsAreEnforced",
         "ContentControlReviewTests.DeferredGlyphProvenanceStaysWithinTightenedSessionBudgets"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G07",
@@ -147,7 +147,7 @@
         "ContentControlReviewTests.TextExportsAndDisplayViewsKeepUnicodeCheckboxesUntilFixedOutput",
         "ContentControlReviewTests.UnsupportedManagedUnderlinesCanStillFlattenToEditableAndTextViews"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     },
     {
       "id": "G08",
@@ -165,7 +165,7 @@
         "ContentControlAcceptanceEdgeTests.StaticUnderlineHasIndependentStrokeGeometryAndDoesNotPaintAdjacentText",
         "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues"
       ],
-      "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+      "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
     }
   ],
   "stages": [
@@ -202,7 +202,7 @@
             "ContentControlFoundationTests.OmittedCheckboxStateAndGlyphDeclarationsKeepTheirAbsence",
             "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C1-02",
@@ -219,7 +219,7 @@
             "ContentControlFoundationTests.CheckboxPreservesIdentityStateGlyphMetadataAndSelectableDisplay",
             "ContentControlReviewTests.TextExportsAndDisplayViewsKeepUnicodeCheckboxesUntilFixedOutput"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C1-03",
@@ -235,7 +235,7 @@
             "ContentControlBoundaryTests.DuplicateIdsFailAndMultipleCharactersCannotMasqueradeAsACheckbox",
             "ContentControlBoundaryTests.RichControlsRejectStructuralHistoryObjectAndBoundaryContent"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C1-04",
@@ -252,10 +252,10 @@
             "ContentControlBoundaryTests.MissingOrRichGlossaryEntriesFailInsteadOfDroppingThePlaceholderRelationship",
             "ContentControlReviewTests.WordGeneratedGlossaryStructuresHaveAnExplicitRejection"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         }
       ],
-      "status": "implemented under review; original technical dependencies retained"
+      "status": "accepted in merged PR #134; original technical dependencies retained"
     },
     {
       "issue": 114,
@@ -290,7 +290,7 @@
           "tests": [
             "ContentControlListTests.OrderedItemsStoredValuesFreeTextAndCellOwnersRemainEditable"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C2-02",
@@ -306,7 +306,7 @@
             "ContentControlListTests.InvalidSelectionAndAmbiguousComboTextAreAtomic",
             "ContentControlListTests.MultipleInlineEditsDoNotUseStaleRunSliceOffsets"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C2-03",
@@ -322,7 +322,7 @@
             "ContentControlListTests.UnmatchedDropdownCacheIsUnresolvedAndNeverSelectsItemZero",
             "ContentControlListTests.OmittedLabelsUseValuesAndAnEmptyListCanStayEmpty"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C2-04",
@@ -337,7 +337,7 @@
             "ContentControlBoundaryTests.ControlCountAndPerListItemLimitsHaveRealBoundaryCases",
             "ContentControlBoundaryTests.AggregateItemsAndMetadataStringsAreBounded"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C2-05",
@@ -353,10 +353,10 @@
             "ContentControlFoundationTests.OrdinaryCachedConversionRemainsIndependentOfTypedTemplateTags",
             "ContentControlBindingTests.LocalGraphsArePreservedWithoutImplicitApplyThenAllScalarKindsApplyExplicitly"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         }
       ],
-      "status": "implemented under review; original technical dependencies retained"
+      "status": "accepted in merged PR #134; original technical dependencies retained"
     },
     {
       "issue": 115,
@@ -393,7 +393,7 @@
             "ContentControlDateTests.CalendarDatesRoundTripWithExplicitPolicyAndNoHiddenTimeTruncation",
             "ContentControlAcceptanceEdgeTests.DateLoadPolicyIsCapturedAndPlaceholdersDoNotExposeAnOldTypedValue"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C3-02",
@@ -408,7 +408,7 @@
           "tests": [
             "ContentControlDateTests.InstantDisplayUsesUtcAndInvariantPicturesWithoutClockOrTextInference"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C3-03",
@@ -425,7 +425,7 @@
             "ContentControlDateTests.UnsupportedCalendarsLocalesAndPicturesFailPreservation",
             "ContentControlDateTests.DateOnlyPicturesRejectTimeTokensButPermitQuotedTimeLetters"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C3-04",
@@ -442,7 +442,7 @@
             "ContentControlDateTests.DateOnlyPicturesRejectTimeTokensButPermitQuotedTimeLetters",
             "P1FieldTests.PicturesAreInvariantAndDoNotConsultTheClock"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C3-05",
@@ -458,10 +458,10 @@
             "ContentControlDateTests.UnsupportedCalendarsLocalesAndPicturesFailPreservation",
             "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         }
       ],
-      "status": "implemented under review; original technical dependencies retained"
+      "status": "accepted in merged PR #134; original technical dependencies retained"
     },
     {
       "issue": 116,
@@ -500,7 +500,7 @@
             "ContentControlReviewTests.WordShapedEditorMarkupKeepsPrimaryAppearanceAndEditableValues",
             "ContentControlReviewTests.ProofingLanguagesAloneDoNotRestrictOrdinaryUnicodeText"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C4-02",
@@ -520,7 +520,7 @@
             "ContentControlReviewTests.PendingClosedBlockBookmarksCannotBeDroppedOrMovedInsideTypedOwners",
             "ContentControlReviewTests.InheritedParagraphDirectionSurvivesSaveReloadAndSnapshotReplacement"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C4-03",
@@ -537,7 +537,7 @@
             "ContentControlAcceptanceEdgeTests.RetainedObjectsAndRecordingCannotBypassTypedOwnerProtection",
             "ContentControlReviewTests.InactiveScriptSlotAdmissionCannotSilentlyFlattenActiveScriptFormatting"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C4-04",
@@ -554,10 +554,10 @@
             "ContentControlRichTextTests.LateInvalidAndCanceledEnumerationDoNotCommitAnyReplacementOrInvalidateTheHandle",
             "ContentControlBoundaryTests.ReplacementExpansionAndTightenedSaveBoundsLeaveTheOriginalAndDestinationUntouched"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         }
       ],
-      "status": "implemented under review; original technical dependencies retained"
+      "status": "accepted in merged PR #134; original technical dependencies retained"
     },
     {
       "issue": 117,
@@ -596,7 +596,7 @@
             "ContentControlBindingTests.DetachmentRemovesTheMappingWithoutDeletingLocalXmlAndReloadsStrictly",
             "ContentControlAcceptanceEdgeTests.LocalStoreCountIsBoundedWithoutDroppingUnboundAdmittedData"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-02",
@@ -612,7 +612,7 @@
             "ContentControlBindingTests.RedundantFirstPredicatesDoNotHideAmbiguousChildrenAndPrefixesMustBeExplicit",
             "ContentControlAcceptanceEdgeTests.XmlPathsAndNamespaceMapsHavePositiveAndNegativeBoundaryCases"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-03",
@@ -629,7 +629,7 @@
             "ContentControlBindingTests.DtdEntitiesAndProcessingInstructionsAreNeverFetched",
             "ContentControlBindingTests.ArbitraryOrUnresolvedPathsAreRejectedWithoutXPathExecution"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-04",
@@ -646,7 +646,7 @@
             "ContentControlBindingTests.BooleanBindingsUseOnlyXmlSchemaLexicalValuesAndCanonicalWriteBack",
             "ContentControlBindingTests.DateBindingModesAndPlainTextMultilineAreExplicit"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-05",
@@ -662,7 +662,7 @@
             "ContentControlBindingTests.RichTextBindingsAndStructuredXmlTargetsAreRejectedRatherThanInterpretedAsMarkup",
             "ContentControlBindingTests.DirtySaveRequiresAnExplicitDecisionAndWriteBackEscapesLiteralAttributeData"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-06",
@@ -680,7 +680,7 @@
             "ContentControlBindingTests.MultiControlApplyRefreshesInlineSliceLocationsAndLateFailuresRollBackAllOwners",
             "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-07",
@@ -694,7 +694,7 @@
           "tests": [
             "ContentControlBindingTests.SharedTargetWriteBackRequiresEveryControlAndRejectsDivergentValuesAtomically"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         },
         {
           "id": "C5-08",
@@ -711,10 +711,10 @@
             "ContentControlAcceptanceEdgeTests.LocalStoreCountIsBoundedWithoutDroppingUnboundAdmittedData",
             "ContentControlBindingTests.BindingSelectionCancellationAndDuplicateHandlesAreAtomic"
           ],
-          "status": "mapped tests pass on revised source locally on net8.0/net10.0; review/merge pending"
+          "status": "accepted in merged PR #134; local mapped tests and final hosted checks passed"
         }
       ],
-      "status": "implemented under review; original technical dependencies retained"
+      "status": "accepted in merged PR #134; original technical dependencies retained"
     }
   ],
   "fixtureStatus": "Independently authored OOXML/XML fixtures plus bounded package generators; see fixture README and test methods.",
@@ -731,5 +731,6 @@
   ],
   "historicalExecutionReceipt": "measurements/roadmap-102-p2.json",
   "reviewedPreviousHead": "e006a8833b794dd791d7ba28a2cba896797a8097",
-  "reviewStatus": "Eight findings addressed; revised-source local checks pass; new hosted checks are separate."
+  "reviewStatus": "Eight review threads resolved and final hosted checks passed before merge.",
+  "mergeCommit": "b407ca44cc92733654ca92a91031c3db3186fb6c"
 }

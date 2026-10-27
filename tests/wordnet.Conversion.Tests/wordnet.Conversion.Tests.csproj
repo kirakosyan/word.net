@@ -31,6 +31,7 @@
   <ItemGroup>
     <None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../examples/WordNet.Automation/AutomationRecipes.cs" Link="Examples/AutomationRecipes.cs" />
+    <Compile Include="../../examples/WordNet.Automation/P3Recipes.cs" Link="Examples/P3Recipes.cs" />
     <None Include="../../examples/WordNet.Automation/Templates/**" Link="Fixtures/Automation/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Fixtures/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

@@ -1,6 +1,25 @@
 # Conversion diagnostics
 
-## P2 control diagnostics — source under review
+## Mixed report regions — source under review
+
+PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
+`Template.RepeatReferences` for references, counters or notes that cannot safely
+be cloned across a region boundary. `Template.InactiveControl` reports a retained
+mixed wrapper that cannot execute; saving unsupported control structure reports
+`Template.ControlStructure`. Unresolved link or field-structure diagnostics
+also prevent mixed-region execution. Expansion and reference work use existing
+`Limit.*` bounds; unsupported object ownership and retained revisions remain hard
+errors. These checks are pending review and are not part of public 1.4.0.
+
+Cross-tabs reject invalid keys with `Report.CrossTabKey`, oversized input or tables
+with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
+`Report.CrossTabLayout`; decimal arithmetic raises overflow. Fragment insertion
+uses `Fragment.SourceLoss`, `Fragment.SourceStructure`, `Fragment.Section`,
+`Fragment.Table`, `Fragment.Structure`, `Fragment.Reference` and
+`Fragment.Placeholder` to identify rejected sources or placement. Loading remains
+subject to the source reader's existing security and resource diagnostics.
+
+## P2 control diagnostics — merged source
 
 The [P2 catalog](content-controls.md#resource-and-diagnostic-contract) documents
 hard `Control.*`, `Binding.*` and `Limit.Controls` failures, informational ID/cache/
@@ -12,7 +31,7 @@ fallback apply at PDF/XPS preparation, including later saves of display views. U
 preservation behavior rejects in every mode. Dirty bindings block DOCX save until
 an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.
-This source is under review and absent from public 1.4.0.
+This source is merged and absent from public 1.4.0.
 
 ## Merged roadmap #102 P1 diagnostics
 

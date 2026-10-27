@@ -1,6 +1,62 @@
 # Creating, editing and filling documents
 
-## Opt-in typed controls — source under review
+## Mixed report regions — source under review
+
+PR #135 extends body `repeat:Path` controls to one contiguous, same-section
+region of ordinary paragraphs and simple tables. Zero items remove the region;
+one or more items reproduce its blocks in order. Inline scalar, image and
+conditional controls and existing row repeats in those tables retain their item
+scope. Cloned bookmarks, notes, lists and retained template-control IDs are
+remapped; aliases survive. `KeepCached` retains unresolved controls with unique IDs.
+Composition also remaps retained template-control IDs.
+
+One parent region may contain a child body repeat with a distinct path; at least
+one simple table must occur within the parent. Lookup searches the current item,
+then enclosing items from nearest to farthest, then the root, using the first
+complete path. Children can shadow parent values; no expressions or method calls
+are evaluated. Existing nested row repeats keep item-then-root lookup rather than
+implicitly inheriting their enclosing row item. Parent and child work
+shares the depth, row, character and byte budgets; empty collections remove their
+own region. Deeper block nesting and ambiguous same-path wrappers remain rejected.
+The runnable [customer statement](../examples/WordNet.Automation/P3Recipes.cs)
+prepares subtotals in caller code.
+
+Nested tables, other overlapping block controls, section breaks, positioned or retained
+objects and revisions are outside this profile. References and sequence counters
+crossing the region, shared notes and ambiguous control properties fail explicitly.
+Mixed regions also reject documents with unresolved link or field-structure losses,
+because their targets cannot be checked reliably. Generated blocks, rows, cells,
+images and metadata consume the existing limits before commit; cancellation and
+failures leave the original session unchanged. This source is pending review and is
+not included in the public 1.4.0 package.
+
+`AddCrossTab(records, aggregation, includeTotals, token)` appends an editable
+table from explicit `CrossTabRecord` values. Keys are non-empty Unicode strings,
+ordered by first appearance using ordinal equality; null/empty keys and control
+characters fail, and the
+label `Total` is reserved when totals are requested. Count
+includes null values, sum ignores them, absent intersections are zero and decimal
+arithmetic is checked. Sum cells and totals use the largest input decimal scale;
+count cells use integer formatting. Empty input produces a header; optional totals add a totals
+column and row. Limits are 100,000 input records, 64 column keys and 10,000 output
+cells, in addition to the conversion bounds. Widths use the selected 11-point font
+metrics with padding and a safety allowance and must fit the current body column;
+a table that does not fit fails with
+`Report.CrossTabLayout` instead of shrinking or dropping data. This conservative
+test can reject tables that a more sophisticated layout might fit.
+
+`InsertFragmentAtBookmark(name, fragment, token)` replaces a dedicated plain
+body bookmark paragraph with a private copy of a separately loaded DOCX or safe
+HTML session. Callers load sources explicitly; streams remain theirs. Source
+formatting is kept, colliding styles and list/bookmark/note/template-control IDs
+are remapped, and the destination section is used. Sections/stories, nested tables,
+typed controls, history, positioned/retained objects, fields and source load
+warnings are rejected. Internal links must resolve in the fragment. Target REF/PAGEREF
+fields or links to the placeholder must be resolved before insertion; unrelated
+fields remain intact. Both sessions are
+unchanged on failure; repeated insertions create independent identities.
+
+## Opt-in typed controls — merged source
 
 See [typed-control usage](content-controls.md) for the opt-in DOCX entry point,
 immutable handles, explicit checkbox/list/date/rich/plain edits, placeholders and
@@ -10,7 +66,7 @@ glyph fallback and managed underline restrictions run only at later PDF/XPS save
 The source profile explicitly lists Word editor metadata, inactive-script bounds
 and the intentionally rejected Word-generated glossary graphs. Existing
 template-only loading below is unchanged.
-The implementation is under review in PR #134 and absent from public 1.4.0.
+The implementation is merged in PR #134 and absent from public 1.4.0.
 
 ## Merged typed properties and field workflows
 
@@ -202,11 +258,12 @@ Content-control `w:tag/@w:val` values use this exact grammar:
 | `merge:Path` | One block paragraph or one adjacent inline control group; retains first-run appearance |
 | `image:Path` | Same scalar placements; replaces cached content with a caller `TemplateImage`, or empty content for null |
 | `if:Path`, `if:!Path` | Block or inline content; retains/removes it according to the value or its negation |
-| `repeat:Path` | A control wrapping exactly one table row; repeats for array items in source order |
+| `repeat:Path` | One table row, a body paragraph region, or (in PR #135) a mixed paragraph/simple-table body region; repeats for array items in source order |
 
 False values are null, false, numeric zero, an empty string or an empty array.
 Conditions can contain scalar fields/inline controls. Nesting controls that share
-the same block, row or run group is outside the profile and diagnosed on load.
+the same block, row or run group is outside the profile and diagnosed on load,
+except for the one-level mixed master-detail body repeats described above.
 Merge rejects these flattened nested constructs before executing any condition.
 Block controls inside cells are supported; cell-level table wrappers are diagnosed
 and cannot execute. Multi-block/multi-row control boundaries survive DOCX save/load,

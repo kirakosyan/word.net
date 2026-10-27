@@ -1,5 +1,13 @@
 # Invoice and report automation recipes
 
+## P3 customer statement — source under review
+
+The program also writes `p3-statement.docx` and `p3-statement.pdf`. It repeats
+customer paragraphs and nested line-item paragraph/table regions; caller code sums
+each customer's decimal totals. The independent MIT template and manifest can be
+recreated with `python3 eng/generate-p3-template.py`. This source is pending review
+and is not in public 1.4.0.
+
 ## P1 recipes under review
 
 The program also runs `P1Recipes.Run`: it groups unsorted revenue, computes decimal

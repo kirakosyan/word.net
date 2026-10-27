@@ -1,7 +1,7 @@
 # Typed DOCX content controls — roadmap #102 P2 source
 
 PR [#134](https://github.com/kirakosyan/word.net/pull/134) implements #112–#117 as
-one owner-authorized batch. This is source under review, absent from public
+one owner-authorized batch. This is merged source, absent from public
 1.4.0; it does not publish packages. The [design record](content-controls-design.md)
 and [acceptance map](content-controls-acceptance.json) describe the contract and
 independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) records current local execution; the [initial receipt](measurements/roadmap-102-p2.json) remains historical. Hosted/runtime gates are recorded separately.
@@ -286,8 +286,8 @@ Its final documentation follow-up preserves the qualified code/test trees.
 
 The previous head `e006a88` passed all 24 hosted check conclusions, including
 source/package/explicit-Standard, actual Framework and Android compilation jobs;
-those results do not qualify this revised code. Revised-head hosted checks remain
-separate pending evidence. No Framework execution occurs on this Linux host, and no
+those results do not qualify this revised code. Final reviewed-head hosted checks subsequently passed before merge; the dated
+receipt preserves its original pending-at-recording status. No Framework execution occurs on this Linux host, and no
 new platform, general Word/consumer UI, native-control rendering, release or package
 publication is claimed. The original receipt and reference failures stay dated.
 

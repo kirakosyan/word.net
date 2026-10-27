@@ -1,6 +1,6 @@
 # Typed content-control contract — roadmap #102 C0
 
-**Status: design and bounded implementation under review in [PR #134](https://github.com/kirakosyan/word.net/pull/134).**
+**Status: design and bounded implementation merged in [PR #134](https://github.com/kirakosyan/word.net/pull/134).**
 The owner subsequently authorized all P2 issues #112–#117 as one batch, superseding
 this ADR's original per-leaf scheduling gate. Implementation follows the same
 technical dependencies; each leaf keeps independent acceptance evidence. See the

@@ -53,6 +53,7 @@ internal abstract class DocumentBlock
 {
     internal int? TypedControlId { get; set; }
     internal TemplateControl? Control { get; set; }
+    internal TemplateControl? NestedControl { get; set; }
     internal SourceLocation? Location { get; set; }
     internal PageSettings? Section { get; set; }
 }
@@ -193,6 +194,8 @@ internal sealed class TextRun
 
 internal sealed class TemplateControl
 {
+    internal int? Id { get; set; }
+    internal string? Alias { get; set; }
     internal TemplateControl(string tag) { Tag = tag; }
     internal string Tag { get; }
     internal bool Executable { get; set; } = true;

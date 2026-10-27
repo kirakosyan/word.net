@@ -1,6 +1,14 @@
 # Formatting and image profile
 
-## P2 control preservation — source under review
+## Mixed report regions — source under review
+
+PR #135 repeats bounded same-section paragraph/table regions, including one
+master-detail level, with cloned identity and reference checks. Explicit cross-tabs
+reject non-fitting layouts, and fragments retain source formatting under the
+documented placement policy. It does not extend object, revision, nested-table or
+section support. See the [template profile](editing-and-templates.md#mixed-report-regions--source-under-review).
+
+## P2 control preservation — merged source
 
 The [P2 source profile](content-controls.md) preserves bounded typed DOCX controls,
 provides atomic edits and explicit local XML operations, and renders ordinary
@@ -11,7 +19,7 @@ scaffolding is omitted informationally within the documented inactive-script
 subset; Word-generated glossary category/relationships remain rejected explicitly.
 Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
-This under-review source is separate from public 1.4.0 and dated qualification.
+This merged source is separate from public 1.4.0 and dated qualification.
 
 ## Merged roadmap #102 P1 source profile
 

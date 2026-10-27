@@ -1,5 +1,40 @@
 # Conversion tests and qualification
 
+## Mixed report regions — source under review
+
+The independently authored OOXML tests in
+`EditingTemplateTests.MixedReports.cs` exercise zero, one and multiple records,
+DOCX schema and content order, multipage selectable PDF, nested row repeats,
+inline images/conditions, identity remapping, boundary and resource failures,
+and cancellation. The image uses the existing `color-grid.png` fixture. These
+tests qualify this bounded source only; the P2 receipts below remain historical,
+and public 1.4.0 and platform qualification have not changed.
+On Linux x64 the full .NET 8 and .NET 10 conversion suites each passed 1,408/1,408
+with no skips and English OCR prepared in the test process. Locked restore,
+five-target Release build, formatting verification and local pack passed; the pack
+contains all five target assets and license notices. Framework execution requires
+a compatible Windows host and hosted checks for this PR remain separate.
+These results precede the subsequent #119–#121 implementation. Master-detail,
+cross-tab and fragment tests additionally inspect schema-valid DOCX and PDF text
+and geometry, caller-prepared totals, identity remapping, malicious/missing
+resources, expansion limits and failure atomicity. The runnable statement fixture
+is independently authored by `eng/generate-p3-template.py` under MIT and has a
+recorded SHA-256 manifest. Final full-suite and hosted results for the batch must
+be reported separately from the earlier 1,408-case run.
+
+The PR #135 review follow-up adds parent/child boundary references and shared-note
+negative controls, strict loading of inactive controls, legacy row-scope checks,
+fragment field/display-view checks, and independently inspected quarterly tables
+with consistent decimal scales. The statement fixture now uses stored ZIP entries
+with fixed metadata, avoiding compressor-dependent archive hashes.
+An exact-head hosted stress retry exposed a wall-clock timeout in PDF trailer ID
+matching; the bounded byte scan now avoids a time-limited regex and tests verify
+the digest, preserved byte offsets and malformed candidates. The earlier timed-out
+and failed stress runs remain distinct from the new head's qualification. The
+Linux x64 desktop-job deadline is 30 minutes because that lane also performs
+independent office checks and the full 64-by-200 gate; its workload and assertions
+are unchanged. Other desktop job deadlines remain 20 minutes.
+
 ## P2 controls acceptance and qualification
 
 The [source profile](content-controls.md), [acceptance map](content-controls-acceptance.json)
@@ -19,8 +54,8 @@ archive inspection pass. No dependency or target is changed.
 See the [review qualification limits](content-controls.md#review-corrections-and-qualification--2026-10-27)
 for the explicit glossary/script subset and unexecuted local platform/consumer lanes.
 The [initial receipt](measurements/roadmap-102-p2.json) remains dated evidence of
-1,355 cases. Previous-head hosted checks passed, but new-head CI and public-package
-availability remain separate from this revised local source verification.
+1,355 cases. Final reviewed-head hosted checks subsequently passed before merge; public-package
+availability remains separate from this revised local source verification.
 
 ## Merged roadmap #102 P1 qualification
 

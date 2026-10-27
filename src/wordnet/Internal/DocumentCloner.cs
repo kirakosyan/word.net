@@ -84,7 +84,7 @@ internal sealed class DocumentCloner
             result = copy;
         }
         blocks.Add(source, result);
-        result.TypedControlId = source.TypedControlId; result.Section = Section(source.Section); result.Location = source.Location; result.Control = Control(source.Control); return result;
+        result.TypedControlId = source.TypedControlId; result.Section = Section(source.Section); result.Location = source.Location; result.Control = Control(source.Control); result.NestedControl = Control(source.NestedControl); return result;
     }
     internal TableCell Cell(TableCell source)
     {
@@ -148,7 +148,7 @@ internal sealed class DocumentCloner
     private TemplateControl? Control(TemplateControl? source)
     {
         if (source == null) return null;
-        if (!controls.TryGetValue(source, out TemplateControl? copy)) { copy = new TemplateControl(source.Tag) { Executable = source.Executable }; controls.Add(source, copy); }
+        if (!controls.TryGetValue(source, out TemplateControl? copy)) { copy = new TemplateControl(source.Tag) { Executable = source.Executable, Id = source.Id, Alias = source.Alias }; controls.Add(source, copy); }
         return copy;
     }
     private static NotePolicy Policy(NotePolicy p) => new NotePolicy { Format = p.Format, Start = p.Start, Restart = p.Restart };

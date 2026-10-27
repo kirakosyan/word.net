@@ -3,7 +3,12 @@
 The [P2 control contract](content-controls-design.md) and [implemented source profile](content-controls.md)
 add an opt-in typed-control path in PR #134. Existing template-only loading below
 keeps its contract; typed tags never silently acquire executable template meaning.
-The new source is under review and absent from published 1.4.0.
+The new source is merged and absent from published 1.4.0.
+
+PR #135 extends the existing `Merge` contract to bounded mixed and one-level
+master-detail body regions and adds cross-tab and explicit fragment insertion APIs.
+See the [usage profile](editing-and-templates.md#mixed-report-regions--source-under-review)
+for scope lookup, cloning, atomicity, ownership and limits.
 
 This records the implementation contract for roadmap #32, bucket 3 (#11–#15),
 before implementation. The existing converter and all five targets remain compatible.
