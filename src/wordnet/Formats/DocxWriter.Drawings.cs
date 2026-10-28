@@ -16,7 +16,7 @@ internal sealed partial class DocxWriter
         container.Name = Wp + "anchor";
         container.Add(new XAttribute("distT", Emu(anchor.Distance.Top)), new XAttribute("distB", Emu(anchor.Distance.Bottom)),
             new XAttribute("distL", Emu(anchor.Distance.Left)), new XAttribute("distR", Emu(anchor.Distance.Right)),
-            new XAttribute("simplePos", false), new XAttribute("relativeHeight", 0), new XAttribute("behindDoc", anchor.Behind),
+            new XAttribute("simplePos", false), new XAttribute("relativeHeight", anchor.RelativeHeight), new XAttribute("behindDoc", anchor.Behind),
             new XAttribute("locked", false), new XAttribute("layoutInCell", true), new XAttribute("allowOverlap", true));
         container.AddFirst(new XElement(Wp + "simplePos", new XAttribute("x", 0), new XAttribute("y", 0)),
             new XElement(Wp + "positionH", new XAttribute("relativeFrom", anchor.HorizontalOrigin), anchor.HorizontalAlignment == null

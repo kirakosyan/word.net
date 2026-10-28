@@ -59,9 +59,9 @@ public static partial class DocumentComparison
         if (characters > options.MaximumCharacters || characters * 4 > options.MaximumExpandedBytes) throw new InvalidDataException("Comparison.ResourceLimit: Combined inputs exceed the comparison allowance.");
         List<(ParagraphBlock Old, ParagraphBlock New)> stories = MatchingStories(left, right, context);
         byte[] leftStructure = Structure(left), rightStructure = Structure(right);
-        bool structural = !leftStructure.SequenceEqual(rightStructure) || ReorderedPlainParagraphs(left, right);
         int tokenCount = 0, work = 0, bodyCount = 0;
-        if (structural) _ = CompareStructure(left, right, comparisonOptions, options, context, out work, out tokenCount);
+        bool structural = !leftStructure.SequenceEqual(rightStructure) || ReorderedPlainParagraphs(left, right);
+        if (structural) CompareStructure(left, right, comparisonOptions, options, context, out work, out tokenCount);
         ParagraphBlock[] bodyA = structural ? Array.Empty<ParagraphBlock>() : left.BodyParagraphs.ToArray();
         ParagraphBlock[] bodyB = structural ? Array.Empty<ParagraphBlock>() : right.BodyParagraphs.ToArray();
         bodyCount = bodyA.Length;
@@ -178,15 +178,20 @@ public static partial class DocumentComparison
             }
             string[] oldBlocks = BlockKeys(originalModel), newBlocks = BlockKeys(revisedModel);
             if (oldBlocks.SequenceEqual(newBlocks)) return false;
-            if ((long)oldBlocks.Length + newBlocks.Length > Math.Min(10000, steps))
+            long scan = (long)oldBlocks.Length + newBlocks.Length;
+            if (scan > steps - work)
                 throw new InvalidDataException("Comparison.WorkLimit: Paragraph move candidate search exceeds its allowance.");
+            work += (int)scan;
             var oldGroups = oldBlocks.Select((key, i) => (Text: key, Index: i)).GroupBy(x => x.Text, StringComparer.Ordinal)
-                .ToDictionary(g => g.Key, g => new Queue<int>(g.Select(x => x.Index)), StringComparer.Ordinal);
+                .ToDictionary(g => g.Key, g => new Queue<int>(g.Select(value => value.Index)), StringComparer.Ordinal);
+            var oldCounts = oldGroups.ToDictionary(pair => pair.Key, pair => pair.Value.Count, StringComparer.Ordinal);
+            var newCounts = newBlocks.GroupBy(key => key, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
             int previous = -1;
             foreach (string key in newBlocks)
             {
                 context.CheckCancellation();
-                if (!oldGroups.TryGetValue(key, out Queue<int>? positions) || positions.Count == 0) continue;
+                if (!oldGroups.TryGetValue(key, out Queue<int>? positions) || positions.Count == 0 || !newCounts.TryGetValue(key, out int count)) continue;
+                if (oldCounts[key] != count) continue;
                 int position = positions.Dequeue();
                 if (position < previous) return true;
                 previous = position;

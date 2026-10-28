@@ -128,7 +128,6 @@ internal sealed partial class DocxReader
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         document.ObjectCount = context.ObjectCount;
         reader.FinishTypedControls(document);
-        _ = LinkedTextBoxes.Validate(document, context);
         if (document.ObjectCount != 0) { ObjectSafety.Owners(document); context.Objects.Finish(document.CharacterCount, 0); }
         return document;
     }
@@ -370,7 +369,10 @@ internal sealed partial class DocxReader
                 }
                 if (child.Descendants(wps + "wsp").Any())
                 {
-                    PositionedBox? shape = ReadVectorShape(child);
+                    PositionedBox? shape;
+                    try { shape = ReadVectorShape(child); }
+                    catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
+                    { context.Loss("Shape.VectorUnsupported", "The drawing is outside the admitted vector profile and is omitted."); shape = null; }
                     if (shape != null) Emit(runs, new TextRun("", box: shape));
                     continue;
                 }

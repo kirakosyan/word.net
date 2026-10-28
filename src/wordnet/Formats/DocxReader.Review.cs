@@ -119,9 +119,10 @@ internal sealed partial class DocxReader
         if (!context.PreserveReview) return;
         XElement[] changes = run.Element(W + "rPr")?.Elements(W + "rPrChange").ToArray() ?? Array.Empty<XElement>();
         if (changes.Length == 0) return;
-        if (changes.Length != 1 || insideRevision || fields.Count != 0 || link != null || runs.Count != first + 1
+        if (changes.Length != 1 || insideRevision || fields.Count != 0 || link != null || runs.Count <= first
             || run.Ancestors().Any(e => e.Name == W + "sdt" || e.Name == W + "txbxContent" || e.Name == W + "hdr" || e.Name == W + "ftr" || e.Name == W + "footnote" || e.Name == W + "endnote")
-            || run.Elements().Any(e => e.Name != W + "rPr" && e.Name != W + "t"))
+            || run.Elements().Any(e => e.Name != W + "rPr" && e.Name != W + "t" && e.Name != W + "tab" && e.Name != W + "br")
+            || run.Elements(W + "br").Any(e => (string?)e.Attribute(W + "type") is string type && type != "textWrapping"))
             throw new NotSupportedException("Review.Format: Formatting history requires one ordinary body/cell text run.");
         XElement change = changes[0]; XElement? old = change.Element(W + "rPr");
         XElement properties = run.Element(W + "rPr")!;
@@ -136,7 +137,13 @@ internal sealed partial class DocxReader
         ReviewRecord record = ReviewMetadata(change); record.Structure = "format";
         if (review.Revisions.ContainsKey(record.Id)) throw new InvalidDataException("Review.Id: Duplicate revision identifier.");
         TextStyle previous = inherited.Copy(); ReadRunProperties(old, previous);
-        TextRun owner = runs[first]; owner.FormatRevision = record.Id;
+        TextRun owner = runs[first];
+        if (runs.Count > first + 1)
+        {
+            owner = owner.WithText(string.Concat(runs.Skip(first).Select(r => r.Text)));
+            runs.RemoveRange(first, runs.Count - first); runs.Add(owner);
+        }
+        owner.FormatRevision = record.Id;
         owner.PreviousFormat = new TextRun(owner.Text, previous.Bold, previous.Italic, previous.Code, fontSize: previous.FontSize, color: previous.Color, appearance: previous.Appearance.Copy());
         TextRun currentOther = new TextRun(owner.Text, code: owner.Code, appearance: owner.Appearance);
         TextRun previousOther = new TextRun(owner.Text, code: previous.Code, appearance: previous.Appearance);
@@ -209,7 +216,7 @@ internal sealed partial class DocxReader
                 throw new InvalidDataException("Review.Move: Invalid or unsupported range boundaries.");
             XElement? mark = paragraph.Element(W + "pPr")?.Element(W + "rPr")?.Element(W + (from ? "moveFrom" : "moveTo"));
             XElement[] content = paragraph.Elements().Where(e => e.Name != W + "pPr").ToArray();
-            if (mark == null || paragraph.Descendants(W + "sectPr").Any() || content.Length != 1 || content[0].Name != W + (from ? "moveFrom" : "moveTo"))
+            if (mark == null || content.Length != 1 || content[0].Name != W + (from ? "moveFrom" : "moveTo"))
                 throw new NotSupportedException("Review.Move: Only a whole plain paragraph inside each range is supported.");
             ReviewRecord rangeMetadata = ReviewMetadata(start), markMetadata = ReviewMetadata(mark);
             if (!rangeMetadata.Date.HasValue || rangeMetadata.Date != markMetadata.Date || rangeMetadata.Author != markMetadata.Author)

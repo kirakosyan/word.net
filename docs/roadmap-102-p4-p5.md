@@ -18,7 +18,9 @@ property changes and ambiguous nested histories. Decisions and detached views
 retain the chosen appearance, including explicit off values against inherited
 styles; intersecting comments require an explicit comment decision first. Saved
 DOCX contains real `w:rPrChange` markup. This source is pending review and has not
-been published as a package.
+been published as a package. Word-specific complex-script variants and proofing
+properties in formatting history remain unsupported, including variants that
+mirror ordinary run properties; they are not silently dropped.
 
 ## Whole-paragraph moves (#123)
 
@@ -64,14 +66,16 @@ an editor's later interactive reflow.
 
 Linked boxes use the DOCX story ID and ordered contiguous sequence, with one head
 owning all ordinary text and up to 63 continuation boxes in the same section.
+When multiple heads have the same default zero ID, ownership is ambiguous and the
+chain is rejected; an explicit distinct story ID is needed to disambiguate it.
 Layout wraps at the smallest usable chain width, allocates complete lines in order,
 and fails if the final box cannot hold the remainder. This conservative width policy
 may wrap earlier than an interactive editor. Empty intermediate frames are allowed.
 Rotated or autofit chains, nested content, histories and composition through chains
 are rejected. Managed ordinary fixed output is qualified separately from tagged,
-archive and native typography profiles. Nonzero drawing-layer values, disabled
-overlap and placement outside cells remain unsupported for rotated, fitted and
-linked boxes.
+archive and native typography profiles. Source drawing-layer values are retained;
+overlapping drawings with explicit layers, disabled overlap and placement outside
+cells remain unsupported for managed rendering of rotated, fitted and linked boxes.
 
 ## Vector shapes (#129)
 
@@ -81,7 +85,7 @@ coordinates and explicit fill/no-fill. DOCX retains editable DrawingML and optio
 alternative text. Managed PDF, XPS and SVG use vector paths; ellipses and corners use
 the standard four-cubic approximation. Behind/foreground paint and rectangular wrap
 exclusion follow the retained anchor. Groups, transforms, shape effects, gradients,
-adjustments, nonzero drawing layers, disabled overlap and unqualified cell placement,
+adjustments, overlapping drawings with explicit layers, disabled overlap and unqualified cell placement,
 and unrecognized geometries reject or report loss. Tagged/archive PDF
 and native typography combinations remain unsupported, even with alternative text.
 

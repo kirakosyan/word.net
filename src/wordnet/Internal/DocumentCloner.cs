@@ -164,6 +164,7 @@ internal sealed class DocumentCloner
         Wrap = a.Wrap,
         Behind = a.Behind,
         UnqualifiedLayer = a.UnqualifiedLayer,
+        RelativeHeight = a.RelativeHeight,
         Distance = a.Distance.Copy()
     };
 }

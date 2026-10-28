@@ -24,7 +24,7 @@ internal sealed partial class DocxReader
         {
             if (!uint.TryParse(height.Value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out uint layer))
                 throw new InvalidDataException("Shape.DrawingOrder: Invalid drawing layer.");
-            result.UnqualifiedLayer |= layer != 0;
+            result.RelativeHeight = layer;
         }
         ReadPosition("positionH", true); ReadPosition("positionV", false);
         result.Distance = new CellPadding { Left = Distance("distL"), Right = Distance("distR"), Top = Distance("distT"), Bottom = Distance("distB") };
@@ -138,7 +138,7 @@ internal sealed partial class DocxReader
                 context.Loss("Shape.TextBoxLayout", "Unsupported text-box autofit and vertical text are not retained.");
         }
         if ((box.Rotation != 0 || box.ShrinkToFit) && box.Anchor.UnqualifiedLayer)
-            throw new NotSupportedException("Shape.DrawingOrder: Nonzero drawing layers are outside the rotated/fit profile.");
+            context.Loss("Shape.DrawingOrder", "The drawing layer or placement is outside the rotated/fit profile.");
         if (content != null) ReadBlocks(content, box.Blocks); return box;
         double Inset(string name, double fallback) => body?.Attribute(name) == null ? fallback : Integer(body, name, 0, 20116800) / 12700.0;
     }

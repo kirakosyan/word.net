@@ -13,7 +13,7 @@ namespace WordNet;
 public static partial class DocumentComparison
 {
     private static readonly XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-    private static WordDocument CompareStructure(DocumentModel left, DocumentModel right, ComparisonOptions comparison,
+    private static void CompareStructure(DocumentModel left, DocumentModel right, ComparisonOptions comparison,
         ConversionOptions options, ConversionContext context, out int usedWork, out int usedTokens)
     {
         long structuralItems = (long)left.Blocks.Count + right.Blocks.Count
@@ -30,7 +30,7 @@ public static partial class DocumentComparison
                     || table.Rows.Any(row => row.Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock))))
                     throw new NotSupportedException("Comparison.Structure: Merged, nested, controlled and individually sized rows are outside structural alignment.");
         }
-        int work = 0, items = 0;
+        int work = 0, items = 0; long metadataBytes = 0;
         List<PageSettings?> leftSections = Sections(left), rightSections = Sections(right);
         if (leftSections.Count > 64 || rightSections.Count > 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
         if (leftSections.Count != rightSections.Count || StoryTopology(leftSections) != StoryTopology(rightSections)
@@ -84,6 +84,7 @@ public static partial class DocumentComparison
             throw new NotSupportedException("Comparison.Move: Cross-section moves are unsupported.");
         var movedKeys = new HashSet<string>(alignedBlocks.Where(p => p.B < 0).Select(p => aKeys[p.A]), StringComparer.Ordinal);
         movedKeys.IntersectWith(alignedBlocks.Where(p => p.A < 0).Select(p => bKeys[p.B]));
+        movedKeys.RemoveWhere(key => Text(key).Length == 0);
         if (movedKeys.Count != 0)
         {
             var oldCounts = aKeys.GroupBy(k => k, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
@@ -114,7 +115,6 @@ public static partial class DocumentComparison
         }
         left.Blocks.Clear(); left.Blocks.AddRange(blocks);
         usedWork = work; usedTokens = items;
-        return WordDocument.ComparisonResult(left, options, context);
 
         string Record(bool deletion, string structure)
         {
@@ -139,26 +139,28 @@ public static partial class DocumentComparison
                 lengths[i * width + j] = aSymbols[i] == bSymbols[j] ? 1 + lengths[(i + 1) * width + j + 1]
                     : Math.Max(lengths[(i + 1) * width + j], lengths[i * width + j + 1]);
             }
-            var output = new List<(int A, int B)>(); int x = 0, y = 0; bool ambiguous = false;
+            var output = new List<(int A, int B)>(); var ties = new List<(string Old, string New)>(); int x = 0, y = 0;
             while (x < a.Length || y < b.Length)
             {
                 context.CheckCancellation();
                 if (x < a.Length && y < b.Length && aSymbols[x] == bSymbols[y]) output.Add((x++, y++));
                 else if (x < a.Length && (y == b.Length || lengths[(x + 1) * width + y] >= lengths[x * width + y + 1]))
-                { if (y < b.Length && lengths[(x + 1) * width + y] == lengths[x * width + y + 1]) ambiguous = true; output.Add((x++, -1)); }
+                { if (y < b.Length && lengths[(x + 1) * width + y] == lengths[x * width + y + 1]) ties.Add((a[x], b[y])); output.Add((x++, -1)); }
                 else output.Add((-1, y++));
             }
             // Matching content on both unmatched sides is an ambiguous move, not an insertion.
             var removed = new HashSet<string>(output.Where(p => p.B < 0).Select(p => a[p.A]), StringComparer.Ordinal);
             var moved = new HashSet<string>(output.Where(p => p.A < 0 && removed.Contains(b[p.B])).Select(p => b[p.B]), StringComparer.Ordinal);
+            var empty = new HashSet<string>(moved.Where(key => Text(key).Length == 0), StringComparer.Ordinal);
+            moved.ExceptWith(empty);
             var oldCounts = a.GroupBy(value => value, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
             var newCounts = b.GroupBy(value => value, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
-            if (moved.Count != 0 && (!allowMoves || ambiguous || moved.Any(key => key.StartsWith("table:", StringComparison.Ordinal)
+            if (moved.Count != 0 && (!allowMoves || ties.Any(tie => moved.Contains(tie.Old) || moved.Contains(tie.New)) || moved.Any(key => key.StartsWith("table:", StringComparison.Ordinal)
                 || oldCounts[key] != 1 || newCounts[key] != 1)))
                 throw new NotSupportedException("Comparison.Move: Reordered content has ambiguous or unsupported ownership.");
             // Same text with different properties is a formatting revision, not a structural replacement.
-            var oldText = new HashSet<string>(output.Where(p => p.B < 0 && !moved.Contains(a[p.A])).Select(p => Text(a[p.A])), StringComparer.Ordinal);
-            if (output.Where(p => p.A < 0 && !moved.Contains(b[p.B])).Any(p => oldText.Contains(Text(b[p.B]))))
+            var oldText = new HashSet<string>(output.Where(p => p.B < 0 && !moved.Contains(a[p.A]) && !empty.Contains(a[p.A])).Select(p => Text(a[p.A])), StringComparer.Ordinal);
+            if (output.Where(p => p.A < 0 && !moved.Contains(b[p.B]) && !empty.Contains(b[p.B])).Any(p => oldText.Contains(Text(b[p.B]))))
                 throw new NotSupportedException("Comparison.Formatting: Formatting revisions are unsupported.");
             return output;
         }
@@ -209,15 +211,11 @@ public static partial class DocumentComparison
             foreach (PageSettings? section in sections)
             {
                 context.CheckCancellation(); copy.FinalSection = section;
-                long storyCost = copy.Paragraphs.Sum(p => (long)p.Text.Length + p.Runs.Count + 1)
-                    + copy.Styles.Sum(p => (long)p.Key.Length + p.Value.Length + 1) + copy.CustomProperties.Count;
-                if (storyCost > comparison.MaximumSteps - work) throw new InvalidDataException("Comparison.WorkLimit: Story metadata comparison exceeds its work allowance.");
-                work += (int)storyCost;
                 DocumentModel normalized = new DocumentCloner(context).Copy(copy); NormalizePlainStories(normalized, context);
                 using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(normalized, stream, context);
-                long cost = stream.Length;
-                if (cost > comparison.MaximumSteps - work) throw new InvalidDataException("Comparison.WorkLimit: Section metadata comparison exceeds its work allowance.");
-                work += (int)cost; yield return Convert.ToBase64String(stream.ToArray());
+                metadataBytes += stream.Length;
+                if (metadataBytes > options.MaximumExpandedBytes) throw new InvalidDataException("Comparison.ResourceLimit: Section metadata comparison exceeds its byte allowance.");
+                yield return Convert.ToBase64String(stream.ToArray());
             }
         }
         Dictionary<DocumentBlock, XElement> Elements(DocumentModel document)

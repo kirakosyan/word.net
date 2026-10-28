@@ -11,9 +11,9 @@ namespace WordNet.Tests;
 
 public sealed partial class BusinessFidelityTests
 {
-    private static byte[] RotatedBox(int rotation, string? boxText = null, bool autofit = false, int y = 100)
+    private static byte[] RotatedBox(int rotation, string? boxText = null, bool autofit = false, int y = 100, int layer = 0)
     {
-        string shape = "<w:p><w:r><w:drawing><wp:anchor xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing' behindDoc='0'>"
+        string shape = "<w:p><w:r><w:drawing><wp:anchor xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing' behindDoc='0' relativeHeight='" + layer.ToString(CultureInfo.InvariantCulture) + "'>"
             + "<wp:positionH relativeFrom='page'><wp:posOffset>1270000</wp:posOffset></wp:positionH><wp:positionV relativeFrom='page'><wp:posOffset>" + (y * 12700).ToString(CultureInfo.InvariantCulture) + "</wp:posOffset></wp:positionV>"
             + "<wp:extent cx='1778000' cy='1016000'/><wp:wrapSquare wrapText='bothSides'/><wp:docPr id='1' name='Box'/>"
             + "<a:graphic xmlns:a='http://schemas.openxmlformats.org/drawingml/2006/main'><a:graphicData uri='http://schemas.microsoft.com/office/word/2010/wordprocessingShape'>"
@@ -82,6 +82,18 @@ public sealed partial class BusinessFidelityTests
         double width = rotation == 90 ? 80 : 140, height = rotation == 90 ? 140 : 80;
         Assert.All(letters, letter => { Assert.InRange(letter.StartBaseLine.X, left, left + width); Assert.InRange(letter.StartBaseLine.Y, 300 - top - height, 300 - top); });
         Assert.Throws<NotSupportedException>(() => Export(RotatedBox(rotation, string.Join(" ", Enumerable.Repeat("sample", 300)), true), DocumentFormat.Pdf));
+    }
+    [Fact]
+    public void WordLayerValueIsRetainedForRotatedAndFittedBoxes()
+    {
+        foreach (byte[] input in new[] { RotatedBox(90, layer: 251659264), RotatedBox(0, "fit text", true, layer: 251659264) })
+        {
+            byte[] output = Export(input, DocumentFormat.Docx); Schema(output);
+            XNamespace wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+            Assert.Equal("251659264", (string?)Part(output, "word/document.xml").Descendants(wp + "anchor").Single().Attribute("relativeHeight"));
+            using PdfDocument pdf = PdfDocument.Open(Export(input, DocumentFormat.Pdf));
+            Assert.NotEmpty(pdf.GetPage(1).Letters);
+        }
     }
     [Fact]
     public void UnsupportedRotationBoundsAndConformanceAreRejected()

@@ -56,10 +56,37 @@ public sealed partial class BusinessFidelityTests
     }
 
     [Fact]
+    public void UnsupportedVectorEffectsAreReportedInLenientConversion()
+    {
+        using var source = new MemoryStream(VectorShape("ellipse", "<a:effectLst/>"));
+        using var output = new MemoryStream();
+        ConversionResult result = new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Pdf,
+            new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "Shape.VectorUnsupported");
+        using PdfDocument pdf = PdfDocument.Open(output.ToArray());
+        Assert.Equal("Body", pdf.GetPage(1).Text);
+    }
+    [Fact]
+    public void OverlappingExplicitLayersAreRejectedForManagedRendering()
+    {
+        XNamespace wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+        XElement first = Part(VectorShape("ellipse", highLayer: true), "word/document.xml").Descendants(W + "p")
+            .Single(p => p.Descendants(wp + "anchor").Any());
+        XElement second = new XElement(first);
+        second.Descendants(wp + "docPr").Single().SetAttributeValue("id", "2");
+        second.Descendants(wp + "anchor").Single().SetAttributeValue("relativeHeight", "2");
+        byte[] input = Docx(first.ToString(SaveOptions.DisableFormatting) + second.ToString(SaveOptions.DisableFormatting) + Page);
+        Assert.Throws<NotSupportedException>(() => Export(input, DocumentFormat.Pdf));
+    }
+    [Fact]
     public void VectorEffectsAndUnqualifiedProfilesAreRejected()
     {
         Assert.Throws<NotSupportedException>(() => Export(VectorShape("ellipse", "<a:effectLst/>"), DocumentFormat.Docx));
-        Assert.Throws<NotSupportedException>(() => Export(VectorShape("ellipse", highLayer: true), DocumentFormat.Docx));
+        byte[] layered = Export(VectorShape("ellipse", highLayer: true), DocumentFormat.Docx); Schema(layered);
+        XNamespace wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+        Assert.Equal("1", (string?)Part(layered, "word/document.xml").Descendants(wp + "anchor").Single().Attribute("relativeHeight"));
+        using PdfDocument layeredPdf = PdfDocument.Open(Export(VectorShape("ellipse", highLayer: true), DocumentFormat.Pdf));
+        Assert.Equal("Body", layeredPdf.GetPage(1).Text);
         using var source = new MemoryStream(VectorShape("ellipse")); using var output = new MemoryStream();
         var options = new ConversionOptions(); options.Pdf.Conformance = PdfConformance.PdfA2b;
         Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken));

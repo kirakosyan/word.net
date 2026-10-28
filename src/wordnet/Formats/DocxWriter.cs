@@ -28,6 +28,7 @@ internal sealed partial class DocxWriter
     internal static void Write(DocumentModel document, Stream output, ConversionContext context)
     {
         var writer = new DocxWriter(context) { model = document };
+        _ = LinkedTextBoxes.Validate(document, context);
         ObjectOutputBudget(document, context);
         if (DocumentReferences.HasFields(document)) _ = DocumentReferences.Refresh(document, context, paginate: false);
         writer.RegisterStories(document);
@@ -116,6 +117,7 @@ internal sealed partial class DocxWriter
     private void AttachSection(XElement body, PageSettings settings)
     {
         XElement? last = body.Elements().LastOrDefault();
+        if (last?.Name == W + "moveFromRangeEnd" || last?.Name == W + "moveToRangeEnd") last = last.ElementsBeforeSelf().LastOrDefault();
         while (last?.Name == W + "sdt") last = last.Element(W + "sdtContent")?.Elements().LastOrDefault();
         if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
         XElement? properties = last.Element(W + "pPr");

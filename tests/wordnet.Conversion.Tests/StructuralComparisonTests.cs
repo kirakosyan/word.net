@@ -126,6 +126,81 @@ public sealed class StructuralComparisonTests
         Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(duplicateOld, duplicateNew, Attribution, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Fact]
+    public void DuplicateParagraphEditedBeforeAnotherOccurrenceIsNotAMove()
+    {
+        WordDocument old = Load(P("Yes") + P("Question 2") + P("Yes"));
+        WordDocument revised = Load(P("No") + P("Question 2") + P("Yes"));
+        WordDocument result = DocumentComparison.Compare(old, revised, Attribution, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Visible(old), Visible(result.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken)));
+        Assert.Equal(Visible(revised), Visible(result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)));
+        Assert.DoesNotContain(result.Revisions, item => item.Structure == "paragraph");
+    }
+    [Fact]
+    public void UniqueMoveCanAccompanyAnUnrelatedParagraphEdit()
+    {
+        WordDocument old = Load(P("One") + P("Two") + P("Three") + P("Four") + P("Old"));
+        WordDocument revised = Load(P("Two") + P("Three") + P("One") + P("Four") + P("New"));
+        WordDocument result = DocumentComparison.Compare(old, revised, Attribution, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Visible(old), Visible(result.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken)));
+        Assert.Equal(Visible(revised), Visible(result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)));
+        byte[] bytes = Save(result); using var package = WordprocessingDocument.Open(new MemoryStream(bytes), false);
+        Assert.Empty(new OpenXmlValidator().Validate(package, TestContext.Current.CancellationToken));
+    }
+    [Fact]
+    public void ReorderedEmptyParagraphUsesOrdinaryStructuralRevisions()
+    {
+        WordDocument old = Load(P("") + P("A") + P("B") + P("C"));
+        WordDocument revised = Load(P("A") + P("B") + P("C") + P(""));
+        WordDocument result = DocumentComparison.Compare(old, revised, Attribution, cancellationToken: TestContext.Current.CancellationToken);
+        byte[] bytes = Save(result); using var package = WordprocessingDocument.Open(new MemoryStream(bytes), false);
+        Assert.Empty(new OpenXmlValidator().Validate(package, TestContext.Current.CancellationToken));
+        var accepted = result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken).Paragraphs;
+        var rejected = result.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken).Paragraphs;
+        Assert.Equal("A|B|C|", string.Join("|", accepted.Select(paragraph => paragraph.Text)));
+        Assert.Equal("|A|B|C", string.Join("|", rejected.Select(paragraph => paragraph.Text)));
+    }
+    [Fact]
+    public void SmallStructuralComparisonDoesNotChargePackageBytesAsSteps()
+    {
+        WordDocument old = Load(P("A") + P("B"));
+        WordDocument revised = Load(P("A") + P("Added") + P("B"));
+        var options = new ComparisonOptions("Reviewer", new DateTimeOffset(2026, 10, 25, 12, 0, 0, TimeSpan.Zero)) { MaximumSteps = 5000 };
+        WordDocument result = DocumentComparison.Compare(old, revised, options, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Visible(revised), Visible(result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)));
+    }
+    [Fact]
+    public void MatchingTextComparisonDoesNotImposeTheStructuralSectionLimit()
+    {
+        const string section = "<w:sectPr><w:pgSz w:w='12240' w:h='15840'/></w:sectPr>";
+        string body = string.Concat(Enumerable.Range(0, 70).Select(i => P("Paragraph " + i).Replace("<w:p>", "<w:p><w:pPr>" + section + "</w:pPr>")));
+        WordDocument old = Load(body + section), revised = Load(body.Replace("Paragraph 42", "Changed 42") + section);
+        WordDocument result = DocumentComparison.Compare(old, revised, Attribution, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Visible(revised), Visible(result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)));
+    }
+    [Fact]
+    public void MatchingLargeDocumentsUseTheConfiguredWorkBudget()
+    {
+        string body = string.Concat(Enumerable.Range(0, 6000).Select(i => P("Paragraph " + i)));
+        WordDocument old = Load(body), revised = Load(body.Replace("Paragraph 4200", "Changed 4200"));
+        WordDocument result = DocumentComparison.Compare(old, revised, Attribution, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Visible(revised), Visible(result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)));
+    }
+    [Fact]
+    public void MovedParagraphAtSectionEndKeepsTheSectionBoundary()
+    {
+        const string section = "<w:sectPr><w:pgSz w:w='12240' w:h='15840'/></w:sectPr>";
+        string Boundary(string text) => P(text).Replace("<w:p>", "<w:p><w:pPr>" + section + "</w:pPr>");
+        WordDocument old = Load(P("Move") + P("A") + Boundary("B") + P("Next section") + section);
+        WordDocument revised = Load(P("A") + P("B") + Boundary("Move") + P("Next section") + section);
+        WordDocument result = DocumentComparison.Compare(old, revised, Attribution, cancellationToken: TestContext.Current.CancellationToken);
+        byte[] bytes = Save(result); using var package = WordprocessingDocument.Open(new MemoryStream(bytes), false);
+        Assert.Empty(new OpenXmlValidator().Validate(package, TestContext.Current.CancellationToken));
+        WordDocument reloaded = WordDocument.Load(new MemoryStream(bytes), DocumentFormat.Docx, new ReviewLoadOptions(), out _, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Visible(revised), Visible(reloaded.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)));
+        Assert.Equal(Visible(old), Visible(reloaded.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken)));
+        Assert.Equal(2, Body(Save(reloaded.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken))).Descendants(W + "sectPr").Count());
+    }
+    [Fact]
     public void IndependentlyAuthoredMovePairAndMalformedRangesAreValidated()
     {
         const string metadata = " w:author='Author' w:date='2026-10-25T12:00:00Z'";

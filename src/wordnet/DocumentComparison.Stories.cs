@@ -32,6 +32,7 @@ public static partial class DocumentComparison
     private static List<(ParagraphBlock Old, ParagraphBlock New)> MatchingStories(DocumentModel left, DocumentModel right, ConversionContext context)
     {
         var pairs = new List<(ParagraphBlock, ParagraphBlock)>();
+        if (!HasStories(left) && !HasStories(right)) return pairs;
         List<PageSettings?> a = StorySections(left, context), b = StorySections(right, context);
         if (a.Count != b.Count) return pairs;
         var mapping = new Dictionary<List<DocumentBlock>, List<DocumentBlock>>();
@@ -65,6 +66,7 @@ public static partial class DocumentComparison
 
     private static void NormalizePlainStories(DocumentModel document, ConversionContext context)
     {
+        if (!HasStories(document)) return;
         foreach (List<DocumentBlock> story in StorySections(document, context).Where(s => s != null).SelectMany(s => s!.Stories.Values).Distinct())
         {
             context.CheckCancellation(); if (!PlainStory(story)) continue;
@@ -75,4 +77,7 @@ public static partial class DocumentComparison
             }
         }
     }
+
+    private static bool HasStories(DocumentModel document) => document.Blocks.Select(b => b.Section)
+        .Concat(new[] { document.FinalSection }).Any(section => section != null && section.Stories.Count != 0);
 }

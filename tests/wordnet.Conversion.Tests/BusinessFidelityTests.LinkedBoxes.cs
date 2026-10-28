@@ -54,9 +54,20 @@ public sealed partial class BusinessFidelityTests
         string autofit = LinkedBox(0, 50, 50, 45, "text").Replace("<a:noAutofit/>", "<a:normAutofit/>");
         Assert.Throws<NotSupportedException>(() => Export(Docx(autofit + LinkedBox(1, 50, 120, 80) + Page), DocumentFormat.Docx));
         string layered = LinkedBox(0, 50, 50, 45, "text").Replace("behindDoc='0'", "behindDoc='0' relativeHeight='1'");
-        Assert.Throws<NotSupportedException>(() => Export(Docx(layered + LinkedBox(1, 50, 120, 80) + Page), DocumentFormat.Docx));
+        Schema(Export(Docx(layered + LinkedBox(1, 50, 120, 80) + Page), DocumentFormat.Docx));
         string longText = string.Join(" ", Enumerable.Repeat("linked", 300));
         Assert.Throws<NotSupportedException>(() => Export(Docx(LinkedBox(0, 50, 50, 45, longText) + LinkedBox(1, 50, 120, 45) + Page), DocumentFormat.Pdf));
+    }
+    [Fact]
+    public void UnsupportedChainCanBeFlattenedWithAnExplicitLoss()
+    {
+        string rotated = LinkedBox(0, 50, 50, 45, "head text").Replace("<a:prstGeom", "<a:xfrm rot='5400000'/><a:prstGeom");
+        using var source = new System.IO.MemoryStream(Docx(rotated + LinkedBox(1, 50, 120, 80) + Page));
+        using var output = new System.IO.MemoryStream();
+        ConversionResult result = new WordConverter().Convert(source, output, DocumentFormat.Docx, DocumentFormat.Text,
+            new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "Shape.TextBoxLayout" || diagnostic.Code == "Shape.TextBoxFlattened");
+        Assert.Contains("head text", System.Text.Encoding.UTF8.GetString(output.ToArray()), StringComparison.Ordinal);
     }
     [Fact]
     public void DefaultZeroStoryIdentifierLinksAnUnnumberedHead()
@@ -66,5 +77,13 @@ public sealed partial class BusinessFidelityTests
         byte[] output = Export(Docx(head + continuation + Page), DocumentFormat.Docx); Schema(output);
         using PdfDocument pdf = PdfDocument.Open(Export(output, DocumentFormat.Pdf));
         Assert.Equal(string.Concat(Enumerable.Repeat("linked", 12)), string.Concat(pdf.GetPage(1).Letters.Select(l => l.Value)).Replace(" ", ""));
+    }
+    [Fact]
+    public void MultipleImplicitZeroHeadsAreRejectedAsAmbiguous()
+    {
+        string head = LinkedBox(0, 50, 50, 45, "head").Replace("<wps:txbx id='42'>", "<wps:txbx>");
+        string other = LinkedBox(0, 220, 50, 45, "ordinary").Replace("<wps:txbx id='42'>", "<wps:txbx>");
+        string continuation = LinkedBox(1, 50, 120, 80).Replace("id='42' seq='1'", "id='0' seq='1'");
+        Assert.Throws<System.IO.InvalidDataException>(() => Export(Docx(head + other + continuation + Page), DocumentFormat.Docx));
     }
 }

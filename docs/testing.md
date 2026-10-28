@@ -17,6 +17,12 @@ package contains all five target assets, XML documentation and license notices.
 Framework execution requires a compatible Windows host; hosted checks and other
 platform qualification are separate.
 
+The PR review follow-up adds comparison, drawing and revision regressions. The
+final local Linux x64 .NET 8 and .NET 10 suites each passed 1,484 tests with OCR
+and no skips; hosted checks are recorded with the PR. The original
+Framework 4.7.2 guest report passed 1,471 cases, but its host gate failed because
+the pinned case count still said 1,435; the count now tracks the enlarged suite.
+
 ## Mixed report regions — merged source
 
 The independently authored OOXML tests in

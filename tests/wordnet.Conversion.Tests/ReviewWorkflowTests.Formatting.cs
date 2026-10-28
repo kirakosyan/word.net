@@ -9,6 +9,17 @@ namespace WordNet.Tests;
 public sealed partial class ReviewWorkflowTests
 {
     [Fact]
+    public void FormatHistoryPreservesTabsAndLineBreaksAfterReload()
+    {
+        WordDocument old = Load(Input("<w:p><w:r><w:t>Name:</w:t><w:tab/><w:t>Value</w:t><w:br/><w:t>Next</w:t></w:r></w:p>"));
+        WordDocument revised = Load(Input("<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Name:</w:t><w:tab/><w:t>Value</w:t><w:br/><w:t>Next</w:t></w:r></w:p>"));
+        WordDocument compared = DocumentComparison.Compare(old, revised, new ComparisonOptions("Reviewer", Time), Policy(), TestContext.Current.CancellationToken);
+        byte[] reviewed = Save(compared); Schema(reviewed);
+        WordDocument reloaded = Load(reviewed); Assert.Single(reloaded.Revisions);
+        Assert.Equal("Name:\tValue\nNext", reloaded.Paragraphs[0].Text);
+        Assert.Equal("Name:\tValue\nNext", reloaded.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken).Paragraphs[0].Text);
+    }
+    [Fact]
     public void FormatHistoryKeepsBothAppearancesAndExplicitViews()
     {
         string content = "<w:p><w:r><w:rPr><w:b/><w:color w:val='C00000'/><w:sz w:val='32'/><w:rPrChange w:id='12' w:author='Reviewer' w:date='2026-10-19T12:00:00Z'><w:rPr><w:i/><w:color w:val='0000FF'/><w:sz w:val='20'/></w:rPr></w:rPrChange></w:rPr><w:t>café</w:t></w:r></w:p>";

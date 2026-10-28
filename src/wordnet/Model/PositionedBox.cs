@@ -12,6 +12,7 @@ internal sealed class DrawingAnchor
     internal double Y { get; set; }
     internal string Wrap { get; set; } = "none";
     internal bool Behind { get; set; }
+    internal uint RelativeHeight { get; set; }
     internal bool UnqualifiedLayer { get; set; }
     internal CellPadding Distance { get; set; } = new CellPadding();
 }

@@ -20,6 +20,8 @@ internal sealed class FixedPage
     internal List<PositionedText> Text { get; } = new List<PositionedText>();
     internal List<FixedShape> Shapes { get; } = new List<FixedShape>();
     internal List<(double X, double Y, double Width, double Height, string Wrap)> Exclusions { get; } = new List<(double, double, double, double, string)>();
+    internal List<(DrawingAnchor Anchor, double X, double Y, double Width, double Height, bool Guarded)> DrawingBounds { get; } = new List<(DrawingAnchor, double, double, double, double, bool)>();
+    internal bool HasGuardedDrawing { get; set; }
     internal HashSet<PageSettings> Sections { get; } = new HashSet<PageSettings>();
     internal int PageNumber { get; set; } = 1;
     internal bool ParityBlank { get; set; }
@@ -979,6 +981,23 @@ internal static partial class FixedLayout
 
         void PlaceOn(FixedPage destination, Line line, double top)
         {
+            void CheckDrawingOrder(DrawingAnchor anchor, (double X, double Y, double Width, double Height, string Wrap) bounds, bool guarded)
+            {
+                if (!guarded && !destination.HasGuardedDrawing)
+                { destination.DrawingBounds.Add((anchor, bounds.X, bounds.Y, bounds.Width, bounds.Height, false)); return; }
+                destination.HasGuardedDrawing |= guarded;
+                foreach (var previous in destination.DrawingBounds)
+                {
+                    context.CheckCancellation();
+                    if (!(guarded || previous.Guarded)) continue;
+                    context.ReserveBoxFitWork(1);
+                    if (anchor.RelativeHeight == 0 && previous.Anchor.RelativeHeight == 0) continue;
+                    if (bounds.X < previous.X + previous.Width && previous.X < bounds.X + bounds.Width
+                        && bounds.Y < previous.Y + previous.Height && previous.Y < bounds.Y + bounds.Height)
+                        context.Loss("Shape.DrawingOrder", "Overlapping drawings with explicit layers are outside the managed drawing profile.");
+                }
+                destination.DrawingBounds.Add((anchor, bounds.X, bounds.Y, bounds.Width, bounds.Height, guarded));
+            }
             context.PageNumberFormat = sourceSettings.PageNumberFormat;
             destination.Shapes.AddRange(line.Shapes.Select(s => s.At(s.X + settings.Left - line.PageLeft, s.Y + top)));
             foreach (PositionedText item in line.Items)
@@ -998,6 +1017,8 @@ internal static partial class FixedLayout
                             throw new NotSupportedException("Shape.VectorProfile: Vector shapes require managed ordinary fixed output.");
                         var vectorBounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
                         double halfStroke = (box.Border?.Width ?? 0) / 2;
+                        CheckDrawingOrder(box.Anchor, (vectorBounds.X - halfStroke, vectorBounds.Y - halfStroke,
+                            vectorBounds.Width + 2 * halfStroke, vectorBounds.Height + 2 * halfStroke, vectorBounds.Wrap), true);
                         if (vectorBounds.X - halfStroke < 0 || vectorBounds.Y - halfStroke < 0
                             || vectorBounds.X + vectorBounds.Width + halfStroke > settings.Width || vectorBounds.Y + vectorBounds.Height + halfStroke > settings.Height)
                             throw new NotSupportedException("Layout.AnchorBounds: Vector strokes must fit inside the physical page.");
@@ -1014,6 +1035,7 @@ internal static partial class FixedLayout
                         throw new NotSupportedException("Shape.TextBoxContent: Rotated or fitted boxes support ordinary managed paragraphs only.");
                     var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y, validate: box.Rotation == 0);
                     var visualBounds = RotatedBounds(bounds, box.Rotation);
+                    CheckDrawingOrder(box.Anchor, visualBounds, box.Rotation != 0 || box.ShrinkToFit || model.HasLinkedTextBoxes && box.StoryId != null);
                     double boxStroke = (box.Border?.Width ?? 0) / 2;
                     if (box.Rotation != 0 && (visualBounds.X - boxStroke < 0 || visualBounds.Y - boxStroke < 0 || visualBounds.X + visualBounds.Width + boxStroke > settings.Width || visualBounds.Y + visualBounds.Height + boxStroke > settings.Height))
                         throw new NotSupportedException("Layout.AnchorBounds: A rotated text box extends outside the physical page.");
@@ -1145,6 +1167,7 @@ internal static partial class FixedLayout
                 if (item.Image?.Anchor is DrawingAnchor anchor)
                 {
                     var bounds = DrawingBounds(anchor, item.Image.Width, item.Image.Height, top + item.Y);
+                    CheckDrawingOrder(anchor, bounds, false);
                     placed = item.At(bounds.X, bounds.Y + item.Image.Height); RememberExclusion(anchor, bounds);
                 }
                 if (item.Field != null)
