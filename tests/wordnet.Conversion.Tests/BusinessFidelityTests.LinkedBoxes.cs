@@ -86,4 +86,15 @@ public sealed partial class BusinessFidelityTests
         string continuation = LinkedBox(1, 50, 120, 80).Replace("id='42' seq='1'", "id='0' seq='1'");
         Assert.Throws<System.IO.InvalidDataException>(() => Export(Docx(head + other + continuation + Page), DocumentFormat.Docx));
     }
+    [Fact]
+    public void ExplicitZeroHeadDoesNotCaptureUnrelatedImplicitBoxes()
+    {
+        string head = LinkedBox(0, 50, 50, 45, "chain").Replace("id='42'", "id='0'");
+        string continuation = LinkedBox(1, 50, 120, 80).Replace("id='42'", "id='0'");
+        string ordinary = LinkedBox(0, 220, 50, 45, "ordinary").Replace("<wps:txbx id='42'>", "<wps:txbx>");
+        byte[] output = Export(Docx(ordinary + head + continuation + Page), DocumentFormat.Docx); Schema(output);
+        using PdfDocument pdf = PdfDocument.Open(Export(output, DocumentFormat.Pdf));
+        Assert.Contains("ordinary", pdf.GetPage(1).Text, StringComparison.Ordinal);
+        Assert.Contains("chain", pdf.GetPage(1).Text, StringComparison.Ordinal);
+    }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using WordNet.Model;
+using WordNet.Internal;
 
 namespace WordNet.Formats;
 
@@ -42,9 +43,7 @@ internal sealed partial class DocxReader
         if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed header/footer field.");
         if (context.PreserveReview && reader.review.HasHistory)
         {
-            if (reader.review.Comments.Count != 0 || blocks.Exists(b => b is not ParagraphBlock)
-                || DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any(p => p.Control != null || p.NestedControl != null || p.TypedControlId != null || p.List != null || p.Runs.Any(r => r.FieldInstruction != null || r.Control != null
-                    || r.TypedControlId != null || r.Image != null || r.Box != null || r.Note != null || r.Bookmark != null || r.Link != null || r.Object != null || r.FormatRevision != null)))
+            if (reader.review.Comments.Count != 0 || blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true)))
                 throw new NotSupportedException("Review.Story: Story history requires ordinary plain-text paragraphs.");
             string prefix = "story-" + storyCache.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + "-";
             foreach (ParagraphBlock paragraph in blocks.Cast<ParagraphBlock>())

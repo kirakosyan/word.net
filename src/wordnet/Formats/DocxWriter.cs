@@ -255,21 +255,27 @@ internal sealed partial class DocxWriter
         }
         if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily)));
 
-        if (run.Bold || run.FormatRevision != null || run.ExplicitFormat)
+        if (run.Bold || run.FormatRevision != null || run.ExplicitFormat || appearance.ReviewCompanions?.Contains("bCs") == true)
         {
             properties.Add(new XElement(W + "b", run.Bold ? null : new XAttribute(W + "val", "0")));
         }
 
-        if (run.Italic || run.FormatRevision != null || run.ExplicitFormat)
+        if (run.Italic || run.FormatRevision != null || run.ExplicitFormat || appearance.ReviewCompanions?.Contains("iCs") == true)
         {
             properties.Add(new XElement(W + "i", run.Italic ? null : new XAttribute(W + "val", "0")));
         }
+        XElement? companions = appearance.ReviewCompanions == null ? null : XElement.Parse(appearance.ReviewCompanions);
+        if (companions?.Element(W + "bCs") is XElement boldCs) properties.Element(W + "b")!.AddAfterSelf(new XElement(boldCs));
+        if (companions?.Element(W + "iCs") is XElement italicCs) properties.Element(W + "i")!.AddAfterSelf(new XElement(italicCs));
         if (appearance.Strike) properties.Add(new XElement(W + "strike"));
+        if (companions?.Element(W + "noProof") is XElement proof) properties.Add(new XElement(proof));
         if (run.Color != null || run.FormatRevision != null || run.ExplicitFormat) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color ?? "auto")));
         if ((run.FontSize ?? fallbackFontSize) is double pointSize) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(pointSize * 2)))));
+        if (companions?.Element(W + "szCs") is XElement sizeCs) properties.Add(new XElement(sizeCs));
         if (appearance.Underline) properties.Add(new XElement(W + "u", new XAttribute(W + "val", "single")));
         if (appearance.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", appearance.Background)));
         if (appearance.VerticalAlignment != null) properties.Add(new XElement(W + "vertAlign", new XAttribute(W + "val", appearance.VerticalAlignment)));
+        if (companions?.Element(W + "lang") is XElement language) properties.Add(new XElement(language));
 
         if (run.FormatRevision != null)
         {

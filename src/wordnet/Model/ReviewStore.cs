@@ -52,9 +52,7 @@ internal sealed class ReviewStore
             context.CheckCancellation();
             bool history = DocumentModel.Expand(story).OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Revision != null));
             if (!history) continue;
-            if (story.Any(b => b is not ParagraphBlock) || story.Cast<ParagraphBlock>().Any(p => p.Control != null || p.NestedControl != null || p.TypedControlId != null || p.List != null || p.StructuralRevision != null
-                || p.Runs.Any(r => r.Object != null || r.Image != null || r.Box != null || r.Note != null || r.FieldInstruction != null || r.Control != null
-                    || r.TypedControlId != null || r.Bookmark != null || r.Comment != null || r.Link != null || r.FormatRevision != null)))
+            if (story.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true)))
                 throw new NotSupportedException("Review.Story: Story history requires ordinary plain-text paragraphs.");
             storyParagraphs.UnionWith(story.Cast<ParagraphBlock>());
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using UglyToad.PdfPig;
 using Xunit;
 
@@ -8,6 +9,31 @@ namespace WordNet.Tests;
 
 public sealed partial class ReviewWorkflowTests
 {
+    [Fact]
+    public void MirroredWordCompanionsSurviveHistoryDecisionsCompositionAndReload()
+    {
+        string old = "<w:b w:val='0'/><w:bCs w:val='0'/><w:i/><w:iCs/><w:sz w:val='20'/><w:szCs w:val='20'/><w:noProof/><w:lang w:val='en-US' w:bidi='ar-SA'/>";
+        string current = "<w:b/><w:bCs/><w:i w:val='0'/><w:iCs w:val='0'/><w:sz w:val='28'/><w:szCs w:val='28'/><w:noProof/><w:lang w:val='en-US' w:bidi='ar-SA'/>";
+        WordDocument source = Load(Input("<w:p><w:r><w:rPr>" + current + "<w:rPrChange w:id='1' w:author='Word'><w:rPr>" + old
+            + "</w:rPr></w:rPrChange></w:rPr><w:t>Companions</w:t></w:r></w:p>"));
+        byte[] history = Save(source); Schema(history);
+        Assert.Equal(2, Part(history).Descendants(W + "szCs").Count());
+        foreach (ReviewDecision decision in new[] { ReviewDecision.Accept, ReviewDecision.Reject })
+        {
+            WordDocument view = source.CreateReviewView(decision, cancellationToken: TestContext.Current.CancellationToken);
+            WordDocument combined = Load(Input(P("Prefix"))); combined.Append(view, cancellationToken: TestContext.Current.CancellationToken);
+            byte[] saved = Save(Load(Save(combined))); Schema(saved);
+            XElement properties = Part(saved).Descendants(W + "r").Single(r => r.Element(W + "t")?.Value == "Companions").Element(W + "rPr")!;
+            Assert.Equal(decision == ReviewDecision.Accept ? "28" : "20", (string?)properties.Element(W + "szCs")!.Attribute(W + "val"));
+            Assert.Equal(decision == ReviewDecision.Accept ? null : "0", (string?)properties.Element(W + "bCs")!.Attribute(W + "val"));
+            Assert.Equal("ar-SA", (string?)properties.Element(W + "lang")!.Attribute(W + "bidi"));
+            Assert.NotNull(properties.Element(W + "noProof")); Assert.Empty(Part(saved).Descendants(W + "rPrChange"));
+        }
+        Assert.Equal(history, Save(source));
+        string mismatch = current.Replace("<w:szCs w:val='28'/>", "<w:szCs w:val='30'/>");
+        Assert.Throws<NotSupportedException>(() => Load(Input("<w:p><w:r><w:rPr>" + mismatch + "<w:rPrChange w:id='1' w:author='Word'><w:rPr>" + old
+            + "</w:rPr></w:rPrChange></w:rPr><w:t>Companions</w:t></w:r></w:p>")));
+    }
     [Fact]
     public void FormatHistoryPreservesTabsAndLineBreaksAfterReload()
     {

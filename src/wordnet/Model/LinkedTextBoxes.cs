@@ -24,6 +24,9 @@ internal static class LinkedTextBoxes
         foreach (var group in owners.GroupBy(pair => pair.Box.StoryId))
         {
             context.CheckCancellation(); var entries = group.ToArray();
+            // An explicit head identifies zero without capturing unrelated implicit heads.
+            if (entries.Any(e => e.Box.StorySequence == 0 && !e.Box.ImplicitStoryId))
+                entries = entries.Where(e => e.Box.StorySequence > 0 || !e.Box.ImplicitStoryId).ToArray();
             if (!entries.Any(e => e.Box.StorySequence > 0)) continue;
             context.ReserveBoxFitWork(entries.Length);
             if (entries.Length is < 2 or > 64 || entries[0].Box.StorySequence != 0
@@ -38,10 +41,7 @@ internal static class LinkedTextBoxes
                     || entry.Paragraph.Control != null || entry.Paragraph.NestedControl != null || entry.Paragraph.TypedControlId != null || entry.Paragraph.List != null
                     || box.StorySequence > 0 && box.Blocks.Count != 0)
                     throw new NotSupportedException("Shape.TextBoxChain: Chains require fixed, unrotated same-section boxes with content only in the head.");
-                if (box.Blocks.Any(b => b is not ParagraphBlock) || box.Blocks.Cast<ParagraphBlock>().Any(p => p.Control != null || p.NestedControl != null || p.TypedControlId != null || p.List != null
-                    || p.Runs.Any(r => r.Image != null || r.Box != null || r.Note != null || r.Object != null || r.Control != null || r.TypedControlId != null
-                        || r.Link != null || r.FieldInstruction != null || r.Bookmark != null || r.Revision != null || r.FormatRevision != null || r.Comment != null
-                        || r.Appearance.Underline || r.Appearance.Strike || r.Appearance.Background != null)))
+                if (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, decorations: false, structuralHistory: true)))
                     throw new NotSupportedException("Shape.TextBoxChain: Chain content supports ordinary paragraphs only.");
             }
             List<PositionedBox> chain = entries.Select(e => e.Box).ToList();

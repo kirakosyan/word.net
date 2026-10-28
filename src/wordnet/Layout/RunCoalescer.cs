@@ -32,5 +32,6 @@ internal static class RunCoalescer
         && a.Bold == b.Bold && a.Italic == b.Italic && a.Code == b.Code && a.Link == b.Link && a.FontSize == b.FontSize && a.Color == b.Color
         && string.Equals(a.Appearance.FontFamily, b.Appearance.FontFamily, StringComparison.OrdinalIgnoreCase)
         && a.Appearance.Background == b.Appearance.Background && a.Appearance.Underline == b.Appearance.Underline
-        && a.Appearance.Strike == b.Appearance.Strike && a.Appearance.VerticalAlignment == b.Appearance.VerticalAlignment;
+        && a.Appearance.Strike == b.Appearance.Strike && a.Appearance.VerticalAlignment == b.Appearance.VerticalAlignment
+        && a.Appearance.ReviewCompanions == b.Appearance.ReviewCompanions;
 }
