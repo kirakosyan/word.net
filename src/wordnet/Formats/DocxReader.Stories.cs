@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using WordNet.Model;
 using WordNet.Internal;
+using WordNet.Model;
 
 namespace WordNet.Formats;
 
