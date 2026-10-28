@@ -43,7 +43,11 @@ internal sealed partial class DocxWriter
                 writer.AttachSection(body, previousSection ?? new PageSettings());
             }
             previousSection = group.Last.Section;
+            ReviewRecord? move = block is ParagraphBlock paragraph && paragraph.StructuralRevision != null
+                ? document.Review.Revisions[paragraph.StructuralRevision] : null;
+            if (move != null && move.MoveSide.Length != 0) body.Add(writer.MoveRange(move, true));
             body.Add(group.Content);
+            if (move != null && move.MoveSide.Length != 0) body.Add(writer.MoveRange(move, false));
         }
 
         if (!body.HasElements)
@@ -180,7 +184,8 @@ internal sealed partial class DocxWriter
             }
             if (revisionParent != null)
             {
-                if (model.Review.Revisions[run.Revision!].Deletion) foreach (XElement text in runElements.SelectMany(e => e.Descendants(W + "t"))) text.Name = W + "delText";
+                if (model.Review.Revisions[run.Revision!].Deletion && model.Review.Revisions[run.Revision!].MoveSide.Length == 0)
+                    foreach (XElement text in runElements.SelectMany(e => e.Descendants(W + "t"))) text.Name = W + "delText";
                 revisionParent.Add(runElements); continue;
             }
             if (run.Link == null)
@@ -248,21 +253,38 @@ internal sealed partial class DocxWriter
         }
         if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily)));
 
-        if (run.Bold)
+        if (run.Bold || run.FormatRevision != null || run.ExplicitFormat)
         {
-            properties.Add(new XElement(W + "b"));
+            properties.Add(new XElement(W + "b", run.Bold ? null : new XAttribute(W + "val", "0")));
         }
 
-        if (run.Italic)
+        if (run.Italic || run.FormatRevision != null || run.ExplicitFormat)
         {
-            properties.Add(new XElement(W + "i"));
+            properties.Add(new XElement(W + "i", run.Italic ? null : new XAttribute(W + "val", "0")));
         }
         if (appearance.Strike) properties.Add(new XElement(W + "strike"));
-        if (run.Color != null) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color)));
+        if (run.Color != null || run.FormatRevision != null || run.ExplicitFormat) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color ?? "auto")));
         if ((run.FontSize ?? fallbackFontSize) is double pointSize) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(pointSize * 2)))));
         if (appearance.Underline) properties.Add(new XElement(W + "u", new XAttribute(W + "val", "single")));
         if (appearance.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", appearance.Background)));
         if (appearance.VerticalAlignment != null) properties.Add(new XElement(W + "vertAlign", new XAttribute(W + "val", appearance.VerticalAlignment)));
+
+        if (run.FormatRevision != null)
+        {
+            ReviewRecord record = model.Review.Revisions[run.FormatRevision];
+            XElement oldProperties = Run(run.PreviousFormat!, fallbackFontSize).Element(W + "rPr") ?? new XElement(W + "rPr");
+            InsertMissing(oldProperties, "b", run.PreviousFormat!.Bold);
+            InsertMissing(oldProperties, "i", run.PreviousFormat.Italic);
+            if (oldProperties.Element(W + "color") == null)
+            {
+                XElement color = new XElement(W + "color", new XAttribute(W + "val", "auto"));
+                XElement? next = oldProperties.Elements().FirstOrDefault(e => e.Name == W + "sz" || e.Name == W + "u" || e.Name == W + "shd" || e.Name == W + "vertAlign");
+                if (next == null) oldProperties.Add(color); else next.AddBeforeSelf(color);
+            }
+            var change = new XElement(W + "rPrChange", new XAttribute(W + "id", ReviewId(reviewIds, record.Id)), new XAttribute(W + "author", record.Author));
+            if (record.Date.HasValue) change.Add(new XAttribute(W + "date", record.Date.Value.ToString("o", CultureInfo.InvariantCulture)));
+            change.Add(oldProperties); properties.Add(change);
+        }
 
         if (properties.HasElements)
         {
@@ -306,6 +328,15 @@ internal sealed partial class DocxWriter
         }
 
         return element;
+
+        void InsertMissing(XElement target, string name, bool enabled)
+        {
+            if (enabled || target.Element(W + name) != null) return;
+            var value = new XElement(W + name, new XAttribute(W + "val", "0"));
+            XElement? next = target.Elements().FirstOrDefault(e => (name == "b" && e.Name == W + "i") || e.Name == W + "strike"
+                || e.Name == W + "color" || e.Name == W + "sz" || e.Name == W + "u" || e.Name == W + "shd" || e.Name == W + "vertAlign");
+            if (next == null) target.Add(value); else next.AddBeforeSelf(value);
+        }
     }
 
     private XElement Table(TableBlock table)

@@ -1,5 +1,22 @@
 # Conversion tests and qualification
 
+## P4/P5 source under review
+
+The [P4/P5 profile](roadmap-102-p4-p5.md) has independently authored OOXML
+fixtures for formatting history, move ranges, sections, story variants, rotated
+and linked text boxes, autofit and vector geometry. Tests inspect Open XML schema,
+accepted/rejected output, PDF text and geometry, XPS paths and SVG outlines, with
+negative ownership, resource and unsupported-combination controls. Final source,
+package and platform qualification must be reported separately from the dated P3
+results below; no publication or new platform qualification is implied.
+
+On Linux x64, locked restore and the five-target Release build passed. The complete
+.NET 10 and .NET 8 suites each passed 1,471 tests with English OCR provisioned in
+the test process and no skips. Format verification and local pack passed; the
+package contains all five target assets, XML documentation and license notices.
+Framework execution requires a compatible Windows host; hosted checks and other
+platform qualification are separate.
+
 ## Mixed report regions — merged source
 
 The independently authored OOXML tests in

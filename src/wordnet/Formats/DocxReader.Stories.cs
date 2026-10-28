@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 using WordNet.Model;
 
@@ -35,8 +36,24 @@ internal sealed partial class DocxReader
         foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
         foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);
         foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);
+        reader.ValidateReviewSource(root);
         var blocks = new List<DocumentBlock>(); reader.ReadBlocks(root, blocks);
+        sawLinkedTextBox |= reader.sawLinkedTextBox;
         if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed header/footer field.");
+        if (context.PreserveReview && reader.review.HasHistory)
+        {
+            if (reader.review.Comments.Count != 0 || blocks.Exists(b => b is not ParagraphBlock)
+                || DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any(p => p.Control != null || p.NestedControl != null || p.TypedControlId != null || p.List != null || p.Runs.Any(r => r.FieldInstruction != null || r.Control != null
+                    || r.TypedControlId != null || r.Image != null || r.Box != null || r.Note != null || r.Bookmark != null || r.Link != null || r.Object != null || r.FormatRevision != null)))
+                throw new NotSupportedException("Review.Story: Story history requires ordinary plain-text paragraphs.");
+            string prefix = "story-" + storyCache.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + "-";
+            foreach (ParagraphBlock paragraph in blocks.Cast<ParagraphBlock>())
+                foreach (TextRun run in paragraph.Runs) if (run.Revision != null) run.Revision = prefix + run.Revision;
+            foreach (ReviewRecord record in reader.review.Revisions.Values)
+            {
+                record.Id = prefix + record.Id; review.Revisions.Add(record.Id, record);
+            }
+        }
         storyCache.Add(path, blocks); return blocks;
     }
 }

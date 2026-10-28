@@ -21,9 +21,18 @@ internal static class SvgPreview
         var root = new XElement(svg + "svg", new XAttribute("version", "1.1"), new XAttribute(XNamespace.Xmlns + "xlink", xlink), new XAttribute("width", N(page.Settings.Width) + "pt"), new XAttribute("height", N(page.Settings.Height) + "pt"),
             new XAttribute("viewBox", "0 0 " + N(page.Settings.Width) + " " + N(page.Settings.Height)), new XAttribute("role", "img"));
         root.Add(new XElement(svg + "rect", new XAttribute("width", "100%"), new XAttribute("height", "100%"), new XAttribute("fill", "#ffffff")));
-        foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes))
+        long length = 0; int imageId = 0;
+        foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => !s.Foreground))) AddShape(shape);
+        void AddShape(FixedShape shape)
         {
-            if (shape.Stroke == 0) root.Add(new XElement(svg + "rect", new XAttribute("x", N(shape.X)), new XAttribute("y", N(shape.Y)), new XAttribute("width", N(shape.Width)), new XAttribute("height", N(shape.Height)), new XAttribute("fill", "#" + shape.Color)));
+            if (shape.Geometry != null)
+            {
+                string data = string.Join(" ", VectorPath.Create(shape).Select(command => command.Kind + (command.Values.Length == 0 ? "" : " " + string.Join(" ", command.Values.Select(N)))));
+                length += data.Length + 200; Check();
+                root.Add(new XElement(svg + "path", new XAttribute("d", data), new XAttribute("fill", shape.Stroke == 0 ? "#" + shape.Color : "none"),
+                    shape.Stroke == 0 ? null : new XAttribute("stroke", "#" + shape.Color), shape.Stroke == 0 ? null : new XAttribute("stroke-width", N(shape.Stroke))));
+            }
+            else if (shape.Stroke == 0) root.Add(new XElement(svg + "rect", new XAttribute("x", N(shape.X)), new XAttribute("y", N(shape.Y)), new XAttribute("width", N(shape.Width)), new XAttribute("height", N(shape.Height)), new XAttribute("fill", "#" + shape.Color)));
             else foreach (int side in shape.Style == "double" ? new[] { -1, 1 } : new[] { 0 })
             {
                 double offset = side * shape.Stroke / 3;
@@ -33,7 +42,6 @@ internal static class SvgPreview
                     shape.Style is "dotted" or "dashed" ? new XAttribute("stroke-dasharray", N(shape.Stroke * (shape.Style == "dashed" ? 3 : 1)) + " " + N(shape.Stroke * (shape.Style == "dashed" ? 2 : 1))) : null));
             }
         }
-        long length = 0; int imageId = 0;
         foreach (PositionedText item in page.Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1))
         {
             context.CheckCancellation();
@@ -49,7 +57,8 @@ internal static class SvgPreview
             }
             if (item.Text.Length == 0 && item.NativeShape == null) continue;
             RenderFontCache.Face face = context.RenderFonts.Get(item.Font); TrueTypeFont font = face.Font;
-            var text = new XElement(svg + "g", new XAttribute("fill", "#" + (item.Color ?? "000000")), new XElement(svg + "title", item.Text));
+            var text = new XElement(svg + "g", new XAttribute("fill", "#" + (item.Color ?? "000000")),
+                item.Rotation == 0 ? null : new XAttribute("transform", "rotate(" + item.Rotation.ToString(CultureInfo.InvariantCulture) + " " + N(item.RotationX) + " " + N(item.RotationY) + ")"), new XElement(svg + "title", item.Text));
             double x = item.X, scale = item.Size / font.GetUnitsPerEm();
             int glyphCount = item.NativeShape?.Glyphs.Length ?? item.Text.Length;
             for (int c = 0; c < glyphCount; c++)
@@ -83,6 +92,7 @@ internal static class SvgPreview
             }
             root.Add(text);
         }
+        foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground))) AddShape(shape);
         byte[] bytes = TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting)); if (bytes.Length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: SVG exceeds output bounds."); return bytes;
         void Check() { if (length > context.Options.MaximumOutputBytes) throw new InvalidDataException("Limit.OutputBytes: SVG resources exceed output bounds."); }
         static string Point(PdfPoint p) => N(p.X) + " " + N(p.Y);

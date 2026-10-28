@@ -1,5 +1,9 @@
 # Formatting and image profile
 
+The [pending P4/P5 profile](roadmap-102-p4-p5.md) describes the bounded review,
+text-box and vector additions and their explicit exclusions. It is separate from
+the published 1.4.0 profile below.
+
 ## Mixed report regions — merged source
 
 PR #135 repeats bounded same-section paragraph/table regions, including one

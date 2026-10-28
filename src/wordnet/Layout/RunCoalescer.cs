@@ -16,7 +16,7 @@ internal static class RunCoalescer
         {
             TextRun first = runs[i];
             if (first.Object != null || first.Image != null || first.Note != null || first.Box != null || first.Bookmark != null || first.FieldInstruction != null || first.Control != null
-                || first.Revision != null || first.Comment != null || i + 1 == runs.Count || !Same(first, runs[i + 1]))
+                || first.Revision != null || first.FormatRevision != null || first.Comment != null || i + 1 == runs.Count || !Same(first, runs[i + 1]))
             { result.Add(first); continue; }
             var text = new StringBuilder(first.Text);
             while (i + 1 < runs.Count && Same(first, runs[i + 1])) text.Append(runs[++i].Text);
@@ -26,8 +26,8 @@ internal static class RunCoalescer
     }
 
     internal static bool Same(TextRun a, TextRun b) => b.Object == null && b.Image == null && b.Note == null && b.Box == null && b.Bookmark == null && b.FieldInstruction == null && b.Control == null
-        && b.Revision == null && b.Comment == null
-        && a.ControlDisplay == b.ControlDisplay && ReferenceEquals(a.ControlGlyph, b.ControlGlyph) && a.TypedControlId == b.TypedControlId
+        && b.Revision == null && b.FormatRevision == null && b.Comment == null
+        && a.ControlDisplay == b.ControlDisplay && ReferenceEquals(a.ControlGlyph, b.ControlGlyph) && a.TypedControlId == b.TypedControlId && a.ExplicitFormat == b.ExplicitFormat
         && a.BidiLevel == b.BidiLevel
         && a.Bold == b.Bold && a.Italic == b.Italic && a.Code == b.Code && a.Link == b.Link && a.FontSize == b.FontSize && a.Color == b.Color
         && string.Equals(a.Appearance.FontFamily, b.Appearance.FontFamily, StringComparison.OrdinalIgnoreCase)

@@ -34,7 +34,7 @@ public sealed class DocumentReviewItem
     internal Guid Session { get; }
     internal long Version { get; }
     internal string Id { get; }
-    /// <summary>Gets "paragraph", "row", or an empty string for a text revision/comment.</summary>
+    /// <summary>Gets "paragraph", "row", "format", or an empty string for a text revision/comment.</summary>
     public string Structure { get; }
     /// <summary>Gets the imported/caller author without attribution inference.</summary>
     public string Author { get; }
@@ -89,8 +89,9 @@ public sealed partial class WordDocument
         {
             lock (gate)
             {
-                var texts = model.BodyParagraphs.SelectMany(p => p.Runs).Where(r => r.Revision != null).GroupBy(r => r.Revision!, StringComparer.Ordinal)
+                var texts = model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Revision != null).GroupBy(r => r.Revision!, StringComparer.Ordinal)
                     .ToDictionary(g => g.Key, g => string.Concat(g.Select(r => r.Text)), StringComparer.Ordinal);
+                foreach (TextRun run in model.BodyParagraphs.SelectMany(p => p.Runs)) if (run.FormatRevision != null) texts[run.FormatRevision] = run.Text;
                 foreach (ParagraphBlock p in model.Blocks.OfType<ParagraphBlock>()) if (p.StructuralRevision != null) texts[p.StructuralRevision] = p.Text;
                 foreach (TableBlock table in model.Blocks.OfType<TableBlock>()) foreach (var pair in table.RowRevisions)
                     texts[pair.Value] = string.Join("\t", table.Rows[pair.Key].Select(c => string.Join("\n", c.Paragraphs.Select(p => p.Text))));
@@ -118,7 +119,7 @@ public sealed partial class WordDocument
     }
     private static void ValidateReviewParagraph(ParagraphBlock paragraph)
     {
-        if (paragraph.StructuralRevision != null || paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.Comment != null || r.Bookmark != null || r.Control != null
+        if (paragraph.StructuralRevision != null || paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.FormatRevision != null || r.Comment != null || r.Bookmark != null || r.Control != null
             || r.FieldInstruction != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null))
             throw new NotSupportedException("Review.Range: Recording requires a history-free paragraph without structured ranges.");
     }
@@ -220,8 +221,12 @@ public sealed partial class WordDocument
                 || paragraph.Runs.Any(r => r.Revision != null && selected.Contains(r.Revision))))
             {
                 selected.Add(paragraph.StructuralRevision);
-                foreach (TextRun run in paragraph.Runs) if (run.Revision != null) selected.Add(run.Revision);
             }
+        foreach (string id in selected.ToArray())
+            if (model.Review.Revisions[id].MovePartner is string partner) selected.Add(partner);
+        foreach (ParagraphBlock paragraph in model.Blocks.OfType<ParagraphBlock>())
+            if (paragraph.StructuralRevision != null && selected.Contains(paragraph.StructuralRevision))
+                foreach (TextRun run in paragraph.Runs) if (run.Revision != null) selected.Add(run.Revision);
         for (int index = model.Blocks.Count - 1; index >= 0; index--)
         {
             context.CheckCancellation(); DocumentBlock block = model.Blocks[index];
@@ -270,6 +275,8 @@ public sealed partial class WordDocument
             {
                 if (run.Comment != null)
                 { if (run.CommentBoundary == 1) open.Add(run.Comment); else if (run.CommentBoundary == 2) open.Remove(run.Comment); }
+                if (run.FormatRevision != null && selected.Contains(run.FormatRevision) && open.Count > 0)
+                    throw new NotSupportedException("Review.CommentIntersection: Remove intersecting comments explicitly before deciding their formatting.");
                 if (run.Revision == null || !selected.Contains(run.Revision)) continue;
                 bool remove = model.Review.Revisions[run.Revision].Deletion == (decision == ReviewDecision.Accept);
                 if (remove && open.Count > 0) throw new NotSupportedException("Review.CommentIntersection: Remove intersecting comments explicitly before consuming their text.");
@@ -279,6 +286,13 @@ public sealed partial class WordDocument
                 TextRun run = paragraph.Runs[i]; if (run.Revision == null || !selected.Contains(run.Revision)) continue;
                 if (model.Review.Revisions[run.Revision].Deletion == (decision == ReviewDecision.Accept)) paragraph.Runs.RemoveAt(i);
                 else run.Revision = null;
+            }
+            for (int i = 0; i < paragraph.Runs.Count; i++)
+            {
+                TextRun run = paragraph.Runs[i];
+                if (run.FormatRevision == null || !selected.Contains(run.FormatRevision)) continue;
+                if (decision == ReviewDecision.Reject) { paragraph.Runs[i] = run.PreviousFormat!.WithText(run.Text); paragraph.Runs[i].ExplicitFormat = true; }
+                else { run.FormatRevision = null; run.PreviousFormat = null; run.ExplicitFormat = true; }
             }
         }
         foreach (string id in selected) model.Review.Revisions.Remove(id);

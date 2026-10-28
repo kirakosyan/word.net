@@ -8,6 +8,8 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
+The pending [P4/P5 source profile](https://github.com/kirakosyan/word.net/blob/codex/roadmap-102-p4-p5/docs/roadmap-102-p4-p5.md) extends review workflows and bounded drawing support. It is not included in the published 1.4.0 packages.
+
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.
 - Compose documents and export editable DOCX or selectable-text PDF without Microsoft Office or a remote service.

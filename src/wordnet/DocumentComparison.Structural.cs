@@ -14,31 +14,37 @@ public static partial class DocumentComparison
 {
     private static readonly XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
     private static WordDocument CompareStructure(DocumentModel left, DocumentModel right, ComparisonOptions comparison,
-        ConversionOptions options, ConversionContext context)
+        ConversionOptions options, ConversionContext context, out int usedWork, out int usedTokens)
     {
         long structuralItems = (long)left.Blocks.Count + right.Blocks.Count
             + left.Tables.Sum(t => (long)t.Rows.Count) + right.Tables.Sum(t => (long)t.Rows.Count);
         if (structuralItems > Math.Min(10000, comparison.MaximumTokens)) throw new InvalidDataException("Comparison.WorkLimit: Structural alignment exceeds 10,000 combined blocks/rows or its token allowance.");
         foreach (DocumentModel document in new[] { left, right })
         {
-            if (document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }).Where(s => s != null).Distinct().Count() > 1 || document.Notes.Count != 0 || document.ObjectCount != 0
+            if (document.Notes.Count != 0 || document.ObjectCount != 0
                 || document.BodyParagraphs.Any(p => p.Control != null || p.List != null || p.Runs.Any(r => r.Image != null || r.Box != null || r.Object != null
                     || r.Note != null || r.Bookmark != null || r.FieldInstruction != null || r.Control != null || r.Link != null)))
-                throw new NotSupportedException("Comparison.Structure: Structural alignment supports plain single-section body paragraphs and simple tables.");
+                throw new NotSupportedException("Comparison.Structure: Structural alignment supports plain body paragraphs and simple tables.");
             foreach (TableBlock table in document.Blocks.OfType<TableBlock>())
                 if (table.Control != null || table.RowControls.Count != 0 || table.RowHeights.Count != 0 || table.RowLefts.Count != 0 || table.NonSplittingRows.Count != 0
                     || table.Rows.Any(row => row.Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock))))
                     throw new NotSupportedException("Comparison.Structure: Merged, nested, controlled and individually sized rows are outside structural alignment.");
         }
-        if (Global(left) != Global(right)) throw new NotSupportedException("Comparison.Structure: Metadata, section geometry and protected stories must match.");
+        int work = 0, items = 0;
+        List<PageSettings?> leftSections = Sections(left), rightSections = Sections(right);
+        if (leftSections.Count > 64 || rightSections.Count > 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
+        if (leftSections.Count != rightSections.Count || StoryTopology(leftSections) != StoryTopology(rightSections)
+            || !Global(left).SequenceEqual(Global(right)))
+            throw new NotSupportedException("Comparison.Structure: Section topology, geometry, metadata and protected stories must match.");
         TableBlock[] oldTables = left.Blocks.OfType<TableBlock>().ToArray(), newTables = right.Blocks.OfType<TableBlock>().ToArray();
         if (oldTables.Length != newTables.Length) throw new NotSupportedException("Comparison.Structure: Table insertion/deletion is outside the structural profile.");
         // Serialize each input once; signatures retain the writer's canonical XML.
         Dictionary<DocumentBlock, XElement> oldElements = Elements(left), newElements = Elements(right);
-        int work = 0, items = 0;
         for (int t = 0; t < oldTables.Length; t++)
         {
             TableBlock a = oldTables[t], b = newTables[t];
+            if (SectionIndex(leftSections, a.Section) != SectionIndex(rightSections, b.Section))
+                throw new NotSupportedException("Comparison.Structure: Tables cannot move across sections.");
             XElement ax = oldElements[a], bx = newElements[b];
             XElement[] ar = ax.Elements(W + "tr").ToArray(), br = bx.Elements(W + "tr").ToArray();
             ax.Elements(W + "tr").Remove(); bx.Elements(W + "tr").Remove();
@@ -59,20 +65,55 @@ public static partial class DocumentComparison
         }
         string[] aKeys = Keys(left, oldTables, oldElements), bKeys = Keys(right, newTables, newElements);
         var blocks = new List<DocumentBlock>();
-        PageSettings? section = left.Blocks.FirstOrDefault()?.Section ?? left.FinalSection;
-        foreach (var pair in Align(aKeys, bKeys))
+        var moveMarks = new Dictionary<string, string>(StringComparer.Ordinal);
+        var alignedBlocks = new List<(int A, int B, int Section)>();
+        for (int sectionIndex = 0; sectionIndex < leftSections.Count; sectionIndex++)
+        {
+            context.CheckCancellation();
+            long scan = (long)left.Blocks.Count + right.Blocks.Count;
+            if (scan > comparison.MaximumSteps - work) throw new InvalidDataException("Comparison.WorkLimit: Section alignment exceeds its work allowance.");
+            work += (int)scan;
+            int[] oldIndices = Enumerable.Range(0, left.Blocks.Count).Where(i => ReferenceEquals(left.Blocks[i].Section, leftSections[sectionIndex])).ToArray();
+            int[] newIndices = Enumerable.Range(0, right.Blocks.Count).Where(i => ReferenceEquals(right.Blocks[i].Section, rightSections[sectionIndex])).ToArray();
+            foreach (var pair in Align(oldIndices.Select(i => aKeys[i]).ToArray(), newIndices.Select(i => bKeys[i]).ToArray(), true))
+                alignedBlocks.Add((pair.A < 0 ? -1 : oldIndices[pair.A], pair.B < 0 ? -1 : newIndices[pair.B], sectionIndex));
+        }
+        var deletedSections = alignedBlocks.Where(p => p.B < 0).GroupBy(p => aKeys[p.A], StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => new HashSet<int>(g.Select(p => p.Section)), StringComparer.Ordinal);
+        if (alignedBlocks.Any(p => p.A < 0 && deletedSections.TryGetValue(bKeys[p.B], out HashSet<int>? sections) && !sections.Contains(p.Section)))
+            throw new NotSupportedException("Comparison.Move: Cross-section moves are unsupported.");
+        var movedKeys = new HashSet<string>(alignedBlocks.Where(p => p.B < 0).Select(p => aKeys[p.A]), StringComparer.Ordinal);
+        movedKeys.IntersectWith(alignedBlocks.Where(p => p.A < 0).Select(p => bKeys[p.B]));
+        if (movedKeys.Count != 0)
+        {
+            var oldCounts = aKeys.GroupBy(k => k, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            var newCounts = bKeys.GroupBy(k => k, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            if (movedKeys.Any(k => oldCounts[k] != 1 || newCounts[k] != 1))
+                throw new NotSupportedException("Comparison.Move: Duplicate paragraph candidates are ambiguous across sections.");
+        }
+        foreach (var pair in alignedBlocks)
         {
             if (pair.A >= 0 && pair.B >= 0) { blocks.Add(left.Blocks[pair.A]); continue; }
             DocumentBlock changed = pair.A >= 0 ? left.Blocks[pair.A] : right.Blocks[pair.B];
             if (changed is not ParagraphBlock p) throw new NotSupportedException("Comparison.Move: Table moves are unsupported.");
-            bool deletion = pair.A >= 0; p.StructuralRevision = Record(deletion, "paragraph"); p.Section = section;
+            bool deletion = pair.A >= 0; string key = deletion ? aKeys[pair.A] : bKeys[pair.B];
+            p.StructuralRevision = Record(deletion, "paragraph"); p.Section = leftSections[pair.Section];
+            if (movedKeys.Contains(key))
+            {
+                ReviewRecord mark = left.Review.Revisions[p.StructuralRevision]; mark.MoveSide = deletion ? "from" : "to";
+                if (moveMarks.TryGetValue(key, out string? partner))
+                { mark.MovePartner = partner; left.Review.Revisions[partner].MovePartner = mark.Id; }
+                else moveMarks.Add(key, mark.Id);
+            }
             if (p.Runs.Any(r => r.Text.Length != 0))
             {
                 string revision = Record(deletion, ""); foreach (TextRun run in p.Runs) run.Revision = revision;
+                if (movedKeys.Contains(key)) left.Review.Revisions[revision].MoveSide = deletion ? "from" : "to";
             }
             blocks.Add(p);
         }
         left.Blocks.Clear(); left.Blocks.AddRange(blocks);
+        usedWork = work; usedTokens = items;
         return WordDocument.ComparisonResult(left, options, context);
 
         string Record(bool deletion, string structure)
@@ -82,7 +123,7 @@ public static partial class DocumentComparison
         }
         string[] Keys(DocumentModel document, TableBlock[] tables, Dictionary<DocumentBlock, XElement> elements) => document.Blocks.Select(b => b is TableBlock table
             ? "table:" + Array.IndexOf(tables, table).ToString(System.Globalization.CultureInfo.InvariantCulture) : Key(elements[b])).ToArray();
-        List<(int A, int B)> Align(string[] a, string[] b)
+        List<(int A, int B)> Align(string[] a, string[] b, bool allowMoves = false)
         {
             items = checked(items + a.Length + b.Length);
             long cells = (a.Length + 1L) * (b.Length + 1L);
@@ -98,34 +139,112 @@ public static partial class DocumentComparison
                 lengths[i * width + j] = aSymbols[i] == bSymbols[j] ? 1 + lengths[(i + 1) * width + j + 1]
                     : Math.Max(lengths[(i + 1) * width + j], lengths[i * width + j + 1]);
             }
-            var output = new List<(int A, int B)>(); int x = 0, y = 0;
+            var output = new List<(int A, int B)>(); int x = 0, y = 0; bool ambiguous = false;
             while (x < a.Length || y < b.Length)
             {
                 context.CheckCancellation();
                 if (x < a.Length && y < b.Length && aSymbols[x] == bSymbols[y]) output.Add((x++, y++));
-                else if (x < a.Length && (y == b.Length || lengths[(x + 1) * width + y] >= lengths[x * width + y + 1])) output.Add((x++, -1));
+                else if (x < a.Length && (y == b.Length || lengths[(x + 1) * width + y] >= lengths[x * width + y + 1]))
+                { if (y < b.Length && lengths[(x + 1) * width + y] == lengths[x * width + y + 1]) ambiguous = true; output.Add((x++, -1)); }
                 else output.Add((-1, y++));
             }
             // Matching content on both unmatched sides is an ambiguous move, not an insertion.
             var removed = new HashSet<string>(output.Where(p => p.B < 0).Select(p => a[p.A]), StringComparer.Ordinal);
-            if (output.Any(p => p.A < 0 && removed.Contains(b[p.B]))) throw new NotSupportedException("Comparison.Move: Reordered content is outside structural comparison.");
+            var moved = new HashSet<string>(output.Where(p => p.A < 0 && removed.Contains(b[p.B])).Select(p => b[p.B]), StringComparer.Ordinal);
+            var oldCounts = a.GroupBy(value => value, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            var newCounts = b.GroupBy(value => value, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            if (moved.Count != 0 && (!allowMoves || ambiguous || moved.Any(key => key.StartsWith("table:", StringComparison.Ordinal)
+                || oldCounts[key] != 1 || newCounts[key] != 1)))
+                throw new NotSupportedException("Comparison.Move: Reordered content has ambiguous or unsupported ownership.");
             // Same text with different properties is a formatting revision, not a structural replacement.
-            var oldText = output.Where(p => p.B < 0).Select(p => Text(a[p.A])).ToArray();
-            if (output.Where(p => p.A < 0).Any(p => oldText.Contains(Text(b[p.B]), StringComparer.Ordinal)))
+            var oldText = new HashSet<string>(output.Where(p => p.B < 0 && !moved.Contains(a[p.A])).Select(p => Text(a[p.A])), StringComparer.Ordinal);
+            if (output.Where(p => p.A < 0 && !moved.Contains(b[p.B])).Any(p => oldText.Contains(Text(b[p.B]))))
                 throw new NotSupportedException("Comparison.Formatting: Formatting revisions are unsupported.");
             return output;
         }
-        string Global(DocumentModel source)
+        List<PageSettings?> Sections(DocumentModel document)
         {
-            DocumentModel copy = new DocumentCloner(context).Copy(source); copy.FinalSection ??= copy.Blocks.FirstOrDefault()?.Section; copy.Blocks.Clear();
-            using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(copy, stream, context); return Convert.ToBase64String(stream.ToArray());
+            var result = new List<PageSettings?>();
+            foreach (DocumentBlock block in document.Blocks)
+            {
+                context.CheckCancellation();
+                if (result.Count == 0 || !ReferenceEquals(result[result.Count - 1], block.Section))
+                {
+                    if (result.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
+                    if (result.Any(section => ReferenceEquals(section, block.Section))) throw new NotSupportedException("Comparison.Structure: Noncontiguous section ownership is unsupported.");
+                    result.Add(block.Section);
+                }
+            }
+            if (result.Count == 0 || !ReferenceEquals(result[result.Count - 1], document.FinalSection))
+            {
+                if (result.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
+                if (result.Any(section => ReferenceEquals(section, document.FinalSection))) throw new NotSupportedException("Comparison.Structure: Noncontiguous final section ownership is unsupported.");
+                result.Add(document.FinalSection);
+            }
+            return result;
+        }
+        int SectionIndex(List<PageSettings?> sections, PageSettings? section)
+        {
+            for (int i = 0; i < sections.Count; i++) if (ReferenceEquals(sections[i], section)) return i;
+            throw new InvalidDataException("Comparison.Structure: A section has no owner.");
+        }
+        string StoryTopology(List<PageSettings?> sections)
+        {
+            var identities = new Dictionary<List<DocumentBlock>, int>(); var signature = new System.Text.StringBuilder();
+            foreach (PageSettings? section in sections)
+            {
+                context.CheckCancellation(); signature.Append('|');
+                if (section == null) continue;
+                foreach (var story in section.Stories.OrderBy(p => p.Key, StringComparer.Ordinal))
+                {
+                    if (!identities.TryGetValue(story.Value, out int id)) identities.Add(story.Value, id = identities.Count);
+                    signature.Append(story.Key).Append(':').Append(id).Append(';');
+                }
+            }
+            return signature.ToString();
+        }
+        IEnumerable<string> Global(DocumentModel source)
+        {
+            DocumentModel copy = new DocumentCloner(context).Copy(source); List<PageSettings?> sections = Sections(copy); copy.Blocks.Clear();
+            foreach (PageSettings? section in sections)
+            {
+                context.CheckCancellation(); copy.FinalSection = section;
+                long storyCost = copy.Paragraphs.Sum(p => (long)p.Text.Length + p.Runs.Count + 1)
+                    + copy.Styles.Sum(p => (long)p.Key.Length + p.Value.Length + 1) + copy.CustomProperties.Count;
+                if (storyCost > comparison.MaximumSteps - work) throw new InvalidDataException("Comparison.WorkLimit: Story metadata comparison exceeds its work allowance.");
+                work += (int)storyCost;
+                DocumentModel normalized = new DocumentCloner(context).Copy(copy); NormalizePlainStories(normalized, context);
+                using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(normalized, stream, context);
+                long cost = stream.Length;
+                if (cost > comparison.MaximumSteps - work) throw new InvalidDataException("Comparison.WorkLimit: Section metadata comparison exceeds its work allowance.");
+                work += (int)cost; yield return Convert.ToBase64String(stream.ToArray());
+            }
         }
         Dictionary<DocumentBlock, XElement> Elements(DocumentModel document)
         {
             XElement[] elements = Body(document).Element(W + "body")!.Elements().Where(e => e.Name != W + "sectPr").ToArray();
-            if (elements.Length != document.Blocks.Count) throw new NotSupportedException("Comparison.Structure: The body requires one canonical element per block.");
-            return document.Blocks.Select((block, i) => new { block, element = elements[i] }).ToDictionary(p => p.block, p => p.element);
+            var result = new Dictionary<DocumentBlock, XElement>(); int index = 0;
+            if (document.Blocks.Count == 0 && elements.Length == 1 && elements[0].Name == W + "p" && !elements[0].HasElements) return result;
+            for (int i = 0; i < document.Blocks.Count; i++)
+            {
+                context.CheckCancellation();
+                if (i > 0 && document.Blocks[i - 1] is TableBlock && !ReferenceEquals(document.Blocks[i - 1].Section, document.Blocks[i].Section))
+                {
+                    if (index >= elements.Length || !SyntheticBreak(elements[index])) throw new NotSupportedException("Comparison.Structure: Invalid table section boundary.");
+                    index++;
+                }
+                if (index >= elements.Length || elements[index].Name != W + (document.Blocks[i] is TableBlock ? "tbl" : "p"))
+                    throw new NotSupportedException("Comparison.Structure: The body requires one canonical element per block.");
+                XElement element = elements[index++]; XElement? properties = element.Element(W + "pPr");
+                properties?.Element(W + "sectPr")?.Remove(); if (properties != null && !properties.HasElements && !properties.HasAttributes) properties.Remove();
+                result.Add(document.Blocks[i], element);
+            }
+            if (index < elements.Length && (index + 1 != elements.Length || document.Blocks.Count == 0 || document.Blocks[document.Blocks.Count - 1] is not TableBlock || !SyntheticBreak(elements[index])))
+                throw new NotSupportedException("Comparison.Structure: Unexpected synthetic body content.");
+            return result;
         }
+        static bool SyntheticBreak(XElement element) => element.Name == W + "p" && element.Elements().Count() == 1
+            && element.Element(W + "pPr")?.Elements().Count() == 1 && element.Element(W + "pPr")?.Element(W + "sectPr") != null;
         XElement Body(DocumentModel document)
         {
             using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(document, stream, context); stream.Position = 0;

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using WordNet.Model;
@@ -30,19 +31,21 @@ internal sealed partial class DocxWriter
     {
         XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
         int id = drawingId++;
-        var properties = new XElement(wps + "spPr", new XElement(A + "xfrm", new XElement(A + "off", new XAttribute("x", 0), new XAttribute("y", 0)),
+        var properties = new XElement(wps + "spPr", new XElement(A + "xfrm", box.Rotation == 0 ? null : new XAttribute("rot", box.Rotation * 60000), new XElement(A + "off", new XAttribute("x", 0), new XAttribute("y", 0)),
                 new XElement(A + "ext", new XAttribute("cx", Emu(box.Width)), new XAttribute("cy", Emu(box.Height)))),
-            new XElement(A + "prstGeom", new XAttribute("prst", "rect"), new XElement(A + "avLst")),
+            new XElement(A + "prstGeom", new XAttribute("prst", box.Geometry ?? "rect"), new XElement(A + "avLst")),
             box.Fill == null ? new XElement(A + "noFill") : new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", box.Fill))));
         if (box.Border != null) properties.Add(new XElement(A + "ln", new XAttribute("w", Emu(box.Border.Width)),
             new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", box.Border.Color)))));
         var container = new XElement(Wp + "inline", new XElement(Wp + "extent", new XAttribute("cx", Emu(box.Width)), new XAttribute("cy", Emu(box.Height))),
-            new XElement(Wp + "docPr", new XAttribute("id", id), new XAttribute("name", "Text box " + id.ToString(CultureInfo.InvariantCulture))),
+            new XElement(Wp + "docPr", new XAttribute("id", id), new XAttribute("name", (box.Geometry == null ? "Text box " : "Shape ") + id.ToString(CultureInfo.InvariantCulture)),
+                box.AlternativeText.Length == 0 ? null : new XAttribute("descr", box.AlternativeText)),
             new XElement(A + "graphic", new XElement(A + "graphicData", new XAttribute("uri", wps.NamespaceName),
-                new XElement(wps + "wsp", new XElement(wps + "cNvSpPr", new XAttribute("txBox", true)), properties,
-                    new XElement(wps + "txbx", new XElement(W + "txbxContent", Blocks(box.Blocks))),
-                    new XElement(wps + "bodyPr", new XAttribute("lIns", Emu(box.Padding.Left)), new XAttribute("rIns", Emu(box.Padding.Right)),
-                        new XAttribute("tIns", Emu(box.Padding.Top)), new XAttribute("bIns", Emu(box.Padding.Bottom)), new XElement(A + "noAutofit"))))));
+                new XElement(wps + "wsp", new XElement(wps + "cNvSpPr", box.Geometry == null ? new XAttribute("txBox", true) : null), properties,
+                    box.Geometry != null ? null : box.StorySequence > 0 ? new XElement(wps + "linkedTxbx", new XAttribute("id", box.StoryId ?? throw new InvalidDataException("Shape.TextBoxChain: Missing story identifier.")), new XAttribute("seq", box.StorySequence))
+                        : new XElement(wps + "txbx", box.StoryId == null || box.ImplicitStoryId ? null : new XAttribute("id", box.StoryId.Value), new XElement(W + "txbxContent", box.Blocks.Count == 0 ? new object[] { new XElement(W + "p") } : Blocks(box.Blocks))),
+                    box.Geometry != null ? new XElement(wps + "bodyPr") : new XElement(wps + "bodyPr", new XAttribute("lIns", Emu(box.Padding.Left)), new XAttribute("rIns", Emu(box.Padding.Right)),
+                        new XAttribute("tIns", Emu(box.Padding.Top)), new XAttribute("bIns", Emu(box.Padding.Bottom)), new XElement(A + (box.ShrinkToFit ? "normAutofit" : "noAutofit")))))));
         Anchor(container, box.Anchor); return new XElement(W + "drawing", container);
     }
 

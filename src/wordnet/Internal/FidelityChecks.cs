@@ -66,6 +66,19 @@ internal static class FidelityChecks
         }
         var tables = model.Tables.ToArray();
         var paragraphs = model.Paragraphs.Distinct().ToArray();
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+            foreach (ParagraphBlock paragraph in paragraphs)
+                for (int i = paragraph.Runs.Count - 1; i >= 0; i--)
+                    if (paragraph.Runs[i].Box is PositionedBox box)
+                    {
+                        if (box.Geometry != null)
+                        {
+                            context.Loss("Shape.VectorOutput", "This destination cannot retain vector shape geometry.");
+                            paragraph.Runs.RemoveAt(i);
+                        }
+                        else if (format == DocumentFormat.Html && (box.Rotation != 0 || box.ShrinkToFit || box.StorySequence != 0))
+                            context.Loss("Shape.TextBoxLayout", "This destination does not retain rotation, shrink-to-fit or linked-box flow.");
+                    }
         if (format is not DocumentFormat.Html and not DocumentFormat.Docx)
         {
             if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Rows.SelectMany(r => r).Any(c => c.Content.OfType<TableBlock>().Any())).Select(t => t.Location),

@@ -1,5 +1,13 @@
 # Bounded DOCX review workflows
 
+## Roadmap #102 P4 source under review
+
+The pending source extends the published profile with bounded run-format history,
+exact unambiguous whole-paragraph moves, matching multiple sections, and plain
+header/footer text revisions. See the [P4/P5 profile](roadmap-102-p4-p5.md) for
+ownership, decisions, limits and excluded histories. The 1.4.0 descriptions below
+remain the published-package behavior.
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in

@@ -13,12 +13,15 @@ public sealed partial class ReviewWorkflowTests
     [Theory]
     [InlineData(" here")]
     [InlineData(" here!")]
-    public void ComparisonRejectsFormattingBoundaryChangesOnEqualText(string tail)
+    public void ComparisonTracksFormattingBoundaryChangesAlongsideTextChanges(string tail)
     {
         string Runs(string bold, string plain) => "<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>" + bold + "</w:t></w:r><w:r><w:t xml:space='preserve'>" + plain + "</w:t></w:r></w:p>";
         WordDocument original = Load(Input(Runs("Important", " notice here")));
         WordDocument revised = Load(Input(Runs("Important notice", tail)));
-        Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(original, revised, new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken));
+        WordDocument result = DocumentComparison.Compare(original, revised, new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken);
+        byte[] reviewed = Save(result); Schema(reviewed); Assert.NotEmpty(Part(reviewed).Descendants(W + "rPrChange"));
+        Assert.Equal("Important notice" + tail, result.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken).Paragraphs[0].Text);
+        Assert.Equal("Important notice here", result.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken).Paragraphs[0].Text);
     }
     [Fact]
     public void ComparisonTokenAllowanceChargesOnlyChangedParagraphs()

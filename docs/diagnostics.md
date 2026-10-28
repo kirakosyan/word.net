@@ -1,5 +1,16 @@
 # Conversion diagnostics
 
+## P4/P5 source under review
+
+`Review.Format`, `Review.Move`, `Review.Story` and `Comparison.StoryTopology`
+identify unsupported or inconsistent review ownership without exposing history text.
+`Shape.TextBoxProfile`, `Shape.TextBoxContent`, `Shape.TextBoxChain`,
+`Shape.Vector`, `Shape.VectorProfile`, `Shape.DrawingOrder`, `Layout.TextBoxMinimumSize`,
+`Layout.TextBoxChainOverflow` and `Limit.TextBoxFit` identify bounded drawing and
+layout failures. `Shape.VectorOutput` reports a destination that cannot retain the
+vector; `Shape.TextBoxLayout` reports unsupported HTML box layout. See the
+[profile](roadmap-102-p4-p5.md) for supported combinations.
+
 ## Mixed report regions — merged source
 
 PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
@@ -9,7 +20,7 @@ mixed wrapper that cannot execute; saving unsupported control structure reports
 `Template.ControlStructure`. Unresolved link or field-structure diagnostics
 also prevent mixed-region execution. Expansion and reference work use existing
 `Limit.*` bounds; unsupported object ownership and retained revisions remain hard
-errors. These checks are pending review and are not part of public 1.4.0.
+errors. These checks are merged source and are not part of public 1.4.0.
 
 Cross-tabs reject invalid keys with `Report.CrossTabKey`, oversized input or tables
 with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
