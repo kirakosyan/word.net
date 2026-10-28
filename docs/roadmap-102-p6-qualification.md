@@ -47,3 +47,11 @@ packages, the .NET 8 and .NET 10 consumer suites and the explicitly selected
 and no skips. The latter .NET 10 run was restarted after interruption; the
 framework-specific test assembly was restored and its hash verified afterward.
 Actual minimum runtime checks remain pending for the final accepted source.
+
+The last documented independent office comparison in the [P1 evidence](roadmap-102-p1.md)
+retains 36 strict aggregate failures at unchanged thresholds. Original cases passed
+reference per-page text in 19/24, glyph placement in 6/24 and raster comparison in
+11/24; the 12 probes passed per-page text in 10/12, glyph placement in 3/12 and
+raster comparison in 0/12. These are historical observations, not measurements of
+this P6 head. Fresh independent reference results remain required before claiming
+whether these gaps have changed.
