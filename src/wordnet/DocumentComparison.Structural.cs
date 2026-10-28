@@ -31,7 +31,7 @@ public static partial class DocumentComparison
                     throw new NotSupportedException("Comparison.Structure: Merged, nested, controlled and individually sized rows are outside structural alignment.");
         }
         int work = 0, items = 0; long metadataBytes = 0;
-        List<PageSettings?> leftSections = Sections(left), rightSections = Sections(right);
+        List<PageSettings?> leftSections = Sections(left, context), rightSections = Sections(right, context);
         if (leftSections.Count > 64 || rightSections.Count > 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
         if (leftSections.Count != rightSections.Count || StoryTopology(leftSections) != StoryTopology(rightSections)
             || !Global(left).SequenceEqual(Global(right)))
@@ -164,27 +164,6 @@ public static partial class DocumentComparison
                 throw new NotSupportedException("Comparison.Formatting: Formatting revisions are unsupported.");
             return output;
         }
-        List<PageSettings?> Sections(DocumentModel document)
-        {
-            var result = new List<PageSettings?>();
-            foreach (DocumentBlock block in document.Blocks)
-            {
-                context.CheckCancellation();
-                if (result.Count == 0 || !ReferenceEquals(result[result.Count - 1], block.Section))
-                {
-                    if (result.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
-                    if (result.Any(section => ReferenceEquals(section, block.Section))) throw new NotSupportedException("Comparison.Structure: Noncontiguous section ownership is unsupported.");
-                    result.Add(block.Section);
-                }
-            }
-            if (result.Count == 0 || !ReferenceEquals(result[result.Count - 1], document.FinalSection))
-            {
-                if (result.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
-                if (result.Any(section => ReferenceEquals(section, document.FinalSection))) throw new NotSupportedException("Comparison.Structure: Noncontiguous final section ownership is unsupported.");
-                result.Add(document.FinalSection);
-            }
-            return result;
-        }
         int SectionIndex(List<PageSettings?> sections, PageSettings? section)
         {
             for (int i = 0; i < sections.Count; i++) if (ReferenceEquals(sections[i], section)) return i;
@@ -207,7 +186,7 @@ public static partial class DocumentComparison
         }
         IEnumerable<string> Global(DocumentModel source)
         {
-            DocumentModel copy = new DocumentCloner(context).Copy(source); List<PageSettings?> sections = Sections(copy); copy.Blocks.Clear();
+            DocumentModel copy = new DocumentCloner(context).Copy(source); List<PageSettings?> sections = Sections(copy, context); copy.Blocks.Clear();
             foreach (PageSettings? section in sections)
             {
                 context.CheckCancellation(); copy.FinalSection = section;

@@ -118,6 +118,7 @@ internal sealed partial class DocxReader
     {
         if (!context.PreserveReview) return;
         XElement[] changes = run.Element(W + "rPr")?.Elements(W + "rPrChange").ToArray() ?? Array.Empty<XElement>();
+        for (int i = first; i < runs.Count; i++) runs[i].Appearance.ReviewCompanions = ReadReviewCompanions(run.Element(W + "rPr"));
         if (changes.Length == 0) return;
         if (changes.Length != 1 || insideRevision || fields.Count != 0 || link != null || runs.Count <= first
             || run.Ancestors().Any(e => e.Name == W + "sdt" || e.Name == W + "txbxContent" || e.Name == W + "hdr" || e.Name == W + "ftr" || e.Name == W + "footnote" || e.Name == W + "endnote")
@@ -127,16 +128,20 @@ internal sealed partial class DocxReader
         XElement change = changes[0]; XElement? old = change.Element(W + "rPr");
         XElement properties = run.Element(W + "rPr")!;
         if (properties.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
-            || properties.Elements().Any(e => e.Name != W + "rPrChange" && e.Name != W + "b" && e.Name != W + "i" && e.Name != W + "sz" && e.Name != W + "color"
+            || properties.Elements().Any(e => !IsReviewCompanion(e) && e.Name != W + "rPrChange" && e.Name != W + "b" && e.Name != W + "i" && e.Name != W + "sz" && e.Name != W + "color"
                 && e.Name != W + "rFonts" && e.Name != W + "rStyle" && e.Name != W + "strike" && e.Name != W + "u" && e.Name != W + "shd" && e.Name != W + "vertAlign"))
             throw new NotSupportedException("Review.Format: Unsupported current run properties in formatting history.");
         if (old == null || change.Elements().Count() != 1 || old.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
-            || old.Elements().Any(e => e.Name != W + "b" && e.Name != W + "i" && e.Name != W + "sz" && e.Name != W + "color"
+            || old.Elements().Any(e => !IsReviewCompanion(e) && e.Name != W + "b" && e.Name != W + "i" && e.Name != W + "sz" && e.Name != W + "color"
                 && e.Name != W + "rFonts" && e.Name != W + "rStyle" && e.Name != W + "strike" && e.Name != W + "u" && e.Name != W + "shd" && e.Name != W + "vertAlign"))
             throw new NotSupportedException("Review.Format: Only bold, italic, size and color history is supported.");
         ReviewRecord record = ReviewMetadata(change); record.Structure = "format";
         if (review.Revisions.ContainsKey(record.Id)) throw new InvalidDataException("Review.Id: Duplicate revision identifier.");
         TextStyle previous = inherited.Copy(); ReadRunProperties(old, previous);
+        previous.Appearance.ReviewCompanions = ReadReviewCompanions(old);
+        foreach (string name in new[] { "lang", "noProof" })
+            if (!XNode.DeepEquals(properties.Element(W + name), old.Element(W + name)))
+                throw new NotSupportedException("Review.Format: Language and proofing metadata must be unchanged.");
         TextRun owner = runs[first];
         if (runs.Count > first + 1)
         {
@@ -145,10 +150,41 @@ internal sealed partial class DocxReader
         }
         owner.FormatRevision = record.Id;
         owner.PreviousFormat = new TextRun(owner.Text, previous.Bold, previous.Italic, previous.Code, fontSize: previous.FontSize, color: previous.Color, appearance: previous.Appearance.Copy());
-        TextRun currentOther = new TextRun(owner.Text, code: owner.Code, appearance: owner.Appearance);
-        TextRun previousOther = new TextRun(owner.Text, code: previous.Code, appearance: previous.Appearance);
+        RunAppearance currentAppearance = owner.Appearance.Copy(), previousAppearance = previous.Appearance.Copy();
+        currentAppearance.ReviewCompanions = null; previousAppearance.ReviewCompanions = null;
+        TextRun currentOther = new TextRun(owner.Text, code: owner.Code, appearance: currentAppearance);
+        TextRun previousOther = new TextRun(owner.Text, code: previous.Code, appearance: previousAppearance);
         if (!RunCoalescer.Same(currentOther, previousOther)) throw new NotSupportedException("Review.Format: Unsupported non-admitted run property change.");
         review.Revisions.Add(record.Id, record);
+    }
+    private static bool IsReviewCompanion(XElement element) => element.Name == W + "bCs" || element.Name == W + "iCs"
+        || element.Name == W + "szCs" || element.Name == W + "lang" || element.Name == W + "noProof";
+
+    private static string? ReadReviewCompanions(XElement? properties)
+    {
+        XElement[] companions = properties?.Elements().Where(IsReviewCompanion).ToArray() ?? Array.Empty<XElement>();
+        if (companions.Length == 0) return null;
+        var retained = new XElement(W + "rPr");
+        foreach (XElement element in companions.OrderBy(e => e.Name.LocalName, StringComparer.Ordinal))
+        {
+            string name = element.Name.LocalName;
+            if (properties!.Elements(element.Name).Count() != 1 || element.HasElements
+                || element.Attributes().Any(a => !a.IsNamespaceDeclaration && (a.Name.Namespace != W
+                    || (name == "lang" ? a.Name.LocalName is not ("val" or "eastAsia" or "bidi") : a.Name.LocalName != "val"))))
+                throw new NotSupportedException("Review.Format: Unsupported companion property metadata.");
+            if (name is "bCs" or "iCs" or "szCs")
+            {
+                XElement? latin = properties.Element(W + name.Substring(0, name.Length - 2));
+                string Value(XElement e) => (string?)e.Attribute(W + "val") ?? "1";
+                bool Toggle(XElement e) => Value(e) is "1" or "true" or "on";
+                if (name != "szCs" && Value(element) is not ("1" or "0" or "true" or "false" or "on" or "off"))
+                    throw new InvalidDataException("Review.Format: Invalid complex-script toggle.");
+                if (latin == null || (name == "szCs" ? Value(element) != Value(latin) : Toggle(element) != Toggle(latin)))
+                    throw new NotSupportedException("Review.Format: Complex-script properties must mirror explicit ordinary properties.");
+            }
+            retained.Add(new XElement(element.Name, element.Attributes().Where(a => !a.IsNamespaceDeclaration).OrderBy(a => a.Name.LocalName, StringComparer.Ordinal).Select(a => new XAttribute(a))));
+        }
+        return retained.ToString(SaveOptions.DisableFormatting);
     }
     private string? ReadStructuralRevision(XElement? properties, string kind)
     {

@@ -10,30 +10,36 @@ namespace WordNet;
 
 public static partial class DocumentComparison
 {
-    private static bool PlainStory(List<DocumentBlock> story) => story.All(b => b is ParagraphBlock p && p.Control == null && p.NestedControl == null && p.TypedControlId == null && p.List == null
-        && p.Runs.All(r => r.Text.Length != 0 && r.FieldInstruction == null && r.Control == null && r.TypedControlId == null && r.Bookmark == null
-            && r.Box == null && r.Note == null && r.Image == null && r.Link == null && r.Object == null));
+    private static bool PlainStory(List<DocumentBlock> story) => story.All(b => b is ParagraphBlock p
+        && ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, emptyRuns: false, structuralHistory: true));
 
-    private static List<PageSettings?> StorySections(DocumentModel document, ConversionContext context)
+    private static List<PageSettings?> Sections(DocumentModel document, ConversionContext context)
     {
-        var sections = new List<PageSettings?>();
-        foreach (PageSettings? section in document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }))
+        var result = new List<PageSettings?>();
+        foreach (DocumentBlock block in document.Blocks)
         {
             context.CheckCancellation();
-            if (sections.Count == 0 || !ReferenceEquals(sections[sections.Count - 1], section))
+            if (result.Count == 0 || !ReferenceEquals(result[result.Count - 1], block.Section))
             {
-                if (sections.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
-                sections.Add(section);
+                if (result.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
+                if (result.Any(section => ReferenceEquals(section, block.Section))) throw new NotSupportedException("Comparison.Structure: Noncontiguous section ownership is unsupported.");
+                result.Add(block.Section);
             }
         }
-        return sections;
+        if (result.Count == 0 || !ReferenceEquals(result[result.Count - 1], document.FinalSection))
+        {
+            if (result.Count == 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
+            if (result.Any(section => ReferenceEquals(section, document.FinalSection))) throw new NotSupportedException("Comparison.Structure: Noncontiguous final section ownership is unsupported.");
+            result.Add(document.FinalSection);
+        }
+        return result;
     }
 
     private static List<(ParagraphBlock Old, ParagraphBlock New)> MatchingStories(DocumentModel left, DocumentModel right, ConversionContext context)
     {
         var pairs = new List<(ParagraphBlock, ParagraphBlock)>();
         if (!HasStories(left) && !HasStories(right)) return pairs;
-        List<PageSettings?> a = StorySections(left, context), b = StorySections(right, context);
+        List<PageSettings?> a = Sections(left, context), b = Sections(right, context);
         if (a.Count != b.Count) return pairs;
         var mapping = new Dictionary<List<DocumentBlock>, List<DocumentBlock>>();
         var reverse = new Dictionary<List<DocumentBlock>, List<DocumentBlock>>();
@@ -67,7 +73,7 @@ public static partial class DocumentComparison
     private static void NormalizePlainStories(DocumentModel document, ConversionContext context)
     {
         if (!HasStories(document)) return;
-        foreach (List<DocumentBlock> story in StorySections(document, context).Where(s => s != null).SelectMany(s => s!.Stories.Values).Distinct())
+        foreach (List<DocumentBlock> story in Sections(document, context).Where(s => s != null).SelectMany(s => s!.Stories.Values).Distinct())
         {
             context.CheckCancellation(); if (!PlainStory(story)) continue;
             foreach (ParagraphBlock paragraph in story.Cast<ParagraphBlock>())

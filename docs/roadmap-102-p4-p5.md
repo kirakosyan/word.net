@@ -18,9 +18,10 @@ property changes and ambiguous nested histories. Decisions and detached views
 retain the chosen appearance, including explicit off values against inherited
 styles; intersecting comments require an explicit comment decision first. Saved
 DOCX contains real `w:rPrChange` markup. This source is pending review and has not
-been published as a package. Word-specific complex-script variants and proofing
-properties in formatting history remain unsupported, including variants that
-mirror ordinary run properties; they are not silently dropped.
+been published as a package. Mirrored explicit `bCs`, `iCs` and `szCs` properties survive preservation,
+composition, decisions and reload. Unchanged `lang` and `noProof` metadata is
+retained in both snapshots. Independent complex-script formatting and changes to
+language/proofing metadata remain outside this bounded profile and fail explicitly.
 
 ## Whole-paragraph moves (#123)
 
@@ -66,8 +67,9 @@ an editor's later interactive reflow.
 
 Linked boxes use the DOCX story ID and ordered contiguous sequence, with one head
 owning all ordinary text and up to 63 continuation boxes in the same section.
-When multiple heads have the same default zero ID, ownership is ambiguous and the
-chain is rejected; an explicit distinct story ID is needed to disambiguate it.
+An explicit zero-ID head is selected without capturing unrelated implicit boxes.
+When several implicit heads share default zero, ownership is ambiguous and fails
+explicitly; assign the actual head an explicit ID to disambiguate it.
 Layout wraps at the smallest usable chain width, allocates complete lines in order,
 and fails if the final box cannot hold the remainder. This conservative width policy
 may wrap earlier than an interactive editor. Empty intermediate frames are allowed.

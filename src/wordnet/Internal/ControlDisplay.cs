@@ -29,7 +29,7 @@ internal static class ControlDisplay
         }
         if (fixedOutput)
         {
-            if (c.Typography.Enabled || c.Options.Pdf.Accessibility != PdfAccessibility.None || c.Options.Pdf.Conformance != PdfConformance.Pdf17)
+            if (!ContentProfiles.ManagedFixedOutput(c, pdfOptionsForAllFormats: true))
                 throw new NotSupportedException("Control.OutputProfile: Typed controls currently qualify ordinary managed output only.");
             c.Report("Control.StaticDisplay", "Typed controls are displayed as selectable static content, not interactive form fields.");
         }

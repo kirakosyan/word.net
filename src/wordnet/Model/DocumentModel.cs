@@ -207,6 +207,7 @@ internal sealed class TemplateControl
 
 internal sealed class RunAppearance
 {
+    internal string? ReviewCompanions { get; set; }
     internal string? FontFamily { get; set; }
     internal bool Underline { get; set; }
     internal bool Strike { get; set; }

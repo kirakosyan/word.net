@@ -1012,8 +1012,7 @@ internal static partial class FixedLayout
                     PositionedBox box = item.Box;
                     if (box.Geometry != null)
                     {
-                        if (context.Typography.Enabled || context.Destination == DocumentFormat.Pdf
-                            && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+                        if (!ContentProfiles.ManagedFixedOutput(context))
                             throw new NotSupportedException("Shape.VectorProfile: Vector shapes require managed ordinary fixed output.");
                         var vectorBounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
                         double halfStroke = (box.Border?.Width ?? 0) / 2;
@@ -1026,12 +1025,9 @@ internal static partial class FixedLayout
                         if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind));
                         RememberExclusion(box.Anchor, vectorBounds); continue;
                     }
-                    if ((box.Rotation != 0 || box.ShrinkToFit) && (context.Typography.Enabled || context.Destination == DocumentFormat.Pdf
-                        && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
+                    if ((box.Rotation != 0 || box.ShrinkToFit) && (!ContentProfiles.ManagedFixedOutput(context)))
                         throw new NotSupportedException("Shape.TextBoxProfile: Rotated or fitted boxes require managed ordinary fixed output.");
-                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock) || DocumentModel.Expand(box.Blocks).OfType<ParagraphBlock>().Any(p => p.List != null || p.Control != null || p.NestedControl != null || p.TypedControlId != null
-                        || p.Runs.Any(r => r.Link != null || r.FieldInstruction != null || r.Image != null || r.Box != null || r.Note != null || r.Object != null
-                            || r.Control != null || r.TypedControlId != null || r.Bookmark != null || r.Appearance.Underline || r.Appearance.Strike || r.Appearance.Background != null))))
+                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, decorations: false, structuralHistory: true))))
                         throw new NotSupportedException("Shape.TextBoxContent: Rotated or fitted boxes support ordinary managed paragraphs only.");
                     var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y, validate: box.Rotation == 0);
                     var visualBounds = RotatedBounds(bounds, box.Rotation);
@@ -1062,8 +1058,7 @@ internal static partial class FixedLayout
                     double chainOffset = 0;
                     if (boxChains.TryGetValue(box, out List<PositionedBox>? chain))
                     {
-                        if (context.Typography.Enabled || context.Destination == DocumentFormat.Pdf
-                            && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+                        if (!ContentProfiles.ManagedFixedOutput(context))
                             throw new NotSupportedException("Shape.TextBoxChain: Linked boxes require managed ordinary fixed output.");
                         if (!chainLines.TryGetValue(box, out var cached))
                         {
