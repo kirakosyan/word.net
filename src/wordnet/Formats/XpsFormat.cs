@@ -43,9 +43,10 @@ internal static class XpsFormat
             context.CheckCancellation();
             string name = (p + 1).ToString(CultureInfo.InvariantCulture);
             Xml("Documents/1/Pages/" + name + ".fpage", new XElement(xps + "FixedPage", new XAttribute("Width", Number(pages[p].Settings.Width)), new XAttribute("Height", Number(pages[p].Settings.Height)), new XAttribute(XNamespace.Xml + "lang", "en-US"),
-                FixedShape.PaintOrder(pages[p].Shapes).SelectMany(Shape),
+                FixedShape.PaintOrder(pages[p].Shapes.Where(s => !s.Foreground)).SelectMany(Shape),
                 pages[p].Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1).Where(t => t.Image != null || t.Text.Length != 0 || t.NativeShape != null)
-                    .Select(t => t.Image != null ? Image(t, imageNames[t.Image]) : Text(t))));
+                    .Select(t => t.Image != null ? Image(t, imageNames[t.Image]) : Text(t)),
+                FixedShape.PaintOrder(pages[p].Shapes.Where(s => s.Foreground)).SelectMany(Shape)));
             Xml("Documents/1/Pages/_rels/" + name + ".fpage.rels", new XElement(rel + "Relationships", Enumerable.Range(0, context.FontData.Length).Select(f => new XElement(rel + "Relationship", new XAttribute("Id", "f" + f.ToString(CultureInfo.InvariantCulture)),
                 new XAttribute("Type", "http://schemas.microsoft.com/xps/2005/06/required-resource"), new XAttribute("Target", "/Resources/Fonts/" + FontName(f))))
                 .Concat(imageNames.Select((image, i) => new XElement(rel + "Relationship", new XAttribute("Id", "i" + i.ToString(CultureInfo.InvariantCulture)),
@@ -68,10 +69,22 @@ internal static class XpsFormat
                 element.Add(new XAttribute("Indices", string.Join(";", t.NativeShape.Glyphs.Select(g => g.Glyph.ToString(CultureInfo.InvariantCulture) + "," + Metric(g.Advance) + "," + Metric(g.X) + "," + Metric(g.Y)))));
             }
             if (t.Text.Length > 0) element.Add(new XAttribute("UnicodeString", t.Text[0] == '{' ? "{}" + t.Text : t.Text));
-            return element;
+            if (t.Rotation == 0) return element;
+            double angle = t.Rotation * System.Math.PI / 180, c = System.Math.Round(System.Math.Cos(angle)), s = System.Math.Round(System.Math.Sin(angle));
+            return new XElement(xps + "Canvas", new XAttribute("RenderTransform", c.ToString(CultureInfo.InvariantCulture) + "," + s.ToString(CultureInfo.InvariantCulture) + ","
+                + (-s).ToString(CultureInfo.InvariantCulture) + "," + c.ToString(CultureInfo.InvariantCulture) + ","
+                + Number(t.RotationX - c * t.RotationX + s * t.RotationY) + "," + Number(t.RotationY - s * t.RotationX - c * t.RotationY)), element);
         }
         System.Collections.Generic.IEnumerable<XElement> Shape(FixedShape shape)
         {
+            if (shape.Geometry != null)
+            {
+                string data = string.Join(" ", VectorPath.Create(shape).Select(command => command.Kind + (command.Values.Length == 0 ? "" : " " + string.Join(",", command.Values.Select(Number)))));
+                yield return new XElement(xps + "Path", new XAttribute("Data", data),
+                    shape.Stroke == 0 ? new XAttribute("Fill", "#FF" + shape.Color) : new XAttribute("Stroke", "#FF" + shape.Color),
+                    shape.Stroke == 0 ? null : new XAttribute("StrokeThickness", Number(shape.Stroke)));
+                yield break;
+            }
             if (shape.Stroke == 0)
             {
                 yield return new XElement(xps + "Path", new XAttribute("Fill", "#FF" + shape.Color), new XAttribute("Data", "M " + Number(shape.X) + "," + Number(shape.Y) + " l " + Number(shape.Width) + ",0 0," + Number(shape.Height) + " " + Number(-shape.Width) + ",0 Z"));

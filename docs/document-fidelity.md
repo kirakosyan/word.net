@@ -1,12 +1,16 @@
 # Formatting and image profile
 
-## Mixed report regions — source under review
+The [pending P4/P5 profile](roadmap-102-p4-p5.md) describes the bounded review,
+text-box and vector additions and their explicit exclusions. It is separate from
+the published 1.4.0 profile below.
+
+## Mixed report regions — merged source
 
 PR #135 repeats bounded same-section paragraph/table regions, including one
 master-detail level, with cloned identity and reference checks. Explicit cross-tabs
 reject non-fitting layouts, and fragments retain source formatting under the
 documented placement policy. It does not extend object, revision, nested-table or
-section support. See the [template profile](editing-and-templates.md#mixed-report-regions--source-under-review).
+section support. See the [template profile](editing-and-templates.md#mixed-report-regions--merged-source).
 
 ## P2 control preservation — merged source
 

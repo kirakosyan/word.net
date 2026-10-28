@@ -20,6 +20,8 @@ internal sealed class FixedPage
     internal List<PositionedText> Text { get; } = new List<PositionedText>();
     internal List<FixedShape> Shapes { get; } = new List<FixedShape>();
     internal List<(double X, double Y, double Width, double Height, string Wrap)> Exclusions { get; } = new List<(double, double, double, double, string)>();
+    internal List<(DrawingAnchor Anchor, double X, double Y, double Width, double Height, bool Guarded)> DrawingBounds { get; } = new List<(DrawingAnchor, double, double, double, double, bool)>();
+    internal bool HasGuardedDrawing { get; set; }
     internal HashSet<PageSettings> Sections { get; } = new HashSet<PageSettings>();
     internal int PageNumber { get; set; } = 1;
     internal bool ParityBlank { get; set; }
@@ -41,8 +43,8 @@ internal sealed class FixedHeading
 
 internal sealed class PositionedText
 {
-    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null)
-    { Visual = visual; SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; }
+    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null, int rotation = 0, double rotationX = 0, double rotationY = 0)
+    { Visual = visual; SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; Rotation = rotation; RotationX = rotationX; RotationY = rotationY; }
     internal ObjectVisual? Visual { get; }
     internal string Text { get; }
     internal double X { get; }
@@ -58,9 +60,13 @@ internal sealed class PositionedText
     internal TextRun? SourceRun { get; }
     internal ShapedWord? NativeShape { get; }
     internal bool IsLabel { get; }
-    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel, Visual);
-    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual);
-    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual);
+    internal int Rotation { get; }
+    internal double RotationX { get; }
+    internal double RotationY { get; }
+    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel, Visual, Rotation, RotationX, RotationY);
+    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX + x - X, RotationY + y - Y);
+    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX, RotationY);
+    internal PositionedText Rotated(int rotation, double x, double y) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, rotation, x, y);
 }
 
 internal static partial class FixedLayout
@@ -179,6 +185,8 @@ internal static partial class FixedLayout
         var pages = new List<FixedPage> { new FixedPage { Settings = settings, SourceSettings = sourceSettings } };
         var counter = new ListCounter();
         var storyHeights = new Dictionary<(PageSettings Section, List<DocumentBlock> Story), double>();
+        Dictionary<PositionedBox, List<PositionedBox>> boxChains = LinkedTextBoxes.Validate(model, context);
+        var chainLines = new Dictionary<PositionedBox, (List<Line> Lines, double Origin)>();
         int renderPage = 0, renderSectionPages = totalPages;
         double y = 0;
         settings = ReserveStories(sourceSettings); pages[0].Settings = settings;
@@ -960,6 +968,9 @@ internal static partial class FixedLayout
                 bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
         }
 
+        static (double X, double Y, double Width, double Height, string Wrap) RotatedBounds((double X, double Y, double Width, double Height, string Wrap) bounds, int rotation)
+            => rotation is 90 or 270 ? (bounds.X + (bounds.Width - bounds.Height) / 2, bounds.Y + (bounds.Height - bounds.Width) / 2, bounds.Height, bounds.Width, bounds.Wrap) : bounds;
+
         void Place(Line line, double top)
         {
             pages[pages.Count - 1].MaximumAscent = Math.Max(pages[pages.Count - 1].MaximumAscent, line.Ascent);
@@ -970,6 +981,23 @@ internal static partial class FixedLayout
 
         void PlaceOn(FixedPage destination, Line line, double top)
         {
+            void CheckDrawingOrder(DrawingAnchor anchor, (double X, double Y, double Width, double Height, string Wrap) bounds, bool guarded)
+            {
+                if (!guarded && !destination.HasGuardedDrawing)
+                { destination.DrawingBounds.Add((anchor, bounds.X, bounds.Y, bounds.Width, bounds.Height, false)); return; }
+                destination.HasGuardedDrawing |= guarded;
+                foreach (var previous in destination.DrawingBounds)
+                {
+                    context.CheckCancellation();
+                    if (!(guarded || previous.Guarded)) continue;
+                    context.ReserveBoxFitWork(1);
+                    if (anchor.RelativeHeight == 0 && previous.Anchor.RelativeHeight == 0) continue;
+                    if (bounds.X < previous.X + previous.Width && previous.X < bounds.X + bounds.Width
+                        && bounds.Y < previous.Y + previous.Height && previous.Y < bounds.Y + bounds.Height)
+                        context.Loss("Shape.DrawingOrder", "Overlapping drawings with explicit layers are outside the managed drawing profile.");
+                }
+                destination.DrawingBounds.Add((anchor, bounds.X, bounds.Y, bounds.Width, bounds.Height, guarded));
+            }
             context.PageNumberFormat = sourceSettings.PageNumberFormat;
             destination.Shapes.AddRange(line.Shapes.Select(s => s.At(s.X + settings.Left - line.PageLeft, s.Y + top)));
             foreach (PositionedText item in line.Items)
@@ -982,27 +1010,85 @@ internal static partial class FixedLayout
                 if (item.Box != null)
                 {
                     PositionedBox box = item.Box;
-                    var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
+                    if (box.Geometry != null)
+                    {
+                        if (!ContentProfiles.ManagedFixedOutput(context))
+                            throw new NotSupportedException("Shape.VectorProfile: Vector shapes require managed ordinary fixed output.");
+                        var vectorBounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
+                        double halfStroke = (box.Border?.Width ?? 0) / 2;
+                        CheckDrawingOrder(box.Anchor, (vectorBounds.X - halfStroke, vectorBounds.Y - halfStroke,
+                            vectorBounds.Width + 2 * halfStroke, vectorBounds.Height + 2 * halfStroke, vectorBounds.Wrap), true);
+                        if (vectorBounds.X - halfStroke < 0 || vectorBounds.Y - halfStroke < 0
+                            || vectorBounds.X + vectorBounds.Width + halfStroke > settings.Width || vectorBounds.Y + vectorBounds.Height + halfStroke > settings.Height)
+                            throw new NotSupportedException("Layout.AnchorBounds: Vector strokes must fit inside the physical page.");
+                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Fill, geometry: box.Geometry, foreground: !box.Anchor.Behind));
+                        if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind));
+                        RememberExclusion(box.Anchor, vectorBounds); continue;
+                    }
+                    if ((box.Rotation != 0 || box.ShrinkToFit) && (!ContentProfiles.ManagedFixedOutput(context)))
+                        throw new NotSupportedException("Shape.TextBoxProfile: Rotated or fitted boxes require managed ordinary fixed output.");
+                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, decorations: false, structuralHistory: true))))
+                        throw new NotSupportedException("Shape.TextBoxContent: Rotated or fitted boxes support ordinary managed paragraphs only.");
+                    var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y, validate: box.Rotation == 0);
+                    var visualBounds = RotatedBounds(bounds, box.Rotation);
+                    CheckDrawingOrder(box.Anchor, visualBounds, box.Rotation != 0 || box.ShrinkToFit || model.HasLinkedTextBoxes && box.StoryId != null);
+                    double boxStroke = (box.Border?.Width ?? 0) / 2;
+                    if (box.Rotation != 0 && (visualBounds.X - boxStroke < 0 || visualBounds.Y - boxStroke < 0 || visualBounds.X + visualBounds.Width + boxStroke > settings.Width || visualBounds.Y + visualBounds.Height + boxStroke > settings.Height))
+                        throw new NotSupportedException("Layout.AnchorBounds: A rotated text box extends outside the physical page.");
                     CellPadding boxPadding = box.Padding;
                     if (box.Width <= boxPadding.Left + boxPadding.Right || box.Height <= boxPadding.Top + boxPadding.Bottom)
                     {
+                        if (box.ShrinkToFit) throw new NotSupportedException("Layout.TextBoxPadding: Shrink-to-fit requires a usable content area.");
                         if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TextBoxPadding: Text-box padding leaves no usable content area.");
                         context.ReportStrictRejection("Layout.TextBoxPadding", "Text-box padding is omitted to retain usable content space.");
                         boxPadding = new CellPadding();
                     }
                     var cell = new CellLayout
                     {
-                        Left = bounds.X,
-                        Width = box.Width,
-                        Extent = box.Height,
+                        Left = visualBounds.X,
+                        Width = visualBounds.Width,
+                        Extent = visualBounds.Height,
                         Padding = boxPadding,
                         Source = new TableCell { Background = box.Fill }
                     };
                     if (box.Border != null) foreach (string side in new[] { "left", "top", "right", "bottom" }) cell.Source.Borders.Add(side, box.Border);
-                    destination.Shapes.AddRange(CellShapes(cell, bounds.Y, box.Height));
+                    destination.Shapes.AddRange(CellShapes(cell, visualBounds.Y, visualBounds.Height));
                     double boxTop = bounds.Y + boxPadding.Top;
                     var boxLines = new List<Line>();
-                    if (box.Blocks.Any(b => b is not ParagraphBlock) || DocumentModel.Expand(box.Blocks).OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Box != null)))
+                    double chainOffset = 0;
+                    if (boxChains.TryGetValue(box, out List<PositionedBox>? chain))
+                    {
+                        if (!ContentProfiles.ManagedFixedOutput(context))
+                            throw new NotSupportedException("Shape.TextBoxChain: Linked boxes require managed ordinary fixed output.");
+                        if (!chainLines.TryGetValue(box, out var cached))
+                        {
+                            if (!ReferenceEquals(box, chain[0])) throw new InvalidDataException("Shape.TextBoxChain: Continuation precedes its head.");
+                            double origin = bounds.X + boxPadding.Left;
+                            double commonWidth = chain.Min(b => b.Width - b.Padding.Left - b.Padding.Right);
+                            var all = new List<Line>();
+                            foreach (ParagraphBlock paragraph in box.Blocks.Cast<ParagraphBlock>()) AddParagraph(paragraph, origin, commonWidth, all);
+                            foreach (Line boxLine in all)
+                                foreach (PositionedText text in boxLine.Items)
+                                {
+                                    context.ReserveBoxFitWork(checked(text.Text.Length + 1));
+                                    if (text.Text.Length != 0 && (text.X < origin || text.X + Measure(text.Text, text.Font, text.Size) > origin + commonWidth + 0.001))
+                                        throw new NotSupportedException("Layout.TextBoxChain: A line exceeds the shared chain width.");
+                                }
+                            int next = 0;
+                            foreach (PositionedBox member in chain)
+                            {
+                                double remaining = member.Height - member.Padding.Top - member.Padding.Bottom;
+                                var segment = new List<Line>();
+                                while (next < all.Count && all[next].Height <= remaining + 0.0001)
+                                { context.CheckCancellation(); segment.Add(all[next]); remaining -= all[next++].Height; }
+                                chainLines.Add(member, (segment, origin));
+                            }
+                            if (next != all.Count) throw new NotSupportedException("Layout.TextBoxChainOverflow: Text exceeds the terminal linked box.");
+                            cached = chainLines[box];
+                        }
+                        boxLines = cached.Lines; chainOffset = bounds.X + boxPadding.Left - cached.Origin;
+                    }
+                    else if (box.Blocks.Any(b => b is not ParagraphBlock) || DocumentModel.Expand(box.Blocks).OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Box != null)))
                     {
                         if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TextBoxContent: Positioned text boxes support paragraphs only.");
                         context.ReportStrictRejection("Layout.TextBoxContent", "Tables and nested boxes in a positioned text box are flattened to formatted text in reading order.");
@@ -1013,7 +1099,34 @@ internal static partial class FixedLayout
                         AddParagraph(boxParagraph, bounds.X + boxPadding.Left, box.Width - boxPadding.Left - boxPadding.Right, boxLines);
                     double available = box.Height - boxPadding.Top - boxPadding.Bottom;
                     double contentHeight = boxLines.Sum(l => l.Height);
-                    if (contentHeight > available)
+                    if (box.Rotation != 0 && !box.ShrinkToFit)
+                        foreach (Line boxLine in boxLines)
+                            foreach (PositionedText text in boxLine.Items)
+                            {
+                                context.ReserveBoxFitWork(checked(text.Text.Length + 1));
+                                if (text.Text.Length != 0 && (text.X < bounds.X + boxPadding.Left
+                                    || text.X + Measure(text.Text, text.Font, text.Size) > bounds.X + box.Width - boxPadding.Right + 0.001))
+                                    throw new NotSupportedException("Layout.TextBoxOverflow: Rotated text exceeds its frame width.");
+                            }
+                    if (box.ShrinkToFit)
+                    {
+                        double factor = contentHeight > 0 ? Math.Min(1, available / contentHeight) : 1;
+                        double minimum = double.PositiveInfinity;
+                        foreach (Line boxLine in boxLines)
+                            foreach (PositionedText text in boxLine.Items)
+                            {
+                                context.ReserveBoxFitWork(checked(text.Text.Length + 1));
+                                if (text.Text.Length == 0) continue;
+                                double left = bounds.X + boxPadding.Left, right = bounds.X + box.Width - boxPadding.Right;
+                                if (text.X < left || boxLine.Origin >= right) throw new NotSupportedException("Layout.TextBoxFit: Text indentation is outside the frame.");
+                                double extent = text.X - boxLine.Origin + Measure(text.Text, text.Font, text.Size);
+                                if (extent > 0) factor = Math.Min(factor, (right - boxLine.Origin) / extent);
+                                minimum = Math.Min(minimum, text.Size);
+                            }
+                        if (factor <= 0 || minimum * factor < 6) throw new NotSupportedException("Layout.TextBoxMinimumSize: Text cannot fit at the six-point minimum.");
+                        if (factor < 1) boxLines = boxLines.Select(l => ScaleLine(l, factor)).ToList();
+                    }
+                    else if (contentHeight > available)
                     {
                         if (context.EffectiveMode != FidelityMode.Lenient) throw new NotSupportedException("Layout.TextBoxOverflow: Text does not fit inside the positioned box.");
                         context.ReportStrictRejection("Layout.TextBoxOverflow", "Text-box content is proportionally reduced to fit its frame.");
@@ -1021,10 +1134,14 @@ internal static partial class FixedLayout
                     }
                     foreach (Line boxLine in boxLines)
                     {
-                        foreach (PositionedText boxItem in boxLine.Items) destination.Text.Add(boxItem.At(boxItem.X, boxTop + boxLine.Ascent + boxItem.Y));
+                        foreach (PositionedText boxItem in boxLine.Items)
+                        {
+                            PositionedText boxPlaced = boxItem.At(boxItem.X + chainOffset, boxTop + boxLine.Ascent + boxItem.Y);
+                            destination.Text.Add(box.Rotation == 0 ? boxPlaced : boxPlaced.Rotated(box.Rotation, bounds.X + box.Width / 2, bounds.Y + box.Height / 2));
+                        }
                         boxTop += boxLine.Height;
                     }
-                    RememberExclusion(box.Anchor, bounds); continue;
+                    RememberExclusion(box.Anchor, visualBounds); continue;
                 }
                 if (item.Visual is ObjectVisual visual)
                 {
@@ -1045,6 +1162,7 @@ internal static partial class FixedLayout
                 if (item.Image?.Anchor is DrawingAnchor anchor)
                 {
                     var bounds = DrawingBounds(anchor, item.Image.Width, item.Image.Height, top + item.Y);
+                    CheckDrawingOrder(anchor, bounds, false);
                     placed = item.At(bounds.X, bounds.Y + item.Image.Height); RememberExclusion(anchor, bounds);
                 }
                 if (item.Field != null)
@@ -1150,6 +1268,7 @@ internal static partial class FixedLayout
             {
                 DrawingAnchor anchor = drawing.Image?.Anchor ?? drawing.Box!.Anchor;
                 var bounds = DrawingBounds(anchor, drawing.Image?.Width ?? drawing.Box!.Width, drawing.Image?.Height ?? drawing.Box!.Height, renderPage == 0 ? y : 0, validate: false);
+                if (drawing.Box != null) bounds = RotatedBounds(bounds, drawing.Box.Rotation);
                 if (anchor.Wrap != "none") exclusions.Add((bounds.X - anchor.Distance.Left, bounds.Y - anchor.Distance.Top, bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
             }
             double x = left;

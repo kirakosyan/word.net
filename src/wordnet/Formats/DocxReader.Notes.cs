@@ -45,6 +45,7 @@ internal sealed partial class DocxReader
                 foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);
                 foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);
                 var blocks = new List<DocumentBlock>(); reader.ReadBlocks(note, blocks);
+                sawLinkedTextBox |= reader.sawLinkedTextBox;
                 if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed note field.");
                 XElement? firstParagraph = note.Elements(W + "p").FirstOrDefault();
                 if (note.Descendants(W + (kind == "footnotes" ? "footnoteRef" : "endnoteRef")).Any(mark => !ReferenceEquals(mark.Ancestors(W + "p").FirstOrDefault(), firstParagraph)))

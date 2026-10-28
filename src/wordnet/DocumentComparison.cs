@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Xml.Linq;
 using WordNet.Formats;
 using WordNet.Internal;
 using WordNet.Layout;
@@ -57,16 +58,28 @@ public static partial class DocumentComparison
             { List<TextRun> combined = RunCoalescer.Combine(paragraph.Runs); paragraph.Runs.Clear(); paragraph.Runs.AddRange(combined); }
         long characters = (long)left.CharacterCount + right.CharacterCount;
         if (characters > options.MaximumCharacters || characters * 4 > options.MaximumExpandedBytes) throw new InvalidDataException("Comparison.ResourceLimit: Combined inputs exceed the comparison allowance.");
+        List<(ParagraphBlock Old, ParagraphBlock New)> stories = MatchingStories(left, right, context);
         byte[] leftStructure = Structure(left), rightStructure = Structure(right);
-        if (!leftStructure.SequenceEqual(rightStructure)) return CompareStructure(left, right, comparisonOptions, options, context);
-        ParagraphBlock[] a = left.BodyParagraphs.ToArray(), b = right.BodyParagraphs.ToArray(); int tokenCount = 0, work = 0;
+        int tokenCount = 0, work = 0, bodyCount = 0;
+        bool structural = !leftStructure.SequenceEqual(rightStructure) || ReorderedPlainParagraphs(left, right);
+        if (structural) CompareStructure(left, right, comparisonOptions, options, context, out work, out tokenCount);
+        ParagraphBlock[] bodyA = structural ? Array.Empty<ParagraphBlock>() : left.BodyParagraphs.ToArray();
+        ParagraphBlock[] bodyB = structural ? Array.Empty<ParagraphBlock>() : right.BodyParagraphs.ToArray();
+        bodyCount = bodyA.Length;
+        ParagraphBlock[] a = bodyA.Concat(stories.Select(p => p.Old)).ToArray(), b = bodyB.Concat(stories.Select(p => p.New)).ToArray();
         for (int paragraph = 0; paragraph < a.Length; paragraph++)
         {
-            context.CheckCancellation(); string oldText = a[paragraph].Text, newText = b[paragraph].Text;
+            context.CheckCancellation(); bool storyMode = paragraph >= bodyCount; string oldText = a[paragraph].Text, newText = b[paragraph].Text;
             if (oldText == newText)
             {
-                if (!a[paragraph].Runs.Select(r => r.Text.Length).SequenceEqual(b[paragraph].Runs.Select(r => r.Text.Length)))
-                    throw new NotSupportedException("Comparison.Formatting: Formatting boundaries must match on unchanged text.");
+                if (a[paragraph].Runs.Any(Structured) || b[paragraph].Runs.Any(Structured))
+                {
+                    if (!a[paragraph].Runs.Select(r => r.Text.Length).SequenceEqual(b[paragraph].Runs.Select(r => r.Text.Length)))
+                        throw new NotSupportedException("Comparison.Formatting: Structured run boundaries must match.");
+                    continue;
+                }
+                List<TextRun> formatted = CompareFormats(a[paragraph].Runs, b[paragraph].Runs, storyMode);
+                a[paragraph].Runs.Clear(); a[paragraph].Runs.AddRange(formatted);
                 continue;
             }
             List<int> x = UnicodeBoundaries.Find(oldText, granularity == ComparisonGranularity.Word, context, tokens);
@@ -92,9 +105,7 @@ public static partial class DocumentComparison
                 {
                     List<TextRun> oldRuns = RunCoalescer.Combine(Slice(a[paragraph], x[u], x[u + 1] - x[u], context, ref work, steps));
                     List<TextRun> newRuns = RunCoalescer.Combine(Slice(b[paragraph], y[v], y[v + 1] - y[v], context, ref work, steps));
-                    if (oldRuns.Count != newRuns.Count || oldRuns.Where((run, i) => run.Text.Length != newRuns[i].Text.Length || !RunCoalescer.Same(run, newRuns[i])).Any())
-                        throw new NotSupportedException("Comparison.Formatting: Formatting on unchanged tokens must match.");
-                    output.AddRange(oldRuns); revision = null; deleting = null; u++; v++; continue;
+                    output.AddRange(CompareFormats(oldRuns, newRuns, storyMode)); revision = null; deleting = null; u++; v++; continue;
                 }
                 bool deletion = u < m && (v == n || lengths[(u + 1) * (n + 1) + v] >= lengths[u * (n + 1) + v + 1]);
                 if (deleting != deletion)
@@ -116,14 +127,84 @@ public static partial class DocumentComparison
         byte[] Structure(DocumentModel model)
         {
             DocumentModel copy = new DocumentCloner(context).Copy(model);
+            NormalizePlainStories(copy, context);
             var body = new HashSet<ParagraphBlock>(ReviewStore.SupportedParagraphs(copy.Blocks));
             foreach (ParagraphBlock paragraph in copy.Paragraphs)
             {
                 if (!body.Contains(paragraph) || paragraph.Control != null || paragraph.Runs.Any(r => r.FieldInstruction != null || r.Control != null
                     || r.Bookmark != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null)) continue;
-                for (int i = 0; i < paragraph.Runs.Count; i++) paragraph.Runs[i] = paragraph.Runs[i].WithText("");
+                var normalized = RunCoalescer.Combine(paragraph.Runs.Select(Neutral).ToList());
+                paragraph.Runs.Clear(); paragraph.Runs.AddRange(normalized.Select(r => r.WithText("")));
             }
             using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(copy, stream, context); return stream.ToArray();
+        }
+        List<TextRun> CompareFormats(List<TextRun> oldRuns, List<TextRun> newRuns, bool storyMode)
+        {
+            var result = new List<TextRun>(); int i = 0, j = 0, aOffset = 0, bOffset = 0;
+            while (i < oldRuns.Count && j < newRuns.Count)
+            {
+                context.CheckCancellation(); if (++work > steps) throw new InvalidDataException("Comparison.WorkLimit: Formatting alignment exceeds its work allowance.");
+                TextRun oldRun = oldRuns[i], newRun = newRuns[j]; int count = Math.Min(oldRun.Text.Length - aOffset, newRun.Text.Length - bOffset);
+                if (count <= 0 || !RunCoalescer.Same(Neutral(oldRun), Neutral(newRun))) throw new NotSupportedException("Comparison.Formatting: Unsupported formatting differences or structured runs.");
+                TextRun current = newRun.WithText(newRun.Text.Substring(bOffset, count));
+                if (oldRun.Bold != newRun.Bold || oldRun.Italic != newRun.Italic || oldRun.FontSize != newRun.FontSize || oldRun.Color != newRun.Color)
+                {
+                    if (storyMode) throw new NotSupportedException("Comparison.StoryFormatting: Story formatting changes are unsupported.");
+                    string id = Guid.NewGuid().ToString("N");
+                    left.Review.Revisions.Add(id, new ReviewRecord { Id = id, Author = comparisonOptions.Author, Date = comparisonOptions.Timestamp, Structure = "format" });
+                    current.FormatRevision = id; current.PreviousFormat = oldRun.WithText(current.Text);
+                }
+                result.Add(current); aOffset += count; bOffset += count;
+                if (aOffset == oldRun.Text.Length) { i++; aOffset = 0; }
+                if (bOffset == newRun.Text.Length) { j++; bOffset = 0; }
+            }
+            if (i != oldRuns.Count || j != newRuns.Count) throw new NotSupportedException("Comparison.Formatting: Formatting alignment failed.");
+            return result;
+        }
+        static TextRun Neutral(TextRun r)
+        {
+            RunAppearance appearance = r.Appearance.Copy();
+            if (appearance.ReviewCompanions != null)
+            {
+                XElement companions = XElement.Parse(appearance.ReviewCompanions);
+                companions.Elements().Where(e => e.Name == W + "bCs" || e.Name == W + "iCs" || e.Name == W + "szCs").Remove();
+                appearance.ReviewCompanions = companions.HasElements ? companions.ToString(SaveOptions.DisableFormatting) : null;
+            }
+            TextRun result = new TextRun(r.Text, code: r.Code, link: r.Link, image: r.Image, appearance: appearance,
+                fieldInstruction: r.FieldInstruction, note: r.Note, box: r.Box, bookmark: r.Bookmark, control: r.Control, retainedObject: r.Object).RetainMetadata(r);
+            result.ExplicitFormat = false; return result;
+        }
+        static bool Structured(TextRun r) => r.Text.Length == 0 || r.Object != null || r.Image != null || r.Box != null || r.Note != null || r.Bookmark != null
+            || r.FieldInstruction != null || r.Control != null || r.Link != null || r.TypedControlId != null;
+        bool ReorderedPlainParagraphs(DocumentModel originalModel, DocumentModel revisedModel)
+        {
+            string[] BlockKeys(DocumentModel model)
+            {
+                int table = 0;
+                return model.Blocks.Select(block => block is ParagraphBlock paragraph ? "p:" + paragraph.Text
+                    : "t:" + (table++).ToString(CultureInfo.InvariantCulture)).ToArray();
+            }
+            string[] oldBlocks = BlockKeys(originalModel), newBlocks = BlockKeys(revisedModel);
+            if (oldBlocks.SequenceEqual(newBlocks)) return false;
+            long scan = (long)oldBlocks.Length + newBlocks.Length;
+            if (scan > steps - work)
+                throw new InvalidDataException("Comparison.WorkLimit: Paragraph move candidate search exceeds its allowance.");
+            work += (int)scan;
+            var oldGroups = oldBlocks.Select((key, i) => (Text: key, Index: i)).GroupBy(x => x.Text, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => new Queue<int>(g.Select(value => value.Index)), StringComparer.Ordinal);
+            var oldCounts = oldGroups.ToDictionary(pair => pair.Key, pair => pair.Value.Count, StringComparer.Ordinal);
+            var newCounts = newBlocks.GroupBy(key => key, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+            int previous = -1;
+            foreach (string key in newBlocks)
+            {
+                context.CheckCancellation();
+                if (!oldGroups.TryGetValue(key, out Queue<int>? positions) || positions.Count == 0 || !newCounts.TryGetValue(key, out int count)) continue;
+                if (oldCounts[key] != count) continue;
+                int position = positions.Dequeue();
+                if (position < previous) return true;
+                previous = position;
+            }
+            return false;
         }
     }
     private static List<TextRun> Slice(ParagraphBlock paragraph, int start, int length, ConversionContext context, ref int work, int maximum)

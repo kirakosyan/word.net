@@ -5,8 +5,8 @@ namespace WordNet.Layout;
 
 internal sealed class FixedShape
 {
-    internal FixedShape(double x, double y, double width, double height, string color, double stroke = 0, string style = "single")
-    { X = x; Y = y; Width = width; Height = height; Color = color; Stroke = stroke; Style = style; }
+    internal FixedShape(double x, double y, double width, double height, string color, double stroke = 0, string style = "single", string? geometry = null, bool foreground = false)
+    { X = x; Y = y; Width = width; Height = height; Color = color; Stroke = stroke; Style = style; Geometry = geometry; Foreground = foreground; }
     internal double X { get; }
     internal double Y { get; }
     internal double Width { get; }
@@ -14,15 +14,18 @@ internal sealed class FixedShape
     internal string Color { get; }
     internal double Stroke { get; }
     internal string Style { get; }
-    internal FixedShape At(double x, double y) => new FixedShape(x, y, Width, Height, Color, Stroke, Style);
+    internal string? Geometry { get; }
+    internal bool Foreground { get; }
+    internal FixedShape At(double x, double y) => new FixedShape(x, y, Width, Height, Color, Stroke, Style, Geometry, Foreground);
     internal static IEnumerable<FixedShape> PaintOrder(IEnumerable<FixedShape> shapes)
     {
         FixedShape[] all = shapes.ToArray();
-        foreach (FixedShape fill in all.Where(s => s.Stroke == 0)) yield return fill;
-        foreach (FixedShape diagonal in all.Where(s => s.Stroke > 0 && s.Width != 0 && s.Height != 0)) yield return diagonal;
+        foreach (FixedShape vector in all.Where(s => s.Geometry != null)) yield return vector;
+        foreach (FixedShape fill in all.Where(s => s.Geometry == null && s.Stroke == 0)) yield return fill;
+        foreach (FixedShape diagonal in all.Where(s => s.Geometry == null && s.Stroke > 0 && s.Width != 0 && s.Height != 0)) yield return diagonal;
         // Sweep shared edges, including partial edges of spanning cells. The active
         // set is ordered by border weight/style/source order, with logarithmic updates.
-        foreach (var group in all.Where(s => s.Stroke > 0 && (s.Width == 0 || s.Height == 0)).GroupBy(s => (Vertical: s.Width == 0, Coordinate: s.Width == 0 ? s.X : s.Y)))
+        foreach (var group in all.Where(s => s.Geometry == null && s.Stroke > 0 && (s.Width == 0 || s.Height == 0)).GroupBy(s => (Vertical: s.Width == 0, Coordinate: s.Width == 0 ? s.X : s.Y)))
         {
             var borders = group.Select((shape, index) => (Shape: shape, Index: index)).ToArray();
             var events = borders.SelectMany(b => new[] { (Position: group.Key.Vertical ? b.Shape.Y : b.Shape.X, Start: true, b.Index),

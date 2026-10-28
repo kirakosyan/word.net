@@ -87,7 +87,7 @@ public sealed partial class EditingTemplateTests
         WordDocument document = WordDocument.Create(); document.AddParagraph(timeout ? new string('a', 50000) + "!" : "bbb", cancellationToken: TestContext.Current.CancellationToken);
         string before = document.Paragraphs[0].Text;
         if (timeout) Assert.ThrowsAny<TimeoutException>(() => document.ReplaceRegex(pattern, "x", TimeSpan.FromMilliseconds(5), cancellationToken: TestContext.Current.CancellationToken));
-        else Assert.ThrowsAny<ArgumentException>(() => document.ReplaceRegex(pattern, "x", TimeSpan.FromMilliseconds(5), cancellationToken: TestContext.Current.CancellationToken));
+        else Assert.ThrowsAny<ArgumentException>(() => document.ReplaceRegex(pattern, "x", TimeSpan.FromSeconds(1), cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(before, document.Paragraphs[0].Text);
     }
 

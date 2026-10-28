@@ -30,6 +30,13 @@ internal sealed class ConversionContext
         if (controlWork > Math.Max(4096L, Options.MaximumCharacters * 64L)) throw new InvalidDataException("Limit.Controls: Aggregate control/XML traversal work exceeded.");
     }
     private long fieldWork;
+    private long boxFitWork;
+    internal void ReserveBoxFitWork(int count)
+    {
+        CheckCancellation(); boxFitWork = checked(boxFitWork + count);
+        if (boxFitWork > Math.Min(5000000L, Math.Max(4096L, Options.MaximumCharacters * 64L)))
+            throw new InvalidDataException("Limit.TextBoxFit: Aggregate text-box fitting work exceeded.");
+    }
     internal void ReserveFieldWork(int count)
     {
         fieldWork = checked(fieldWork + count);

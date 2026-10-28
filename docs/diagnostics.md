@@ -1,6 +1,17 @@
 # Conversion diagnostics
 
-## Mixed report regions — source under review
+## P4/P5 source under review
+
+`Review.Format`, `Review.Move`, `Review.Story` and `Comparison.StoryTopology`
+identify unsupported or inconsistent review ownership without exposing history text.
+`Shape.TextBoxProfile`, `Shape.TextBoxContent`, `Shape.TextBoxChain`,
+`Shape.Vector`, `Shape.VectorProfile`, `Shape.DrawingOrder`, `Layout.TextBoxMinimumSize`,
+`Layout.TextBoxChainOverflow` and `Limit.TextBoxFit` identify bounded drawing and
+layout failures. `Shape.VectorOutput` reports a destination that cannot retain the
+vector; `Shape.TextBoxLayout` reports unsupported HTML box layout. See the
+[profile](roadmap-102-p4-p5.md) for supported combinations.
+
+## Mixed report regions — merged source
 
 PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
 `Template.RepeatReferences` for references, counters or notes that cannot safely
@@ -9,7 +20,7 @@ mixed wrapper that cannot execute; saving unsupported control structure reports
 `Template.ControlStructure`. Unresolved link or field-structure diagnostics
 also prevent mixed-region execution. Expansion and reference work use existing
 `Limit.*` bounds; unsupported object ownership and retained revisions remain hard
-errors. These checks are pending review and are not part of public 1.4.0.
+errors. These checks are merged source and are not part of public 1.4.0.
 
 Cross-tabs reject invalid keys with `Report.CrossTabKey`, oversized input or tables
 with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
@@ -236,7 +247,7 @@ conversion diagnostics.
 | `Docx.ImageCropPadding` | Loss | Outward image crop padding is omitted; the original image edge is retained. |
 | `Docx.ImageEffects` | Loss | Arbitrary-angle image rotation is not retained. |
 | `Docx.Inline` | Loss | Unsupported inline content or annotations are flattened where text is available. |
-| `Docx.LanguageMetadata` | Report | Language/proofing metadata is not retained; Unicode text is preserved. |
+| `Docx.LanguageMetadata` | Report | Language/proofing metadata outside admitted explicit run companions is omitted; Unicode text is preserved. |
 | `Docx.ListAppearance` | Loss | Centered/right-aligned list labels use left label alignment. |
 | `Docx.ListBehavior` | Loss | Unsupported auxiliary numbering behavior is not retained. |
 | `Docx.ListFormat` | Loss | An unsupported number format uses decimal numbering. |

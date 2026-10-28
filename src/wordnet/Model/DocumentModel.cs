@@ -8,6 +8,7 @@ internal sealed class DocumentModel
     internal int ObjectCount { get; set; }
     internal ContentControlStore Controls { get; set; } = new ContentControlStore();
     internal bool HasControlDisplay { get; set; }
+    internal bool HasLinkedTextBoxes { get; set; }
     internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
@@ -179,17 +180,20 @@ internal sealed class TextRun
     internal Dictionary<int, TextRun>? FieldChildren { get; set; }
     internal List<TextRun>? FieldCache { get; set; }
     internal string? Revision { get; set; }
+    internal string? FormatRevision { get; set; }
+    internal TextRun? PreviousFormat { get; set; }
+    internal bool ExplicitFormat { get; set; }
     internal string? Comment { get; set; }
     internal int CommentBoundary { get; set; }
     // Every semantic run rebuild must retain the complete field/history carrier.
     internal TextRun RetainMetadata(TextRun source)
     {
         ControlDisplay = source.ControlDisplay; ControlGlyph = source.ControlGlyph; TypedControlId = source.TypedControlId; FieldChildren = source.FieldChildren; FieldCache = source.FieldCache;
-        Revision = source.Revision; Comment = source.Comment; CommentBoundary = source.CommentBoundary; BidiLevel = source.BidiLevel;
+        Revision = source.Revision; FormatRevision = source.FormatRevision; PreviousFormat = source.PreviousFormat; ExplicitFormat = source.ExplicitFormat; Comment = source.Comment; CommentBoundary = source.CommentBoundary; BidiLevel = source.BidiLevel;
         return this;
     }
     internal TextRun WithText(string text) => new TextRun(text, Bold, Italic, Code, Link, FontSize, Color, Image, Appearance, FieldInstruction, Note, Box, Bookmark, Control, Object)
-    { ControlDisplay = ControlDisplay, ControlGlyph = ControlGlyph, TypedControlId = TypedControlId, FieldChildren = FieldChildren, FieldCache = FieldCache, Revision = Revision, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
+    { ControlDisplay = ControlDisplay, ControlGlyph = ControlGlyph, TypedControlId = TypedControlId, FieldChildren = FieldChildren, FieldCache = FieldCache, Revision = Revision, FormatRevision = FormatRevision, PreviousFormat = PreviousFormat, ExplicitFormat = ExplicitFormat, Comment = Comment, CommentBoundary = CommentBoundary, BidiLevel = BidiLevel };
 }
 
 internal sealed class TemplateControl
@@ -203,6 +207,7 @@ internal sealed class TemplateControl
 
 internal sealed class RunAppearance
 {
+    internal string? ReviewCompanions { get; set; }
     internal string? FontFamily { get; set; }
     internal bool Underline { get; set; }
     internal bool Strike { get; set; }

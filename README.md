@@ -8,6 +8,8 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
+The pending [P4/P5 source profile](https://github.com/kirakosyan/word.net/blob/codex/roadmap-102-p4-p5/docs/roadmap-102-p4-p5.md) extends review workflows and bounded drawing support. It is not included in the published 1.4.0 packages.
+
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.
 - Compose documents and export editable DOCX or selectable-text PDF without Microsoft Office or a remote service.
@@ -78,7 +80,7 @@ Merged [PR #133](https://github.com/kirakosyan/word.net/pull/133) implements [th
 
 P2 [PR #134](https://github.com/kirakosyan/word.net/pull/134) adds opt-in typed DOCX checkbox/list/date/rich-text editing and explicit local XML binding. See the [source profile and limits](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls.md). This source is merged and absent from public 1.4.0; existing template loading keeps its behavior.
 
-[PR #135](https://github.com/kirakosyan/word.net/pull/135) proposes bounded mixed and master-detail report repeats, count/sum cross-tabs and caller-supplied fragment insertion. Its [template profile](https://github.com/kirakosyan/word.net/blob/codex/roadmap-102-p3-reports/docs/editing-and-templates.md#mixed-report-regions--source-under-review) describes the explicit limits. This work is under review and is not in the published package.
+[PR #135](https://github.com/kirakosyan/word.net/pull/135) delivers bounded mixed and master-detail report repeats, count/sum cross-tabs and caller-supplied fragment insertion. Its [template profile](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#mixed-report-regions--merged-source) describes the explicit limits. This merged source is not in the published package.
 
 ## Quick start
 

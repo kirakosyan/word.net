@@ -1,6 +1,6 @@
 # Invoice and report automation recipes
 
-## P3 customer statement — source under review
+## P3 customer statement — merged source
 
 The program also writes `p3-statement.docx` and `p3-statement.pdf`. It repeats
 customer paragraphs and nested line-item paragraph/table regions; caller code sums

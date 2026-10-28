@@ -29,6 +29,8 @@ public sealed partial class WordDocument
             DocumentModel incoming = self ? new DocumentCloner(c).Copy(m) : snapshot!;
             foreach (ConversionDiagnostic d in sourceDiagnostics) c.Inherit(d);
             if (incoming.Blocks.Count == 0) return 0;
+            if (LinkedTextBoxes.Validate(m, c).Count != 0 || LinkedTextBoxes.Validate(incoming, c).Count != 0)
+                throw new NotSupportedException("Shape.TextBoxChain: Resolve linked boxes before document composition.");
             m.HasControlDisplay |= incoming.HasControlDisplay;
             int nextControlId = 1; RemapTemplateControlIds(incoming, TemplateControlIds(m), ref nextControlId, c);
             ValidateRanges(incoming);
@@ -42,6 +44,8 @@ public sealed partial class WordDocument
             Remap(incoming, prefix, m.Notes.Count == 0 ? 0 : m.Notes.Max(n => n.PartId));
             if (style == CompositionStyle.UseDestination)
             {
+                if (incoming.Review.Revisions.Values.Any(r => r.Structure == "format" || r.MoveSide.Length != 0))
+                    throw new NotSupportedException("Review.Composition: Resolve formatting and move history before applying destination styles.");
                 if (incoming.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object != null)) throw new NotSupportedException("Object.Restyle: Object composition retains source appearance only.");
                 var prototypes = m.BodyParagraphs.GroupBy(p => p.HeadingLevel).ToDictionary(g => g.Key, g => g.First());
                 foreach (ParagraphBlock paragraph in incoming.BodyParagraphs)
@@ -115,7 +119,12 @@ public sealed partial class WordDocument
         foreach (var store in new[] { source.Review.Revisions, source.Review.Comments })
         {
             var records = store.Values.ToArray(); store.Clear();
-            foreach (ReviewRecord record in records) { record.Id = prefix + "r" + record.Id; store.Add(record.Id, record); }
+            foreach (ReviewRecord record in records)
+            {
+                record.Id = prefix + "r" + record.Id;
+                if (record.MovePartner != null) record.MovePartner = prefix + "r" + record.MovePartner;
+                store.Add(record.Id, record);
+            }
         }
         foreach (TableBlock table in source.Tables)
             foreach (int row in table.RowRevisions.Keys.ToArray()) table.RowRevisions[row] = prefix + "r" + table.RowRevisions[row];
@@ -167,6 +176,9 @@ public sealed partial class WordDocument
                     FieldChildren = r.FieldChildren,
                     FieldCache = cache,
                     Revision = r.Revision == null ? null : prefix + "r" + r.Revision,
+                    FormatRevision = r.FormatRevision == null ? null : prefix + "r" + r.FormatRevision,
+                    PreviousFormat = r.PreviousFormat,
+                    ExplicitFormat = r.ExplicitFormat,
                     Comment = r.Comment == null ? null : prefix + "r" + r.Comment,
                     CommentBoundary = r.CommentBoundary
                 };
@@ -175,5 +187,5 @@ public sealed partial class WordDocument
     }
     private static TextRun Restyle(TextRun r, TextRun appearance) => new TextRun(r.Text, appearance.Bold, appearance.Italic, appearance.Code, r.Link,
         appearance.FontSize, appearance.Color, r.Image, appearance.Appearance.Copy(), r.FieldInstruction, r.Note, r.Box, r.Bookmark, r.Control)
-    { FieldChildren = r.FieldChildren?.ToDictionary(p => p.Key, p => Restyle(p.Value, appearance)), FieldCache = r.FieldCache?.Select(cached => Restyle(cached, appearance)).ToList(), Revision = r.Revision, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
+    { FieldChildren = r.FieldChildren?.ToDictionary(p => p.Key, p => Restyle(p.Value, appearance)), FieldCache = r.FieldCache?.Select(cached => Restyle(cached, appearance)).ToList(), Revision = r.Revision, FormatRevision = r.FormatRevision, PreviousFormat = r.PreviousFormat, ExplicitFormat = r.ExplicitFormat, Comment = r.Comment, CommentBoundary = r.CommentBoundary };
 }

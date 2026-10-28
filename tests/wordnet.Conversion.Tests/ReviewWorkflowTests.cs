@@ -179,7 +179,7 @@ public sealed partial class ReviewWorkflowTests
         Assert.Equal("Total 20", compared.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken).Paragraphs[0].Text);
     }
     [Fact]
-    public void ComparisonPreservesMatchingHeaderStoriesAndRejectsChangesToThem()
+    public void ComparisonPreservesMatchingHeadersAndTracksPlainHeaderChanges()
     {
         string section = "<w:sectPr><w:headerReference w:type='default' r:id='header'/></w:sectPr>";
         byte[] Document(string text, string header) => TestDocuments.Docx(TestDocuments.Body(P(text) + section),
@@ -188,11 +188,13 @@ public sealed partial class ReviewWorkflowTests
         WordDocument original = Load(Document("Total 10", "Stable header")), revised = Load(Document("Total 20", "Stable header"));
         WordDocument compared = DocumentComparison.Compare(original, revised, new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken);
         Schema(Save(compared)); Assert.Equal("Stable header", Part(Save(compared), "word/header1.xml").Root!.Value);
-        Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(original, Load(Document("Total 20", "Changed header")), new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken));
+        WordDocument changed = DocumentComparison.Compare(original, Load(Document("Total 20", "Changed header")), new ComparisonOptions("Author", Time), Policy(), TestContext.Current.CancellationToken);
+        Assert.Equal("Changed header", Part(Save(changed.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken)), "word/header1.xml").Root!.Value);
+        Assert.Equal("Stable header", Part(Save(changed.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken)), "word/header1.xml").Root!.Value);
     }
     [Theory]
     [InlineData("<w:moveTo w:id='1' w:author='Author'><w:r><w:t>X</w:t></w:r></w:moveTo>")]
-    [InlineData("<w:r><w:rPr><w:rPrChange w:id='1' w:author='Author'><w:rPr/></w:rPrChange></w:rPr><w:t>X</w:t></w:r>")]
+    [InlineData("<w:r><w:rPr><w:rPrChange w:id='1' w:author='Author'><w:rPr><w:caps/></w:rPr></w:rPrChange></w:rPr><w:t>X</w:t></w:r>")]
     public void UnsupportedValidHistoryRejectsPreservation(string content)
     { Assert.Throws<NotSupportedException>(() => Load(Input("<w:p>" + content + "</w:p>"))); }
 }

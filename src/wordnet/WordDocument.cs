@@ -205,6 +205,7 @@ public sealed partial class WordDocument
     private static void Admit(DocumentModel model, ConversionContext context)
     {
         context.CheckCancellation();
+        _ = LinkedTextBoxes.Validate(model, context);
         CustomPropertyValues.Validate(model, context);
         long controlMetadata = model.Controls.Admit(model, context);
         controlMetadata = checked(controlMetadata + TemplateControls(model).Distinct().Sum(control => (long)control.Tag.Length + (control.Alias?.Length ?? 0) + 32));

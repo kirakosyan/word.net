@@ -60,8 +60,9 @@ internal static class PdfFormat
                 PdfPageBuilder target = builder.AddPage(page.Settings.Width, page.Settings.Height);
                 tags?.NewPage();
                 if (tags != null) target.CurrentStream.Operations.Add(new BeginMarkedContent(NameToken.Create("Artifact")));
-                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes))
+                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => !s.Foreground)))
                 {
+                    if (shape.Geometry != null) { PaintVector(target, shape, page.Settings.Height); continue; }
                     byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
                     if (shape.Stroke == 0)
                     {
@@ -113,6 +114,14 @@ internal static class PdfFormat
                     }
                     else if (text.Text.Length > 0 || text.NativeShape != null)
                     {
+                        if (text.Rotation != 0)
+                        {
+                            double angle = text.Rotation * Math.PI / 180, cosine = Math.Round(Math.Cos(angle)), sine = Math.Round(Math.Sin(angle));
+                            double cx = text.RotationX, cy = page.Settings.Height - text.RotationY;
+                            target.CurrentStream.Operations.Add(Push.Value);
+                            target.CurrentStream.Operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
+                                cx - cosine * cx - sine * cy, cy + sine * cx - cosine * cy }));
+                        }
                         string color = text.Color ?? "000000";
                         target.SetTextAndFillColor(Convert.ToByte(color.Substring(0, 2), 16), Convert.ToByte(color.Substring(2, 2), 16), Convert.ToByte(color.Substring(4, 2), 16));
                         if (text.NativeShape != null)
@@ -121,6 +130,7 @@ internal static class PdfFormat
                             else PdfNativeText.DrawCarrier(target, text, page.Settings.Height, carrier!);
                         }
                         else target.AddText(text.Text, text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), fonts[text.Font]);
+                        if (text.Rotation != 0) target.CurrentStream.Operations.Add(Pop.Value);
                         if (text.Link != null)
                         {
                             var measured = text.NativeShape == null ? target.MeasureText(text.Text, text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), fonts[text.Font]) : target.MeasureText("?", text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), carrier!);
@@ -133,6 +143,7 @@ internal static class PdfFormat
                     }
                     if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 }
+                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground))) PaintVector(target, shape, page.Settings.Height);
                 void AddLink(string link, PdfRectangle area, PdfTags.Node? semantic)
                 {
                     if (context.PreviewIntermediate) return;
@@ -156,6 +167,24 @@ internal static class PdfFormat
             if (complete) builder.Dispose();
             else { try { builder.Dispose(); } catch { /* Completion can retry after failure; preserve the primary exception. */ } }
         }
+    }
+
+    private static void PaintVector(PdfPageBuilder target, FixedShape shape, double pageHeight)
+    {
+        var ops = target.CurrentStream.Operations; ops.Add(Push.Value);
+        byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
+        if (shape.Stroke == 0) target.SetTextAndFillColor(r, g, b);
+        else { target.SetStrokeColor(r, g, b); ops.Add(new SetLineWidth(shape.Stroke)); }
+        foreach (VectorPath.Command command in VectorPath.Create(shape))
+        {
+            double[] p = command.Values;
+            if (command.Kind == 'M') ops.Add(new BeginNewSubpath(p[0], pageHeight - p[1]));
+            else if (command.Kind == 'L') ops.Add(new AppendStraightLineSegment(p[0], pageHeight - p[1]));
+            else if (command.Kind == 'C') ops.Add(new AppendDualControlPointBezierCurve(p[0], pageHeight - p[1], p[2], pageHeight - p[3], p[4], pageHeight - p[5]));
+            else ops.Add(CloseSubpath.Value);
+        }
+        if (shape.Stroke == 0) ops.Add(FillPathNonZeroWinding.Value); else ops.Add(StrokePath.Value);
+        ops.Add(Pop.Value);
     }
 
 }

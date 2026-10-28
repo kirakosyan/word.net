@@ -115,6 +115,7 @@ internal sealed partial class DocxReader
             }
         }
         document.Title = reader.title; document.Author = reader.author;
+        document.HasLinkedTextBoxes = reader.sawLinkedTextBox;
         foreach (var property in reader.customProperties) document.CustomProperties.Add(property.Key, property.Value);
         CustomPropertyValues.Validate(document, context);
         foreach (var pair in reader.styles.Where(p => (string?)p.Value.Attribute(W + "type") == "paragraph"))
@@ -203,6 +204,7 @@ internal sealed partial class DocxReader
         foreach (XElement element in container.Elements())
         {
             context.CheckCancellation();
+            if (context.PreserveReview && container.Name == W + "body" && (element.Name == W + "moveFromRangeStart" || element.Name == W + "moveFromRangeEnd" || element.Name == W + "moveToRangeStart" || element.Name == W + "moveToRangeEnd")) continue;
             using var location = element.Name == W + "p" || element.Name == W + "tbl" ? null : context.At(XmlSourceLocation.Create(element, mainPart));
             if (BlockBookmark(element, blocks, pendingBookmarks)) continue;
             int controlStart = blocks.Count;
@@ -270,7 +272,7 @@ internal sealed partial class DocxReader
         var mark = style.Copy();
         XElement? markProperties = properties?.Element(W + "rPr");
         if (markProperties != null && context.PreserveReview)
-            markProperties = new XElement(W + "rPr", markProperties.Elements().Where(e => e.Name != W + "ins" && e.Name != W + "del"));
+            markProperties = new XElement(W + "rPr", markProperties.Elements().Where(e => e.Name != W + "ins" && e.Name != W + "del" && e.Name != W + "moveFrom" && e.Name != W + "moveTo"));
         ReadRunProperties(markProperties, mark);
         string? retainedStyle = styleId ?? defaultStyle;
         if (retainedStyle != null && (!styles.TryGetValue(retainedStyle, out XElement? retainedDefinition) || (string?)retainedDefinition.Attribute(W + "type") != "paragraph")) retainedStyle = null;
@@ -326,7 +328,13 @@ internal sealed partial class DocxReader
             {
                 TextStyle style = inherited.Copy();
                 ReadRunProperties(child.Element(W + "rPr"), style);
+                int first = runs.Count;
                 ReadInlines(child, runs, style, link);
+                XElement? properties = child.Element(W + "rPr");
+                if (properties != null && (properties.Elements(W + "b").Concat(properties.Elements(W + "i")).Any(p => !IsOn(p))
+                    || properties.Elements(W + "color").Any(p => (string?)p.Attribute(W + "val") == "auto")))
+                    for (int i = first; i < runs.Count; i++) runs[i].ExplicitFormat = true;
+                ReadFormatRevision(child, inherited, link, runs, first);
             }
             else if (child.Name == W + "t")
             {
@@ -353,9 +361,19 @@ internal sealed partial class DocxReader
                 if (retained != null) { Emit(runs, new TextRun("", retainedObject: retained)); continue; }
                 if (child.Descendants(ChartObjectFormat.C + "chart").Any()) continue;
                 XElement? box = child.Descendants(W + "txbxContent").FirstOrDefault();
-                if (box != null)
+                XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
+                if (box != null || child.Descendants(wps + "linkedTxbx").Any() || child.Descendants(wps + "txbx").Any())
                 {
                     Emit(runs, new TextRun("", box: ReadBox(child, box)));
+                    continue;
+                }
+                if (child.Descendants(wps + "wsp").Any())
+                {
+                    PositionedBox? shape;
+                    try { shape = ReadVectorShape(child); }
+                    catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
+                    { context.Loss("Shape.VectorUnsupported", "The drawing is outside the admitted vector profile and is omitted."); shape = null; }
+                    if (shape != null) Emit(runs, new TextRun("", box: shape));
                     continue;
                 }
                 DocumentImage? image = ReadDrawing(child);
@@ -643,9 +661,21 @@ internal sealed partial class DocxReader
             return;
         }
 
+        string? companions = null;
+        if (properties.Parent?.Name == W + "r" || properties.Parent?.Name == W + "rPrChange")
+        {
+            try { companions = ReadReviewCompanions(properties); }
+            catch (NotSupportedException) when (!context.PreserveReview) { /* Keep the existing loss policy for unadmitted ordinary properties. */ }
+            style.Appearance.ReviewCompanions = companions;
+        }
+
         foreach (XElement property in properties.Elements().OrderBy(p => p.Name == W + "rStyle" ? 0 : 1))
         {
-            if (property.Name == W + "b")
+            if (property.Name == W + "rPrChange")
+            {
+                if (!context.PreserveReview) context.Loss("Revisions.Accepted", "Run formatting history is omitted in the accepted-state conversion profile.");
+            }
+            else if (property.Name == W + "b")
             {
                 // Resolve each style's basedOn chain before combining paragraph and character styles.
                 style.Bold = IsOn(property);
@@ -733,6 +763,7 @@ internal sealed partial class DocxReader
                 style.HasColor = true;
                 if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val")) context.Loss("Docx.ThemeColor", "Theme color uses its stored RGB fallback.");
             }
+            else if (companions != null && IsReviewCompanion(property)) { /* Retained explicit mirrored formatting and language/proofing metadata. */ }
             else if (property.Name == W + "lang")
                 context.Report("Docx.LanguageMetadata", "Language/proofing metadata is not retained; Unicode text is preserved.");
             else if (!(knownCodeStyle && property.Name == W + "rFonts"))
