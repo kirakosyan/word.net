@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Xml.Linq;
 using WordNet.Formats;
 using WordNet.Internal;
 using WordNet.Layout;
@@ -162,7 +163,14 @@ public static partial class DocumentComparison
         }
         static TextRun Neutral(TextRun r)
         {
-            TextRun result = new TextRun(r.Text, code: r.Code, link: r.Link, image: r.Image, appearance: r.Appearance,
+            RunAppearance appearance = r.Appearance.Copy();
+            if (appearance.ReviewCompanions != null)
+            {
+                XElement companions = XElement.Parse(appearance.ReviewCompanions);
+                companions.Elements().Where(e => e.Name == W + "bCs" || e.Name == W + "iCs" || e.Name == W + "szCs").Remove();
+                appearance.ReviewCompanions = companions.HasElements ? companions.ToString(SaveOptions.DisableFormatting) : null;
+            }
+            TextRun result = new TextRun(r.Text, code: r.Code, link: r.Link, image: r.Image, appearance: appearance,
                 fieldInstruction: r.FieldInstruction, note: r.Note, box: r.Box, bookmark: r.Bookmark, control: r.Control, retainedObject: r.Object).RetainMetadata(r);
             result.ExplicitFormat = false; return result;
         }

@@ -661,6 +661,14 @@ internal sealed partial class DocxReader
             return;
         }
 
+        string? companions = null;
+        if (properties.Parent?.Name == W + "r" || properties.Parent?.Name == W + "rPrChange")
+        {
+            try { companions = ReadReviewCompanions(properties); }
+            catch (NotSupportedException) when (!context.PreserveReview) { /* Keep the existing loss policy for unadmitted ordinary properties. */ }
+            style.Appearance.ReviewCompanions = companions;
+        }
+
         foreach (XElement property in properties.Elements().OrderBy(p => p.Name == W + "rStyle" ? 0 : 1))
         {
             if (property.Name == W + "rPrChange")
@@ -755,6 +763,7 @@ internal sealed partial class DocxReader
                 style.HasColor = true;
                 if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val")) context.Loss("Docx.ThemeColor", "Theme color uses its stored RGB fallback.");
             }
+            else if (companions != null && IsReviewCompanion(property)) { /* Retained explicit mirrored formatting and language/proofing metadata. */ }
             else if (property.Name == W + "lang")
                 context.Report("Docx.LanguageMetadata", "Language/proofing metadata is not retained; Unicode text is preserved.");
             else if (!(knownCodeStyle && property.Name == W + "rFonts"))
