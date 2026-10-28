@@ -1,5 +1,14 @@
 # API and support policy
 
+## 1.5.0 roadmap #102 delivery
+
+The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
+and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6 batch.
+The bounded fields, controls, reports, review and drawing additions ship together;
+all five target frameworks and existing platform limits remain. Historical results
+below retain their original source/package identities.
+
+
 ## P2 controls API — merged source
 
 The [P2 source API](content-controls.md) adds `LoadWithControls`, detached

@@ -1,6 +1,15 @@
 # Architecture and implementation status
 
-## P4/P5 source under review
+## 1.5.0 roadmap #102 delivery
+
+The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
+and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6 batch.
+The bounded fields, controls, reports, review and drawing additions ship together;
+all five target frameworks and existing platform limits remain. Historical results
+below retain their original source/package identities.
+
+
+## P4/P5 review and drawing profile
 
 Run-format and paired paragraph-move history retain explicit review ownership;
 section and story comparison uses bounded shared work and shared-part identities.

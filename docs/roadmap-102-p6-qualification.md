@@ -1,19 +1,24 @@
-# Roadmap #102 P6 qualification — preliminary source evidence
+# Roadmap #102 P6 qualification
 
-Issue #130 qualifies combinations and local packages after the leaf work is
-accepted. This branch is based on the review head of [PR #136](https://github.com/kirakosyan/word.net/pull/136),
-which has not merged. The evidence here is preliminary: it cannot establish the
-final merged commit, close the leaf issues or qualify a published package.
+The 1.5.0 batch is tracked by #130 and the [capability matrix](roadmap-102-capability-matrix.json).
+The release record links the exact final-main source, immutable packages, hosted
+runtime receipts and publication verification. Preliminary results below remain
+historical; they cannot substitute for those release gates.
 
-The independent OOXML tests in `BusinessFidelityTests.P6.cs` combine a scalar
-field, body comparison, review decisions, rotated text and vector output. They
-inspect editable DOCX schema and PDF text/vector paths, and verify that archive
-output rejects the unsupported drawing combination without writing output.
-`EditingTemplateTests.P6.cs` combines a mixed report region, a page field and
-review decisions, with independent DOCX and PDF inspection. Existing control
-tests separately verify that typed controls require an explicit display view
-before merge and that unsupported ownership fails without invoking caller data.
-These are bounded combinations; they do not imply arbitrary cross-feature support.
+## Combination coverage — 2026-10-28
+
+`BusinessFidelityTests.P6.cs` independently checks DOCX markup and PDF text,
+ellipse bounds and cubic paths, stale PAGE refresh, both review decisions, Word-shaped
+nonzero drawing layers and the explicit overlapping-layer diagnostic. Formatting
+history and paragraph moves run beside vectors; header revisions run beside rotated
+boxes; text decisions preserve fitted and linked-box text exactly once. Unsupported
+archive, tagged and native-typography combinations must fail with the drawing-profile
+code (or the earlier native structural guard) before writing output. `EditingTemplateTests.P6.cs` checks both decisions,
+all repeated paragraph/table values and stale PAGE removal after report merge.
+Existing typed-control tests retain their explicit display-view and ownership gates.
+These cases qualify the named combinations only.
+
+## Historical preliminary qualification — 2026-10-28
 
 The P4/P5 review follow-up passed local Linux x64 locked restore, five-target
 Release build, format verification and the full .NET 8 and .NET 10 conversion
