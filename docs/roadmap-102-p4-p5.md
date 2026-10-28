@@ -17,8 +17,10 @@ controls, objects or paragraph/table/section properties. It rejects unsupported
 property changes and ambiguous nested histories. Decisions and detached views
 retain the chosen appearance, including explicit off values against inherited
 styles; intersecting comments require an explicit comment decision first. Saved
-DOCX contains real `w:rPrChange` markup. The 1.5.0 release includes this bounded source profile. Mirrored explicit `bCs`, `iCs` and `szCs` properties survive preservation,
-composition, decisions and reload. Unchanged `lang` and `noProof` metadata is
+DOCX contains real `w:rPrChange` markup. The 1.5.0 release includes this bounded
+source profile. Mirrored explicit `bCs`, `iCs` and `szCs` properties survive
+preservation, composition, comparison, decisions and ordinary strict reload.
+Unchanged `lang` and `noProof` metadata is
 retained in both snapshots. Independent complex-script formatting and changes to
 language/proofing metadata remain outside this bounded profile and fail explicitly.
 

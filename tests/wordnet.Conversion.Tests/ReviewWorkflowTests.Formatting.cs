@@ -22,13 +22,19 @@ public sealed partial class ReviewWorkflowTests
         {
             WordDocument view = source.CreateReviewView(decision, cancellationToken: TestContext.Current.CancellationToken);
             WordDocument combined = Load(Input(P("Prefix"))); combined.Append(view, cancellationToken: TestContext.Current.CancellationToken);
-            byte[] saved = Save(Load(Save(combined))); Schema(saved);
+            WordDocument ordinaryReload = WordDocument.Load(new System.IO.MemoryStream(Save(combined)), DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
+            byte[] saved = Save(ordinaryReload); Schema(saved);
             XElement properties = Part(saved).Descendants(W + "r").Single(r => r.Element(W + "t")?.Value == "Companions").Element(W + "rPr")!;
             Assert.Equal(decision == ReviewDecision.Accept ? "28" : "20", (string?)properties.Element(W + "szCs")!.Attribute(W + "val"));
             Assert.Equal(decision == ReviewDecision.Accept ? null : "0", (string?)properties.Element(W + "bCs")!.Attribute(W + "val"));
             Assert.Equal("ar-SA", (string?)properties.Element(W + "lang")!.Attribute(W + "bidi"));
             Assert.NotNull(properties.Element(W + "noProof")); Assert.Empty(Part(saved).Descendants(W + "rPrChange"));
         }
+        WordDocument previous = source.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken);
+        WordDocument currentView = source.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken);
+        WordDocument compared = DocumentComparison.Compare(previous, currentView, new ComparisonOptions("Reviewer", Time), Policy(), TestContext.Current.CancellationToken);
+        byte[] comparedBytes = Save(compared); Schema(comparedBytes);
+        Assert.Equal(2, Part(comparedBytes).Descendants(W + "szCs").Count());
         Assert.Equal(history, Save(source));
         string mismatch = current.Replace("<w:szCs w:val='28'/>", "<w:szCs w:val='30'/>");
         Assert.Throws<NotSupportedException>(() => Load(Input("<w:p><w:r><w:rPr>" + mismatch + "<w:rPrChange w:id='1' w:author='Word'><w:rPr>" + old

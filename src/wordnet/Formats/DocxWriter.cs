@@ -255,16 +255,16 @@ internal sealed partial class DocxWriter
         }
         if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily)));
 
-        if (run.Bold || run.FormatRevision != null || run.ExplicitFormat || appearance.ReviewCompanions?.Contains("bCs") == true)
+        XElement? companions = appearance.ReviewCompanions == null ? null : XElement.Parse(appearance.ReviewCompanions);
+        if (run.Bold || run.FormatRevision != null || run.ExplicitFormat || companions?.Element(W + "bCs") != null)
         {
             properties.Add(new XElement(W + "b", run.Bold ? null : new XAttribute(W + "val", "0")));
         }
 
-        if (run.Italic || run.FormatRevision != null || run.ExplicitFormat || appearance.ReviewCompanions?.Contains("iCs") == true)
+        if (run.Italic || run.FormatRevision != null || run.ExplicitFormat || companions?.Element(W + "iCs") != null)
         {
             properties.Add(new XElement(W + "i", run.Italic ? null : new XAttribute(W + "val", "0")));
         }
-        XElement? companions = appearance.ReviewCompanions == null ? null : XElement.Parse(appearance.ReviewCompanions);
         if (companions?.Element(W + "bCs") is XElement boldCs) properties.Element(W + "b")!.AddAfterSelf(new XElement(boldCs));
         if (companions?.Element(W + "iCs") is XElement italicCs) properties.Element(W + "i")!.AddAfterSelf(new XElement(italicCs));
         if (appearance.Strike) properties.Add(new XElement(W + "strike"));

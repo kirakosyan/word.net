@@ -256,7 +256,7 @@ conversion diagnostics.
 | `Docx.ImageCropPadding` | Loss | Outward image crop padding is omitted; the original image edge is retained. |
 | `Docx.ImageEffects` | Loss | Arbitrary-angle image rotation is not retained. |
 | `Docx.Inline` | Loss | Unsupported inline content or annotations are flattened where text is available. |
-| `Docx.LanguageMetadata` | Report | Language/proofing metadata is not retained; Unicode text is preserved. |
+| `Docx.LanguageMetadata` | Report | Language/proofing metadata outside admitted explicit run companions is omitted; Unicode text is preserved. |
 | `Docx.ListAppearance` | Loss | Centered/right-aligned list labels use left label alignment. |
 | `Docx.ListBehavior` | Loss | Unsupported auxiliary numbering behavior is not retained. |
 | `Docx.ListFormat` | Loss | An unsupported number format uses decimal numbering. |

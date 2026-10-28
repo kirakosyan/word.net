@@ -118,7 +118,6 @@ internal sealed partial class DocxReader
     {
         if (!context.PreserveReview) return;
         XElement[] changes = run.Element(W + "rPr")?.Elements(W + "rPrChange").ToArray() ?? Array.Empty<XElement>();
-        for (int i = first; i < runs.Count; i++) runs[i].Appearance.ReviewCompanions = ReadReviewCompanions(run.Element(W + "rPr"));
         if (changes.Length == 0) return;
         if (changes.Length != 1 || insideRevision || fields.Count != 0 || link != null || runs.Count <= first
             || run.Ancestors().Any(e => e.Name == W + "sdt" || e.Name == W + "txbxContent" || e.Name == W + "hdr" || e.Name == W + "ftr" || e.Name == W + "footnote" || e.Name == W + "endnote")
@@ -138,7 +137,6 @@ internal sealed partial class DocxReader
         ReviewRecord record = ReviewMetadata(change); record.Structure = "format";
         if (review.Revisions.ContainsKey(record.Id)) throw new InvalidDataException("Review.Id: Duplicate revision identifier.");
         TextStyle previous = inherited.Copy(); ReadRunProperties(old, previous);
-        previous.Appearance.ReviewCompanions = ReadReviewCompanions(old);
         foreach (string name in new[] { "lang", "noProof" })
             if (!XNode.DeepEquals(properties.Element(W + name), old.Element(W + name)))
                 throw new NotSupportedException("Review.Format: Language and proofing metadata must be unchanged.");
