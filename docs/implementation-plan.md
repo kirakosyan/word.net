@@ -1,5 +1,12 @@
 # wordnet implementation and delivery status
 
+## Roadmap #102 P6 — preliminary qualification
+
+The owner requested the next bucket. The [P6 qualification record](roadmap-102-p6-qualification.md)
+adds combination checks on the P4/P5 review head. Issue #130 remains open until
+the leaf work is accepted, exact final-source and local-package gates pass, and
+issues and roadmaps are reconciled. No publication is authorized by this work.
+
 ## Roadmap #102 P4/P5 — source under review
 
 The owner authorized issues #122–#129 as one batch. The pending
@@ -190,7 +197,7 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 ## Remaining work
 
 1. Preserve historical release evidence, including the published [1.4.0 profile](roadmap-99-implementation.md).
-   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. P3 #118–#121 is merged and reconciled; P4 and P5 source is under review; P6 and #99’s unnumbered proposal remain planning. Bucket 5
+   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. P3 #118–#121 is merged and reconciled; P4 and P5 source is under review; P6 qualification is preliminary and #99’s unnumbered proposal remains planning. Bucket 5
    [design records](later-design-decisions.md) retain their separate policy gates.
 
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed
