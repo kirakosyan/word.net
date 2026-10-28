@@ -170,13 +170,14 @@ internal sealed partial class DocxReader
                 || element.Attributes().Any(a => !a.IsNamespaceDeclaration && (a.Name.Namespace != W
                     || (name == "lang" ? a.Name.LocalName is not ("val" or "eastAsia" or "bidi") : a.Name.LocalName != "val"))))
                 throw new NotSupportedException("Review.Format: Unsupported companion property metadata.");
+            string value = (string?)element.Attribute(W + "val") ?? "1";
+            if (name is "bCs" or "iCs" or "noProof" && value is not ("1" or "0" or "true" or "false" or "on" or "off"))
+                throw new InvalidDataException("Review.Format: Invalid companion toggle.");
             if (name is "bCs" or "iCs" or "szCs")
             {
                 XElement? latin = properties.Element(W + name.Substring(0, name.Length - 2));
                 string Value(XElement e) => (string?)e.Attribute(W + "val") ?? "1";
                 bool Toggle(XElement e) => Value(e) is "1" or "true" or "on";
-                if (name != "szCs" && Value(element) is not ("1" or "0" or "true" or "false" or "on" or "off"))
-                    throw new InvalidDataException("Review.Format: Invalid complex-script toggle.");
                 if (latin == null || (name == "szCs" ? Value(element) != Value(latin) : Toggle(element) != Toggle(latin)))
                     throw new NotSupportedException("Review.Format: Complex-script properties must mirror explicit ordinary properties.");
             }

@@ -39,6 +39,9 @@ public sealed partial class ReviewWorkflowTests
         string mismatch = current.Replace("<w:szCs w:val='28'/>", "<w:szCs w:val='30'/>");
         Assert.Throws<NotSupportedException>(() => Load(Input("<w:p><w:r><w:rPr>" + mismatch + "<w:rPrChange w:id='1' w:author='Word'><w:rPr>" + old
             + "</w:rPr></w:rPrChange></w:rPr><w:t>Companions</w:t></w:r></w:p>")));
+        string malformed = current.Replace("<w:noProof/>", "<w:noProof w:val='invalid'/>");
+        Assert.Throws<System.IO.InvalidDataException>(() => Load(Input("<w:p><w:r><w:rPr>" + malformed + "<w:rPrChange w:id='1' w:author='Word'><w:rPr>" + old
+            + "</w:rPr></w:rPrChange></w:rPr><w:t>Companions</w:t></w:r></w:p>")));
     }
     [Fact]
     public void FormatHistoryPreservesTabsAndLineBreaksAfterReload()
