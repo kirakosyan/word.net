@@ -22,7 +22,7 @@ against merged P3 passed at 0.974, using 62 samples per revision. This is eviden
 for the review head, not the final P6 revision. With the three preliminary
 combination tests, the P6 source suites each passed 1,487 cases on .NET 8 and
 .NET 10 with English OCR and no skips. Hosted final-head checks, actual
-Framework 4.7.2 execution, local-package consumer/API checks and reconciliation
+Framework 4.7.2 execution, final accepted-source package checks and reconciliation
 of the leaf issues and roadmaps remain required before #130 can be completed.
 No release, package publication, new runtime or platform claim is made here.
 
@@ -41,6 +41,9 @@ archives.
 | wordnet.Fonts | `3e1bd21d60d8f7431cab45e5caab59ef098a090d256cba0fa4372afeab21129c` |
 | wordnet.Ocr | `2cb107eabd9951770f08b15e896651d6deb58951c1d614fdca748f919b8915f0` |
 
-The local runtimes are .NET 8.0.33 and 10.0.12 on Linux x64. Package creation and
-API validation do not substitute for the packed-consumer or actual minimum
-runtime checks, which remain pending for the final accepted source.
+The local runtimes are .NET 8.0.33 and 10.0.12 on Linux x64. Against these
+packages, the .NET 8 and .NET 10 consumer suites and the explicitly selected
+.NET Standard 2.0 asset on each runtime each passed 1,487 cases with English OCR
+and no skips. The latter .NET 10 run was restarted after interruption; the
+framework-specific test assembly was restored and its hash verified afterward.
+Actual minimum runtime checks remain pending for the final accepted source.
