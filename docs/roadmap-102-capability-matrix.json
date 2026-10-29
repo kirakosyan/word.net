@@ -1,0 +1,153 @@
+{
+  "version": "1.5.0",
+  "frameworks": [
+    "net462",
+    "net472",
+    "netstandard2.0",
+    "net8.0",
+    "net10.0"
+  ],
+  "releaseEvidence": "https://github.com/kirakosyan/word.net/releases/tag/v1.5.0",
+  "qualificationIssue": 130,
+  "profiles": [
+    {
+      "id": "layout",
+      "issues": [
+        104,
+        105,
+        106,
+        107
+      ],
+      "profile": "docs/roadmap-102-p1.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/P1LayoutTests.cs",
+        "tests/wordnet.Conversion.Tests/P1ReviewRegressionTests.cs"
+      ],
+      "limits": "Managed DOCX defaults, sizing, marks and notes; explicit layout and native boundaries remain."
+    },
+    {
+      "id": "fields",
+      "issues": [
+        108,
+        109,
+        110,
+        111
+      ],
+      "profile": "docs/roadmap-102-p1.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/P1FieldTests.cs"
+      ],
+      "limits": "Typed local properties, deterministic pictures, bounded nested IF and managed STYLEREF; unsupported fields retain caches with diagnostics."
+    },
+    {
+      "id": "controls",
+      "issues": [
+        112,
+        113,
+        114,
+        115,
+        116,
+        117
+      ],
+      "profile": "docs/content-controls.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/ContentControlReviewTests.cs"
+      ],
+      "limits": "Opt-in typed controls and explicit local XML binding; fixed output requires an explicit display view and ordinary managed profile."
+    },
+    {
+      "id": "reports",
+      "issues": [
+        118,
+        119,
+        120,
+        121
+      ],
+      "profile": "docs/editing-and-templates.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/EditingTemplateTests.MixedReports.cs",
+        "tests/wordnet.Conversion.Tests/EditingTemplateTests.P6.cs"
+      ],
+      "limits": "Bounded mixed/master-detail repeats, prepared cross-tabs and caller fragments; ownership and resource gates remain."
+    },
+    {
+      "id": "format-history",
+      "issues": [
+        122
+      ],
+      "profile": "docs/roadmap-102-p4-p5.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/ReviewWorkflowTests.Formatting.cs",
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.P6.cs"
+      ],
+      "limits": "Body/cell bold, italic, size and color; mirrored explicit complex-script companions and unchanged language/proofing metadata; unsupported histories reject."
+    },
+    {
+      "id": "moves-and-sections",
+      "issues": [
+        123,
+        124
+      ],
+      "profile": "docs/roadmap-102-p4-p5.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/StructuralComparisonTests.cs",
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.P6.cs"
+      ],
+      "limits": "Unique exact whole-paragraph moves and matching section topology; cross-section/ambiguous moves reject."
+    },
+    {
+      "id": "story-review",
+      "issues": [
+        125
+      ],
+      "profile": "docs/roadmap-102-p4-p5.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/ReviewWorkflowTests.Stories.cs",
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.P6.cs"
+      ],
+      "limits": "Plain header/footer text insert/delete; fields, structured owners and format history in revised stories reject."
+    },
+    {
+      "id": "rotated-and-fitted-boxes",
+      "issues": [
+        126,
+        127
+      ],
+      "profile": "docs/roadmap-102-p4-p5.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.RotatedBoxes.cs",
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.P6.cs"
+      ],
+      "limits": "Quarter turns and opt-in shrink-to-fit to a six-point minimum; ordinary managed paragraphs and fixed output only."
+    },
+    {
+      "id": "linked-boxes",
+      "issues": [
+        128
+      ],
+      "profile": "docs/roadmap-102-p4-p5.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.LinkedBoxes.cs",
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.P6.cs"
+      ],
+      "limits": "At most 64 fixed unrotated boxes in one section; complete-line flow; ambiguous implicit zero heads and terminal overflow reject."
+    },
+    {
+      "id": "vectors",
+      "issues": [
+        129
+      ],
+      "profile": "docs/roadmap-102-p4-p5.md",
+      "tests": [
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.VectorShapes.cs",
+        "tests/wordnet.Conversion.Tests/BusinessFidelityTests.P6.cs"
+      ],
+      "limits": "Editable line, ellipse and default rounded rectangle; managed PDF/XPS/SVG vectors; unsupported effects and overlapping explicit layers reject."
+    }
+  ],
+  "limits": [
+    "Named combinations only; no general rendering parity claim.",
+    "Historical reference failures and exact-release runtime evidence remain separate.",
+    "Actual net462 runtime, Android/macOS releases, extra OCR languages and cryptographic features remain unqualified or unsupported."
+  ]
+}

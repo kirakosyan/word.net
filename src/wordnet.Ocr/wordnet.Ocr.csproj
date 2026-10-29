@@ -4,14 +4,14 @@
     <RootNamespace>WordNet.Ocr</RootNamespace>
     <AssemblyName>wordnet.Ocr</AssemblyName>
     <PackageId>wordnet.Ocr</PackageId>
-    <Version>1.4.0</Version>
+    <Version>1.5.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Description>Optional native PDF import, local English OCR, Arabic typography and PNG preview providers for wordnet. Managed document export does not require this package.</Description>
-    <PackageReleaseNotes>Direct HTML/ODT PDF export, immutable report chart binding, bounded scalar fields and structural comparison, improved font/table/note layout, final-column balancing, and qualified native table/story and separate managed-object PDF profiles. Includes roadmap review corrections. See the 1.4.0 release notes for compatibility and profile limits.</PackageReleaseNotes>
+    <PackageReleaseNotes>Typed fields and content controls, mixed and master-detail reports, bounded review histories and section/story comparison, rotated/fitted/linked text boxes and editable vectors. Includes layout and review corrections. See the 1.5.0 release notes for compatibility, qualification and combination limits.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

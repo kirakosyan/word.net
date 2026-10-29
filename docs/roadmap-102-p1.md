@@ -1,5 +1,14 @@
 # Roadmap #102 P1 source profile
 
+## 1.5.0 roadmap #102 delivery
+
+The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
+and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6 batch.
+The bounded fields, controls, reports, review and drawing additions ship together;
+all five target frameworks and existing platform limits remain. Historical results
+below retain their original source/package identities.
+
+
 Merged [PR #133](https://github.com/kirakosyan/word.net/pull/133) implements #104–#111; see the [capability map](roadmap-102-p1-capabilities.json). It is not a package publication or a
 claim of qualification on an unexecuted runtime. Historical #103 receipts and
 reference thresholds remain unchanged.

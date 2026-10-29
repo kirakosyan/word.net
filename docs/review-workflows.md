@@ -1,8 +1,17 @@
 # Bounded DOCX review workflows
 
-## Roadmap #102 P4 source under review
+## 1.5.0 roadmap #102 delivery
 
-The pending source extends the published profile with bounded run-format history,
+The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
+and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6 batch.
+The bounded fields, controls, reports, review and drawing additions ship together;
+all five target frameworks and existing platform limits remain. Historical results
+below retain their original source/package identities.
+
+
+## Roadmap #102 P4 review profile
+
+Version 1.5.0 extends the earlier profile with bounded run-format history,
 exact unambiguous whole-paragraph moves, matching multiple sections, and plain
 header/footer text revisions. See the [P4/P5 profile](roadmap-102-p4-p5.md) for
 ownership, decisions, limits and excluded histories. The 1.4.0 descriptions below

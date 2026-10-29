@@ -45,42 +45,16 @@ dotnet add package wordnet.Ocr
 This provider also supplies PNG previews and optional native typography. English OCR additionally requires a local Tesseract 5 library and `eng.traineddata`.
 See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md) and [deployment requirements](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md).
 
-## P1 additions in 1.3.0
+## New in 1.5.0
 
-PR [#85](https://github.com/kirakosyan/word.net/pull/85) merged unequal DOCX columns, [bounded report preprocessing](https://github.com/kirakosyan/word.net/blob/main/docs/report-preprocessing.md), body paragraph repeats, [DOCX ↔ ODT exchange](https://github.com/kirakosyan/word.net/blob/main/docs/odt.md), and [opt-in DOCX review workflows](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md). These additions ship in 1.3.0; earlier 1.2.x packages exclude them. The automation example includes executable P1 recipes. Existing default review interpretation and earlier format pairs remain; 1.3.0 limits ODT to the two DOCX exchanges; 1.4.0 also exports ODT directly to PDF.
+- Improved DOCX defaults, paragraph marks, managed table sizing and footnote layout.
+- Typed custom-property fields, deterministic numeric/date pictures, bounded nested IF fields and STYLEREF running headers.
+- Opt-in checkbox, list, date and rich-text content controls with explicit local XML binding.
+- Mixed and master-detail report regions, count/sum cross-tabs and caller-supplied document fragments.
+- Bounded formatting revisions, whole-paragraph moves, matching-section comparison and header/footer text revisions.
+- Quarter-turn and shrink-to-fit text boxes, linked box chains and editable line, ellipse and rounded-rectangle shapes.
 
-## 1.3.0 object and typography additions
-
-Release 1.3.0 adds bounded editable column/line charts and OMML equations,
-managed PDF/XPS/SVG rendering, and opt-in Unicode 17 bidi/Hindi paragraphs with a
-qualified ordinary PDF/UA-1 profile. Math needs an explicit caller MATH font; native
-text needs the optional provider and suitable caller fonts. Objects and native/UA
-output have separate combination limits. See the [P2 profile](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md)
-and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/p2-capability-matrix.json).
-These changes shipped from [PR #86](https://github.com/kirakosyan/word.net/pull/86), building on P0 and P1 work. See the [1.3.0 release record](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.3.0.md) for qualification and publication status.
-
-## 1.4.0 report and layout additions
-
-Version 1.4.0 adds report chart binding, bounded scalar fields, structural paragraph/row
-comparison, direct HTML/ODT-to-PDF conversion, corrected managed line/row metrics, opt-in
-final-column balancing, and qualified native-table/story and object-PDF combinations.
-There are 40 enabled conversion directions. These additions are absent from 1.3.x.
-See the [profile and limits](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-99-implementation.md)
-and [1.4.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.4.0.md).
-
-Font metrics and table/note placement corrections can change pagination. Unsupported
-scalar instructions retain cached results with informational diagnostics, including in
-Strict mode. Whole-paragraph review decisions include the paragraph mark and its text.
-Independent comparison failures remain recorded; this release makes no universal
-rendering-parity claim.
-
-## Merged roadmap #102 P1 source changes
-
-Merged [PR #133](https://github.com/kirakosyan/word.net/pull/133) implements [the bounded P1 profile](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p1.md): DOCX defaults/mark metrics, implicit managed table autofit, conventional note spacing, typed custom properties, field pictures, nested scalar IF fields and managed STYLEREF running headers. These source changes are absent from published 1.4.0; no new package has been published. Default sizing/spacing and implicit autofit can change pagination; explicit fixed tables and explicit text formatting keep their policies.
-
-P2 [PR #134](https://github.com/kirakosyan/word.net/pull/134) adds opt-in typed DOCX checkbox/list/date/rich-text editing and explicit local XML binding. See the [source profile and limits](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls.md). This source is merged and absent from public 1.4.0; existing template loading keeps its behavior.
-
-[PR #135](https://github.com/kirakosyan/word.net/pull/135) delivers bounded mixed and master-detail report repeats, count/sum cross-tabs and caller-supplied fragment insertion. Its [template profile](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#mixed-report-regions--merged-source) describes the explicit limits. This merged source is not in the published package.
+See the [1.5.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json) for migration guidance and supported combinations. Drawing extensions require ordinary managed fixed output; tagged/archive PDF and native typography combinations remain outside that profile. Use matching versions of all three packages.
 
 ## Quick start
 

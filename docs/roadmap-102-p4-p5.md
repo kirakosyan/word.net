@@ -1,4 +1,4 @@
-# Roadmap #102 P4/P5 source profile under review
+# Roadmap #102 P4/P5 — 1.5.0 profile
 
 ## Bounded run-format revisions (#122)
 
@@ -17,9 +17,10 @@ controls, objects or paragraph/table/section properties. It rejects unsupported
 property changes and ambiguous nested histories. Decisions and detached views
 retain the chosen appearance, including explicit off values against inherited
 styles; intersecting comments require an explicit comment decision first. Saved
-DOCX contains real `w:rPrChange` markup. This source is pending review and has not
-been published as a package. Mirrored explicit `bCs`, `iCs` and `szCs` properties survive preservation,
-composition, comparison, decisions and ordinary strict reload. Unchanged `lang` and `noProof` metadata is
+DOCX contains real `w:rPrChange` markup. The 1.5.0 release includes this bounded
+source profile. Mirrored explicit `bCs`, `iCs` and `szCs` properties survive
+preservation, composition, comparison, decisions and ordinary strict reload.
+Unchanged `lang` and `noProof` metadata is
 retained in both snapshots. Independent complex-script formatting and changes to
 language/proofing metadata remain outside this bounded profile and fail explicitly.
 
@@ -91,5 +92,6 @@ adjustments, overlapping drawings with explicit layers, disabled overlap and unq
 and unrecognized geometries reject or report loss. Tagged/archive PDF
 and native typography combinations remain unsupported, even with alternative text.
 
-All of these source changes remain under review. They are not part
-of the published 1.4.0 packages.
+These additions belong to 1.5.0; earlier 1.4.0 packages exclude them.
+See the [qualification record](roadmap-102-p6-qualification.md) and
+[release notes](releases/1.5.0.md) for exact-source and package evidence.

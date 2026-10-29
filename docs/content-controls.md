@@ -1,5 +1,14 @@
 # Typed DOCX content controls — roadmap #102 P2 source
 
+## 1.5.0 roadmap #102 delivery
+
+The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
+and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6 batch.
+The bounded fields, controls, reports, review and drawing additions ship together;
+all five target frameworks and existing platform limits remain. Historical results
+below retain their original source/package identities.
+
+
 PR [#134](https://github.com/kirakosyan/word.net/pull/134) implements #112–#117 as
 one owner-authorized batch. This is merged source, absent from public
 1.4.0; it does not publish packages. The [design record](content-controls-design.md)

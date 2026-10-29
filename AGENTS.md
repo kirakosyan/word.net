@@ -49,6 +49,15 @@ bounded native tables/stories, separate managed-object accessibility/archive out
 scalar fields, chart binding and direct HTML/ODT PDF export. Keep the new subset limits
 explicit; do not treat this as permission to expand other combinations or platforms.
 
+## Roadmap #102 release profile
+
+The owner authorized completing P4/P5, addressing P6 review, merging both PRs and
+publishing 1.5.0. The bounded P1–P6 profiles and combination limits are indexed in
+`docs/roadmap-102-capability-matrix.json`; release provenance belongs in the 1.5.0
+release record. Keep #99's separate unnumbered planning proposal open unless its
+scope is separately delivered or explicitly deferred by the owner. No new platform,
+cryptographic feature or unrestricted fidelity claim is added.
+
 ## Engineering quality
 
 - Keep the public API small, documented, and independent of platform/provider types.
