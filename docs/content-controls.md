@@ -340,9 +340,10 @@ The [receipt](measurements/roadmap-102-p2.json) records source/test trees, TRX,
 fixture/font/archive hashes, per-class counts and tooling limits. The following
 receipt/docs commit does not change the qualified source/test trees.
 
-No Framework test host runs on this Linux machine. Hosted Windows/Linux x64/ARM64,
-exact-package/explicit-Standard and actual-minimum-runtime checks remain separate
-and pending for the new PR head. No consumer Word/UI appearance or refresh, pixel
+No Framework test host ran on that Linux machine. At that checkpoint, hosted
+Windows/Linux x64/ARM64, exact-package/explicit-Standard and actual-minimum-runtime
+checks remained separate and pending for the new PR head; later qualification is
+recorded above. No consumer Word/UI appearance or refresh, pixel
 parity, Android/macOS execution, new platform or publication is claimed. Resource
 regressions cover selected independent/aggregate ceilings, not every possible
 threshold or hard CPU/RSS isolation. Historical reference failure verdicts and

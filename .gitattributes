@@ -20,6 +20,8 @@
 *.png binary
 *.tif binary
 tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/*.xml text eol=lf
+# Preserve the byte-identical, independently licensed Word-authored theme part.
+tests/wordnet.Conversion.Tests/Fixtures/Theme/OfficeWordParts/theme1.xml -text whitespace=cr-at-eol
 
 # Keep the reproducible corpus generator hash stable on Windows and Unix.
 eng/generate-comparison-corpus.py text eol=lf

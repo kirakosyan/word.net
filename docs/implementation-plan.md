@@ -15,6 +15,10 @@ or #172. Their compilation, enforcement and independent outcome evidence remain 
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 #139 remains incomplete until its additional feature controls and ledger are delivered.
+Unreleased #141 work resolves a bounded subset of local theme text appearance but
+retains loss diagnostics and does not yet preserve editable theme references. The
+[fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
+records its remaining script, drawing and style-precedence work.
 Pending source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships. The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
 records the accepted subset and the Office-authored evidence and richer structures
@@ -173,7 +177,9 @@ The 1.2.0 publishing workflow succeeded at release commit `3202a1f`; all three p
 packages' 11 DLLs match its qualified artifact. A fresh public-only restore/build
 passes; see the [ledger](release-1.2.0-readiness.md).
 
-## Current delivery
+<a id="current-delivery"></a>
+
+## Historical bucket delivery — 2026-10-18
 
 | Work | Delivery and evidence |
 | --- | --- |
@@ -182,13 +188,14 @@ passes; see the [ledger](release-1.2.0-readiness.md).
 | Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's composition-collision acceptance landed in #35; all eight issues are closed. |
 | Bucket 3: document editing and templates | PR [#35](https://github.com/kirakosyan/word.net/pull/35) merged as `0b2af843`; #11–#15 and #17 are closed with verified acceptance evidence. The merged source adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
 | Bucket 4: interoperability, typography, accessibility and import | PR [#37](https://github.com/kirakosyan/word.net/pull/37) merged as `44c9e362`; #20–#23 and #25–#27 closed with verified acceptance. All 15 review findings resolved, all 20 checks passed on `2af6a43`, and the merge tree matches that head. 828 required cases, including 33 review regressions; independent readers/validators and exact packed fallback runs pass. See [profiles/usage](interoperability.md). |
-| Bucket 5: later design decisions | [Four design deliverables](later-design-decisions.md) for #28–#31 merged in PR #39, with API/provider decisions, profiles, safety/resource limits, fixture provenance and staged acceptance plans. Runtime implementation remains deferred; design acceptance does not claim support. |
+| Bucket 5: later design decisions | [Four design deliverables](later-design-decisions.md) for #28–#31 merged in PR #39, with API/provider decisions, profiles, safety/resource limits, fixture provenance and staged acceptance plans. Runtime implementation was deferred at that checkpoint; design acceptance did not claim support. |
 
 PR #38 merged documentation reconciliation and a native font-buffer lifetime fix
 as `2f16d47ac007bf1a5affb41bc0b7653f5198c9f8`. Its tree matches head `e09c17c7ef43e38bcdf9717e535caa02b31d7812`,
 which passed all 20 checks. At that reconciliation the required suite was **829**; the 828-case
 PR #37 qualification remains dated historical evidence. See [testing](testing.md).
-No package was published. Bucket 5 is merged design work; runtime implementation is deferred.
+No package was published by that PR. Bucket 5 was merged design work at that checkpoint;
+later releases supply only their separately documented bounded runtime profiles.
 
 Bucket 2's [supported profile](document-fidelity.md) and
 [design decisions](business-fidelity-design.md) cover nested/decorated tables,
@@ -205,8 +212,9 @@ head `383ea15f1bb21d96f38a61a2eaee42980cae0124` before its expected-head squash 
 The merged source tree is identical to that head. Both complete local Linux x64
 .NET 8/10 suites passed without skips; package/API checks and the public sample pass.
 See [testing](testing.md) for exact runs, independent readers, historical release
-evidence and qualification limits. The source remains unreleased; this evidence
-does not establish Word/Aspose parity or exact-main-package release qualification.
+evidence and qualification limits. At that checkpoint the source was unreleased;
+later releases included it. This evidence does not establish Word/Aspose parity or
+exact-main-package release qualification.
 
 ## Preserved contracts
 

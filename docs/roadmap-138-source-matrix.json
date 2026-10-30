@@ -3,6 +3,31 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "theme-local-appearance",
+      "issue": 141,
+      "outcome": "supported-bounded",
+      "boundary": "Selected Latin fonts, text colors and direct cell colors resolve for rendering, with loss diagnostics because editable theme references are not retained.",
+      "tests": [
+        { "class": "DocxThemeTests", "method": "LatinThemeFontAndColorRenderLikeIndependentExplicitFormatting" },
+        { "class": "DocxThemeTests", "method": "WordAuthoredThemeUsesLocalSchemeAndCallerConfiguredOpenFonts" },
+        { "class": "DocxThemeTests", "method": "ThemeColorsApplyTintShadeAndSettingsMapping" },
+        { "class": "DocxThemeTests", "method": "DirectCellThemeShadingAndBorderRenderWithExplicitLossDiagnostics" },
+        { "class": "DocxThemeTests", "method": "HeaderAndFootnoteRunsUseTheDocumentTheme" },
+        { "class": "DocxThemeTests", "method": "CodeStyleThemeReferencesRemainExplicitlyDiagnosed" },
+        { "class": "DocxThemeTests", "method": "NamespaceDeclarationsAreNotFontThemeReferences" }
+      ]
+    },
+    {
+      "id": "theme-invalid-parts",
+      "issue": 141,
+      "outcome": "rejected",
+      "boundary": "Malformed, duplicate and external theme metadata reject; missing or unsupported references retain diagnosed fallbacks.",
+      "tests": [
+        { "class": "DocxThemeTests", "method": "MissingUnsupportedAndMalformedThemesUseExplicitLimits" },
+        { "class": "DocxThemeTests", "method": "UnavailableLocalThemeFontUsesDiagnosedFallback" }
+      ]
+    },
+    {
       "id": "glossary-inert-local",
       "issue": 143,
       "outcome": "supported-bounded",

@@ -33,6 +33,7 @@ internal sealed partial class DocxReader
             defaultAlignment = defaultAlignment,
             defaultLayout = defaultLayout.Copy(),
             defaultRun = defaultRun.Copy(),
+            theme = theme,
         };
         foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
         foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);

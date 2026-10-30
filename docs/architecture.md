@@ -8,6 +8,12 @@ end-annotation policy maps supported classic comments, formatting and paired mov
 to source anchors without margin callout placement. See the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
 
+Unreleased DOCX reading also consults the bounded local theme and settings before
+resolving text styles. It computes selected Latin font families and RGB colors for
+rendering while retaining loss diagnostics because editable theme semantics are not
+yet preserved. The [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
+records fallback and combination limits.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

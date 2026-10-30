@@ -300,8 +300,8 @@ conversion diagnostics.
 | `Docx.TableHeaders` | Loss | Noncontiguous repeating header rows are not retained. |
 | `Docx.TableIndent` | Loss | Nonabsolute table indentation is not retained. |
 | `Docx.TableStructure` | Loss | Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs. |
-| `Docx.ThemeColor` | Loss | Theme color uses its stored RGB fallback. |
-| `Docx.ThemeFont` | Loss | Theme fonts without a resolved family use the explicit family or output fallback. |
+| `Docx.ThemeColor` | Loss | Unreleased source resolves a bounded local theme color or uses the stored RGB fallback; editable theme semantics are not retained. |
+| `Docx.ThemeFont` | Loss | Unreleased source resolves a bounded local Latin theme font or uses the explicit/output fallback; editable theme semantics are not retained. |
 | `Docx.Underline` | Loss | Unsupported underline decoration uses a single line. |
 | `Ebook.ActiveContent` | Loss | Event handlers are omitted. |
 | `Ebook.Alignment` | Loss | Unsupported or direction-dependent ebook alignment becomes left alignment. |

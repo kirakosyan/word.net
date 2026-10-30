@@ -232,7 +232,8 @@ internal sealed partial class DocxReader
         cell.Padding = ReadPadding(properties?.Element(W + "tcMar"), padding);
         if (properties?.Element(W + "shd") is XElement shading)
         {
-            cell.Background = ReadRgb((string?)shading.Attribute(W + "fill"));
+            cell.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", ReadRgb((string?)shading.Attribute(W + "fill")));
+            _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
             if ((string?)shading.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
                 context.Loss("Table.ShadingApproximated", "Patterned cell shading uses its solid background color.");
         }
@@ -249,13 +250,17 @@ internal sealed partial class DocxReader
             if (side is "end") side = "right";
             if (side is not "left" and not "right" and not "top" and not "bottom") { context.Loss("Table.BorderApproximated", "Diagonal or direction-dependent borders are omitted."); continue; }
             string style = (string?)border.Attribute(W + "val") ?? "single";
-            if (style is "nil" or "none") { cell.Borders[side] = new CellBorder { Width = 0 }; continue; }
+            if (style is "nil" or "none")
+            {
+                _ = ThemeReference(border, "themeColor", "themeTint", "themeShade", null);
+                cell.Borders[side] = new CellBorder { Width = 0 }; continue;
+            }
             if (style is not "single" and not "double" and not "dashed" and not "dotted")
             { context.Loss("Table.BorderApproximated", "An unsupported border style uses a single line."); style = "single"; }
             cell.Borders[side] = new CellBorder
             {
                 Style = style,
-                Color = ReadRgb((string?)border.Attribute(W + "color")) ?? "000000",
+                Color = ThemeReference(border, "themeColor", "themeTint", "themeShade", ReadRgb((string?)border.Attribute(W + "color"))) ?? "000000",
                 Width = border.Attribute(W + "sz") == null ? 0.5 : Integer(border, W + "sz", 0, 255) / 8.0
             };
         }

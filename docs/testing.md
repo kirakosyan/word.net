@@ -18,6 +18,20 @@ The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) record a sepa
 36-input source/public-package comparison and schema checks. They do not complete
 the additional controls and platform qualification required by roadmap #138.
 
+Unreleased #141 tests independently construct schema-validated OOXML themes and
+compare local Latin font and color resolution against explicit formatting with
+PdfPig coordinates/colors and XPS markup. A [Word-authored theme XML control](../tests/wordnet.Conversion.Tests/Fixtures/Theme/OfficeWordParts/README.md)
+is reused under its upstream MIT license with caller-configured open-font substitutions;
+it is not an interactive Word execution. Tests cover inherited/default styles,
+direct overrides, tint/shade endpoints, settings mappings, system-color fallbacks,
+headers and footnotes, direct cell shading/borders, missing and malformed parts,
+output atomicity and cancellation.
+The tests do not establish editable theme preservation, every style interaction,
+script slot, conditional table style or drawing support, or public-package availability.
+On Linux x64, locked restore and the five-target Release build passed; the full
+.NET 8 and .NET 10 suites each passed 1,592 cases with English OCR prepared in
+the launching process and no skips. Hosted exact-head qualification is separate.
+
 Unreleased #143 glossary tests use independently authored OPC/XML packages and
 Open XML schema checks for category metadata, bounded local resources, typed edits,
 bindings, placeholder display and byte/relationship preservation. Negative cases
@@ -35,8 +49,8 @@ placeholder-style overrides, unsupported owners, cancellation and untouched
 source/destination sessions.
 The full #146 acceptance and cross-platform qualification remain open.
 
-The [unreleased source matrix](roadmap-138-source-matrix.json) maps current #143,
-#146, #148 and #149 positive and negative combinations to test methods. Run
+The [unreleased source matrix](roadmap-138-source-matrix.json) maps current #141,
+#143, #146, #148 and #149 positive and negative combinations to test methods. Run
 `python eng/verify-roadmap-138-source-matrix.py --run` after locked restore to
 validate the mapping and execute those tests; add `--framework net8.0` to use
 .NET 8. This is not public-package or platform qualification.
@@ -56,8 +70,14 @@ and the five-target Release build also passed; hosted exact-head evidence remain
 separate.
 On earlier text-display head `ca732f2`, locked restore and the five-target Release build passed, and the
 complete .NET 8 and .NET 10 suites each passed 1,567 cases with English OCR
-prepared in the launching process and no skips. This is local source evidence;
-the final hosted and actual Framework 4.7.2 checks are separate.
+prepared in the launching process and no skips. Its hosted Windows/Linux x64 and
+ARM source/package lanes passed. The push workflow's actual Framework 4.7.2
+[source](https://github.com/kirakosyan/word.net/actions/runs/41127722806/job/124317622187)
+and [package](https://github.com/kirakosyan/word.net/actions/runs/41127722806/job/124320865003)
+gates each passed exactly 1,567 cases with the required legacy JIT; the
+[PR workflow](https://github.com/kirakosyan/word.net/actions/runs/41127732182)
+also passed both gates. Both complete hosted workflows succeeded. That evidence
+belongs to `ca732f2`, not the later annotation or theme changes.
 
 For the earlier draft head `4d35259`, the actual Framework 4.7.2 source guest
 reported 1,522/1,522 passing with no skipped tests, but the
@@ -66,7 +86,7 @@ failed because its bundle still required exactly 1,498. The
 [guest evidence](https://github.com/kirakosyan/word.net/actions/runs/41120440306/artifacts/13009293177)
 retains the test report and identity/cleanup records. The later fragment head
 required 1,559 cases; the subsequent text-display head required 1,567. The current
-suite requires 1,578. An exact-head Framework run is still required.
+suite requires 1,592. An exact-head Framework run is still required.
 
 
 ## P4/P5 review and drawing profile — historical checkpoints
@@ -439,8 +459,9 @@ tree equals that head. Native Windows/Linux x64/ARM64 source and packed lanes pa
 including explicit Standard fallback on .NET 8/10 and the hosted Windows x64 Framework lane.
 The required suite is **828**, including 33 review regressions. Seven bucket-4 issues
 have verified acceptance and closure; roadmap #32 records completed buckets 1–4.
-This remains unreleased source, separate from published 1.1.0, actual-minimum-runtime
-qualification and exact-main-package release qualification.
+At that checkpoint this was unreleased source, separate from published 1.1.0,
+actual-minimum-runtime qualification and exact-main-package release qualification;
+the subsequent 1.2.0 release included it.
 
 PR [#35](https://github.com/kirakosyan/word.net/pull/35) was squash-merged on
 2026-10-17 as `0b2af843a40b8c866119594a887e8dac1f5c7340`, with **696** required
@@ -469,7 +490,8 @@ checklist](implementation-plan.md) before interpreting an old count as current.
 
 ## Bucket 4 merged-source qualification
 
-The merged, unreleased implementation covers #20–#23 and #25–#27; see the
+The merged implementation covered #20–#23 and #25–#27 and was unreleased at this
+checkpoint; see the
 [bounded profiles/API](interoperability.md) and [decisions](interoperability-design.md).
 The required suite expands from 696 to **828** cases (795 initial plus 33 review regressions): 15 HTML, 21 RTF, 12 typography,
 10 accessibility, 16 previews, 14 geometric PDF reconstruction and 16 OCR metadata/control

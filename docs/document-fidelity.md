@@ -7,6 +7,25 @@ paired paragraph moves. Its exclusions and source-history guarantees are in the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
 This is not a published 1.5.0 capability.
 
+## Unreleased source: bounded theme appearance
+
+The pending #141 work resolves major/minor Latin theme font slots and RGB theme
+colors from the local DOCX theme for ordinary text and direct cell shading/borders,
+including admitted settings color mappings and one tint or shade transform.
+Direct formatting still follows
+the existing style-processing order. Missing or unsupported schemes use explicit
+font/RGB values or the existing output fallback. This improves visible PDF/XPS
+appearance for the documented subset but continues to report `Docx.ThemeFont`
+or `Docx.ThemeColor`: editable theme references and the original theme package are
+not retained in DOCX. Mixed-script font selection, conditional table styles and
+drawings, other DrawingML color transforms, simultaneous tint/shade, and the full
+style/reset precedence remain unqualified. See the [testing record](testing.md)
+and the [initial 1.5.0 controls](fidelity-138-initial.md#additional-independent-controls).
+The color formulas and theme-font priority follow the public OOXML descriptions
+for [run colors](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_color_topic_ID0EYTHO.html)
+and [run fonts](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_rFonts_topic_ID0E25RO.html).
+No fonts or other resources are fetched.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
