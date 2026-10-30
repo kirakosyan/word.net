@@ -121,6 +121,8 @@ selected MATH font as existing equations and never silently uses ordinary font m
 
 The admitted OMML matrix has rectangular rows, a centered baseline, hidden empty
 placeholders, supported column alignment groups and standard relative spacing.
+Its mathematical runs retain the existing uniform-size and supported plain/italic
+appearance limits; other retained appearances are not silently rendered.
 Visible placeholders, top/bottom baselines, custom spacing, minimum column widths
 and unknown matrix properties remain unsupported with `Equation.Matrix*` errors.
 Existing `Object.UnsupportedLoss` behavior governs ordinary lenient conversion of
