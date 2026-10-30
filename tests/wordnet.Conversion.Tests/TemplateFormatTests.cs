@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using OpenMcdf;
 using UglyToad.PdfPig;
+using WordNet.Internal;
 using Xunit;
 using Wp = DocumentFormat.OpenXml.Wordprocessing;
 
@@ -381,6 +382,20 @@ public sealed class TemplateFormatTests
         Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(controlInput, controlOutput, DocumentFormat.Dotx, DocumentFormat.Docx,
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
         Assert.Equal(new byte[] { 42 }, controlOutput.ToArray());
+        using var genericInput = new MemoryStream(controlName);
+        Assert.Throws<InvalidDataException>(() => { using var package = new PackageArchive(genericInput, new ConversionContext(new ConversionOptions(), TestContext.Current.CancellationToken)); });
+        byte[] controlOdf = ControlCharacterInEntryName(StoredFixture(new[] { ("mimetype", OttMime), ("word/evil-name.xml", "<x/>") }));
+        Assert.Equal(FormatDetectionStatus.Invalid, Detect(controlOdf).Status);
+        using var odfInput = new MemoryStream(controlOdf); using var odfOutput = new MemoryStream(); odfOutput.WriteByte(42);
+        Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(odfInput, odfOutput, DocumentFormat.Ott, DocumentFormat.Docx,
+            new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        Assert.Equal(new byte[] { 42 }, odfOutput.ToArray());
+        byte[] unsafeDirectory = Edit(word, zip => zip.CreateEntry("../outside/"));
+        Assert.Equal(FormatDetectionStatus.Invalid, Detect(unsafeDirectory).Status);
+        using var directoryInput = new MemoryStream(unsafeDirectory); using var directoryOutput = new MemoryStream(); directoryOutput.WriteByte(42);
+        Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(directoryInput, directoryOutput, DocumentFormat.Dotx, DocumentFormat.Docx,
+            new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        Assert.Equal(new byte[] { 42 }, directoryOutput.ToArray());
         byte[] caseConflict = Edit(word, zip => Put(zip, "[content_types].xml", "<x/>"));
         Assert.Equal(FormatDetectionStatus.Invalid, Detect(caseConflict).Status);
         using var conflictInput = new MemoryStream(caseConflict); using var conflictOutput = new MemoryStream(); conflictOutput.WriteByte(42);

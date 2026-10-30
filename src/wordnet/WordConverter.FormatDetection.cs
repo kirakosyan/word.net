@@ -99,11 +99,7 @@ public sealed partial class WordConverter
             FormatIdentityConfidence confidence = FormatIdentityConfidence.Unknown, DocumentFormat format = DocumentFormat.Unknown, bool? template = null)
             => new DocumentFormatInspection(status, family, confidence, format, template, input.Length);
         using var archive = new ZipArchive(input, ZipArchiveMode.Read, true);
-        System.Collections.ObjectModel.ReadOnlyCollection<ZipArchiveEntry> archiveEntries;
-        // Framework validates entry names while loading the central directory and can
-        // throw before our own path checks see a malformed name.
-        try { archiveEntries = archive.Entries; }
-        catch (ArgumentException) { return Result(FormatDetectionStatus.Invalid); }
+        var archiveEntries = PackageArchive.ReadEntries(archive);
         if (archiveEntries.Count > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.ArchiveEntries: Too many entries for format inspection.");
         var entries = new Dictionary<string, ZipArchiveEntry>(StringComparer.Ordinal);
         var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase); long expanded = 0;

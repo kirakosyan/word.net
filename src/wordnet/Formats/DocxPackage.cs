@@ -68,12 +68,13 @@ internal sealed class DocxPackage : IDisposable
         {
             long expanded = 0;
             var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (archive.Entries.Count > context.Options.MaximumArchiveEntries)
+            var archiveEntries = PackageArchive.ReadEntries(archive);
+            if (archiveEntries.Count > context.Options.MaximumArchiveEntries)
             {
                 throw new InvalidDataException("Limit.ArchiveEntries: DOCX contains too many entries.");
             }
 
-            foreach (ZipArchiveEntry entry in archive.Entries)
+            foreach (ZipArchiveEntry entry in archiveEntries)
             {
                 context.CheckCancellation();
                 expanded = checked(expanded + entry.Length);
@@ -82,12 +83,9 @@ internal sealed class DocxPackage : IDisposable
                     throw new InvalidDataException("Limit.ExpandedBytes: DOCX exceeds the uncompressed byte limit.");
                 }
 
-                if (entry.FullName.Length > 0 && entry.FullName[entry.FullName.Length - 1] == '/')
-                {
-                    continue;
-                }
-
-                ValidatePartName(entry.FullName);
+                bool directory = entry.FullName.Length > 0 && entry.FullName[entry.FullName.Length - 1] == '/';
+                ValidatePartName(directory ? entry.FullName.Substring(0, entry.FullName.Length - 1) : entry.FullName);
+                if (directory) continue;
                 if (!insensitive.Add(entry.FullName))
                 {
                     throw new InvalidDataException("Docx.DuplicatePart: DOCX contains duplicate or case-ambiguous part names.");
@@ -95,7 +93,7 @@ internal sealed class DocxPackage : IDisposable
 
                 entries.Add(entry.FullName, entry);
             }
-            context.ArchiveEntryCount = archive.Entries.Count;
+            context.ArchiveEntryCount = archiveEntries.Count;
             context.DeclaredExpandedBytes = expanded;
         }
         catch

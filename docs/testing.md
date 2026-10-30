@@ -64,9 +64,12 @@ its direction guard still expected 40 pairs after the template routes were added
 On `83ab990`, the portable fixtures fixed six of the seven Framework failures, but
 both Windows Framework source runs still failed the malformed-name test: Framework
 rejected the name while loading ZIP entries before the detector could classify it.
-The subsequent detector correction requires a fresh hosted run. The updated local
-resource benchmark retains the original 40-pair guard and passed 32 iterations across
-all 53 directions; hosted results are separate. An independent check used the authored
+On `5a654f5`, detection classified that input correctly, but both Framework runs
+passed 1,619 cases and failed the new conversion assertion because the DOCX reader
+enumerated the archive separately. The subsequent shared package-reader correction
+requires a fresh hosted run. The updated local resource benchmark retains the
+original 40-pair guard and passed 32 iterations across all 53 directions; hosted
+results are separate. An independent check used the authored
 [`Odt/text.odt`](../tests/wordnet.Conversion.Tests/Fixtures/Odt/README.md) fixture
 (SHA-256 `50f1feca909fa19bbb38aee93f5649f8451becc8a6d792b1b432bd832b133b09`).
 LibreOffice 24.2.7.2 opened generated OTT and DOTX outputs and recovered the

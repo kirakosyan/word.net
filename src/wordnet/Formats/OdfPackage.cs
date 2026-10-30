@@ -43,10 +43,11 @@ internal sealed class OdfPackage : IDisposable
         archive = new ZipArchive(input, ZipArchiveMode.Read, true);
         try
         {
-            if (archive.Entries.Count > context.Options.MaximumArchiveEntries) throw Invalid("EntryLimit");
+            var archiveEntries = PackageArchive.ReadEntries(archive);
+            if (archiveEntries.Count > context.Options.MaximumArchiveEntries) throw Invalid("EntryLimit");
             var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             long declared = 0;
-            foreach (ZipArchiveEntry entry in archive.Entries)
+            foreach (ZipArchiveEntry entry in archiveEntries)
             {
                 context.CheckCancellation(); declared = checked(declared + entry.Length);
                 if (declared > context.Options.MaximumExpandedBytes) throw Invalid("ExpansionLimit");
@@ -56,7 +57,7 @@ internal sealed class OdfPackage : IDisposable
                     || ContainsText(name, "signature") || name.StartsWith("Object", StringComparison.OrdinalIgnoreCase)) throw Invalid("ActiveContent");
                 entries.Add(name, entry);
             }
-            if (archive.Entries.Count == 0 || archive.Entries[0].FullName != "mimetype" || Read("mimetype").Length != mediaType.Length) throw Invalid("Mimetype");
+            if (archiveEntries.Count == 0 || archiveEntries[0].FullName != "mimetype" || Read("mimetype").Length != mediaType.Length) throw Invalid("Mimetype");
             XDocument manifest = Xml("META-INF/manifest.xml");
             if (manifest.Root?.Name != Manifest + "manifest" || (string?)manifest.Root.Attribute(Manifest + "version") != "1.3") throw Invalid("Manifest");
             foreach (XElement entry in manifest.Root.Elements())
