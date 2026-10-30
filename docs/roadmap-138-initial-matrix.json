@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-30",
+  "sourceCommit": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+  "publicPackages": "1.5.0",
+  "scope": "Dated documented combinations; planned issues do not imply delivery or universal support.",
+  "releaseMatrix": "docs/roadmap-102-capability-matrix.json",
+  "entries": [
+    {
+      "id": "docx-theme-references",
+      "status": "diagnosed-loss",
+      "combination": "DOCX theme fonts and colors in ordinary formatting",
+      "boundary": "Stored explicit family/RGB or output fallback is used; theme semantics are not retained.",
+      "evidence": "docs/diagnostics.md",
+      "followUp": [141]
+    },
+    {
+      "id": "docx-conditional-table-styles",
+      "status": "diagnosed-loss",
+      "combination": "DOCX theme and conditional table styles",
+      "boundary": "Direct supported cell appearance is separate from unsupported style resolution.",
+      "evidence": "docs/document-fidelity.md",
+      "followUp": [141, 142]
+    },
+    {
+      "id": "typed-controls-ordinary",
+      "status": "supported-bounded",
+      "combination": "Opt-in typed DOCX controls in admitted body/cell paragraphs",
+      "boundary": "Local binding and display have explicit owner, formatting and output-profile limits.",
+      "evidence": "docs/content-controls.md",
+      "followUp": [143, 144, 145]
+    },
+    {
+      "id": "typed-controls-editor-glossary",
+      "status": "rejected",
+      "combination": "Word-generated glossary category and relationship graphs",
+      "boundary": "The existing placeholder glossary subset does not admit these editor-generated graphs.",
+      "evidence": "docs/content-controls.md",
+      "followUp": [143]
+    },
+    {
+      "id": "typed-controls-nested-stories",
+      "status": "rejected",
+      "combination": "Nested controls, row/cell wrappers and header/footer owners",
+      "boundary": "These owners and combinations are outside the current typed preservation profile.",
+      "evidence": "docs/content-controls.md",
+      "followUp": [144]
+    },
+    {
+      "id": "field-bearing-fragments",
+      "status": "rejected",
+      "combination": "Inserting fragments with live fields or into table-cell placeholders",
+      "boundary": "The existing fragment API accepts an admitted plain body bookmark and rejects source fields.",
+      "evidence": "docs/editing-and-templates.md",
+      "followUp": [146, 147]
+    },
+    {
+      "id": "portable-review-redline",
+      "status": "unqualified",
+      "combination": "Rendering a redline of retained history in PDF or SVG",
+      "boundary": "Existing non-DOCX review output requires explicit decisions and a detached view.",
+      "evidence": "docs/review-workflows.md",
+      "followUp": [148, 149]
+    },
+    {
+      "id": "native-merged-table-combinations",
+      "status": "unqualified",
+      "combination": "Arabic/Hindi native typography with merged business tables and additional features",
+      "boundary": "Existing native paragraph/table profiles do not establish all requested combinations.",
+      "evidence": "docs/p2-objects-typography.md",
+      "followUp": [151, 152, 153]
+    },
+    {
+      "id": "drawing-tagged-archive-native",
+      "status": "rejected",
+      "combination": "Roadmap #102 drawing extensions in tagged/archive PDF or native typography",
+      "boundary": "The new drawing extensions require ordinary managed fixed output.",
+      "evidence": "docs/roadmap-102-p4-p5.md",
+      "followUp": [154, 155, 156]
+    },
+    {
+      "id": "mixed-report-depth",
+      "status": "supported-bounded",
+      "combination": "Mixed paragraph/table report regions with one master-detail level",
+      "boundary": "Deeper block nesting and ambiguous wrappers remain rejected.",
+      "evidence": "docs/editing-and-templates.md",
+      "followUp": [157]
+    },
+    {
+      "id": "cross-tab-region",
+      "status": "unqualified",
+      "combination": "Prepared cross-tab inserted into a named report region",
+      "boundary": "The existing API appends a bounded cross-tab; region insertion is a later scope.",
+      "evidence": "docs/editing-and-templates.md",
+      "followUp": [158]
+    },
+    {
+      "id": "chart-math-general",
+      "status": "unqualified",
+      "combination": "New chart families, matrix equations and n-ary operators",
+      "boundary": "The existing chart and equation profiles remain bounded to their admitted graphs.",
+      "evidence": "docs/p2-objects-typography.md",
+      "followUp": [163, 168, 169]
+    },
+    {
+      "id": "dotx-ott",
+      "status": "unqualified",
+      "combination": "Named macro-free DOTX/OTT template formats and byte-based detection",
+      "boundary": "Template identities and automatic format inspection are not current public format support.",
+      "evidence": "docs/odt.md",
+      "followUp": [166]
+    },
+    {
+      "id": "layout-inspection",
+      "status": "unqualified",
+      "combination": "Public source-to-page rectangle snapshot",
+      "boundary": "Current inspection exposes aggregate pages, fonts and diagnostics, not node rectangles.",
+      "evidence": "docs/preflight-comparison-design.md",
+      "followUp": [167]
+    },
+    {
+      "id": "compatibility-plan-policy",
+      "status": "unqualified",
+      "combination": "Compiled template plan and enforced explicit loss policy",
+      "boundary": "The proposed contract is design-only; current inspection is not a conversion guarantee.",
+      "evidence": "docs/template-compatibility-plan-design.md",
+      "followUp": [170, 171, 172]
+    }
+  ]
+}

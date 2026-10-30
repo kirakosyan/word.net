@@ -1,0 +1,105 @@
+{
+  "capturedAtUtc": "2026-10-30T19:31:07.854154+00:00",
+  "packages": [
+    {
+      "package": "wordnet",
+      "url": "https://api.nuget.org/v3/registration5-gz-semver2/wordnet/index.json",
+      "responseSha256": "fe6d49e859e496127be61b13930980b298205c5d8d788bcaf00a94295513f37d",
+      "stableVersions": [
+        {
+          "version": "1.0.0",
+          "listed": true
+        },
+        {
+          "version": "1.1.0",
+          "listed": true
+        },
+        {
+          "version": "1.2.0",
+          "listed": true
+        },
+        {
+          "version": "1.2.1",
+          "listed": true
+        },
+        {
+          "version": "1.3.0",
+          "listed": true
+        },
+        {
+          "version": "1.4.0",
+          "listed": true
+        },
+        {
+          "version": "1.5.0",
+          "listed": true
+        }
+      ],
+      "latestListedStable": "1.5.0"
+    },
+    {
+      "package": "wordnet.fonts",
+      "url": "https://api.nuget.org/v3/registration5-gz-semver2/wordnet.fonts/index.json",
+      "responseSha256": "f1a2fd095ed8166863678a4d4de9afa67f2895ebd12be425006bcdaf82b0d43e",
+      "stableVersions": [
+        {
+          "version": "1.1.0",
+          "listed": true
+        },
+        {
+          "version": "1.2.0",
+          "listed": true
+        },
+        {
+          "version": "1.2.1",
+          "listed": true
+        },
+        {
+          "version": "1.3.0",
+          "listed": true
+        },
+        {
+          "version": "1.4.0",
+          "listed": true
+        },
+        {
+          "version": "1.5.0",
+          "listed": true
+        }
+      ],
+      "latestListedStable": "1.5.0"
+    },
+    {
+      "package": "wordnet.ocr",
+      "url": "https://api.nuget.org/v3/registration5-gz-semver2/wordnet.ocr/index.json",
+      "responseSha256": "bbb0b2f48ca3e32bb78e65d6a1894dc44e2fde8f40a4d67ff7aa804cfca5bb2e",
+      "stableVersions": [
+        {
+          "version": "1.1.0",
+          "listed": true
+        },
+        {
+          "version": "1.2.0",
+          "listed": true
+        },
+        {
+          "version": "1.2.1",
+          "listed": true
+        },
+        {
+          "version": "1.3.0",
+          "listed": true
+        },
+        {
+          "version": "1.4.0",
+          "listed": true
+        },
+        {
+          "version": "1.5.0",
+          "listed": true
+        }
+      ],
+      "latestListedStable": "1.5.0"
+    }
+  ]
+}

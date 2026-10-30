@@ -8,6 +8,10 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The proposed [template compatibility plan](template-compatibility-plan-design.md)
+describes a future bounded, immutable preflight contract. It does not add runtime
+behavior; existing inspection and conversion continue to use their current APIs.
+
 
 ## P4/P5 review and drawing profile
 

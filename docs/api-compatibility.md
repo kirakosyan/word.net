@@ -8,6 +8,9 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The [template compatibility-plan design](template-compatibility-plan-design.md)
+proposes later APIs but adds no public signatures or package/runtime support.
+
 
 ## P2 controls API — merged source
 
@@ -18,12 +21,12 @@ Snapshots are cached per committed version; failures/save keep them live and
 successful edits invalidate them. Display views retain Unicode text and defer
 managed glyph/underline preparation until PDF/XPS save.
 Existing Load/ReviewLoadOptions metadata and all five targets remain. No provider
-or XML/SDK type enters the public API. Source review, binary/package validation
-and actual runtime qualification remain separate from public 1.4.0 availability.
+or XML/SDK type enters the public API. The profile is included in 1.5.0; source
+review, package validation and actual runtime qualification remain distinct evidence.
 
 ## Merged roadmap #102 P1 API additions
 
-The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets. Existing signatures and package versions remain unchanged; publication and runtime qualification are separate gates.
+The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets and included in 1.5.0. Existing signatures remain compatible; package availability and runtime qualification are separate facts.
 
 
 ## 1.4.0 compatibility

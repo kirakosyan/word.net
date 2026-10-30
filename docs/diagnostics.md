@@ -8,6 +8,10 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The proposed [compatibility-plan contract](template-compatibility-plan-design.md)
+separates existing observed diagnostics from future predictions and independently
+validated outcomes. It does not change today's diagnostic or rejection behavior.
+
 
 ## P4/P5 review and drawing profile
 
@@ -29,7 +33,7 @@ mixed wrapper that cannot execute; saving unsupported control structure reports
 `Template.ControlStructure`. Unresolved link or field-structure diagnostics
 also prevent mixed-region execution. Expansion and reference work use existing
 `Limit.*` bounds; unsupported object ownership and retained revisions remain hard
-errors. These checks are merged source and are not part of public 1.4.0.
+errors. These checks are included in 1.5.0.
 
 Cross-tabs reject invalid keys with `Report.CrossTabKey`, oversized input or tables
 with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
@@ -51,7 +55,7 @@ fallback apply at PDF/XPS preparation, including later saves of display views. U
 preservation behavior rejects in every mode. Dirty bindings block DOCX save until
 an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.
-This source is merged and absent from public 1.4.0.
+This profile is included in 1.5.0.
 
 ## Merged roadmap #102 P1 diagnostics
 

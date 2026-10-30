@@ -8,6 +8,10 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The [compatibility-plan design](template-compatibility-plan-design.md) describes
+future typed requirements and loss policies; template-plan compilation and policy
+enforcement are not implemented by that design.
+
 
 ## Mixed report regions — merged source
 
@@ -36,8 +40,7 @@ crossing the region, shared notes and ambiguous control properties fail explicit
 Mixed regions also reject documents with unresolved link or field-structure losses,
 because their targets cannot be checked reliably. Generated blocks, rows, cells,
 images and metadata consume the existing limits before commit; cancellation and
-failures leave the original session unchanged. This source is pending review and is
-not included in the public 1.4.0 package.
+failures leave the original session unchanged. This profile is included in 1.5.0.
 
 `AddCrossTab(records, aggregation, includeTotals, token)` appends an editable
 table from explicit `CrossTabRecord` values. Keys are non-empty Unicode strings,
@@ -75,11 +78,11 @@ glyph fallback and managed underline restrictions run only at later PDF/XPS save
 The source profile explicitly lists Word editor metadata, inactive-script bounds
 and the intentionally rejected Word-generated glossary graphs. Existing
 template-only loading below is unchanged.
-The implementation is merged in PR #134 and absent from public 1.4.0.
+The implementation merged in PR #134 and is included in 1.5.0.
 
 ## Merged typed properties and field workflows
 
-See [the P1 usage and token matrix](roadmap-102-p1.md#typed-custom-properties-108) for immutable custom-property snapshots, atomic updates and DOCPROPERTY lookup. The same profile specifies numeric/date pictures, retained nested scalar IF fields and managed running headers. Legacy merge formatting remains unchanged. These additions merged in PR #133 and remain absent from public 1.4.0.
+See [the P1 usage and token matrix](roadmap-102-p1.md#typed-custom-properties-108) for immutable custom-property snapshots, atomic updates and DOCPROPERTY lookup. The same profile specifies numeric/date pictures, retained nested scalar IF fields and managed running headers. Legacy merge formatting remains unchanged. These additions merged in PR #133 and are included in 1.5.0.
 
 
 ## 1.4.0 roadmap #99 profile

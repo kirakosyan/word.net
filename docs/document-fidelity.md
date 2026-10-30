@@ -8,6 +8,9 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) retain all
+current comparison failures. The requested new feature controls remain outstanding.
+
 
 The [1.5.0 P4/P5 profile](roadmap-102-p4-p5.md) describes the bounded review,
 text-box and vector additions and their explicit exclusions. It is separate from
@@ -32,11 +35,11 @@ scaffolding is omitted informationally within the documented inactive-script
 subset; Word-generated glossary category/relationships remain rejected explicitly.
 Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
-This merged source is separate from public 1.4.0 and dated qualification.
+This profile is included in 1.5.0; its earlier source qualification remains dated evidence.
 
 ## Merged roadmap #102 P1 source profile
 
-See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes merged in PR #133 and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
+See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes merged in PR #133 and are included in 1.5.0. Explicit historical controls and all unchanged reference failures remain separate from later source-policy measurements.
 
 
 ## 1.4.0 roadmap #99 profile

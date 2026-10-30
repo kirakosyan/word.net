@@ -10,10 +10,9 @@ below retain their original source/package identities.
 
 
 PR [#134](https://github.com/kirakosyan/word.net/pull/134) implements #112–#117 as
-one owner-authorized batch. This is merged source, absent from public
-1.4.0; it does not publish packages. The [design record](content-controls-design.md)
+one owner-authorized batch; its bounded profile is included in 1.5.0. The [design record](content-controls-design.md)
 and [acceptance map](content-controls-acceptance.json) describe the contract and
-independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) records current local execution; the [initial receipt](measurements/roadmap-102-p2.json) remains historical. Hosted/runtime gates are recorded separately.
+independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) and [initial receipt](measurements/roadmap-102-p2.json) record historical local execution. Final release and runtime evidence is recorded separately in the [release record](releases/1.5.0.md).
 
 ## Load, inspect and edit
 

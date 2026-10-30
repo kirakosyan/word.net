@@ -1,11 +1,26 @@
 # wordnet implementation and delivery status
 
-## Roadmap #102 P6 — preliminary qualification
+## Roadmap #138 — planned compatibility and combinations
 
-The owner requested the next bucket. The [P6 qualification record](roadmap-102-p6-qualification.md)
-adds combination checks on the P4/P5 review head. Issue #130 remains open until
-the leaf work is accepted, exact final-source and local-package gates pass, and
-issues and roadmaps are reconciled. No publication is authorized by this work.
+The [roadmap](https://github.com/kirakosyan/word.net/issues/138) tracks the next
+35 scoped issues, beginning with a fresh 1.5.0 fidelity baseline and release wording.
+They remain open until their individual acceptance and reconciliation gates are met.
+Their planned support does not change the published [1.5.0 capability matrix](roadmap-102-capability-matrix.json).
+Source implementation, exact-runtime qualification and public package availability
+are separate facts; publication is outside this roadmap's implementation request.
+
+The proposed [compatibility-plan and loss-policy contract](template-compatibility-plan-design.md)
+is a design and executable schema example for #170, not an implementation of #171
+or #172. Their compilation, enforcement and independent outcome evidence remain open.
+The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
+comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
+#139 remains incomplete until its additional feature controls and ledger are delivered.
+
+## Roadmap #102 P6 — historical preliminary qualification
+
+The [P6 qualification record](roadmap-102-p6-qualification.md) preserves preliminary
+combination checks on the P4/P5 review head. Those checks predate final acceptance;
+the 1.5.0 release record below identifies the final source and publication evidence.
 
 ## Roadmap #102 P4–P6 and release 1.5.0
 
@@ -18,7 +33,7 @@ unnumbered planning proposal in #99 remains open and is outside this release.
 
 ## Roadmap #102 P3 — merged source in PR #135
 
-[PR #135](https://github.com/kirakosyan/word.net/pull/135) merged as `6695e5eb399f3d9800332cb47a63e493db383e47`, with tree equality to reviewed head `0d130e3f0b9e4b2266dc469c49575df7f4fe7925`. All 15 review threads are resolved; #118–#121 are reconciled and closed. Both final-head workflows and Android compilation passed; actual Framework 4.7.2 source/package checks passed. Local Linux x64 .NET 8/10 suites each passed 1,435 cases including English OCR with no skips; restore, five-target build, format and pack passed. The PR performance gate failed twice (1.259 and 1.321) before passing at 1.072; a separate local exact-runtime comparison passed at 0.999 over 93 samples per revision. No package was published. The owner authorized P4 #122–#125 and P5 #126–#129; their bounded source implementation is under review.
+[PR #135](https://github.com/kirakosyan/word.net/pull/135) merged as `6695e5eb399f3d9800332cb47a63e493db383e47`, with tree equality to reviewed head `0d130e3f0b9e4b2266dc469c49575df7f4fe7925`. All 15 review threads are resolved; #118–#121 are reconciled and closed. Both final-head workflows and Android compilation passed; actual Framework 4.7.2 source/package checks passed. Local Linux x64 .NET 8/10 suites each passed 1,435 cases including English OCR with no skips; restore, five-target build, format and pack passed. The PR performance gate failed twice (1.259 and 1.321) before passing at 1.072; a separate local exact-runtime comparison passed at 0.999 over 93 samples per revision. No package was published by that PR; P3 and the subsequent P4–P6 work are included in 1.5.0.
 
 ## Roadmap #102 P2 — merged source in PR #134
 
@@ -31,12 +46,11 @@ Android jobs establish compilation only. Local Linux x64 .NET 8/10 suites each p
 1,390 cases with English OCR and no skips. The [profile](content-controls.md),
 [acceptance map](content-controls-acceptance.json) and [review receipt](measurements/roadmap-102-p2-review.json)
 retain exact bounds, source/test identities and dated historical evidence. This merged
-source is absent from public 1.4.0; no package was published. The owner's next bucket
-request starts P3 at #118, following the roadmap's issue-by-issue ordering.
+source was absent from public 1.4.0 and was subsequently included in 1.5.0.
 
 ## Roadmap #102 P1 — merged source, PR #133
 
-The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 #112–#117 subsequently merged in PR #134.
+The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; these additions are included in 1.5.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed by that PR. P2 #112–#117 subsequently merged in PR #134.
 
 ## Roadmap #102 / issue #103 - merged baseline findings
 
@@ -50,8 +64,7 @@ unproven inheritance/implicit-sizing defects, source omissions and the existing 
 reservation policy. No converter behavior, package version or support scope changes.
 Issue #103 is accepted and reconciled in roadmap #102 and historical roadmap #32.
 At that historical point the evidence-only delivery left subsequent tasks unimplemented.
-The later owner-authorized P1 and P2 work is recorded above, and P3 has since started
-with #118. Publication is not authorized by those implementation requests.
+The later owner-authorized P1–P6 work is recorded above and included in 1.5.0.
 The CI follow-up makes fixture-content verification portable across ZIP encodings,
 with archive hashes and the original measured receipt preserved.
 Review corrections protect measured fixtures from generation, isolate the public
@@ -114,7 +127,7 @@ The existing corpus now has 24 independently authored fixtures, including twelve
 
 The invoice/report recipes use the existing public API, caller images and repeat/if controls. Application code rounds line amounts before summing; logs explicitly describe cumulative diagnostics. Staging/cancellation/cleanup and real replacement are independently tested. The required conversion/OCR suite is **855**, including fourteen recipe cases; thirteen Python tests cover comparison/capture contracts. [Testing evidence](testing.md) identifies the exact source/package/runtime checks and their limits.
 
-This is merged source, separate from published packages. No new engine API, dependency version, target framework, platform claim, release tag or NuGet publication is added. The older presentation-patch and release descriptions below retain their dated evidence; the concise README delivered in #83 supersedes their earlier header layout.
+At that checkpoint this was merged source, separate from published packages; the later 1.3.0 release included it. PR #83 added no new engine API, dependency version, target framework, platform claim, release tag or NuGet publication. The older presentation-patch and release descriptions below retain their dated evidence; the concise README delivered in #83 supersedes their earlier header layout.
 
 The 1.2.1 presentation patch replaces the README's HTML-sized OS icons with six
 consistent Markdown badges, including readable Windows/Linux x64/ARM64 labels.
@@ -125,7 +138,7 @@ the converter profile remains the same. PR #43 merged as
 All four source/package actual-4.7.2 reports passed 829/829 with verified cleanup;
 all 24 job logs are free of the Node.js 20 warning. The documentation-only follow-up
 corrects NuGet's stripped relative file links and records this reconciliation.
-Publication remains pending final reconciled-main qualification. Use the live
+At the preparation checkpoint, publication was pending final reconciled-main qualification. Use the live
 [roadmap record](https://github.com/kirakosyan/word.net/issues/32) for its exact
 SHA/run/artifact selection; see [patch release notes](releases/1.2.1.md).
 
@@ -198,8 +211,12 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Preserve historical release evidence, including the published [1.4.0 profile](roadmap-99-implementation.md).
-   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. P3 #118–#121 is merged and reconciled; P4 and P5 source is under review; P6 qualification is preliminary and #99’s unnumbered proposal remains planning. Bucket 5
+1. Implement and independently qualify the open leaves of
+   [roadmap #138](https://github.com/kirakosyan/word.net/issues/138), retaining its
+   dependency and combination gates. The unnumbered proposal in #99 remains open;
+   #138's E0–E2 track addresses part of it without implying acceptance. Preserve
+   historical evidence, including the [1.4.0 profile](roadmap-99-implementation.md)
+   and the 1.5.0 [release record](releases/1.5.0.md). Bucket 5
    [design records](later-design-decisions.md) retain their separate policy gates.
 
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed

@@ -1,0 +1,22 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Validation;
+int failed = 0, count = 0;
+Console.WriteLine("Validator assembly: " + typeof(OpenXmlValidator).Assembly.FullName);
+Console.WriteLine("Validator SHA256: " + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(OpenXmlValidator).Assembly.Location))).ToLowerInvariant());
+foreach (string directory in args)
+foreach (string path in Directory.GetFiles(directory, "*.docx").OrderBy(x => x, StringComparer.Ordinal))
+{
+    count++;
+    string hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant();
+    using var document = WordprocessingDocument.Open(path, false);
+    var errors = new OpenXmlValidator().Validate(document).ToArray();
+    if (errors.Length > 0) failed++;
+    Console.WriteLine(Path.GetFileName(path) + " " + hash + " errors=" + errors.Length);
+    foreach (var error in errors) Console.WriteLine("  " + error.Description);
+}
+Console.WriteLine($"Total: {count}, invalid: {failed}");
+return failed == 0 && count == 36 ? 0 : 1;

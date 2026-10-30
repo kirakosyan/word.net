@@ -8,7 +8,7 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
-The pending [P4/P5 source profile](https://github.com/kirakosyan/word.net/blob/codex/roadmap-102-p4-p5/docs/roadmap-102-p4-p5.md) extends review workflows and bounded drawing support. It is not included in the published 1.4.0 packages.
+The current published release is [1.5.0](https://github.com/kirakosyan/word.net/releases/tag/v1.5.0). Its bounded review and drawing support is described in the [P4/P5 profile](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p4-p5.md). Further template compatibility and feature combinations are planned in [roadmap #138](https://github.com/kirakosyan/word.net/issues/138).
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.
@@ -252,9 +252,9 @@ Linux requires Tesseract, fontconfig and the documented fonts. Run Framework tes
 | [Diagnostics](https://github.com/kirakosyan/word.net/blob/main/docs/diagnostics.md) | Fidelity reports and preflight remediation |
 | [Testing](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) | Build/test setup, independent validation and platform evidence |
 | [Comparison harness](https://github.com/kirakosyan/word.net/blob/main/docs/comparison.md) | Reproducible corpus and optional licensed reference comparisons |
-| [Current fidelity baseline](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-103-baseline.md) | Merged source/public-package evidence, retained failures and reduced reproductions |
+| [Initial 1.5.0 fidelity measurements](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-138-initial.md) | Current-source/public-package measurements, retained failures and outstanding controls |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Delivered work and remaining scope |
-| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.4.0.md) | Published packages and exact-artifact evidence |
+| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) | Published packages and exact-artifact evidence |
 | [Release procedure](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) | Package qualification and manual publishing |
 | [Contributing](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md) | Engineering and validation requirements |
 

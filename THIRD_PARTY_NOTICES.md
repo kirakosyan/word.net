@@ -100,6 +100,9 @@ Word pagination parity. No proprietary Microsoft font is redistributed.
 - Fixture generators use ReportLab (BSD) and Pillow (HPND). External fixture validation
   used NPOI/HWPF (Apache-2.0) and KindleUnpack (GPL-3.0). These tools are not copied,
   linked or included in the library/package; their role is recorded in fixture provenance.
+- The template-plan design examples use development-only jsonschema 4.26.0 (MIT)
+  and rfc8785 0.1.4 (Apache-2.0) for schema and canonicalization checks. They are not
+  runtime dependencies and are not included in the NuGet packages.
 
 ## Binary Word fixtures and Android validation
 

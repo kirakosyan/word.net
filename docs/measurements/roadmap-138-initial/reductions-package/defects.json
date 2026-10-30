@@ -1,0 +1,1135 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+  "sourceDirty": false,
+  "manifestSha256": "2eea7af50ad7a3bea205f690db0c5bb3313751bbb00cea83dc561effaa7e3f21",
+  "tolerances": {
+    "glyphPoints": 0.25,
+    "significantPixelChannelSum": 96,
+    "changedPixelFraction": 0.002,
+    "meanChannelError": 0.25
+  },
+  "unavailableReaders": [
+    "licensed desktop Word",
+    "licensed Aspose.Words"
+  ],
+  "findings": [
+    {
+      "rank": 3,
+      "finding": "diagnostic-expectations",
+      "failedVerdicts": [
+        "diagnostic-expectations",
+        "pagination",
+        "reference-text-or-order",
+        "glyph-placement",
+        "page-geometry",
+        "raster"
+      ],
+      "documentId": "notes-continuation",
+      "engine": "wordnet",
+      "minimalFixture": "notes-continuation.docx",
+      "smallerRelatedFixture": "notes-continuation.docx",
+      "inputSha256": "813951ac8e7f35786a3bf35ed2dd9fc4fa628b3f77f431f7857a323418e02136",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [
+        {
+          "part": "word/document.xml",
+          "path": "/document[1]/body[1]/p[1]",
+          "phase": "Destination"
+        }
+      ],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": false,
+        "missing": [],
+        "unexpected": [
+          "Formatting.RunAppearance"
+        ]
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": false,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": false,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.04608136266881397,
+              "meanChannelError": 7.002010851645578
+            },
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.02693285123735227,
+              "meanChannelError": 4.002763378948526
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "finding": "diagnostic-expectations",
+      "failedVerdicts": [
+        "diagnostic-expectations",
+        "glyph-placement",
+        "page-geometry",
+        "raster"
+      ],
+      "documentId": "notes-marked",
+      "engine": "wordnet",
+      "minimalFixture": "notes-marked.docx",
+      "smallerRelatedFixture": "notes-marked.docx",
+      "inputSha256": "d9c42f7762bae786e08b6a9257ff0533b425ab47c8bc5f2081effc7e32249eff",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [
+        {
+          "part": "word/document.xml",
+          "path": "/document[1]/body[1]/p[1]",
+          "phase": "Destination"
+        }
+      ],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": false,
+        "missing": [],
+        "unexpected": [
+          "Formatting.RunAppearance"
+        ]
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 4.498000000000047,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.001858327482835424,
+              "meanChannelError": 0.260451830402103
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "defaults-docdefaults11",
+      "engine": "wordnet",
+      "minimalFixture": "defaults-docdefaults11.docx",
+      "smallerRelatedFixture": "defaults-docdefaults11.docx",
+      "inputSha256": "ee0d9a2da4b712f96bce65c688125cec7fc385fbde229d4db1c6b54c92ac2852",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0005517785887477542,
+              "meanChannelError": 0.03705664253943759
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "defaults-explicit11",
+      "engine": "wordnet",
+      "minimalFixture": "defaults-explicit11.docx",
+      "smallerRelatedFixture": "defaults-explicit11.docx",
+      "inputSha256": "5b24a3a9259bd579e6ac0e3d5ed19a3ca593ef72835dd74dc03285a0e4b7621f",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0005517785887477542,
+              "meanChannelError": 0.03705664253943759
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "defaults-omitted",
+      "engine": "wordnet",
+      "minimalFixture": "defaults-omitted.docx",
+      "smallerRelatedFixture": "defaults-omitted.docx",
+      "inputSha256": "89f5b5e5cf74c7d5004c96a744b899a3c269ba06ccff218971cf496009e461f4",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0005517785887477542,
+              "meanChannelError": 0.03705664253943759
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "defaults-style-chain11",
+      "engine": "wordnet",
+      "minimalFixture": "defaults-style-chain11.docx",
+      "smallerRelatedFixture": "defaults-style-chain11.docx",
+      "inputSha256": "277d851ed25f7f8854e9e566adcabee03762d40d00c95d7b04273d8c26cd4ae4",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0005517785887477542,
+              "meanChannelError": 0.03705664253943759
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "spacing-explicit",
+      "engine": "wordnet",
+      "minimalFixture": "spacing-explicit.docx",
+      "smallerRelatedFixture": "spacing-explicit.docx",
+      "inputSha256": "84fa52d9dfc6b547065f2c8d4203e7f099b6cf7fb84148522187e3b8dd38b123",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0003196278410429064,
+              "meanChannelError": 0.022145162628888524
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "spacing-inherited",
+      "engine": "wordnet",
+      "minimalFixture": "spacing-inherited.docx",
+      "smallerRelatedFixture": "spacing-inherited.docx",
+      "inputSha256": "cf2d70955a82e44df4ba099e46d71ea4f79440a372f110c88fb00d140d3b5a44",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0003196278410429064,
+              "meanChannelError": 0.022145162628888524
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "finding": "glyph-placement",
+      "failedVerdicts": [
+        "glyph-placement",
+        "page-geometry"
+      ],
+      "documentId": "wrap-explicit11",
+      "engine": "wordnet",
+      "minimalFixture": "wrap-explicit11.docx",
+      "smallerRelatedFixture": "wrap-explicit11.docx",
+      "inputSha256": "29a154449b5f325997a3dfa5de7e13dfc24d1660e7b94f374d9429ebdb183d05",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 59.92199999999998,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0017450558619746047,
+              "meanChannelError": 0.20784333076883393
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "finding": "page-geometry",
+      "failedVerdicts": [
+        "page-geometry"
+      ],
+      "documentId": "table-autofit",
+      "engine": "wordnet",
+      "minimalFixture": "table-autofit.docx",
+      "smallerRelatedFixture": "table-autofit.docx",
+      "inputSha256": "6089c4998cb998b624f2c861d30f25b5e11b62aa63aefc626c7420a12f48ed9e",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 0.10000000000002274,
+          "glyphPlacementPasses": true,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0006044891449899177,
+              "meanChannelError": 0.03989852657172785
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "finding": "page-geometry",
+      "failedVerdicts": [
+        "page-geometry"
+      ],
+      "documentId": "table-fixed",
+      "engine": "wordnet",
+      "minimalFixture": "table-fixed.docx",
+      "smallerRelatedFixture": "table-fixed.docx",
+      "inputSha256": "422c084650a5022289091cd43bddc27bd14fbe0e9bc24354555cecb5e95a72cd",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 0.10000000000002274,
+          "glyphPlacementPasses": true,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0006044891449899177,
+              "meanChannelError": 0.03989852657172785
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "finding": "page-geometry",
+      "failedVerdicts": [
+        "page-geometry"
+      ],
+      "documentId": "table-implicit",
+      "engine": "wordnet",
+      "minimalFixture": "table-implicit.docx",
+      "smallerRelatedFixture": "table-implicit.docx",
+      "inputSha256": "e253d4bc65c618e0fb29b4d56f599c726de98d7233e4d36499493c8bd40d341f",
+      "candidateSourceLocations": [
+        "src/wordnet/Formats/"
+      ],
+      "sourceLocationBasis": "triage starting points, not confirmed root causes",
+      "diagnosticOccurrences": [],
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 0.10000000000002274,
+          "glyphPlacementPasses": true,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0006044891449899177,
+              "meanChannelError": 0.03989852657172785
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    }
+  ]
+}

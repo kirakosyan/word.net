@@ -1,5 +1,12 @@
 # Interoperability, typography and import
 
+## 1.5.0 release profile
+
+The current published packages include the bounded roadmap #102 additions. See the
+[release notes](releases/1.5.0.md) and [capability matrix](roadmap-102-capability-matrix.json)
+for supported combinations and their runtime qualification. Further compatibility
+work is planned in [roadmap #138](https://github.com/kirakosyan/word.net/issues/138).
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in

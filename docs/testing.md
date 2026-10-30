@@ -8,16 +8,26 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The [compatibility-plan design](template-compatibility-plan-design.md) includes
+schema and example checks. Run `python -m pip install -r eng/template-plan-requirements.txt`
+in a development environment, then `python eng/test-template-plan-design.py`. These
+checks validate the design examples, not converter behavior, policy enforcement,
+independent output validation or any runtime/package qualification.
 
-## P4/P5 review and drawing profile
+The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) record a separate
+36-input source/public-package comparison and schema checks. They do not complete
+the additional controls and platform qualification required by roadmap #138.
+
+
+## P4/P5 review and drawing profile — historical checkpoints
 
 The [P4/P5 profile](roadmap-102-p4-p5.md) has independently authored OOXML
 fixtures for formatting history, move ranges, sections, story variants, rotated
 and linked text boxes, autofit and vector geometry. Tests inspect Open XML schema,
 accepted/rejected output, PDF text and geometry, XPS paths and SVG outlines, with
 negative ownership, resource and unsupported-combination controls. Final source,
-package and platform qualification must be reported separately from the dated P3
-results below; no publication or new platform qualification is implied.
+package and platform qualification are reported separately from the dated P3
+results below; see the [1.5.0 release record](releases/1.5.0.md).
 
 On Linux x64, locked restore and the five-target Release build passed. The complete
 .NET 10 and .NET 8 suites each passed 1,471 tests with English OCR provisioned in
@@ -40,7 +50,7 @@ DOCX schema and content order, multipage selectable PDF, nested row repeats,
 inline images/conditions, identity remapping, boundary and resource failures,
 and cancellation. The image uses the existing `color-grid.png` fixture. These
 tests qualify this bounded source only; the P2 receipts below remain historical,
-and public 1.4.0 and platform qualification have not changed.
+and the earlier public 1.4.0 and platform qualification were unchanged at that checkpoint.
 On Linux x64 the full .NET 8 and .NET 10 conversion suites each passed 1,408/1,408
 with no skips and English OCR prepared in the test process. Locked restore,
 five-target Release build, formatting verification and local pack passed; the pack
@@ -51,8 +61,8 @@ cross-tab and fragment tests additionally inspect schema-valid DOCX and PDF text
 and geometry, caller-prepared totals, identity remapping, malicious/missing
 resources, expansion limits and failure atomicity. The runnable statement fixture
 is independently authored by `eng/generate-p3-template.py` under MIT and has a
-recorded SHA-256 manifest. Final full-suite and hosted results for the batch must
-be reported separately from the earlier 1,408-case run.
+recorded SHA-256 manifest. Final full-suite and hosted results for the batch are
+recorded separately from the earlier 1,408-case run in the 1.5.0 release evidence.
 
 The PR #135 review follow-up adds parent/child boundary references and shared-note
 negative controls, strict loading of inactive controls, legacy row-scope checks,
@@ -103,7 +113,7 @@ including source/package/Standard and actual Framework 4.7.2 source/package jobs
 passed; both Android API compilation runs also passed. The identical-tree
 [PR CI](https://github.com/kirakosyan/word.net/actions/runs/40331042390) was retrying
 an Ubuntu package-download timeout at merge. This qualifies the tested source tree
-separately from historical measurements, pending CI and public-package availability.
+separately from historical measurements; the PR-time CI and package status are historical.
 
 The [new baseline receipt](fidelity-103-baseline.md) measures clean source
 `ec7816b` and independently restored public 1.4.0 against all 24 original references
