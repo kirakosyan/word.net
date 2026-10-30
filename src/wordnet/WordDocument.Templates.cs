@@ -50,7 +50,7 @@ public sealed partial class WordDocument
             originalRuns = new Dictionary<ParagraphBlock, TextRun[]>();
             foreach (ParagraphBlock paragraph in m.Paragraphs) { c.CheckCancellation(); originalRuns.Add(paragraph, paragraph.Runs.ToArray()); }
         }
-        string prefix = UniquePrefix(m) + "t";
+        string prefix = UniquePrefix(m, c) + "t";
         Blocks(m.Blocks, root, 0, true);
         foreach (List<DocumentBlock> story in m.Blocks.Select(b => b.Section).Concat(new[] { m.FinalSection }).Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct()) Blocks(story, root, 0);
         var referenced = new HashSet<DocumentNote>(DocumentModel.Expand(m.Blocks).OfType<ParagraphBlock>().SelectMany(p => p.Runs).Where(r => r.Note != null).Select(r => r.Note!));

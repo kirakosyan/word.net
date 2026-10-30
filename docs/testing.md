@@ -27,6 +27,22 @@ of a [Word-authored glossary](../tests/wordnet.Conversion.Tests/Fixtures/Content
 is retained as a negative control. Positive Office-authored and broader resource-graph
 acceptance required by #143 remain outstanding.
 
+Unreleased #146 tests independently validate inserted cell-fragment DOCX structure,
+host widths and bookmark/note identities with Open XML, and inspect PDF text,
+geometry, text colors and inline images with PdfPig. Field opt-in checks reference remapping, refreshed
+values, retained merge caches, isolated sequence counters, invalid switches,
+placeholder-style overrides, unsupported owners, cancellation and untouched
+source/destination sessions.
+The full #146 acceptance and cross-platform qualification remain open.
+
+For the earlier draft head `4d35259`, the actual Framework 4.7.2 source guest
+reported 1,522/1,522 passing with no skipped tests, but the
+[host gate](https://github.com/kirakosyan/word.net/actions/runs/41120440306/job/124293436141)
+failed because its bundle still required exactly 1,498. The
+[guest evidence](https://github.com/kirakosyan/word.net/actions/runs/41120440306/artifacts/13009293177)
+retains the test report and identity/cleanup records. The required count is now
+1,559 for the expanded suite; an exact-head Framework run is still required.
+
 
 ## P4/P5 review and drawing profile — historical checkpoints
 

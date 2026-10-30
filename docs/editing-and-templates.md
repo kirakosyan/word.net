@@ -62,11 +62,55 @@ body bookmark paragraph with a private copy of a separately loaded DOCX or safe
 HTML session. Callers load sources explicitly; streams remain theirs. Source
 formatting is kept, colliding styles and list/bookmark/note/template-control IDs
 are remapped, and the destination section is used. Sections/stories, nested tables,
-typed controls, history, positioned/retained objects, fields and source load
-warnings are rejected. Internal links must resolve in the fragment. Target REF/PAGEREF
-fields or links to the placeholder must be resolved before insertion; unrelated
-fields remain intact. Both sessions are
+typed controls, history, positioned/retained objects, source load warnings and
+informational diagnostics for omitted/flattened field instructions are rejected.
+This original overload also rejects fields. Internal links must resolve
+in the fragment. Target REF/PAGEREF fields or links to the placeholder must be
+resolved before insertion; unrelated fields remain intact. Both sessions are
 unchanged on failure; repeated insertions create independent identities.
+Crossing source bookmark ranges fail, and nested ranges are limited by the
+destination's `MaximumNestingDepth`.
+
+Unreleased source also provides `InsertFragmentAtBookmarkWithOptions` and
+`InsertFragmentAtTableCellBookmarkWithOptions` with a `FragmentInsertionOptions`
+argument. `Style` defaults to `CompositionStyle.KeepSource`. The explicit
+`UseDestination` policy applies the placeholder paragraph's alignment, layout,
+paragraph style and first ordinary run appearance to source body/cell paragraphs;
+it retains their text, list/heading structure, links, bookmarks and field tokens.
+Source note appearance is unchanged. Detached typed-control display and code-styled
+content/placeholders cannot use this restyling policy, and both sessions remain
+unchanged on failure.
+
+Unreleased source adds `InsertFragmentAtTableCellBookmark(name, fragment, token)`
+for a dedicated whole-paragraph bookmark inside an unmerged, single-column-span
+cell of a top-level body table. It keeps the host grid, widths and neighboring
+blocks, and admits multiple paragraphs and simple source tables. A paragraph is
+added at the end of the cell if the inserted source would otherwise leave a table
+as its last block. Nested source tables, merged/protected cells, nested-table
+destinations and stories remain outside this partial #146 profile. The original
+body API keeps its existing placement rule.
+
+The options methods permit the explicit
+`FragmentFieldHandling.AcceptCachedResults` choice. It admits simple `MERGEFIELD`,
+`REF`, `PAGEREF`, `SEQ`, `PAGE`, `NUMPAGES`, `SECTIONPAGES`, `DATE` and `TIME`
+instructions, without nested fields or structured caches. `REF` admits the `\n`
+list-label switch; `PAGEREF` admits no switches. Hyperlink reference switches remain
+unsupported. Sequence switches must match the existing supported evaluator;
+page/date/time fields admit no switches. Field-bearing fragments require each
+bookmark range to remain inside one paragraph. Reference targets must exist inside
+the source fragment and are remapped with its bookmarks; sequence
+names are isolated. `Fragment.CachedFields` records the caller's explicit acceptance:
+cached values can be stale, while existing DOCX/PDF/XPS rules refresh supported
+references or page fields in the destination. Template merge is explicit. Other
+field kinds and unresolved targets fail atomically. These source changes are not
+in the published 1.5.0 package; #146 remains open for its full acceptance and
+independent qualification.
+
+```csharp
+// Both sessions are loaded separately; this explicitly accepts cached field values.
+destination.InsertFragmentAtTableCellBookmarkWithOptions("Terms", clause,
+    new FragmentInsertionOptions { Fields = FragmentFieldHandling.AcceptCachedResults });
+```
 
 ## Opt-in typed controls — merged source
 

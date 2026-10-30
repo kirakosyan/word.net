@@ -124,6 +124,25 @@ internal static class DocumentReferences
         return levels.Length == 2 && int.TryParse(levels[0], out int first) && int.TryParse(levels[1], out int last) && first >= 1 && last <= 6 && first <= last;
     }
 
+    // Fragment insertion must not silently turn an unsupported reference into an accepted cache.
+    internal static bool SupportedFragmentReference(string instruction)
+    {
+        if (instruction.Count(c => c == '"') % 2 != 0) return false;
+        string[] args = Arguments(instruction);
+        if (args.Length < 2 || args[1].Length is 0 or > 256 || args[1][0] == '\\') return false;
+        string kind = DocumentFields.Kind(instruction);
+        // Hyperlink switches need a separate fixed-output link contract; retain only
+        // the currently supported text/list-number reference semantics here.
+        if (kind == "REF") return ValidSwitches(args, "\\n");
+        if (kind == "PAGEREF") return args.Length == 2;
+        if (kind != "SEQ" || !ValidSwitches(args, "\\r", "\\c", "\\n", "\\*")) return false;
+        string format = Switch(args, "\\*") ?? "decimal";
+        if (format.Equals("MERGEFORMAT", StringComparison.OrdinalIgnoreCase)) format = "decimal";
+        if (Format(format).Length == 0) return false;
+        string? restart = Switch(args, "\\r");
+        return restart == null || int.TryParse(restart, NumberStyles.None, CultureInfo.InvariantCulture, out int value) && value >= 0 && value < int.MaxValue;
+    }
+
     private static string[] Arguments(string instruction)
     {
         if (instruction.Length > 4096) return Array.Empty<string>();

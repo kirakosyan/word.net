@@ -41,7 +41,10 @@ with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
 uses `Fragment.SourceLoss`, `Fragment.SourceStructure`, `Fragment.Section`,
 `Fragment.Table`, `Fragment.Structure`, `Fragment.Reference` and
 `Fragment.Placeholder` to identify rejected sources or placement. Loading remains
-subject to the source reader's existing security and resource diagnostics.
+subject to the source reader's security and resource diagnostics. Unreleased source
+reports `Fragment.CachedFields` when a
+caller explicitly opts in to retained field results that can be stale; unresolved
+or unsupported source references still fail.
 
 ## P2 control diagnostics — merged source
 

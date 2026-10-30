@@ -19,6 +19,9 @@ Pending source work on #143 preserves bounded glossary categories and selected i
 local resource relationships. The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
 records the accepted subset and the Office-authored evidence and richer structures
 still required before the leaf can be accepted.
+Unreleased #146 work adds an explicit simple body-table-cell destination and an
+opt-in subset of field-bearing fragments. The remaining field scope, acceptance
+and independent qualification criteria stay open.
 
 ## Roadmap #102 P6 — historical preliminary qualification
 

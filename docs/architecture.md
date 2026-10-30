@@ -29,6 +29,11 @@ Cross-tabs build bounded simple tables with a conservative fit check; fragment
 insertion snapshots a separate admitted session, remaps metadata and commits a
 dedicated bookmark replacement atomically. See the
 [source profile](editing-and-templates.md#mixed-report-regions--merged-source).
+An unreleased cell-destination extension updates the selected cell's block and
+paragraph indexes together; host table geometry remains owned by the destination.
+Only simple top-level body cells are admitted, and the broader #146 field work
+and qualification remain open. Explicit field opt-in preserves admitted instructions,
+isolates local reference/counter identities and makes stale caches visible to callers.
 
 ## P2 control store — merged source
 

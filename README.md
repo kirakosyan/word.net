@@ -56,6 +56,11 @@ See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/
 
 See the [1.5.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json) for migration guidance and supported combinations. Drawing extensions require ordinary managed fixed output; tagged/archive PDF and native typography combinations remain outside that profile. Use matching versions of all three packages.
 
+Unreleased roadmap #138 source work adds bounded glossary metadata preservation and
+an explicit simple table-cell fragment destination. See the
+[implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)
+for their remaining limits; these changes are not in the published 1.5.0 packages.
+
 ## Quick start
 
 Convert a DOCX document to PDF and inspect any reported fidelity losses. Stage output before replacing an existing file:

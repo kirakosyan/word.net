@@ -9,7 +9,7 @@ all five target frameworks and existing platform limits remain. Historical resul
 below retain their original source/package identities.
 
 The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) retain all
-current comparison failures. The requested new feature controls remain outstanding.
+current comparison failures. Some requested controls and combinations remain outstanding.
 
 
 The [1.5.0 P4/P5 profile](roadmap-102-p4-p5.md) describes the bounded review,
@@ -23,6 +23,8 @@ master-detail level, with cloned identity and reference checks. Explicit cross-t
 reject non-fitting layouts, and fragments retain source formatting under the
 documented placement policy. It does not extend object, revision, nested-table or
 section support. See the [template profile](editing-and-templates.md#mixed-report-regions--merged-source).
+Unreleased source also admits bounded fragment insertion into a dedicated simple
+body-table cell and explicitly opted-in simple fields, as described in that profile.
 
 ## P2 control preservation — merged source
 
