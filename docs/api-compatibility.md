@@ -1,5 +1,17 @@
 # API and support policy
 
+## Unreleased roadmap #138 API work
+
+`InsertFragmentAtTableCellBookmark`, the distinct fragment-options methods and
+`FragmentInsertionOptions` add bounded opt-in placement and field policies while
+retaining the original fragment signatures. `CreateReviewDisplay` returns a
+detached `DocumentReviewDisplay` with immutable revision metadata and explicit
+managed PDF/SVG output. See the [fragment](editing-and-templates.md) and
+[review](review-workflows.md#unreleased-source-detached-text-revision-display)
+profiles for bounds and exclusions. These signatures are pending source work,
+not part of the published 1.5.0 API; exact-framework and package qualification
+are reported separately.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

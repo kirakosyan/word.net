@@ -35,13 +35,30 @@ placeholder-style overrides, unsupported owners, cancellation and untouched
 source/destination sessions.
 The full #146 acceptance and cross-platform qualification remain open.
 
+The [unreleased source matrix](roadmap-138-source-matrix.json) maps current #143,
+#146 and #148 positive and negative combinations to test methods. Run
+`python eng/verify-roadmap-138-source-matrix.py --run` after locked restore to
+validate the mapping and execute those tests; selecting .NET 8 uses `--framework
+net8.0`. This is not public-package or platform qualification.
+
+Unreleased #148 review tests independently inspect Open XML history, PdfPig
+selectable text, mark color and coordinates, and SVG glyph paths and marked titles.
+They cover body and simple-cell revisions, multi-page text, source immutability,
+attribution escaping, profile and owner rejections, cancellation and bounds.
+Full issue acceptance and exact-runtime qualification remain open.
+On Linux x64, locked restore and the five-target Release build passed, and the
+complete .NET 8 and .NET 10 suites each passed 1,567 cases with English OCR
+prepared in the launching process and no skips. This is local source evidence;
+the final hosted and actual Framework 4.7.2 checks are separate.
+
 For the earlier draft head `4d35259`, the actual Framework 4.7.2 source guest
 reported 1,522/1,522 passing with no skipped tests, but the
 [host gate](https://github.com/kirakosyan/word.net/actions/runs/41120440306/job/124293436141)
 failed because its bundle still required exactly 1,498. The
 [guest evidence](https://github.com/kirakosyan/word.net/actions/runs/41120440306/artifacts/13009293177)
-retains the test report and identity/cleanup records. The required count is now
-1,559 for the expanded suite; an exact-head Framework run is still required.
+retains the test report and identity/cleanup records. The later fragment head
+required 1,559 cases; the current suite requires 1,567. An exact-head Framework
+run is still required.
 
 
 ## P4/P5 review and drawing profile — historical checkpoints

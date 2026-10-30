@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
+  "profiles": [
+    {
+      "id": "glossary-inert-local",
+      "issue": 143,
+      "outcome": "supported-bounded",
+      "boundary": "Typed control glossary categories and selected inert local resources; richer graphs remain excluded.",
+      "tests": [
+        { "class": "ContentControlGlossaryResourceTests", "method": "InertLocalGlossaryResourcesPreserveBytesRelationshipsAndBindings" },
+        { "class": "ContentControlReviewTests", "method": "StaticGlossaryCategoriesSurviveTypedEditsAndPlaceholderViews" }
+      ]
+    },
+    {
+      "id": "glossary-unsupported-graph",
+      "issue": 143,
+      "outcome": "rejected",
+      "boundary": "External, unsafe and unadmitted glossary graphs are rejected rather than silently omitted.",
+      "tests": [
+        { "class": "ContentControlGlossaryResourceTests", "method": "UnsafeOrUnadmittedGlossaryResourcesFailBeforePublishingASession" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryGraphWithUnadmittedSettingsIsRejectedExplicitly" }
+      ]
+    },
+    {
+      "id": "fragment-simple-cell-fields",
+      "issue": 146,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit simple body-cell placement and opted-in cached simple fields use the documented identity and style rules.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellFragmentPreservesHostGridAndRendersNestedContent" },
+        { "class": "EditingTemplateTests", "method": "FieldFragmentsRequireExplicitCachePolicyAndRemapLocalReferences" }
+      ]
+    },
+    {
+      "id": "fragment-unsupported-owners",
+      "issue": 146,
+      "outcome": "rejected",
+      "boundary": "Unsupported owners, field switches and unresolved references fail atomically.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellFragmentRejectsUnsupportedOwnersWithoutMutatingEitherSession" },
+        { "class": "EditingTemplateTests", "method": "FieldFragmentsRejectUnsupportedSwitchesBeforeInsertion" }
+      ]
+    },
+    {
+      "id": "review-managed-text-display",
+      "issue": 148,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit detached ordinary managed PDF/SVG display of admitted body and simple-cell text revisions.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayExportsSearchableMarkedTextAndKeepsSourceHistory" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplaySvgHasMarkedGlyphsAndSnapshotSurvivesSourceDecisions" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayHandlesCellTextAndMultiplePages" }
+      ]
+    },
+    {
+      "id": "review-unsupported-combinations",
+      "issue": 148,
+      "outcome": "rejected",
+      "boundary": "Comments, story/format revisions, controls, source loss, PNG, native and tagged/archive combinations remain excluded.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsUnsupportedProfilesAndLeavesOutputUntouched" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsCommentsAndStoryRevisionsWithoutChangingSource" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsTemplateOwnersAndPriorSourceLoss" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayProfileChangesFailBeforeWriting" }
+      ]
+    }
+  ]
+}

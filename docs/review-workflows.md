@@ -1,5 +1,49 @@
 # Bounded DOCX review workflows
 
+## Unreleased source: detached text-revision display
+
+The pending roadmap #138 work adds an explicit display for retained text insertions
+and deletions in body paragraphs and simple body-table cells. It does not decide any
+revision or alter the source session:
+
+```csharp
+using var input = File.OpenRead("reviewed.docx");
+WordDocument document = WordDocument.Load(input, DocumentFormat.Docx,
+    new ReviewLoadOptions(), out _, new ConversionOptions(FidelityMode.BestEffort));
+DocumentReviewDisplay display = document.CreateReviewDisplay();
+using var pdf = File.Create("review-display.pdf");
+display.SavePdf(pdf);
+DocumentPreview svgPages = display.RenderSvg();
+```
+
+Each display-local `D` or `I` label surrounds the corresponding original deleted
+or inserted text, and its opening marker identifies the recorded author and
+optional date. The labels identify change kinds without color; deleted text is
+also red and inserted text blue, replacing the original colors of changed text.
+Bold, italic and the other admitted run properties continue to use the ordinary
+managed layout profile. An attribution legend is appended by default; set
+`ReviewDisplayOptions.IncludeLegend` to false to omit it. Marker authors escape
+backslashes, brackets, colons, `@` and control characters. `display.Revisions`
+exposes immutable display-local labels and the original author, optional date and
+revision text. PDF keeps the displayed deletion text selectable and searchable.
+SVG uses glyph outlines and text titles, as in the existing preview profile.
+Source text itself is not escaped and can resemble a marker; these labels are
+visual cues, not an authenticated interchange format. Both output and the snapshot
+may contain sensitive deleted text and attribution.
+
+The display is detached, so subsequent source edits or decisions do not change it.
+Its ordinary managed PDF and SVG share the source conversion options, limits and
+diagnostics; configure those options before concurrent use. Native typography,
+tagged or archival PDF, PNG, comments, moves, structural or format history,
+revisions in headers/footers and structured content are rejected. Structured
+content includes fields, bookmarks, links, images, notes, drawings and controls;
+tables must have ordinary unmerged, unnested cells. Source load warnings also
+prevent display creation. Invalid profiles and cancellation are checked before
+the staged PDF is copied to the caller's stream. The normal final-copy I/O limits
+still apply. The original accepted/rejected view APIs and regular export behavior
+remain available. This is unreleased source work; issue #148 remains open pending
+its complete acceptance and exact-runtime qualification.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -71,8 +115,9 @@ using var pdf = File.Create("accepted.pdf");
 accepted.Save(pdf, DocumentFormat.Pdf);
 ```
 
-Retained history may be saved to DOCX. Other exports require an explicit view with
-comments removed. Removing history is not secure redaction of original bytes,
+Retained history may be saved to DOCX. Other ordinary exports require an explicit
+accepted/rejected view with comments removed; the unreleased display above is a
+separate opt-in view of supported text history. Removing history is not secure redaction of original bytes,
 backups or managed memory. Diagnostics do not include authors or review text.
 
 Recording is an explicit range operation; existing Replace/Merge methods do not

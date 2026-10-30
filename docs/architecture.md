@@ -1,5 +1,11 @@
 # Architecture and implementation status
 
+Unreleased review-display work creates a detached marked model from admitted body
+and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot
+through the shared layout without modifying the source review store; unsupported
+history, structured owners and output profiles fail explicitly. See the
+[review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

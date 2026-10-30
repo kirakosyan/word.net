@@ -1,5 +1,11 @@
 # Formatting and image profile
 
+Unreleased source adds an explicit managed PDF/SVG display for bounded retained
+text revisions, with textual labels as well as colors and searchable deleted PDF
+text. Its exclusions and source-history guarantees are in the
+[review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
+This is not a published 1.5.0 capability.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

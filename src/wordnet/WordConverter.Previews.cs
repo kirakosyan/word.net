@@ -25,12 +25,30 @@ public sealed partial class WordConverter
         if (!IsReadable(sourceFormat)) throw new NotSupportedException("Preview.InputFormat: This format has no reader.");
         preview ??= new PreviewOptions(); options ??= new ConversionOptions();
         PreviewFormat format = preview.Format; int dpi = preview.Dpi; long pixelLimit = preview.MaximumPixels;
-        if (format is not PreviewFormat.Svg and not PreviewFormat.Png || dpi < 36 || dpi > 600 || pixelLimit <= 0 || preview.Pages.Count > options.MaximumPages)
-            throw new ArgumentException("Preview format, DPI, pixel limit or range count is invalid.", nameof(preview));
+        ValidatePreview(preview, options);
         PageRange[] ranges = preview.Pages.ToArray();
         var context = new ConversionContext(options, cancellationToken) { Destination = DocumentFormat.Pdf };
         using var input = new BoundedMemoryStream(options.MaximumInputBytes); Copy(source, input, context, options.MaximumInputBytes);
-        DocumentModel model = ReadDocument(input, sourceFormat, context); context.Phase = DiagnosticPhase.Destination;
+        DocumentModel model = ReadDocument(input, sourceFormat, context);
+        return RenderModel(model, format, dpi, pixelLimit, ranges, context);
+    }
+
+    internal static DocumentPreview RenderModel(DocumentModel model, PreviewOptions preview, ConversionContext context)
+    {
+        ValidatePreview(preview, context.Options);
+        return RenderModel(model, preview.Format, preview.Dpi, preview.MaximumPixels, preview.Pages.ToArray(), context);
+    }
+
+    private static void ValidatePreview(PreviewOptions preview, ConversionOptions options)
+    {
+        if (preview.Format is not PreviewFormat.Svg and not PreviewFormat.Png || preview.Dpi < 36 || preview.Dpi > 600
+            || preview.MaximumPixels <= 0 || preview.Pages.Count > options.MaximumPages)
+            throw new ArgumentException("Preview format, DPI, pixel limit or range count is invalid.", nameof(preview));
+    }
+
+    private static DocumentPreview RenderModel(DocumentModel model, PreviewFormat format, int dpi, long pixelLimit, PageRange[] ranges, ConversionContext context)
+    {
+        ConversionOptions options = context.Options; context.Phase = DiagnosticPhase.Destination;
         FidelityChecks.Destination(model, DocumentFormat.Pdf, context); context.Phase = DiagnosticPhase.Layout;
         var pages = FixedLayout.Create(model, context); int[] selected = PageSelection.Resolve(ranges, pages.Count);
         var output = new List<PagePreview>(); long pixels = 0, bytes = 0;

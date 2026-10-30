@@ -22,6 +22,11 @@ still required before the leaf can be accepted.
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.
+Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
+cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
+and remaining acceptance/runtime qualification are separate from published 1.5.0.
+The [pending source matrix](roadmap-138-source-matrix.json) maps supported and
+rejected combinations to executable tests; it does not alter the dated baseline.
 
 ## Roadmap #102 P6 — historical preliminary qualification
 
