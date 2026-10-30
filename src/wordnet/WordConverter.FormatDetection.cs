@@ -99,10 +99,15 @@ public sealed partial class WordConverter
             FormatIdentityConfidence confidence = FormatIdentityConfidence.Unknown, DocumentFormat format = DocumentFormat.Unknown, bool? template = null)
             => new DocumentFormatInspection(status, family, confidence, format, template, input.Length);
         using var archive = new ZipArchive(input, ZipArchiveMode.Read, true);
-        if (archive.Entries.Count > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.ArchiveEntries: Too many entries for format inspection.");
+        System.Collections.ObjectModel.ReadOnlyCollection<ZipArchiveEntry> archiveEntries;
+        // Framework validates entry names while loading the central directory and can
+        // throw before our own path checks see a malformed name.
+        try { archiveEntries = archive.Entries; }
+        catch (ArgumentException) { return Result(FormatDetectionStatus.Invalid); }
+        if (archiveEntries.Count > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.ArchiveEntries: Too many entries for format inspection.");
         var entries = new Dictionary<string, ZipArchiveEntry>(StringComparer.Ordinal);
         var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase); long expanded = 0;
-        foreach (ZipArchiveEntry entry in archive.Entries)
+        foreach (ZipArchiveEntry entry in archiveEntries)
         {
             context.CheckCancellation();
             if (entry.Length > context.Options.MaximumExpandedBytes - expanded) throw new InvalidDataException("Limit.ExpandedBytes: Package expansion exceeds the inspection limit.");
@@ -161,7 +166,7 @@ public sealed partial class WordConverter
         if (odf)
         {
             bool template = mime == OdfPackage.TemplateMediaType;
-            if (archive.Entries.Count == 0 || archive.Entries[0].FullName != "mimetype" || !OdfHeader(input, mime!)
+            if (archiveEntries.Count == 0 || archiveEntries[0].FullName != "mimetype" || !OdfHeader(input, mime!)
                 || !entries.ContainsKey("META-INF/manifest.xml") || !entries.ContainsKey("content.xml"))
                 return Result(FormatDetectionStatus.Invalid, FormatContainerFamily.OpenDocument);
             XDocument manifest = Xml("META-INF/manifest.xml"); XElement? root = manifest.Root;

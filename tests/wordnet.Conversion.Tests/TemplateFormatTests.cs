@@ -375,7 +375,12 @@ public sealed class TemplateFormatTests
         Assert.Equal(new byte[] { 42 }, zip64Output.ToArray());
         Assert.Equal(FormatDetectionStatus.Invalid, Detect(Edit(word, zip => Put(zip, "../outside.xml", "<x/>"))).Status);
         byte[] controlName = Edit(word, zip => Put(zip, "word/evil-name.xml", "<x/>"));
-        Assert.Equal(FormatDetectionStatus.Invalid, Detect(ControlCharacterInEntryName(controlName)).Status);
+        controlName = ControlCharacterInEntryName(controlName);
+        Assert.Equal(FormatDetectionStatus.Invalid, Detect(controlName).Status);
+        using var controlInput = new MemoryStream(controlName); using var controlOutput = new MemoryStream(); controlOutput.WriteByte(42);
+        Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(controlInput, controlOutput, DocumentFormat.Dotx, DocumentFormat.Docx,
+            new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        Assert.Equal(new byte[] { 42 }, controlOutput.ToArray());
         byte[] caseConflict = Edit(word, zip => Put(zip, "[content_types].xml", "<x/>"));
         Assert.Equal(FormatDetectionStatus.Invalid, Detect(caseConflict).Status);
         using var conflictInput = new MemoryStream(caseConflict); using var conflictOutput = new MemoryStream(); conflictOutput.WriteByte(42);
