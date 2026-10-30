@@ -84,7 +84,10 @@ identities; resource and cancellation failures still throw. See the
 Unreleased #143 source admits the glossary metadata described in the
 [control profile](content-controls.md#unreleased-source-bounded-glossary-metadata).
 Unadmitted resource content and relationship types use `Control.Unsupported`;
-malformed or dangling parts use `Control.Malformed`, `Binding.Store` or
+`Control.GlossaryTheme` reports materialized theme references on a local
+placeholder, and Strict mode rejects that loss. Missing or unqualified theme
+fonts retain the existing `Docx.ThemeFont` diagnostics. Malformed or dangling
+parts use `Control.Malformed`, `Binding.Store` or
 `Docx.MissingPart`, and resource
 exhaustion uses `Limit.Controls`. These remain hard failures, including Lenient mode.
 

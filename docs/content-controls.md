@@ -20,25 +20,30 @@ The pending source work for #143 preserves a static glossary category with a
 bounded name and `default` or `placeholder` gallery on the existing admitted
 placeholder entries. It also admits up to four relationships from the glossary part
 to `word/glossary/styles.xml`, `word/glossary/settings.xml`,
-`word/glossary/fontTable.xml` and `word/glossary/webSettings.xml`. The admitted
-styles part is empty. Settings
-are limited to proofing state, zoom and revision-session IDs; fonts to bounded
-names and family, pitch, charset, PANOSE and signature metadata; web settings to `allowPNG`
-and `optimizeForBrowser`. Valid resource bytes and relationship IDs survive typed
-edits, bindings and DOCX save/reload. No font or other resource is fetched.
-Duplicate, dangling, external, nested, active or unknown relationships, nonempty
-style definitions and unlisted metadata fail explicitly in every mode.
+`word/glossary/fontTable.xml` and `word/glossary/webSettings.xml`. A closed inert
+subset of local styles, inherited character styles, settings and font metadata is
+admitted, including the static default placeholder in the independently sourced
+[Word-authored fixture](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md).
+The placeholder's supported resolved appearance is materialized when displayed;
+local glossary style identities are not imported into the main document. Valid
+resource bytes and relationship IDs survive typed edits, bindings and DOCX
+save/reload. No font or other resource is fetched. Missing and cyclic style bases,
+duplicate, dangling, external, nested, active or unknown relationships and
+unlisted metadata fail explicitly.
 
-This is a narrow independently authored source profile, not a claim that arbitrary
-Word-generated glossaries or Office-authored templates are qualified. The remaining
-#143 criteria, including positive Office-authored coverage and richer local resource
-graphs, stay open. A [Word-authored negative control](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
-still fails explicitly. Published 1.5.0 retains the earlier rejection below;
-ordinary loading remains separate from opt-in typed preservation.
+The fixture's theme-dependent defaults retain the existing `Docx.ThemeFont` and
+other applicable fallback diagnostics; Strict mode rejects those losses. When
+local styles contain East Asian or complex-script slots, placeholder text outside
+the admitted Latin/default-script profile is rejected with `Control.ScriptFormatting`.
+This profile does not qualify arbitrary Word-generated glossaries or every control kind,
+resource graph and template combination required by #143, which remains open.
+Published 1.5.0 retains the earlier rejection below; ordinary loading remains
+separate from opt-in typed preservation.
 
 ## Load, inspect and edit
 
-Typed preservation is opt-in and DOCX-only. Existing `Load` and ordinary conversion
+Typed preservation is opt-in for DOCX and, with the format-aware overload, DOTX.
+Existing `Load` and ordinary conversion
 retain their existing cached/template interpretation. Typed loading never executes
 merge-looking tags, fetches a resource or automatically applies XML bindings.
 Unknown kinds/properties, unsafe parts and unsupported owners fail in every mode.

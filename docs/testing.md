@@ -35,7 +35,10 @@ The tests do not establish complete editable theme preservation, every style
 interaction, script slot, conditional table style or drawing support, or
 public-package availability. On Linux x64, theme head `b47ff0a` passed the
 five-target Release build and both full .NET 8 and .NET 10 suites, 1,597 cases
-each including English OCR. Hosted exact-head qualification remains separate.
+each including English OCR. Its complete [push](https://github.com/kirakosyan/word.net/actions/runs/41137881478)
+and [PR](https://github.com/kirakosyan/word.net/actions/runs/41137886101) workflows
+passed Windows/Linux x64 and ARM source/package lanes and actual Framework 4.7.2
+source/package execution. Those results do not qualify later template changes.
 
 Unreleased #166 tests construct independent DOCX/DOTX and ODF text/template
 packages. Open XML SDK validation, ODF mimetype/manifest checks, PdfPig text and
@@ -44,17 +47,25 @@ The tests also exercise typed controls, review and field retention, explicit
 mismatch and control loss, ZIP/CFB negatives, macro/protected classification,
 stream position and ownership, aggregate limits and cancellation. These checks
 do not establish general package validity or additional platform qualification.
-Before committing this increment, locked restore and the five-target Release build
-passed on Linux x64; the complete .NET 8 and .NET 10 suites each passed 1,609 cases
-with English OCR and no skips. Hosted exact-commit and package checks are separate.
-An initial dirty-working-tree check used the independently authored
+On template head `444bf2e`, locked restore, the five-target Release build and local
+core/fonts/OCR package checks passed on Linux x64; the complete .NET 8 and .NET 10
+suites each passed 1,609 cases with English OCR and no skips. The
+[local receipt](measurements/roadmap-138-template-444bf2e.json) records identities;
+hosted exact-head qualification is separate. Both hosted Windows Framework source
+lanes for `444bf2e` failed seven template tests: Framework's ZIP fixture generation
+emitted a compressed mimetype, and its ZIP API rejected a deliberately invalid
+entry name before inspection. The portable fixture correction requires a fresh
+hosted run. The Linux x64 resource benchmark also failed because its direction
+guard still expected 40 pairs after the template routes were added. The pending
+qualification update retains that legacy guard and exercises all 53 directions;
+its hosted result is separate. An independent check used the authored
 [`Odt/text.odt`](../tests/wordnet.Conversion.Tests/Fixtures/Odt/README.md) fixture
 (SHA-256 `50f1feca909fa19bbb38aee93f5649f8451becc8a6d792b1b432bd832b133b09`).
 LibreOffice 24.2.7.2 opened generated OTT and DOTX outputs and recovered the
 expected synthetic text; the OTT also passed the pinned ODF 1.3 schemas. The
 [probe](../eng/roadmap-138-template-probe.cs) and
-[verification script](../eng/verify-template-identity.py) reproduce the checks;
-this initial observation does not qualify a committed source or public package.
+[verification script](../eng/verify-template-identity.py) reproduce the checks.
+This observation does not qualify a public package.
 
 Unreleased #143 glossary tests use independently authored OPC/XML packages and
 Open XML schema checks for category metadata, bounded local resources, typed edits,
@@ -62,8 +73,14 @@ bindings, placeholder display and byte/relationship preservation. Negative cases
 cover external, dangling, duplicate, nested, active and unsupported resources,
 default loading, cancellation and untouched output. A schema-validated derivative
 of a [Word-authored glossary](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
-is retained as a negative control. Positive Office-authored and broader resource-graph
-acceptance required by #143 remain outstanding.
+now checks local resource preservation and independently inspected gray placeholder
+text in Lenient mode. Strict theme fallback and unsafe style graphs remain negative
+controls. Broader Office-authored kinds and resource-graph acceptance required by
+#143 remain outstanding. On the local Linux x64 working tree containing these
+changes, the complete .NET 8 and .NET 10 suites each passed 1,620 cases with
+English OCR; the executable source matrix passed 84 mapped cases. Hosted Windows
+Framework and other platform results for this change remain separate and require
+their own exact-commit runs.
 
 Unreleased #146 tests independently validate inserted cell-fragment DOCX structure,
 host widths and bookmark/note identities with Open XML, and inspect PDF text,

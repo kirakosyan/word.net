@@ -21,9 +21,10 @@ diagnostics for the remaining theme semantics. The
 [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
 records its remaining script, drawing and style-precedence work.
 Pending source work on #143 preserves bounded glossary categories and selected inert
-local resource relationships. The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
-records the accepted subset and the Office-authored evidence and richer structures
-still required before the leaf can be accepted.
+local resource relationships, including one Word-authored placeholder derivative.
+The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
+records its subset, diagnostics and the broader control and resource evidence still
+required before the leaf can be accepted.
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.

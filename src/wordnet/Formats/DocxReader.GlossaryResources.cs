@@ -40,6 +40,12 @@ internal sealed partial class DocxReader
                 throw new NotSupportedException("Control.Unsupported: Nested glossary resource relationships are not admitted.");
             XElement root = TypedXml(part);
             ValidateGlossaryResource(kind, root);
+            if (kind == "styles" && root.HasElements)
+            {
+                glossaryStyleReader = new DocxReader(context, new Dictionary<string, XElement>(StringComparer.Ordinal))
+                { mainPart = glossaryPart, theme = theme };
+                glossaryStyleReader.ReadStyles(new XDocument(new XElement(root)));
+            }
             typedControls.GlossaryResources.Add(kind, new ControlGlossaryResource
             {
                 Part = part,
@@ -59,7 +65,7 @@ internal sealed partial class DocxReader
         Attributes(root);
         if (kind == "styles")
         {
-            if (root.HasElements) throw new NotSupportedException("Control.Unsupported: Glossary style definitions require separate qualification.");
+            ValidateGlossaryStyles(root);
             return;
         }
         var names = new HashSet<string>(StringComparer.Ordinal);
@@ -92,6 +98,7 @@ internal sealed partial class DocxReader
                     Leaf(rsid, W + "val"); Hex(DocxPackage.RequiredAttribute(rsid, W + "val"), 8);
                 }
             }
+            else if (kind == "settings" && ValidateGlossarySetting(child)) { }
             else if (kind == "webSettings" && (child.Name == W + "allowPNG" || child.Name == W + "optimizeForBrowser"))
             { Leaf(child, W + "val"); _ = ControlValues.On(child, W); }
             else if (kind == "fontTable" && child.Name == W + "font")
@@ -113,6 +120,11 @@ internal sealed partial class DocxReader
                     }
                     else if (property.Name == W + "charset" || property.Name == W + "panose1")
                     { Leaf(property, W + "val"); Hex(DocxPackage.RequiredAttribute(property, W + "val"), property.Name == W + "charset" ? 2 : 20); }
+                    else if (property.Name == W + "altName")
+                    {
+                        Leaf(property, W + "val"); string alternative = DocxPackage.RequiredAttribute(property, W + "val");
+                        if (alternative.Length is 0 or > 256) throw new InvalidDataException("Limit.Controls: Glossary font metadata exceeds its bound.");
+                    }
                     else if (property.Name == W + "sig")
                     {
                         XName[] signature = { W + "usb0", W + "usb1", W + "usb2", W + "usb3", W + "csb0", W + "csb1" };

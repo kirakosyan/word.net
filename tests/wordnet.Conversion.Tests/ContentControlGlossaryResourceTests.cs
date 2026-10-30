@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
+using UglyToad.PdfPig;
 using Xunit;
 using static WordNet.Tests.ControlTestDocuments;
 
@@ -74,13 +75,58 @@ public sealed class ContentControlGlossaryResourceTests
         Assert.Equal(new byte[] { 42 }, output.ToArray());
     }
 
-    [Theory]
-    [InlineData(FidelityMode.Strict)]
-    [InlineData(FidelityMode.Lenient)]
-    public void WordAuthoredGlossaryGraphWithUnadmittedSettingsIsRejectedExplicitly(FidelityMode mode)
+    [Fact]
+    public void WordAuthoredGlossaryResourcesAndPlaceholderSurviveEdits()
+    {
+        byte[] source = WordAuthoredGlossary(); Validate(source);
+        WordDocument document = Load(source, new ConversionOptions(FidelityMode.Lenient));
+        Assert.Contains(document.Diagnostics, d => d.Code == "Docx.ThemeFont");
+        Assert.Equal("SDT  Run", Assert.Single(document.ContentControls).DisplayText);
+        document.SetControlText(Assert.Single(document.ContentControls), "Edited", TestContext.Current.CancellationToken);
+        document.ShowControlPlaceholder(Assert.Single(document.ContentControls), TestContext.Current.CancellationToken);
+        Assert.Equal("Click here to enter text.", Assert.Single(document.ContentControls).DisplayText);
+        byte[] saved = Save(document); Validate(saved);
+        foreach (string name in new[] { "styles", "settings", "fontTable", "webSettings" })
+            Assert.Equal(Part(source, "word/glossary/" + name + ".xml"), Part(saved, "word/glossary/" + name + ".xml"));
+        var originalRelationships = Xml(source, "word/glossary/_rels/document.xml.rels").Root!.Elements()
+            .Select(e => ((string?)e.Attribute("Id"), (string?)e.Attribute("Type"), (string?)e.Attribute("Target"))).OrderBy(e => e.Item1, StringComparer.Ordinal).ToArray();
+        var savedRelationships = Xml(saved, "word/glossary/_rels/document.xml.rels").Root!.Elements()
+            .Select(e => ((string?)e.Attribute("Id"), (string?)e.Attribute("Type"), (string?)e.Attribute("Target"))).OrderBy(e => e.Item1, StringComparer.Ordinal).ToArray();
+        Assert.Equal(originalRelationships, savedRelationships);
+        XElement sourceProperties = Xml(source, "word/glossary/document.xml").Descendants(W + "docPartPr").Single();
+        XElement savedProperties = Xml(saved, "word/glossary/document.xml").Descendants(W + "docPartPr").Single();
+        Assert.Equal((string?)sourceProperties.Element(W + "name")?.Attribute(W + "val"), (string?)savedProperties.Element(W + "name")?.Attribute(W + "val"));
+        Assert.Equal((string?)sourceProperties.Element(W + "guid")?.Attribute(W + "val"), (string?)savedProperties.Element(W + "guid")?.Attribute(W + "val"));
+        XElement color = Assert.Single(Xml(saved, "word/document.xml").Descendants(W + "color"));
+        Assert.Equal("808080", (string?)color.Attribute(W + "val"));
+        WordDocument display = document.CreateControlDisplayView(out ConversionResult displayResult, TestContext.Current.CancellationToken);
+        Assert.Empty(display.ContentControls); Assert.Single(document.ContentControls);
+        Assert.Contains(displayResult.Diagnostics, d => d.Code == "Control.OutputLoss");
+        using (PdfDocument pdf = PdfDocument.Open(Save(display, DocumentFormat.Pdf)))
+        {
+            var letters = pdf.GetPage(1).Letters;
+            Assert.Contains("Click here to enter text.", string.Concat(letters.Select(l => l.Value)), StringComparison.Ordinal);
+            Assert.All(letters, letter =>
+            {
+                var rgb = letter.Color.ToRGBValues();
+                Assert.Equal(128 / 255.0, rgb.r, 2); Assert.Equal(128 / 255.0, rgb.g, 2); Assert.Equal(128 / 255.0, rgb.b, 2);
+            });
+        }
+        WordDocument reopened = Load(saved, new ConversionOptions(FidelityMode.Lenient));
+        Assert.Equal("Click here to enter text.", Assert.Single(reopened.ContentControls).DisplayText);
+    }
+
+    [Fact]
+    public void WordAuthoredGlossaryThemeFallbackStillRejectsInStrictMode()
+    {
+        var error = Assert.Throws<NotSupportedException>(() => Load(WordAuthoredGlossary(), new ConversionOptions(FidelityMode.Strict)));
+        Assert.StartsWith("Docx.ThemeFont:", error.Message, StringComparison.Ordinal);
+    }
+
+    private static byte[] WordAuthoredGlossary()
     {
         string control = Fixture("OfficeWordParts/control.xml");
-        byte[] source = Modify(Package(Document("<w:p>" + control + "</w:p>")), zip =>
+        return Modify(Package(Document("<w:p>" + control + "</w:p>")), zip =>
         {
             AddRelationship(zip, "word/_rels/document.xml.rels", "glossary", "glossaryDocument", "glossary/document.xml");
             Put(zip, "word/glossary/document.xml", Fixture("OfficeWordParts/glossary-document.xml"));
@@ -93,9 +139,62 @@ public sealed class ContentControlGlossaryResourceTests
                 Override(zip, part, "application/vnd.openxmlformats-officedocument.wordprocessingml." + resource.Item1 + "+xml");
             }
         });
-        Validate(source);
-        var error = Assert.Throws<NotSupportedException>(() => Load(source, new ConversionOptions(mode)));
-        Assert.StartsWith("Control.Unsupported:", error.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("cycle")]
+    [InlineData("missing-base")]
+    [InlineData("wrong-base-kind")]
+    [InlineData("duplicate-style")]
+    [InlineData("duplicate-latent")]
+    [InlineData("bad-theme-token")]
+    [InlineData("external-attribute")]
+    [InlineData("missing-character-style")]
+    [InlineData("paragraph-mark-style")]
+    public void WordAuthoredGlossaryRejectsUnsafeStyleGraphs(string scenario)
+    {
+        byte[] source = Modify(WordAuthoredGlossary(), zip =>
+        {
+            string path = scenario is "missing-character-style" or "paragraph-mark-style" ? "word/glossary/document.xml" : "word/glossary/styles.xml";
+            XDocument xml = Xml(zip, path);
+            if (scenario == "missing-character-style")
+                xml.Descendants(W + "rStyle").Single().SetAttributeValue(W + "val", "NotPresent");
+            else if (scenario == "paragraph-mark-style")
+                xml.Descendants(W + "p").Single().AddFirst(new XElement(W + "pPr", new XElement(W + "rPr", new XElement(W + "rStyle", new XAttribute(W + "val", "PlaceholderText")))));
+            else
+            {
+                XElement style = xml.Descendants(W + "style").Single(e => (string?)e.Attribute(W + "styleId") == "PlaceholderText");
+                if (scenario is "cycle" or "missing-base" or "wrong-base-kind")
+                    style.Element(W + "basedOn")!.SetAttributeValue(W + "val", scenario == "cycle" ? "PlaceholderText" : scenario == "missing-base" ? "NotPresent" : "Normal");
+                else if (scenario == "duplicate-style") xml.Root!.Add(new XElement(style));
+                else if (scenario == "duplicate-latent")
+                {
+                    XElement latent = xml.Descendants(W + "latentStyles").Single(); latent.Add(new XElement(latent.Elements(W + "lsdException").First()));
+                }
+                else if (scenario == "bad-theme-token") xml.Descendants(W + "rFonts").First().SetAttributeValue(W + "asciiTheme", "unsupported");
+                else style.SetAttributeValue(R + "id", "external");
+            }
+            Put(zip, path, xml.ToString());
+        });
+        using var input = new MemoryStream(source);
+        Exception? error = Record.Exception(() => WordDocument.LoadWithControls(input, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        if (scenario is "external-attribute" or "missing-character-style" or "paragraph-mark-style") Assert.IsType<NotSupportedException>(error);
+        else Assert.IsType<InvalidDataException>(error);
+        Assert.True(input.CanRead);
+    }
+
+    [Theory]
+    [InlineData("漢")]
+    [InlineData("العربية")]
+    public void GlossaryScriptFontSlotsRejectUnqualifiedPlaceholderText(string text)
+    {
+        byte[] source = Modify(WordAuthoredGlossary(), zip =>
+        {
+            const string path = "word/glossary/document.xml";
+            XDocument xml = Xml(zip, path); xml.Descendants(W + "t").Single().Value = text; Put(zip, path, xml.ToString());
+        });
+        var error = Assert.Throws<NotSupportedException>(() => Load(source, new ConversionOptions(FidelityMode.Lenient)));
+        Assert.StartsWith("Control.ScriptFormatting:", error.Message, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -126,7 +225,7 @@ public sealed class ContentControlGlossaryResourceTests
             }
             else if (scenario == "nested") AddRelationship(zip, "word/glossary/_rels/styles.xml.rels", "external", "hyperlink", "https://example.invalid/", "External");
             else if (scenario == "active-font") Put(zip, "word/glossary/fontTable.xml", "<w:fonts xmlns:w='" + W + "' xmlns:r='" + R + "'><w:font w:name='Test'><w:embedRegular r:id='external'/></w:font></w:fonts>");
-            else if (scenario == "nonempty-styles") Put(zip, "word/glossary/styles.xml", "<w:styles xmlns:w='" + W + "'><w:style w:type='paragraph' w:styleId='Normal'/></w:styles>");
+            else if (scenario == "nonempty-styles") Put(zip, "word/glossary/styles.xml", "<w:styles xmlns:w='" + W + "'><w:style w:type='paragraph' w:styleId='Normal'><w:link w:val='Other'/></w:style></w:styles>");
             else if (scenario == "active-settings") Put(zip, "word/glossary/settings.xml", "<w:settings xmlns:w='" + W + "' xmlns:r='" + R + "'><w:attachedTemplate r:id='external'/></w:settings>");
             else Put(zip, "word/glossary/fontTable.xml", "<w:fonts xmlns:w='" + W + "'><w:font w:name='Test'><w:charset w:val='XX'/></w:font></w:fonts>");
         });

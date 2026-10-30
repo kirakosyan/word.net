@@ -12,8 +12,8 @@ its single content-control subtree and six glossary parts, and normalizes line
 endings to LF. The subtree is XML-reserialized without its outside whitespace; glossary part content is otherwise
 unchanged. Document properties, the rest of the document body and unrelated package
 parts are not copied. Tests construct a new minimal OPC package around these parts
-and independently validate its schema. This derivative is not the original package,
-and its rejection is not an interactive Word/UI or rendering qualification.
+and independently validate its schema. This derivative is not the original package
+or an interactive Word/UI qualification.
 
 To regenerate from the pinned source downloaded explicitly by the developer:
 
@@ -32,7 +32,9 @@ python eng/extract-word-glossary-fixture.py --input /path/to/SDT.docx \
 | `glossary-font-table.xml` | `4b26f248e2d2b3cef38606254bda9e6937d5fd5e1879125a07344e72720ceb6c` |
 | `glossary-web-settings.xml` | `e5cb5c29101de2f2ac6bd08ad01597cdb299b47467b71c61605f4e5eee04743c` |
 
-The source and public 1.5.0 packages reject the unmodified upstream glossary graph.
-The new source still rejects this derivative because its settings and style graph
-exceed the currently admitted inert subset. This is a negative control, not evidence
-that #143's Office-authored positive acceptance is complete.
+The released 1.5.0 source and public packages reject the unmodified upstream
+glossary graph. Unreleased source admits this derivative in Lenient mode and
+tests its local resource bytes, placeholder text and resolved gray appearance
+after editing and saving. Its theme-dependent defaults still produce explicit
+loss diagnostics and Strict mode rejects them. This one derivative does not
+establish all Office-authored controls or complete acceptance of #143.

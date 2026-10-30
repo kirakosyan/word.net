@@ -60,9 +60,10 @@
       "id": "glossary-inert-local",
       "issue": 143,
       "outcome": "supported-bounded",
-      "boundary": "Typed control glossary categories and selected inert local resources; richer graphs remain excluded.",
+      "boundary": "Typed control glossary categories, selected inert resources and a Word-authored static placeholder; unlisted graphs and Strict theme losses remain excluded.",
       "tests": [
         { "class": "ContentControlGlossaryResourceTests", "method": "InertLocalGlossaryResourcesPreserveBytesRelationshipsAndBindings" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryResourcesAndPlaceholderSurviveEdits" },
         { "class": "ContentControlReviewTests", "method": "StaticGlossaryCategoriesSurviveTypedEditsAndPlaceholderViews" }
       ]
     },
@@ -73,7 +74,9 @@
       "boundary": "External, unsafe and unadmitted glossary graphs are rejected rather than silently omitted.",
       "tests": [
         { "class": "ContentControlGlossaryResourceTests", "method": "UnsafeOrUnadmittedGlossaryResourcesFailBeforePublishingASession" },
-        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryGraphWithUnadmittedSettingsIsRejectedExplicitly" }
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryThemeFallbackStillRejectsInStrictMode" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryRejectsUnsafeStyleGraphs" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "GlossaryScriptFontSlotsRejectUnqualifiedPlaceholderText" }
       ]
     },
     {
