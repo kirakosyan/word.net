@@ -9,6 +9,7 @@ internal sealed class DocumentModel
     internal ContentControlStore Controls { get; set; } = new ContentControlStore();
     internal bool HasControlDisplay { get; set; }
     internal bool HasLinkedTextBoxes { get; set; }
+    internal DocumentTheme? Theme { get; set; }
     internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
@@ -48,6 +49,16 @@ internal sealed class DocumentModel
             if (block is ParagraphBlock paragraph) yield return paragraph;
             else foreach (ParagraphBlock nested in ((TableBlock)block).Rows.SelectMany(r => r).SelectMany(c => c.Paragraphs)) yield return nested;
     }
+}
+
+// Constructed only from the bounded, local font and RGB scheme. The XML strings
+// are immutable and never contain arbitrary source theme markup or relationships.
+internal sealed class DocumentTheme
+{
+    internal DocumentTheme(string xml, string? mapping) { Xml = xml; Mapping = mapping; }
+    internal string Xml { get; }
+    internal string? Mapping { get; }
+    internal bool Same(DocumentTheme? other) => other != null && Xml == other.Xml && Mapping == other.Mapping;
 }
 
 internal abstract class DocumentBlock
@@ -209,6 +220,11 @@ internal sealed class RunAppearance
 {
     internal string? ReviewCompanions { get; set; }
     internal string? FontFamily { get; set; }
+    internal string? ThemeFontAscii { get; set; }
+    internal string? ThemeFontHighAnsi { get; set; }
+    internal string? ThemeColor { get; set; }
+    internal string? ThemeTint { get; set; }
+    internal string? ThemeShade { get; set; }
     internal bool Underline { get; set; }
     internal bool Strike { get; set; }
     internal string? Background { get; set; }

@@ -39,9 +39,11 @@ internal sealed partial class DocxWriter
             types.Add(new XElement(DocxPackage.ContentTypes + "Override", new XAttribute("PartName", "/word/" + story.Value.Path),
                 new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml." + story.Value.Kind + "+xml")));
         }
-        if (document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }).Any(s => s?.EvenAndOdd == true))
+        bool evenAndOdd = document.Blocks.Select(b => b.Section).Concat(new[] { document.FinalSection }).Any(s => s?.EvenAndOdd == true);
+        if (evenAndOdd || document.Theme?.Mapping != null)
         {
-            WritePart(archive, "word/settings.xml", new XElement(W + "settings", new XElement(W + "evenAndOddHeaders")));
+            WritePart(archive, "word/settings.xml", new XElement(W + "settings", evenAndOdd ? new XElement(W + "evenAndOddHeaders") : null,
+                document.Theme?.Mapping == null ? null : XElement.Parse(document.Theme.Mapping)));
             relationships.Add(Relationship("rSettings", "settings", "settings.xml"));
             types.Add(new XElement(DocxPackage.ContentTypes + "Override", new XAttribute("PartName", "/word/settings.xml"),
                 new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml")));

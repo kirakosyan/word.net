@@ -6,7 +6,7 @@
       "id": "theme-local-appearance",
       "issue": 141,
       "outcome": "supported-bounded",
-      "boundary": "Selected Latin fonts, text colors and direct cell colors resolve for rendering, with loss diagnostics because editable theme references are not retained.",
+      "boundary": "Selected Latin fonts, text colors and direct cell colors resolve for rendering. A reconstructed scheme retains supported text references; unsupported theme semantics remain diagnosed.",
       "tests": [
         { "class": "DocxThemeTests", "method": "LatinThemeFontAndColorRenderLikeIndependentExplicitFormatting" },
         { "class": "DocxThemeTests", "method": "WordAuthoredThemeUsesLocalSchemeAndCallerConfiguredOpenFonts" },
@@ -14,7 +14,10 @@
         { "class": "DocxThemeTests", "method": "DirectCellThemeShadingAndBorderRenderWithExplicitLossDiagnostics" },
         { "class": "DocxThemeTests", "method": "HeaderAndFootnoteRunsUseTheDocumentTheme" },
         { "class": "DocxThemeTests", "method": "CodeStyleThemeReferencesRemainExplicitlyDiagnosed" },
-        { "class": "DocxThemeTests", "method": "NamespaceDeclarationsAreNotFontThemeReferences" }
+        { "class": "DocxThemeTests", "method": "NamespaceDeclarationsAreNotFontThemeReferences" },
+        { "class": "DocxThemeTests", "method": "EqualResolvedThemeColorsKeepTextKerningAndSeparateEditableReferences" },
+        { "class": "DocxThemeTests", "method": "SourceThemeExtensionsAndRelationshipsAreNotCopiedIntoTheBoundedTheme" },
+        { "class": "DocxThemeTests", "method": "TypedControlsRejectInheritedThemeReferencesBeforeSaving" }
       ]
     },
     {
@@ -24,7 +27,9 @@
       "boundary": "Malformed, duplicate and external theme metadata reject; missing or unsupported references retain diagnosed fallbacks.",
       "tests": [
         { "class": "DocxThemeTests", "method": "MissingUnsupportedAndMalformedThemesUseExplicitLimits" },
-        { "class": "DocxThemeTests", "method": "UnavailableLocalThemeFontUsesDiagnosedFallback" }
+        { "class": "DocxThemeTests", "method": "UnavailableLocalThemeFontUsesDiagnosedFallback" },
+        { "class": "DocxThemeTests", "method": "CompositionAndComparisonRejectConflictingThemesAtomically" },
+        { "class": "DocxThemeTests", "method": "RepeatedThemedCompositionCountsRetainedMetadataAndFailsAtomically" }
       ]
     },
     {

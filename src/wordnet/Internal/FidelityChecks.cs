@@ -8,6 +8,8 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        if (format == DocumentFormat.Docx && model.Theme != null)
+            context.Loss("Docx.ThemeData", "The DOCX retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
         if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs)
                 for (int i = 0; i < paragraph.Runs.Count; i++)

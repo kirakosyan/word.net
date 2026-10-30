@@ -92,7 +92,7 @@ internal sealed partial class DocxReader
         }
 
         reader.PrepareTypedControls(source);
-        var document = new DocumentModel();
+        var document = new DocumentModel { Theme = reader.theme?.Package };
         reader.ValidateReviewSource(bodies[0]);
         reader.ReadBlocks(bodies[0], document.Blocks);
         if (reader.sectionCount > 0 && bodies[0].Element(W + "sectPr") == null)
@@ -159,11 +159,12 @@ internal sealed partial class DocxReader
             }
             if (settings && root.Element(W + "evenAndOddHeaders") is XElement parity) evenAndOdd = IsOn(parity);
             if (settings && root.Elements().Any(e => e.Name != W + "proofState" && e.Name != W + "zoom"
-                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl" && e.Name != W + "evenAndOddHeaders"))
+                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl" && e.Name != W + "evenAndOddHeaders"
+                && (e.Name != W + "clrSchemeMapping" || theme?.Package == null)))
                 context.Loss("Docx.Settings", "Unsupported document settings may affect layout or editing behavior and are not retained.");
             if (settings && root.Elements().Any(e => e.Name == W + "defaultTabStop" || e.Name == W + "characterSpacingControl"))
                 context.Loss("Docx.Settings", "Tab and character-spacing settings are not retained.");
-            context.Report("Docx.AuxiliaryMetadata", "Document properties, font/theme catalogs and editor metadata are not retained; unsupported content formatting is diagnosed separately.");
+            context.Report("Docx.AuxiliaryMetadata", "Some document properties, font catalogs and editor metadata are not retained; theme retention is bounded and unsupported formatting is diagnosed separately.");
         }
     }
 
@@ -692,23 +693,40 @@ internal sealed partial class DocxReader
                 style.Bold ^= character.Bold;
                 style.Italic ^= character.Italic;
                 style.FontSize = character.FontSize ?? style.FontSize;
-                if (character.Appearance.FontFamily != null) style.Appearance.FontFamily = character.Appearance.FontFamily;
+                if (character.Appearance.FontFamily != null)
+                {
+                    style.Appearance.FontFamily = character.Appearance.FontFamily;
+                    style.Appearance.ThemeFontAscii = character.Appearance.ThemeFontAscii;
+                    style.Appearance.ThemeFontHighAnsi = character.Appearance.ThemeFontHighAnsi;
+                }
                 style.Appearance.Underline |= character.Appearance.Underline;
                 style.Appearance.Strike |= character.Appearance.Strike;
                 style.Appearance.Background = character.Appearance.Background ?? style.Appearance.Background;
                 style.Appearance.VerticalAlignment = character.Appearance.VerticalAlignment ?? style.Appearance.VerticalAlignment;
-                if (character.HasColor) { style.Color = character.Color; style.HasColor = true; }
+                if (character.HasColor)
+                {
+                    style.Color = character.Color; style.HasColor = true;
+                    style.Appearance.ThemeColor = character.Appearance.ThemeColor;
+                    style.Appearance.ThemeTint = character.Appearance.ThemeTint;
+                    style.Appearance.ThemeShade = character.Appearance.ThemeShade;
+                }
             }
             else if (property.Name == W + "sz") style.FontSize = Integer(property, W + "val", 2, 3276) / 2.0;
             else if (property.Name == W + "rFonts" && !knownCodeStyle)
             {
                 string? explicitFamily = (string?)property.Attribute(W + "ascii") ?? (string?)property.Attribute(W + "hAnsi");
-                string? token = (string?)property.Attribute(W + "asciiTheme") ?? (string?)property.Attribute(W + "hAnsiTheme");
+                string? ascii = (string?)property.Attribute(W + "asciiTheme"), high = (string?)property.Attribute(W + "hAnsiTheme");
+                string? token = ascii ?? high;
                 style.Appearance.FontFamily = (token == null ? null : theme?.Font(token)) ?? explicitFamily ?? style.Appearance.FontFamily;
+                if (token != null || explicitFamily != null)
+                {
+                    style.Appearance.ThemeFontAscii = theme?.Package != null && ascii != null && theme.Font(ascii) != null ? ascii : null;
+                    style.Appearance.ThemeFontHighAnsi = theme?.Package != null && high != null && theme.Font(high) != null ? high : null;
+                }
                 if (HasThemeFont(property))
                 {
                     ValidateThemeFonts(property);
-                    context.Loss("Docx.ThemeFont", "Theme font references use the bounded local scheme or an explicit/output fallback; editable theme semantics are not retained.");
+                    context.Loss("Docx.ThemeFont", "Theme fonts use the bounded local scheme or a fallback; unsupported references and other theme semantics are not retained.");
                 }
             }
             else if (property.Name == W + "rFonts" && knownCodeStyle && HasThemeFont(property))
@@ -777,11 +795,16 @@ internal sealed partial class DocxReader
                 if (colorTheme != null && !ThemeAppearance.ValidColorToken(colorTheme)
                     || !ThemeAppearance.ValidTransform((string?)property.Attribute(W + "themeTint")) || !ThemeAppearance.ValidTransform((string?)property.Attribute(W + "themeShade")))
                     throw new InvalidDataException("Docx.ThemeColor: Invalid theme color reference or transform.");
-                if (colorTheme != null && property.Attributes().All(a => a.IsNamespaceDeclaration || a.Name == W + "val" || a.Name == W + "themeColor" || a.Name == W + "themeTint" || a.Name == W + "themeShade"))
-                    style.Color = theme?.Color(colorTheme, (string?)property.Attribute(W + "themeTint"), (string?)property.Attribute(W + "themeShade")) ?? style.Color;
+                string? tint = (string?)property.Attribute(W + "themeTint"), shade = (string?)property.Attribute(W + "themeShade");
+                bool supported = colorTheme != null && property.Attributes().All(a => a.IsNamespaceDeclaration || a.Name == W + "val" || a.Name == W + "themeColor" || a.Name == W + "themeTint" || a.Name == W + "themeShade");
+                string? resolved = supported ? theme?.Color(colorTheme!, tint, shade) : null;
+                style.Color = resolved ?? style.Color;
+                style.Appearance.ThemeColor = resolved != null && theme?.Package != null ? colorTheme : null;
+                style.Appearance.ThemeTint = style.Appearance.ThemeColor != null ? tint : null;
+                style.Appearance.ThemeShade = style.Appearance.ThemeColor != null ? shade : null;
                 style.HasColor = true;
                 if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val"))
-                    context.Loss("Docx.ThemeColor", "Theme colors use the bounded local scheme or stored RGB fallback; editable theme semantics are not retained.");
+                    context.Loss("Docx.ThemeColor", "Theme colors use the bounded local scheme or stored RGB fallback; some editable references and other theme semantics are not retained.");
             }
             else if (companions != null && IsReviewCompanion(property)) { /* Retained explicit mirrored formatting and language/proofing metadata. */ }
             else if (property.Name == W + "lang")

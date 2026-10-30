@@ -66,6 +66,11 @@ an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.
 This profile is included in 1.5.0.
 
+Unreleased #141 source rejects incompatible document-wide themes before
+composition or comparison with `Composition.ThemeConflict` or
+`Comparison.ThemeConflict`. These are hard failures, not loss diagnostics.
+`Docx.ThemeData` reports the bounded theme reconstruction or an incomplete theme.
+
 Unreleased #143 source admits the glossary metadata described in the
 [control profile](content-controls.md#unreleased-source-bounded-glossary-metadata).
 Unadmitted resource content and relationship types use `Control.Unsupported`;
@@ -263,7 +268,7 @@ conversion diagnostics.
 | `Docx.AdditionalParts` | Loss | Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile. |
 | `Docx.Alignment` | Loss | Justified, distributed and direction-dependent alignment becomes left alignment. |
 | `Docx.AlternateContent` | Loss | Alternate content without an understood choice or fallback is omitted. |
-| `Docx.AuxiliaryMetadata` | Report | Document properties, font/theme catalogs and editor metadata are not retained; unsupported content formatting is diagnosed separately. |
+| `Docx.AuxiliaryMetadata` | Report | Some document properties, font catalogs and editor metadata are not retained; bounded theme and unsupported formatting outcomes are diagnosed separately. |
 | `Docx.Block` | Loss | Unsupported document block structure is flattened where supported content is available. |
 | `Docx.BookmarkEndIgnored` | Report | An unmatched bookmark end is ignored while retaining its surrounding content. |
 | `Docx.CellPadding` | Loss | Unknown cell margin side is omitted. |
@@ -300,8 +305,9 @@ conversion diagnostics.
 | `Docx.TableHeaders` | Loss | Noncontiguous repeating header rows are not retained. |
 | `Docx.TableIndent` | Loss | Nonabsolute table indentation is not retained. |
 | `Docx.TableStructure` | Loss | Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs. |
-| `Docx.ThemeColor` | Loss | Unreleased source resolves a bounded local theme color or uses the stored RGB fallback; editable theme semantics are not retained. |
-| `Docx.ThemeFont` | Loss | Unreleased source resolves a bounded local Latin theme font or uses the explicit/output fallback; editable theme semantics are not retained. |
+| `Docx.ThemeColor` | Loss | Unreleased source resolves a bounded local theme color or uses the stored RGB fallback; only selected text references are retained and other theme semantics may be lost. |
+| `Docx.ThemeData` | Loss | An incomplete theme cannot be retained, or DOCX output reconstructs a bounded scheme without original effects, script fonts and dynamic system colors. |
+| `Docx.ThemeFont` | Loss | Unreleased source resolves a bounded local Latin theme font or uses a fallback; unsupported references and other theme semantics are not retained. |
 | `Docx.Underline` | Loss | Unsupported underline decoration uses a single line. |
 | `Ebook.ActiveContent` | Loss | Event handlers are omitted. |
 | `Ebook.Alignment` | Loss | Unsupported or direction-dependent ebook alignment becomes left alignment. |

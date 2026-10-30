@@ -36,7 +36,7 @@ internal static partial class NativeTypography
             context.CheckCancellation();
             if (p.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed)
                 throw new NotSupportedException("Typography.Alignment: Native paragraphs require ordinary horizontal left, center or right alignment.");
-            TextRun[] joined = RunCoalescer.Combine(p.Runs).ToArray();
+            TextRun[] joined = RunCoalescer.Combine(p.Runs, forRendering: true).ToArray();
             if (p.Control != null || p.List != null || joined.Any(r => r.Object != null || r.Control != null || r.Image != null || r.Box != null || r.Note != null || r.FieldInstruction != null || r.Bookmark != null || r.Text.Contains('\t')))
                 throw new NotSupportedException("Typography.Structure: Fields, controls, drawings, notes, bookmarks and tabs require separate qualification.");
             string logical = string.Concat(joined.Select(r => r.Text));
@@ -73,7 +73,7 @@ internal static partial class NativeTypography
                 }
                 offset = end;
             }
-            p.Runs.Clear(); p.Runs.AddRange(RunCoalescer.Combine(prepared));
+            p.Runs.Clear(); p.Runs.AddRange(RunCoalescer.Combine(prepared, forRendering: true));
         }
         model.TypographyPrepared = true;
         bool Has(byte[] bytes, string cluster)

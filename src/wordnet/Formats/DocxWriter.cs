@@ -91,6 +91,7 @@ internal sealed partial class DocxWriter
                 new XAttribute(XNamespace.Xmlns + "mc", "http://schemas.openxmlformats.org/markup-compatibility/2006"),
                 new XAttribute(XName.Get("Ignorable", "http://schemas.openxmlformats.org/markup-compatibility/2006"), "w14") } : null, body));
 
+        writer.WriteTheme(document, archive, types);
         writer.WriteStories(document, archive, types);
         writer.WriteReview(archive, types);
         writer.WriteTypedParts(archive, types);
@@ -253,7 +254,9 @@ internal sealed partial class DocxWriter
             usedStyles.Add("WordnetCode");
             properties.Add(new XElement(W + "rStyle", new XAttribute(W + "val", "WordnetCode")));
         }
-        if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily)));
+        if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily),
+            appearance.ThemeFontAscii == null ? null : new XAttribute(W + "asciiTheme", appearance.ThemeFontAscii),
+            appearance.ThemeFontHighAnsi == null ? null : new XAttribute(W + "hAnsiTheme", appearance.ThemeFontHighAnsi)));
 
         XElement? companions = appearance.ReviewCompanions == null ? null : XElement.Parse(appearance.ReviewCompanions);
         if (run.Bold || run.FormatRevision != null || run.ExplicitFormat || companions?.Element(W + "bCs") != null)
@@ -269,7 +272,10 @@ internal sealed partial class DocxWriter
         if (companions?.Element(W + "iCs") is XElement italicCs) properties.Element(W + "i")!.AddAfterSelf(new XElement(italicCs));
         if (appearance.Strike) properties.Add(new XElement(W + "strike"));
         if (companions?.Element(W + "noProof") is XElement proof) properties.Add(new XElement(proof));
-        if (run.Color != null || run.FormatRevision != null || run.ExplicitFormat) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color ?? "auto")));
+        if (run.Color != null || run.FormatRevision != null || run.ExplicitFormat) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color ?? "auto"),
+            appearance.ThemeColor == null ? null : new XAttribute(W + "themeColor", appearance.ThemeColor),
+            appearance.ThemeTint == null ? null : new XAttribute(W + "themeTint", appearance.ThemeTint),
+            appearance.ThemeShade == null ? null : new XAttribute(W + "themeShade", appearance.ThemeShade)));
         if ((run.FontSize ?? fallbackFontSize) is double pointSize) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(pointSize * 2)))));
         if (companions?.Element(W + "szCs") is XElement sizeCs) properties.Add(new XElement(sizeCs));
         if (appearance.Underline) properties.Add(new XElement(W + "u", new XAttribute(W + "val", "single")));

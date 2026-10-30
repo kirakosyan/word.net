@@ -107,7 +107,7 @@ The design's initial example registry is deliberately small:
 | Code | Meaning and policy effect |
 | --- | --- |
 | `content.text` | Required logical text in the admitted source/data profile; a planned `supported` assessment requires complete coverage of the relevant owners and paths. It does not assess presentation or certify written output. |
-| `Docx.ThemeFont` | Existing observed loss: theme font semantics are not retained. Explicitly allowing it at one known location does not accept other occurrences. |
+| `Docx.ThemeFont` | Existing observed loss: some theme-font semantics are not retained. Explicitly allowing it at one known location does not accept other occurrences. |
 | `Plan.UninspectedCoverage` | Proposed unknown coverage; an unknown cannot be accepted as a known loss or used to satisfy a required semantic. |
 | `Remediation.SetExplicitFont` | Proposed informational action identifier for the example loss; it never performs a change. |
 

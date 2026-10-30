@@ -25,12 +25,18 @@ is reused under its upstream MIT license with caller-configured open-font substi
 it is not an interactive Word execution. Tests cover inherited/default styles,
 direct overrides, tint/shade endpoints, settings mappings, system-color fallbacks,
 headers and footnotes, direct cell shading/borders, missing and malformed parts,
-output atomicity and cancellation.
-The tests do not establish editable theme preservation, every style interaction,
-script slot, conditional table style or drawing support, or public-package availability.
-On Linux x64, locked restore and the five-target Release build passed; the full
-.NET 8 and .NET 10 suites each passed 1,592 cases with English OCR prepared in
-the launching process and no skips. Hosted exact-head qualification is separate.
+output atomicity and cancellation. The editable text subset is checked by changing
+the saved theme XML independently and comparing the new PDF font, color and glyph
+positions with explicit-format controls. Separate tests validate generated DOCX
+schema, theme mapping and composition conflicts and confirm source extensions and
+relationships are not copied. Typed-control tests reject inherited theme references
+before they could be emitted outside the admitted control profile.
+The tests do not establish complete editable theme preservation, every style
+interaction, script slot, conditional table style or drawing support, or
+public-package availability. On Linux x64, the five-target Release build and both
+full .NET 8 and .NET 10 suites passed 1,597 cases each, including English OCR,
+before the final header-only composition guard. The focused theme suite passed
+after that guard; hosted exact-head qualification remains separate.
 
 Unreleased #143 glossary tests use independently authored OPC/XML packages and
 Open XML schema checks for category metadata, bounded local resources, typed edits,
@@ -66,8 +72,12 @@ PDF/SVG. They also cover comments combined with moves or format history, empty a
 source preservation, unsupported structural changes, cancellation and bounds.
 The expanded local Linux x64 .NET 8 and .NET 10 suites each passed 1,578 cases
 without skips, with English OCR prepared in the launching process. Locked restore
-and the five-target Release build also passed; hosted exact-head evidence remains
-separate.
+and the five-target Release build also passed. On annotation head `b0776aa`, the
+[push workflow](https://github.com/kirakosyan/word.net/actions/runs/41132995601)
+passed the Windows/Linux x64 and ARM source and package lanes, including actual
+Framework 4.7.2 [source](https://github.com/kirakosyan/word.net/actions/runs/41132995601/job/124334009444)
+and [package](https://github.com/kirakosyan/word.net/actions/runs/41132995601/job/124337339781)
+execution. This does not qualify the later theme changes.
 On earlier text-display head `ca732f2`, locked restore and the five-target Release build passed, and the
 complete .NET 8 and .NET 10 suites each passed 1,567 cases with English OCR
 prepared in the launching process and no skips. Its hosted Windows/Linux x64 and

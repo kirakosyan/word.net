@@ -53,6 +53,8 @@ public static partial class DocumentComparison
         if (tokens is < 1 or > 100000 || steps is < 1 or > 4000000 || granularity is not ComparisonGranularity.Word and not ComparisonGranularity.Grapheme) throw new ArgumentOutOfRangeException(nameof(comparisonOptions));
         options ??= new ConversionOptions(); var context = new ConversionContext(options, cancellationToken) { Editing = true };
         DocumentModel left = original.ComparisonSnapshot(context), right = revised.ComparisonSnapshot(context);
+        if (!(left.Theme == null && right.Theme == null) && !(left.Theme?.Same(right.Theme) ?? false))
+            throw new NotSupportedException("Comparison.ThemeConflict: Documents with different or missing themes cannot be compared without resolving their document-wide theme.");
         foreach (DocumentModel snapshot in new[] { left, right })
             foreach (ParagraphBlock paragraph in snapshot.BodyParagraphs)
             { List<TextRun> combined = RunCoalescer.Combine(paragraph.Runs); paragraph.Runs.Clear(); paragraph.Runs.AddRange(combined); }

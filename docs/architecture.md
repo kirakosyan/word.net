@@ -10,8 +10,9 @@ to source anchors without margin callout placement. See the
 
 Unreleased DOCX reading also consults the bounded local theme and settings before
 resolving text styles. It computes selected Latin font families and RGB colors for
-rendering while retaining loss diagnostics because editable theme semantics are not
-yet preserved. The [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
+rendering, and reconstructs a bounded scheme and selected editable text references
+for DOCX. It retains loss diagnostics for unsupported theme semantics and rejects
+conflicting document themes in composition. The [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
 records fallback and combination limits.
 
 ## 1.5.0 roadmap #102 delivery

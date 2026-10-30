@@ -49,7 +49,7 @@ internal sealed class FontResolver
                 _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
                 if (paragraph.List.Definition != null) foreach (ListLevel level in paragraph.List.Definition) _ = Resolve(level.Appearance.WithText(level.Pattern), paragraph.HeadingLevel > 0);
             }
-            foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
+            foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs, forRendering: true)) _ = Resolve(run, paragraph.HeadingLevel > 0);
         }
         if (model.ObjectCount != 0 && model.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object?.Equation != null))
         {

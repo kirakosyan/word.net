@@ -12,6 +12,9 @@ public sealed partial class WordDocument
 {
     private static void MergeMetadata(DocumentModel destination, DocumentModel incoming, string prefix, ConversionContext context)
     {
+        if (!destination.AllBlocks.Any() && destination.Theme == null) destination.Theme = incoming.Theme;
+        else if (!(destination.Theme == null && incoming.Theme == null) && !(destination.Theme?.Same(incoming.Theme) ?? false))
+            throw new NotSupportedException("Composition.ThemeConflict: Documents with different or missing themes cannot be composed without resolving their document-wide theme.");
         foreach (DocumentProperty property in incoming.CustomProperties.Values)
         {
             context.CheckCancellation();

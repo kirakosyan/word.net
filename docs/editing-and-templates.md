@@ -267,6 +267,12 @@ documented role-based style rule rather than an arbitrary Word style-catalog mer
 DOCX retains supported field tokens and refreshes plain REF/SEQ results; PDF/XPS
 refresh their supported page-dependent references after composition. Unsupported
 source features retain diagnostics. Aggregate destination resource limits apply.
+In unreleased #141 source, a destination with body, note or story content and a source must have identical
+retained bounded themes, or both have no retained theme. A conflict fails before
+the edit commits, including with `UseDestination`; an empty destination may adopt
+the source theme. Document comparison likewise rejects differing retained themes.
+The [theme profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
+describes the retained subset and loss diagnostics.
 
 ## Populate templates
 

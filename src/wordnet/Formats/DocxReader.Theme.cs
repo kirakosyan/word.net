@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using WordNet.Model;
 
 namespace WordNet.Formats;
 
@@ -57,8 +58,17 @@ internal sealed partial class DocxReader
             XElement settingsRoot = source.ReadXml(DocxPackage.ResolvePart(owner, settings[0])).Root ?? throw new InvalidDataException("Docx.Settings: Missing settings root.");
             if (settingsRoot.Name != W + "settings") throw new InvalidDataException("Docx.Settings: Invalid settings root.");
             XElement? mapping = Single(settingsRoot, W + "clrSchemeMapping");
-            if (mapping != null) theme.Map(mapping);
+            if (mapping != null)
+            {
+                if (mapping.HasElements || mapping.Attributes().Any(a => !a.IsNamespaceDeclaration && (a.Name.Namespace != W
+                    || a.Name.LocalName is not ("bg1" or "t1" or "bg2" or "t2" or "accent1" or "accent2" or "accent3" or "accent4" or "accent5" or "accent6" or "hyperlink" or "followedHyperlink"))))
+                    context.Loss("Docx.Settings", "Unrecognized color-scheme mapping metadata is not retained.");
+                theme.Map(mapping);
+            }
         }
+        theme.Package = theme.CreatePackage();
+        if (theme.Package == null)
+            context.Loss("Docx.ThemeData", "An incomplete or unsupported local theme cannot be retained as an editable bounded scheme.");
     }
 
     private static XElement? Single(XElement parent, XName name)
@@ -75,7 +85,7 @@ internal sealed partial class DocxReader
             throw new InvalidDataException("Docx.ThemeColor: Invalid theme color reference or transform.");
         if (token == null && tint == null && shade == null) return fallback;
         string? resolved = token == null ? null : theme?.Color(token, tint, shade);
-        context.Loss("Docx.ThemeColor", "Theme colors use the bounded local scheme or stored RGB fallback; editable theme semantics are not retained.");
+        context.Loss("Docx.ThemeColor", "Theme colors use the bounded local scheme or stored RGB fallback; some editable references and other theme semantics are not retained.");
         return resolved ?? fallback;
     }
 
@@ -92,6 +102,8 @@ internal sealed partial class DocxReader
         internal static readonly string[] Slots = { "dk1", "lt1", "dk2", "lt2", "accent1", "accent2", "accent3", "accent4", "accent5", "accent6", "hlink", "folHlink" };
         internal readonly Dictionary<string, string> Fonts = new Dictionary<string, string>(StringComparer.Ordinal);
         internal readonly Dictionary<string, string> Colors = new Dictionary<string, string>(StringComparer.Ordinal);
+        internal DocumentTheme? Package { get; set; }
+        private bool hasMapping;
         private readonly Dictionary<string, string> mapping = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["dark1"] = "dk1",
@@ -114,12 +126,54 @@ internal sealed partial class DocxReader
 
         internal void Map(XElement source)
         {
+            hasMapping = true;
             foreach (var pair in new[] { ("bg1", "background1"), ("t1", "text1"), ("bg2", "background2"), ("t2", "text2"),
                 ("accent1", "accent1"), ("accent2", "accent2"), ("accent3", "accent3"), ("accent4", "accent4"), ("accent5", "accent5"), ("accent6", "accent6"),
                 ("hyperlink", "hyperlink"), ("followedHyperlink", "followedHyperlink") })
                 if ((string?)source.Attribute(W + pair.Item1) is string value)
                     mapping[pair.Item2] = Slot(value) ?? throw new InvalidDataException("Docx.Theme: Invalid color-scheme mapping.");
         }
+        internal DocumentTheme? CreatePackage()
+        {
+            if (Colors.Count != Slots.Length || !Fonts.ContainsKey("major") || !Fonts.ContainsKey("minor")) return null;
+            XElement Fill() => new XElement(Drawing + "solidFill", new XElement(Drawing + "schemeClr", new XAttribute("val", "phClr")));
+            XElement Line() => new XElement(Drawing + "ln", new XAttribute("w", "9525"), Fill(), new XElement(Drawing + "prstDash", new XAttribute("val", "solid")));
+            XElement Effect() => new XElement(Drawing + "effectStyle", new XElement(Drawing + "effectLst"));
+            XElement Family(string group) => new XElement(Drawing + (group + "Font"),
+                new XElement(Drawing + "latin", new XAttribute("typeface", Fonts[group])),
+                new XElement(Drawing + "ea", new XAttribute("typeface", "")), new XElement(Drawing + "cs", new XAttribute("typeface", "")));
+            XElement root = new XElement(Drawing + "theme", new XAttribute(XNamespace.Xmlns + "a", Drawing.NamespaceName), new XAttribute("name", "WordNet bounded theme"),
+                new XElement(Drawing + "themeElements",
+                    new XElement(Drawing + "clrScheme", new XAttribute("name", "WordNet"), Slots.Select(slot =>
+                        new XElement(Drawing + slot, new XElement(Drawing + "srgbClr", new XAttribute("val", Colors[slot]))))),
+                    new XElement(Drawing + "fontScheme", new XAttribute("name", "WordNet"), Family("major"), Family("minor")),
+                    new XElement(Drawing + "fmtScheme", new XAttribute("name", "WordNet"),
+                        new XElement(Drawing + "fillStyleLst", Fill(), Fill(), Fill()),
+                        new XElement(Drawing + "lnStyleLst", Line(), Line(), Line()),
+                        new XElement(Drawing + "effectStyleLst", Effect(), Effect(), Effect()),
+                        new XElement(Drawing + "bgFillStyleLst", Fill(), Fill(), Fill()))));
+            string? settings = null;
+            if (hasMapping)
+            {
+                var element = new XElement(W + "clrSchemeMapping", new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName));
+                foreach (var pair in new[] { ("bg1", "background1"), ("t1", "text1"), ("bg2", "background2"), ("t2", "text2"),
+                    ("accent1", "accent1"), ("accent2", "accent2"), ("accent3", "accent3"), ("accent4", "accent4"), ("accent5", "accent5"), ("accent6", "accent6"),
+                    ("hyperlink", "hyperlink"), ("followedHyperlink", "followedHyperlink") })
+                    element.Add(new XAttribute(W + pair.Item1, SchemeToken(mapping[pair.Item2])));
+                settings = element.ToString(SaveOptions.DisableFormatting);
+            }
+            return new DocumentTheme(root.ToString(SaveOptions.DisableFormatting), settings);
+        }
+        private static string SchemeToken(string slot) => slot switch
+        {
+            "dk1" => "dark1",
+            "lt1" => "light1",
+            "dk2" => "dark2",
+            "lt2" => "light2",
+            "hlink" => "hyperlink",
+            "folHlink" => "followedHyperlink",
+            _ => slot,
+        };
         internal string? Font(string value)
         {
             string? group = value is "majorAscii" or "majorHAnsi" ? "major" : value is "minorAscii" or "minorHAnsi" ? "minor" : null;

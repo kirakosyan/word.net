@@ -81,6 +81,18 @@ public sealed class DocxThemeTests
     { using var output = new MemoryStream(); source.Save(output, format, cancellationToken: TestContext.Current.CancellationToken); return output.ToArray(); }
     private static void Schema(byte[] bytes)
     { using var package = WordprocessingDocument.Open(new MemoryStream(bytes), false); Assert.Empty(new OpenXmlValidator().Validate(package)); }
+    private static byte[] EditTheme(byte[] bytes, Action<XDocument> edit)
+    {
+        using var output = new MemoryStream(); output.Write(bytes, 0, bytes.Length);
+        using (var zip = new ZipArchive(output, ZipArchiveMode.Update, true))
+        {
+            ZipArchiveEntry entry = zip.GetEntry("word/theme/theme1.xml")!; XDocument theme;
+            using (Stream source = entry.Open()) theme = XDocument.Load(source);
+            edit(theme); entry.Delete();
+            using Stream destination = zip.CreateEntry("word/theme/theme1.xml").Open(); theme.Save(destination);
+        }
+        return output.ToArray();
+    }
 
     [Fact]
     public void LatinThemeFontAndColorRenderLikeIndependentExplicitFormatting()
@@ -102,8 +114,39 @@ public sealed class DocxThemeTests
         using (var zip = new ZipArchive(new MemoryStream(Save(source, DocumentFormat.Xps))))
         using (Stream page = zip.GetEntry("Documents/1/Pages/1.fpage")!.Open())
             Assert.Contains(XDocument.Load(page).Descendants(), e => e.Name.LocalName == "Glyphs" && (string?)e.Attribute("Fill") == "#FF2266CC");
-        byte[] saved = Save(source, DocumentFormat.Docx); Schema(saved);
-        using (var zip = new ZipArchive(new MemoryStream(saved))) Assert.Null(zip.GetEntry("word/theme/theme1.xml"));
+        using var docx = new MemoryStream(); ConversionResult savedResult = source.Save(docx, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        byte[] saved = docx.ToArray(); Schema(saved);
+        Assert.Contains(savedResult.Diagnostics, d => d.Code == "Docx.ThemeData" && d.Severity == DiagnosticSeverity.Warning);
+        using (var zip = new ZipArchive(new MemoryStream(saved)))
+        {
+            using Stream part = zip.GetEntry("word/document.xml")!.Open(); XDocument document = XDocument.Load(part);
+            XElement font = document.Descendants(W + "rFonts").Single(), color = document.Descendants(W + "color").Single();
+            Assert.Equal("majorAscii", (string?)font.Attribute(W + "asciiTheme")); Assert.Equal("majorHAnsi", (string?)font.Attribute(W + "hAnsiTheme"));
+            Assert.Equal("accent1", (string?)color.Attribute(W + "themeColor"));
+            using Stream theme = zip.GetEntry("word/theme/theme1.xml")!.Open(); Assert.NotNull(XDocument.Load(theme).Root);
+        }
+        // Independently edit the saved package's scheme and compare the resulting
+        // render with a separately authored document using explicit formatting.
+        byte[] edited = EditTheme(saved, theme =>
+        {
+            XNamespace a = A;
+            theme.Descendants(a + "accent1").Single().Element(a + "srgbClr")!.SetAttributeValue("val", "119955");
+            theme.Descendants(a + "majorFont").Single().Element(a + "latin")!.SetAttributeValue("typeface", "Liberation Sans");
+        });
+        Schema(edited); WordDocument changed = Load(edited, out _);
+        Assert.Equal("Liberation Sans", changed.Paragraphs[0].Runs[0].Formatting.FontFamily);
+        Assert.Equal("119955", changed.Paragraphs[0].Runs[0].Formatting.Color);
+        WordDocument changedControl = Load(Package(Paragraph("<w:rFonts w:ascii='Liberation Sans'/><w:color w:val='119955'/><w:sz w:val='22'/>"), includeTheme: false), out _);
+        using PdfDocument changedPdf = PdfDocument.Open(Save(changed, DocumentFormat.Pdf));
+        using PdfDocument controlPdf = PdfDocument.Open(Save(changedControl, DocumentFormat.Pdf));
+        var changedLetters = changedPdf.GetPage(1).Letters; var controlLetters = controlPdf.GetPage(1).Letters;
+        Assert.Equal(controlLetters.Count, changedLetters.Count);
+        for (int index = 0; index < changedLetters.Count; index++)
+        {
+            Assert.Equal(controlLetters[index].Value, changedLetters[index].Value);
+            Assert.Equal(controlLetters[index].StartBaseLine.X, changedLetters[index].StartBaseLine.X, 3);
+            Assert.Equal(controlLetters[index].Color.ToRGBValues(), changedLetters[index].Color.ToRGBValues());
+        }
         using var strictSource = new MemoryStream(input); using var output = new MemoryStream(); output.WriteByte(42);
         Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(strictSource, output, DocumentFormat.Docx, DocumentFormat.Pdf,
             new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken));
@@ -130,6 +173,11 @@ public sealed class DocxThemeTests
         var major = letters.First(l => l.Value == "M"); var minor = letters.First(l => l.Value == "m");
         Assert.Contains("Caladea", major.FontName!, StringComparison.OrdinalIgnoreCase); Assert.Contains("Carlito", minor.FontName!, StringComparison.OrdinalIgnoreCase);
         Assert.Equal(79 / 255.0, major.Color.ToRGBValues().r, 2); Assert.Equal(192 / 255.0, minor.Color.ToRGBValues().r, 2);
+        byte[] saved = Save(source, DocumentFormat.Docx); Schema(saved);
+        using var zip = new ZipArchive(new MemoryStream(saved)); using Stream part = zip.GetEntry("word/theme/theme1.xml")!.Open();
+        XDocument bounded = XDocument.Load(part); XNamespace a = A;
+        Assert.Empty(bounded.Descendants(a + "font")); Assert.Empty(bounded.Descendants(a + "gradFill"));
+        Assert.Empty(bounded.Descendants(a + "extLst"));
     }
 
     [Fact]
@@ -146,13 +194,24 @@ public sealed class DocxThemeTests
         var page = pdf.GetPage(1); var first = page.Letters.First(l => l.Value == "B").Color.ToRGBValues(); var tint = page.Letters.First(l => l.Value == "T").Color.ToRGBValues();
         var shade = page.Letters.First(l => l.Value == "S").Color.ToRGBValues();
         Assert.Equal(34 / 255.0, first.r, 2); Assert.Equal(122 / 255.0, tint.r, 2); Assert.Equal(17 / 255.0, shade.r, 2);
-        string settings = "<w:settings xmlns:w='" + W + "'><w:clrSchemeMapping w:bg1='dark2' w:t1='dark1' w:bg2='light2' w:t2='dark2'"
+        string settings = "<w:settings xmlns:w='" + W + "'><w:evenAndOddHeaders/><w:clrSchemeMapping w:bg1='dark2' w:t1='dark1' w:bg2='light2' w:t2='dark2'"
             + " w:accent1='accent2' w:accent2='accent2' w:accent3='accent3' w:accent4='accent4' w:accent5='accent5' w:accent6='accent6' w:hyperlink='hyperlink' w:followedHyperlink='followedHyperlink'/></w:settings>";
         input = Package(Paragraph("<w:color w:val='FF0000' w:themeColor='accent1'/>", "Mapped")
-            + Paragraph("<w:color w:val='FF0000' w:themeColor='background1'/>", "Background"), settings: settings); Schema(input);
+            + Paragraph("<w:color w:val='FF0000' w:themeColor='background1'/>", "Background") + "<w:sectPr><w:pgSz w:w='11906' w:h='16838'/></w:sectPr>", settings: settings); Schema(input);
         WordDocument mapped = Load(input, out ConversionResult result); Assert.Equal("CC2200", mapped.Paragraphs[0].Runs[0].Formatting.Color);
         Assert.Equal("222222", mapped.Paragraphs[1].Runs[0].Formatting.Color);
-        Assert.Contains(result.Diagnostics, d => d.Code == "Docx.Settings");
+        Assert.DoesNotContain(result.Diagnostics, d => d.Code == "Docx.Settings");
+        byte[] mappedSaved = Save(mapped, DocumentFormat.Docx); Schema(mappedSaved);
+        using (var zip = new ZipArchive(new MemoryStream(mappedSaved)))
+        using (Stream part = zip.GetEntry("word/settings.xml")!.Open())
+        {
+            XElement root = XDocument.Load(part).Root!;
+            Assert.NotNull(root.Element(W + "evenAndOddHeaders"));
+            Assert.Equal("accent2", (string?)root.Element(W + "clrSchemeMapping")!.Attribute(W + "accent1"));
+        }
+        WordDocument mappedAgain = Load(mappedSaved, out _);
+        Assert.Equal("CC2200", mappedAgain.Paragraphs[0].Runs[0].Formatting.Color);
+        Assert.Equal("222222", mappedAgain.Paragraphs[1].Runs[0].Formatting.Color);
         string systemTheme = Theme().Replace("<a:dk1><a:srgbClr val='000000'/></a:dk1>", "<a:dk1><a:sysClr val='windowText' lastClr='123456'/></a:dk1>");
         input = Package(Paragraph("<w:color w:val='FF0000' w:themeColor='dark1'/>", "System"), theme: systemTheme); Schema(input);
         Assert.Equal("123456", Load(input, out _).Paragraphs[0].Runs[0].Formatting.Color);
@@ -252,6 +311,133 @@ public sealed class DocxThemeTests
         Assert.Equal("Caladea", source.Paragraphs[1].Runs[0].Formatting.FontFamily);
         Assert.Equal("Liberation Sans", source.Paragraphs[2].Runs[0].Formatting.FontFamily);
         Assert.True(source.Paragraphs[0].Runs[0].Formatting.Bold); Assert.False(source.Paragraphs[1].Runs[0].Formatting.Bold);
+        byte[] saved = Save(source, DocumentFormat.Docx); Schema(saved);
+        using var zip = new ZipArchive(new MemoryStream(saved)); using Stream part = zip.GetEntry("word/document.xml")!.Open();
+        XElement[] fonts = XDocument.Load(part).Descendants(W + "r")
+            .Where(r => r.Element(W + "t") != null).Select(r => r.Element(W + "rPr")!.Element(W + "rFonts")!).ToArray();
+        Assert.Equal("majorAscii", (string?)fonts[0].Attribute(W + "asciiTheme"));
+        Assert.Null(fonts[1].Attribute(W + "asciiTheme"));
+        Assert.Equal("minorAscii", (string?)fonts[2].Attribute(W + "asciiTheme"));
+    }
+
+    [Fact]
+    public void EqualResolvedThemeColorsKeepTextKerningAndSeparateEditableReferences()
+    {
+        string prefix = "<w:rFonts w:ascii='Liberation Sans'/><w:color w:val='FF0000' w:themeColor='";
+        string body = "<w:p><w:r><w:rPr>" + prefix + "accent1'/></w:rPr><w:t>A</w:t></w:r>"
+            + "<w:r><w:rPr>" + prefix + "accent2'/></w:rPr><w:t>V</w:t></w:r></w:p>";
+        string theme = Theme().Replace("<a:accent2><a:srgbClr val='CC2200'/></a:accent2>", "<a:accent2><a:srgbClr val='2266CC'/></a:accent2>");
+        byte[] input = Package(body, theme: theme); Schema(input);
+        WordDocument source = Load(input, out _);
+        WordDocument control = Load(Package(Paragraph("<w:rFonts w:ascii='Liberation Sans'/><w:color w:val='2266CC'/>", "AV"), includeTheme: false), out _);
+        using PdfDocument pdf = PdfDocument.Open(Save(source, DocumentFormat.Pdf)); using PdfDocument expected = PdfDocument.Open(Save(control, DocumentFormat.Pdf));
+        var actualLetters = pdf.GetPage(1).Letters; var expectedLetters = expected.GetPage(1).Letters;
+        Assert.Equal(expectedLetters.Count, actualLetters.Count);
+        for (int index = 0; index < actualLetters.Count; index++)
+            Assert.Equal(expectedLetters[index].StartBaseLine.X, actualLetters[index].StartBaseLine.X, 3);
+        byte[] saved = Save(source, DocumentFormat.Docx); Schema(saved);
+        using var zip = new ZipArchive(new MemoryStream(saved)); using Stream part = zip.GetEntry("word/document.xml")!.Open();
+        XElement[] colors = XDocument.Load(part).Descendants(W + "r").Where(r => r.Element(W + "t") != null)
+            .Select(r => r.Element(W + "rPr")!.Element(W + "color")!).ToArray();
+        Assert.Equal("accent1", (string?)colors[0].Attribute(W + "themeColor"));
+        Assert.Equal("accent2", (string?)colors[1].Attribute(W + "themeColor"));
+    }
+
+    [Fact]
+    public void TypedControlsRejectInheritedThemeReferencesBeforeSaving()
+    {
+        string control = "<w:p><w:sdt><w:sdtPr><w:id w:val='1'/><w:text/></w:sdtPr><w:sdtContent>"
+            + "<w:r><w:t>A</w:t></w:r><w:r><w:t>B</w:t></w:r></w:sdtContent></w:sdt></w:p>";
+        string styles = "<w:styles xmlns:w='" + W + "'><w:docDefaults><w:rPrDefault><w:rPr>"
+            + "<w:color w:val='2266CC' w:themeColor='accent1'/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>";
+        byte[] conflict = Package(control, styles: styles); Schema(conflict);
+        using var bad = new MemoryStream(conflict);
+        Assert.Throws<NotSupportedException>(() => WordDocument.LoadWithControls(bad, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        byte[] fontConflict = Package(control, styles: styles.Replace("<w:color w:val='2266CC' w:themeColor='accent1'/>", "<w:rFonts w:asciiTheme='majorAscii'/>"));
+        Schema(fontConflict); using var badFont = new MemoryStream(fontConflict);
+        Assert.Throws<NotSupportedException>(() => WordDocument.LoadWithControls(badFont, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        byte[] compatible = Package(control, styles: styles.Replace(" w:themeColor='accent1'", "")); Schema(compatible);
+        using var good = new MemoryStream(compatible);
+        WordDocument document = WordDocument.LoadWithControls(good, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.SetControlText(Assert.Single(document.ContentControls), "Changed", TestContext.Current.CancellationToken);
+        byte[] saved = Save(document, DocumentFormat.Docx); Schema(saved);
+        using var zip = new ZipArchive(new MemoryStream(saved)); using Stream part = zip.GetEntry("word/document.xml")!.Open();
+        XElement color = XDocument.Load(part).Descendants(W + "r").Where(r => r.Element(W + "t")?.Value == "Changed")
+            .Single().Element(W + "rPr")!.Element(W + "color")!;
+        Assert.Equal("2266CC", (string?)color.Attribute(W + "val")); Assert.Null(color.Attribute(W + "themeColor"));
+        using var reloaded = new MemoryStream(saved);
+        Assert.Single(WordDocument.LoadWithControls(reloaded, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken).ContentControls);
+    }
+
+    [Fact]
+    public void SourceThemeExtensionsAndRelationshipsAreNotCopiedIntoTheBoundedTheme()
+    {
+        string sourceTheme = Theme().Replace("</a:theme>", "<a:extLst><a:ext uri='urn:example:extra'><x:link xmlns:x='urn:example' href='https://example.invalid/private'/></a:ext></a:extLst></a:theme>");
+        byte[] source = Package(Paragraph("<w:color w:val='FF0000' w:themeColor='accent1'/>", "Text"), theme: sourceTheme);
+        using var stream = new MemoryStream(); stream.Write(source, 0, source.Length);
+        using (var zip = new ZipArchive(stream, ZipArchiveMode.Update, true))
+        using (var writer = new StreamWriter(zip.CreateEntry("word/theme/_rels/theme1.xml.rels").Open(), new UTF8Encoding(false)))
+            writer.Write("<Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'><Relationship Id='remote' Type='" + TestDocuments.R + "/image' Target='https://example.invalid/private' TargetMode='External'/></Relationships>");
+        WordDocument document = Load(stream.ToArray(), out ConversionResult load);
+        Assert.Contains(load.Diagnostics, d => d.Code == "Docx.AdditionalParts");
+        byte[] saved = Save(document, DocumentFormat.Docx); Schema(saved);
+        using var archive = new ZipArchive(new MemoryStream(saved));
+        Assert.Null(archive.GetEntry("word/theme/_rels/theme1.xml.rels"));
+        using Stream part = archive.GetEntry("word/theme/theme1.xml")!.Open(); XDocument bounded = XDocument.Load(part);
+        Assert.DoesNotContain(bounded.Descendants(), e => e.Name.NamespaceName == "urn:example");
+        Assert.DoesNotContain("example.invalid", bounded.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CompositionAndComparisonRejectConflictingThemesAtomically()
+    {
+        string formatting = "<w:rFonts w:asciiTheme='majorAscii'/><w:color w:val='FF0000' w:themeColor='accent1'/>";
+        WordDocument first = Load(Package(Paragraph(formatting, "First")), out _);
+        WordDocument same = Load(Package(Paragraph(formatting, "Second")), out _);
+        WordDocument different = Load(Package(Paragraph(formatting, "Other"), theme: Theme(major: "Caladea")), out _);
+        WordDocument unthemed = Load(Package(Paragraph("", "Plain"), includeTheme: false), out _);
+        string header = "<w:hdr xmlns:w='" + W + "'>" + Paragraph("", "Existing header") + "</w:hdr>";
+        byte[] headerOnly = Package("<w:sectPr><w:headerReference w:type='default' r:id='header'/></w:sectPr>", includeTheme: false, header: header);
+        Schema(headerOnly); WordDocument headerOwner = Load(headerOnly, out _);
+        byte[] before = Save(headerOwner, DocumentFormat.Docx);
+        Assert.Throws<NotSupportedException>(() => headerOwner.Append(same, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(before, Save(headerOwner, DocumentFormat.Docx));
+        WordDocument empty = WordDocument.Create(new ConversionOptions(FidelityMode.Lenient));
+        empty.Append(same, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("2266CC", empty.Paragraphs[0].Runs[0].Formatting.Color);
+        Schema(Save(empty, DocumentFormat.Docx));
+        Assert.Throws<NotSupportedException>(() => first.Append(different, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<NotSupportedException>(() => first.Append(different, CompositionStyle.UseDestination, TestContext.Current.CancellationToken));
+        Assert.Throws<NotSupportedException>(() => first.Append(unthemed, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal("First", first.Paragraphs[0].Text); Assert.Single(first.Paragraphs);
+        Assert.Equal("Other", different.Paragraphs[0].Text); Assert.Equal("Plain", unthemed.Paragraphs[0].Text);
+        var comparison = new ComparisonOptions("Reviewer", new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero));
+        Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(first, different, comparison, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
+        first.Append(same, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("First", first.Paragraphs[0].Text); Assert.Equal("Second", first.Paragraphs[1].Text);
+        byte[] saved = Save(first, DocumentFormat.Docx); Schema(saved);
+        WordDocument reloaded = Load(saved, out _); Assert.Equal("2266CC", reloaded.Paragraphs[1].Runs[0].Formatting.Color);
+    }
+
+    [Fact]
+    public void RepeatedThemedCompositionCountsRetainedMetadataAndFailsAtomically()
+    {
+        byte[] input = Package(Paragraph("<w:color w:val='FF0000' w:themeColor='accent1'/>", "A")); Schema(input);
+        using var source = new MemoryStream(input);
+        var options = new ConversionOptions(FidelityMode.Lenient, maximumCharacters: 5000);
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, options, TestContext.Current.CancellationToken);
+        bool limited = false;
+        for (int attempt = 0; attempt < 10; attempt++)
+        {
+            int before = document.Paragraphs.Count;
+            try { document.Append(document, cancellationToken: TestContext.Current.CancellationToken); }
+            catch (InvalidDataException error)
+            {
+                Assert.StartsWith("Limit.Characters", error.Message, StringComparison.Ordinal);
+                Assert.Equal(before, document.Paragraphs.Count); limited = true; break;
+            }
+        }
+        Assert.True(limited);
     }
 
     [Fact]
@@ -264,6 +450,10 @@ public sealed class DocxThemeTests
         WordDocument unsupported = Load(Package(Paragraph("<w:rFonts w:ascii='Caladea' w:eastAsiaTheme='majorEastAsia'/><w:color w:val='FF0000' w:themeColor='accent1' w:themeShade='80' w:themeTint='99'/>")), out result);
         Assert.Equal("Caladea", unsupported.Paragraphs[0].Runs[0].Formatting.FontFamily); Assert.Equal("FF0000", unsupported.Paragraphs[0].Runs[0].Formatting.Color);
         Assert.Contains(result.Diagnostics, d => d.Code == "Docx.ThemeFont"); Assert.Contains(result.Diagnostics, d => d.Code == "Docx.ThemeColor");
+        string incomplete = Theme().Replace("<a:accent6><a:srgbClr val='888800'/></a:accent6>", "");
+        WordDocument partial = Load(Package(Paragraph(properties), theme: incomplete), out result);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Docx.ThemeData" && d.Severity == DiagnosticSeverity.Warning);
+        using (var partialZip = new ZipArchive(new MemoryStream(Save(partial, DocumentFormat.Docx)))) Assert.Null(partialZip.GetEntry("word/theme/theme1.xml"));
         Assert.Throws<InvalidDataException>(() => Load(Package(Paragraph(properties), duplicateTheme: true), out _));
         Assert.Throws<InvalidDataException>(() => Load(Package(Paragraph(properties), externalTheme: true), out _));
         Assert.Throws<InvalidDataException>(() => Load(Package(Paragraph(properties), theme: Theme().Replace("2266CC", "bad")), out _));

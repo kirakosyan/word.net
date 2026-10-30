@@ -278,6 +278,8 @@ internal sealed partial class DocxReader
             if (run.Image != null || run.FieldInstruction != null || run.Bookmark != null || run.Control != null || run.Object != null || run.Note != null || run.Box != null || run.Revision != null || run.Comment != null)
                 throw new NotSupportedException("Control.ProtectedOwner: Only ordinary formatted text is admitted inside a control.");
             if (run.Color != null && (run.Color.Length != 6 || run.Color.Any(c => !Uri.IsHexDigit(c)))) throw new InvalidDataException("Control.Malformed: Inherited color metadata must contain six RGB hex digits.");
+            if (run.Appearance.ThemeFontAscii != null || run.Appearance.ThemeFontHighAnsi != null || run.Appearance.ThemeColor != null)
+                throw new NotSupportedException("Control.Unsupported: Editable theme references are outside the admitted typed-control text profile.");
             if (run.Code || run.Appearance.Strike || run.Appearance.Background != null || run.Appearance.VerticalAlignment != null)
                 throw new NotSupportedException("Control.Unsupported: Inherited text properties exceed the control formatting profile.");
             if (first != null && data.Kind != ContentControlKind.RichText && !SameStyle(first, run)) throw new NotSupportedException("Control.Unsupported: Scalar controls require a single formatting set.");

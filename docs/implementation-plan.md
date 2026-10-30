@@ -15,8 +15,9 @@ or #172. Their compilation, enforcement and independent outcome evidence remain 
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 #139 remains incomplete until its additional feature controls and ledger are delivered.
-Unreleased #141 work resolves a bounded subset of local theme text appearance but
-retains loss diagnostics and does not yet preserve editable theme references. The
+Unreleased #141 work resolves a bounded subset of local theme text appearance and
+retains selected editable text references in a reconstructed theme, with loss
+diagnostics for the remaining theme semantics. The
 [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
 records its remaining script, drawing and style-precedence work.
 Pending source work on #143 preserves bounded glossary categories and selected inert

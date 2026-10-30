@@ -15,11 +15,21 @@ including admitted settings color mappings and one tint or shade transform.
 Direct formatting still follows
 the existing style-processing order. Missing or unsupported schemes use explicit
 font/RGB values or the existing output fallback. This improves visible PDF/XPS
-appearance for the documented subset but continues to report `Docx.ThemeFont`
-or `Docx.ThemeColor`: editable theme references and the original theme package are
-not retained in DOCX. Mixed-script font selection, conditional table styles and
-drawings, other DrawingML color transforms, simultaneous tint/shade, and the full
-style/reset precedence remain unqualified. See the [testing record](testing.md)
+appearance for the documented subset. When the local theme has all 12 supported
+RGB slots and both Latin fonts, a DOCX save reconstructs a bounded theme and retains
+resolved text font/color references and supported settings color mappings. It does
+not copy arbitrary source theme XML or theme relationships. Original effects,
+script fonts and dynamic system colors are not retained; direct cell theme
+references are flattened to their resolved colors. `Docx.ThemeFont`,
+`Docx.ThemeColor` and `Docx.ThemeData` remain loss diagnostics, so strict mode
+rejects the corresponding loss. Composition and comparison reject incompatible or
+missing document themes rather than silently changing references.
+Typed controls continue to reject theme references, including references inherited
+from document styles, because their admitted editable formatting is narrower.
+
+Mixed-script font selection, conditional table styles and drawings, other DrawingML
+color transforms, simultaneous tint/shade, and the full style/reset precedence
+remain unqualified. See the [testing record](testing.md)
 and the [initial 1.5.0 controls](fidelity-138-initial.md#additional-independent-controls).
 The color formulas and theme-font priority follow the public OOXML descriptions
 for [run colors](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_color_topic_ID0EYTHO.html)

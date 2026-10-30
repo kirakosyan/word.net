@@ -764,7 +764,7 @@ internal static partial class FixedLayout
             {
                 using var location = context.At(paragraph.Location);
                 double line = 0;
-                foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs))
+                foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs, forRendering: true))
                 {
                     shapingLevel = run.BidiLevel;
                     if (run.Image != null) { minimum = Math.Max(minimum, run.Image.Width); line += run.Image.Width; continue; }
@@ -1236,7 +1236,7 @@ internal static partial class FixedLayout
             double tabOrigin = left;
             left += paragraph.Layout.Left;
             width -= paragraph.Layout.Left + paragraph.Layout.Right;
-            List<TextRun> runs = context.Typography.Enabled || context.Options.Pdf.Accessibility != PdfAccessibility.None ? new List<TextRun>(paragraph.Runs) : RunCoalescer.Combine(paragraph.Runs);
+            List<TextRun> runs = context.Typography.Enabled || context.Options.Pdf.Accessibility != PdfAccessibility.None ? new List<TextRun>(paragraph.Runs) : RunCoalescer.Combine(paragraph.Runs, forRendering: true);
             TextRun? listLabel = null;
             if (paragraph.List != null)
             {

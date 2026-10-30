@@ -212,7 +212,15 @@ public sealed partial class WordDocument
         if (model.HasControlDisplay)
             foreach (ControlGlyph glyph in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.ControlGlyph != null).Select(r => r.ControlGlyph!).Distinct())
             { context.CheckCancellation(); controlMetadata = checked(controlMetadata + glyph.Text.Length + glyph.Font.Length + 32); }
+        static long ThemeReferences(TextRun run) => (long)(run.Appearance.ThemeFontAscii?.Length ?? 0) + (run.Appearance.ThemeFontHighAnsi?.Length ?? 0)
+            + (run.Appearance.ThemeColor?.Length ?? 0) + (run.Appearance.ThemeTint?.Length ?? 0) + (run.Appearance.ThemeShade?.Length ?? 0);
+        long themeReferences = model.Paragraphs.SelectMany(p => p.Runs)
+            .Concat(model.Review.Comments.Values.SelectMany(comment => comment.Body).SelectMany(p => p.Runs))
+            .Sum(run => ThemeReferences(run) + (run.PreviousFormat == null ? 0 : ThemeReferences(run.PreviousFormat))
+                + (run.FieldCache?.Sum(ThemeReferences) ?? 0));
         long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
+            + (model.Theme?.Xml.Length ?? 0) + (model.Theme?.Mapping?.Length ?? 0)
+            + themeReferences
             + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
             + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));
