@@ -74,6 +74,7 @@ internal static class MathObjectFormat
                 bool italic = style != "p" && (string?)node.Element(M + "rPr")?.Element(M + "nor")?.Attribute(M + "val") is not "1" and not "true";
                 return EquationExpression.Text(node.Element(M + "t")!.Value, italic);
             }
+            if (node.Name == M + "m") return ParseMatrix(node);
             string kind = node.Name.LocalName;
             if (node.Name.Namespace != M || kind is not "f" and not "sSub" and not "sSup" and not "sSubSup" and not "rad" and not "d") throw new NotSupportedException("Equation.Type: This OMML construction is outside the admitted fraction/script/root/delimiter profile.");
             string[] expected = kind switch
@@ -112,6 +113,98 @@ internal static class MathObjectFormat
                 _ => EquationExpression.SubSuperscript(basis, ParseRow(Child(node, "sub")), ParseRow(Child(node, "sup")))
             };
         }
+        EquationExpression ParseMatrix(XElement matrix)
+        {
+            void Container(XElement element)
+            {
+                if (element.Attributes().Any(a => !a.IsNamespaceDeclaration) || element.Nodes().OfType<XText>().Any(t => !string.IsNullOrWhiteSpace(t.Value)))
+                    throw Invalid("MatrixProperties");
+            }
+            void Leaf(XElement element)
+            {
+                if (element.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != M + "val") || element.HasElements
+                    || element.Nodes().OfType<XText>().Any(t => !string.IsNullOrWhiteSpace(t.Value))) throw Invalid("MatrixProperties");
+            }
+            Container(matrix);
+            if (matrix.Elements().Any(e => e.Name != M + "mPr" && e.Name != M + "mr") || matrix.Elements(M + "mPr").Count() > 1)
+                throw Invalid("Matrix");
+            XElement[] rows = matrix.Elements(M + "mr").ToArray();
+            if (rows.Length is < 1 or > 64 || rows.Any(r => r.Elements().Any(e => e.Name != M + "e"))) throw Invalid("Matrix");
+            int columns = rows[0].Elements(M + "e").Count();
+            if (columns is < 1 or > 64 || rows.Length * columns > 1024 || rows.Any(r => r.Elements(M + "e").Count() != columns)) throw Invalid("Matrix");
+            foreach (XElement row in rows) { Container(row); foreach (XElement cell in row.Elements()) Container(cell); }
+            XElement? properties = matrix.Element(M + "mPr");
+            if (properties != null) Container(properties);
+            if (properties != null && properties.Elements().GroupBy(e => e.Name).Any(g => g.Count() > 1)) throw Invalid("MatrixProperties");
+            foreach (XElement property in properties?.Elements() ?? Enumerable.Empty<XElement>())
+            {
+                if (property.Name == M + "ctrlPr")
+                { Container(property); if (property.Elements().Any(e => e.Name != W + "rPr")) throw Invalid("MatrixProperties"); }
+                else if (property.Name == M + "mcs") Container(property);
+                else if (property.Name.Namespace != M || property.Name.LocalName is not ("baseJc" or "plcHide" or "rSpRule" or "cGpRule" or "rSp" or "cSp" or "cGp") || property.HasElements)
+                    throw new NotSupportedException("Equation.MatrixProperties: Unsupported matrix properties.");
+                else Leaf(property);
+            }
+            string? Value(string name) => (string?)properties?.Element(M + name)?.Attribute(M + "val");
+            if (Value("baseJc") is string baseJustification && baseJustification != "center")
+                throw new NotSupportedException("Equation.MatrixBaseline: Only math-axis centered matrices are supported.");
+            XElement? hide = properties?.Element(M + "plcHide");
+            string? hideValue = (string?)hide?.Attribute(M + "val");
+            if (hideValue is not null and not ("0" or "1" or "false" or "true" or "off" or "on")) throw Invalid("MatrixProperties");
+            bool hidden = hide != null && hideValue is not ("0" or "false" or "off");
+            EquationMatrixSpacing Spacing(string name)
+            {
+                string value = Value(name) ?? "0";
+                return value switch
+                {
+                    "0" => EquationMatrixSpacing.Standard,
+                    "1" => EquationMatrixSpacing.OneAndHalf,
+                    "2" => EquationMatrixSpacing.Twice,
+                    _ => throw new NotSupportedException("Equation.MatrixSpacing: Custom matrix spacing is outside the supported profile.")
+                };
+            }
+            foreach (string name in new[] { "rSp", "cSp", "cGp" })
+            {
+                string? value = Value(name);
+                if (value == null) continue;
+                if (!uint.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out uint number) || number > 31680) throw Invalid("MatrixProperties");
+                if (name == "cSp" && number != 0) throw new NotSupportedException("Equation.MatrixSpacing: A minimum column width is outside the supported profile.");
+            }
+            var alignments = new List<EquationMatrixAlignment>(); XElement? groups = properties?.Element(M + "mcs");
+            if (groups != null)
+            {
+                if (!groups.Elements().Any() || groups.Elements().Any(e => e.Name != M + "mc")) throw Invalid("MatrixColumns");
+                foreach (XElement group in groups.Elements())
+                {
+                    Container(group);
+                    if (group.Elements().Count() != 1 || group.Elements().Single().Name != M + "mcPr") throw Invalid("MatrixColumns");
+                    XElement definition = group.Elements().Single();
+                    Container(definition);
+                    if (definition.Elements().GroupBy(e => e.Name).Any(g => g.Count() > 1) || definition.Elements().Any(e => e.Name != M + "count" && e.Name != M + "mcJc" || e.HasElements)) throw Invalid("MatrixColumns");
+                    foreach (XElement value in definition.Elements()) Leaf(value);
+                    string countValue = (string?)definition.Element(M + "count")?.Attribute(M + "val") ?? "1";
+                    if (!int.TryParse(countValue, NumberStyles.None, CultureInfo.InvariantCulture, out int count) || count < 1 || count > columns - alignments.Count) throw Invalid("MatrixColumns");
+                    string alignValue = (string?)definition.Element(M + "mcJc")?.Attribute(M + "val") ?? "center";
+                    EquationMatrixAlignment alignment = alignValue switch
+                    {
+                        "left" => EquationMatrixAlignment.Left,
+                        "center" => EquationMatrixAlignment.Center,
+                        "right" => EquationMatrixAlignment.Right,
+                        _ => throw new NotSupportedException("Equation.MatrixAlignment: Unsupported matrix column alignment.")
+                    };
+                    alignments.AddRange(Enumerable.Repeat(alignment, count));
+                }
+                if (alignments.Count != columns) throw Invalid("MatrixColumns");
+            }
+            else alignments.AddRange(Enumerable.Repeat(EquationMatrixAlignment.Center, columns));
+            EquationExpression?[][] cells = rows.Select(row => row.Elements(M + "e").Select(cell =>
+            {
+                if (cell.HasElements) return ParseRow(cell);
+                if (!hidden) throw new NotSupportedException("Equation.MatrixPlaceholder: Visible empty-cell placeholders are outside the supported profile.");
+                return null;
+            }).ToArray()).ToArray();
+            return EquationExpression.Matrix(cells, alignments.ToArray(), Spacing("rSpRule"), Spacing("cGpRule"));
+        }
         EquationExpression expression = ParseRow(math); return (expression, display, size, renderable);
     }
     private static void Properties(XElement? properties, params string[] admitted)
@@ -135,6 +228,7 @@ internal static class MathObjectFormat
         EquationKind.Superscript => Description(node.Children[0]) + "^(" + Description(node.Children[1]) + ")",
         EquationKind.SubSuperscript => Description(node.Children[0]) + "_(" + Description(node.Children[1]) + ")^(" + Description(node.Children[2]) + ")",
         EquationKind.Radical => (node.Children.Count == 1 ? "sqrt" : "root[" + Description(node.Children[1]) + "]") + "(" + Description(node.Children[0]) + ")",
+        EquationKind.Matrix => "matrix(" + string.Join("; ", Enumerable.Range(0, node.MatrixRows).Select(r => string.Join(", ", Enumerable.Range(0, node.MatrixColumns).Select(c => Description(node.Children[r * node.MatrixColumns + c]))))) + ")",
         _ => node.Opening + Description(node.Children[0]) + node.Closing
     };
     internal static XElement Write(EquationExpression expression, bool display, double size)
@@ -148,6 +242,18 @@ internal static class MathObjectFormat
             if (node.Kind == EquationKind.Fraction) return new XElement(M + "f", Row("num", node.Children[0]), Row("den", node.Children[1]));
             if (node.Kind == EquationKind.Radical) return new XElement(M + "rad", new XElement(M + "radPr", new XElement(M + "degHide", new XAttribute(M + "val", node.Children.Count == 1 ? "1" : "0"))), node.Children.Count == 1 ? new XElement(M + "deg") : Row("deg", node.Children[1]), Row("e", node.Children[0]));
             if (node.Kind == EquationKind.Delimiter) return new XElement(M + "d", new XElement(M + "dPr", new XElement(M + "begChr", new XAttribute(M + "val", node.Opening)), new XElement(M + "endChr", new XAttribute(M + "val", node.Closing))), Row("e", node.Children[0]));
+            if (node.Kind == EquationKind.Matrix) return new XElement(M + "m",
+                new XElement(M + "mPr", new XElement(M + "plcHide", new XAttribute(M + "val", "1")),
+                    new XElement(M + "rSpRule", new XAttribute(M + "val", (int)node.MatrixRowSpacing)),
+                    new XElement(M + "cGpRule", new XAttribute(M + "val", (int)node.MatrixColumnSpacing)),
+                    new XElement(M + "mcs", node.MatrixColumnAlignments.Select(a => new XElement(M + "mc", new XElement(M + "mcPr",
+                        new XElement(M + "count", new XAttribute(M + "val", "1")),
+                        new XElement(M + "mcJc", new XAttribute(M + "val", a.ToString().ToLowerInvariant()))))))),
+                Enumerable.Range(0, node.MatrixRows).Select(r => new XElement(M + "mr", Enumerable.Range(0, node.MatrixColumns).Select(c =>
+                {
+                    EquationExpression cell = node.Children[r * node.MatrixColumns + c];
+                    return cell.Kind == EquationKind.Text && cell.Value.Length == 0 ? new XElement(M + "e") : Row("e", cell);
+                }))));
             string kind = node.Kind == EquationKind.Subscript ? "sSub" : node.Kind == EquationKind.Superscript ? "sSup" : "sSubSup";
             return new XElement(M + kind, Row("e", node.Children[0]), node.Kind != EquationKind.Superscript ? Row("sub", node.Children[1]) : null,
                 node.Kind == EquationKind.Subscript ? null : Row("sup", node.Children[node.Kind == EquationKind.Superscript ? 1 : 2]));

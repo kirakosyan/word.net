@@ -145,6 +145,33 @@
         { "class": "ReviewWorkflowTests", "method": "NumberedAnnotationsStillRejectOtherStructuralHistory" },
         { "class": "ReviewWorkflowTests", "method": "NumberedAnnotationsRejectExpansionBeforePublishingASnapshot" }
       ]
+    },
+    {
+      "id": "matrix-equation-managed",
+      "issue": 168,
+      "outcome": "supported-bounded",
+      "boundary": "Rectangular matrices retain admitted OMML semantics and render with the caller's qualified MATH font in ordinary managed output.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MatrixEditingCopiesInputsPreservesSnapshotsAndComposesGenuineOmml" },
+        { "class": "ObjectFoundationTests", "method": "IndependentlyConstructedSchemaValidMatrixImportsWithAlignmentAndSpacing" },
+        { "class": "ObjectFoundationTests", "method": "MatrixImportUsesStandardPropertiesWhenTheyAreOmitted" },
+        { "class": "ObjectFoundationTests", "method": "MaximumMatrixCellGridFitsSerializedTreeAndReopensWithoutMutatingCallerArrays" },
+        { "class": "ObjectFoundationTests", "method": "MatrixGeometryUsesColumnEdgesAndFontMathAxisWithoutOverlappingRows" },
+        { "class": "ObjectFoundationTests", "method": "MatrixProducesLogicalPdfTextAndManagedXpsSvgVectors" },
+        { "class": "ObjectFoundationTests", "method": "MatrixTextCannotInjectOmmlElements" }
+      ]
+    },
+    {
+      "id": "matrix-equation-unsupported",
+      "issue": 168,
+      "outcome": "rejected",
+      "boundary": "Malformed, over-limit and unadmitted matrix variants fail explicitly; no unqualified math-font fallback is used.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MatrixImportRejectsMalformedAndUnsupportedVariants" },
+        { "class": "ObjectFoundationTests", "method": "UnsupportedMatrixConversionReportsLossAndStrictModeLeavesOutputUntouched" },
+        { "class": "ObjectFoundationTests", "method": "MatrixRenderingRequiresCallerSelectedMathFontAndKeepsOutputUntouched" },
+        { "class": "ObjectFoundationTests", "method": "MatrixFactoriesEnforceRectangularDimensionsAndImmutableBounds" }
+      ]
     }
   ]
 }

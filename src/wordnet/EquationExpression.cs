@@ -24,6 +24,30 @@ public enum EquationKind
     Radical,
     /// <summary>Simple paired delimiters around one expression.</summary>
     Delimiter,
+    /// <summary>A rectangular grid of mathematical expressions.</summary>
+    Matrix,
+}
+
+/// <summary>Horizontal alignment of the expressions within a matrix column.</summary>
+public enum EquationMatrixAlignment
+{
+    /// <summary>Align expressions to the left edge.</summary>
+    Left,
+    /// <summary>Center expressions in the column.</summary>
+    Center,
+    /// <summary>Align expressions to the right edge.</summary>
+    Right,
+}
+
+/// <summary>Relative spacing between adjacent matrix rows or columns.</summary>
+public enum EquationMatrixSpacing
+{
+    /// <summary>Single spacing.</summary>
+    Standard,
+    /// <summary>One and a half times single spacing.</summary>
+    OneAndHalf,
+    /// <summary>Twice single spacing.</summary>
+    Twice,
 }
 
 /// <summary>A closed, immutable expression tree; no XML, executable formula or provider object is accepted.</summary>
@@ -38,6 +62,13 @@ public sealed class EquationExpression
         Kind = kind; Value = text; Italic = italic; Opening = opening; Closing = closing;
         Children = Array.AsReadOnly((EquationExpression[])children.Clone()); NodeCount = count; Depth = depth; Characters = characters;
     }
+    private EquationExpression(int columns, EquationMatrixAlignment[] alignments, EquationMatrixSpacing rowSpacing, EquationMatrixSpacing columnSpacing, EquationExpression[] children)
+        : this(EquationKind.Matrix, "", false, "", "", children)
+    {
+        MatrixColumns = columns; MatrixRows = children.Length / columns;
+        MatrixColumnAlignments = Array.AsReadOnly((EquationMatrixAlignment[])alignments.Clone());
+        MatrixRowSpacing = rowSpacing; MatrixColumnSpacing = columnSpacing;
+    }
     /// <summary>Gets the expression form.</summary>
     public EquationKind Kind { get; }
     /// <summary>Gets the text of a text node, otherwise empty.</summary>
@@ -50,6 +81,16 @@ public sealed class EquationExpression
     public string Opening { get; }
     /// <summary>Gets the closing delimiter, otherwise empty.</summary>
     public string Closing { get; }
+    /// <summary>Gets the number of rows for a matrix, otherwise zero.</summary>
+    public int MatrixRows { get; }
+    /// <summary>Gets the number of columns for a matrix, otherwise zero.</summary>
+    public int MatrixColumns { get; }
+    /// <summary>Gets copied column alignments for a matrix, otherwise an empty list.</summary>
+    public IReadOnlyList<EquationMatrixAlignment> MatrixColumnAlignments { get; } = Array.Empty<EquationMatrixAlignment>();
+    /// <summary>Gets the relative spacing between matrix rows.</summary>
+    public EquationMatrixSpacing MatrixRowSpacing { get; }
+    /// <summary>Gets the relative spacing between matrix columns.</summary>
+    public EquationMatrixSpacing MatrixColumnSpacing { get; }
     internal int NodeCount { get; }
     internal int Depth { get; }
     internal long Characters { get; }
@@ -80,5 +121,32 @@ public sealed class EquationExpression
     {
         if ((opening, closing) is not ("(", ")") and not ("[", "]") and not ("{", "}") and not ("|", "|") and not ("‖", "‖")) throw new ArgumentException("Equation.Delimiter: Unsupported delimiter pair.", nameof(opening));
         return new EquationExpression(EquationKind.Delimiter, "", false, opening, closing, expression);
+    }
+    /// <summary>Creates a rectangular matrix of up to 64 rows, 64 columns and 1,024 cells, copying the caller's arrays.</summary>
+    /// <remarks>Cells are exposed in row-major order through <see cref="Children"/>. A null cell is an empty cell; a matrix must contain at least one nonempty expression. Omitted column alignments default to centered. Matrices have no implicit delimiters.</remarks>
+    public static EquationExpression Matrix(EquationExpression?[][] rows, EquationMatrixAlignment[]? columnAlignments = null,
+        EquationMatrixSpacing rowSpacing = EquationMatrixSpacing.Standard, EquationMatrixSpacing columnSpacing = EquationMatrixSpacing.Standard)
+    {
+        Guard.NotNull(rows, nameof(rows));
+        if (rows.Length is < 1 or > 64 || rows[0] == null || rows[0].Length is < 1 or > 64)
+            throw new ArgumentException("Equation.Matrix: A bounded nonempty rectangular matrix is required.", nameof(rows));
+        int columns = rows[0].Length;
+        if (rows.Length * columns > 1024) throw new ArgumentException("Equation.Matrix: At most 1,024 cells are admitted.", nameof(rows));
+        if (rows.Any(row => row == null || row.Length != columns))
+            throw new ArgumentException("Equation.Matrix: Rows must have the same number of cells.", nameof(rows));
+        if (rowSpacing is < EquationMatrixSpacing.Standard or > EquationMatrixSpacing.Twice)
+            throw new ArgumentOutOfRangeException(nameof(rowSpacing), "Equation.Matrix: Unsupported matrix spacing.");
+        if (columnSpacing is < EquationMatrixSpacing.Standard or > EquationMatrixSpacing.Twice)
+            throw new ArgumentOutOfRangeException(nameof(columnSpacing), "Equation.Matrix: Unsupported matrix spacing.");
+        EquationMatrixAlignment[] alignments = columnAlignments == null
+            ? Enumerable.Repeat(EquationMatrixAlignment.Center, columns).ToArray() : (EquationMatrixAlignment[])columnAlignments.Clone();
+        if (alignments.Length != columns || alignments.Any(a => a is < EquationMatrixAlignment.Left or > EquationMatrixAlignment.Right))
+            throw new ArgumentException("Equation.Matrix: One supported alignment per column is required.", nameof(columnAlignments));
+        EquationExpression[] cells = rows.SelectMany(row => row.Select(cell => cell ?? Text("", false))).ToArray();
+        bool HasContent(EquationExpression node) => node.Kind == EquationKind.Text ? node.Value.Length != 0
+            : node.Kind != EquationKind.Row || node.Children.Any(HasContent);
+        if (!cells.Any(HasContent))
+            throw new ArgumentException("Equation.Matrix: At least one cell must contain an expression.", nameof(rows));
+        return new EquationExpression(columns, alignments, rowSpacing, columnSpacing, cells);
     }
 }

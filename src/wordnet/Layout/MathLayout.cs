@@ -74,6 +74,43 @@ internal sealed class MathLayout
             foreach (EquationExpression child in node.Children) { Box b = Build(child, size, level, display); Put(result, b, x, 0); x += b.Visual.Width; }
             result.Visual.Width = x; return result;
         }
+        if (node.Kind == EquationKind.Matrix)
+        {
+            int rows = node.MatrixRows, columns = node.MatrixColumns;
+            var boxes = new Box[rows, columns]; var widths = new double[columns];
+            var ascents = new double[rows]; var descents = new double[rows];
+            for (int r = 0; r < rows; r++)
+            {
+                // The strut gives empty rows a stable line height without inventing a visible glyph.
+                ascents[r] = size * 0.75; descents[r] = size * 0.25;
+                for (int c = 0; c < columns; c++)
+                {
+                    Box cell = Build(node.Children[r * columns + c], size, level, false); boxes[r, c] = cell;
+                    widths[c] = Math.Max(widths[c], cell.Visual.Width);
+                    ascents[r] = Math.Max(ascents[r], cell.Visual.Ascent); descents[r] = Math.Max(descents[r], cell.Visual.Descent);
+                }
+            }
+            double Factor(EquationMatrixSpacing spacing) => spacing == EquationMatrixSpacing.Standard ? 1 : spacing == EquationMatrixSpacing.OneAndHalf ? 1.5 : 2;
+            double columnGap = size * Factor(node.MatrixColumnSpacing);
+            double rowGap = Math.Max(0, Constant(0, size)) + size * (Factor(node.MatrixRowSpacing) - 1);
+            double height = ascents.Sum() + descents.Sum() + (rows - 1) * rowGap;
+            double top = -Constant(1, size) - height / 2, y = top; var result = new Box();
+            for (int r = 0; r < rows; r++)
+            {
+                y += ascents[r]; double x = 0;
+                for (int c = 0; c < columns; c++)
+                {
+                    Box cell = boxes[r, c]; double extra = widths[c] - cell.Visual.Width;
+                    double offset = node.MatrixColumnAlignments[c] == EquationMatrixAlignment.Left ? 0 : node.MatrixColumnAlignments[c] == EquationMatrixAlignment.Right ? extra : extra / 2;
+                    Put(result, cell, x + offset, y); x += widths[c] + columnGap;
+                }
+                y += descents[r] + rowGap;
+            }
+            result.Visual.Width = widths.Sum() + (columns - 1) * columnGap;
+            result.Visual.Ascent = Math.Max(result.Visual.Ascent, -top); result.Visual.Descent = Math.Max(result.Visual.Descent, top + height);
+            // The outside of a matrix is a box, not its last internal glyph.
+            result.First = result.Last = -1; return result;
+        }
         if (node.Kind == EquationKind.Fraction)
         {
             double childSize = display ? size : Script(size, level);

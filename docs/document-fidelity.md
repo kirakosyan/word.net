@@ -7,6 +7,11 @@ paired paragraph moves. Its exclusions and source-history guarantees are in the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
 This is not a published 1.5.0 capability.
 
+Unreleased source also admits rectangular matrix equations with selected alignment
+and spacing through editable OMML and ordinary managed fixed output. Its documented
+deterministic layout is not a claim of identical Office pagination or general math
+fidelity; see the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
+
 ## Unreleased source: bounded theme appearance
 
 The pending #141 work resolves major/minor Latin theme font slots and RGB theme

@@ -107,6 +107,13 @@ review history without preservation; preserved story/nested structural marks fai
 Balancing never shrinks text to make a candidate frame fit. See the
 [complete profile](roadmap-99-implementation.md) and [release notes](releases/1.4.0.md).
 
+## Unreleased matrix diagnostics
+
+Pending #168 uses `Equation.Matrix*` failures for unsupported baseline, spacing,
+alignment, placeholder and property variants. Malformed grids and bounded-resource
+failures remain hard errors; valid unsupported objects retain the existing
+`Object.UnsupportedLoss` policy. See the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
+
 ## 1.3.0 source profile
 
 The 1.3.0 diagnostics include `Object.*` graph/owner/combination/editable-output losses, `Chart.*` cache/range/appearance/label-fit failures, `Equation.*` OMML/MATH/font/geometry limits, `Typography.Bidi*` balanced-control and resource checks, and `Pdf.NativeLanguage` for unsupported native language metadata. `Object.UnsupportedLoss` records omission of a valid out-of-profile chart/equation during ordinary Lenient/BestEffort conversion. Strict conversion, session loading, native typography and tagged/UA/PDF-A destinations reject that loss. Malformed graphs, unsafe relationships, unsupported admitted-object render constructions and UA combination failures remain hard errors in Lenient mode. See [P2 contracts](p2-objects-typography.md).

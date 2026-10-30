@@ -42,6 +42,10 @@ Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
 inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification
 limits; it does not change published 1.5.0 support.
+Pending #168 work adds bounded matrix expressions, OMML and ordinary managed
+layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
+records its geometry and unsupported variants; full exact-platform and integrated
+qualification remain separate from implementation and publication.
 The [pending source matrix](roadmap-138-source-matrix.json) maps supported and
 rejected combinations to executable tests; it does not alter the dated baseline.
 

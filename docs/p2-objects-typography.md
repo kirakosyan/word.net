@@ -101,6 +101,43 @@ doc.AddEquation(EquationExpression.Fraction(
 // Save DOCX for editable semantics; PDF/XPS export diagnoses their loss.
 ```
 
+## Unreleased source: bounded matrix equations
+
+Pending #168 source work adds rectangular `EquationExpression.Matrix` trees with
+at most 64 rows, 64 columns and 1,024 cells. Rows and alignment arrays are copied;
+`Children` is row-major and a null cell becomes an empty text node. At least one
+cell must be nonempty. Matrices have no implicit brackets; use `Delimiter` for
+those. Column alignments can be left, center or right; row and column spacing
+can be standard, one-and-a-half or twice the standard value. The existing tree,
+serialized OMML, cancellation and aggregate resource limits still apply.
+
+The managed layout centers the complete grid on the font's MATH axis. Each column
+has the width of its widest cell and standard column spacing is one em. Each row
+uses the largest cell extents and a one-em minimum strut; the gap is the font's
+nonnegative MATH leading plus zero, half an em or one em for the selected row
+spacing. Empty cells draw no placeholder. These deterministic rules do not claim
+pixel equivalence with every Office renderer. Layout requires the same explicitly
+selected MATH font as existing equations and never silently uses ordinary font metrics.
+
+The admitted OMML matrix has rectangular rows, a centered baseline, hidden empty
+placeholders, supported column alignment groups and standard relative spacing.
+Visible placeholders, top/bottom baselines, custom spacing, minimum column widths
+and unknown matrix properties remain unsupported with `Equation.Matrix*` errors.
+Existing `Object.UnsupportedLoss` behavior governs ordinary lenient conversion of
+valid unsupported objects; strict/session and other profile boundaries remain unchanged.
+Public editing, DOCX composition and ordinary managed PDF/XPS/SVG have focused
+source tests; this work is not in published 1.5.0 and does not add native, tagged or
+archival qualification.
+
+```csharp
+var grid = EquationExpression.Matrix(new[] {
+    new EquationExpression?[] { EquationExpression.Text("a"), EquationExpression.Text("b") },
+    new EquationExpression?[] { null, EquationExpression.Fraction(EquationExpression.Text("x"), EquationExpression.Text("2")) }
+}, new[] { EquationMatrixAlignment.Left, EquationMatrixAlignment.Right },
+   EquationMatrixSpacing.Standard, EquationMatrixSpacing.OneAndHalf);
+doc.AddEquation(EquationExpression.Delimiter(grid, "[", "]"));
+```
+
 ## Native text and accessible output
 
 Set `Typography.Enabled` and `Typography.ExtendedBidi` explicitly. The old enabled

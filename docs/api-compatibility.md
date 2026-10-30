@@ -13,6 +13,11 @@ profiles for bounds and exclusions. These signatures are pending source work,
 not part of the published 1.5.0 API; exact-framework and package qualification
 are reported separately.
 
+The pending #168 source API appends `EquationKind.Matrix` and adds immutable
+`EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
+Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
+records the bounds, geometry, unsupported variants and separate qualification status.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

@@ -13,6 +13,7 @@ The current published release is [1.5.0](https://github.com/kirakosyan/word.net/
 Pending source work includes an explicit [review display](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-detached-text-revision-display) for bounded text changes and numbered annotations; it is not part of the published 1.5.0 package.
 Unreleased source also [resolves some local DOCX theme appearance and retains selected editable text references](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md#unreleased-source-bounded-theme-appearance) while retaining explicit loss diagnostics.
 Unreleased source adds [bounded DOTX/OTT identities and format inspection](https://github.com/kirakosyan/word.net/blob/main/docs/template-formats.md); these are not part of the published 1.5.0 package.
+Pending source work also adds [bounded matrix equations](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-bounded-matrix-equations) with explicit limits and a caller-selected MATH font.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.

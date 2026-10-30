@@ -13,6 +13,11 @@ byte-based inspection, with explicit unknown and unsupported outcomes. The
 [template-format profile](template-formats.md) describes the pending directions
 and stream contract.
 
+The pending matrix-equation work extends the immutable expression graph and closed
+OMML adapter. The managed layout positions bounded cells using column extents and
+the caller's MATH axis and leading; it retains the existing vector and logical-text
+paths. Other equation and output profiles remain separate.
+
 Unreleased DOCX reading also consults the bounded local theme and settings before
 resolving text styles. It computes selected Latin font families and RGB colors for
 rendering, and reconstructs a bounded scheme and selected editable text references

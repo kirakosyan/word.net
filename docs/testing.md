@@ -263,6 +263,15 @@ chart binding, scalar fields, structural comparison and qualified layout/native/
 combinations. The [1.4.0 release notes](releases/1.4.0.md) record compatibility and
 qualification requirements. Earlier release receipts below remain historical evidence.
 
+## Unreleased matrix checks
+
+Pending #168 source tests independently construct OMML matrices and validate DOCX
+with Open XML SDK, inspect logical PDF marked content and vector paths, verify XPS
+and SVG output, and check column edges and the MATH baseline with the pinned font.
+They exercise copied inputs, snapshot updates, composition, empty cells, default
+and unsupported properties, limits and cancellation. These tests do not by
+themselves qualify other runtime or output profiles.
+
 ## Released 1.3.0 qualification
 
 The required suite is **1,050** cases: the 957-case P1 head plus 93 P2 cases, including 34 review regressions.
