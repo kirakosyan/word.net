@@ -8,9 +8,9 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
-        if (format == DocumentFormat.Docx && model.Theme != null)
-            context.Loss("Docx.ThemeData", "The DOCX retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
-        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+        if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && model.Theme != null)
+            context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs)
                 for (int i = 0; i < paragraph.Runs.Count; i++)
                 {
@@ -21,9 +21,9 @@ internal static class FidelityChecks
                     paragraph.Runs[i] = new TextRun(run.Text, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, appearance: run.Appearance.Copy());
                 }
         CustomPropertyValues.Validate(model, context);
-        if (format != DocumentFormat.Docx && model.CustomProperties.Count != 0)
-            context.Report("Metadata.CustomProperties", "Custom properties can supply displayed fields; only DOCX preserves their editable metadata.");
-        if (format is DocumentFormat.Docx or DocumentFormat.Pdf or DocumentFormat.Xps)
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.CustomProperties.Count != 0)
+            context.Report("Metadata.CustomProperties", "Custom properties can supply displayed fields; only DOCX/DOTX preserves their editable metadata.");
+        if (format is DocumentFormat.Docx or DocumentFormat.Dotx or DocumentFormat.Pdf or DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs)
             {
                 using var location = context.At(paragraph.Location);
@@ -36,18 +36,18 @@ internal static class FidelityChecks
         if (model.ObjectCount != 0 && !context.PreviewIntermediate && format == DocumentFormat.Pdf && context.Options.Pdf.Accessibility != PdfAccessibility.None)
             foreach (TextRun run in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Object != null))
                 _ = ObjectAlternatives.Describe(run.Object!, context);
-        if (model.ObjectCount != 0 && format != DocumentFormat.Docx && !context.PreviewIntermediate)
+        if (model.ObjectCount != 0 && format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && !context.PreviewIntermediate)
         {
             context.Loss("Object.EditableOutputLoss", "This destination cannot retain editable chart or OMML semantics.");
             if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) context.Loss("Object.VisualOutputLoss", "This destination retains object descriptions instead of chart/equation graphics.");
         }
         // The ODT adapter diagnoses its own bounded mapping rather than inheriting ebook losses.
-        if (format == DocumentFormat.Odt)
+        if (format is DocumentFormat.Odt or DocumentFormat.Ott)
         {
             if (context.Inspecting) WordNet.Formats.OdtFormat.InspectDestination(model, context);
             return;
         }
-        if (format != DocumentFormat.Docx && (model.Paragraphs.Any(p => p.Control != null || p.Runs.Any(r => r.Control != null || r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "MERGEFIELD"))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && (model.Paragraphs.Any(p => p.Control != null || p.Runs.Any(r => r.Control != null || r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "MERGEFIELD"))
             || model.Tables.Any(t => t.Control != null || t.RowControls.Count > 0)))
             context.Loss("Template.UnmergedOutput", "Unexecuted template constructs use cached content without editable template semantics in this destination.");
         foreach (TableBlock table in model.Tables)
@@ -55,7 +55,7 @@ internal static class FidelityChecks
             using var location = context.At(table.Location);
             TableValidation.Validate(table, context);
         }
-        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps and not DocumentFormat.Html && model.Notes.Count > 0)
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps and not DocumentFormat.Html && model.Notes.Count > 0)
         {
             foreach (DocumentNote note in model.Notes)
             {
@@ -68,7 +68,7 @@ internal static class FidelityChecks
         }
         var tables = model.Tables.ToArray();
         var paragraphs = model.Paragraphs.Distinct().ToArray();
-        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in paragraphs)
                 for (int i = paragraph.Runs.Count - 1; i >= 0; i--)
                     if (paragraph.Runs[i].Box is PositionedBox box)
@@ -81,7 +81,7 @@ internal static class FidelityChecks
                         else if (format == DocumentFormat.Html && (box.Rotation != 0 || box.ShrinkToFit || box.StorySequence != 0))
                             context.Loss("Shape.TextBoxLayout", "This destination does not retain rotation, shrink-to-fit or linked-box flow.");
                     }
-        if (format is not DocumentFormat.Html and not DocumentFormat.Docx)
+        if (format is not DocumentFormat.Html and not DocumentFormat.Docx and not DocumentFormat.Dotx)
         {
             if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Rows.SelectMany(r => r).Any(c => c.Content.OfType<TableBlock>().Any())).Select(t => t.Location),
                 "Table.NestedFlattened", "Nested tables retain their text in reading order as cell paragraphs in this output profile.");
@@ -91,7 +91,7 @@ internal static class FidelityChecks
                 && (format is not DocumentFormat.Pdf and not DocumentFormat.Xps || r.Appearance.Underline && !(r.ControlDisplay && !context.Typography.Enabled && context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17) || r.Appearance.Strike || r.Appearance.Background != null || r.Appearance.VerticalAlignment != null))).Select(p => p.Location),
                 "Formatting.RunAppearance", "This output profile does not retain requested font families or additional text decoration.");
         }
-        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps and not DocumentFormat.Html)
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps and not DocumentFormat.Html)
         {
             LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Image?.Transformed == true)).Select(p => p.Location), "Image.TransformOutput", "This destination retains original image pixels without crop, rotation or mirroring.");
             LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Image?.Anchor != null)).Select(p => p.Location), "Image.AnchorApproximated", "This destination uses inline placement for anchored images.");
@@ -106,7 +106,7 @@ internal static class FidelityChecks
                         i += flattened.Count - 1;
                     }
         }
-        if (format is not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs.Distinct())
                 for (int i = 0; i < paragraph.Runs.Count; i++)
                 {
@@ -129,14 +129,14 @@ internal static class FidelityChecks
         }
         if (format == DocumentFormat.Doc)
             LossAt(paragraphs.Where(p => p.Layout.Tabs.Count > 0).Select(p => p.Location), "Layout.DocTabStops", "Binary DOC retains tab characters with default stops; custom tab definitions are not retained.");
-        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Html and not DocumentFormat.Xps)
+        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Html and not DocumentFormat.Xps)
         {
             LossAt(model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct().SelectMany(b => b).Select(b => b.Location), "HeaderFooter.Output", "This output profile does not preserve header/footer stories.");
             LossAt(paragraphs.Where(p => p.Runs.Any(r => r.FieldInstruction != null)).Select(p => p.Location), "Field.Output", "Fields use cached result text in this output profile.");
         }
         if (format is DocumentFormat.Text or DocumentFormat.Markdown or DocumentFormat.Mobi or DocumentFormat.Azw3)
             LossAt(tables.Where(t => t.Rows.SelectMany(r => r).Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None)).Select(t => t.Location), "Table.Merges", "Merged-cell geometry is not preserved by this output profile.");
-        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
+        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
         {
             if (model.FinalSection != null || model.Blocks.Any(b => b.Section != null))
             {
@@ -153,7 +153,7 @@ internal static class FidelityChecks
             LossAt(tables.Where(t => t.LeftIndent != 0 || t.Width.HasValue || t.ColumnWidths.Any(w => w > 0) || t.Rows.SelectMany(r => r).Any(c => c.CellWidth.HasValue || c.Padding != null)).Select(t => t.Location), "Table.Geometry", "This text format cannot retain table widths and cell padding.");
             LossAt(paragraphs.Where(p => p.List != null).Select(p => p.Location), "List.Structure", "Editable list numbering becomes literal labels in this text profile.");
         }
-        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Pdf and not DocumentFormat.Epub and not DocumentFormat.Html and not DocumentFormat.Xps and not DocumentFormat.Rtf)
+        if (format is not DocumentFormat.Doc and not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Epub and not DocumentFormat.Html and not DocumentFormat.Xps and not DocumentFormat.Rtf)
         {
             LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Image != null)).Select(p => p.Location), "Image.Output", "This output profile cannot embed images; alternative text is retained where available.");
             foreach (ParagraphBlock paragraph in paragraphs)

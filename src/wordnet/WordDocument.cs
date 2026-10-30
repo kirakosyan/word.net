@@ -141,7 +141,7 @@ public sealed partial class WordDocument
         lock (gate)
         {
             using var operation = BeginOperation();
-            if (format != DocumentFormat.Docx && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
+            if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
             var context = Context(saveOptions ?? options, cancellationToken); context.Destination = format;
             DocumentModel copy = new DocumentCloner(context).Copy(model); Admit(copy, context);
             context.Phase = DiagnosticPhase.Destination; bool hadControls = copy.Controls.HasControls || copy.HasControlDisplay;
@@ -149,7 +149,7 @@ public sealed partial class WordDocument
             context.Phase = DiagnosticPhase.Write;
             using var output = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
             Write(copy, output, format, context); output.Position = 0;
-            if (format == DocumentFormat.Docx && copy.Controls.HasControls) ControlDisplay.CheckArchive(output, context);
+            if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && copy.Controls.HasControls) ControlDisplay.CheckArchive(output, context);
             Transfer(output, destination, context, context.Options.MaximumOutputBytes);
             return context.Result(output.Length);
         }
@@ -243,7 +243,7 @@ public sealed partial class WordDocument
         if (objects != null) { ObjectSafety.Owners(model); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
         foreach (TableBlock table in model.Tables) TableValidation.Validate(table, context);
     }
-    private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Pdf
+    private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Dotx or DocumentFormat.Odt or DocumentFormat.Ott or DocumentFormat.Pdf
         or DocumentFormat.Markdown or DocumentFormat.Text or DocumentFormat.Azw3 or DocumentFormat.Epub or DocumentFormat.Mobi
         or DocumentFormat.Xps or DocumentFormat.Html or DocumentFormat.Rtf;
     private static void AddRuns(List<TextRun> destination, IEnumerable<DocumentText> runs, ConversionContext context)
@@ -303,7 +303,8 @@ public sealed partial class WordDocument
     }
     private static void Write(DocumentModel m, Stream output, DocumentFormat format, ConversionContext c)
     {
-        if (format == DocumentFormat.Docx) DocxWriter.Write(m, output, c);
+        if (format is DocumentFormat.Docx or DocumentFormat.Dotx) DocxWriter.Write(m, output, c);
+        else if (format is DocumentFormat.Odt or DocumentFormat.Ott) OdtFormat.Write(m, output, c);
         else if (format == DocumentFormat.Doc) DocFormat.Write(m, output, c);
         else if (format == DocumentFormat.Pdf) PdfFormat.Write(m, output, c);
         else if (format == DocumentFormat.Html) HtmlFormat.Write(m, output, c);

@@ -51,6 +51,7 @@ internal sealed class ConversionContext
     internal SourceLocation Location { get; set; } = new SourceLocation("document", "/");
     internal bool Inspecting { get; set; }
     internal bool Editing { get; set; }
+    internal bool TemplateExchange { get; set; }
     internal bool PreserveReview { get; set; }
     internal bool PreserveControls { get; set; }
     internal ContentControlDateMode ControlDateMode { get; set; }

@@ -21,9 +21,9 @@ internal static class ControlDisplay
             if (fixedOutput && model.HasControlDisplay) PrepareFixed(model, c);
             return;
         }
-        if (format == DocumentFormat.Docx)
+        if (format is DocumentFormat.Docx or DocumentFormat.Dotx)
         {
-            if (model.Controls.Items.Values.Any(d => d.BindingState == ContentControlBindingState.Dirty)) throw new InvalidOperationException("Control.BindingDirty: Explicitly apply, write back or detach edited bindings before DOCX save.");
+            if (model.Controls.Items.Values.Any(d => d.BindingState == ContentControlBindingState.Dirty)) throw new InvalidOperationException("Control.BindingDirty: Explicitly apply, write back or detach edited bindings before DOCX/DOTX save.");
             if (model.Controls.Items.Values.Any(d => d.BindingState == ContentControlBindingState.Unevaluated)) c.Report("Control.BindingNotApplied", "Preserved local bindings were not applied by this session; another consumer can refresh them on open.");
             return;
         }

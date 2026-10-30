@@ -30,8 +30,15 @@ internal sealed partial class DocxReader
         this.relationships = relationships;
     }
 
-    internal static DocumentModel Read(Stream input, ConversionContext context)
+    internal static DocumentModel Read(Stream input, ConversionContext context, bool template = false)
     {
+        if (template || context.TemplateExchange)
+        {
+            ZipSecurity.Result security = ZipSecurity.Examine(input, context);
+            if (security == ZipSecurity.Result.Protected) throw new NotSupportedException("Docx.Encryption: Encrypted ZIP entries are unsupported.");
+            if (security == ZipSecurity.Result.Unsupported) throw new NotSupportedException("Docx.Container: ZIP64 or unsupported ZIP directory features are outside the template profile.");
+            if (security == ZipSecurity.Result.Invalid) throw new InvalidDataException("Docx.Container: Invalid ZIP directory or local entry header.");
+        }
         using var package = new DocxPackage(input, context);
         var rootRelations = package.ReadRelationships("").Values;
         var mainRelations = rootRelations
@@ -43,14 +50,17 @@ internal sealed partial class DocxReader
 
         string main = DocxPackage.ResolvePart("", mainRelations[0]);
         XDocument types = package.ReadXml("[Content_Types].xml");
-        if (types.Root?.Name != DocxPackage.ContentTypes + "Types"
-            || !types.Root.Elements(DocxPackage.ContentTypes + "Override").Any(item =>
-                (string?)item.Attribute("PartName") == "/" + main && (string?)item.Attribute("ContentType") == DocxPackage.MainContentType))
+        if (types.Root == null || DocxPackage.ContentTypeFor(types.Root, main, context) != (template ? DocxPackage.TemplateContentType : DocxPackage.MainContentType))
         {
-            throw new InvalidDataException("Docx.ContentType: A non-macro DOCX main document content type is required.");
+            throw new InvalidDataException("Docx.ContentType: The requested non-macro DOCX or DOTX main content type is required.");
         }
 
         var reader = new DocxReader(context, package.ReadRelationships(main)) { mainPart = main };
+        if ((template || context.TemplateExchange) && (package.PartNames.Any(name => name.EndsWith("vbaProject.bin", StringComparison.OrdinalIgnoreCase))
+            || types.Root!.Elements().Any(e => DocxPackage.ContainsIgnoreCase((string?)e.Attribute("ContentType") ?? "", "vbaProject")
+                || DocxPackage.ContainsIgnoreCase((string?)e.Attribute("ContentType") ?? "", "macroEnabled"))
+            || reader.relationships.Values.Any(r => DocxPackage.ContainsIgnoreCase((string?)r.Attribute("Type") ?? "", "vbaProject"))))
+            throw new NotSupportedException("Docx.ActiveContent: Macro-bearing templates are unsupported.");
         var knownParts = new HashSet<string>(StringComparer.Ordinal)
         {
             "[Content_Types].xml", "_rels/.rels", main, DocxPackage.RelationshipPartName(main),

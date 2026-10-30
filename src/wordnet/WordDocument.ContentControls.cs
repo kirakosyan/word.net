@@ -22,8 +22,14 @@ public sealed partial class WordDocument
     /// <summary>Loads typed DOCX controls and local binding metadata without executing tags or synchronizing XML. Options are captured once.</summary>
     public static WordDocument LoadWithControls(Stream source, ContentControlLoadOptions controlOptions, out ConversionResult result,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
+        => LoadWithControls(source, DocumentFormat.Docx, controlOptions, out result, options, cancellationToken);
+
+    /// <summary>Loads typed controls from a macro-free DOCX or DOTX package without executing tags or synchronizing XML.</summary>
+    public static WordDocument LoadWithControls(Stream source, DocumentFormat format, ContentControlLoadOptions controlOptions, out ConversionResult result,
+        ConversionOptions? options = null, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(source, nameof(source)); Guard.NotNull(controlOptions, nameof(controlOptions));
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx) throw new NotSupportedException("Control.InputFormat: Typed controls require DOCX or DOTX.");
         if (!source.CanRead) throw new ArgumentException("The source must be readable.", nameof(source));
         ContentControlDateMode mode = controlOptions.DateMode;
         if (mode is not ContentControlDateMode.UtcInstant and not ContentControlDateMode.DateOnly) throw new ArgumentOutOfRangeException(nameof(controlOptions));
@@ -31,7 +37,7 @@ public sealed partial class WordDocument
         var c = new ConversionContext(options, cancellationToken) { Editing = true, PreserveControls = true, ControlDateMode = mode, Destination = DocumentFormat.Docx };
         c.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes); Transfer(source, input, c, options.MaximumInputBytes); input.Position = 0;
-        DocumentModel loaded = DocxReader.Read(input, c); Admit(loaded, c); result = c.Result(0);
+        DocumentModel loaded = DocxReader.Read(input, c, format == DocumentFormat.Dotx); Admit(loaded, c); result = c.Result(0);
         return new WordDocument(loaded, options) { diagnostics = result.Diagnostics };
     }
     /// <summary>Gets detached typed-control snapshots in source order, cached until a successful edit invalidates their mutation handles.</summary>

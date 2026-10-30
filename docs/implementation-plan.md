@@ -33,6 +33,10 @@ and remaining acceptance/runtime qualification are separate from published 1.5.0
 Unreleased #149 work adds an explicit numbered annotation policy for supported
 classic comments, format changes and paired paragraph moves. The issue remains
 open pending complete independent and exact-runtime qualification.
+Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
+inspection. The [template-format profile](template-formats.md) records its
+directions, stream contract, unsupported active/protected input and qualification
+limits; it does not change published 1.5.0 support.
 The [pending source matrix](roadmap-138-source-matrix.json) maps supported and
 rejected combinations to executable tests; it does not alter the dated baseline.
 

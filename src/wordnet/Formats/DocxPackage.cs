@@ -16,6 +16,46 @@ internal sealed class DocxPackage : IDisposable
     internal static readonly XNamespace DocumentRelationships = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     internal static readonly XNamespace ContentTypes = "http://schemas.openxmlformats.org/package/2006/content-types";
     internal const string MainContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+    internal const string TemplateContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+    internal static bool ContainsIgnoreCase(string value, string part)
+    {
+#if NET8_0_OR_GREATER
+        return value.Contains(part, StringComparison.OrdinalIgnoreCase);
+#else
+        return value.IndexOf(part, StringComparison.OrdinalIgnoreCase) >= 0;
+#endif
+    }
+    internal static string? ContentTypeFor(XElement root, string name, ConversionContext context)
+    {
+        if (root.Name != ContentTypes + "Types") throw new InvalidDataException("Docx.ContentType: Invalid content-type root.");
+        var defaults = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var overrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (XElement item in root.Elements())
+        {
+            context.CheckCancellation();
+            string type = RequiredAttribute(item, "ContentType");
+            if (type.Length == 0) throw new InvalidDataException("Docx.ContentType: Empty content type.");
+            if (item.Name == ContentTypes + "Default")
+            {
+                string extension = RequiredAttribute(item, "Extension");
+                if (extension.Length == 0 || extension.Any(c => c is '/' or '\\' or '.' || char.IsControl(c)) || defaults.ContainsKey(extension))
+                    throw new InvalidDataException("Docx.ContentType: Invalid or duplicate default declaration.");
+                defaults.Add(extension, type);
+            }
+            else if (item.Name == ContentTypes + "Override")
+            {
+                string part = RequiredAttribute(item, "PartName");
+                if (part.Length < 2 || part[0] != '/') throw new InvalidDataException("Docx.ContentType: Invalid override part name.");
+                ValidatePartName(part.Substring(1));
+                if (overrides.ContainsKey(part)) throw new InvalidDataException("Docx.ContentType: Duplicate override declaration.");
+                overrides.Add(part, type);
+            }
+            else throw new InvalidDataException("Docx.ContentType: Unknown content-type declaration.");
+        }
+        if (overrides.TryGetValue("/" + name, out string? declared)) return declared;
+        int dot = name.LastIndexOf('.'), slash = name.LastIndexOf('/');
+        return dot > slash && dot + 1 < name.Length && defaults.TryGetValue(name.Substring(dot + 1), out string? fallback) ? fallback : null;
+    }
     private readonly ZipArchive archive;
     private readonly Dictionary<string, ZipArchiveEntry> entries = new Dictionary<string, ZipArchiveEntry>(StringComparer.Ordinal);
     private readonly ConversionContext context;
@@ -27,6 +67,7 @@ internal sealed class DocxPackage : IDisposable
         try
         {
             long expanded = 0;
+            var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (archive.Entries.Count > context.Options.MaximumArchiveEntries)
             {
                 throw new InvalidDataException("Limit.ArchiveEntries: DOCX contains too many entries.");
@@ -47,9 +88,9 @@ internal sealed class DocxPackage : IDisposable
                 }
 
                 ValidatePartName(entry.FullName);
-                if (entries.ContainsKey(entry.FullName))
+                if (!insensitive.Add(entry.FullName))
                 {
-                    throw new InvalidDataException("Docx.DuplicatePart: DOCX contains duplicate part names.");
+                    throw new InvalidDataException("Docx.DuplicatePart: DOCX contains duplicate or case-ambiguous part names.");
                 }
 
                 entries.Add(entry.FullName, entry);
@@ -191,7 +232,7 @@ internal sealed class DocxPackage : IDisposable
 
     private static void ValidatePartName(string name)
     {
-        if (name.Length == 0 || name.Any(character => character is '\\' or ':' or '?' or '#' or '%')
+        if (name.Length == 0 || name.Any(character => character is '\\' or ':' or '?' or '#' or '%' || char.IsControl(character))
             || name.Split('/').Any(segment => segment.Length == 0 || segment == "." || segment == ".."))
         {
             throw new InvalidDataException("Docx.PartName: Noncanonical or unsafe package part name.");

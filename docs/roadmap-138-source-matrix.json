@@ -33,6 +33,30 @@
       ]
     },
     {
+      "id": "template-format-identities",
+      "issue": 166,
+      "outcome": "supported-bounded",
+      "boundary": "Macro-free DOTX/OTT package identities, selected exchanges, session editing and bounded byte-based inspection use the existing content profiles.",
+      "tests": [
+        { "class": "TemplateFormatTests", "method": "DotxUsesTemplateIdentityThroughConversionEditingAndFixedOutput" },
+        { "class": "TemplateFormatTests", "method": "OttUsesTemplateMimeAndManifestThroughConversionEditingAndPdf" },
+        { "class": "TemplateFormatTests", "method": "DotxRetainsAdmittedReviewAndTypedControlSemantics" },
+        { "class": "TemplateFormatTests", "method": "TemplateCrossFormatDirectionsRetainIndependentPackageIdentityAndText" },
+        { "class": "TemplateFormatTests", "method": "DetectionDistinguishesPackageFamilyAndTemplateIdentity" }
+      ]
+    },
+    {
+      "id": "template-format-negative",
+      "issue": 166,
+      "outcome": "rejected",
+      "boundary": "Mismatched, conflicting, unsafe, macro-bearing and protected identities remain explicit; bounded stream failures retain caller ownership.",
+      "tests": [
+        { "class": "TemplateFormatTests", "method": "DetectionRespectsPositionsOwnershipLimitsAndCancellation" },
+        { "class": "TemplateFormatTests", "method": "DetectionRejectsConflictingTruncatedAndUnsafePackageIdentities" },
+        { "class": "TemplateFormatTests", "method": "DetectionDistinguishesMacrosAndProtectedContainersWithoutExecutingThem" }
+      ]
+    },
+    {
       "id": "glossary-inert-local",
       "issue": 143,
       "outcome": "supported-bounded",

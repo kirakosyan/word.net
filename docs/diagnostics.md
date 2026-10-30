@@ -71,6 +71,16 @@ composition or comparison with `Composition.ThemeConflict` or
 `Comparison.ThemeConflict`. These are hard failures, not loss diagnostics.
 `Docx.ThemeData` reports the bounded theme reconstruction or an incomplete theme.
 
+Unreleased #166 source rejects macro-bearing template exchange with
+`Docx.ActiveContent`, and mismatched or conflicting Word package content types
+with `Docx.ContentType`. Template exchange rejects encrypted ZIP entries with
+`Docx.Encryption`, and malformed or unsupported ZIP directory features with
+`Docx.Container`. Flattening an unadmitted control reports
+`Template.UnsupportedControl` and strict mode rejects that loss. Format detection
+returns an explicit status for invalid, unknown, macro-bearing or protected
+identities; resource and cancellation failures still throw. See the
+[format inspection contract](template-formats.md).
+
 Unreleased #143 source admits the glossary metadata described in the
 [control profile](content-controls.md#unreleased-source-bounded-glossary-metadata).
 Unadmitted resource content and relationship types use `Control.Unsupported`;
@@ -447,6 +457,7 @@ conversion diagnostics.
 | `Template.NestedRowControls` | Loss | Nested controls sharing one table row are outside the editable template profile. |
 | `Template.TableControl` | Loss | Tagged non-row table wrappers retain cached cells and paragraphs but cannot execute safely. |
 | `Template.UnmergedOutput` | Loss | Unexecuted template constructs use cached content without editable template semantics in this destination. |
+| `Template.UnsupportedControl` | Loss | Unreleased DOCX/DOTX template exchange flattens a control outside the admitted tagged-control profile; strict mode rejects the loss. |
 | `Text.Formatting` | Loss | Plain text cannot represent rich formatting. |
 | `Text.TableStructure` | Loss | Table structure becomes tab-separated rows in plain text. |
 

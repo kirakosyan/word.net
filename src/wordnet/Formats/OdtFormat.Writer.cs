@@ -46,9 +46,10 @@ internal static partial class OdtFormat
         {
             XElement body = Content();
             using var archive = new StoredZipWriter(output, context);
-            archive.Write("mimetype", Encoding.ASCII.GetBytes(OdfPackage.MediaType), stored: true);
+            string mediaType = context.Destination == DocumentFormat.Ott ? OdfPackage.TemplateMediaType : OdfPackage.MediaType;
+            archive.Write("mimetype", Encoding.ASCII.GetBytes(mediaType), stored: true);
             var manifest = new XElement(OdfPackage.Manifest + "manifest", new XAttribute(OdfPackage.Manifest + "version", "1.3"),
-                Declaration("/", OdfPackage.MediaType), Declaration("content.xml", "text/xml"), Declaration("styles.xml", "text/xml"), Declaration("meta.xml", "text/xml"));
+                Declaration("/", mediaType), Declaration("content.xml", "text/xml"), Declaration("styles.xml", "text/xml"), Declaration("meta.xml", "text/xml"));
             Xml(archive, "content.xml", Root("document-content", automatic, new XElement(O + "body", body)));
             Xml(archive, "styles.xml", Root("document-styles", new XElement(O + "styles"), pageLayouts, masterStyles));
             Xml(archive, "meta.xml", Root("document-meta", new XElement(O + "meta", new XElement(Dc + "title", model.Title), new XElement(Dc + "creator", model.Author))));

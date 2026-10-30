@@ -48,6 +48,8 @@ internal sealed partial class DocxReader
         int start = blocks.Count;
         if (element.Element(W + "sdtContent") is XElement content) ReadBlocks(content, blocks);
         TemplateControl? control = ReadControl(element);
+        if (control == null && context.TemplateExchange)
+            context.Loss("Template.UnsupportedControl", "Unadmitted content-control metadata is not preserved by this template exchange.");
         if (control != null)
         {
             bool hasTable = false;
@@ -94,12 +96,15 @@ internal sealed partial class DocxReader
         if (fields.Count > 0)
         {
             if (ReadControl(element) != null) context.Loss("Template.FieldStructure", "Controls inside field results retain cached content without template execution.");
+            else if (context.TemplateExchange) context.Loss("Template.UnsupportedControl", "Unadmitted content-control metadata is not preserved by this template exchange.");
             if (element.Element(W + "sdtContent") is XElement fieldContent) ReadInlines(fieldContent, runs, inherited, link);
             return true;
         }
         var cached = new List<TextRun>();
         if (element.Element(W + "sdtContent") is XElement content) ReadInlines(content, cached, inherited, link);
         TemplateControl? control = ReadControl(element);
+        if (control == null && context.TemplateExchange)
+            context.Loss("Template.UnsupportedControl", "Unadmitted content-control metadata is not preserved by this template exchange.");
         if (cached.Count == 0) cached.Add(new TextRun(""));
         foreach (TextRun run in cached)
         {

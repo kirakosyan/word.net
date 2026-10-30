@@ -74,7 +74,7 @@ public sealed partial class WordDocument
         Guard.NotNull(reviewOptions, nameof(reviewOptions));
         if (!reviewOptions.PreserveSupported) return Load(source, format, out result, options, cancellationToken);
         Guard.NotNull(source, nameof(source));
-        if (format != DocumentFormat.Docx) throw new NotSupportedException("Review.InputFormat: Preservation requires DOCX.");
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx) throw new NotSupportedException("Review.InputFormat: Preservation requires DOCX or DOTX.");
         if (!source.CanRead) throw new ArgumentException("The source must be readable.", nameof(source));
         options ??= new ConversionOptions();
         var context = new ConversionContext(options, cancellationToken) { Editing = true, PreserveReview = true, Destination = DocumentFormat.Docx };

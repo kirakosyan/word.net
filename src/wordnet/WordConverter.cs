@@ -21,9 +21,15 @@ namespace WordNet;
 public sealed partial class WordConverter : IDocumentConverter
 {
     /// <inheritdoc />
-    public bool CanConvert(DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
-        destinationFormat == DocumentFormat.Pdf && sourceFormat is DocumentFormat.Html or DocumentFormat.Odt ||
-        CanExchangeWithWord(sourceFormat, destinationFormat);
+    public bool CanConvert(DocumentFormat sourceFormat, DocumentFormat destinationFormat)
+    {
+        if (sourceFormat == DocumentFormat.Dotx) return destinationFormat is DocumentFormat.Docx or DocumentFormat.Odt or DocumentFormat.Ott or DocumentFormat.Pdf or DocumentFormat.Xps;
+        if (destinationFormat == DocumentFormat.Dotx) return sourceFormat is DocumentFormat.Docx or DocumentFormat.Odt or DocumentFormat.Ott;
+        if (sourceFormat == DocumentFormat.Ott) return destinationFormat is DocumentFormat.Odt or DocumentFormat.Docx or DocumentFormat.Pdf;
+        if (destinationFormat == DocumentFormat.Ott) return sourceFormat is DocumentFormat.Odt or DocumentFormat.Docx;
+        return destinationFormat == DocumentFormat.Pdf && sourceFormat is DocumentFormat.Html or DocumentFormat.Odt ||
+            CanExchangeWithWord(sourceFormat, destinationFormat);
+    }
 
     private static bool CanExchangeWithWord(DocumentFormat sourceFormat, DocumentFormat destinationFormat) =>
         sourceFormat == DocumentFormat.Odt || destinationFormat == DocumentFormat.Odt
@@ -184,7 +190,7 @@ public sealed partial class WordConverter : IDocumentConverter
         context.Phase = DiagnosticPhase.Destination;
         FidelityChecks.Destination(document, to, context);
         context.Phase = DiagnosticPhase.Write;
-        if (to == DocumentFormat.Docx)
+        if (to is DocumentFormat.Docx or DocumentFormat.Dotx)
         {
             DocxWriter.Write(document, output, context);
         }
@@ -193,7 +199,7 @@ public sealed partial class WordConverter : IDocumentConverter
         else if (to == DocumentFormat.Pdf) PdfFormat.Write(document, output, context);
         else if (to == DocumentFormat.Html) HtmlFormat.Write(document, output, context);
         else if (to == DocumentFormat.Rtf) RtfFormat.Write(document, output, context);
-        else if (to == DocumentFormat.Odt) OdtFormat.Write(document, output, context);
+        else if (to is DocumentFormat.Odt or DocumentFormat.Ott) OdtFormat.Write(document, output, context);
         else if (to == DocumentFormat.Xps) XpsFormat.Write(document, output, context);
         else if (to is DocumentFormat.Mobi or DocumentFormat.Azw3) KindleFormat.Write(document, output, to == DocumentFormat.Azw3, context);
         else
@@ -208,19 +214,21 @@ public sealed partial class WordConverter : IDocumentConverter
 
     internal static DocumentModel ReadDocument(MemoryStream input, DocumentFormat from, ConversionContext context)
     {
+        if ((from is DocumentFormat.Docx or DocumentFormat.Dotx) && (context.Destination is DocumentFormat.Docx or DocumentFormat.Dotx)
+            && (from == DocumentFormat.Dotx || context.Destination == DocumentFormat.Dotx)) { context.Editing = true; context.TemplateExchange = true; }
         context.Phase = from == DocumentFormat.Pdf ? DiagnosticPhase.Provider : DiagnosticPhase.Parse;
         context.Location = new SourceLocation(from.ToString(), "/");
         input.Position = 0;
         DocumentModel document;
-        if (from == DocumentFormat.Docx)
+        if (from is DocumentFormat.Docx or DocumentFormat.Dotx)
         {
-            document = DocxReader.Read(input, context);
+            document = DocxReader.Read(input, context, from == DocumentFormat.Dotx);
         }
         else if (from == DocumentFormat.Doc) document = DocFormat.Read(input, context);
         else if (from == DocumentFormat.Epub) document = EpubFormat.Read(input, context);
         else if (from == DocumentFormat.Html) document = HtmlInput.Read(input.ToArray(), context);
         else if (from == DocumentFormat.Rtf) document = RtfFormat.Read(input.ToArray(), context);
-        else if (from == DocumentFormat.Odt) document = OdtFormat.Read(input, context);
+        else if (from is DocumentFormat.Odt or DocumentFormat.Ott) document = OdtFormat.Read(input, context, from == DocumentFormat.Ott);
         else if (from == DocumentFormat.Pdf) document = PdfImportBridge.Read(input, context);
         else if (from is DocumentFormat.Mobi or DocumentFormat.Azw3) document = KindleFormat.Read(input, from == DocumentFormat.Azw3, context);
         else

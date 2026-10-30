@@ -8,6 +8,11 @@ end-annotation policy maps supported classic comments, formatting and paired mov
 to source anchors without margin callout placement. See the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
 
+Unreleased template-format work adds DOTX/OTT package identities and bounded
+byte-based inspection, with explicit unknown and unsupported outcomes. The
+[template-format profile](template-formats.md) describes the pending directions
+and stream contract.
+
 Unreleased DOCX reading also consults the bounded local theme and settings before
 resolving text styles. It computes selected Latin font families and RGB colors for
 rendering, and reconstructs a bounded scheme and selected editable text references
@@ -87,8 +92,9 @@ Release 1.3.0 adds immutable admitted chart-part graphs and OMML expression tree
 
 Merged PR #85 adds immutable explicit column geometry with active-width
 text/table/note layout, detached report-data preprocessing and contiguous body repeat
-regions. An independent ODF package layer and managed adapter enable only DOCX ↔ ODT;
-ODT remains outside document-session loading/saving. See [ODT](odt.md),
+regions. In the 1.5.0 release, an independent ODF package layer and managed adapter
+enable DOCX ↔ ODT and ODT remains outside document-session loading/saving. The
+unreleased template work adds bounded ODT/OTT session support. See [ODT](odt.md),
 [report preprocessing](report-preprocessing.md) and [review workflows](review-workflows.md).
 
 ReviewStore retains admitted plain-text revisions and classic comment intervals.

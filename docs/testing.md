@@ -33,10 +33,28 @@ relationships are not copied. Typed-control tests reject inherited theme referen
 before they could be emitted outside the admitted control profile.
 The tests do not establish complete editable theme preservation, every style
 interaction, script slot, conditional table style or drawing support, or
-public-package availability. On Linux x64, the five-target Release build and both
-full .NET 8 and .NET 10 suites passed 1,597 cases each, including English OCR,
-before the final header-only composition guard. The focused theme suite passed
-after that guard; hosted exact-head qualification remains separate.
+public-package availability. On Linux x64, theme head `b47ff0a` passed the
+five-target Release build and both full .NET 8 and .NET 10 suites, 1,597 cases
+each including English OCR. Hosted exact-head qualification remains separate.
+
+Unreleased #166 tests construct independent DOCX/DOTX and ODF text/template
+packages. Open XML SDK validation, ODF mimetype/manifest checks, PdfPig text and
+XPS glyph inspection cover the advertised package identities and conversions.
+The tests also exercise typed controls, review and field retention, explicit
+mismatch and control loss, ZIP/CFB negatives, macro/protected classification,
+stream position and ownership, aggregate limits and cancellation. These checks
+do not establish general package validity or additional platform qualification.
+Before committing this increment, locked restore and the five-target Release build
+passed on Linux x64; the complete .NET 8 and .NET 10 suites each passed 1,609 cases
+with English OCR and no skips. Hosted exact-commit and package checks are separate.
+An initial dirty-working-tree check used the independently authored
+[`Odt/text.odt`](../tests/wordnet.Conversion.Tests/Fixtures/Odt/README.md) fixture
+(SHA-256 `50f1feca909fa19bbb38aee93f5649f8451becc8a6d792b1b432bd832b133b09`).
+LibreOffice 24.2.7.2 opened generated OTT and DOTX outputs and recovered the
+expected synthetic text; the OTT also passed the pinned ODF 1.3 schemas. The
+[probe](../eng/roadmap-138-template-probe.cs) and
+[verification script](../eng/verify-template-identity.py) reproduce the checks;
+this initial observation does not qualify a committed source or public package.
 
 Unreleased #143 glossary tests use independently authored OPC/XML packages and
 Open XML schema checks for category metadata, bounded local resources, typed edits,
@@ -56,7 +74,7 @@ source/destination sessions.
 The full #146 acceptance and cross-platform qualification remain open.
 
 The [unreleased source matrix](roadmap-138-source-matrix.json) maps current #141,
-#143, #146, #148 and #149 positive and negative combinations to test methods. Run
+#143, #146, #148, #149 and #166 positive and negative combinations to test methods. Run
 `python eng/verify-roadmap-138-source-matrix.py --run` after locked restore to
 validate the mapping and execute those tests; add `--framework net8.0` to use
 .NET 8. This is not public-package or platform qualification.
@@ -95,8 +113,8 @@ reported 1,522/1,522 passing with no skipped tests, but the
 failed because its bundle still required exactly 1,498. The
 [guest evidence](https://github.com/kirakosyan/word.net/actions/runs/41120440306/artifacts/13009293177)
 retains the test report and identity/cleanup records. The later fragment head
-required 1,559 cases; the subsequent text-display head required 1,567. The current
-suite requires 1,592. An exact-head Framework run is still required.
+required 1,559 cases; the subsequent text-display head required 1,567. The then-current
+suite required 1,592. Exact-head Framework execution remains a separate gate for later changes.
 
 
 ## P4/P5 review and drawing profile — historical checkpoints

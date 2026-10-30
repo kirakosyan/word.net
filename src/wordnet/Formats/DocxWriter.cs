@@ -68,7 +68,7 @@ internal sealed partial class DocxWriter
                 new XAttribute("ContentType", "application/vnd.openxmlformats-package.relationships+xml")),
             new XElement(contentTypes + "Default", new XAttribute("Extension", "xml"), new XAttribute("ContentType", "application/xml")),
             new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/document.xml"),
-                new XAttribute("ContentType", DocxPackage.MainContentType)));
+                new XAttribute("ContentType", context.Destination == DocumentFormat.Dotx ? DocxPackage.TemplateContentType : DocxPackage.MainContentType)));
 
         using var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true);
         var rootRelationships = new XElement(DocxPackage.Relationships + "Relationships", Relationship("rDocument", "officeDocument", "word/document.xml"));
