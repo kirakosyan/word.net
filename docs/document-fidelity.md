@@ -32,7 +32,9 @@ managed static PDF/XPS display with diagnosed glyph fallback and a bounded singl
 underline policy at fixed-output save time. Text exports and explicit display views
 keep Unicode glyphs without the fixed-layout restrictions. Common Word editor
 scaffolding is omitted informationally within the documented inactive-script
-subset; Word-generated glossary category/relationships remain rejected explicitly.
+subset. Published 1.5.0 rejects Word-generated glossary category/relationships;
+the [unreleased source subset](content-controls.md#unreleased-source-bounded-glossary-metadata)
+admits selected inert metadata while rejecting richer graphs.
 Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
 This profile is included in 1.5.0; its earlier source qualification remains dated evidence.

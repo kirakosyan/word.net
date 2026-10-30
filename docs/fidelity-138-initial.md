@@ -62,6 +62,20 @@ errors; [source](measurements/roadmap-138-initial/schema-check-source.txt),
 The schema validator DLL SHA-256 was
 `ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae`.
 
+A separate Word-authored control probe used the unmodified public Open XML SDK
+[`SDT.docx`](https://github.com/dotnet/Open-XML-SDK/blob/431ab05cf160248cc3885a4a766026d4f8243792/test/DocumentFormat.OpenXml.Tests.Assets/assets/TestDataStorage/v2FxTestFiles/wordprocessing/SDT/SDT.docx)
+(SHA-256 `8d297bee1383f87d0fa77e7b2e5573e88517297a88f36f569ec5eaa0f8201878`).
+Open XML SDK 3.5.1 reported no schema errors. Both the clean `bf5ab00` source and
+public 1.5.0, using Lenient typed-control loading, rejected its glossary resource
+relationships with `Control.Unsupported`; neither produced a display result. Their
+executed core DLL hashes were respectively
+`64abb7af54f26814223ecfd5614b26d0032afda538088710844433134e9faab0` and
+`4c4c1d2c83c4466bce2e0b4da5502b3f513b9d78d4babd7774eade136a2e690c`, matching the
+earlier source/package workers. The extracted, metadata-minimized
+[negative-control parts](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
+and their provenance are retained separately. This probe establishes a documented
+unsupported boundary, not a rendering defect or successful Office qualification.
+
 ## Results
 
 Source and package produced identical page/text/glyph snapshots, output hashes and
@@ -118,14 +132,73 @@ performance superiority, a regression gate or a hard memory bound.
    dropped text or a converter defect.
 4. **Reference-policy difference:** page-unit rounding exceeds the fixed geometry
    threshold as described above. Do not weaken the threshold or discard the verdict.
-5. **Unknown: new roadmap feature boundaries.** The old 12 reductions cover
-   defaults, spacing, wrapping, simple table sizing and notes. They are not the
-   separately identified theme, table-style, editor-authored-control, fragment,
-   review-output and requested-combination controls required by #139. Those controls,
-   their independent validation and a complete ranked ledger remain outstanding.
+5. **Reproduced and documented unsupported: themes and table styles.** Separate
+   paired controls below reproduce theme-font and conditional table-shading losses.
+   The theme-color contrast is inconclusive against this reference producer.
+6. **Documented unsupported: composition and portable review.** Separate API
+   probes below confirm rejection of field-bearing fragments, cell destinations
+   and direct PDF export with retained revisions, without mutation.
+7. **Unknown: remaining roadmap combinations.** The old 12 reductions cover
+   defaults, spacing, wrapping, simple table sizing and notes. The Word-authored
+   negative control and new probes capture some editor and workflow boundaries;
+   broader control cases, requested feature combinations and a complete ranked
+   ledger remain outstanding.
 
 The existing fixtures and scratch-generation procedure are documented in the
 [comparison guide](comparison.md) and
 [reduction provenance](../tests/wordnet.Conversion.Tests/Fixtures/Fidelity103/README.md).
 The 1.5.0 release qualification and these measurements are distinct evidence.
 This run adds no new converter capability, platform qualification or public package.
+
+## Additional independent controls
+
+Six theme/table contrasts and five workflow packages were independently authored
+by the [theme/table generator](../eng/generate-roadmap-138-controls.py) and
+[workflow generator](../eng/generate-roadmap-138-workflows.py), without a wordnet
+serializer. Their inputs, generator hashes and pinned open fonts are recorded in
+the [theme/table manifest](measurements/roadmap-138-contrasts/theme-table-manifest.json)
+and [workflow manifest](measurements/roadmap-138-contrasts/workflow-manifest.json).
+All eleven archives passed [Open XML SDK 3.5.1](measurements/roadmap-138-contrasts/schema-check.txt).
+
+The same clean source commit and public 1.5.0 package were measured using the
+same Ubuntu/LibreOffice/Poppler/POI toolchain and unchanged thresholds described
+above. The [receipt](measurements/roadmap-138-contrasts/receipt.json), full
+result and defect JSON, reference snapshots and command transcripts retain all
+six new verdicts and the repeated 24-case run. Source/package snapshots and
+verdicts agree. All six authored text, page and independently read editable text
+checks passed; all six retain a page-geometry reference failure from the rounding
+described above. Three also report unexpected diagnostics because the authored
+manifest deliberately accepts no losses. The measurements ran alongside other
+tests without CPU isolation: their timing samples are observations only. Reference
+and output PDF/raster bytes are not committed; hashes, raster contrasts, glyph
+snapshots and reference manifests are retained.
+
+- **Theme font — reproduced loss:** LibreOffice's theme and explicit Liberation
+  Mono controls have identical rendered pixels. Release source/package diagnose
+  `Docx.ThemeFont`; their theme output differs from its explicit counterpart, and
+  the theme/reference aligned-glyph maximum displacement is 31.329 pt. The explicit
+  control is within 0.1 pt. This is evidence for the specific theme-font case,
+  not a claim about every theme or font.
+- **Conditional table shading — reproduced loss:** LibreOffice renders the same
+  blue fill in both conditional-style and directly shaded first rows; the two full
+  reference pages differ slightly in other pixels. Source/package report
+  `Docx.TableFormatting` and omit the blue fill for the styled table while retaining
+  it in the direct control. Exact color counts and pairwise pixel differences are
+  in [pair contrasts](measurements/roadmap-138-contrasts/pair-contrasts.json).
+- **Theme color — reference boundary:** the theme stores red as its fallback and
+  blue as its accent. Both LibreOffice and the release render the stored red while
+  the explicit contrast is blue. The release diagnoses `Docx.ThemeColor`, but this
+  reference cannot establish the intended theme-color result; it remains unknown.
+
+The separate [workflow probe](../eng/roadmap-138-workflow-probe.cs) executed the
+clean source and separately restored public package against the five authored
+inputs. Both reject a field-bearing fragment with `Fragment.Structure` and a
+table-cell bookmark destination with `Fragment.Placeholder`; target and source
+remain byte-identical to their pre-operation saves. Both reject direct PDF export
+of retained insertion/deletion history with `Review.ExplicitViewRequired`, leaving
+the caller stream and source history unchanged. Explicit accepted and rejected
+views contain `Total 20` and `Total 10`; Poppler independently extracts those
+values from the generated PDFs. The [source](measurements/roadmap-138-contrasts/workflow-source.json)
+and [package](measurements/roadmap-138-contrasts/workflow-package.json) records
+include exact inputs, assembly identities, diagnostics and outcomes. Different
+PDF hashes do not imply different text or review decisions.

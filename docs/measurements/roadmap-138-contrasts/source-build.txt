@@ -1,0 +1,9 @@
+  wordnet.Fonts -> /tmp/wordnet-138-baseline/src/wordnet.Fonts/bin/Release/netstandard2.0/wordnet.Fonts.dll
+  wordnet -> /tmp/wordnet-138-baseline/src/wordnet/bin/Release/net10.0/wordnet.dll
+  wordnet.Benchmarks -> /tmp/wordnet-138-baseline/tools/wordnet.Benchmarks/bin/Release/net10.0/wordnet.Benchmarks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:20.98

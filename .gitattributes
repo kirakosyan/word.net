@@ -19,6 +19,7 @@
 *.odt binary
 *.png binary
 *.tif binary
+tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/*.xml text eol=lf
 
 # Keep the reproducible corpus generator hash stable on Windows and Unix.
 eng/generate-comparison-corpus.py text eol=lf

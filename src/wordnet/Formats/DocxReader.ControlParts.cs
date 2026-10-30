@@ -57,7 +57,7 @@ internal sealed partial class DocxReader
         if (glossary.Length == 0) return;
         string glossaryPart = ControlPart(mainPart, glossary[0]);
         RequireControlPart(glossaryPart, GlossaryType, contentTypes);
-        if (package.ReadRelationships(glossaryPart).Count != 0) throw new NotSupportedException("Control.Unsupported: Glossary entries cannot have external or resource relationships.");
+        ReadGlossaryResources(glossaryPart, contentTypes);
         XElement root = TypedXml(glossaryPart);
         if (root.Name != W + "glossaryDocument") throw new InvalidDataException("Control.Malformed: Invalid glossary root.");
         Attributes(root);
@@ -85,6 +85,17 @@ internal sealed partial class DocxReader
                     Attributes(property); string leaf = property.Name == W + "types" ? "type" : "behavior";
                     if (property.Elements().Count() != 1 || property.Element(W + leaf) is not XElement value) throw new NotSupportedException("Control.Unsupported: Only static placeholder glossary behavior is admitted.");
                     Leaf(value, W + "val"); if ((string?)value.Attribute(W + "val") != (leaf == "type" ? "bbPlcHdr" : "content")) throw new NotSupportedException("Control.Unsupported: Only static placeholder glossary behavior is admitted.");
+                }
+                else if (property.Name == W + "category")
+                {
+                    Attributes(property);
+                    if (property.Elements().Count() != 2 || property.Element(W + "name") is not XElement categoryName || property.Element(W + "gallery") is not XElement gallery)
+                        throw new InvalidDataException("Control.Malformed: Glossary categories require exactly one name and gallery.");
+                    Leaf(categoryName, W + "val"); Leaf(gallery, W + "val");
+                    string nameValue = DocxPackage.RequiredAttribute(categoryName, W + "val");
+                    string galleryValue = DocxPackage.RequiredAttribute(gallery, W + "val");
+                    if (nameValue.Length is 0 or > 256) throw new InvalidDataException("Limit.Controls: Glossary category name exceeds its bound.");
+                    if (galleryValue is not "default" and not "placeholder") throw new NotSupportedException("Control.Unsupported: Only static placeholder glossary categories are admitted.");
                 }
                 else throw new NotSupportedException("Control.Unsupported: Unknown glossary entry behavior.");
             }

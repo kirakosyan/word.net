@@ -103,6 +103,11 @@ Word pagination parity. No proprietary Microsoft font is redistributed.
 - The template-plan design examples use development-only jsonschema 4.26.0 (MIT)
   and rfc8785 0.1.4 (Apache-2.0) for schema and canonicalization checks. They are not
   runtime dependencies and are not included in the NuGet packages.
+- The test-only Word-authored glossary XML parts in
+  `tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/` derive
+  from the MIT-licensed Open XML SDK repository. The directory retains its license,
+  notice, source revision, hashes and extraction provenance; the parts do not ship
+  in the NuGet packages.
 
 ## Binary Word fixtures and Android validation
 

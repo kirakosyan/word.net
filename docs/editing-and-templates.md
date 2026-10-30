@@ -76,7 +76,8 @@ local XML operations. Typed tags never execute; ordinary content/template edits
 require a detached display view. That view keeps original Unicode checkbox text;
 glyph fallback and managed underline restrictions run only at later PDF/XPS save.
 The source profile explicitly lists Word editor metadata, inactive-script bounds
-and the intentionally rejected Word-generated glossary graphs. Existing
+and the bounded unreleased glossary metadata subset. Richer Word-generated graphs
+remain rejected. Existing
 template-only loading below is unchanged.
 The implementation merged in PR #134 and is included in 1.5.0.
 

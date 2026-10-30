@@ -15,6 +15,10 @@ or #172. Their compilation, enforcement and independent outcome evidence remain 
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 #139 remains incomplete until its additional feature controls and ledger are delivered.
+Pending source work on #143 preserves bounded glossary categories and selected inert
+local resource relationships. The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
+records the accepted subset and the Office-authored evidence and richer structures
+still required before the leaf can be accepted.
 
 ## Roadmap #102 P6 — historical preliminary qualification
 

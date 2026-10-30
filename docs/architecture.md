@@ -42,7 +42,10 @@ fallback and bounded underline strokes only for fixed output. Explicit display v
 keep Unicode text and bounded private render provenance until PDF/XPS save; text
 exports only flatten. Per-version immutable snapshot caching avoids repeated owner
 indexing, and final owner checks reject bookmarks attached after initial parsing.
-No dependency or target change is added.
+Unreleased source additionally admits bounded glossary categories and four strictly
+whitelisted local metadata parts. The store retains validated resource bytes and
+relationship identities through cloning, while aggregate control limits cover them.
+Richer glossary graphs remain rejected. No dependency or target change is added.
 
 ## Merged roadmap #102 P1 implementation
 

@@ -18,6 +18,15 @@ The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) record a sepa
 36-input source/public-package comparison and schema checks. They do not complete
 the additional controls and platform qualification required by roadmap #138.
 
+Unreleased #143 glossary tests use independently authored OPC/XML packages and
+Open XML schema checks for category metadata, bounded local resources, typed edits,
+bindings, placeholder display and byte/relationship preservation. Negative cases
+cover external, dangling, duplicate, nested, active and unsupported resources,
+default loading, cancellation and untouched output. A schema-validated derivative
+of a [Word-authored glossary](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
+is retained as a negative control. Positive Office-authored and broader resource-graph
+acceptance required by #143 remain outstanding.
+
 
 ## P4/P5 review and drawing profile — historical checkpoints
 

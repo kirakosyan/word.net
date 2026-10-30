@@ -14,6 +14,28 @@ one owner-authorized batch; its bounded profile is included in 1.5.0. The [desig
 and [acceptance map](content-controls-acceptance.json) describe the contract and
 independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) and [initial receipt](measurements/roadmap-102-p2.json) record historical local execution. Final release and runtime evidence is recorded separately in the [release record](releases/1.5.0.md).
 
+## Unreleased source: bounded glossary metadata
+
+The pending source work for #143 preserves a static glossary category with a
+bounded name and `default` or `placeholder` gallery on the existing admitted
+placeholder entries. It also admits up to four relationships from the glossary part
+to `word/glossary/styles.xml`, `word/glossary/settings.xml`,
+`word/glossary/fontTable.xml` and `word/glossary/webSettings.xml`. The admitted
+styles part is empty. Settings
+are limited to proofing state, zoom and revision-session IDs; fonts to bounded
+names and family, pitch, charset, PANOSE and signature metadata; web settings to `allowPNG`
+and `optimizeForBrowser`. Valid resource bytes and relationship IDs survive typed
+edits, bindings and DOCX save/reload. No font or other resource is fetched.
+Duplicate, dangling, external, nested, active or unknown relationships, nonempty
+style definitions and unlisted metadata fail explicitly in every mode.
+
+This is a narrow independently authored source profile, not a claim that arbitrary
+Word-generated glossaries or Office-authored templates are qualified. The remaining
+#143 criteria, including positive Office-authored coverage and richer local resource
+graphs, stay open. A [Word-authored negative control](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
+still fails explicitly. Published 1.5.0 retains the earlier rejection below;
+ordinary loading remains separate from opt-in typed preservation.
+
 ## Load, inspect and edit
 
 Typed preservation is opt-in and DOCX-only. Existing `Load` and ordinary conversion
@@ -126,11 +148,11 @@ fail. A control without a glossary reference can retain its original placeholder
 cache. Scalar placeholder formatting/size must fit its kind. Showing a placeholder
 clears a typed date/selection; it cannot be written back as a value.
 
-**Word-generated glossaries are rejected by this initial subset** when they include
-`w:category` or their own styles/settings/fontTable/webSettings relationships.
-Those parts are not read or silently discarded. Only the relationship-free,
-explicitly admitted local entries above qualify; default Word placeholder/template
-files commonly require a separately qualified glossary extension.
+**Published 1.5.0 rejects Word-generated glossaries** when they include `w:category`
+or their own styles/settings/fontTable/webSettings relationships. The unreleased
+source subset above admits only the specified inert structures; richer parts are not
+silently discarded. Default Word placeholder/template files can require additional
+qualification beyond this subset.
 
 ## Dates
 
