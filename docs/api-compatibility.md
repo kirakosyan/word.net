@@ -120,14 +120,13 @@ options, immutable OCR/preview results, PDF accessibility/language/page selectio
 is retained; explicit decoration uses a new five-argument overload. Default managed
 Latin/PDF and OCR text behavior remain. See [usage and deployment](interoperability.md).
 
-## Bucket 5 API proposals
+## Historical bucket 5 API proposals
 
-The [design index](later-design-decisions.md) collects unavailable API sketches.
-There is no `DocumentFormat.Odt`, review/comparison API, `DocxProtection` utility or
-chart/equation editor in this change. A future ODT enum addition must also replace
-numeric format-range assumptions and explicitly gate the two proposed DOCX pairs.
-Each selected implementation slice requires separate additive API/package validation
-across all five targets; the designs do not change existing overload metadata.
+The [design index](later-design-decisions.md) records API sketches from before their
+implementation. Published 1.5.0 includes bounded `DocumentFormat.Odt`,
+review/comparison and chart/equation APIs described in the [capability matrix](roadmap-102-capability-matrix.json).
+`DocxProtection` and signature utilities remain cancelled. The historical design did
+not itself change overload metadata or qualify a package or runtime.
 
 ## 1.2.0 compatibility baseline
 

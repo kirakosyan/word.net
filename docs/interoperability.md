@@ -26,8 +26,10 @@ The [architecture decision](interoperability-design.md) preceded implementation.
 
 ## Supported matrix and deployment
 
-The normal converter now has 36 directed Word exchanges: the original 28, two HTML
-exports, two HTML imports and four RTF exchanges. `DocumentFormat.Rtf` is appended;
+At the 1.2.0 checkpoint the converter had 36 directed Word exchanges: the original
+28, two HTML exports, two HTML imports and four RTF exchanges. The published 1.5.0
+profile has 40 enabled directions; see the [roadmap #99 profile](roadmap-99-implementation.md).
+`DocumentFormat.Rtf` is appended;
 existing enum values and constructors remain. `WordDocument.Load` accepts HTML/RTF;
 `Save` writes RTF. Public additions match all five target frameworks and contain no
 provider types. XPS remains output-only.

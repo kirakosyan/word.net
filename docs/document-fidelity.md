@@ -261,7 +261,10 @@ render-time TITLE/AUTHOR fields; safe DOC hyperlink fields retain styled cached 
 PDF options provide optional heading outlines, uncompressed text/font streams and
 PDF/A-2b. The default remains PDF 1.7. PNG images use Flate PNG prediction and an
 SMask for alpha; JPEG data remains DCT encoded. PDF/A metadata and link flags are
-independently validated with pinned veraPDF. Tagged PDF is optional and unimplemented.
+independently validated with pinned veraPDF. At that earlier checkpoint tagged PDF
+was not implemented; the later opt-in tagged and PDF/UA profiles and their limits
+are described in [interoperability](interoperability.md) and the
+[1.5.0 capability matrix](roadmap-102-capability-matrix.json).
 
 ## Evidence
 
@@ -321,9 +324,10 @@ Arabic typography, semantic PDF/UA, previews, digital reconstruction and OCR met
 plus bounded HTML/RTF exchanges. Existing exclusions describe the default/released
 profiles; the linked guide specifies supported additions and remaining limits.
 
-## Later design profiles (unimplemented)
+## Historical bucket 5 design proposals
 
-The [bucket 5 ADRs](later-design-decisions.md) define future ODT exchange, review
-history/comparison, DOCX encryption and chart/equation stages. Their supported-subset
-tables describe proposals, not capabilities of merged source or package 1.1.0.
-Current unsupported-feature behavior and Strict guarantees remain unchanged.
+The [bucket 5 ADRs](later-design-decisions.md) record proposals made before those
+features were implemented. Published 1.5.0 includes bounded ODT exchange,
+review/comparison and chart/equation profiles; use the [capability matrix](roadmap-102-capability-matrix.json)
+for current combinations and limits. Encryption/decryption and signatures remain
+cancelled. The original design tables are historical, not current support claims.

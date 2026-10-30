@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-31",
+  "timezone": "Europe/Oslo",
+  "sourceBase": "5a654f54eb66153ffff6692da6050a930f84bbb1",
+  "publicPackages": {
+    "wordnet": "1.5.0",
+    "wordnet.Fonts": "1.5.0",
+    "wordnet.Ocr": "1.5.0",
+    "source": "https://api.nuget.org/v3-flatcontainer/"
+  },
+  "release": {
+    "tag": "v1.5.0",
+    "publishedUtc": "2026-10-29T01:13:16Z",
+    "sourceCommit": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+    "url": "https://github.com/kirakosyan/word.net/releases/tag/v1.5.0"
+  },
+  "review": {
+    "trackedMarkdownFiles": 82,
+    "localInlineLinksAndAnchors": "passed",
+    "sampleGuides": "reviewed; no example code changed",
+    "historicalDesigns": "labeled and linked to current published profiles",
+    "limits": "historical evidence and owner exclusions remain explicit"
+  },
+  "scope": "Documentation audit only; no converter execution, runtime qualification or package publication is inferred."
+}

@@ -18,6 +18,11 @@ The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) record a sepa
 36-input source/public-package comparison and schema checks. They do not complete
 the additional controls and platform qualification required by roadmap #138.
 
+The #140 documentation audit checked the current public package versions and
+release commit and reviewed all tracked Markdown links, including sample guides.
+Its [receipt](measurements/roadmap-138-documentation-audit.json) is documentation
+evidence, not a new runtime qualification or package publication.
+
 Unreleased #141 tests independently construct schema-validated OOXML themes and
 compare local Latin font and color resolution against explicit formatting with
 PdfPig coordinates/colors and XPS markup. A [Word-authored theme XML control](../tests/wordnet.Conversion.Tests/Fixtures/Theme/OfficeWordParts/README.md)
@@ -893,7 +898,8 @@ they had no image or affinity restriction and are not the acceptance measurement
 outlines, then validates each with veraPDF 1.30.2, pinned by image digest. **38/38 pass**.
 CI repeats this independent check and uploads its XML. Tests also assert metadata
 uniqueness, embedded/selectable text, compression controls, actual-page hierarchical
-outlines, PNG prediction/alpha and link flags. Tagged PDF remains optional/unimplemented.
+outlines, PNG prediction/alpha and link flags. Tagged PDF was not implemented at
+this historical checkpoint; later opt-in profiles are documented above.
 PNG admission bounds chunk lengths and zlib expansion to the declared scanline
 geometry (including Adam7) before provider allocations, verifies Adler32 and checks
 cancellation. Regressions reject excessive IDAT expansion and absent chunk payloads.

@@ -15,6 +15,10 @@ or #172. Their compilation, enforcement and independent outcome evidence remain 
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 #139 remains incomplete until its additional feature controls and ledger are delivered.
+The pending #140 documentation reconciliation distinguishes current 1.5.0 support
+from historical design and test claims. Its [audit receipt](measurements/roadmap-138-documentation-audit.json)
+records the checked public versions, release provenance and local link review; the
+issue remains open until the merged result is reconciled.
 Unreleased #141 work resolves a bounded subset of local theme text appearance and
 retains selected editable text references in a reconstructed theme, with loss
 diagnostics for the remaining theme semantics. The
