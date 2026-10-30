@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -34,20 +35,58 @@ public sealed class TemplateFormatTests
         }
         return output.ToArray();
     }
-    private static byte[] Odf(bool template, bool active = false, bool encrypted = false)
+    private static byte[] Odf(bool template, bool active = false, bool encrypted = false, bool inlineScript = false, bool manyXml = false)
     {
         string mime = template ? OttMime : OdtMime;
-        using var output = new MemoryStream();
-        using (var zip = new ZipArchive(output, ZipArchiveMode.Create, true))
+        string script = inlineScript ? "<office:scripts xmlns:script='urn:oasis:names:tc:opendocument:xmlns:script:1.0'><script:event-listener script:macro-name='Ignored'/></office:scripts>" : "";
+        var parts = new List<(string Name, string Content)>
         {
-            Put(zip, "mimetype", mime, CompressionLevel.NoCompression);
-            Put(zip, "content.xml", "<office:document-content xmlns:office='urn:oasis:names:tc:opendocument:xmlns:office:1.0' xmlns:text='urn:oasis:names:tc:opendocument:xmlns:text:1.0' office:version='1.3'><office:body><office:text><text:p>Independent ODF text</text:p></office:text></office:body></office:document-content>");
-            Put(zip, "META-INF/manifest.xml", "<manifest:manifest xmlns:manifest='" + Manifest + "' manifest:version='1.3'>"
+            ("mimetype", mime),
+            ("content.xml", "<office:document-content xmlns:office='urn:oasis:names:tc:opendocument:xmlns:office:1.0' xmlns:text='urn:oasis:names:tc:opendocument:xmlns:text:1.0' office:version='1.3'>" + script + "<office:body><office:text><text:p>Independent ODF text</text:p></office:text></office:body></office:document-content>"),
+            ("META-INF/manifest.xml", "<manifest:manifest xmlns:manifest='" + Manifest + "' manifest:version='1.3'>"
                 + "<manifest:file-entry manifest:full-path='/' manifest:media-type='" + mime + "'/>"
                 + "<manifest:file-entry manifest:full-path='content.xml' manifest:media-type='text/xml'>"
-                + (encrypted ? "<manifest:encryption-data/>" : "") + "</manifest:file-entry></manifest:manifest>");
-            if (active) Put(zip, "Basic/script.xml", "<script/>");
+                + (encrypted ? "<manifest:encryption-data/>" : "") + "</manifest:file-entry></manifest:manifest>"),
+        };
+        if (active) parts.Add(("Basic/script.xml", "<script/>"));
+        if (manyXml) { parts.Add(("extra1.xml", "<x>" + new string('a', 400) + "</x>")); parts.Add(("extra2.xml", "<x>" + new string('b', 400) + "</x>")); }
+        return StoredFixture(parts);
+    }
+
+    // Independently author stored ZIP records. Framework ZipArchive's
+    // NoCompression still emits Deflate, which is invalid for ODF mimetype.
+    private static byte[] StoredFixture(IEnumerable<(string Name, string Content)> parts)
+    {
+        using var output = new MemoryStream();
+        using var writer = new BinaryWriter(output, Encoding.UTF8, true);
+        var entries = new List<(byte[] Name, byte[] Data, uint Crc, uint Offset)>();
+        foreach (var part in parts)
+        {
+            byte[] name = Encoding.ASCII.GetBytes(part.Name), data = Encoding.UTF8.GetBytes(part.Content);
+            uint crc = uint.MaxValue;
+            foreach (byte value in data)
+            {
+                crc ^= value;
+                for (int bit = 0; bit < 8; bit++) crc = (crc & 1) != 0 ? crc >> 1 ^ 0xedb88320u : crc >> 1;
+            }
+            crc = ~crc; uint offset = checked((uint)output.Position), length = checked((uint)data.Length);
+            entries.Add((name, data, crc, offset));
+            writer.Write(0x04034b50u); writer.Write((ushort)20); writer.Write((ushort)0); writer.Write((ushort)0);
+            writer.Write((ushort)0); writer.Write((ushort)33); writer.Write(crc); writer.Write(length); writer.Write(length);
+            writer.Write(checked((ushort)name.Length)); writer.Write((ushort)0); writer.Write(name); writer.Write(data);
         }
+        uint directory = checked((uint)output.Position);
+        foreach (var entry in entries)
+        {
+            uint length = checked((uint)entry.Data.Length);
+            writer.Write(0x02014b50u); writer.Write((ushort)20); writer.Write((ushort)20); writer.Write((ushort)0); writer.Write((ushort)0);
+            writer.Write((ushort)0); writer.Write((ushort)33); writer.Write(entry.Crc); writer.Write(length); writer.Write(length);
+            writer.Write(checked((ushort)entry.Name.Length)); writer.Write((ushort)0); writer.Write((ushort)0); writer.Write((ushort)0);
+            writer.Write((ushort)0); writer.Write(0u); writer.Write(entry.Offset); writer.Write(entry.Name);
+        }
+        uint size = checked((uint)output.Position - directory); ushort count = checked((ushort)entries.Count);
+        writer.Write(0x06054b50u); writer.Write((ushort)0); writer.Write((ushort)0); writer.Write(count); writer.Write(count);
+        writer.Write(size); writer.Write(directory); writer.Write((ushort)0); writer.Flush();
         return output.ToArray();
     }
     private static void Put(ZipArchive zip, string name, string content, CompressionLevel compression = CompressionLevel.Optimal)
@@ -81,6 +120,26 @@ public sealed class TemplateFormatTests
         if (end < 0) throw new InvalidDataException("Missing ZIP end record.");
         return end;
     }
+    private static byte[] ControlCharacterInEntryName(byte[] source)
+    {
+        byte[] bytes = (byte[])source.Clone(); int end = ZipEnd(bytes);
+        int U16(int offset) => bytes[offset] | bytes[offset + 1] << 8;
+        int U32(int offset) => U16(offset) | U16(offset + 2) << 16;
+        int position = U32(end + 16), count = U16(end + 10);
+        const string expected = "word/evil-name.xml";
+        for (int i = 0; i < count; i++)
+        {
+            int nameLength = U16(position + 28), local = U32(position + 42);
+            if (Encoding.UTF8.GetString(bytes, position + 46, nameLength) == expected)
+            {
+                int localLength = U16(local + 26), change = expected.IndexOf('-');
+                if (Encoding.UTF8.GetString(bytes, local + 30, localLength) != expected) throw new InvalidDataException("The ZIP fixture has inconsistent entry names.");
+                bytes[position + 46 + change] = (byte)'\n'; bytes[local + 30 + change] = (byte)'\n'; return bytes;
+            }
+            position += 46 + nameLength + U16(position + 30) + U16(position + 32);
+        }
+        throw new InvalidDataException("The ZIP fixture lacks its named test entry.");
+    }
     private static XDocument Xml(ZipArchive zip, string name)
     { using Stream input = zip.GetEntry(name)!.Open(); return XDocument.Load(input); }
     private static void ReplaceXml(ZipArchive zip, string name, XDocument xml)
@@ -99,6 +158,8 @@ public sealed class TemplateFormatTests
     }
     private static void ValidateOdf(byte[] bytes, string mime, string expected = "Independent ODF text")
     {
+        Assert.Equal(0, BitConverter.ToUInt16(bytes, 8)); // ODF requires an uncompressed first local entry.
+        Assert.Equal(0, BitConverter.ToUInt16(bytes, 28)); // Its mimetype entry must not have local extra data.
         using var zip = new ZipArchive(new MemoryStream(bytes));
         Assert.Equal("mimetype", zip.Entries[0].FullName);
         using (var reader = new StreamReader(zip.GetEntry("mimetype")!.Open(), Encoding.ASCII)) Assert.Equal(mime, reader.ReadToEnd());
@@ -264,7 +325,7 @@ public sealed class TemplateFormatTests
         InvalidDataException perPart = Assert.Throws<InvalidDataException>(() => WordConverter.DetectFormat(seekable,
             new ConversionOptions(maximumCharacters: 1), TestContext.Current.CancellationToken));
         Assert.StartsWith("Limit.Characters", perPart.Message, StringComparison.Ordinal); Assert.Equal(4, seekable.Position);
-        byte[] manyXml = Edit(Odf(true), zip => { Put(zip, "extra1.xml", "<x>" + new string('a', 400) + "</x>"); Put(zip, "extra2.xml", "<x>" + new string('b', 400) + "</x>"); });
+        byte[] manyXml = Odf(true, manyXml: true);
         using var aggregate = new MemoryStream(manyXml);
         InvalidDataException limit = Assert.Throws<InvalidDataException>(() => WordConverter.DetectFormat(aggregate,
             new ConversionOptions(maximumCharacters: 700), TestContext.Current.CancellationToken));
@@ -313,7 +374,8 @@ public sealed class TemplateFormatTests
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
         Assert.Equal(new byte[] { 42 }, zip64Output.ToArray());
         Assert.Equal(FormatDetectionStatus.Invalid, Detect(Edit(word, zip => Put(zip, "../outside.xml", "<x/>"))).Status);
-        Assert.Equal(FormatDetectionStatus.Invalid, Detect(Edit(word, zip => Put(zip, "word/evil\nname.xml", "<x/>"))).Status);
+        byte[] controlName = Edit(word, zip => Put(zip, "word/evil-name.xml", "<x/>"));
+        Assert.Equal(FormatDetectionStatus.Invalid, Detect(ControlCharacterInEntryName(controlName)).Status);
         byte[] caseConflict = Edit(word, zip => Put(zip, "[content_types].xml", "<x/>"));
         Assert.Equal(FormatDetectionStatus.Invalid, Detect(caseConflict).Status);
         using var conflictInput = new MemoryStream(caseConflict); using var conflictOutput = new MemoryStream(); conflictOutput.WriteByte(42);
@@ -365,13 +427,7 @@ public sealed class TemplateFormatTests
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
         Assert.Equal(new byte[] { 42 }, templateOutput.ToArray());
         Assert.Equal(FormatDetectionStatus.UnsupportedMacro, Detect(Odf(true, active: true)).Status);
-        byte[] inlineScript = Edit(Odf(true), zip =>
-        {
-            XNamespace office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0", script = "urn:oasis:names:tc:opendocument:xmlns:script:1.0";
-            XDocument content = Xml(zip, "content.xml");
-            content.Root!.AddFirst(new XElement(office + "scripts", new XElement(script + "event-listener", new XAttribute(script + "macro-name", "Ignored"))));
-            ReplaceXml(zip, "content.xml", content);
-        });
+        byte[] inlineScript = Odf(true, inlineScript: true);
         Assert.Equal(FormatDetectionStatus.UnsupportedMacro, Detect(inlineScript).Status);
         Assert.Equal(FormatDetectionStatus.UnsupportedProtected, Detect(Odf(true, encrypted: true)).Status);
         byte[] zipProtected = Word(WordprocessingDocumentType.Template); zipProtected[6] |= 1;
