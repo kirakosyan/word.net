@@ -2,8 +2,9 @@
 
 Unreleased review displays reject unsupported history, owners or output profiles
 with `Review.DisplayProfile`, and reject source sessions carrying load-loss warnings
-with `Review.DisplaySourceLoss`. `Limit.ReviewDisplay` bounds added marks and
-attribution. These exceptions do not include author names or revision text.
+with `Review.DisplaySourceLoss`. `Limit.ReviewDisplay` bounds added marks,
+attribution and annotations. These exceptions do not include author names or
+revision/comment text.
 
 ## 1.5.0 roadmap #102 delivery
 

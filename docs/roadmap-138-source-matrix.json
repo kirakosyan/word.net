@@ -57,12 +57,36 @@
       "id": "review-unsupported-combinations",
       "issue": 148,
       "outcome": "rejected",
-      "boundary": "Comments, story/format revisions, controls, source loss, PNG, native and tagged/archive combinations remain excluded.",
+      "boundary": "The default policy rejects comments and format history; story revisions, controls, source loss, PNG, native and tagged/archive combinations remain excluded.",
       "tests": [
         { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsUnsupportedProfilesAndLeavesOutputUntouched" },
         { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsCommentsAndStoryRevisionsWithoutChangingSource" },
         { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsTemplateOwnersAndPriorSourceLoss" },
         { "class": "ReviewWorkflowTests", "method": "ReviewDisplayProfileChangesFailBeforeWriting" }
+      ]
+    },
+    {
+      "id": "review-numbered-annotations",
+      "issue": 149,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit numbered end annotations cover classic comments, supported run-format changes and paired whole-paragraph moves in ordinary managed output.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "NumberedOverlappingCommentsRetainAnchorsAttributionAndHistory" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedFormatChangesKeepCurrentAppearanceAndDescribeBothStates" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedFormatSummaryRetainsTheExactFontSizes" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedWholeParagraphMovesPairBothEndpointsWithoutChangingTheSource" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewAnnotationListsKeepIndependentCommentCounters" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedCommentsInSimpleTableCellsRetainTheirAnchorAndText" }
+      ]
+    },
+    {
+      "id": "review-numbered-unsupported",
+      "issue": 149,
+      "outcome": "rejected",
+      "boundary": "Other structural revisions, exceeded annotation bounds and the existing nonordinary output profiles remain excluded.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "NumberedAnnotationsStillRejectOtherStructuralHistory" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedAnnotationsRejectExpansionBeforePublishingASnapshot" }
       ]
     }
   ]

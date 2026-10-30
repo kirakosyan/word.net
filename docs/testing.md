@@ -36,17 +36,25 @@ source/destination sessions.
 The full #146 acceptance and cross-platform qualification remain open.
 
 The [unreleased source matrix](roadmap-138-source-matrix.json) maps current #143,
-#146 and #148 positive and negative combinations to test methods. Run
+#146, #148 and #149 positive and negative combinations to test methods. Run
 `python eng/verify-roadmap-138-source-matrix.py --run` after locked restore to
-validate the mapping and execute those tests; selecting .NET 8 uses `--framework
-net8.0`. This is not public-package or platform qualification.
+validate the mapping and execute those tests; add `--framework net8.0` to use
+.NET 8. This is not public-package or platform qualification.
 
 Unreleased #148 review tests independently inspect Open XML history, PdfPig
 selectable text, mark color and coordinates, and SVG glyph paths and marked titles.
 They cover body and simple-cell revisions, multi-page text, source immutability,
 attribution escaping, profile and owner rejections, cancellation and bounds.
 Full issue acceptance and exact-runtime qualification remain open.
-On Linux x64, locked restore and the five-target Release build passed, and the
+Unreleased #149 tests inspect overlapping and table-cell anchors, comment bodies
+and independent list numbering, exact format snapshots and paired move endpoints in
+PDF/SVG. They also cover comments combined with moves or format history, empty and multipage notes,
+source preservation, unsupported structural changes, cancellation and bounds.
+The expanded local Linux x64 .NET 8 and .NET 10 suites each passed 1,578 cases
+without skips, with English OCR prepared in the launching process. Locked restore
+and the five-target Release build also passed; hosted exact-head evidence remains
+separate.
+On earlier text-display head `ca732f2`, locked restore and the five-target Release build passed, and the
 complete .NET 8 and .NET 10 suites each passed 1,567 cases with English OCR
 prepared in the launching process and no skips. This is local source evidence;
 the final hosted and actual Framework 4.7.2 checks are separate.
@@ -57,8 +65,8 @@ reported 1,522/1,522 passing with no skipped tests, but the
 failed because its bundle still required exactly 1,498. The
 [guest evidence](https://github.com/kirakosyan/word.net/actions/runs/41120440306/artifacts/13009293177)
 retains the test report and identity/cleanup records. The later fragment head
-required 1,559 cases; the current suite requires 1,567. An exact-head Framework
-run is still required.
+required 1,559 cases; the subsequent text-display head required 1,567. The current
+suite requires 1,578. An exact-head Framework run is still required.
 
 
 ## P4/P5 review and drawing profile — historical checkpoints

@@ -31,18 +31,46 @@ Source text itself is not escaped and can resemble a marker; these labels are
 visual cues, not an authenticated interchange format. Both output and the snapshot
 may contain sensitive deleted text and attribution.
 
+Supported classic comments, run-format history and whole-paragraph moves require
+the explicit numbered annotation policy:
+
+```csharp
+var options = new ReviewDisplayOptions
+{
+    AnnotationPolicy = ReviewAnnotationPolicy.NumberedEndNotes
+};
+DocumentReviewDisplay annotated = document.CreateReviewDisplay(options);
+```
+
+Comment ranges use matching `[C1:start]` and `[C1:end]` anchors; overlapping
+ranges keep their own anchors in source order. A numbered end-annotation section
+contains each comment's author, initials when present, optional date and full
+body in paragraph order. Supported body paragraph formatting and lists use the
+ordinary managed layout profile, and list numbering is independent for each
+comment. Anchors can appear on different pages, and long annotations continue on
+subsequent pages without a margin-collision policy. Whole-paragraph moves use the
+same `[M1:from]` and `[M1:to]` label at both locations. Format changes use an
+`[F1]` anchor, retain the current run appearance, and describe previous and
+current bold, italic, size and color in the annotation section. A missing size is
+`default` and automatic color is `auto`. These labels are textual connections,
+not interactive PDF annotations. `annotated.Annotations` exposes immutable
+attribution and original text in first-anchor order. `IncludeLegend = false`
+omits the insertion/deletion legend but does not remove the annotation section.
+The ordinary managed review output is not a tagged accessibility profile.
+
 The display is detached, so subsequent source edits or decisions do not change it.
 Its ordinary managed PDF and SVG share the source conversion options, limits and
 diagnostics; configure those options before concurrent use. Native typography,
-tagged or archival PDF, PNG, comments, moves, structural or format history,
-revisions in headers/footers and structured content are rejected. Structured
+tagged or archival PDF, PNG, revisions in headers/footers, structural changes
+other than supported paired moves, and structured content are rejected. Without
+the numbered policy, comments, moves and format history are rejected as well. Structured
 content includes fields, bookmarks, links, images, notes, drawings and controls;
 tables must have ordinary unmerged, unnested cells. Source load warnings also
 prevent display creation. Invalid profiles and cancellation are checked before
 the staged PDF is copied to the caller's stream. The normal final-copy I/O limits
 still apply. The original accepted/rejected view APIs and regular export behavior
-remain available. This is unreleased source work; issue #148 remains open pending
-its complete acceptance and exact-runtime qualification.
+remain available. This is unreleased source work; issues #148 and #149 remain open
+pending their complete acceptance and exact-runtime qualification.
 
 ## 1.5.0 roadmap #102 delivery
 

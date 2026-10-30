@@ -6,7 +6,8 @@
 `FragmentInsertionOptions` add bounded opt-in placement and field policies while
 retaining the original fragment signatures. `CreateReviewDisplay` returns a
 detached `DocumentReviewDisplay` with immutable revision metadata and explicit
-managed PDF/SVG output. See the [fragment](editing-and-templates.md) and
+managed PDF/SVG output. `ReviewAnnotationPolicy.NumberedEndNotes` opts into
+numbered comments, format changes and paired move indicators. See the [fragment](editing-and-templates.md) and
 [review](review-workflows.md#unreleased-source-detached-text-revision-display)
 profiles for bounds and exclusions. These signatures are pending source work,
 not part of the published 1.5.0 API; exact-framework and package qualification

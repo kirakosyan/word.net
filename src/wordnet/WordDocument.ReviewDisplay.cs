@@ -11,11 +11,13 @@ using WordNet.Model;
 
 namespace WordNet;
 
-/// <summary>Controls the optional attribution legend in an explicit review display.</summary>
+/// <summary>Controls attribution and annotation behavior in an explicit review display.</summary>
 public sealed class ReviewDisplayOptions
 {
     /// <summary>Gets or sets whether an attribution legend is appended. Defaults to true.</summary>
     public bool IncludeLegend { get; set; } = true;
+    /// <summary>Gets or sets the policy for supported comments, moves and formatting history. Defaults to rejection.</summary>
+    public ReviewAnnotationPolicy AnnotationPolicy { get; set; }
 }
 
 /// <summary>Immutable attribution and original text for one marked text revision.</summary>
@@ -44,10 +46,17 @@ public sealed class DocumentReviewDisplay
     private readonly WordDocument snapshot;
     private readonly ConversionOptions conversion;
     private readonly IReadOnlyList<ReviewDisplayRevision> revisions;
-    internal DocumentReviewDisplay(WordDocument snapshot, ConversionOptions conversion, IEnumerable<ReviewDisplayRevision> revisions)
-    { this.snapshot = snapshot; this.conversion = conversion; this.revisions = new ReadOnlyCollection<ReviewDisplayRevision>(revisions.ToArray()); }
+    private readonly IReadOnlyList<ReviewDisplayAnnotation> annotations;
+    internal DocumentReviewDisplay(WordDocument snapshot, ConversionOptions conversion, IEnumerable<ReviewDisplayRevision> revisions, IEnumerable<ReviewDisplayAnnotation> annotations)
+    {
+        this.snapshot = snapshot; this.conversion = conversion;
+        this.revisions = new ReadOnlyCollection<ReviewDisplayRevision>(revisions.ToArray());
+        this.annotations = new ReadOnlyCollection<ReviewDisplayAnnotation>(annotations.ToArray());
+    }
     /// <summary>Gets immutable attribution and text in display-marker order.</summary>
     public IReadOnlyList<ReviewDisplayRevision> Revisions => revisions;
+    /// <summary>Gets immutable numbered annotations in their first source-anchor order.</summary>
+    public IReadOnlyList<ReviewDisplayAnnotation> Annotations => annotations;
 
     /// <summary>Writes an ordinary managed PDF from the detached display, leaving the destination open.</summary>
     public ConversionResult SavePdf(Stream destination, CancellationToken cancellationToken = default)
@@ -88,11 +97,15 @@ public sealed partial class WordDocument
     /// <summary>Creates a detached, immutable marked display for supported body/cell text insertions and deletions.</summary>
     /// <remarks>Deletion text is retained and searchable in PDF. Each colored change is also surrounded by a
     /// textual I/D marker carrying author and optional date; original colors of changed text are replaced.
-    /// Comments, moves, structural/format history, story revisions and structured content are unsupported.
+    /// The optional numbered annotation policy admits supported comments, moves and format history;
+    /// other structural history, story revisions and structured content are unsupported.
     /// The source session and its retained history are never modified.</remarks>
     public DocumentReviewDisplay CreateReviewDisplay(ReviewDisplayOptions? displayOptions = null, CancellationToken cancellationToken = default)
     {
         bool legend = displayOptions?.IncludeLegend ?? true;
+        ReviewAnnotationPolicy annotationPolicy = displayOptions?.AnnotationPolicy ?? ReviewAnnotationPolicy.Reject;
+        if (annotationPolicy is not ReviewAnnotationPolicy.Reject and not ReviewAnnotationPolicy.NumberedEndNotes)
+            throw new ArgumentOutOfRangeException(nameof(displayOptions));
         lock (gate)
         {
             using var operation = BeginOperation();
@@ -100,7 +113,8 @@ public sealed partial class WordDocument
             ConversionContext context = Context(options, cancellationToken);
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Warning))
                 throw new NotSupportedException("Review.DisplaySourceLoss: Resolve source load losses before creating a review display.");
-            if (model.Review.Comments.Count != 0 || model.Review.Revisions.Values.Any(r => r.Structure.Length != 0 || r.MoveSide.Length != 0))
+            if (annotationPolicy == ReviewAnnotationPolicy.Reject
+                && (model.Review.Comments.Count != 0 || model.Review.Revisions.Values.Any(r => r.Structure.Length != 0 || r.MoveSide.Length != 0)))
                 throw new NotSupportedException("Review.DisplayProfile: Comments, moves and structural/format revisions require a separate display profile.");
             if (model.Controls.HasControls || model.HasControlDisplay || model.ObjectCount != 0 || model.Notes.Count != 0
                 || model.Paragraphs.Any(p => p.Control != null || p.NestedControl != null)
@@ -114,6 +128,8 @@ public sealed partial class WordDocument
                 throw new NotSupportedException("Review.DisplayProfile: Revision display is limited to body and table-cell text.");
 
             DocumentModel copy = new DocumentCloner(context).Copy(model);
+            IReadOnlyList<ReviewDisplayAnnotation> annotations = annotationPolicy == ReviewAnnotationPolicy.NumberedEndNotes
+                ? ReviewAnnotations.Prepare(copy, context) : Array.Empty<ReviewDisplayAnnotation>();
             var ordered = new List<string>(); var texts = new Dictionary<string, StringBuilder>(StringComparer.Ordinal);
             foreach (ParagraphBlock paragraph in ReviewStore.SupportedParagraphs(copy.Blocks))
                 foreach (TextRun run in paragraph.Runs)
@@ -132,6 +148,9 @@ public sealed partial class WordDocument
                 var item = new ReviewDisplayRevision(label, record, texts[id].ToString()); items.Add(item); byId.Add(id, item);
             }
             long characters = copy.CharacterCount;
+            foreach (ReviewDisplayAnnotation annotation in annotations)
+                AddCharacters(checked(annotation.Label.Length + annotation.Author.Length + annotation.Initials.Length + annotation.Text.Length
+                    + (annotation.PreviousFormatting?.Length ?? 0) + (annotation.CurrentFormatting?.Length ?? 0)));
             foreach (ReviewDisplayRevision item in items)
             {
                 context.CheckCancellation();
@@ -180,7 +199,7 @@ public sealed partial class WordDocument
             }
             Admit(copy, context); context.CheckCancellation();
             var snapshot = new WordDocument(copy, options) { diagnostics = context.Result(0).Diagnostics };
-            return new DocumentReviewDisplay(snapshot, options, items);
+            return new DocumentReviewDisplay(snapshot, options, items, annotations);
 
             void AddCharacters(int count)
             {

@@ -10,7 +10,7 @@
 
 The current published release is [1.5.0](https://github.com/kirakosyan/word.net/releases/tag/v1.5.0). Its bounded review and drawing support is described in the [P4/P5 profile](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p4-p5.md). Further template compatibility and feature combinations are planned in [roadmap #138](https://github.com/kirakosyan/word.net/issues/138).
 
-Pending source work includes an explicit [review display](docs/review-workflows.md#unreleased-source-detached-text-revision-display) for bounded text changes; it is not part of the published 1.5.0 package.
+Pending source work includes an explicit [review display](docs/review-workflows.md#unreleased-source-detached-text-revision-display) for bounded text changes and numbered annotations; it is not part of the published 1.5.0 package.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.

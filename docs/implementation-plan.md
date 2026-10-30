@@ -25,6 +25,9 @@ and independent qualification criteria stay open.
 Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
 cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
 and remaining acceptance/runtime qualification are separate from published 1.5.0.
+Unreleased #149 work adds an explicit numbered annotation policy for supported
+classic comments, format changes and paired paragraph moves. The issue remains
+open pending complete independent and exact-runtime qualification.
 The [pending source matrix](roadmap-138-source-matrix.json) maps supported and
 rejected combinations to executable tests; it does not alter the dated baseline.
 

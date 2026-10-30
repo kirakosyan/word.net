@@ -3,7 +3,9 @@
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot
 through the shared layout without modifying the source review store; unsupported
-history, structured owners and output profiles fail explicitly. See the
+history, structured owners and output profiles fail explicitly. An explicit numbered
+end-annotation policy maps supported classic comments, formatting and paired moves
+to source anchors without margin callout placement. See the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
 
 ## 1.5.0 roadmap #102 delivery
