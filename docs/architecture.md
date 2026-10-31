@@ -86,6 +86,9 @@ Pending #157 generalizes those body repeat owners to an ordered, bounded chain;
 the reader, writer and cloner preserve that chain, and every repeat boundary is
 checked before expansion. This does not expand typed-control or row-repeat
 ownership, and the published 1.5.0 profile remains unchanged.
+Pending #163 adds a horizontal clustered-bar graph and ordinary managed vector
+layout. It preserves the existing workbook/cache contract and records the known
+plot-area difference; this does not qualify native, tagged or archival output.
 Cross-tabs build bounded simple tables with a conservative fit check; pending
 cell placement admits only fixed grids with four unambiguous physical margins and
 emits explicit nested-cell margins, so width admission does not guess defaults.

@@ -31,6 +31,10 @@ Pending #158 adds `WordDocument.InsertCrossTabAtBookmark` and
 the existing prepared-record and aggregation types; the released append API is
 unchanged. Cell placement requires fixed geometry and explicit physical margins.
 
+Pending #163 adds `ChartKind.ClusteredBar` without changing existing enum values
+or chart constructors. It uses the existing immutable chart and report-binding
+APIs; its managed rendering approximation and profile restrictions are explicit.
+
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)

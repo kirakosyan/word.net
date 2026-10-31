@@ -212,6 +212,12 @@ operator, placement, growth, placeholder and hidden-limit variants use
 
 The 1.3.0 diagnostics include `Object.*` graph/owner/combination/editable-output losses, `Chart.*` cache/range/appearance/label-fit failures, `Equation.*` OMML/MATH/font/geometry limits, `Typography.Bidi*` balanced-control and resource checks, and `Pdf.NativeLanguage` for unsupported native language metadata. `Object.UnsupportedLoss` records omission of a valid out-of-profile chart/equation during ordinary Lenient/BestEffort conversion. Strict conversion, session loading, native typography and tagged/UA/PDF-A destinations reject that loss. Malformed graphs, unsafe relationships, unsupported admitted-object render constructions and UA combination failures remain hard errors in Lenient mode. See [P2 contracts](p2-objects-typography.md).
 
+Pending #163 horizontal-bar rendering reports `Chart.BarLayoutApproximation`
+in BestEffort/Lenient for its measured plot-area difference; Strict export is
+already rejected by `Object.EditableOutputLoss`. `Chart.BarProfile` rejects
+unqualified native, tagged and archival combinations. Custom bar gaps, overlap
+and axis appearances remain non-renderable rather than silently ignored.
+
 Unreleased #151 source reports `Typography.MergedTableSpacing` when conservative
 native line metrics may change merged-table row heights; Strict rejects this loss.
 `Typography.MergedTableDirection`, `Typography.MergedTableConformance` and

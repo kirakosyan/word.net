@@ -3,6 +3,27 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "horizontal-bars-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Clustered horizontal bars retain editable workbook data and render signed managed vectors with an explicit plot-area approximation in BestEffort/Lenient.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "HorizontalBarsKeepEditableDataAndRenderSignedVectorGeometry" },
+        { "class": "ObjectFoundationTests", "method": "HorizontalBarBindingRetainsKindAndImmutableSource" },
+        { "class": "ObjectFoundationTests", "method": "PublicChartEditingRebuildsWorkbookAndCachesWithValidSchema" }
+      ]
+    },
+    {
+      "id": "horizontal-bars-unqualified",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Strict loss, unsupported gap/axis appearances and native, tagged or archival combinations remain explicit failures.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "HorizontalBarsRejectUnqualifiedProfilesAndUnsupportedChartForms" },
+        { "class": "ObjectFoundationTests", "method": "MathWithoutExplicitMathFontAndOversizedChartLabelsFailBeforeWriting" }
+      ]
+    },
+    {
       "id": "crosstab-fixed-cell-bookmark",
       "issue": 158,
       "outcome": "supported-bounded",
@@ -130,7 +151,7 @@
       "id": "crosstab-protected-placement",
       "issue": 158,
       "outcome": "rejected",
-      "boundary": "Partial, enclosed or cell bookmarks, references to the placeholder, reentrant data and cancellation do not commit a table.",
+      "boundary": "Body-bookmark insertion rejects partial, enclosed or cell bookmarks, placeholder references, reentrant data and cancellation without committing a table.",
       "tests": [
         { "class": "EditingTemplateTests", "method": "BodyCrossTabRejectsUnsafePlaceholdersReferencesAndReentrantData" }
       ]

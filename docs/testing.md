@@ -238,6 +238,13 @@ The [local performance receipt](measurements/roadmap-138-performance-8f6b5ea.jso
 compares the same-source successor with its previous head under the unchanged
 single-core gate; it does not erase the earlier hosted performance failure.
 
+Pending #163 clustered horizontal-bar tests check editable workbook data, signed
+vector geometry, binding and explicit rejection of unsupported forms. The
+[independent comparison](measurements/roadmap-138-horizontal-bars-reference.json)
+retains the initial label-placement problem and the remaining failures against the
+original 0.5-point absolute geometry tolerance. BestEffort and Lenient diagnose
+that approximation; Strict, native, tagged and archival output are not qualified.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection
@@ -360,8 +367,8 @@ placeholder-style overrides, unsupported owners, cancellation and untouched
 source/destination sessions.
 The full #146 acceptance and cross-platform qualification remain open.
 
-The [unreleased source matrix](roadmap-138-source-matrix.json) maps current #141,
-#143, #146, #148, #149 and #166 positive and negative combinations to test methods. Run
+The [unreleased source matrix](roadmap-138-source-matrix.json) maps bounded positive
+and negative combinations across the pending roadmap work to test methods. Run
 `python eng/verify-roadmap-138-source-matrix.py --run` after locked restore to
 validate the mapping and execute those tests; add `--framework net8.0` to use
 .NET 8. This is not public-package or platform qualification.

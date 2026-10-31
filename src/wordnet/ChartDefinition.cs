@@ -6,13 +6,15 @@ using WordNet.Internal;
 
 namespace WordNet;
 
-/// <summary>The two admitted, two-dimensional, linear chart types.</summary>
+/// <summary>The admitted, two-dimensional, linear chart types.</summary>
 public enum ChartKind
 {
     /// <summary>Side-by-side columns with a zero baseline.</summary>
     ClusteredColumn,
     /// <summary>Ordinary non-stacked lines; missing values break the line.</summary>
     Line,
+    /// <summary>Side-by-side horizontal bars with a zero baseline.</summary>
+    ClusteredBar,
 }
 
 /// <summary>One immutable, explicitly coloured series. Null values are gaps.</summary>
@@ -46,7 +48,7 @@ public sealed class ChartDefinition
     /// <summary>Copies an admitted chart with 1–16 series, matching category counts and at most 10,000 total points.</summary>
     public ChartDefinition(ChartKind kind, IEnumerable<string> categories, IEnumerable<ChartSeries> series, string title = "", bool showLegend = true, string categoryTitle = "", string valueTitle = "")
     {
-        if (kind is not ChartKind.ClusteredColumn and not ChartKind.Line) throw new ArgumentOutOfRangeException(nameof(kind));
+        if (kind is not ChartKind.ClusteredColumn and not ChartKind.Line and not ChartKind.ClusteredBar) throw new ArgumentOutOfRangeException(nameof(kind));
         Guard.NotNull(categories, nameof(categories));
         Guard.NotNull(series, nameof(series));
         ObjectText.Check(title, nameof(title), 1024);

@@ -83,6 +83,31 @@ objects before omission, preserving their separate combination boundaries. Malfo
 errors in every mode; admitted objects with unsupported visible appearance still
 reject static rendering. Word inline anchor/edit identifiers are harmless metadata.
 
+### Unreleased source: clustered horizontal bars
+
+Pending #163 adds `ChartKind.ClusteredBar` to the existing immutable chart,
+Add/Update and prepared-data binding APIs. Editable DOCX uses a clustered
+`c:barChart` with `barDir="bar"`, one linear category/value axis pair and the
+existing local workbook/cache agreement checks. Null values are gaps; zero values
+lie on the zero axis; finite negative and positive values extend to opposite sides.
+Categories run bottom to top, series and legend order follow the admitted source
+profile, and the default 150-percent gap is measured in one bar's thickness.
+Custom gaps/overlap, data labels, reversed or custom axes and other unqualified
+appearances may remain editable when admitted but reject static rendering.
+
+Ordinary managed PDF/XPS/SVG output is available only in BestEffort or Lenient
+with `Chart.BarLayoutApproximation`; Strict export already rejects the editable
+object loss. Native typography and tagged/UA or archival PDF combinations reject
+with `Chart.BarProfile`. The independently authored [reference case](measurements/roadmap-138-horizontal-bars-reference.json)
+confirms signed relative lengths, order and default-gap geometry, but its plot
+zero origin differs by 19.722 points and its category-label gap by 2.289 points.
+Both fail the existing 0.5-point absolute geometry tolerance; that threshold is
+unchanged and the failures remain open. This is not published 1.5.0 support or a
+claim of general Word/LibreOffice plot parity. Stacked, pie/doughnut charts and
+data labels remain open in #163.
+
+### Equation authoring
+
 Equations use the closed immutable `EquationExpression` factories. Size is in
 points. Public trees must also fit serialized OMML nesting, so very deep semantic
 trees may hit the XML limit first. Descriptions are separate session/export metadata;

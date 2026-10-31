@@ -91,6 +91,9 @@ Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;
 broader compatibility and exact-runtime/package qualification remain open.
+Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
+The reference plot-position failure, stacked/circular charts, data labels and
+native/tagged/archive qualification remain open.
 Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
 inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification
