@@ -97,13 +97,16 @@ independent geometry and directional parity remain open.
 Pending #154 adds explicitly [anchor-ordered accessible text boxes](interoperability.md#unreleased-source-anchor-ordered-text-boxes)
 for a narrow ordinary-body profile. Notes, alternate text semantics, other owners,
 placement, native typography and complete independent qualification remain open.
+Pending #155 adds explicitly [described or decorative vector semantics](interoperability.md#unreleased-source-accessible-vector-figures)
+for a bounded managed body-anchor profile. Arbitrary drawings, native and archival
+combinations, screen-reader behavior and full acceptance remain open.
 Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;
 broader compatibility and exact-runtime/package qualification remain open.
 Pending #161 adds [default rectangle, triangle and diamond presets](roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes)
 with independently checked managed vectors. Arrows, group membership, transforms,
-gradients and non-DOCX alternative semantics remain open.
+gradients and broader non-DOCX alternative semantics remain open.
 Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
 The reference plot-position failure, stacked/circular charts, data labels and
 native/tagged/archive qualification remain open.

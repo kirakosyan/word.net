@@ -57,6 +57,7 @@ internal sealed class ConversionContext
     internal ContentControlDateMode ControlDateMode { get; set; }
     internal bool HtmlImport { get; set; }
     internal bool PreviewIntermediate { get; set; }
+    internal bool RenderingPreview { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }
     internal TypographyOptions Typography { get; }
     internal List<OcrPage> OcrPages { get; } = new List<OcrPage>();

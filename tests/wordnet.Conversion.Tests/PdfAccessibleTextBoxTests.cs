@@ -13,7 +13,7 @@ namespace WordNet.Tests;
 public sealed class PdfAccessibleTextBoxTests
 {
     private static string P(string text) => TestDocuments.TextParagraph(text);
-    private static string Box(string content) => "<w:p><w:r><w:drawing><wp:anchor xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing' simplePos='0' relativeHeight='0' behindDoc='0' locked='0' layoutInCell='1' allowOverlap='1'>"
+    internal static string Box(string content) => "<w:p><w:r><w:drawing><wp:anchor xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing' simplePos='0' relativeHeight='0' behindDoc='0' locked='0' layoutInCell='1' allowOverlap='1'>"
         + "<wp:simplePos x='0' y='0'/>"
         + "<wp:positionH relativeFrom='margin'><wp:posOffset>0</wp:posOffset></wp:positionH><wp:positionV relativeFrom='paragraph'><wp:posOffset>0</wp:posOffset></wp:positionV>"
         + "<wp:extent cx='2540000' cy='1016000'/><wp:wrapTopAndBottom/><wp:docPr id='1' name='Box'/>"

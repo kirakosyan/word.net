@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using WordNet.Model;
 
 namespace WordNet.Layout;
 
 internal sealed class FixedShape
 {
-    internal FixedShape(double x, double y, double width, double height, string color, double stroke = 0, string style = "single", string? geometry = null, bool foreground = false)
-    { X = x; Y = y; Width = width; Height = height; Color = color; Stroke = stroke; Style = style; Geometry = geometry; Foreground = foreground; }
+    internal FixedShape(double x, double y, double width, double height, string color, double stroke = 0, string style = "single", string? geometry = null, bool foreground = false, TextRun? sourceRun = null)
+    { X = x; Y = y; Width = width; Height = height; Color = color; Stroke = stroke; Style = style; Geometry = geometry; Foreground = foreground; SourceRun = sourceRun; }
     internal double X { get; }
     internal double Y { get; }
     internal double Width { get; }
@@ -16,7 +17,8 @@ internal sealed class FixedShape
     internal string Style { get; }
     internal string? Geometry { get; }
     internal bool Foreground { get; }
-    internal FixedShape At(double x, double y) => new FixedShape(x, y, Width, Height, Color, Stroke, Style, Geometry, Foreground);
+    internal TextRun? SourceRun { get; }
+    internal FixedShape At(double x, double y) => new FixedShape(x, y, Width, Height, Color, Stroke, Style, Geometry, Foreground, SourceRun);
     internal static IEnumerable<FixedShape> PaintOrder(IEnumerable<FixedShape> shapes)
     {
         FixedShape[] all = shapes.ToArray();

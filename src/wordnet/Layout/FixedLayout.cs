@@ -1035,7 +1035,10 @@ internal static partial class FixedLayout
                     PositionedBox box = item.Box;
                     if (box.Geometry != null)
                     {
-                        if (!ContentProfiles.ManagedFixedOutput(context))
+                        bool taggedVector = !context.RenderingPreview && !context.Typography.Enabled && context.Destination == DocumentFormat.Pdf
+                            && context.Options.Pdf.Conformance == PdfConformance.Pdf17 && context.Options.Pdf.Accessibility != PdfAccessibility.None
+                            && (context.Options.Pdf.VectorSemantics is PdfVectorSemantics.DescribedAtAnchor or PdfVectorSemantics.Decorative);
+                        if (!ContentProfiles.ManagedFixedOutput(context) && !taggedVector)
                             throw new NotSupportedException("Shape.VectorProfile: Vector shapes require managed ordinary fixed output.");
                         var vectorBounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
                         double halfStroke = (box.Border?.Width ?? 0) / 2;
@@ -1044,8 +1047,8 @@ internal static partial class FixedLayout
                         if (vectorBounds.X - halfStroke < 0 || vectorBounds.Y - halfStroke < 0
                             || vectorBounds.X + vectorBounds.Width + halfStroke > settings.Width || vectorBounds.Y + vectorBounds.Height + halfStroke > settings.Height)
                             throw new NotSupportedException("Layout.AnchorBounds: Vector strokes must fit inside the physical page.");
-                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Fill, geometry: box.Geometry, foreground: !box.Anchor.Behind));
-                        if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind));
+                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Fill, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun));
+                        if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun));
                         RememberExclusion(box.Anchor, vectorBounds); continue;
                     }
                     if ((box.Rotation != 0 || box.ShrinkToFit) && (!ContentProfiles.ManagedFixedOutput(context)))

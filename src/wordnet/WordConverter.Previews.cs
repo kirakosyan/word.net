@@ -49,6 +49,7 @@ public sealed partial class WordConverter
 
     private static DocumentPreview RenderModel(DocumentModel model, PreviewFormat format, int dpi, long pixelLimit, PageRange[] ranges, ConversionContext context, LayoutSnapshotOptions? layout)
     {
+        context.RenderingPreview = true;
         ConversionOptions options = context.Options; context.Phase = DiagnosticPhase.Destination;
         FidelityChecks.Destination(model, DocumentFormat.Pdf, context); context.Phase = DiagnosticPhase.Layout;
         var pages = FixedLayout.Create(model, context); int[] selected = PageSelection.Resolve(ranges, pages.Count);

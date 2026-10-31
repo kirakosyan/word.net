@@ -209,6 +209,35 @@ options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
 options.Pdf.TextBoxReadingOrder = PdfTextBoxReadingOrder.AnchorOrder;
 ```
 
+### Unreleased source: accessible vector figures
+
+Pending #155 adds `PdfOptions.VectorSemantics` for tagged PDF and PDF/UA-1.
+The default `Reject` preserves the previous behavior. `DescribedAtAnchor`
+requires a nonempty authored description on every admitted vector and places a
+Figure with that alternative at its source anchor in the logical structure.
+`Decorative` explicitly declares all admitted vectors decorative, requires each
+to have no authored description, and marks their paint as artifacts. Neither
+policy infers an author's intent. Separate vector titles are rejected.
+
+The bounded profile admits the existing unrotated line, ellipse, rounded rectangle,
+rectangle, triangle and diamond geometry. Each vector must be the sole item in an
+ordinary top-level body paragraph on a one-column page, unlayered and anchored to
+the paragraph with top-and-bottom wrapping and zero vertical offset. Figure fill
+and stroke share one semantic owner; page selection removes omitted owners. The
+explicit text-box anchor-order profile can be selected for separate paragraphs in
+the same document. Native typography, notes, histories, groups, adjustments,
+rotations, cell/story owners, arbitrary placement, and tagged PDF/A remain outside
+this increment. Unsupported or hidden vectors cannot be silently omitted from
+accessible output, even under Lenient. The [independent observation](measurements/roadmap-138-accessible-vectors-reference.json)
+records structure, geometry, schema and PDF/UA checks; it does not establish
+screen-reader or live Word behavior, published-package availability, or full #155
+acceptance.
+
+```csharp
+options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+options.Pdf.VectorSemantics = PdfVectorSemantics.DescribedAtAnchor;
+```
+
 ## Physical pages and previews
 
 `Pdf.Pages.Add(new PageRange(first, last))` selects one-based physical source pages,

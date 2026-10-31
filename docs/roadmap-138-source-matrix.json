@@ -16,10 +16,34 @@
       "id": "preset-polygon-boundaries",
       "issue": 161,
       "outcome": "rejected",
-      "boundary": "Hidden, adjusted, rotated, out-of-page or unknown presets and tagged/archive output reject in Strict; lenient omission is diagnosed and cancellation is atomic.",
+      "boundary": "Hidden, adjusted, rotated, out-of-page or unknown presets and default tagged/archive output reject in Strict; permitted ordinary lenient omission is diagnosed and cancellation is atomic.",
       "tests": [
         { "class": "PresetVectorShapeTests", "method": "UnqualifiedPresetsFailBeforeOutput" },
         { "class": "PresetVectorShapeTests", "method": "UnsupportedAdjustmentsAreDiagnosedAndCancellationPreservesOutput" }
+      ]
+    },
+    {
+      "id": "accessible-vector-semantics",
+      "issue": 155,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit described figures and decorative artifacts retain the source-anchor order of six admitted managed vectors in tagged/PDF-UA output, including selected pages and separately ordered boxes.",
+      "tests": [
+        { "class": "PdfAccessibleVectorTests", "method": "EachAdmittedVectorKindUsesTheExplicitSemanticPolicy" },
+        { "class": "PdfAccessibleVectorTests", "method": "MultipleFiguresAndSeparateStrokeRemainInSourceOrder" },
+        { "class": "PdfAccessibleVectorTests", "method": "SelectedPageRetainsTheShapeOwnerWithoutOmittedText" },
+        { "class": "PdfAccessibleVectorTests", "method": "VectorAndExplicitlyOrderedTextBoxRemainSeparate" }
+      ]
+    },
+    {
+      "id": "accessible-vector-boundaries",
+      "issue": 155,
+      "outcome": "rejected",
+      "boundary": "Unqualified owners, alternatives, hidden/unknown vectors, native and archive combinations fail before output; editing sessions cannot omit unknown vectors and cancellation is atomic.",
+      "tests": [
+        { "class": "PdfAccessibleVectorTests", "method": "UnqualifiedOwnersAndSemanticsLeaveOutputUntouched" },
+        { "class": "PdfAccessibleVectorTests", "method": "AccessibleOutputNeverDropsUnsupportedVectorsInLenientMode" },
+        { "class": "PdfAccessibleVectorTests", "method": "EditableSessionCannotOmitAnUnknownVectorInLenientMode" },
+        { "class": "PdfAccessibleVectorTests", "method": "PolicySnapshotInvalidValueAndCancellationAreExplicit" }
       ]
     },
     {

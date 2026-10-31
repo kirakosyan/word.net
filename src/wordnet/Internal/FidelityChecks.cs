@@ -17,7 +17,9 @@ internal static class FidelityChecks
             }
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx))
             foreach (ParagraphBlock paragraph in model.Paragraphs.Where(p => p.Runs.Any(r => r.Box is PositionedBox box
-                && box.Geometry != null && (box.AlternativeTitle.Length != 0 || (box.Geometry is "rect" or "triangle" or "diamond") && box.AlternativeText.Length != 0))))
+                && box.Geometry != null && (box.AlternativeTitle.Length != 0 || (box.Geometry is "rect" or "triangle" or "diamond") && box.AlternativeText.Length != 0)
+                && !(format == DocumentFormat.Pdf && !context.RenderingPreview && context.Options.Pdf.Accessibility != PdfAccessibility.None
+                    && (context.Options.Pdf.VectorSemantics is PdfVectorSemantics.DescribedAtAnchor or PdfVectorSemantics.Decorative)))))
             {
                 using var location = context.At(paragraph.Location);
                 context.Loss("Shape.PresetAlternative", "This destination does not retain the preset shape's authored alternative title or description.");

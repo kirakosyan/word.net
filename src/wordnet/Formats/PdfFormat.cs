@@ -59,10 +59,15 @@ internal static class PdfFormat
                 context.CheckCancellation();
                 PdfPageBuilder target = builder.AddPage(page.Settings.Width, page.Settings.Height);
                 tags?.NewPage();
-                if (tags != null) target.CurrentStream.Operations.Add(new BeginMarkedContent(NameToken.Create("Artifact")));
                 foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => !s.Foreground)))
                 {
-                    if (shape.Geometry != null) { PaintVector(target, shape, page.Settings.Height); continue; }
+                    tags?.BeginShape(target, shape);
+                    if (shape.Geometry != null)
+                    {
+                        PaintVector(target, shape, page.Settings.Height);
+                        if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
+                        continue;
+                    }
                     byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
                     if (shape.Stroke == 0)
                     {
@@ -83,8 +88,8 @@ internal static class PdfFormat
                                 offset == 0 ? shape.Stroke : shape.Stroke / 3);
                         target.CurrentStream.Operations.Add(new SetLineDashPattern(Array.Empty<double>(), 0));
                     }
+                    if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 }
-                if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 foreach (PositionedText text in page.Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1))
                 {
                     if (tags != null && text.NativeShape != null)
@@ -143,7 +148,11 @@ internal static class PdfFormat
                     }
                     if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 }
-                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground))) PaintVector(target, shape, page.Settings.Height);
+                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground)))
+                {
+                    tags?.BeginShape(target, shape); PaintVector(target, shape, page.Settings.Height);
+                    if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
+                }
                 void AddLink(string link, PdfRectangle area, PdfTags.Node? semantic)
                 {
                     if (context.PreviewIntermediate) return;

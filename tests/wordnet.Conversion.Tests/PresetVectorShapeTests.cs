@@ -19,16 +19,18 @@ public sealed class PresetVectorShapeTests
     private const string Wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
     private const string Wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
 
-    private static byte[] Source(string geometry, string title = "", string description = "", string adjustment = "", string transform = "", string horizontal = "1270000")
+    internal static byte[] Source(string geometry, string title = "", string description = "", string adjustment = "", string transform = "", string horizontal = "1270000")
     {
+        string fill = geometry == "line" ? "<a:noFill/>" : "<a:solidFill><a:srgbClr val='2468AC'/></a:solidFill>";
+        string line = geometry == "line" ? "<a:ln w='25400'><a:solidFill><a:srgbClr val='FF0000'/></a:solidFill></a:ln>" : "<a:ln><a:noFill/></a:ln>";
         string drawing = "<w:p><w:r><w:drawing><wp:anchor xmlns:wp='" + Wp + "' distT='0' distB='0' distL='0' distR='0' simplePos='0' relativeHeight='0' behindDoc='0' locked='0' layoutInCell='1' allowOverlap='1'>"
             + "<wp:simplePos x='0' y='0'/><wp:positionH relativeFrom='page'><wp:posOffset>" + horizontal + "</wp:posOffset></wp:positionH>"
             + "<wp:positionV relativeFrom='page'><wp:posOffset>1270000</wp:posOffset></wp:positionV><wp:extent cx='1778000' cy='1016000'/>"
             + "<wp:wrapNone/><wp:docPr id='1' name='Synthetic shape' title='" + SecurityElement.Escape(title) + "' descr='" + SecurityElement.Escape(description) + "'/>"
             + "<a:graphic xmlns:a='" + A + "'><a:graphicData uri='" + Wps + "'><wps:wsp xmlns:wps='" + Wps + "'><wps:cNvSpPr/><wps:spPr>"
             + "<a:xfrm" + transform + "><a:off x='0' y='0'/><a:ext cx='1778000' cy='1016000'/></a:xfrm>"
-            + "<a:prstGeom prst='" + geometry + "'><a:avLst>" + adjustment + "</a:avLst></a:prstGeom><a:solidFill><a:srgbClr val='2468AC'/></a:solidFill>"
-            + "<a:ln><a:noFill/></a:ln></wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r></w:p>";
+            + "<a:prstGeom prst='" + geometry + "'><a:avLst>" + adjustment + "</a:avLst></a:prstGeom>" + fill + line
+            + "</wps:spPr><wps:bodyPr/></wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r></w:p>";
         return TestDocuments.Docx(TestDocuments.Body(TestDocuments.TextParagraph("Before") + drawing + TestDocuments.TextParagraph("After")
             + "<w:sectPr><w:pgSz w:w='12240' w:h='15840'/><w:pgMar w:top='720' w:right='720' w:bottom='720' w:left='720' w:header='0' w:footer='0' w:gutter='0'/></w:sectPr>"));
     }

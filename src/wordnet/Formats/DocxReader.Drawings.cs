@@ -157,9 +157,14 @@ internal sealed partial class DocxReader
         XElement? properties = shapes[0].Element(wps + "spPr");
         XElement? geometry = properties?.Element(A + "prstGeom"); string? kind = (string?)geometry?.Attribute("prst");
         if (kind is not "line" and not "ellipse" and not "roundRect" and not "rect" and not "triangle" and not "diamond")
-        { context.Loss("Shape.VectorUnsupported", "The drawing geometry is outside the admitted vector profile."); return null; }
-        if ((kind is "rect" or "triangle" or "diamond") && (string?)anchor.Element(Wp + "docPr")?.Attribute("hidden") is not null and not "0" and not "false" and not "off")
-            throw new NotSupportedException("Shape.Vector: Hidden preset shapes are outside the fixed-output profile.");
+        {
+            if (context.Editing || context.PreserveReview || context.Typography.Enabled || context.Destination == DocumentFormat.Pdf
+                && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+                throw new NotSupportedException("Shape.VectorUnsupported: The drawing geometry is outside the admitted vector profile.");
+            context.Loss("Shape.VectorUnsupported", "The drawing geometry is outside the admitted vector profile."); return null;
+        }
+        if ((string?)anchor.Element(Wp + "docPr")?.Attribute("hidden") is not null and not "0" and not "false" and not "off")
+            throw new NotSupportedException("Shape.Vector: Hidden vector shapes are outside the fixed-output profile.");
         if (properties == null || geometry == null || properties.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
             || properties.Elements().Any(e => e.Name != A + "xfrm" && e.Name != A + "prstGeom" && e.Name != A + "solidFill" && e.Name != A + "noFill" && e.Name != A + "ln")
             || geometry.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "prst") || geometry.Elements().Any(e => e.Name != A + "avLst" || e.HasElements || e.Attributes().Any(a => !a.IsNamespaceDeclaration))

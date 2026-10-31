@@ -86,9 +86,14 @@ and directional extraction differences are diagnosed; notes and charts stay reje
 Pending #154 builds a Div and paragraph subtree at an explicitly selected text-box
 anchor, using actual page MCIDs and link ParentTree associations. The opt-in is
 restricted to unambiguous unrotated body boxes; notes and other owners remain open.
+Pending #155 attaches each explicitly described vector's fill and stroke to a
+single Figure at its admitted source anchor, with page MCIDs and ParentTree owners;
+explicitly decorative vectors instead paint as artifacts. Unsupported owners and
+semantic combinations reject before output is copied.
 Pending #161 maps three default preset polygons through the existing drawing anchor
 and vector path pipeline. Editable title/description metadata is retained; output
-loss is diagnosed, while groups and transformed presets remain outside the profile.
+loss is diagnosed where the selected profile cannot preserve it, while groups and
+transformed presets remain outside the profile.
 
 ## P3 reports — merged source
 

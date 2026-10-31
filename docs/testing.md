@@ -243,6 +243,14 @@ records complete local suites, package checks and the repeated specimens.
 The pending Linux workflow runs these checks with test-only pypdf 6.10.0 and
 retains the generated evidence; its hosted result requires a separate run.
 
+Pending #155 tests described and explicitly decorative vectors across all six
+admitted geometries, page selection, repeated figures, fill and stroke, and
+separately opted-in text boxes. The [independent observation](measurements/roadmap-138-accessible-vectors-reference.json)
+records independently authored DOCX, schema and LibreOffice geometry checks,
+PDF/UA validation, ParentTree and source-order checks, and negative controls.
+The pending Linux workflow validates the generated corpus; hosted execution,
+screen-reader behavior, archival output and other drawing combinations remain open.
+
 Pending #161 tests default rectangle, triangle and diamond presets, editable
 alternative metadata, PDF/XPS/SVG output, invalid adjustments and output bounds.
 The [independent observation](measurements/roadmap-138-preset-shapes-reference.json)

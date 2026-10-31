@@ -247,11 +247,19 @@ box owner, placement, content or output combination before copying output.
 text-box title or description; Strict rejects it. Oversized text-box alternatives
 fail with `Shape.TextBoxAlternative` before use.
 
+Pending #155 uses `Pdf.VectorSemantics` to reject unqualified vector owners or
+placement, and `Pdf.VectorAlternative` to reject missing, conflicting or titled
+alternatives for the explicitly selected figure/decorative policy. Unsupported
+vectors cannot be omitted from accessible, archival, native or editable-session
+output in Lenient mode. A preview does not inherit the tagged-PDF exemption
+from an alternative-loss diagnostic.
+
 Pending #161 reports `Shape.PresetAlternative` when non-DOCX output would lose
 the title or description of a newly supported rectangle, triangle or diamond,
-or a title on an earlier admitted vector. Strict rejects that loss. Hidden shapes,
-unqualified transforms and adjustments remain explicit vector-profile failures
-or diagnosed omission under the existing lenient conversion policy.
+or a title on an earlier admitted vector. Strict rejects that loss; the bounded
+accessible figure policy preserves its admitted description instead. Hidden shapes,
+unqualified transforms and adjustments remain explicit vector-profile failures or,
+for permitted ordinary conversions only, diagnosed omission.
 
 ## Merged P1 diagnostics
 

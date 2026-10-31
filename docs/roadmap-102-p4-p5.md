@@ -107,12 +107,15 @@ checks source/saved schema, PDF vertices and edges against LibreOffice, and XPS/
 vertices at the unchanged 0.5-point tolerance. It does not establish Word execution
 or all positions, strokes and application-specific appearance.
 
-Non-DOCX output does not retain authored title or description for these new
-presets: BestEffort/Lenient report `Shape.PresetAlternative`, while Strict rejects
-the loss. Alternative titles on previously admitted vector presets are now retained
-in DOCX and diagnosed when a non-DOCX output would lose them. Hidden new presets,
+Ordinary non-DOCX output does not retain authored title or description for these
+new presets: BestEffort/Lenient report `Shape.PresetAlternative`, while Strict
+rejects the loss. A separately selected [accessible vector policy](interoperability.md#unreleased-source-accessible-vector-figures)
+can preserve an admitted description as a Figure alternative. Alternative titles
+on previously admitted vector presets are retained in DOCX and diagnosed when an
+output would lose them. Hidden presets,
 custom adjustments, rotations, groups, arrow presets, gradients, ambiguous layers,
-native typography and tagged/archive output remain unqualified. In ordinary
+native typography and archival output remain unqualified. In ordinary
 Lenient/BestEffort conversion an unsupported shape may be omitted only with the
-existing `Shape.VectorUnsupported` diagnostic; strict and editable sessions reject.
+existing `Shape.VectorUnsupported` diagnostic; strict, editable, accessible,
+native and archival output reject unsupported vectors.
 This increment is not in the published 1.5.0 package.

@@ -43,6 +43,10 @@ Pending #154 adds `PdfTextBoxReadingOrder` and `PdfOptions.TextBoxReadingOrder`.
 The default rejects or diagnoses text boxes as before; `AnchorOrder` explicitly
 opts into the bounded source-order profile on all target frameworks.
 
+Pending #155 adds `PdfVectorSemantics` and `PdfOptions.VectorSemantics`. Its
+default is `Reject`; callers can explicitly select described figures or
+decorative vector artifacts in the bounded managed accessible-PDF profile.
+
 Pending #161 adds three default vector preset geometries using existing conversion
 and session methods, without new public signatures. It also diagnoses loss of
 their authored alternatives and vector titles; existing API shapes remain intact.

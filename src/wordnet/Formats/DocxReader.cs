@@ -415,7 +415,9 @@ internal sealed partial class DocxReader
                 {
                     PositionedBox? shape;
                     try { shape = ReadVectorShape(child); }
-                    catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
+                    catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict
+                        && !context.Typography.Enabled && (context.Destination != DocumentFormat.Pdf
+                            || context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17))
                     { context.Loss("Shape.VectorUnsupported", "The drawing is outside the admitted vector profile and is omitted."); shape = null; }
                     if (shape != null) Emit(runs, new TextRun("", box: shape));
                     continue;

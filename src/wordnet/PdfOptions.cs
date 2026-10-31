@@ -32,6 +32,17 @@ public enum PdfTextBoxReadingOrder
     AnchorOrder = 1,
 }
 
+/// <summary>Explicit semantics for admitted vector drawings in tagged PDF.</summary>
+public enum PdfVectorSemantics
+{
+    /// <summary>Retain the existing rejection or loss for vector drawings.</summary>
+    Reject = 0,
+    /// <summary>Place each described vector at its source anchor as a figure.</summary>
+    DescribedAtAnchor = 1,
+    /// <summary>Treat every admitted vector in the document as decorative.</summary>
+    Decorative = 2,
+}
+
 /// <summary>Controls PDF output. Configure before starting concurrent conversions.</summary>
 public sealed class PdfOptions
 {
@@ -41,6 +52,8 @@ public sealed class PdfOptions
     public string? Language { get; set; }
     /// <summary>Gets or sets the explicit reading order for admitted positioned text boxes. Defaults to rejection.</summary>
     public PdfTextBoxReadingOrder TextBoxReadingOrder { get; set; }
+    /// <summary>Gets or sets the explicit semantic policy for admitted vector drawings. Defaults to rejection.</summary>
+    public PdfVectorSemantics VectorSemantics { get; set; }
     private List<PageRange> pages = new List<PageRange>();
     /// <summary>Gets ascending nonoverlapping physical source-page ranges; empty selects all. Full layout precedes selection, retaining original PAGE/NUMPAGES and labels.</summary>
     public IList<PageRange> Pages => pages;
@@ -59,6 +72,8 @@ public sealed class PdfOptions
             throw new ArgumentOutOfRangeException(nameof(Conformance));
         if (TextBoxReadingOrder is not PdfTextBoxReadingOrder.Reject and not PdfTextBoxReadingOrder.AnchorOrder)
             throw new ArgumentOutOfRangeException(nameof(TextBoxReadingOrder));
+        if (VectorSemantics is not PdfVectorSemantics.Reject and not PdfVectorSemantics.DescribedAtAnchor and not PdfVectorSemantics.Decorative)
+            throw new ArgumentOutOfRangeException(nameof(VectorSemantics));
         var copy = (PdfOptions)MemberwiseClone();
         if (pages.Count > 100000) throw new ArgumentException("Too many PDF page ranges.");
         copy.pages = new List<PageRange>(pages); return copy;
