@@ -3,6 +3,28 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "native-hindi-merged-diagnosed",
+      "issue": 151,
+      "outcome": "supported-bounded",
+      "boundary": "BestEffort and Lenient native output retain Hindi/Latin text in one-column merged tables with an explicit row-spacing loss; this does not qualify strict or tagged output.",
+      "tests": [
+        { "class": "NativeMergedTableTests", "method": "NativeMergedCellsKeepLogicalHindiTextWidthsAndRepeatedHeaders" }
+      ]
+    },
+    {
+      "id": "native-merged-unqualified",
+      "issue": 151,
+      "outcome": "rejected",
+      "boundary": "Strict row-spacing parity, right-to-left text, tagged/archive output and oversized vertical groups reject before copying output.",
+      "tests": [
+        { "class": "NativeMergedTableTests", "method": "RightToLeftMergedNativeTablesRemainExplicitlyRejected" },
+        { "class": "NativeMergedTableTests", "method": "MergedNativeConformanceProfilesRemainExplicitlyRejected" },
+        { "class": "NativeMergedTableTests", "method": "StrictMergedNativeOutputRejectsUnqualifiedRowSpacing" },
+        { "class": "NativeMergedTableTests", "method": "InvalidNativeMergeLeavesOutputUntouched" },
+        { "class": "NativeMergedTableTests", "method": "OversizedNativeVerticalMergeIsRejectedBeforeOutput" }
+      ]
+    },
+    {
       "id": "crosstab-body-bookmark",
       "issue": 158,
       "outcome": "supported-bounded",

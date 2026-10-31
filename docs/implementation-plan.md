@@ -78,6 +78,9 @@ Pending #150 adds [comparison selection](review-workflows.md#unreleased-source-c
 for admitted story text and run-format changes, plus [bounded paragraph-property
 revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
 Structural combinations and broader story/format categories remain open.
+Pending #151 source admits a diagnosed [Hindi/Latin merged-table subset](p2-objects-typography.md#unreleased-source-hindi-merged-tables)
+only in BestEffort and Lenient native output. Right-to-left merged tables, strict
+row-spacing parity and tagged/archive combinations remain open.
 Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;

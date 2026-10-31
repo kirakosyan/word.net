@@ -188,6 +188,12 @@ cell destinations, repeat-region insertion or unrestricted report nesting.
 The [exact-source receipt](measurements/roadmap-138-crosstab-placement-c0c31aa.json)
 records the complete local suites, package checks and reproduced reference document.
 
+Pending #151 native merged-table tests exercise Hindi clusters, horizontal and
+vertical cells, repeated headers, pagination and atomic rejection. The independent
+[reference observation](measurements/roadmap-138-native-merged-reference.json)
+checks text and cell ownership while retaining the row-spacing and Arabic
+differences. It does not establish right-to-left, tagged, archival or strict parity.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection

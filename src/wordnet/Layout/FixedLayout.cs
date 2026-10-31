@@ -540,6 +540,9 @@ internal static partial class FixedLayout
                 {
                     if (end - r > 1 || table.NonSplittingRows.Contains(r) || r < table.HeaderRowCount)
                     {
+                        if (end - r > 1 && context.Typography.Enabled && context.Typography.ExtendedBidi
+                            && rows.Skip(r).Take(end - r).SelectMany(row => row.Cells).Any(cell => cell.RowSpan > 1))
+                            throw new NotSupportedException("Typography.MergedGroupHeight: A vertically merged native table group cannot exceed the available page height.");
                         if (context.EffectiveMode != FidelityMode.Lenient)
                             throw new NotSupportedException("Layout.TableGroupHeight: A non-splitting row or vertically merged group exceeds a page.");
                         context.ReportStrictRejection(end - r > 1 ? "Table.MergedGroupSplit" : "Table.RowForcedSplit", "An oversized row/group is split at line boundaries to retain its content.");

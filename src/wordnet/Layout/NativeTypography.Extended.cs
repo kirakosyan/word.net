@@ -25,8 +25,18 @@ internal static partial class NativeTypography
         if (sections.SelectMany(s => s.Stories.Values).SelectMany(s => s).Any(b => b is not ParagraphBlock))
             throw new NotSupportedException("Typography.Story: Native headers and footers require ordinary paragraphs.");
         if (model.Tables.Any() && (sections.Any(s => s.Columns != 1) || model.Tables.Any(t => t.Control != null || t.RowControls.Count != 0
-            || t.Rows.SelectMany(r => r).Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock)))))
-            throw new NotSupportedException("Typography.Table: Native tables require one-column pages and simple, unmerged cells without nested tables or controls.");
+            || t.Rows.SelectMany(r => r).Any(c => c.Blocks.Any(b => b is not ParagraphBlock)))))
+            throw new NotSupportedException("Typography.Table: Native tables require one-column pages and paragraph cells without nested tables or controls.");
+        bool mergedCells = model.Tables.Any(t => t.Rows.SelectMany(r => r).Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None));
+        if (mergedCells && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+            throw new NotSupportedException("Typography.MergedTableConformance: Merged native tables are qualified only for ordinary untagged PDF and previews.");
+        if (mergedCells && (context.Typography.Direction == TextDirection.RightToLeft
+            || model.Tables.Where(t => t.Rows.SelectMany(r => r).Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None))
+                .SelectMany(t => t.Rows).SelectMany(row => row).SelectMany(cell => cell.Paragraphs)
+                .Any(p => p.RightToLeft == true || p.Runs.Any(run => run.Text.Any(ch => Arabic(ch) || UnicodeBidi.Format(ch))))))
+            throw new NotSupportedException("Typography.MergedTableDirection: Right-to-left or mixed-direction native merged tables require further qualification.");
+        if (mergedCells)
+            context.Loss("Typography.MergedTableSpacing", "Conservative native line metrics can change merged-table row heights compared with the source application.");
         FontSource[] sources = context.Options.Fonts.Sources.ToArray();
         if (sources.Length > 128 || sources.Any(s => s == null) || sources.Sum(s => (long)s.Bytes.Length) > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TypographyFonts: Caller font count/bytes exceed the operation allowance.");

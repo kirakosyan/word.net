@@ -181,6 +181,24 @@ doc.AddEquation(sum);
 
 ## Native text and accessible output
 
+### Unreleased source: Hindi merged tables
+
+The pending #151 source admits horizontal and vertical merges in one-column,
+non-nested native tables with Hindi and Latin text, subject to the existing font,
+cluster, owner and resource checks. This is separate from the published 1.5.0
+profile and is not yet complete #151 qualification. BestEffort and Lenient output
+report `Typography.MergedTableSpacing`: the native conservative line metrics can
+make rows taller than the source application's rows. Strict output rejects that
+known difference. Oversized vertically merged groups fail rather than splitting;
+tagged or archival output and right-to-left or mixed-direction merged tables also
+reject explicitly. Other native-table restrictions remain in force.
+
+An [independent reference observation](measurements/roadmap-138-native-merged-reference.json)
+records matching logical Hindi text and cell ownership but a 30.699-point difference
+at the final row of one four-row specimen. A separate Arabic specimen exposed
+alignment and text-extraction differences and is not admitted. These are bounded
+observations, not a claim of general rendering parity.
+
 Set `Typography.Enabled` and `Typography.ExtendedBidi` explicitly. The old enabled
 Arabic profile and managed default remain separate and retain their earlier tests.
 The extended profile applies Unicode 17 UAX #9 levels, isolate run sequences, bracket
