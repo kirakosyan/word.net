@@ -413,6 +413,10 @@ flags and pass Open XML SDK validation; eight corrupted controls check graph,
 diagnostics, content, orientation and cross-format label positions. The
 [reference observation](measurements/roadmap-138-chart-labels-reference.json)
 records office text and position differences without changing the tolerance.
+The [exact-source receipt](measurements/roadmap-138-chart-labels-9f038d0.json)
+records both full suites, matrix, packages and reproduced specimens. Its
+[performance receipt](measurements/roadmap-138-chart-labels-performance-9f038d0.json)
+retains both rounds and the visible timing drift under the unchanged gate.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
