@@ -3,6 +3,28 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "preview-layout-body-glyphs",
+      "issue": 167,
+      "outcome": "supported-bounded",
+      "boundary": "The same preview render can expose bounded, immutable managed body-paragraph glyph boxes and source locations; text remains opt-in.",
+      "tests": [
+        { "class": "LayoutSnapshotTests", "method": "PreviewCapturesPrivateSourceLocationsAndManagedGlyphBounds" },
+        { "class": "LayoutSnapshotTests", "method": "TextAndPageSelectionAreExplicitAndStableInTheSnapshot" },
+        { "class": "LayoutSnapshotTests", "method": "SourceLocatedLayoutDiagnosticCanBeMatchedWithoutAnotherRender" }
+      ]
+    },
+    {
+      "id": "preview-layout-unqualified",
+      "issue": 167,
+      "outcome": "rejected",
+      "boundary": "Unqualified owners retain null bounds and reasons; detached review snapshots and excessive fragment requests fail explicitly.",
+      "tests": [
+        { "class": "LayoutSnapshotTests", "method": "MissingSourceGeometryIsExplicitAndFragmentLimitsFail" },
+        { "class": "LayoutSnapshotTests", "method": "TableCellTextIsReportedWithoutInventingBounds" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplaySvgHasMarkedGlyphsAndSnapshotSurvivesSourceDecisions" }
+      ]
+    },
+    {
       "id": "native-hindi-merged-diagnosed",
       "issue": 151,
       "outcome": "supported-bounded",

@@ -196,6 +196,12 @@ differences. It does not establish right-to-left, tagged, archival or strict par
 The [exact-source receipt](measurements/roadmap-138-native-merged-a91b49d.json)
 records complete local suites, package verification and the repeated specimen.
 
+Pending #167 preview-layout tests check opt-in text privacy, selected pages,
+immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
+and resource limits. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
+compares SVG glyph geometry using fontTools and bounds it within Poppler PDF word
+boxes. It does not qualify cell, object, native or review-owner identities.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection

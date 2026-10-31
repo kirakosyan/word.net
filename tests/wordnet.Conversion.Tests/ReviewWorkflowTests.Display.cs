@@ -49,6 +49,8 @@ public sealed partial class ReviewWorkflowTests
         WordDocument source = Load(Input(Revisions));
         DocumentReviewDisplay display = source.CreateReviewDisplay(new ReviewDisplayOptions { IncludeLegend = false }, TestContext.Current.CancellationToken);
         source.ApplyRevisions(source.Revisions, ReviewDecision.Accept, TestContext.Current.CancellationToken);
+        var mapping = Assert.Throws<NotSupportedException>(() => display.RenderSvg(new PreviewOptions { Layout = new LayoutSnapshotOptions() }, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Layout.ReviewDisplay:", mapping.Message, StringComparison.Ordinal);
         DocumentPreview preview = display.RenderSvg(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Single(preview.Pages); byte[] bytes = preview.Pages[0].GetBytes();
         XDocument svg = XDocument.Parse(Encoding.UTF8.GetString(bytes)); XNamespace ns = "http://www.w3.org/2000/svg";

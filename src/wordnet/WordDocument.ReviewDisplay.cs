@@ -70,6 +70,7 @@ public sealed class DocumentReviewDisplay
     {
         CheckProfile(conversion); preview ??= new PreviewOptions();
         if (preview.Format != PreviewFormat.Svg) throw new NotSupportedException("Review.DisplayProfile: Review previews support managed SVG only.");
+        if (preview.Layout != null) throw new NotSupportedException("Layout.ReviewDisplay: Source mapping of detached review displays is not qualified.");
         return snapshot.RenderReviewSvg(preview, cancellationToken);
     }
 

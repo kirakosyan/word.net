@@ -213,6 +213,40 @@ foreach (PagePreview page in preview.Pages)
     File.WriteAllBytes($"page-{page.SourcePage}.png", page.GetBytes());
 ```
 
+### Unreleased source: preview layout snapshots
+
+The pending #167 source can attach an immutable snapshot to the same `RenderPages`
+layout used for the selected preview pages. Configure `PreviewOptions.Layout` to
+enable it. `MaximumFragments` bounds the number of positioned items (1–100,000),
+and the conversion expanded-byte and cancellation limits also apply. Text is absent
+by default; `IncludeText = true` explicitly returns the emitted item text.
+
+```csharp
+var options = new PreviewOptions { Layout = new LayoutSnapshotOptions { MaximumFragments = 5000 } };
+DocumentPreview rendered = new WordConverter().RenderPages(source, DocumentFormat.Docx, options);
+foreach (LayoutFragment fragment in rendered.Layout!.Fragments)
+    if (fragment.Source != null && fragment.Bounds != null)
+        Console.WriteLine($"{fragment.Source}: page {fragment.Page}, x={fragment.Bounds.X}, y={fragment.Bounds.Y}");
+```
+
+For simple top-level managed body paragraphs without fields, controls, lists,
+bookmarks, notes, images, text boxes or objects, `Source` identifies the paragraph
+using the same part/path form as diagnostics. `Bounds` is the union of measured
+glyph boxes in points with the origin at the page's upper-left corner. One source
+paragraph can yield several fragments or pages. The item order is the layout's
+emitted order, not a semantic reading-order promise. `ExtendsOutsidePage` reports
+page-boundary overflow; it is not a general clipping analysis. Source identities
+are valid for the captured source revision and are not permanent across edits.
+
+Only positioned items are listed. Unqualified owners, transformed/native text,
+fields and generated items return null bounds with an `UnavailableReason`, and
+`HasUnmappedGraphics` reports non-text shapes without pretending to locate them.
+Cell, object, note and story identities, arbitrary clipping, review displays and
+cross-edit identity remain open; requesting a detached review-display snapshot
+fails explicitly. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
+checks two simple paragraphs against font outlines, SVG and PDF. This source work
+does not establish full #167 acceptance or change published 1.5.0 capabilities.
+
 ## Digital PDF reconstruction
 
 `PdfImport.ReconstructLayout = true` opts into known one/two/three-column horizontal

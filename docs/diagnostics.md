@@ -586,6 +586,10 @@ A repeated RTF row definition with inconsistent edges fails `Rtf.Structure`.
 `Pdf.TagsConformance`/`Pdf.TagsTypography` reject unqualified combinations.
 `Pdf.OmittedDestination` retains visible content without an excluded link target.
 `Pdf.OmittedDestination` does not apply to annotation-free raster intermediates.
+Unreleased `Limit.LayoutFragments` and `Limit.LayoutSnapshot` bound optional preview
+mapping. `Layout.ReviewDisplay` rejects unqualified detached-review mapping;
+`Layout.SnapshotFont` and `Layout.SnapshotGeometry` reject invalid measurement
+state; null fragment bounds carry a reason instead of a fabricated rectangle.
 `Limit.Preview*` bounds preview work. `Pdf.Reconstruction`, `Pdf.ReconstructionAmbiguity`
 and `Pdf.ReconstructionFlow` distinguish geometric import limits from confidence
 information. `Ocr.UnmappedRegion` reports missing canonical span mappings without
