@@ -282,6 +282,11 @@ font outline metrics and corrupted controls. The justified LibreOffice reference
 retains the 0.58-point origin and 2.26-point following-line differences at the
 unchanged 0.5-point tolerance. The first-line-only search highlight and broader
 typography and full #164 acceptance remain open.
+The [exact-source receipt](measurements/roadmap-138-hyphenation-00bf1f8.json)
+records both complete local suites, the matrix, package checks and independent
+specimens. The [performance record](measurements/roadmap-138-hyphenation-performance-00bf1f8.json)
+retains an initial failed ratio and a passing repeat with substantial timing drift;
+hosted exact-head performance and Framework execution remain separate gates.
 
 Pending #167 preview-layout tests check opt-in text privacy, selected pages,
 immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
