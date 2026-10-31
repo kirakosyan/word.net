@@ -131,6 +131,8 @@ internal static partial class FixedLayout
 
     internal static List<FixedPage> Create(DocumentModel model, ConversionContext context)
     {
+        if (context.Typography.Enabled && model.Paragraphs.Any(p => p.Runs.Any(r => r.Box?.Gradient != null)))
+            throw new NotSupportedException("Shape.GradientProfile: Gradient shapes with native typography require separate qualification.");
         if (context.Hyphenation.Dictionary != null)
         {
             PdfOptions pdf = context.Options.Pdf ?? throw new ArgumentException("PDF options must not be null.");
@@ -177,6 +179,7 @@ internal static partial class FixedLayout
                 context.Loss("Field.LayoutDidNotConverge", "Calculated references did not stabilize within four layout passes.");
         }
         if (context.Options.BalanceFinalColumns) pages = BalanceColumns(model, context, pages);
+        if (context.HasGradient) GradientBudget.CheckPages(pages, context);
         if (context.HyphenationUsed && pages.Count != 1)
             throw new NotSupportedException("Hyphenation.Pagination: Hyphenated words cannot yet cross physical page boundaries.");
         if (styleReferences) StyleReferences.ReportUnresolved(model, context);
@@ -1069,6 +1072,11 @@ internal static partial class FixedLayout
                             || vectorBounds.X + vectorBounds.Width + halfStroke > settings.Width || vectorBounds.Y + vectorBounds.Height + halfStroke > settings.Height)
                             throw new NotSupportedException("Layout.AnchorBounds: Vector strokes must fit inside the physical page.");
                         if (box.Fill != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Fill, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun));
+                        if (box.Gradient != null)
+                        {
+                            context.ReserveGradientPaint(box.Gradient.Stops.Length);
+                            destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Gradient.Stops[0].Color, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun, gradient: box.Gradient));
+                        }
                         if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun));
                         RememberExclusion(box.Anchor, vectorBounds); continue;
                     }

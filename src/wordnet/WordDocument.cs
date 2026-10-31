@@ -213,6 +213,7 @@ public sealed partial class WordDocument
     private static void Admit(DocumentModel model, ConversionContext context)
     {
         context.CheckCancellation();
+        GradientBudget.Check(model, context);
         _ = LinkedTextBoxes.Validate(model, context);
         CustomPropertyValues.Validate(model, context);
         long controlMetadata = model.Controls.Admit(model, context);

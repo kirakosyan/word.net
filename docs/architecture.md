@@ -102,6 +102,11 @@ Pending #161 maps three default preset polygons through the existing drawing anc
 and vector path pipeline. Editable title/description metadata is retained; output
 loss is diagnosed where the selected profile cannot preserve it, while groups and
 transformed presets remain outside the profile.
+Pending #162 retains ordered opaque RGB and bounded local-theme gradient stops in
+the editable model. Cardinal gradients become clipped PDF axial shadings, XPS
+linear brushes and SVG gradient resources; aggregate stops and expanded paints
+are bounded before caller output. Native, tagged and archival combinations remain
+separate from this managed profile.
 
 ## P3 reports — merged source
 

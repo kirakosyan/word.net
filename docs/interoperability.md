@@ -271,6 +271,36 @@ options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
 options.Pdf.VectorSemantics = PdfVectorSemantics.DescribedAtAnchor;
 ```
 
+### Unreleased source: linear gradients
+
+Pending #162 preserves anchored, unrotated `ellipse`, `roundRect`, `rect`,
+`triangle` and `diamond` shapes with an explicit linear fill. A gradient has two
+to eight strictly increasing stops from 0 to 100000, an explicit cardinal angle
+of 0, 90, 180 or 270 degrees, and opaque RGB colors or untransformed `accent1`
+through `accent6` colors resolved from a complete retained local theme. Editable
+DOCX keeps the stop positions, angle, scaling flag and admitted theme references.
+The existing solid RGB stroke profile can be used separately.
+
+Managed ordinary PDF uses clipped axial shading, XPS uses a clipped linear brush,
+and SVG preview uses a vector gradient. Each extends its first and last color
+beyond the endpoint stops and interpolates the encoded sRGB components linearly.
+Duplicate or unordered stops are rejected rather than reordered. Aggregate source
+and expanded paint-work limits apply across repeated pages and layout passes: at
+most 4,096 total stops, with 512 bytes of expansion budget per stop. PDF also
+limits the product of physical pages and shading resources to 4,096, with 4,096
+bytes of expansion budget per resulting resource; both budgets are checked against
+`MaximumExpandedBytes`. There is no remote theme or color lookup. When a local theme remaps an accent to a different color, the
+editable mapping survives and managed output uses that mapping; LibreOffice instead
+rendered the original accent in the independent reference. Strict rejects this
+unqualified difference and BestEffort/Lenient report `Shape.GradientThemeMapping`.
+Unsupported angles, transformations, color effects, alpha, groups,
+and tagged, archival or native output remain outside this profile. Strict and
+editable sessions reject unsupported vectors; ordinary BestEffort/Lenient can
+omit them only with a diagnostic. The [independent observation](measurements/roadmap-138-gradients-reference.json)
+records format structure, sampled colors, clipping and the corrected XPS-rendering
+failure. This source increment is not in the published 1.5.0 packages and does not
+claim live Word or complete #162 acceptance.
+
 ### Unreleased source: tagged archival PDF
 
 Pending #156 adds `PdfConformance.PdfA2a`, which requires the explicit

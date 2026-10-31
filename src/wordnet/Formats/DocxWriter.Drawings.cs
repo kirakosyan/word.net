@@ -34,7 +34,8 @@ internal sealed partial class DocxWriter
         var properties = new XElement(wps + "spPr", new XElement(A + "xfrm", box.Rotation == 0 ? null : new XAttribute("rot", box.Rotation * 60000), new XElement(A + "off", new XAttribute("x", 0), new XAttribute("y", 0)),
                 new XElement(A + "ext", new XAttribute("cx", Emu(box.Width)), new XAttribute("cy", Emu(box.Height)))),
             new XElement(A + "prstGeom", new XAttribute("prst", box.Geometry ?? "rect"), new XElement(A + "avLst")),
-            box.Fill == null ? new XElement(A + "noFill") : new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", box.Fill))));
+            box.Gradient != null ? Gradient(box.Gradient)
+                : box.Fill == null ? new XElement(A + "noFill") : new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", box.Fill))));
         if (box.Border != null) properties.Add(new XElement(A + "ln", new XAttribute("w", Emu(box.Border.Width)),
             new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", box.Border.Color)))));
         var container = new XElement(Wp + "inline", new XElement(Wp + "extent", new XAttribute("cx", Emu(box.Width)), new XAttribute("cy", Emu(box.Height))),
@@ -51,4 +52,9 @@ internal sealed partial class DocxWriter
     }
 
     private static string Emu(double points) => Math.Round(points * 12700).ToString(CultureInfo.InvariantCulture);
+
+    private static XElement Gradient(LinearGradient gradient) => new XElement(A + "gradFill",
+        new XElement(A + "gsLst", gradient.Stops.Select(stop => new XElement(A + "gs", new XAttribute("pos", stop.Position),
+            new XElement(A + (stop.Theme == null ? "srgbClr" : "schemeClr"), new XAttribute("val", stop.Theme ?? stop.Color))))),
+        new XElement(A + "lin", new XAttribute("ang", gradient.Angle), new XAttribute("scaled", gradient.Scaled)));
 }

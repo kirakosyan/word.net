@@ -31,6 +31,7 @@ internal sealed class PositionedBox
     internal string AlternativeText { get; set; } = "";
     internal string AlternativeTitle { get; set; } = "";
     internal string? Fill { get; set; }
+    internal LinearGradient? Gradient { get; set; }
     internal CellBorder? Border { get; set; }
     internal CellPadding Padding { get; set; } = new CellPadding { Left = 7.2, Right = 7.2, Top = 3.6, Bottom = 3.6 };
     internal List<DocumentBlock> Blocks { get; } = new List<DocumentBlock>();

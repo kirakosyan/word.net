@@ -117,7 +117,7 @@ internal sealed class DocumentCloner
         PositionedBox? box = null;
         if (r.Box != null)
         {
-            box = new PositionedBox { Anchor = Anchor(r.Box.Anchor), Width = r.Box.Width, Height = r.Box.Height, Rotation = r.Box.Rotation, ShrinkToFit = r.Box.ShrinkToFit, StoryId = r.Box.StoryId, ImplicitStoryId = r.Box.ImplicitStoryId, StorySequence = r.Box.StorySequence, Geometry = r.Box.Geometry, AlternativeText = r.Box.AlternativeText, AlternativeTitle = r.Box.AlternativeTitle, Fill = r.Box.Fill, Border = r.Box.Border == null ? null : Border(r.Box.Border), Padding = r.Box.Padding.Copy() };
+            box = new PositionedBox { Anchor = Anchor(r.Box.Anchor), Width = r.Box.Width, Height = r.Box.Height, Rotation = r.Box.Rotation, ShrinkToFit = r.Box.ShrinkToFit, StoryId = r.Box.StoryId, ImplicitStoryId = r.Box.ImplicitStoryId, StorySequence = r.Box.StorySequence, Geometry = r.Box.Geometry, AlternativeText = r.Box.AlternativeText, AlternativeTitle = r.Box.AlternativeTitle, Fill = r.Box.Fill, Gradient = r.Box.Gradient, Border = r.Box.Border == null ? null : Border(r.Box.Border), Padding = r.Box.Padding.Copy() };
             box.Blocks.AddRange(r.Box.Blocks.Select(Block));
         }
         DocumentImage? image = r.Image?.Scaled(1);

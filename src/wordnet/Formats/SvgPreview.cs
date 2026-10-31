@@ -21,7 +21,7 @@ internal static class SvgPreview
         var root = new XElement(svg + "svg", new XAttribute("version", "1.1"), new XAttribute(XNamespace.Xmlns + "xlink", xlink), new XAttribute("width", N(page.Settings.Width) + "pt"), new XAttribute("height", N(page.Settings.Height) + "pt"),
             new XAttribute("viewBox", "0 0 " + N(page.Settings.Width) + " " + N(page.Settings.Height)), new XAttribute("role", "img"));
         root.Add(new XElement(svg + "rect", new XAttribute("width", "100%"), new XAttribute("height", "100%"), new XAttribute("fill", "#ffffff")));
-        long length = 0; int imageId = 0;
+        long length = 0; int imageId = 0, gradientId = 0;
         foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => !s.Foreground))) AddShape(shape);
         void AddShape(FixedShape shape)
         {
@@ -29,7 +29,18 @@ internal static class SvgPreview
             {
                 string data = string.Join(" ", VectorPath.Create(shape).Select(command => command.Kind + (command.Values.Length == 0 ? "" : " " + string.Join(" ", command.Values.Select(N)))));
                 length += data.Length + 200; Check();
-                root.Add(new XElement(svg + "path", new XAttribute("d", data), new XAttribute("fill", shape.Stroke == 0 ? "#" + shape.Color : "none"),
+                string paint = "#" + shape.Color;
+                if (shape.Gradient is LinearGradient gradient)
+                {
+                    string id = "gradient" + (gradientId++).ToString(CultureInfo.InvariantCulture);
+                    var ends = gradient.Endpoints(shape.X, shape.Y, shape.Width, shape.Height);
+                    root.Add(new XElement(svg + "defs", new XElement(svg + "linearGradient", new XAttribute("id", id), new XAttribute("gradientUnits", "userSpaceOnUse"),
+                        new XAttribute("spreadMethod", "pad"), new XAttribute("color-interpolation", "sRGB"),
+                        new XAttribute("x1", N(ends.X1)), new XAttribute("y1", N(ends.Y1)), new XAttribute("x2", N(ends.X2)), new XAttribute("y2", N(ends.Y2)),
+                        gradient.Stops.Select(stop => new XElement(svg + "stop", new XAttribute("offset", N(stop.Position / 100000.0)), new XAttribute("stop-color", "#" + stop.Color))))));
+                    paint = "url(#" + id + ")"; length += gradient.Stops.Length * 100 + 300; Check();
+                }
+                root.Add(new XElement(svg + "path", new XAttribute("d", data), new XAttribute("fill", shape.Stroke == 0 ? paint : "none"),
                     shape.Stroke == 0 ? null : new XAttribute("stroke", "#" + shape.Color), shape.Stroke == 0 ? null : new XAttribute("stroke-width", N(shape.Stroke))));
             }
             else if (shape.Stroke == 0) root.Add(new XElement(svg + "rect", new XAttribute("x", N(shape.X)), new XAttribute("y", N(shape.Y)), new XAttribute("width", N(shape.Width)), new XAttribute("height", N(shape.Height)), new XAttribute("fill", "#" + shape.Color)));

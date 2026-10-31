@@ -45,6 +45,21 @@ internal sealed class ConversionContext
     }
     private long outlinePoints;
     internal void ReserveOutlinePoints(int count) { outlinePoints = checked(outlinePoints + count); if (outlinePoints > Options.MaximumExpandedBytes / 64) throw new InvalidDataException("Limit.FontOutlines: Expanded outline cache exceeds its point budget."); }
+    private int gradientStops;
+    private int gradientPaintStops;
+    internal bool HasGradient { get; set; }
+    internal void ReserveGradientStops(int count)
+    {
+        CheckCancellation(); HasGradient = true; gradientStops = checked(gradientStops + count);
+        if (gradientStops > 4096 || (long)gradientStops * 512 > Options.MaximumExpandedBytes)
+            throw new InvalidDataException("Limit.GradientPaint: Aggregate gradient paint resources exceed the document budget.");
+    }
+    internal void ReserveGradientPaint(int count)
+    {
+        CheckCancellation(); gradientPaintStops = checked(gradientPaintStops + count);
+        if (gradientPaintStops > 4096 || (long)gradientPaintStops * 512 > Options.MaximumExpandedBytes)
+            throw new InvalidDataException("Limit.GradientPaint: Expanded gradient paint work exceeds the document budget.");
+    }
     internal int? PageCount { get; set; }
     internal DocumentFormat Destination { get; set; }
     internal DiagnosticPhase Phase { get; set; }

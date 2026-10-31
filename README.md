@@ -32,6 +32,7 @@ Pending source also places [prepared cross-tabs at dedicated body or fixed-grid 
 Pending source extends [mixed body report regions](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#unreleased-source-deeper-mixed-report-regions) to bounded nesting, with per-region reference checks and aggregate work limits.
 Pending source adds [diagnosed clustered horizontal bars](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-clustered-horizontal-bars); the measured plot-position difference remains open.
 Pending source retains [basic rectangle, triangle and diamond presets](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes) as editable drawings and managed vectors; groups and adjustments remain open.
+Pending source preserves [bounded cardinal linear gradients](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-linear-gradients) on admitted managed vector shapes; other angles and transparency remain open.
 Pending source work adds [comparison selection](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-comparison-selection) for ordinary story text and run formatting.
 Pending source work adds [bounded paragraph-format revisions](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-paragraph-format-revisions) for ordinary body and simple-cell comparison.
 

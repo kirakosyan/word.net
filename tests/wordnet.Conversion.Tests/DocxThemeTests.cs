@@ -35,7 +35,7 @@ public sealed class DocxThemeTests
             + "<a:lnStyleLst>" + line + line + line + "</a:lnStyleLst><a:effectStyleLst>" + effect + effect + effect + "</a:effectStyleLst>"
             + "<a:bgFillStyleLst>" + fill + fill + fill + "</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>";
     }
-    private static byte[] Package(string body, bool includeTheme = true, string? theme = null, string? styles = null, string? settings = null,
+    internal static byte[] Package(string body, bool includeTheme = true, string? theme = null, string? styles = null, string? settings = null,
         bool duplicateTheme = false, bool externalTheme = false, string? header = null, string? footnotes = null)
     {
         string relation = includeTheme ? "<Relationship Id='theme' Type='" + TestDocuments.R + "/theme' Target='theme/theme1.xml'"

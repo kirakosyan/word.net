@@ -58,6 +58,11 @@ Pending #161 adds three default vector preset geometries using existing conversi
 and session methods, without new public signatures. It also diagnoses loss of
 their authored alternatives and vector titles; existing API shapes remain intact.
 
+Pending #162 extends the existing DOCX and managed conversion paths with bounded
+linear gradient paints. It adds no public signatures or new runtime dependencies;
+other gradient geometries, transparency and conformance combinations stay outside
+the admitted profile.
+
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)

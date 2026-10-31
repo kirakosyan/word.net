@@ -110,7 +110,11 @@ Blank, text, merged and other unsupported cell combinations retain their caches;
 broader compatibility and exact-runtime/package qualification remain open.
 Pending #161 adds [default rectangle, triangle and diamond presets](roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes)
 with independently checked managed vectors. Arrows, group membership, transforms,
-gradients and broader non-DOCX alternative semantics remain open.
+and broader non-DOCX alternative semantics remain open.
+Pending #162 preserves [cardinal opaque linear gradients](interoperability.md#unreleased-source-linear-gradients)
+on admitted managed vector shapes. Other angles, alpha, groups, effects and
+tagged/archive/native output remain open; the remapped-theme reference color
+difference is diagnosed and exact hosted qualification is separate.
 Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
 The reference plot-position failure, stacked/circular charts, data labels and
 native/tagged/archive qualification remain open.

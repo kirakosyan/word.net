@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using UglyToad.PdfPig.Core;
+using UglyToad.PdfPig.Graphics.Operations;
 using UglyToad.PdfPig.Graphics.Operations.ClippingPaths;
 using UglyToad.PdfPig.Graphics.Operations.General;
 using UglyToad.PdfPig.Graphics.Operations.MarkedContent;
@@ -36,7 +37,10 @@ internal static class PdfFormat
         byte[]? metadata = options.Conformance is PdfConformance.PdfA2b or PdfConformance.PdfA2a
             ? System.Text.Encoding.UTF8.GetBytes(PdfExportMetadata.Xmp(model, context.FieldTime, options.Conformance == PdfConformance.PdfA2a).ToString(System.Xml.Linq.SaveOptions.DisableFormatting)) : null;
         string[]? labels = indices.Where((p, i) => p != i + 1).Any() || pages.Count != allPages.Count ? pages.Select(p => ListCounter.Number(p.PageNumber, p.SourceSettings.PageNumberFormat)).ToArray() : null;
-        PdfExportTokenWriter writer = tags == null ? new PdfExportTokenWriter(options.Compress, metadata, labels) : new PdfTaggedTokenWriter(options.Compress, labels, tags, metadata ?? tags.Xmp(model.Title), context);
+        var gradient = PdfGradient.Create(pages, context);
+        if (gradient.Resources != null && (context.Typography.Enabled || options.Accessibility != PdfAccessibility.None || options.Conformance != PdfConformance.Pdf17))
+            throw new NotSupportedException("Shape.GradientProfile: Gradients currently require ordinary managed PDF.");
+        PdfExportTokenWriter writer = tags == null ? new PdfExportTokenWriter(options.Compress, metadata, labels, gradient.Resources) : new PdfTaggedTokenWriter(options.Compress, labels, tags, metadata ?? tags.Xmp(model.Title), context);
         var builder = new PdfDocumentBuilder(buffer, false, PdfWriterType.Default, 1.7, writer);
         bool complete = false;
         try
@@ -65,7 +69,7 @@ internal static class PdfFormat
                     tags?.BeginShape(target, shape);
                     if (shape.Geometry != null)
                     {
-                        PaintVector(target, shape, page.Settings.Height);
+                        PaintVector(target, shape, page.Settings.Height, gradient.Names);
                         if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                         continue;
                     }
@@ -162,7 +166,7 @@ internal static class PdfFormat
                 }
                 foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground)))
                 {
-                    tags?.BeginShape(target, shape); PaintVector(target, shape, page.Settings.Height);
+                    tags?.BeginShape(target, shape); PaintVector(target, shape, page.Settings.Height, gradient.Names);
                     if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 }
                 void AddLink(string link, PdfRectangle area, PdfTags.Node? semantic)
@@ -190,7 +194,7 @@ internal static class PdfFormat
         }
     }
 
-    private static void PaintVector(PdfPageBuilder target, FixedShape shape, double pageHeight)
+    private static void PaintVector(PdfPageBuilder target, FixedShape shape, double pageHeight, Dictionary<FixedShape, NameToken> gradients)
     {
         var ops = target.CurrentStream.Operations; ops.Add(Push.Value);
         byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
@@ -204,7 +208,12 @@ internal static class PdfFormat
             else if (command.Kind == 'C') ops.Add(new AppendDualControlPointBezierCurve(p[0], pageHeight - p[1], p[2], pageHeight - p[3], p[4], pageHeight - p[5]));
             else ops.Add(CloseSubpath.Value);
         }
-        if (shape.Stroke == 0) ops.Add(FillPathNonZeroWinding.Value); else ops.Add(StrokePath.Value);
+        if (shape.Gradient != null)
+        {
+            ops.Add(ModifyClippingByNonZeroWindingIntersect.Value); ops.Add(EndPath.Value);
+            ops.Add(new PaintShading(gradients[shape]));
+        }
+        else if (shape.Stroke == 0) ops.Add(FillPathNonZeroWinding.Value); else ops.Add(StrokePath.Value);
         ops.Add(Pop.Value);
     }
 

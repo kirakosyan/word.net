@@ -276,6 +276,16 @@ accessible figure policy preserves its admitted description instead. Hidden shap
 unqualified transforms and adjustments remain explicit vector-profile failures or,
 for permitted ordinary conversions only, diagnosed omission.
 
+Pending #162 uses `Shape.Gradient` for unqualified angles, stop order, colors,
+transparency or effects; `Shape.GradientProfile` rejects native, tagged and archive
+combinations. `Shape.GradientThemeMapping` reports the independently observed
+remapped-accent rendering difference; Strict rejects it before copying output.
+`Limit.GradientStops` bounds each stop list and
+`Limit.GradientPaint` bounds aggregate source and expanded paint resources.
+Malformed numeric values use `Docx.Number`. Ordinary BestEffort/Lenient may omit
+an unsupported vector only with `Shape.VectorUnsupported`; editing, Strict,
+native, tagged and archival output reject it before publishing output.
+
 ## Merged P1 diagnostics
 
 Report preprocessing rejects invalid paths/types/cycles, arithmetic failures and

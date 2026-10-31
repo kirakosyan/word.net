@@ -3,6 +3,40 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "opaque-cardinal-linear-gradients",
+      "issue": 162,
+      "outcome": "supported-bounded",
+      "boundary": "Two to eight ordered opaque RGB or resolved local accent stops on five admitted anchored shapes retain editable cardinal gradients and native managed PDF, XPS and SVG paints.",
+      "tests": [
+        { "class": "LinearGradientTests", "method": "CardinalGradientsRetainStopsAndRenderVectorPaint" },
+        { "class": "LinearGradientTests", "method": "LocalThemeStopRemainsEditableAndRendersTheResolvedColor" },
+        { "class": "LinearGradientTests", "method": "GradientPaintIsClippedToTheAdmittedVectorGeometry" },
+        { "class": "LinearGradientTests", "method": "TwoEndpointStopsUseAValidSimpleShadingFunction" },
+        { "class": "LinearGradientTests", "method": "SeparatePagesAndPageSelectionKeepTheirGradientResources" }
+      ]
+    },
+    {
+      "id": "linear-gradient-theme-mapping-difference",
+      "issue": 162,
+      "outcome": "supported-bounded",
+      "boundary": "Editable local-theme stop mappings survive DOCX; Strict rejects a known reference color difference and BestEffort/Lenient diagnose the retained mapped output.",
+      "tests": [
+        { "class": "LinearGradientTests", "method": "RemappedThemeStopIsEditableButItsReferenceDifferenceIsDiagnosed" }
+      ]
+    },
+    {
+      "id": "linear-gradient-boundaries",
+      "issue": 162,
+      "outcome": "rejected",
+      "boundary": "Malformed or oversized stops, duplicate order, alpha, unsupported themes/angles/effects, native, tagged and archival profiles and exhausted output limits are rejected or diagnosed before output.",
+      "tests": [
+        { "class": "LinearGradientTests", "method": "UnsupportedOrMalformedGradientsFailBeforeOutput" },
+        { "class": "LinearGradientTests", "method": "UnqualifiedOutputProfilesRejectBeforeCopy" },
+        { "class": "LinearGradientTests", "method": "AggregateStopLimitAppliesEvenInLenientMode" },
+        { "class": "LinearGradientTests", "method": "OutputLimitAndCancellationLeaveCallerOutputUnchanged" }
+      ]
+    },
+    {
       "id": "local-hyphenation-diagnosed",
       "issue": 164,
       "outcome": "supported-bounded",

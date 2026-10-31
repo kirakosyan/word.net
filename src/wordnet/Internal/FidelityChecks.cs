@@ -8,6 +8,13 @@ internal static class FidelityChecks
 {
     internal static void Destination(DocumentModel model, DocumentFormat format, ConversionContext context)
     {
+        if (context.HasGradient) GradientBudget.Check(model, context);
+        if (context.HasGradient && format is not (DocumentFormat.Docx or DocumentFormat.Dotx))
+            foreach (ParagraphBlock paragraph in model.Paragraphs.Where(p => p.Runs.Any(r => r.Box?.Gradient?.Stops.Any(s => s.MappingDifference) == true)))
+            {
+                using var location = context.At(paragraph.Location);
+                context.Loss("Shape.GradientThemeMapping", "A remapped gradient theme color differs from an independent reference application's rendering.");
+            }
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx))
             foreach (ParagraphBlock paragraph in model.Paragraphs.Where(p => p.Runs.Any(r => r.Box is PositionedBox box
                 && box.Geometry == null && (box.AlternativeText.Length != 0 || box.AlternativeTitle.Length != 0))))

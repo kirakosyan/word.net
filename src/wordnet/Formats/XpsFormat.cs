@@ -80,9 +80,19 @@ internal static class XpsFormat
             if (shape.Geometry != null)
             {
                 string data = string.Join(" ", VectorPath.Create(shape).Select(command => command.Kind + (command.Values.Length == 0 ? "" : " " + string.Join(",", command.Values.Select(Number)))));
-                yield return new XElement(xps + "Path", new XAttribute("Data", data),
-                    shape.Stroke == 0 ? new XAttribute("Fill", "#FF" + shape.Color) : new XAttribute("Stroke", "#FF" + shape.Color),
+                var path = new XElement(xps + "Path", new XAttribute("Data", data),
+                    shape.Gradient != null ? null : shape.Stroke == 0 ? new XAttribute("Fill", "#FF" + shape.Color) : new XAttribute("Stroke", "#FF" + shape.Color),
                     shape.Stroke == 0 ? null : new XAttribute("StrokeThickness", Number(shape.Stroke)));
+                if (shape.Gradient is LinearGradient gradient)
+                {
+                    var ends = gradient.Endpoints(shape.X, shape.Y, shape.Width, shape.Height);
+                    path.Add(new XElement(xps + "Path.Fill", new XElement(xps + "LinearGradientBrush",
+                        new XAttribute("MappingMode", "Absolute"), new XAttribute("SpreadMethod", "Pad"), new XAttribute("ColorInterpolationMode", "SRgbLinearInterpolation"),
+                        new XAttribute("StartPoint", Number(ends.X1) + "," + Number(ends.Y1)), new XAttribute("EndPoint", Number(ends.X2) + "," + Number(ends.Y2)),
+                        new XElement(xps + "LinearGradientBrush.GradientStops", gradient.Stops.Select(stop => new XElement(xps + "GradientStop", new XAttribute("Offset", (stop.Position / 100000.0).ToString("0.#####", CultureInfo.InvariantCulture)),
+                            new XAttribute("Color", "#FF" + stop.Color)))))));
+                }
+                yield return path;
                 yield break;
             }
             if (shape.Stroke == 0)

@@ -274,6 +274,15 @@ and accessibility combinations remain open.
 The [exact-source receipt](measurements/roadmap-138-preset-shapes-6b4b3a8.json)
 records complete local suites, package checks and the repeated specimens.
 
+Pending #162 checks independently authored DrawingML gradients across four
+cardinal directions, five filled shapes and local-theme stops. Pinned readers
+inspect editable DOCX, PDF axial shading/clipping, XPS and SVG brushes, and sample
+PDF/XPS colors against an offline LibreOffice reference. Locally an independent
+Inkscape raster also checks SVG. The [observation](measurements/roadmap-138-gradients-reference.json)
+retains an initial invisible-XPS failure, its corrected stop container, a failed
+remapped-accent reference comparison and corruption controls. Unsupported effects, alpha, other angles and conformance
+combinations are not qualified by these specimens.
+
 Pending #164 tests copied local dictionaries, explicit language and limits,
 retained editable/searchable text, visible hyphen outlines, unqualified profiles,
 pagination, cancellation and strict loss behavior. The [independent observation](measurements/roadmap-138-hyphenation-reference.json)
