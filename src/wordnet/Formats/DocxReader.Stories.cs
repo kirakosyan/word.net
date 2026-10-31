@@ -22,7 +22,8 @@ internal sealed partial class DocxReader
         string path = DocxPackage.ResolvePart(mainPart, relation);
         if (storyCache.TryGetValue(path, out List<DocumentBlock>? cached)) return cached;
         knownParts.Add(path); knownParts.Add(DocxPackage.RelationshipPartName(path));
-        XElement root = package.ReadXml(path).Root ?? throw new InvalidDataException("Docx.HeaderFooter: Missing story root.");
+        XDocument storySource = context.PreserveControls && typedStorySources.TryGetValue(path, out XDocument? prepared) ? prepared : package.ReadXml(path);
+        XElement root = storySource.Root ?? throw new InvalidDataException("Docx.HeaderFooter: Missing story root.");
         if (root.Name != W + (kind == "header" ? "hdr" : "ftr")) throw new InvalidDataException("Docx.HeaderFooter: Invalid story root.");
         var reader = new DocxReader(context, package.ReadRelationships(path))
         {
@@ -35,6 +36,7 @@ internal sealed partial class DocxReader
             defaultLayout = defaultLayout.Copy(),
             defaultRun = defaultRun.Copy(),
             theme = theme,
+            typedNodes = typedNodes,
         };
         foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
         foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);

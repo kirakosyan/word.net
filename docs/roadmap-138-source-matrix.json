@@ -3,6 +3,35 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "plain-story-control-owners",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "boundary": "Top-level block or paragraph-inline controls in plain header/footer stories preserve global identity, shared-story ownership and explicit bindings. Default, first and even story selection stays editable and displays as static text.",
+      "tests": [
+        { "class": "ContentControlStoryOwnerTests", "method": "SyntheticWordDerivedStoriesMatchIndependentPageOrderAndPlacement" },
+        { "class": "ContentControlStoryOwnerTests", "method": "HeaderAndFooterValuesRemainEditableAndDisplayInBothFixedFormats" },
+        { "class": "ContentControlStoryOwnerTests", "method": "ASharedInheritedHeaderHasOneOwnerAndEditsAppearOnBothPages" },
+        { "class": "ContentControlStoryOwnerTests", "method": "TypedStoryVariantsDisplayOnTheirSelectedPages" },
+        { "class": "ContentControlStoryOwnerTests", "method": "EveryAdmittedKindEditsInPlainHeaderAndFooterOwners" },
+        { "class": "ContentControlStoryOwnerTests", "method": "BodyAndStoryIdsAreReservedTogetherBeforeAssigningMissingIds" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryBindingIsExplicitAndRetainsAtomicWriteBack" },
+        { "class": "ContentControlStoryOwnerTests", "method": "LocalNamespaceDeclarationsAreNotParagraphLayoutProperties" }
+      ]
+    },
+    {
+      "id": "story-control-protected-boundaries",
+      "issue": 144,
+      "outcome": "rejected",
+      "boundary": "Story table or nested owners, crossing bookmarks, duplicate or excessive global control IDs and inconsistent shared bindings reject; locks and cancellation preserve the original document.",
+      "tests": [
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryAndBodyControlsSharingOneBindingMustAgreeAtomically" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryLocksAndCancellationLeaveTheDocumentUntouched" },
+        { "class": "ContentControlStoryOwnerTests", "method": "GlobalControlLimitIncludesDistinctStoryParts" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryControlsCannotCrossBookmarksOrUseNestedOwners" },
+        { "class": "ContentControlBoundaryTests", "method": "TableRowAndHeaderTableOwnersAreExplicitlyRejected" }
+      ]
+    },
+    {
       "id": "nested-control-block-inline",
       "issue": 144,
       "outcome": "supported-bounded",

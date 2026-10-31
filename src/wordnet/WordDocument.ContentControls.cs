@@ -50,7 +50,7 @@ public sealed partial class WordDocument
                 if (controlSnapshots != null && controlSnapshotsVersion == version) return controlSnapshots;
                 if (!model.Controls.HasControls) return Array.Empty<DocumentContentControl>();
                 var c = new ConversionContext(options, CancellationToken.None); var owners = ControlOwners.Index(model, c);
-                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, owners[d.Id].ParentId, ControlContent(owners[d.Id], c))).ToList());
+                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, owners[d.Id].ParentId, owners[d.Id].Story, ControlContent(owners[d.Id], c))).ToList());
                 controlSnapshotsVersion = version;
                 return controlSnapshots;
             }

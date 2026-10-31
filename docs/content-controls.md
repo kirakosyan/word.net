@@ -68,9 +68,31 @@ explicit display view show the child text. An independently assembled
 and LibreOffice rendering check text order and the schema, without establishing a
 Word-authored nested template or Word execution. This is a limited source increment:
 deeper nesting, inline-in-inline and block children, row/cell/table wrappers,
-header/footer or other story owners, repeated report rows and typed-control
+nested and table-wrapped header/footer or other story owners, repeated report rows and typed-control
 composition remain outside this subset. #144 remains open. Ordinary loading is
 unchanged and does not create typed owners.
+
+## Unreleased source: plain header and footer owners
+
+Pending #144 also admits an inline typed control in a top-level plain header/footer
+paragraph or a block typed control containing ordinary paragraphs directly in a
+header/footer. The six existing kinds, locks, placeholders and explicit local XML
+bindings use the same bounded rules as body owners. IDs are unique across the body
+and distinct referenced stories; missing IDs are assigned after reserving every
+explicit ID. An inherited or multiply referenced story has one owner and one set of
+bindings. Its edited display is reused on each page that selects that story.
+
+Snapshots identify these owners as `inline header/footer paragraph` or `block
+header/footer paragraphs`. Their `ParentId` is null. Editing and binding operations
+remain atomic, honor locks and require fresh handles; a shared XML target still
+requires all affected controls to agree. Editable DOCX and an explicit display view
+retain the selected stories. Ordinary managed PDF/XPS presents static text; it does
+not create interactive PDF controls. The
+[synthetic Word-derived reference](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StoryOwners/README.md)
+and LibreOffice PDF check selected header, body and footer text placement over two
+pages, not Word execution or universal geometry. Table-wrapped or nested story
+controls, notes, comments, text boxes and typed-control composition remain outside
+this increment; #144 remains open.
 
 ## Load, inspect and edit
 
@@ -123,12 +145,13 @@ into executable template syntax.
 
 ## Kinds and owners
 
-All controls have inline owners in an ordinary body/table-cell paragraph, or block
-owners containing ordinary body/cell paragraphs. A containing table is outside the
+The published profile has inline owners in an ordinary body/table-cell paragraph,
+or block owners containing ordinary body/cell paragraphs. The unreleased story
+increment above adds bounded plain header/footer owners. A containing table is outside the
 control. Scalar controls have one formatting set and at most one paragraph;
 checkbox content, including placeholders, is one character. No row/cell/table
-wrappers, headers/footers, notes, boxes, section changes, nested controls except
-for the unreleased subset above, embedded
+wrappers, notes, boxes, section changes, or nested controls except for the
+unreleased subset above; no embedded
 objects or retained history inside a control. Crossing or enclosing field/bookmark
 ranges fail; independent fields/bookmarks wholly outside owners are retained. A
 closed body/cell bookmark immediately preceding a block control can be attached

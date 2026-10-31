@@ -12,18 +12,40 @@ namespace WordNet.Formats;
 internal sealed partial class DocxReader
 {
     private readonly ContentControlStore typedControls = new ContentControlStore();
-    private readonly Dictionary<XElement, ControlData> typedNodes = new Dictionary<XElement, ControlData>();
+    private Dictionary<XElement, ControlData> typedNodes = new Dictionary<XElement, ControlData>();
+    private readonly Dictionary<string, XDocument> typedStorySources = new Dictionary<string, XDocument>(StringComparer.Ordinal);
     private static readonly XNamespace Cx = "http://schemas.openxmlformats.org/officeDocument/2006/customXml";
     private void PrepareTypedControls(XDocument source)
     {
         if (!context.PreserveControls) return;
         typedControls.DateMode = context.ControlDateMode;
-        XElement[] nodes = source.Descendants(W + "sdt").ToArray();
+        var sources = new List<(XDocument Document, string Part, bool Story)> { (source, mainPart, false) };
+        var storyKinds = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (XElement reference in source.Descendants(W + "sectPr").Elements().Where(element => element.Name == W + "headerReference" || element.Name == W + "footerReference"))
+        {
+            context.ReserveControlWork(1);
+            string id = DocxPackage.RequiredAttribute(reference, DocxPackage.DocumentRelationships + "id");
+            string kind = reference.Name == W + "headerReference" ? "header" : "footer";
+            if (!relationships.TryGetValue(id, out XElement? relation)
+                || (string?)relation.Attribute("Type") != DocxPackage.DocumentRelationships.NamespaceName + "/" + kind)
+                throw new InvalidDataException("Docx.HeaderFooter: A header/footer relationship is missing or has the wrong type.");
+            string part = DocxPackage.ResolvePart(mainPart, relation);
+            if (storyKinds.TryGetValue(part, out string? previous))
+            {
+                if (previous != kind) throw new InvalidDataException("Docx.HeaderFooter: A story part cannot be both header and footer.");
+                continue;
+            }
+            XDocument story = package.ReadXml(part);
+            if (story.Root?.Name != W + (kind == "header" ? "hdr" : "ftr")) throw new InvalidDataException("Docx.HeaderFooter: Invalid story root.");
+            storyKinds.Add(part, kind); typedStorySources.Add(part, story); sources.Add((story, part, true));
+        }
+        var nodes = sources.SelectMany(item => item.Document.Descendants(W + "sdt").Select(node => (Node: node, item.Part, item.Story))).ToArray();
         if (nodes.Length == 0) return;
         if (nodes.Length > 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
         var ids = new HashSet<int>();
-        foreach (XElement node in nodes)
+        foreach (var entry in nodes)
         {
+            XElement node = entry.Node;
             context.CheckCancellation(); Attributes(node);
             XElement[] props = node.Elements(W + "sdtPr").ToArray();
             if (props.Length != 1 || node.Elements(W + "sdtContent").Count() != 1 || node.Elements(W + "sdtEndPr").Count() > 1
@@ -34,9 +56,10 @@ internal sealed partial class DocxReader
                 throw new InvalidDataException("Control.DuplicateId: Control IDs must be unique signed integers.");
         }
         int next = 1;
-        foreach (XElement node in nodes)
+        foreach (var entry in nodes)
         {
-            using var location = context.At(XmlSourceLocation.Create(node, mainPart));
+            XElement node = entry.Node;
+            using var location = context.At(XmlSourceLocation.Create(node, entry.Part));
             XElement properties = node.Element(W + "sdtPr")!;
             int id;
             if (properties.Element(W + "id") is XElement identity) id = Integer(identity, W + "val", int.MinValue, int.MaxValue);
@@ -53,11 +76,12 @@ internal sealed partial class DocxReader
                 || !typedNodes.TryGetValue(parents[0], out ControlData? parent) || parent.Inline || parent.Kind != ContentControlKind.RichText
                 || parent.Placeholder || parent.Binding != null))
                 throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
-            if (!inline && node.Parent?.Name != W + "body" && node.Parent?.Name != W + "tc"
+            if (entry.Story && (parents.Length != 0 || (inline ? node.Parent?.Parent != node.Document?.Root : node.Parent != node.Document?.Root))
+                || !entry.Story && (!inline && node.Parent?.Name != W + "body" && node.Parent?.Name != W + "tc" || !node.Ancestors(W + "body").Any())
                 || node.Ancestors().Any(a => a.Name == W + "fldSimple" || a.Name == W + "txbxContent"
                     || a.Name == W + "ins" || a.Name == W + "del" || a.Name == W + "moveFrom" || a.Name == W + "moveTo")
-                || !node.Ancestors(W + "body").Any())
-                throw new NotSupportedException("Control.ProtectedOwner: Typed controls require admitted ordinary body/cell paragraph owners.");
+                )
+                throw new NotSupportedException("Control.ProtectedOwner: Typed controls require admitted ordinary body, cell or plain header/footer owners.");
             var data = ReadTypedProperties(properties, id, inline);
             if (node.Element(W + "sdtEndPr") is XElement end)
             {
@@ -68,15 +92,18 @@ internal sealed partial class DocxReader
             typedControls.Items.Add(id, data); typedNodes.Add(node, data);
         }
         // A control may not intersect any source field/bookmark range, even when its marker is outside the wrapper.
-        var bookmarksOpen = new HashSet<string>(StringComparer.Ordinal); int fieldDepth = 0;
-        foreach (XElement element in source.Descendants())
+        foreach (var item in sources)
         {
-            context.ReserveControlWork(1);
-            if (element.Name == W + "sdt" && (fieldDepth != 0 || bookmarksOpen.Count != 0)) throw new NotSupportedException("Control.ProtectedOwner: Field/bookmark ranges cannot enclose or cross a control.");
-            if (element.Name == W + "bookmarkStart") bookmarksOpen.Add(DocxPackage.RequiredAttribute(element, W + "id"));
-            else if (element.Name == W + "bookmarkEnd") bookmarksOpen.Remove(DocxPackage.RequiredAttribute(element, W + "id"));
-            else if (element.Name == W + "fldChar")
-            { string? kind = (string?)element.Attribute(W + "fldCharType"); if (kind == "begin") fieldDepth++; else if (kind == "end") fieldDepth--; }
+            var bookmarksOpen = new HashSet<string>(StringComparer.Ordinal); int fieldDepth = 0;
+            foreach (XElement element in item.Document.Descendants())
+            {
+                context.ReserveControlWork(1);
+                if (element.Name == W + "sdt" && (fieldDepth != 0 || bookmarksOpen.Count != 0)) throw new NotSupportedException("Control.ProtectedOwner: Field/bookmark ranges cannot enclose or cross a control.");
+                if (element.Name == W + "bookmarkStart") bookmarksOpen.Add(DocxPackage.RequiredAttribute(element, W + "id"));
+                else if (element.Name == W + "bookmarkEnd") bookmarksOpen.Remove(DocxPackage.RequiredAttribute(element, W + "id"));
+                else if (element.Name == W + "fldChar")
+                { string? kind = (string?)element.Attribute(W + "fldCharType"); if (kind == "begin") fieldDepth++; else if (kind == "end") fieldDepth--; }
+            }
         }
         ReadTypedParts();
     }

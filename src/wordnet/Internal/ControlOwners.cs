@@ -14,6 +14,7 @@ internal sealed class ControlOwner
     internal int Start { get; set; }
     internal int Count { get; set; }
     internal int? ParentId { get; set; }
+    internal bool Story { get; set; }
     internal bool HasChildren => Paragraph == null && Content.Any(p => p.Runs.Any(r => r.TypedControlId.HasValue));
     internal void Refresh(int id, ConversionContext c)
     {
@@ -63,7 +64,10 @@ internal static class ControlOwners
     internal static Dictionary<int, ControlOwner> Index(DocumentModel model, ConversionContext c)
     {
         var result = new Dictionary<int, ControlOwner>();
-        Blocks(model.Blocks);
+        Blocks(model.Blocks, false);
+        foreach (List<DocumentBlock> story in model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection })
+            .Where(s => s != null).Distinct().SelectMany(s => s!.Stories.Values).Distinct())
+            Blocks(story, true);
         if (result.Count != model.Controls.Items.Count || result.Keys.Any(id => !model.Controls.Items.ContainsKey(id)))
             throw new InvalidDataException("Control.ProtectedOwner: Control metadata and live owners disagree.");
         foreach (var item in result)
@@ -77,7 +81,7 @@ internal static class ControlOwners
         return result;
         void Add(int id, ControlOwner owner)
         { if (result.ContainsKey(id)) throw new InvalidDataException("Control.ProtectedOwner: A control has disjoint owners."); result.Add(id, owner); }
-        void Blocks(List<DocumentBlock> blocks)
+        void Blocks(List<DocumentBlock> blocks, bool story)
         {
             for (int i = 0; i < blocks.Count; i++)
             {
@@ -88,24 +92,24 @@ internal static class ControlOwners
                     int end = i + 1; while (end < blocks.Count && blocks[end].TypedControlId == id) { c.ReserveControlWork(1); end++; }
                     if (blocks.Skip(i).Take(end - i).Any(b => b is not ParagraphBlock || !ReferenceEquals(b.Section, block.Section)))
                         throw new InvalidDataException("Control.ProtectedOwner: Block controls require ordinary paragraphs in one section.");
-                    Add(id, new ControlOwner { Blocks = blocks, Start = i, Count = end - i });
-                    for (int nested = i; nested < end; nested++) Inlines((ParagraphBlock)blocks[nested], blocks, id);
+                    Add(id, new ControlOwner { Blocks = blocks, Start = i, Count = end - i, Story = story });
+                    for (int nested = i; nested < end; nested++) Inlines((ParagraphBlock)blocks[nested], blocks, id, story);
                     i = end - 1; continue;
                 }
                 if (block is TableBlock table)
-                { foreach (TableCell cell in table.Rows.SelectMany(r => r)) Blocks(cell.Content); continue; }
+                { foreach (TableCell cell in table.Rows.SelectMany(r => r)) Blocks(cell.Content, story); continue; }
                 var p = (ParagraphBlock)block;
-                Inlines(p, blocks, null);
+                Inlines(p, blocks, null, story);
             }
         }
-        void Inlines(ParagraphBlock p, List<DocumentBlock> blocks, int? parentId)
+        void Inlines(ParagraphBlock p, List<DocumentBlock> blocks, int? parentId, bool story)
         {
             for (int j = 0; j < p.Runs.Count; j++)
             {
                 c.ReserveControlWork(1);
                 if (p.Runs[j].TypedControlId is not int inlineId) continue;
                 int end = j + 1; while (end < p.Runs.Count && p.Runs[end].TypedControlId == inlineId) { c.ReserveControlWork(1); end++; }
-                Add(inlineId, new ControlOwner { Blocks = blocks, Paragraph = p, Start = j, Count = end - j, ParentId = parentId }); j = end - 1;
+                Add(inlineId, new ControlOwner { Blocks = blocks, Paragraph = p, Start = j, Count = end - j, ParentId = parentId, Story = story }); j = end - 1;
             }
         }
     }

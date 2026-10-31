@@ -184,10 +184,12 @@ public sealed class ContentControlBinding
 /// <summary>An immutable, session/version-scoped control snapshot. Reacquire after every committed edit.</summary>
 public sealed class DocumentContentControl
 {
-    internal DocumentContentControl(Guid session, long version, ControlData data, int? parentId, IReadOnlyList<ContentControlParagraph> content)
+    internal DocumentContentControl(Guid session, long version, ControlData data, int? parentId, bool story, IReadOnlyList<ContentControlParagraph> content)
     {
         Session = session; Version = version; Identity = data.Identity; Id = data.Id; Kind = data.Kind;
-        Tag = data.Tag; Alias = data.Alias; ParentId = parentId; Owner = data.Inline ? "inline body/cell paragraph" : "block body/cell paragraphs";
+        Tag = data.Tag; Alias = data.Alias; ParentId = parentId;
+        Owner = story ? (data.Inline ? "inline header/footer paragraph" : "block header/footer paragraphs")
+            : (data.Inline ? "inline body/cell paragraph" : "block body/cell paragraphs");
         Lock = data.Lock; ShowingPlaceholder = data.Placeholder; State = data.State;
         IsChecked = data.Kind == ContentControlKind.Checkbox && !data.Placeholder ? data.Checked : null;
         SelectedValue = data.SelectedValue; DateValue = data.Placeholder ? null : data.DateValue; FreeText = data.FreeText;

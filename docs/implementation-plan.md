@@ -47,7 +47,9 @@ required before the leaf can be accepted.
 Pending #144 source admits a bounded inline child within an ordinary block
 rich-text control, including simple body-table cells, with parent/child lock,
 identity and binding checks. The [owner profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
-records the remaining nesting, wrapper, story and repeated-row work; #144 stays open.
+and [plain story profile](content-controls.md#unreleased-source-plain-header-and-footer-owners)
+record the bounded header/footer owners and remaining nesting, wrapper and
+repeated-row work; #144 stays open.
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.

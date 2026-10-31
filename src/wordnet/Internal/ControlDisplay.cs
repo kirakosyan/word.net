@@ -113,7 +113,7 @@ internal static class ControlDisplay
     internal static void Flatten(DocumentModel model, ConversionContext c)
     {
         MarkDisplay(model, c);
-        foreach (DocumentBlock block in DocumentModel.Expand(model.Blocks))
+        foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
         {
             block.TypedControlId = null;
             if (block is ParagraphBlock p) foreach (TextRun run in p.Runs) run.TypedControlId = null;

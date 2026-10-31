@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
+using WordNet.Internal;
 using WordNet.Model;
 
 namespace WordNet.Formats;
@@ -30,7 +31,15 @@ internal sealed partial class DocxWriter
         foreach (var story in storyReferences)
         {
             int relationshipStart = relationships.Count;
-            var root = new XElement(W + (story.Value.Kind == "header" ? "hdr" : "ftr"));
+            var root = new XElement(W + (story.Value.Kind == "header" ? "hdr" : "ftr"),
+                new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
+                new XAttribute(XNamespace.Xmlns + "r", DocxPackage.DocumentRelationships.NamespaceName));
+            if (model.Controls.Items.Values.Any(data => data.Kind == ContentControlKind.Checkbox))
+            {
+                XNamespace compatibility = "http://schemas.openxmlformats.org/markup-compatibility/2006";
+                root.Add(new XAttribute(XNamespace.Xmlns + "w14", ControlValues.W14.NamespaceName),
+                    new XAttribute(XNamespace.Xmlns + "mc", compatibility.NamespaceName), new XAttribute(compatibility + "Ignorable", "w14"));
+            }
             root.Add(Blocks(story.Key));
             var ownRelationships = relationships.Skip(relationshipStart).ToArray();
             relationships.RemoveRange(relationshipStart, relationships.Count - relationshipStart);
