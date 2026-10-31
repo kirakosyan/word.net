@@ -24,12 +24,15 @@ internal static class FidelityChecks
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.CustomProperties.Count != 0)
             context.Report("Metadata.CustomProperties", "Custom properties can supply displayed fields; only DOCX/DOTX preserves their editable metadata.");
         if (format is DocumentFormat.Docx or DocumentFormat.Dotx or DocumentFormat.Pdf or DocumentFormat.Xps)
+        {
+            TableFields.Refresh(model, context);
             foreach (ParagraphBlock paragraph in model.Paragraphs)
             {
                 using var location = context.At(paragraph.Location);
                 foreach (TextRun run in paragraph.Runs.Where(r => r.FieldInstruction != null && ScalarFields.Candidate(r.FieldInstruction)))
-                    model.FieldResults[run] = ScalarFields.Render(run, model, context);
+                    if (!model.FieldResults.ContainsKey(run)) model.FieldResults[run] = ScalarFields.Render(run, model, context);
             }
+        }
         if (model.ObjectCount != 0 && (context.Typography.Enabled || !context.PreviewIntermediate && format == DocumentFormat.Pdf
             && context.Options.Pdf.Accessibility != PdfAccessibility.None && context.Options.Pdf.Conformance != PdfConformance.Pdf17))
             throw new System.NotSupportedException("Object.Combination: Native typography with objects and combined archival/accessibility profiles remain unsupported.");

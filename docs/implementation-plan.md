@@ -38,6 +38,10 @@ and remaining acceptance/runtime qualification are separate from published 1.5.0
 Unreleased #149 work adds an explicit numbered annotation policy for supported
 classic comments, format changes and paired paragraph moves. The issue remains
 open pending complete independent and exact-runtime qualification.
+Pending #159 adds a conservative [table formula profile](table-formulas.md) with
+dependency-ordered, table-atomic cache refresh and literal percentage pictures.
+Blank, text, merged and other unsupported cell combinations retain their caches;
+broader compatibility and exact-runtime/package qualification remain open.
 Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
 inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification

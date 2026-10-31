@@ -46,6 +46,7 @@ internal static class DocumentReferences
         }
         var previous = new Dictionary<TextRun, string>(model.FieldResults);
         model.FieldResults.Clear(); model.TocTargets.Clear();
+        TableFields.Refresh(model, context);
         var sequences = new Dictionary<string, int>(StringComparer.Ordinal);
         foreach (TextRun run in paragraphs.SelectMany(p => p.Runs).Where(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "SEQ"))
         {

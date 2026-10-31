@@ -15,7 +15,7 @@ internal static class FieldPictures
         string result;
         if (kind == "\\#" && value is decimal number)
         {
-            if (!Regex.IsMatch(picture, "^(?:'[^'\\r\\n]*')?(?:0|#,##0)(?:\\.(?:0{1,10}|#{1,10}))?(?:'[^'\\r\\n]*')?$", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1))) throw new FormatException();
+            if (!Regex.IsMatch(picture, "^(?:'[^'\\r\\n]*')?(?:0|#,##0)(?:\\.(?:0{1,10}|#{1,10}))?(?:'[^'\\r\\n]*')?%?$", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1))) throw new FormatException();
             bool literal = false; int precision = 0; bool fraction = false;
             foreach (char c in picture)
             {
@@ -23,7 +23,15 @@ internal static class FieldPictures
                 else if (!literal && c == '.') fraction = true;
                 else if (!literal && fraction && (c == '0' || c == '#')) precision++;
             }
-            result = decimal.Round(number, precision, MidpointRounding.AwayFromZero).ToString(picture, CultureInfo.InvariantCulture);
+            // Word's numeric picture shows a percent sign; callers multiply by
+            // 100 explicitly when formatting a fractional percentage. .NET's
+            // unquoted percent token instead scales by 100, so quote it here.
+            string normalized = picture;
+            if (picture[picture.Length - 1] == '%')
+            {
+                var escaped = new StringBuilder(picture); escaped.Remove(escaped.Length - 1, 1); escaped.Append("'%'"); normalized = escaped.ToString();
+            }
+            result = decimal.Round(number, precision, MidpointRounding.AwayFromZero).ToString(normalized, CultureInfo.InvariantCulture);
         }
         else if (kind == "\\@" && value is DateTimeOffset instant)
         {

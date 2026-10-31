@@ -13,6 +13,29 @@ Assertions encode the expected structure and text directly. Generated DOCX outpu
 also read and schema-validated with the test-only Open XML SDK. No pagination or
 rendering fidelity is claimed by these initial DOCX fixtures.
 
+## Table formula interoperability probe — 2026-10-31
+
+`P2/generate-table-formulas.py` independently constructs the original, synthetic
+`P2/table-formulas.docx` using Python's standard ZIP/XML facilities. It is covered
+by the repository MIT license and contains no customer data. Run the generator
+with an output-directory argument; the DOCX archive has fixed entry timestamps.
+
+LibreOfficeDev 26.8.0.0.alpha0 imported that DOCX and exported
+`P2/table-formulas-libreoffice.pdf`; Poppler `pdftotext` 25.03.0 recovered table
+rows `1.25 2`, `3.5 -2`, `4.75 4.75`, and `9.5 15`. These independently check
+`SUM(ABOVE)`, a rectangular `SUM(A1:B2)`, a dependent `A3+B3`, and the numeric
+result of `0.15*100`. LibreOffice did not retain the percent picture and kept
+the two non-table simple-field caches (`9999`), so this probe does not validate
+Word's percentage display or non-table field refresh. The Word numeric-picture
+example requiring an explicit multiplication by 100 is separately documented in
+[Microsoft Q&A](https://learn.microsoft.com/en-us/answers/a/9719502); it is a
+community example, not a Word-authored test fixture.
+
+| File | SHA-256 |
+| --- | --- |
+| `P2/table-formulas.docx` | `c38d816cc3bb8fa0eb6cf55a7b0cfe8796b6fd357772b76b65fa6696747c6ca1` |
+| `P2/table-formulas-libreoffice.pdf` | `2315b15ddb637ab47470dfa64a29d5536bf14f756e31239e953537e1f198172d` |
+
 ## Additional synthetic fixtures — 2026-10-12
 
 Except for the identified Apache template/table derivatives, document content is original

@@ -107,6 +107,14 @@ review history without preservation; preserved story/nested structural marks fai
 Balancing never shrinks text to make a candidate frame fit. See the
 [complete profile](roadmap-99-implementation.md) and [release notes](releases/1.4.0.md).
 
+## Unreleased table formula diagnostics
+
+The pending [table formula profile](table-formulas.md) uses
+`Field.UnsupportedUsedCachedResult` when a table dependency, cell, formula or
+bounded graph cannot be calculated. All `=` fields in that table retain their
+source caches together, even in Strict mode. Cancellation and the existing
+conversion-wide resource limits remain hard failures.
+
 ## Unreleased matrix diagnostics
 
 Pending #168 uses `Equation.Matrix*` failures for unsupported baseline, spacing,

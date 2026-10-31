@@ -357,6 +357,12 @@ codes and source locations without including field names or data values. Invalid
 images, syntax or expansion fail atomically. Supported executed markers are removed;
 ordinary non-merge fields remain editable and follow the existing field profile.
 
+Pending #159 source work adds [bounded table formulas](table-formulas.md), including
+dependency-aware refresh after admitted report expansion and edits. It requires
+simple invariant numeric cells and retains all table formula caches together when
+the table or a dependency falls outside that profile. This work is not in the
+published 1.5.0 packages.
+
 ## Run the standalone sample
 
 ```sh

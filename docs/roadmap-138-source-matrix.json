@@ -3,6 +3,35 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "table-formula-numeric",
+      "issue": 159,
+      "outcome": "supported-bounded",
+      "boundary": "Rectangular unmerged numeric tables refresh admitted local sums and cell dependencies atomically, with explicit invariant percentage pictures.",
+      "tests": [
+        { "class": "TableFieldTests", "method": "BoundedDependenciesRefreshInOrderAndSurviveReferenceRefresh" },
+        { "class": "TableFieldTests", "method": "FormulaReferencesUseUnroundedValuesRatherThanDisplayCaches" },
+        { "class": "TableFieldTests", "method": "ExpandedRowsAndLaterEditsRecomputeTheTotal" },
+        { "class": "TableFieldTests", "method": "IndependentLibreOfficeFixtureAgreesOnNumericDependencies" },
+        { "class": "TableFieldTests", "method": "HeaderCellsUseTheSameNumericAdmissionRules" },
+        { "class": "TableFieldTests", "method": "EmptyPositionalRangesProduceZero" },
+        { "class": "P1FieldTests", "method": "NumericPicturesFollowTheSpecifiedRoundingAndLiteralRules" }
+      ]
+    },
+    {
+      "id": "table-formula-retained-caches",
+      "issue": 159,
+      "outcome": "rejected",
+      "boundary": "Unsupported, cyclic, over-limit, blank, text and merged table dependencies reject calculation and retain every source formula cache in the table.",
+      "tests": [
+        { "class": "TableFieldTests", "method": "InvalidDependenciesPreserveEveryCacheInTheTable" },
+        { "class": "TableFieldTests", "method": "UnknownFunctionWithoutAValidReferenceDoesNotPartiallyRefreshTheTable" },
+        { "class": "TableFieldTests", "method": "BlankTextAndCultureDependentCellsRetainTheTableCaches" },
+        { "class": "TableFieldTests", "method": "MergedCellsAndOverdeepGraphsRetainCaches" },
+        { "class": "TableFieldTests", "method": "ReferenceWorkLimitDoesNotCommitEarlierFormulaResults" },
+        { "class": "TableFieldTests", "method": "CancellationDoesNotChangeTheDestination" }
+      ]
+    },
+    {
       "id": "theme-local-appearance",
       "issue": 141,
       "outcome": "supported-bounded",

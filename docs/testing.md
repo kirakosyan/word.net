@@ -1,5 +1,11 @@
 # Conversion tests and qualification
 
+Pending #159 source work has a [table formula test profile](table-formulas.md):
+independently authored DOCX and LibreOffice numeric checks, schema and fixed-output
+inspection, cultures, graph failures, atomic caches and report/edit refresh. The
+independent probe's percentage-picture limitations are recorded with the fixture;
+it does not qualify a public package or untested runtime.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

@@ -22,6 +22,11 @@ The pending #169 API appends `EquationKind.Nary` and adds `EquationExpression.Na
 `EquationNaryOperator` and `EquationLimitPlacement`; existing expression factories
 and enum values remain unchanged. See the [n-ary profile](p2-objects-typography.md#unreleased-source-n-ary-equations).
 
+The pending [#159 table-field profile](table-formulas.md) changes bounded field
+evaluation without adding a public API. Its deterministic culture, cached-result
+fallback and per-table limits are part of the documented behavior; it is not yet
+available in the published 1.5.0 packages.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
