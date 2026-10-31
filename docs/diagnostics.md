@@ -114,6 +114,11 @@ alignment, placeholder and property variants. Malformed grids and bounded-resour
 failures remain hard errors; valid unsupported objects retain the existing
 `Object.UnsupportedLoss` policy. See the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
 
+Pending n-ary rendering reports `Equation.NarySizeFallback` when the selected font
+lacks a display operator meeting its MATH minimum; Strict rejects it. Unsupported
+operator, placement, growth, placeholder and hidden-limit variants use
+`Equation.Nary*`; missing glyphs use `Equation.Glyph`. See the [operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations).
+
 ## 1.3.0 source profile
 
 The 1.3.0 diagnostics include `Object.*` graph/owner/combination/editable-output losses, `Chart.*` cache/range/appearance/label-fit failures, `Equation.*` OMML/MATH/font/geometry limits, `Typography.Bidi*` balanced-control and resource checks, and `Pdf.NativeLanguage` for unsupported native language metadata. `Object.UnsupportedLoss` records omission of a valid out-of-profile chart/equation during ordinary Lenient/BestEffort conversion. Strict conversion, session loading, native typography and tagged/UA/PDF-A destinations reject that loss. Malformed graphs, unsafe relationships, unsupported admitted-object render constructions and UA combination failures remain hard errors in Lenient mode. See [P2 contracts](p2-objects-typography.md).

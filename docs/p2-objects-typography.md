@@ -140,6 +140,42 @@ var grid = EquationExpression.Matrix(new[] {
 doc.AddEquation(EquationExpression.Delimiter(grid, "[", "]"));
 ```
 
+## Unreleased source: n-ary equations
+
+Pending #169 source work adds `EquationExpression.Nary` with a closed summation,
+product or integral operator, one required nonempty operand and optional nonempty
+lower and upper limits. A null limit is absent and hidden in emitted OMML; visible
+empty placeholders are not invented. `Children` contains operand, lower and upper
+in that order, with empty text nodes for absent limits and explicit presence flags.
+`EquationLimitPlacement.Side` places limits as scripts; `AboveBelow` centers them
+over and under the operator. A matrix or another supported expression may be an
+operand or limit. Existing node, text, XML nesting, resource and cancellation
+limits apply to the complete tree.
+
+Inline layout uses the selected font's operator glyph. Display layout selects a
+MATH variant or assembly meeting the font's `DisplayOperatorMinHeight`. If the font
+has no sufficient construction, Lenient/BestEffort uses its largest available
+variant and reports `Equation.NarySizeFallback`; Strict rejects that fallback.
+Missing glyphs and invalid font constructions fail explicitly. Above/below limits
+use the font's upper/lower gap and baseline constants; side limits use its script
+metrics. The operand follows the decorated operator with a one-sixth-em gap.
+These deterministic rules do not imply pixel parity with every office renderer.
+
+The admitted OMML subset requires an explicit `limLoc` because omitted placement
+can depend on document math settings. Operand-height growth, other operator glyphs,
+hidden nonempty limits and visible empty placeholders are unsupported; valid
+out-of-profile objects retain the existing explicit loss or strict rejection policy.
+Common run-size/appearance and managed-output boundaries remain those of the
+existing equation profile. This is pending source work, not published 1.5.0 or a
+claim about native, tagged or archival combinations.
+
+```csharp
+var sum = EquationExpression.Nary(EquationNaryOperator.Summation,
+    EquationExpression.Text("x"), EquationExpression.Text("i=1"),
+    EquationExpression.Text("n"), EquationLimitPlacement.AboveBelow);
+doc.AddEquation(sum);
+```
+
 ## Native text and accessible output
 
 Set `Typography.Enabled` and `Typography.ExtendedBidi` explicitly. The old enabled

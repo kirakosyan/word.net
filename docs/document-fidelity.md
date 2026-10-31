@@ -12,6 +12,10 @@ and spacing through editable OMML and ordinary managed fixed output. Its documen
 deterministic layout is not a claim of identical Office pagination or general math
 fidelity; see the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
 
+Pending n-ary source adds editable sums, products and integrals with explicit
+limits and managed output. The [operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations)
+records font fallback and imported-OMML boundaries.
+
 ## Unreleased source: bounded theme appearance
 
 The pending #141 work resolves major/minor Latin theme font slots and RGB theme

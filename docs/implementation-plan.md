@@ -46,6 +46,9 @@ Pending #168 work adds bounded matrix expressions, OMML and ordinary managed
 layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
 records its geometry and unsupported variants; full exact-platform and integrated
 qualification remain separate from implementation and publication.
+Pending #169 adds bounded n-ary operator authoring and managed layout; the
+[operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations)
+records supported OMML, font diagnostics and remaining qualification.
 The [pending source matrix](roadmap-138-source-matrix.json) maps supported and
 rejected combinations to executable tests; it does not alter the dated baseline.
 

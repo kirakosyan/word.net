@@ -153,7 +153,7 @@ public sealed partial class ObjectFoundationTests
         else
         {
             var doc = WordDocument.Create(); doc.AddParagraph("Before", cancellationToken: TestContext.Current.CancellationToken); doc.AddEquation(EquationExpression.Text("x"), cancellationToken: TestContext.Current.CancellationToken); doc.AddParagraph("After", cancellationToken: TestContext.Current.CancellationToken);
-            source = Xml(SaveObjects(doc), "word/document.xml", xml => xml.Descendants(m + "oMath").Single().ReplaceNodes(new XElement(m + "nary", new XElement(m + "e", new XElement(m + "r", new XElement(m + "t", "x"))))));
+            source = Xml(SaveObjects(doc), "word/document.xml", xml => xml.Descendants(m + "oMath").Single().ReplaceNodes(new XElement(m + "bar", new XElement(m + "e", new XElement(m + "r", new XElement(m + "t", "x"))))));
         }
         using var input = new MemoryStream(source); using var output = new MemoryStream();
         var result = new WordConverter().Convert(input, output, DocumentFormat.Docx, DocumentFormat.Text, new ConversionOptions(mode), TestContext.Current.CancellationToken);

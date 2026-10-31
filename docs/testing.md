@@ -274,6 +274,19 @@ and SVG output, and check column edges and the MATH baseline with the pinned fon
 They exercise copied inputs, snapshot updates, composition, empty cells, default
 and unsupported properties, limits and cancellation. These tests do not by
 themselves qualify other runtime or output profiles.
+The [414707d receipt](measurements/roadmap-138-matrix-414707d.json) records its
+local full-suite and package checks and the partial hosted observation at that time;
+later commits require their own exact-head checks.
+
+Pending #169 tests independently construct and schema-validate OMML sums, products
+and integrals, compare limit placement and display glyph selection to pinned MATH
+metrics, and inspect managed PDF/XPS/SVG vectors and logical text. They cover
+snapshot/composition, missing limits, nested matrices, unsupported properties,
+missing glyphs, explicit size fallback, cancellation and strict untouched output.
+The [independent font check](../eng/verify-nary-font.py) uses pinned FontTools 4.61.1
+to verify the font hash, display minimum, limit metrics, sum/product/integral
+variant glyphs and integral assembly parts. A bounded in-memory font control forces
+the assembly path. The Linux P2 CI lane runs the font check separately from the converter.
 
 ## Released 1.3.0 qualification
 

@@ -18,6 +18,10 @@ The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
 records the bounds, geometry, unsupported variants and separate qualification status.
 
+The pending #169 API appends `EquationKind.Nary` and adds `EquationExpression.Nary`,
+`EquationNaryOperator` and `EquationLimitPlacement`; existing expression factories
+and enum values remain unchanged. See the [n-ary profile](p2-objects-typography.md#unreleased-source-n-ary-equations).
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

@@ -121,6 +121,7 @@ jobs:
           artifacts/p2-venv/bin/pip install -r eng/p2-requirements.txt
           python3 eng/verify-p2-office.py artifacts/p2-objects
           artifacts/p2-venv/bin/python eng/verify-p2.py artifacts/p2-objects --office-edited
+          artifacts/p2-venv/bin/python eng/verify-nary-font.py
           python3 eng/validate-pdf-accessibility.py artifacts/p2-objects --output artifacts/p2-objects/ua-verification.xml --files native-hindi.pdf native-arabic.pdf native-hindi-link.pdf native-hindi-negative.pdf native-arabic-negative.pdf
           dotnet run --project examples/WordNet.Automation -c Release --no-build --no-restore -- artifacts/p2-sample tests/wordnet.Conversion.Tests/Fixtures/P2/STIXTwoMath.ttf tests/wordnet.Conversion.Tests/Fixtures/P2/NotoSansDevanagari-Regular.ttf tests/wordnet.Conversion.Tests/Fixtures/Interoperability/NotoSansArabic-Regular.ttf
       - name: Qualify roadmap table stories and separate object PDF profiles

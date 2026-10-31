@@ -69,6 +69,7 @@ public sealed partial class ObjectFoundationTests
         var font = new MathFont(bytes, Context()); using JsonDocument reference = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(folder, "math-reference.json")));
         JsonElement root = reference.RootElement; Assert.Equal(root.GetProperty("units").GetInt32(), font.Units);
         Assert.Equal(root.GetProperty("constants").GetProperty("ScriptPercentScaleDown").GetInt32(), font.ScriptPercent);
+        Assert.Equal(root.GetProperty("constants").GetProperty("DisplayOperatorMinHeight").GetInt32(), font.DisplayOperatorMinHeight);
         Assert.Equal(root.GetProperty("constants").EnumerateObject().Skip(4).Take(51).Select(p => p.Value.GetInt32()), font.Constants);
         foreach (JsonProperty property in root.GetProperty("glyphs").EnumerateObject())
         {

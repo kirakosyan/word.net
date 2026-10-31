@@ -18,6 +18,10 @@ OMML adapter. The managed layout positions bounded cells using column extents an
 the caller's MATH axis and leading; it retains the existing vector and logical-text
 paths. Other equation and output profiles remain separate.
 
+Pending n-ary expressions retain a closed operator and optional limit semantics in
+the immutable graph and OMML adapter. Managed layout uses the selected MATH font's
+display variants, assemblies and limit metrics, with an explicit size fallback.
+
 Unreleased DOCX reading also consults the bounded local theme and settings before
 resolving text styles. It computes selected Latin font families and RGB colors for
 rendering, and reconstructs a bounded scheme and selected editable text references

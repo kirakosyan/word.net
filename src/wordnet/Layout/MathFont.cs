@@ -26,6 +26,7 @@ internal sealed class MathFont
     internal int Units { get; }
     internal int ScriptPercent { get; }
     internal int ScriptScriptPercent { get; }
+    internal int DisplayOperatorMinHeight { get; }
     internal int DegreePercent { get; }
     internal int MinOverlap { get; }
     internal int[] Constants { get; } = new int[51];
@@ -67,7 +68,7 @@ internal sealed class MathFont
             if (end < start || end > 0x10ffff || g + (long)end - start >= glyphCount || i > 0 && start <= mappings[i - 1].End) throw Invalid();
             mappings.Add((start, end, g));
         }
-        int constants = Offset(math, math + 4, 214); ScriptPercent = S16(constants); ScriptScriptPercent = S16(constants + 2);
+        int constants = Offset(math, math + 4, 214); ScriptPercent = S16(constants); ScriptScriptPercent = S16(constants + 2); DisplayOperatorMinHeight = U16(constants + 6);
         Claim(math, 10); Claim(constants, 214);
         if (ScriptPercent is < 10 or > 100 || ScriptScriptPercent is < 10 or > 100) throw Invalid();
         for (int i = 0; i < Constants.Length; i++) Constants[i] = Value(constants, constants + 8 + i * 4);

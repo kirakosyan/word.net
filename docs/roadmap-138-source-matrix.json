@@ -172,6 +172,33 @@
         { "class": "ObjectFoundationTests", "method": "MatrixRenderingRequiresCallerSelectedMathFontAndKeepsOutputUntouched" },
         { "class": "ObjectFoundationTests", "method": "MatrixFactoriesEnforceRectangularDimensionsAndImmutableBounds" }
       ]
+    },
+    {
+      "id": "nary-equation-managed",
+      "issue": 169,
+      "outcome": "supported-bounded",
+      "boundary": "Summation, product and integral expressions retain explicit limits and render with qualified MATH font metrics; insufficient display variants are diagnosed.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "NaryEditingPreservesImmutableSnapshotsAndWritesGenuineOmml" },
+        { "class": "ObjectFoundationTests", "method": "NaryOptionalLimitsAreExplicitAndRoundTrip" },
+        { "class": "ObjectFoundationTests", "method": "IndependentlyConstructedNaryImportsAsEditableSemantics" },
+        { "class": "ObjectFoundationTests", "method": "NaryLimitsHaveSeparatedFontBasedBaselines" },
+        { "class": "ObjectFoundationTests", "method": "NaryDisplayUsesFontVariantsAndReportsAnInsufficientVariant" },
+        { "class": "ObjectFoundationTests", "method": "NaryDisplayUsesAQualifiedOperatorAssemblyWhenTheVariantIsTooSmall" },
+        { "class": "ObjectFoundationTests", "method": "NaryOperandsCanNestMatricesAndMissingGlyphsRemainExplicit" },
+        { "class": "ObjectFoundationTests", "method": "NaryManagedOutputHasLogicalPdfTextAndXpsSvgVectors" }
+      ]
+    },
+    {
+      "id": "nary-equation-unsupported",
+      "issue": 169,
+      "outcome": "rejected",
+      "boundary": "Unsupported operators, unqualified document defaults, growth, placeholders and malformed graphs do not silently flatten.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "NaryImportRejectsUnsupportedAndMalformedVariants" },
+        { "class": "ObjectFoundationTests", "method": "UnsupportedNaryConversionReportsLossAndStrictModeLeavesOutputUntouched" },
+        { "class": "ObjectFoundationTests", "method": "NaryFactoriesEnforceOperandsEnumsAndCancellation" }
+      ]
     }
   ]
 }

@@ -26,6 +26,8 @@ public enum EquationKind
     Delimiter,
     /// <summary>A rectangular grid of mathematical expressions.</summary>
     Matrix,
+    /// <summary>A sum, product or integral with optional limits and an operand.</summary>
+    Nary,
 }
 
 /// <summary>Horizontal alignment of the expressions within a matrix column.</summary>
@@ -50,6 +52,26 @@ public enum EquationMatrixSpacing
     Twice,
 }
 
+/// <summary>Admitted mathematical n-ary operators.</summary>
+public enum EquationNaryOperator
+{
+    /// <summary>Summation (∑).</summary>
+    Summation,
+    /// <summary>Product (∏).</summary>
+    Product,
+    /// <summary>Integral (∫).</summary>
+    Integral,
+}
+
+/// <summary>Placement of the limits of an n-ary operator.</summary>
+public enum EquationLimitPlacement
+{
+    /// <summary>Place limits as scripts beside the operator.</summary>
+    Side,
+    /// <summary>Center limits below and above the operator.</summary>
+    AboveBelow,
+}
+
 /// <summary>A closed, immutable expression tree; no XML, executable formula or provider object is accepted.</summary>
 public sealed class EquationExpression
 {
@@ -68,6 +90,11 @@ public sealed class EquationExpression
         MatrixColumns = columns; MatrixRows = children.Length / columns;
         MatrixColumnAlignments = Array.AsReadOnly((EquationMatrixAlignment[])alignments.Clone());
         MatrixRowSpacing = rowSpacing; MatrixColumnSpacing = columnSpacing;
+    }
+    private EquationExpression(EquationNaryOperator operation, EquationLimitPlacement placement, bool lower, bool upper, EquationExpression[] children)
+        : this(EquationKind.Nary, "", false, "", "", children)
+    {
+        NaryOperator = operation; NaryLimitPlacement = placement; NaryHasLowerLimit = lower; NaryHasUpperLimit = upper;
     }
     /// <summary>Gets the expression form.</summary>
     public EquationKind Kind { get; }
@@ -91,9 +118,19 @@ public sealed class EquationExpression
     public EquationMatrixSpacing MatrixRowSpacing { get; }
     /// <summary>Gets the relative spacing between matrix columns.</summary>
     public EquationMatrixSpacing MatrixColumnSpacing { get; }
+    /// <summary>Gets the operator for an n-ary expression.</summary>
+    public EquationNaryOperator NaryOperator { get; }
+    /// <summary>Gets the limit placement for an n-ary expression.</summary>
+    public EquationLimitPlacement NaryLimitPlacement { get; }
+    /// <summary>Gets whether an n-ary expression has a lower limit.</summary>
+    public bool NaryHasLowerLimit { get; }
+    /// <summary>Gets whether an n-ary expression has an upper limit.</summary>
+    public bool NaryHasUpperLimit { get; }
     internal int NodeCount { get; }
     internal int Depth { get; }
     internal long Characters { get; }
+    private static bool HasContent(EquationExpression node) => node.Kind == EquationKind.Text ? node.Value.Length != 0
+        : node.Kind != EquationKind.Row || node.Children.Any(HasContent);
     /// <summary>Creates mathematical text; Latin letters are italic by default.</summary>
     public static EquationExpression Text(string value, bool italic = true)
     { ObjectText.Check(value, nameof(value), 1024); return new EquationExpression(EquationKind.Text, value, italic, "", ""); }
@@ -143,10 +180,25 @@ public sealed class EquationExpression
         if (alignments.Length != columns || alignments.Any(a => a is < EquationMatrixAlignment.Left or > EquationMatrixAlignment.Right))
             throw new ArgumentException("Equation.Matrix: One supported alignment per column is required.", nameof(columnAlignments));
         EquationExpression[] cells = rows.SelectMany(row => row.Select(cell => cell ?? Text("", false))).ToArray();
-        bool HasContent(EquationExpression node) => node.Kind == EquationKind.Text ? node.Value.Length != 0
-            : node.Kind != EquationKind.Row || node.Children.Any(HasContent);
         if (!cells.Any(HasContent))
             throw new ArgumentException("Equation.Matrix: At least one cell must contain an expression.", nameof(rows));
         return new EquationExpression(columns, alignments, rowSpacing, columnSpacing, cells);
+    }
+
+    /// <summary>Creates a sum, product or integral with an operand and optional limits.</summary>
+    /// <remarks>Children are operand, lower limit and upper limit. Missing limits are represented by empty text nodes and the corresponding presence property is false.</remarks>
+    public static EquationExpression Nary(EquationNaryOperator operation, EquationExpression operand, EquationExpression? lowerLimit = null,
+        EquationExpression? upperLimit = null, EquationLimitPlacement placement = EquationLimitPlacement.Side)
+    {
+        Guard.NotNull(operand, nameof(operand));
+        if (operation is < EquationNaryOperator.Summation or > EquationNaryOperator.Integral)
+            throw new ArgumentOutOfRangeException(nameof(operation), "Equation.Nary: Unsupported operator.");
+        if (placement is < EquationLimitPlacement.Side or > EquationLimitPlacement.AboveBelow)
+            throw new ArgumentOutOfRangeException(nameof(placement), "Equation.Nary: Unsupported limit placement.");
+        if (!HasContent(operand)) throw new ArgumentException("Equation.Nary: The operand must contain an expression.", nameof(operand));
+        if (lowerLimit != null && !HasContent(lowerLimit)) throw new ArgumentException("Equation.Nary: A present limit must contain an expression.", nameof(lowerLimit));
+        if (upperLimit != null && !HasContent(upperLimit)) throw new ArgumentException("Equation.Nary: A present limit must contain an expression.", nameof(upperLimit));
+        return new EquationExpression(operation, placement, lowerLimit != null, upperLimit != null,
+            new[] { operand, lowerLimit ?? Text("", false), upperLimit ?? Text("", false) });
     }
 }
