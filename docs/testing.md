@@ -122,6 +122,10 @@ The following [PR guest failure](measurements/roadmap-138-framework-bc9995f-fail
 preserves an early VM exit without completed test evidence; it is not a Framework pass.
 The [fresh retry and other guests](measurements/roadmap-138-framework-bc9995f-retry.json)
 passed 2,065 cases each, while the original failure remains recorded.
+The later [exact-head push receipt](measurements/roadmap-138-framework-fbe9a3d-push.json)
+records both actual Framework guests passing 2,105 cases. Its separate PR Linux
+[failure](measurements/roadmap-138-ci-fbe9a3d-linux-failure.json) remains recorded;
+neither result qualifies later source.
 
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit

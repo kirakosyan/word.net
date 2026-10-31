@@ -1,0 +1,25 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "headCommit": "fbe9a3d1c6914d6a79a3420e00476dbdfc6aa084",
+  "pushRun": "https://github.com/kirakosyan/word.net/actions/runs/41183237294",
+  "conclusion": "success",
+  "frameworkRelease": 461814,
+  "casesPerGuest": 2105,
+  "pushSource": {
+    "job": 124489439995,
+    "artifact": 13036332805,
+    "artifactSha256": "8eac2d51326c74cfb0c5d8114d123c38785b91f4f26a12e2351f40a1be4400d3",
+    "librarySha256": "1f0db2b0b9e6cb29339af8fdf1813648cd3232aac799ab592fc263745cdac450",
+    "testSha256": "29f08194f4e9f936e08e2aa0167b7bcd2f741600bb0f008ed7c052ccf3aa971a"
+  },
+  "pushPackage": {
+    "job": 124490913329,
+    "artifact": 13036183496,
+    "artifactSha256": "a60379be9dc165a12e512712569b530eb023fbc093d1603c1ca0476184b0edeb",
+    "librarySha256": "eee07f7f0b9884342ea7c41b77cb87fe8858fdc7f6ca2a0afcb5edbcaeefb40f",
+    "testSha256": "b73e5a68e56b2da9e70e1146d3ab277dc2ab664f21b6c780b3ccb46568218310"
+  },
+  "interpretation": "The exact-head push passed all source, packed-assets, performance and actual Framework 4.7.2 source/package jobs. Each Framework guest reported 2105 passing cases. This is separate from the PR workflow's original Linux failure and does not qualify later source.",
+  "separatePrFailure": "docs/measurements/roadmap-138-ci-fbe9a3d-linux-failure.json"
+}
