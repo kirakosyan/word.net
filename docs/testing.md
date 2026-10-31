@@ -225,6 +225,8 @@ boxes, page selection and unsupported semantic owners. The independent
 [reference observation](measurements/roadmap-138-accessible-box-reference.json)
 records source/saved DOCX schema checks, pinned veraPDF, ParentTree and reading-order
 inspection and four corruption controls; it is not a screen-reader study.
+The [exact-source receipt](measurements/roadmap-138-accessible-box-42524ca.json)
+records complete local suites, package checks and the repeated specimens.
 The pending Linux workflow runs these checks with test-only pypdf 6.10.0 and
 retains the generated evidence; its hosted result requires a separate run.
 
