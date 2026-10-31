@@ -1,0 +1,224 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "3319dbc66fbd6e3fa61f68441a14ff2e202b5aea",
+  "scope": "Diagnosed ordinary managed pie and 50-percent doughnut charts; office frame, circular point labels and protected-profile qualification remain open at this source.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "20acf3dc21d1a02226d823397dadc17eedb94165984ce8d268b09a3e6a33d6ee",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2327,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "3cf2a485852347ca00562a54f5cc720788018722defe2866fd2ceadd59f021af"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2327,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "cee6654fe8147ac205fcaa023e2c7e09768ac855ccfd428e4e258124b053b988"
+    },
+    "capabilityMatrix": {
+      "profiles": 97,
+      "testMethods": 458,
+      "net10CasesPassed": 799
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "6a7a5fe1bde4b834317a89c301f3c9df4631cfa4e970eaf58025fbc6458507d3",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "60d6c732a39c840b9358f8ce60b1232d30fd8c7dd3eeb79ec3d703bc7819e06a",
+      "wordnet.Fonts.1.5.0.nupkg": "4f68cb0935d69317a84bf4481a0448e3a342ec4164f1f79ad7a9f02dda45a256",
+      "wordnet.Ocr.1.5.0.nupkg": "47b961f165cbfe0eb7970208296d48bee5ba19ec69eecd105eb68bae0989b5c0"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 145.52530000000002,
+      "CandidateMedianMilliseconds": 178.71705,
+      "Ratio": 1.2280823334499222,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 41719384,
+      "PeakSampledManagedBytes": 27505264,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-circular-performance-3319dbc.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-circular-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "e038b1dc91ffb78fce967c63b719967963497ec2ca90c4812ea187838aae24a9",
+    "checkerLogSha256": "35bbcf428d879ed5b03801a63eff24868b73e368f61a1f95f15ee2038eb0608c",
+    "schemaLogSha256": "e6a495ffa11fbbbe1ac3ad8f5ab1c072f6df4c1440868ddcd530ac5d8155fd21",
+    "openXml": "Two independently authored source, exact-source saved and API-authored DOCX passed Open XML SDK 3.5.1.",
+    "documents": {
+      "pie": {
+        "inputDocxSha256": "93333053586d6d648fb553c9779bea40161305394567a60b754f9044ba318378",
+        "savedDocxSha256": "baef1a4ddffa096291412e7f94822aa1d568d84915bb8fa8f6b975e7c4868c37",
+        "authoredDocxSha256": "fcca7d64b6df4662d3b18d1de4c3562244a948c4918a45e914010eee0bdfe9aa",
+        "pdfSha256": "bd106e163eb428c02f73834e6ad3a8a71ed943ab93a0e3360fc8f8dff0572fad",
+        "xpsSha256": "ec56727c4648ce6a6b158b2de1784ec529dcbffb3848cbc2de33d64768cb059b",
+        "svgSha256": "b13eda95e536602eaf66467654820099ae189b561e6f97d8ad5e894d5dfead24",
+        "diagnosticsSha256": "93e6929154a0f69ce2ccae0b113c64c72d721ec07f9a99b1a6aa302087e47292",
+        "referencePdfSha256": "fea4bf146e305b97231996a6b25f5dd5aa34603dd2c6a205555dbdd516c36e6b",
+        "referenceReopenedSavedPdfSha256": "f4a80db7d755d4ea469bdf2d48c7b2ae999465e7eb237bc49bb030d604fb5666",
+        "referenceAuthoredPdfSha256": "872144f423c833db06cf28de5d083598af1e7fb9b8d2ab35f42c4007a7965d80"
+      },
+      "doughnut": {
+        "inputDocxSha256": "a962849747944a3a0a84507e2edf8f288b4dc75f1d5da09da4d5e1493dc762e4",
+        "savedDocxSha256": "cc2efacff550d756200957e75eb82b0040f6540cacfaf0ea00e50927077f50ed",
+        "authoredDocxSha256": "621aadc4774de39eeb0b5494e70507932ab4ff4a22113562d1b3c10744bed772",
+        "pdfSha256": "839f774c3ee031547ccdb16ec1f5f3d658a999e8502eefc67cb06eba1ac1f0ab",
+        "xpsSha256": "e6b497410d825b447521be692a43c52281463e70394ae03cf836ad15e6665059",
+        "svgSha256": "d2acf06466b7fbbfd7d035482686210c6a4d0139ee49ac0a8651494411498e96",
+        "diagnosticsSha256": "93e6929154a0f69ce2ccae0b113c64c72d721ec07f9a99b1a6aa302087e47292",
+        "referencePdfSha256": "1064a4fcd51b4156a04af706051c263d2cc8f7c0681a2d3f1557e83974ca6966",
+        "referenceReopenedSavedPdfSha256": "fbd2053bcf30ccc67ce2f0f2bcfda80d95b010f8a7f46e103bda26b55e0a9cc4",
+        "referenceAuthoredPdfSha256": "15b6f962435edb24fa7fa9c540690e27ab267bb035d8037d47ad5f63bf60e320"
+      }
+    },
+    "result": {
+      "specimens": [
+        {
+          "kind": "pie",
+          "graph": {
+            "chartSha256": "7e0d3e02a2289aea9b7f01777733dc4f9d5f77bdd0a075a1769acae088c7b38d",
+            "workbookSha256": "0293195d4b34956049f98abb77504a84791b39ea0b5b05b34bbe5044ba2ec5dd"
+          },
+          "legendOrder": [
+            "First",
+            "Second",
+            "Third"
+          ],
+          "pdfSvgMaxDeltaPt": 7.62939453125e-06,
+          "pdfXpsMaxDeltaPt": 3.814697265625e-05,
+          "actualRasterBoundsPt": [
+            80.5,
+            56.0,
+            226.0,
+            202.0
+          ],
+          "referenceRasterBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "referenceMaxDeltaPt": 23.5,
+          "rasterResolutionPt": 0.5,
+          "geometryTolerancePt": 0.5,
+          "referenceFidelityPassed": false,
+          "sectorProportions": [
+            6,
+            3,
+            1
+          ],
+          "doughnutHoleChecked": false
+        },
+        {
+          "kind": "doughnut",
+          "graph": {
+            "chartSha256": "6fdd599993d52f1106b9dfb94b94777b942dbbed042b304ce35ab8fee3e8e6a7",
+            "workbookSha256": "0293195d4b34956049f98abb77504a84791b39ea0b5b05b34bbe5044ba2ec5dd"
+          },
+          "legendOrder": [
+            "First",
+            "Second",
+            "Third"
+          ],
+          "pdfSvgMaxDeltaPt": 7.62939453125e-06,
+          "pdfXpsMaxDeltaPt": 4.57763671875e-05,
+          "actualRasterBoundsPt": [
+            80.5,
+            56.0,
+            226.0,
+            202.0
+          ],
+          "referenceRasterBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "referenceMaxDeltaPt": 23.5,
+          "rasterResolutionPt": 0.5,
+          "geometryTolerancePt": 0.5,
+          "referenceFidelityPassed": false,
+          "sectorProportions": [
+            6,
+            3,
+            1
+          ],
+          "doughnutHoleChecked": true
+        }
+      ],
+      "negativeControls": {
+        "missing pie diagnostic": "Missing independent circular-layout diagnostic",
+        "missing doughnut diagnostic": "Missing independent circular-layout diagnostic",
+        "wrong reference": "Circular centre or doughnut hole changed",
+        "changed editable slice value": "Slice values changed",
+        "changed SVG sector": "PDF, SVG and XPS sector geometry differs",
+        "changed XPS sector": "PDF, SVG and XPS sector geometry differs",
+        "changed legend order": "Category legend order changed",
+        "missing PDF content": "Missing or duplicated category legend"
+      },
+      "officeRoundtrips": {
+        "pie": {
+          "authoredGraph": {
+            "chartSha256": "4febf0f79f399c54b6fd2addd3ee7f736240ee0030e2e1f10205a2644cc7a0e4",
+            "workbookSha256": "3aa300e03ab53be0e476f2c406758c000f8b6313eaf1bdd5a7f7088221ec84f8"
+          },
+          "referenceBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "savedBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "authoredBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "legendTolerancePt": 0.001
+        },
+        "doughnut": {
+          "authoredGraph": {
+            "chartSha256": "2bab79499aa9099b0e656d759203a3f863c57d1a685399777585eb066117d4fb",
+            "workbookSha256": "3aa300e03ab53be0e476f2c406758c000f8b6313eaf1bdd5a7f7088221ec84f8"
+          },
+          "referenceBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "savedBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "authoredBoundsPt": [
+            91.5,
+            79.5,
+            211.5,
+            199.5
+          ],
+          "legendTolerancePt": 0.001
+        }
+      }
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, full #163 acceptance and roadmap #138 remain open."
+}

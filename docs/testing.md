@@ -426,6 +426,13 @@ checks XlsxWriter-authored pie and doughnut fixtures, Open XML validation, vecto
 paths across formats, 6:3:1 raster proportions, legend order, the hole and eight
 corrupted controls. The office frame difference remains above the existing
 0.5-point geometry tolerance.
+The [exact-source receipt](measurements/roadmap-138-circular-3319dbc.json) records
+both complete suites, matrix, packages and reproduced specimens. Its [performance
+receipt](measurements/roadmap-138-circular-performance-3319dbc.json) retains all
+four rounds and the visible timing variation under the unchanged gate.
+The earlier `c478393` head's [Framework guest receipt](measurements/roadmap-138-framework-c478-successes.json)
+records successful source and package guests from both hosted workflows; it does
+not qualify the later chart changes.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
