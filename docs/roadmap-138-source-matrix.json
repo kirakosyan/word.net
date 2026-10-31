@@ -3,6 +3,35 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "east-asian-managed-line-breaks",
+      "issue": 165,
+      "outcome": "supported-bounded",
+      "boundary": "Opt-in Japanese or Chinese single-run managed PDF uses Unicode 17 line breaks and complete run-font coverage; measured Japanese punctuation and mixed Latin-number differences are diagnosed.",
+      "tests": [
+        { "class": "UnicodeLineBreakTests", "method": "Unicode17OfficialLineBreakConformance" },
+        { "class": "EastAsianLayoutTests", "method": "ManagedPdfKeepsLogicalTextAndDoesNotStartOrEndLinesWithProhibitedPunctuation" },
+        { "class": "EastAsianLayoutTests", "method": "PlainJapaneseCanUseStrictManagedLayout" },
+        { "class": "EastAsianLayoutTests", "method": "NonbreakingSpaceKeepsAdjacentCjkCharactersOnTheSameLine" },
+        { "class": "EastAsianLayoutTests", "method": "OrdinarySpacesRemainInLogicalTextAcrossWrapping" },
+        { "class": "EastAsianLayoutTests", "method": "ManagedBreaksCanUseTheBoundedEnglishHyphenationDictionary" }
+      ]
+    },
+    {
+      "id": "east-asian-line-break-boundaries",
+      "issue": 165,
+      "outcome": "rejected",
+      "boundary": "Strict rejects measured punctuation and mixed-number losses; unqualified graphemes, missing glyphs, owners, output profiles, exhausted segmentation and cancellation reject before output.",
+      "tests": [
+        { "class": "UnicodeLineBreakTests", "method": "LineBreakRejectsMalformedUtf16LimitsAndCancellation" },
+        { "class": "EastAsianLayoutTests", "method": "MissingGlyphAndUnqualifiedGraphemeOrOutputFailWithoutPublishing" },
+        { "class": "EastAsianLayoutTests", "method": "MixedReferenceDifferenceRejectsStrictOutputBeforePublishing" },
+        { "class": "EastAsianLayoutTests", "method": "JapanesePunctuationReferenceDifferenceRejectsStrictOutputBeforePublishing" },
+        { "class": "EastAsianLayoutTests", "method": "LanguageOptionsAndCancellationAreExplicit" },
+        { "class": "EastAsianLayoutTests", "method": "MultipleRunsAndAnUnbreakableWideSpanFailBeforeOutput" },
+        { "class": "EastAsianLayoutTests", "method": "HyphenationDoesNotMoveARequiredTrailingSpaceToTheNextLine" }
+      ]
+    },
+    {
       "id": "general-rotation-diagnosed",
       "issue": 160,
       "outcome": "supported-bounded",

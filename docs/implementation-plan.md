@@ -126,6 +126,10 @@ Pending #164 adds [bounded local dictionary hyphenation](interoperability.md#unr
 in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.
 The measured search-highlight and justified-reference differences, soft hyphens,
 native/accessible text, other owners and full acceptance remain open.
+Pending #165 adds [bounded East Asian line breaking](interoperability.md#unreleased-source-east-asian-line-breaking)
+with Unicode 17 conformance data, explicit language selection and caller font coverage.
+Japanese punctuation and mixed Latin-number reference differences are diagnosed;
+additional scripts, owners, fallback behavior and output combinations remain open.
 Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
 inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification

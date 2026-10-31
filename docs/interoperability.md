@@ -141,6 +141,46 @@ case. Indic shaping, CJK line breaking and hyphenation remain separate follow-up
 Native typography with tagged/PDF-UA, PDF/A output or XPS is explicitly unsupported in this
 increment. English-only OCR is unchanged.
 
+### Unreleased source: East Asian line breaking
+
+Pending #165 adds `Typography.EastAsianLineBreak` with `Japanese`,
+`SimplifiedChinese` and `TraditionalChinese` selections. `None` is the default
+and preserves the existing layout. The initial managed profile uses the same
+Unicode 17 default UAX #14 rules for all three selections, including conservative
+small-kana/nonstarter handling; it does not claim complete language-specific
+tailoring. It intersects break opportunities with extended grapheme boundaries,
+keeps ordinary and nonbreaking spaces in the logical text, and never splits an
+unbreakable span merely to make it fit.
+
+The current profile renders ordinary left-aligned, single-run body paragraphs to
+untagged PDF 1.7, without selected pages, stories or columns. The selected font
+must cover the complete run; configure an appropriate caller-supplied face.
+Existing family substitutions operate at run
+granularity and retain their diagnostics; per-glyph fallback is not qualified.
+Native shaping, combining marks, emoji/supplementary characters, zero-width and
+word-joiner controls, tables, images, fields, links, vertical text and accessible
+or archival output are rejected. An unbreakable span wider than the column fails
+with `Layout.LineBreakWidth`. The existing bounded local English hyphenation
+dictionary can be selected for admitted mixed text, subject to its own limits and
+search-geometry diagnostic.
+
+Independent LibreOffice measurements match the tested plain Japanese and traditional
+Chinese samples within 0.5 points. Japanese punctuation differs by up to 1.2 points,
+and a simplified Chinese sample wraps `123.45` differently, moving glyphs by up to
+44.7 points horizontally and 16.01 vertically. The original tolerances are unchanged.
+`Layout.EastAsianPunctuationReference` and `Layout.EastAsianMixedReference` reject
+the affected cases in Strict and warn in BestEffort/Lenient. An initial test using
+CID-keyed CFF Noto faces also failed in the existing CFF converter; the qualified
+fixtures are independently converted TrueType subsets and that CFF limitation stays open.
+The [testing record](testing.md) describes the conformance data and independent
+controls. These additions are unreleased source, not published 1.5.0 behavior.
+
+```csharp
+var options = new ConversionOptions(FidelityMode.BestEffort);
+options.Typography.EastAsianLineBreak = EastAsianLineBreakLanguage.Japanese;
+options.Fonts.Sources.Add(FontSource.FromFile("Noto Sans CJK JP", callerFontPath));
+```
+
 ### Unreleased source: local dictionary hyphenation
 
 Pending #164 accepts a caller-supplied `HyphenationLexicon` for explicitly

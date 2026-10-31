@@ -1,0 +1,206 @@
+{
+  "roadmap": 138,
+  "issue": 165,
+  "recordedUtc": "2026-10-31",
+  "workingTreeParent": "0645c87cc95843fe05dc4f71bd4c8e6f0edf3284",
+  "executedWorkingTreeNet10AssemblySha256": "7f76ef0f8d53be58f37ea55410b1bcefecbf1189337182058d7ed3a24a9f52c8",
+  "scope": "Unicode 17 default line breaks and grapheme-safe, single-run managed East Asian PDF. Strict rejects independently measured Japanese punctuation and mixed-number differences. Broader script, font fallback and output acceptance remain open.",
+  "tools": {
+    "eng/generate-unicode-linebreak.py": "ef3deeafdbfd53cdc7b58cecaeebdff43438ea5007400a786ed4f96e7d458f17",
+    "eng/generate-roadmap-138-cjk-fonts.py": "6d20a3c8c8c5cd314e61505b8052ae1f0418cf1802146346df1b5d6f78e76375",
+    "eng/generate-roadmap-138-cjk.py": "9822a7199a877fdea575d3efd3e1437fea47360a65f10a3acea70c838b348f5e",
+    "eng/roadmap-138-cjk-probe.cs": "34ab3ba35cb0452b5904ffa30cc23741bf1cf3b00db1e5fafaa364fa43b0a67b",
+    "eng/check-roadmap-138-cjk.py": "cf9a671a816e4d232b90513af1007fa18c8507bca6c82ae481566ec46a55977e",
+    "eng/verify-roadmap-138-cjk.py": "2ba9489d4a458e8fdec83d42b3742146a39e6d709244d24f71bbb55331d5a772"
+  },
+  "provenance": "python-docx 1.2.0 synthetic packages, normalized ZIP timestamps and byte-identical regeneration; four source and four saved documents passed Open XML SDK 3.5.1. FontTools 4.61.1 created renamed, one-unit quadratic approximations of OFL Noto CJK 2.004 faces, byte-identically regenerated; original collection SHA256 b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a. Offline LibreOffice 24.2.7.2 image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 used the original collection; pypdf 6.10.0 and PyMuPDF 1.27.2.2 examined PDF text and geometry. No Microsoft Word reference was available.",
+  "files": {
+    "japanese-plain": {
+      "sourceDocxSha256": "b5b99c36aef9502b05c0ddbfa54654f8144862e66a484ad688fccefc560867a3",
+      "savedDocxSha256": "98b56ceb1dd1f4a6a2f1f9015043a32906e57ab6f2ba691a9341e806cf5fee99",
+      "pdfSha256": "29a6cf22cb3bfb60c06dc615bcd6a464be0d53b53c110b57b2280da562026d98",
+      "referencePdfSha256": "980011f3b7fddb415a64c828442dec08e0061a4e0de8ba6ddfc8c293380d1559",
+      "diagnosticsSha256": "4dc2e54141175af8b308339ef5d2f27baf49e780a6abe7c86fcdc79a43e50a05"
+    },
+    "japanese": {
+      "sourceDocxSha256": "eab5b2e5ac140eb9ce7e284ac6c13362559264fc6682c9a7c68ebaa5bb05199a",
+      "savedDocxSha256": "a7e43c68a51377e23827a3d2f3bcf05abf81251e4249f1d624a400d5c4ae5c0b",
+      "pdfSha256": "cddd8fbb7f67dcae17b22edbeeb48cfa1454f7f600207916616c678692815a44",
+      "referencePdfSha256": "56b9c084f192c4727b708bd954865089bc1614b57504918a1a9c73499b431314",
+      "diagnosticsSha256": "c4bbe7e98d7d8deb63a64b9eeb4f80733fb99bc84326f9607a15e1307038feb8"
+    },
+    "simplified": {
+      "sourceDocxSha256": "8f15d480d75ec5666615683c0492c0a4fcd3b612d5b8bcc4db5398b2510c1e4d",
+      "savedDocxSha256": "ce7810992fc4633aa3149e3d8b76170eeac8447cdf6738af3f5f9837a41e1306",
+      "pdfSha256": "b25c78c35fef6574b912e77da222eb7a20117106722a9690ea5cdd78a7f73f92",
+      "referencePdfSha256": "fcf3ea648bd5f46ef62cb461164faa795234e073002abc757b30bbd472919e8f",
+      "diagnosticsSha256": "76d5b0e7d8b4e61408ca19bacebc467d7b118a7cfe8fee5185bdd08539764680"
+    },
+    "traditional": {
+      "sourceDocxSha256": "ed7658286d202838bcb2b203b5f94be1b66960f902e44a2fa556963c65976958",
+      "savedDocxSha256": "2e6928a9a25627c2f965d910bca3b1ca5b3548c734ce312e15140be6e42fb85b",
+      "pdfSha256": "c679d4434931e492b7521fe56dcfe6d820bf843434ce649a80c78cc94d0ee968",
+      "referencePdfSha256": "76c34a8740d990076015ad00cea7dd3db47389a814336c15bf4bf6f7367ee264",
+      "diagnosticsSha256": "4dc2e54141175af8b308339ef5d2f27baf49e780a6abe7c86fcdc79a43e50a05"
+    }
+  },
+  "measurements": {
+    "specimens": [
+      {
+        "language": "JP",
+        "textLength": 16,
+        "lines": [
+          "日本語の文章です",
+          "日本語の文章です"
+        ],
+        "referenceLines": [
+          "日本語の文章です",
+          "日本語の文章です"
+        ],
+        "maxGlyphOriginDeltaXPt": 0.10000038146972656,
+        "maxGlyphOriginDeltaYPt": 0.01202392578125,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": true,
+        "diagnostics": [
+          "Docx.AdditionalParts",
+          "Docx.AuxiliaryMetadata",
+          "Docx.LanguageMetadata",
+          "Docx.PageLayout",
+          "Docx.RunFormatting",
+          "Docx.Settings",
+          "Docx.ThemeFont"
+        ]
+      },
+      {
+        "language": "JP",
+        "textLength": 35,
+        "lines": [
+          "日本語の文章で",
+          "す。段落（句読",
+          "点）を正しく折り",
+          "返す、次の行は継",
+          "続します。"
+        ],
+        "referenceLines": [
+          "日本語の文章で",
+          "す。段落（句読",
+          "点）を正しく折り",
+          "返す、次の行は継",
+          "続します。"
+        ],
+        "maxGlyphOriginDeltaXPt": 1.1999969482421875,
+        "maxGlyphOriginDeltaYPt": 0.0780029296875,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "diagnostics": [
+          "Docx.AdditionalParts",
+          "Docx.AuxiliaryMetadata",
+          "Docx.LanguageMetadata",
+          "Docx.PageLayout",
+          "Docx.RunFormatting",
+          "Docx.Settings",
+          "Docx.ThemeFont",
+          "Layout.EastAsianPunctuationReference"
+        ]
+      },
+      {
+        "language": "SC",
+        "textLength": 33,
+        "lines": [
+          "这是一个中文段",
+          "落，包含标点（以",
+          "及）数字123.45。",
+          "测试换行规则！"
+        ],
+        "referenceLines": [
+          "这是一个中文段",
+          "落，包含标点（以",
+          "及）数字",
+          "123.45。测试换行",
+          "规则！"
+        ],
+        "maxGlyphOriginDeltaXPt": 44.69999694824219,
+        "maxGlyphOriginDeltaYPt": 16.0059814453125,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "diagnostics": [
+          "Docx.AdditionalParts",
+          "Docx.AuxiliaryMetadata",
+          "Docx.LanguageMetadata",
+          "Docx.PageLayout",
+          "Docx.RunFormatting",
+          "Docx.Settings",
+          "Docx.ThemeFont",
+          "Layout.EastAsianMixedReference"
+        ]
+      },
+      {
+        "language": "TC",
+        "textLength": 17,
+        "lines": [
+          "繁體中文測試，標",
+          "點與文字換行規",
+          "則。"
+        ],
+        "referenceLines": [
+          "繁體中文測試，標",
+          "點與文字換行規",
+          "則。"
+        ],
+        "maxGlyphOriginDeltaXPt": 0.10000038146972656,
+        "maxGlyphOriginDeltaYPt": 0.03399658203125,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": true,
+        "diagnostics": [
+          "Docx.AdditionalParts",
+          "Docx.AuxiliaryMetadata",
+          "Docx.LanguageMetadata",
+          "Docx.PageLayout",
+          "Docx.RunFormatting",
+          "Docx.Settings",
+          "Docx.ThemeFont"
+        ]
+      }
+    ],
+    "negativeControls": {
+      "wrong reference": "ValueError: Expected font face was not embedded.",
+      "wrong font": "ValueError: Expected font face was not embedded.",
+      "missing japanese diagnostic": "ValueError: The reference mismatch lacks a diagnostic.",
+      "missing simplified diagnostic": "ValueError: The reference mismatch lacks a diagnostic.",
+      "changed editable text": "ValueError: Editable source text changed.",
+      "missing PDF text": "ValueError: Expected font face was not embedded."
+    }
+  },
+  "officialUnicodeConformance": {
+    "version": "17.0.0",
+    "testFileSha256": "e69884e0dde6a8724873f885d68c52dc14518abf9ae4ca9e2283b8773db3b752",
+    "casesPassed": 19338
+  },
+  "originalProblemsRetained": [
+    {
+      "failure": "The first CFF fixture run failed five of six tests because PdfPig could not read selected CID-keyed CFF glyph outlines; Font.Invalid was thrown before layout. The CFF limitation is not fixed by the later TrueType fixtures.",
+      "logSha256": "70dfc5af6a8df50c213eb5d01ff411b265585ebd94ac9df1daef8153eb7d5316",
+      "trxSha256": "f97af644ebbc64e0cc11ae37354e664dfddf0d113c8bef837008b32391251dbf",
+      "cffFixtureSha256": {
+        "RoadmapCJK-JP.otf": "d8320e6e00cb1fe15102e85a8215f91c3644ae01ab1570d4c3e9442758f554a6",
+        "RoadmapCJK-SC.otf": "abaf8d70c4e6611a2d2d6a46b8ce60a7c41c86d4ae3518d6e608f97552e8a82a",
+        "RoadmapCJK-TC.otf": "a21be806d83b4aaf88a0f195d4001c4b2a951a5238ef758e1313143d8026d504"
+      }
+    },
+    {
+      "failure": "The first TrueType attempt passed seven of eight tests; a dictionary-hyphenation example with a 60-point column failed Hyphenation.WordWidth because no admitted prefix/suffix pair fit. The successful interaction uses a 90-point column; the original narrower failure remains valid.",
+      "logSha256": "02e4f998b8017b654930881339bc960862a0706fd421af383efdc0d801d5825b",
+      "trxSha256": "0bb9bf71ca12b1708e452c73f5430a33fd4f244e85a26db123380d801d7917bd"
+    },
+    {
+      "failure": "The first independent Japanese punctuation check exceeded the 0.5-point per-glyph tolerance by up to 1.2 points even though line starts and wrapping matched. The first simplified Chinese numeric specimen differed by 44.7 points horizontally and 16.01 vertically. Both remain diagnosed, and Strict rejects the affected profiles."
+    },
+    {
+      "failure": "Early compilation exposed cross-framework analyzer requirements (CA1512, CA1872, CA1850, CA1861); the generator initially needed FontBuilder explicitly marked TrueType. These were corrected without relaxing the checks."
+    },
+    {
+      "failure": "The first solution format check reported whitespace in UnicodeLineBreak.cs; an intermediate unformatted diagnostic-phase edit also required indentation. The files were formatted and the full format gate was rerun."
+    }
+  ],
+  "toolWarnings": "LibreOffice reported that javaldx could not launch; reference PDFs, font identity and negative controls were still checked."
+}

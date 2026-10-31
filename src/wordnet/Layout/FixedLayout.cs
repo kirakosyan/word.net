@@ -129,10 +129,65 @@ internal static partial class FixedLayout
         using var buffer = new MemoryStream(); stream.CopyTo(buffer); return buffer.ToArray();
     }
 
+    private static bool UnsupportedEastAsianText(string text, ConversionContext context)
+    {
+        context.CheckCancellation();
+        for (int i = 0; i < text.Length; i++)
+        {
+            if ((i & 255) == 0) context.CheckCancellation(); char c = text[i];
+            if (c is '\t' or '\n' or '\f' or '\v' or '\u00ad' || char.IsSurrogate(c)
+                || UnicodeLineBreakData.GetCategory(c) is UnicodeLineBreakData.Category.Mn or UnicodeLineBreakData.Category.Mc
+                || UnicodeLineBreakData.GetBreak(c) is UnicodeLineBreakData.Break.ZW or UnicodeLineBreakData.Break.ZWJ or UnicodeLineBreakData.Break.WJ
+                    or UnicodeLineBreakData.Break.BK or UnicodeLineBreakData.Break.CR or UnicodeLineBreakData.Break.LF or UnicodeLineBreakData.Break.NL)
+                return true;
+        }
+        return false;
+    }
+
     internal static List<FixedPage> Create(DocumentModel model, ConversionContext context)
     {
         if (context.Typography.Enabled && model.Paragraphs.Any(p => p.Runs.Any(r => r.Box?.Gradient != null)))
             throw new NotSupportedException("Shape.GradientProfile: Gradient shapes with native typography require separate qualification.");
+        if (context.Typography.EastAsianLineBreak != EastAsianLineBreakLanguage.None)
+        {
+            PdfOptions pdf = context.Options.Pdf ?? throw new ArgumentException("PDF options must not be null.");
+            if (context.Destination != DocumentFormat.Pdf || context.RenderingPreview || context.PreviewIntermediate || context.Typography.Enabled
+                || context.Typography.Direction == TextDirection.RightToLeft || pdf.Accessibility != PdfAccessibility.None
+                || pdf.Conformance != PdfConformance.Pdf17 || pdf.Pages.Count != 0 || context.Options.BalanceFinalColumns)
+                throw new NotSupportedException("Layout.EastAsianProfile: East Asian breaks currently require ordinary managed PDF without page selection or preview.");
+            if (model.Notes.Count != 0 || model.ObjectCount != 0 || model.Review.HasHistory || model.Blocks.Any(b => b is not ParagraphBlock p
+                || p.Alignment != ParagraphAlignment.Left || p.HeadingLevel != 0 || p.RightToLeft == true || p.Runs.Count != 1
+                || !ContentProfiles.OrdinaryParagraph(p, decorations: false) || UnsupportedEastAsianText(p.Runs[0].Text, context)))
+                throw new NotSupportedException("Layout.EastAsianOwner: East Asian breaks require single-run ordinary body paragraphs without unqualified shaping or controls.");
+            if (model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null)
+                .Any(s => s!.Columns != 1 || s.Stories.Any(story => story.Value.Count != 0)))
+                throw new NotSupportedException("Layout.EastAsianOwner: Columns and header/footer stories require separate qualification.");
+            DiagnosticPhase prior = context.Phase; context.Phase = DiagnosticPhase.Layout;
+            try
+            {
+                foreach (ParagraphBlock paragraph in model.Blocks.OfType<ParagraphBlock>())
+                {
+                    string text = paragraph.Runs[0].Text; bool punctuation = false, wide = false, latinNumber = false;
+                    for (int i = 0; i < text.Length; i++)
+                    {
+                        if ((i & 255) == 0) context.CheckCancellation(); char c = text[i];
+                        punctuation |= c is '\u3001' or '\u3002'; wide |= UnicodeLineBreakData.GetEastAsian(c) == UnicodeLineBreakData.EastAsian.Wide;
+                        latinNumber |= c is >= '0' and <= '9' or >= 'A' and <= 'Z' or >= 'a' and <= 'z';
+                    }
+                    if (context.Typography.EastAsianLineBreak == EastAsianLineBreakLanguage.Japanese && punctuation)
+                    {
+                        using var location = context.At(paragraph.Location);
+                        context.Loss("Layout.EastAsianPunctuationReference", "Japanese punctuation positioning differs from an independent office reference.");
+                    }
+                    if (wide && latinNumber)
+                    {
+                        using var location = context.At(paragraph.Location);
+                        context.Loss("Layout.EastAsianMixedReference", "Mixed East Asian and Latin-number line breaks differ from an independent office reference.");
+                    }
+                }
+            }
+            finally { context.Phase = prior; }
+        }
         if (context.Hyphenation.Dictionary != null)
         {
             PdfOptions pdf = context.Options.Pdf ?? throw new ArgumentException("PDF options must not be null.");
@@ -1394,6 +1449,14 @@ internal static partial class FixedLayout
                 string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages[pages.Count - 1].PageNumber : renderPage, totalPages, renderSectionPages, context);
                 if (context.Hyphenation.Dictionary != null && runText.Any(c => c == '\u00ad'))
                     throw new NotSupportedException("Hyphenation.SoftHyphen: Authored soft hyphens require separate qualification.");
+                bool eastAsian = context.Typography.EastAsianLineBreak != EastAsianLineBreakLanguage.None;
+                if (eastAsian)
+                    for (int i = 0; i < runText.Length; i++)
+                    {
+                        if ((i & 255) == 0) context.CheckCancellation();
+                        if (maps[font] == null || !maps[font]!.TryGetGlyphIndex(runText[i], out int glyph) || glyph == 0)
+                            throw new NotSupportedException("Layout.EastAsianGlyph: Configure a caller font that covers the complete run.");
+                    }
                 runText = ManagedText(runText, font);
                 foreach (char character in runText)
                     if (!(context.Typography.ExtendedBidi && (UnicodeBidi.Format(character) || character is '\u200c' or '\u200d')) && character is not '\n' and not '\t' and not '\f' and not '\v' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
@@ -1407,8 +1470,17 @@ internal static partial class FixedLayout
                 }
                 if (model.TocTargets.TryGetValue(run, out List<string>? targets) && targets.Count > 0) activeLink = "#" + targets[0];
                 var token = new StringBuilder();
+                HashSet<int>? breakOffsets = null;
+                if (eastAsian)
+                {
+                    if (runText.Length * 160L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Layout.LineBreakLimit: Segmentation exceeds the resource allowance.");
+                    var graphemeOffsets = new HashSet<int>(UnicodeBoundaries.Find(runText, false, context));
+                    breakOffsets = new HashSet<int>(UnicodeLineBreak.Find(runText, context).Where(graphemeOffsets.Contains));
+                }
+                int offset = 0;
                 foreach (char c in runText)
                 {
+                    offset++;
                     if (c == '\t')
                     {
                         Flush();
@@ -1430,7 +1502,7 @@ internal static partial class FixedLayout
                         x = position;
                     }
                     else if (c is '\n' or '\f' or '\v') { Flush(); line.BreakAfter = c == '\n' ? '\0' : c; Finish(); tocLine++; if (targets != null && tocLine < targets.Count) activeLink = "#" + targets[tocLine]; }
-                    else { token.Append(c); if (c == ' ') Flush(); }
+                    else { token.Append(c); if (breakOffsets == null ? c == ' ' : breakOffsets.Contains(offset)) Flush(); }
                 }
                 Flush();
 
@@ -1441,6 +1513,7 @@ internal static partial class FixedLayout
                     if (TryHyphenate(value, advance)) return;
                     if (context.Hyphenation.Dictionary != null && advance > width)
                     {
+                        if (eastAsian) throw new NotSupportedException("Layout.LineBreakWidth: An unbreakable East Asian text span cannot fit the column.");
                         string word = value.TrimEnd(' '); double wordWidth = Measure(word, font, size);
                         if (wordWidth > width) throw new NotSupportedException("Hyphenation.WordWidth: The token has no qualified break that fits the line.");
                         if (word.Length != 0) Add(word, wordWidth);
@@ -1455,6 +1528,7 @@ internal static partial class FixedLayout
                     }
                     else if (advance <= width) Add(value, advance);
                     else if (native != null) throw new NotSupportedException("Typography.WordWidth: A shaped word cannot fit the column; hyphenation is outside this profile.");
+                    else if (eastAsian) throw new NotSupportedException("Layout.LineBreakWidth: An unbreakable East Asian text span cannot fit the column.");
                     else foreach (char c in value) Add(c.ToString(), Measure(c.ToString(), font, size));
                 }
                 bool TryHyphenate(string value, double advance)

@@ -87,6 +87,14 @@ also report `Shape.RotatedLinkBounds`: the clickable area is the enclosing recta
 not a rotated polygon. `Shape.TextBoxLayout` reports unsupported upright text intent,
 and `Shape.GeometryApproximated` reports unsupported text-box flips.
 
+Pending #165 uses `Layout.EastAsianPunctuationReference` for the measured Japanese
+punctuation-position difference and `Layout.EastAsianMixedReference` for mixed
+East Asian/Latin-number line-wrap differences. Strict rejects these measured
+profiles; BestEffort/Lenient retain the warnings. `Layout.EastAsianProfile`,
+`Layout.EastAsianOwner`, `Layout.EastAsianGlyph` and `Layout.LineBreakWidth` identify
+unsupported output, content, font coverage and unbreakable-width cases.
+`Layout.LineBreakLimit` bounds segmentation work and memory.
+
 ## Mixed report regions — merged source
 
 PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and

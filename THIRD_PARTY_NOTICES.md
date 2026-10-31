@@ -154,11 +154,13 @@ FriBidi and veraPDF are optional external qualification tools, not runtime depen
 No proprietary reference data or code was added. Existing native provider licenses apply.
 ## Unicode boundary data
 
-The generated Unicode 17.0.0 word/grapheme, Indic conjunct and extended-pictographic
+The generated Unicode 17.0.0 word/grapheme/line-break, Indic conjunct, width,
+general-category and extended-pictographic
 tables derive from the Unicode Character Database. Copyright © 2025 Unicode, Inc.
 They are used under Unicode License V3 (Unicode-3.0). The unmodified license is
 included in packages as `licenses/Unicode-3.0.txt`. Generator inputs and SHA-256 pins
-are recorded in `tests/wordnet.Conversion.Tests/Fixtures/Unicode17/manifest.json`;
+are recorded in `tests/wordnet.Conversion.Tests/Fixtures/Unicode17/manifest.json`
+and `linebreak-manifest.json`;
 the official conformance files retain their original notices. These tables do not
 add a shaping engine or language-specific dictionary segmentation.
 
@@ -172,6 +174,11 @@ SIL OFL 1.1, with `Fixtures/P2/STIX-OFL.txt` and exact SHA-256 in
 1.1, with its OFL and hash beside `devanagari-reference.json`. Neither font is
 included in production packages. Unicode 17 bidi data and conformance files retain
 the existing Unicode-3.0 notice and separate `bidi-manifest.json` hashes.
+
+The renamed and subset East Asian test fonts derive from Noto Sans CJK Regular
+2.004, copyright 2014–2021 Adobe, under SIL OFL 1.1. Their provenance, outline
+conversion, exact hashes and license accompany `Fixtures/EastAsian`; these
+test-only faces are not included in production packages.
 
 FontTools 4.61.1 (MIT), uharfbuzz 0.53.0 (Apache-2.0), PyMuPDF 1.27.2.2
 (AGPL-3.0-or-later) and Pillow 12.3.0 (HPND) are development-only independent

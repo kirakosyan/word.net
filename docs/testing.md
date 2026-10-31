@@ -302,6 +302,19 @@ The [exact-source receipt](measurements/roadmap-138-gradients-5549be0.json)
 records the complete local suites, package checks and repeated independent files;
 hosted exact-head and actual Framework qualification remain separate.
 
+Pending #165 tests all 19,338 unmodified Unicode 17 default line-break cases,
+grapheme-safe use in managed PDF, nonbreaking spaces, font and owner rejection,
+local dictionary interaction and cancellation. Four independently authored and
+schema-checked DOCX specimens use OFL-licensed, reproducibly subset test fonts;
+PyMuPDF, pypdf and offline LibreOffice compare selectable text and glyph origins at
+0.5 points. Plain Japanese and traditional Chinese pass; Japanese punctuation
+differs by up to 1.2 points and the simplified Chinese numeric-wrap sample differs
+by 44.7 points horizontally and 16.01 vertically. Six corrupted controls verify
+the checks. The [reference receipt](measurements/roadmap-138-cjk-reference.json)
+retains both differences, the CFF source-face failure and earlier test failures.
+Other office implementations, broader fallback, grapheme shaping and output profiles
+remain unqualified.
+
 Pending #164 tests copied local dictionaries, explicit language and limits,
 retained editable/searchable text, visible hyphen outlines, unqualified profiles,
 pagination, cancellation and strict loss behavior. The [independent observation](measurements/roadmap-138-hyphenation-reference.json)

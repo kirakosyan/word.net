@@ -300,6 +300,47 @@ jobs:
             artifacts/roadmap-138/rotation-output/**/*
             artifacts/roadmap-138/rotation-controls/*
           if-no-files-found: error
+      - name: Measure independently authored East Asian paragraphs
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          dpkg-query -W fonts-noto-cjk
+          for language in JP SC TC; do fc-match --format '%{file}\n' "Noto Sans CJK $language" | xargs sha256sum; done
+          libreoffice --version
+          source=artifacts/roadmap-138/cjk-source
+          reference=artifacts/roadmap-138/cjk-reference
+          output=artifacts/roadmap-138/cjk-output
+          controls=artifacts/roadmap-138/cjk-controls
+          probe="$RUNNER_TEMP/wordnet-cjk-probe"
+          mkdir -p "$reference" "$output" "$probe"
+          artifacts/p2-venv/bin/python eng/generate-roadmap-138-cjk.py --output "$source"
+          libreoffice "-env:UserInstallation=file://$RUNNER_TEMP/cjk-lo" --headless --convert-to pdf --outdir "$reference" "$source"/*.docx
+          cat > "$probe/Probe.csproj" <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+            <ItemGroup><ProjectReference Include="$GITHUB_WORKSPACE/src/wordnet/wordnet.csproj" /></ItemGroup>
+            <ItemGroup><Compile Include="$GITHUB_WORKSPACE/eng/roadmap-138-cjk-probe.cs" /></ItemGroup>
+          </Project>
+          EOF
+          dotnet restore "$probe/Probe.csproj" -m:1
+          dotnet build "$probe/Probe.csproj" -c Release --no-restore -m:1
+          for spec in japanese-plain:JP japanese:JP simplified:SC traditional:TC; do
+            name=${spec%:*}; language=${spec#*:}
+            dotnet "$probe/bin/Release/net10.0/Probe.dll" "$source/$name.docx" "$language" "tests/wordnet.Conversion.Tests/Fixtures/EastAsian/RoadmapCJK-$language.ttf" "$output/$name"
+          done
+          artifacts/p2-venv/bin/python eng/verify-roadmap-138-cjk.py "$source" "$output" "$reference" "$controls" > "$output/verification.json"
+      - name: Retain East Asian measurements and discrepancies
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-cjk
+          path: |
+            artifacts/roadmap-138/cjk-source/*.docx
+            artifacts/roadmap-138/cjk-reference/*.pdf
+            artifacts/roadmap-138/cjk-output/**/*
+            artifacts/roadmap-138/cjk-controls/*
+          if-no-files-found: error
       - name: Retain roadmap independent qualification evidence
         if: always() && matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -13,7 +13,20 @@ public enum TextDirection
     RightToLeft = 2,
 }
 
-/// <summary>Optional native shaping for PDF and page previews. Requires wordnet.Ocr and caller Arabic TrueType fonts.</summary>
+/// <summary>Explicit language for the bounded horizontal East Asian line-breaking profile.</summary>
+public enum EastAsianLineBreakLanguage
+{
+    /// <summary>Keep the existing managed layout behavior.</summary>
+    None = 0,
+    /// <summary>Use Japanese horizontal line-breaking rules.</summary>
+    Japanese = 1,
+    /// <summary>Use simplified Chinese horizontal line-breaking rules.</summary>
+    SimplifiedChinese = 2,
+    /// <summary>Use traditional Chinese horizontal line-breaking rules.</summary>
+    TraditionalChinese = 3,
+}
+
+/// <summary>Optional native shaping and separately selected managed East Asian line breaking.</summary>
 public sealed class TypographyOptions
 {
     /// <summary>Gets or sets whether to enable the bounded Arabic/Latin profile. Default false preserves managed Latin layout.</summary>
@@ -22,6 +35,8 @@ public sealed class TypographyOptions
     public bool ExtendedBidi { get; set; }
     /// <summary>Gets or sets the ordinary Hindi Devanagari/Latin profile, with caller fonts and HarfBuzz script/language tags. Requires ExtendedBidi and Enabled.</summary>
     public bool Devanagari { get; set; }
+    /// <summary>Gets or sets the opt-in managed horizontal East Asian line-breaking language. Configure a matching caller font.</summary>
+    public EastAsianLineBreakLanguage EastAsianLineBreak { get; set; }
     /// <summary>Gets or sets the maximum balanced directional nesting depth, from 1 to 125. Default 32.</summary>
     public int MaximumBidiDepth { get; set; } = 32;
     /// <summary>Gets or sets paragraph base direction.</summary>
@@ -31,9 +46,11 @@ public sealed class TypographyOptions
     internal TypographyOptions Snapshot()
     {
         if (Direction is < TextDirection.Auto or > TextDirection.RightToLeft) throw new ArgumentOutOfRangeException(nameof(Direction));
+        if (EastAsianLineBreak is < EastAsianLineBreakLanguage.None or > EastAsianLineBreakLanguage.TraditionalChinese) throw new ArgumentOutOfRangeException(nameof(EastAsianLineBreak));
         if (MaximumGlyphs <= 0 || MaximumGlyphs > 10000000) throw new ArgumentOutOfRangeException(nameof(MaximumGlyphs));
         if (MaximumBidiDepth is < 1 or > 125) throw new ArgumentOutOfRangeException(nameof(MaximumBidiDepth));
         if (ExtendedBidi && !Enabled || Devanagari && (!ExtendedBidi || !Enabled)) throw new ArgumentException("Typography.Options: Extended bidi and Devanagari require the enabled native profile; Devanagari also requires ExtendedBidi.");
+        if (Enabled && EastAsianLineBreak != EastAsianLineBreakLanguage.None) throw new ArgumentException("Typography.Options: East Asian managed line breaking is not qualified with native shaping.");
         return (TypographyOptions)MemberwiseClone();
     }
 }

@@ -98,6 +98,10 @@ Pending #164 snapshots a bounded caller-provided word/break lexicon. For admitte
 managed PDF words it draws visible split glyph outlines and one invisible original
 word carrier; diagnosed search-highlight and justified-reference differences
 prevent strict output.
+Pending #165 intersects Unicode 17 default line-break opportunities with extended
+grapheme boundaries for admitted managed PDF paragraphs. Source offsets and glyph
+coverage are checked before layout; mixed numeric and Japanese punctuation reference
+differences are explicit losses rather than implicit native shaping.
 Pending #161 maps three default preset polygons through the existing drawing anchor
 and vector path pipeline. Editable title/description metadata is retained; output
 loss is diagnosed where the selected profile cannot preserve it, while groups and
