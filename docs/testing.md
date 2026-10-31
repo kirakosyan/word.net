@@ -209,6 +209,13 @@ boxes. It does not qualify cell, object, native or review-owner identities.
 The [exact-source receipt](measurements/roadmap-138-layout-snapshot-5b6eb7e.json)
 records the complete local suites, package checks and reproduced reference geometry.
 
+Pending #145 block-control creation covers six typed kinds, initial values and
+locks, local bindings, wrapper removal, fragment isolation and protected-owner
+failures. Its [independent reference](measurements/roadmap-138-block-controls-reference.json)
+checks DOCX schema and LibreOffice-extracted values; the [exact-source receipt](measurements/roadmap-138-block-controls-e44ef15.json)
+records complete local suites, package checks and the reproduced specimen. Cell
+and story block creation remain open.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection
