@@ -99,6 +99,8 @@ deletion versus preservation, lock combinations, nested parents, stale/foreign
 handles, shared stories, table-cell schema, local resource retention and
 cancellation. Block creation, broader ownership and composition are not established
 by these tests.
+The [exact-source control receipt](measurements/roadmap-138-controls-1c0dce7.json)
+records the full local suites, matrix, package checks and independent form output.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

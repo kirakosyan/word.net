@@ -1,0 +1,40 @@
+{
+  "roadmap": 138,
+  "issues": [139, 142, 143, 144, 145],
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "1c0dce7a4d477587210df3ba8130c0700c9eea55",
+  "scope": "Unreleased conditional-border, failure-ledger, nested/plain-story ownership, diagnosed character-style materialization and bounded inline control creation/removal increments; none completes the entire roadmap.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed with one MSBuild worker",
+    "format": "solution verification passed",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 2003, "failed": 0, "skipped": 0, "trxSha256": "ab8692a2ecb05930b306c5a4377ee549220158d8ba0cc3d9a1d8da47aeee1e84" },
+    "net10ConversionAndEnglishOcr": { "passed": 2003, "failed": 0, "skipped": 0, "trxSha256": "0e780b6c4f305ea8b9a736cf306bdb214bc2c84d7be25c4c725625bc7d6548ff" },
+    "capabilityMatrix": { "profiles": 46, "testMethods": 266, "net10CasesPassed": 473 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive and cross-framework API validation against this commit",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "82a023635114283af90857ac5597ddd8160ff4f39df142a733ccdb9fa0acf3e3",
+      "wordnet.Fonts.1.5.0.nupkg": "7b2ad0f11b16421c47fa8be8cf4fa43bbfc39fd55ea2defd58ba464c04f70672",
+      "wordnet.Ocr.1.5.0.nupkg": "a015ce4978bd53800c3c43ac6e0ad55bf495527147a312760ff86c3dd5adc4f7"
+    },
+    "releaseBaselineLedger": "Six ledger checks and 20 existing baseline-tool checks passed; the ledger retains 312 failed verdicts, including 216 whose cause remains unknown."
+  },
+  "independentEvidence": {
+    "authoredForm": {
+      "probe": "eng/roadmap-138-control-creation-probe.cs",
+      "probeSha256": "aaeff37e1c068ff1e224ef61667729fd05b2ec7b5daf69ed293c3c12c00fae7f",
+      "executedNet10AssemblySha256": "1bfa9587ea7b0434d42c9319ec21c4c2b1a8d4dea951e5a7f6900b29b2133131",
+      "docxSha256": "d42e2ae71e4e352adf530b3adfe6c489e14773d43c15ee472f703be39767e7f9",
+      "schema": "Open XML SDK 3.5.1, zero errors; validator SHA-256 ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+      "reference": "LibreOffice 24.2.7.2 on Ubuntu 24.04 exported the identical DOCX to PDF; Poppler extracted Name: Ada / Approved: X / Choice: Beta / Other: Manual / Date: 2026-10-31 / Note: Approved in order.",
+      "referencePdfSha256": "fae0259e49caee5c6d4b74cd83ca7c3e699f0c996fcef6ad7b70c1d785c64c24",
+      "limitations": "This synthetic form checks static text and independently read DOCX structure; it is not live Word execution, a Word-authored form or universal layout qualification. The reference PDF is not committed."
+    },
+    "otherControls": "The Word-derived synthetic nested and plain story fixtures retain provenance and LibreOffice text/placement observations. The Word-derived date placeholder has an independently checked gray text observation; editable character-style identity is explicitly lost and Strict mode rejects it. Fixture READMEs and date-style-reference.json record their hashes and limits.",
+    "conditionalBorders": "The exact-source 0567bf8 receipt records independently generated outside-edge controls and the unqualified inheritance and conflict observations."
+  },
+  "earlierAttempts": "The first story focused run exposed four DOCX reload failures caused by namespace declarations being treated as layout attributes; the reader/writer fix and full suites passed. The first parallel combined build stopped with MSB4166 child-worker exits and no compiler diagnostics; a one-worker retry passed. Creation-focused builds initially encountered CA1861 and CA1512 analyzer errors, corrected before the final suites. An initial probe invocation passed an extra MSBuild flag to the program and exited before writing; the corrected invocation generated the validated form. The original a502c6c PR Framework source guest failed before VM boot for insufficient runner disk; its fresh-runner retry and both push guests passed, as recorded in the earlier receipt.",
+  "qualification": "Hosted checks for this newer commit, structural row/cell mutation, repeated report-row identity, unqualified formatting and the remaining roadmap leaves are not established by this receipt. No package was published."
+}
