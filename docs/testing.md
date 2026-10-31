@@ -94,6 +94,8 @@ Two independently authored inputs and
 [LibreOffice observations](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StructuralOwners/reference.json)
 check text and relative cell positions. They do not establish live Word execution,
 structural mutation or repeated-row identity.
+The [exact-source receipt](measurements/roadmap-138-structural-c9f11e6.json)
+records local test, matrix and package evidence and both corrected focused-test failures.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated

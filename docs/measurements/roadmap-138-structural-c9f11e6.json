@@ -1,0 +1,34 @@
+{
+  "roadmap": 138,
+  "issue": 144,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "c9f11e63f3cf536f921be7059e224a4403a576b4",
+  "scope": "Unreleased read-only rich-text wrappers around one plain body-table row or cell. Nested children, editable structural contents, multiple wrapped rows/cells and repeated report-row identity remain outside this increment.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed with one MSBuild worker",
+    "format": "solution verification passed",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 2023, "failed": 0, "skipped": 0, "trxSha256": "93091b40510b3bb84e3566ba9e1122b0525d558364ab9ff2fd98f6b56691859d" },
+    "net10ConversionAndEnglishOcr": { "passed": 2023, "failed": 0, "skipped": 0, "trxSha256": "757e2a26dfd4f899140219331e18239afcb0a4fa28c12c5c3c63ac21233f6e78" },
+    "capabilityMatrix": { "profiles": 48, "testMethods": 276, "net10CasesPassed": 493 },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API validation and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "043209493d917aae33ba0878c200526da2c4d2278536e4759602c6437f922faa",
+      "wordnet.Fonts.1.5.0.nupkg": "8800df3b5efb60c6e9c4962b10532fd313e2d50515c3db2a3ce2cef391565907",
+      "wordnet.Ocr.1.5.0.nupkg": "91a8dd655315875eec425dd71811e5a4112f550566bae5e2a74b3a1848602b75"
+    }
+  },
+  "independentEvidence": {
+    "provenance": "tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StructuralOwners/reference.json",
+    "generatorSha256": "4ea1a893f4f8e0cf65f69685bc3823cd508822e6fb2c136ba8357647403171f1",
+    "rowDocxSha256": "e3a5f9036cbaa2a0af0b43eae449cc23b630ef5ef11dff3ced7b613fd75dd82e",
+    "cellDocxSha256": "d268e39c6fb806801522cb692c3ef572f36cbd20f2632a814506f6e182900ad1",
+    "schema": "Both independently authored inputs passed Open XML SDK 3.5.1 validation; validator SHA-256 ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae.",
+    "reference": "LibreOffice 24.2.7.2 and Poppler with pinned Noto Sans independently observed A B above C D in both inputs. Tests compare text and selected relative cell positions, not pixel identity.",
+    "limitations": "Reference PDFs are not committed. These checks do not establish live Word execution, structural editing, nested typed wrappers or report expansion."
+  },
+  "earlierAttempts": "An initial focused structural run had one failed assertion because binding validation produced ArgumentException before the test's expected protected-owner exception; the assertion was corrected and the focused suite passed. A later width-focused run passed 81 cases and failed one positive fixture because its row omitted a grid cell; the fixture was corrected and all 82 focused cases passed. The validator now explicitly rejects automatic, missing or invalid cell-width forms rather than silently losing their semantics.",
+  "qualification": "Actual Windows Framework execution and hosted checks for this exact source remain pending. This increment does not complete #144 or roadmap #138."
+}
