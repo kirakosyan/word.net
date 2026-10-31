@@ -39,6 +39,11 @@ LibreOffice's non-default band-size mismatch and one-row/column observations;
 these do not qualify those rendering cases or provide a Word execution.
 The [exact-source region receipt](measurements/roadmap-138-table-regions-541aef9.json)
 records the local build, suite, matrix and package results for that increment.
+The default-style increment's first .NET 8 full run encountered a full temporary
+filesystem; the [failure record](measurements/roadmap-138-default-5fc8215-disk-failure.json)
+retains the 444 affected test names and messages and the original TRX hash. The
+[exact-source receipt](measurements/roadmap-138-default-style-5fc8215.json)
+records the successful complete retry, .NET 10 suite, matrix and package checks.
 The independent [default-style controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleDefaults/README.md)
 record that LibreOffice rendered the explicit style but omitted its implicit
 default. Tests also validate editable default identity, composition conflicts,
@@ -146,7 +151,14 @@ default loading, cancellation and untouched output. A schema-validated derivativ
 of a [Word-authored glossary](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
 now checks local resource preservation and independently inspected gray placeholder
 text in Lenient mode. Strict theme fallback and unsafe style graphs remain negative
-controls. Broader Office-authored kinds and resource-graph acceptance required by
+controls. [Additional Word-authored variants](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/README.md)
+exercise block/inline rich text, plain text, dates and the static `notTrueType`
+font-catalog flag. The tests retain the source's missing list-placeholder references
+as negatives, alongside malformed or active font metadata. The first nine-case
+working-tree run failed six cases because the prior validator rejected that font
+flag before reaching the controls; the follow-up admits the bounded Boolean flag.
+Broader Office-authored
+kinds and resource-graph acceptance required by
 #143 remain outstanding. On the local Linux x64 working tree containing these
 changes, the complete .NET 8 and .NET 10 suites each passed 1,620 cases with
 English OCR; the executable source matrix passed 84 mapped cases. Hosted Windows

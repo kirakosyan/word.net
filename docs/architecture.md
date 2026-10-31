@@ -95,7 +95,8 @@ indexing, and final owner checks reject bookmarks attached after initial parsing
 Unreleased source additionally admits bounded glossary categories and four strictly
 whitelisted local metadata parts. The store retains validated resource bytes and
 relationship identities through cloning, while aggregate control limits cover them.
-Richer glossary graphs remain rejected. No dependency or target change is added.
+Validated `notTrueType` flags remain inert font-catalog metadata; richer glossary
+graphs and embedded font data remain rejected. No dependency or target change is added.
 
 ## Merged roadmap #102 P1 implementation
 

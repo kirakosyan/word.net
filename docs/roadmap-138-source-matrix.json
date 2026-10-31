@@ -306,10 +306,12 @@
       "id": "glossary-inert-local",
       "issue": 143,
       "outcome": "supported-bounded",
-      "boundary": "Typed control glossary categories, selected inert resources and a Word-authored static placeholder; unlisted graphs and Strict theme losses remain excluded.",
+      "boundary": "Typed control glossary categories, selected inert resources including validated notTrueType metadata, and Word-authored rich, plain and date derivatives; unlisted graphs and Strict theme losses remain excluded.",
       "tests": [
         { "class": "ContentControlGlossaryResourceTests", "method": "InertLocalGlossaryResourcesPreserveBytesRelationshipsAndBindings" },
         { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryResourcesAndPlaceholderSurviveEdits" },
+        { "class": "ContentControlWordVariantsTests", "method": "WordAuthoredControlKindsPreserveTheirLocalGlossaryThroughEdits" },
+        { "class": "ContentControlWordVariantsTests", "method": "ExplicitNonTrueTypeFlagsStayInTheLocalFontCatalog" },
         { "class": "ContentControlReviewTests", "method": "StaticGlossaryCategoriesSurviveTypedEditsAndPlaceholderViews" }
       ]
     },
@@ -322,7 +324,10 @@
         { "class": "ContentControlGlossaryResourceTests", "method": "UnsafeOrUnadmittedGlossaryResourcesFailBeforePublishingASession" },
         { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryThemeFallbackStillRejectsInStrictMode" },
         { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryRejectsUnsafeStyleGraphs" },
-        { "class": "ContentControlGlossaryResourceTests", "method": "GlossaryScriptFontSlotsRejectUnqualifiedPlaceholderText" }
+        { "class": "ContentControlGlossaryResourceTests", "method": "GlossaryScriptFontSlotsRejectUnqualifiedPlaceholderText" },
+        { "class": "ContentControlWordVariantsTests", "method": "MissingWordAuthoredGlossaryEntriesRemainExplicitlyUnsupported" },
+        { "class": "ContentControlWordVariantsTests", "method": "AuthoredControlCharacterStyleReferencesAreStillExplicitlyUnsupported" },
+        { "class": "ContentControlWordVariantsTests", "method": "AuthoredNonTrueTypeFontMetadataDoesNotAdmitActiveOrMalformedContent" }
       ]
     },
     {

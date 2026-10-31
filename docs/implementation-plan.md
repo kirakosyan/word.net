@@ -32,7 +32,8 @@ editable, with their unresolved static rendering difference reported. Non-unit r
 conditional borders, full style precedence and independent qualification remain
 open; the table-level shading reference failure is retained.
 Pending source work on #143 preserves bounded glossary categories and selected inert
-local resource relationships, including one Word-authored placeholder derivative.
+local resource relationships, including `notTrueType` font metadata and additional
+Word-authored rich-text, plain-text and date control derivatives.
 The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
 records its subset, diagnostics and the broader control and resource evidence still
 required before the leaf can be accepted.

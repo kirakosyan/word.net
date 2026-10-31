@@ -120,6 +120,8 @@ internal sealed partial class DocxReader
                     }
                     else if (property.Name == W + "charset" || property.Name == W + "panose1")
                     { Leaf(property, W + "val"); Hex(DocxPackage.RequiredAttribute(property, W + "val"), property.Name == W + "charset" ? 2 : 20); }
+                    else if (property.Name == W + "notTrueType")
+                    { Leaf(property, W + "val"); _ = ControlValues.On(property, W); }
                     else if (property.Name == W + "altName")
                     {
                         Leaf(property, W + "val"); string alternative = DocxPackage.RequiredAttribute(property, W + "val");

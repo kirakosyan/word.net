@@ -22,14 +22,18 @@ placeholder entries. It also admits up to four relationships from the glossary p
 to `word/glossary/styles.xml`, `word/glossary/settings.xml`,
 `word/glossary/fontTable.xml` and `word/glossary/webSettings.xml`. A closed inert
 subset of local styles, inherited character styles, settings and font metadata is
-admitted, including the static default placeholder in the independently sourced
-[Word-authored fixture](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md).
+admitted, including the [`notTrueType` font catalog flag](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.nottruetype?view=openxml-3.0.1) and the static default
+placeholders in independently sourced [Word-authored fixtures](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
+and [additional control variants](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/README.md).
 The placeholder's supported resolved appearance is materialized when displayed;
 local glossary style identities are not imported into the main document. Valid
 resource bytes and relationship IDs survive typed edits, bindings and DOCX
 save/reload. No font or other resource is fetched. Missing and cyclic style bases,
 duplicate, dangling, external, nested, active or unknown relationships and
 unlisted metadata fail explicitly.
+The font flag is preserved as metadata; it does not embed, execute or fetch a font.
+An authored list control whose named glossary entry is absent remains unsupported,
+as do character-style references within ordinary control runs.
 
 The fixture's theme-dependent defaults retain the existing `Docx.ThemeFont` and
 other applicable fallback diagnostics; Strict mode rejects those losses. When
