@@ -277,6 +277,9 @@ controls test angles, reference selection, diagnostics, transforms, links and
 image identity. Flips, upright intent, page edges, cancellation and autofit
 boundaries also have targeted tests. Other office implementations and hosted
 runtime results require separate evidence.
+The [exact-source receipt](measurements/roadmap-138-rotation-8737a8a.json) records
+both complete local suites, package and API checks, repeated samples and the
+[local performance comparison](measurements/roadmap-138-rotation-performance-8737a8a.json).
 
 Pending #161 tests default rectangle, triangle and diamond presets, editable
 alternative metadata, PDF/XPS/SVG output, invalid adjustments and output bounds.
