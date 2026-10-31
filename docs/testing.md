@@ -90,6 +90,11 @@ graphs and an additional Word-derived date placeholder. The independently genera
 checks text and color. Character-style identity is lost with a diagnostic in this
 bounded increment, and strict mode rejects it.
 
+Pending #145 removal tests check all existing kinds, preserved run formatting,
+deletion versus preservation, lock combinations, nested parents, stale/foreign
+handles, shared stories, table-cell schema, local resource retention and
+cancellation. Control creation and composition are not established by these tests.
+
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output
 inspection, cultures, graph failures, atomic caches and report/edit refresh. The

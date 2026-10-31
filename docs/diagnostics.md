@@ -121,6 +121,11 @@ run's bounded character style is resolved into direct formatting. The editable
 style identity is not retained; Strict mode rejects this loss. Unsafe, missing,
 cyclic and unqualified style definitions remain hard failures.
 
+Unreleased #145 removal uses `Control.Resources` when the final wrapper still owns
+retained local XML or glossary resources. `Control.BindingDirty`, `Control.Locked`,
+`Control.ProtectedOwner` and `Control.StaleHandle` reject the corresponding removal
+before the session is changed.
+
 Unreleased #141 source rejects incompatible document-wide themes before
 composition or comparison with `Composition.ThemeConflict` or
 `Comparison.ThemeConflict`. These are hard failures, not loss diagnostics.

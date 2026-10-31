@@ -99,6 +99,23 @@ pages, not Word execution or universal geometry. Table-wrapped or nested story
 controls, notes, comments, text boxes and typed-control composition remain outside
 this increment; #144 remains open.
 
+## Unreleased source: removing an admitted control
+
+Pending #145 adds `RemoveControl(handle, preserveContent: true)` for admitted
+typed owners. By default it removes the wrapper and keeps its current text and
+run formatting. Passing `false` removes the control's text as well; a block owner
+retains an empty paragraph shell so that its cell, story or section stays valid.
+Successful removal invalidates earlier snapshots just like other committed edits.
+
+A wrapper lock prevents removal. A content lock permits explicit wrapper removal
+with the content preserved but blocks deleting that content. A parent's content
+lock protects its child, and a parent containing typed children cannot be removed.
+An edited binding must first be applied, written back or detached. Retained local
+XML and glossary resources are never implicitly deleted: removing the final
+control is rejected while those resources remain. Removal is atomic on failure
+and cancellation. This increment does not create controls or establish their
+composition; the remaining #145 scope stays open.
+
 ## Load, inspect and edit
 
 Typed preservation is opt-in for DOCX and, with the format-aware overload, DOTX.

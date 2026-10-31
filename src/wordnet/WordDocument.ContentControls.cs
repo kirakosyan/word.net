@@ -118,6 +118,46 @@ public sealed partial class WordDocument
     /// <summary>Sets literal plain text. LF soft breaks require the source multiLine setting; markup is never interpreted.</summary>
     public DocumentEditResult SetControlText(DocumentContentControl handle, string text, CancellationToken cancellationToken = default)
     { Guard.NotNull(text, nameof(text)); return ChangeControl(handle, (_, d, owner, c) => ControlValues.SetPlain(d, owner, text, c), cancellationToken); }
+
+    /// <summary>Atomically removes a typed wrapper, retaining its current text content by default. When content is deleted, a block owner retains an empty paragraph shell.</summary>
+    /// <remarks>Wrapper locks always reject removal; a content lock also rejects deleting content. Nested parents with children, dirty bindings and removal of the last control while local XML/glossary resources remain are rejected.</remarks>
+    public DocumentEditResult RemoveControl(DocumentContentControl handle, bool preserveContent = true, CancellationToken cancellationToken = default)
+    {
+        Guard.NotNull(handle, nameof(handle));
+        return Edit((m, c) =>
+        {
+            if (handle.Session != sessionId || handle.Version != version || !m.Controls.Items.TryGetValue(handle.Id, out ControlData? data) || data.Identity != handle.Identity)
+                throw new ArgumentException("Control.StaleHandle: Reacquire a live control handle from its originating session.", nameof(handle));
+            if (data.Lock is ContentControlLock.ControlLocked or ContentControlLock.ControlAndContentLocked
+                || !preserveContent && data.Lock == ContentControlLock.ContentLocked)
+                throw new InvalidOperationException("Control.Locked: The editing lock rejects this removal.");
+            if (data.BindingState == ContentControlBindingState.Dirty)
+                throw new InvalidOperationException("Control.BindingDirty: Explicitly apply, write back or detach an edited binding before removing its wrapper.");
+            if (m.Controls.Items.Count == 1 && (m.Controls.XmlStores.Count != 0 || m.Controls.Glossary != null
+                || m.Controls.GlossaryResources.Count != 0 || m.Controls.GlossaryContent.Count != 0))
+                throw new NotSupportedException("Control.Resources: The last control cannot be removed while retained local XML or glossary resources remain.");
+            var owners = ControlOwners.Index(m, c); ControlOwner owner = owners[data.Id];
+            owner.Refresh(data.Id, c); CheckNestedControlEdit(m, owner);
+            if (owner.Paragraph != null)
+            {
+                if (preserveContent) foreach (TextRun run in owner.Runs) run.TypedControlId = null;
+                else owner.Paragraph.Runs.RemoveRange(owner.Start, owner.Count);
+            }
+            else if (preserveContent)
+            {
+                foreach (ParagraphBlock paragraph in owner.Content) paragraph.TypedControlId = null;
+            }
+            else
+            {
+                DocumentBlock first = owner.Blocks[owner.Start];
+                var shell = new ParagraphBlock { Section = first.Section, Location = first.Location, FallbackFontSize = 11, FallbackAfter = 0 };
+                owner.Blocks.RemoveRange(owner.Start, owner.Count); owner.Blocks.Insert(owner.Start, shell);
+            }
+            m.Controls.Items.Remove(data.Id);
+            if (owner.ParentId is int parent) ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
+            ControlOwners.Normalize(m); return 1;
+        }, cancellationToken, controlAware: true);
+    }
     /// <summary>Replaces inline rich content with copied formatted text. Images, fields, boundaries and structural breaks are rejected.</summary>
     public DocumentEditResult ReplaceControlContent(DocumentContentControl handle, IEnumerable<DocumentText> runs, CancellationToken cancellationToken = default)
     {

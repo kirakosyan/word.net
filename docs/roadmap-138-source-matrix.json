@@ -3,6 +3,33 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "typed-control-removal",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "An explicit edit removes an admitted typed wrapper, retaining text by default or deleting it with a valid block shell; admitted body, cell and shared plain story owners remain valid.",
+      "tests": [
+        { "class": "ContentControlRemovalTests", "method": "InlineRemovalSeparatesWrapperAndContentAndInvalidatesOldHandles" },
+        { "class": "ContentControlRemovalTests", "method": "EveryAdmittedKindCanLoseItsWrapperWhileKeepingItsText" },
+        { "class": "ContentControlRemovalTests", "method": "BlockRemovalInACellKeepsValidCellStructure" },
+        { "class": "ContentControlRemovalTests", "method": "PreservedRichTextKeepsTheFormattingOfItsRuns" },
+        { "class": "ContentControlRemovalTests", "method": "RemovingASharedStoryControlUpdatesBothPagesWithoutDuplicatingOwners" }
+      ]
+    },
+    {
+      "id": "typed-control-removal-protected",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "Removal honors wrapper and content locks, ancestor protection, dirty bindings and stale handles; the final wrapper cannot be removed while retained local resources remain.",
+      "tests": [
+        { "class": "ContentControlRemovalTests", "method": "WrapperAndContentLocksAreRespected" },
+        { "class": "ContentControlRemovalTests", "method": "RemovingANestedChildRefreshesItsParentAndCannotBypassLocks" },
+        { "class": "ContentControlRemovalTests", "method": "DirtyBindingsAndLastResourceOwnerRequireAnExplicitDecision" },
+        { "class": "ContentControlRemovalTests", "method": "RemovingOneBindingRetainsTheSharedLocalStoreAndOtherControls" },
+        { "class": "ContentControlRemovalTests", "method": "LastGlossaryOwnerCannotBeRemovedWhileItsLocalResourcesRemain" },
+        { "class": "ContentControlRemovalTests", "method": "CancellationAndForeignHandlesLeaveTheSourceAndHandlesUntouched" }
+      ]
+    },
+    {
       "id": "plain-story-control-owners",
       "issue": 144,
       "outcome": "supported-bounded",
