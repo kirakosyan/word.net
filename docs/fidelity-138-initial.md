@@ -141,8 +141,29 @@ performance superiority, a regression gate or a hard memory bound.
 7. **Unknown: remaining roadmap combinations.** The old 12 reductions cover
    defaults, spacing, wrapping, simple table sizing and notes. The Word-authored
    negative control and new probes capture some editor and workflow boundaries;
-   broader control cases, requested feature combinations and a complete ranked
-   ledger remain outstanding.
+   broader control cases and requested feature combinations remain outstanding.
+
+The separate [machine-readable failure ledger](measurements/roadmap-138-failure-ledger.json)
+indexes every failed verdict in the retained initial and contrast defect reports,
+separately for source and public-package runs. It records 312 verdicts across the
+four recorded cohorts: 216 remain `unknown`, 82 are the specifically verified A4
+rounding policy difference and 14 are documented unsupported theme/table controls.
+The six separate fragment/review probes remain explicitly classified as unsupported
+for release 1.5.0. These counts include distinct repeated runs and do not count
+unique defects. A pagination difference is never reclassified as page-size rounding;
+when the repeated contrast's extracted reference snapshot was not retained, its
+geometry verdict remains unknown. The ledger keeps input/reference identities,
+original findings and result-file pointers and does not change any thresholds.
+The [generator](../eng/generate-roadmap-138-ledger.py) and
+[tests](../eng/test-roadmap-138-ledger.py) reproduce this index from 65 hashed
+evidence files and reject missing failures or changed paired observations. The
+ledger does not add the remaining requested combination controls or establish
+that current unreleased source behaves like the 1.5.0 baseline.
+The ledger tests passed six cases, the existing baseline-tool tests passed 20,
+and the comparison-tool controls passed 13 after a locked restore and local
+benchmark build. The first comparison-tool attempt failed its prerequisite check
+because that benchmark executable had not yet been built; no comparison result
+was produced in that attempt. These checks do not rerun the historical reference.
 
 The existing fixtures and scratch-generation procedure are documented in the
 [comparison guide](comparison.md) and

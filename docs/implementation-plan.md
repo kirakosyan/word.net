@@ -14,7 +14,10 @@ is a design and executable schema example for #170, not an implementation of #17
 or #172. Their compilation, enforcement and independent outcome evidence remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
-#139 remains incomplete until its additional feature controls and ledger are delivered.
+the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the
+recorded verdicts and distinguishes unknowns from the bounded documented cases.
+#139 remains incomplete until its additional feature controls and requested
+combination evidence are delivered.
 The pending #140 documentation reconciliation distinguishes current 1.5.0 support
 from historical design and test claims. Its [audit receipt](measurements/roadmap-138-documentation-audit.json)
 records the checked public versions, release provenance and local link review; the
