@@ -85,6 +85,7 @@ internal sealed class DocumentCloner
             foreach (var item in table.RowLefts) copy.RowLefts.Add(item.Key, item.Value);
             foreach (var item in table.RowHeights) copy.RowHeights.Add(item.Key, item.Value);
             foreach (var item in table.RowControls) copy.RowControls.Add(item.Key, Control(item.Value)!);
+            foreach (var item in table.TypedRowControls) copy.TypedRowControls.Add(item.Key, item.Value);
             foreach (List<TableCell> row in table.Rows) copy.Rows.Add(row.Select(Cell).ToList());
             result = copy;
         }
@@ -95,6 +96,7 @@ internal sealed class DocumentCloner
     {
         var cell = new TableCell
         {
+            TypedControlId = source.TypedControlId,
             CellWidth = source.CellWidth,
             WidthPercent = source.WidthPercent,
             Padding = source.Padding?.Copy(),

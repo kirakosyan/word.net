@@ -55,9 +55,9 @@ public sealed class ContentControlBoundaryTests
         Assert.Throws<NotSupportedException>(() => LoadBody(block));
     }
     [Fact]
-    public void TableRowAndHeaderTableOwnersAreExplicitlyRejected()
+    public void MultipleRowsAndHeaderTableOwnersAreExplicitlyRejected()
     {
-        string row = "<w:tbl><w:sdt><w:sdtPr><w:id w:val='1'/><w:richText/></w:sdtPr><w:sdtContent><w:tr><w:tc><w:p>" + Run("Text") + "</w:p></w:tc></w:tr></w:sdtContent></w:sdt></w:tbl>";
+        string row = "<w:tbl><w:sdt><w:sdtPr><w:id w:val='1'/><w:richText/></w:sdtPr><w:sdtContent><w:tr><w:tc><w:p>" + Run("Text") + "</w:p></w:tc></w:tr><w:tr><w:tc><w:p>" + Run("More") + "</w:p></w:tc></w:tr></w:sdtContent></w:sdt></w:tbl>";
         Assert.Throws<NotSupportedException>(() => LoadBody(row));
         byte[] source = Modify(Package(Document("<w:p>" + Run("Body") + "</w:p><w:sectPr><w:headerReference w:type='default' r:id='header'/></w:sectPr>")), zip =>
         {

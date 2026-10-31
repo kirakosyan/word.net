@@ -492,6 +492,7 @@ internal sealed partial class DocxReader
 
             using var rowLocation = context.At(XmlSourceLocation.Create(child, mainPart));
             if (rowControls.TryGetValue(child, out TemplateControl? control)) table.RowControls.Add(table.Rows.Count, control);
+            if (typedRowControls.TryGetValue(child, out int rowControl)) table.TypedRowControls.Add(table.Rows.Count, rowControl);
             var cells = new List<TableCell>();
             foreach (XElement rowChild in TableContents(child))
             {
@@ -527,6 +528,7 @@ internal sealed partial class DocxReader
 
                 using var cellLocation = context.At(XmlSourceLocation.Create(rowChild, mainPart));
                 var cell = new TableCell();
+                if (typedCellControls.TryGetValue(rowChild, out int cellControl)) cell.TypedControlId = cellControl;
                 var pendingBookmarks = new List<TextRun>();
                 if (rowChild.Element(W + "tcPr")?.Elements(W + "shd").Skip(1).Any() == true)
                     throw new InvalidDataException("Docx.TableShading: Duplicate direct cell shading properties.");
@@ -611,6 +613,14 @@ internal sealed partial class DocxReader
     {
         foreach (XElement child in container.Elements())
         {
+            if (context.PreserveControls && child.Name == W + "sdt" && typedNodes.TryGetValue(child, out ControlData? typed)
+                && typed.Structure != ControlStructure.None)
+            {
+                XElement nested = child.Element(W + "sdtContent")!.Elements().Single();
+                var owners = typed.Structure == ControlStructure.Row ? typedRowControls : typedCellControls;
+                if (owners.ContainsKey(nested)) throw new InvalidDataException("Control.ProtectedOwner: A structural owner cannot have multiple typed wrappers.");
+                owners.Add(nested, typed.Id); yield return nested; continue;
+            }
             if (child.Name == W + "sdt" || child.Name == W + "sdtContent" || child.Name == W + "customXml")
             {
                 if (context.Editing && container.Name == W + "tc" && child.Name == W + "sdt") { yield return child; continue; }

@@ -422,10 +422,13 @@ internal sealed partial class DocxWriter
                 if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
                     Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
                 if (cell.VerticalAlignment != "top") cellProperties.Add(new XElement(W + "vAlign", new XAttribute(W + "val", cell.VerticalAlignment)));
-                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Blocks(cell.Blocks)));
+                var content = new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Blocks(cell.Blocks));
+                row.Add(cell.TypedControlId is int cellControl ? TypedControl(cellControl, content) : content);
             }
 
-            if (table.RowControls.TryGetValue(index, out TemplateControl? control))
+            if (table.TypedRowControls.TryGetValue(index, out int typedRow))
+            { element.Add(TypedControl(typedRow, row)); previousControl = null; rowContent = null; }
+            else if (table.RowControls.TryGetValue(index, out TemplateControl? control))
             {
                 if (ReferenceEquals(previousControl, control)) rowContent!.Add(row);
                 else { XElement wrapper = Control(control, row); element.Add(wrapper); rowContent = wrapper.Element(W + "sdtContent"); }

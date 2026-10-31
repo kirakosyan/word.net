@@ -87,12 +87,15 @@ internal sealed class ControlGlossaryResource
     { Part = Part, ContentType = ContentType, Relationship = new XElement(Relationship), Xml = new XElement(Xml), Bytes = Bytes };
 }
 
+internal enum ControlStructure { None, Row, Cell }
+
 internal sealed class ControlData
 {
     internal int Id { get; set; }
     internal Guid Identity { get; set; } = Guid.NewGuid();
     internal ContentControlKind Kind { get; set; }
     internal bool Inline { get; set; }
+    internal ControlStructure Structure { get; set; }
     internal XElement Properties { get; set; } = new XElement(ControlValues.W + "sdtPr");
     internal XElement? EndProperties { get; set; }
     internal string? Tag => (string?)Properties.Element(ControlValues.W + "tag")?.Attribute(ControlValues.W + "val");
@@ -117,6 +120,7 @@ internal sealed class ControlData
             Identity = Identity,
             Kind = Kind,
             Inline = Inline,
+            Structure = Structure,
             Properties = new XElement(Properties),
             EndProperties = EndProperties == null ? null : new XElement(EndProperties),
             Lock = Lock,

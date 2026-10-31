@@ -117,6 +117,11 @@ internal static class ControlDisplay
         {
             block.TypedControlId = null;
             if (block is ParagraphBlock p) foreach (TextRun run in p.Runs) run.TypedControlId = null;
+            if (block is TableBlock table)
+            {
+                table.TypedRowControls.Clear();
+                foreach (TableCell cell in table.Rows.SelectMany(row => row)) { c.ReserveControlWork(1); cell.TypedControlId = null; }
+            }
         }
         model.Controls = new ContentControlStore();
     }

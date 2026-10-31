@@ -72,7 +72,7 @@ explicit display view show the child text. An independently assembled
 [Word-derived control](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners/README.md)
 and LibreOffice rendering check text order and the schema, without establishing a
 Word-authored nested template or Word execution. This is a limited source increment:
-deeper nesting, inline-in-inline and block children, row/cell/table wrappers,
+deeper nesting, inline-in-inline and block children, nested or multi-row/cell wrappers,
 nested and table-wrapped header/footer or other story owners, repeated report rows and typed-control
 composition remain outside this subset. #144 remains open. Ordinary loading is
 unchanged and does not create typed owners.
@@ -98,6 +98,28 @@ and LibreOffice PDF check selected header, body and footer text placement over t
 pages, not Word execution or universal geometry. Table-wrapped or nested story
 controls, notes, comments, text boxes and typed-control composition remain outside
 this increment; #144 remains open.
+
+## Unreleased source: single row and cell wrappers
+
+Pending #144 source preserves an unbound, non-placeholder rich-text control around
+one row or one cell of a top-level body table. A wrapped row contains ordinary
+cells with one paragraph each; a wrapped cell contains one ordinary paragraph.
+An explicit cell width must be a valid absolute or percentage width; automatic
+and other width forms are rejected for these wrappers.
+Merged, nested, specially formatted or multi-row/cell wrappers and typed children
+inside these structural controls remain unsupported. `Owner` identifies the row
+or cell, and its detached content snapshot contains the row's or cell's paragraphs
+in order. IDs, literal tags, locks and wrapper placement survive metadata edits,
+cloning and DOCX save/reload.
+
+The structural wrapper is read-only in this increment: paragraph replacement,
+wrapper removal, binding operations and inserting another typed control into that
+table reject instead of bypassing ownership. An explicit display view strips the
+wrapper, and ordinary managed PDF/XPS show the cached text. The independently
+authored [row and cell controls](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StructuralOwners/README.md)
+and LibreOffice observations check selected text and relative cell positions.
+They do not establish live Word execution, structural editing, nested controls or
+repeated report-row identity. #144 remains open.
 
 ## Unreleased source: creating an inline control
 
@@ -145,6 +167,7 @@ Successful removal invalidates earlier snapshots just like other committed edits
 A wrapper lock prevents removal. A content lock permits explicit wrapper removal
 with the content preserved but blocks deleting that content. A parent's content
 lock protects its child, and a parent containing typed children cannot be removed.
+The read-only row and cell wrappers above cannot be removed by this operation.
 An edited binding must first be applied, written back or detached. Retained local
 XML and glossary resources are never implicitly deleted: removing the final
 control is rejected while those resources remain. Removal is atomic on failure
@@ -205,10 +228,11 @@ into executable template syntax.
 
 The published profile has inline owners in an ordinary body/table-cell paragraph,
 or block owners containing ordinary body/cell paragraphs. The unreleased story
-increment above adds bounded plain header/footer owners. A containing table is outside the
-control. Scalar controls have one formatting set and at most one paragraph;
+increment above adds bounded plain header/footer owners. A containing table is outside
+ordinary paragraph controls; the separate structural profile above admits a row or
+cell wrapper. Scalar controls have one formatting set and at most one paragraph;
 checkbox content, including placeholders, is one character. No row/cell/table
-wrappers, notes, boxes, section changes, or nested controls except for the
+wrappers except the unreleased subset above; no notes, boxes, section changes, or nested controls except for the
 unreleased subset above; no embedded
 objects or retained history inside a control. Crossing or enclosing field/bookmark
 ranges fail; independent fields/bookmarks wholly outside owners are retained. A

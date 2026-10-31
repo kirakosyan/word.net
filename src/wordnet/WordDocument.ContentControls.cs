@@ -50,7 +50,7 @@ public sealed partial class WordDocument
                 if (controlSnapshots != null && controlSnapshotsVersion == version) return controlSnapshots;
                 if (!model.Controls.HasControls) return Array.Empty<DocumentContentControl>();
                 var c = new ConversionContext(options, CancellationToken.None); var owners = ControlOwners.Index(model, c);
-                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, owners[d.Id].ParentId, owners[d.Id].Story, ControlContent(owners[d.Id], c))).ToList());
+                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, owners[d.Id].ParentId, owners[d.Id].Story, owners[d.Id].Structure, ControlContent(owners[d.Id], c))).ToList());
                 controlSnapshotsVersion = version;
                 return controlSnapshots;
             }
@@ -264,6 +264,7 @@ public sealed partial class WordDocument
     }
     private static void CheckNestedControlEdit(DocumentModel model, ControlOwner owner)
     {
+        if (owner.Structure != ControlStructure.None) throw new NotSupportedException("Control.ProtectedOwner: Structural wrappers cannot be edited or removed through paragraph operations.");
         if (owner.HasChildren) throw new NotSupportedException("Control.ProtectedOwner: A parent containing typed children cannot be replaced or rebound.");
         if (owner.ParentId is int parent && model.Controls.Items[parent].Lock is ContentControlLock.ContentLocked or ContentControlLock.ControlAndContentLocked)
             throw new InvalidOperationException("Control.Locked: The parent content lock rejects this child mutation.");

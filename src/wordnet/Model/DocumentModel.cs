@@ -110,6 +110,7 @@ internal sealed class TableBlock : DocumentBlock
     internal bool LayoutExplicit { get; set; }
     internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
+    internal Dictionary<int, int> TypedRowControls { get; } = new Dictionary<int, int>();
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal string? Background { get; set; }
@@ -397,6 +398,7 @@ internal enum VerticalMerge { None, Start, Continue }
 
 internal sealed class TableCell
 {
+    internal int? TypedControlId { get; set; }
     internal List<DocumentBlock> Content { get; } = new List<DocumentBlock>();
     internal IEnumerable<DocumentBlock> Blocks => Content.Count > 0 ? Content : Paragraphs;
     internal TableCell() { }

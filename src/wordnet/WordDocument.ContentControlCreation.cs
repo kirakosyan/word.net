@@ -144,14 +144,14 @@ public sealed partial class WordDocument
             c.ReserveControlWork(1);
             if (ReferenceEquals(block, paragraph)) return true;
             if (block is not TableBlock table) continue;
-            bool valid = table.Control == null && table.NestedControl == null && table.RowControls.Count == 0, found = false;
+            bool valid = table.Control == null && table.NestedControl == null && table.RowControls.Count == 0 && table.TypedRowControls.Count == 0, found = false;
             foreach (List<TableCell> row in table.Rows)
             {
                 c.ReserveControlWork(1);
                 foreach (TableCell cell in row)
                 {
                     c.ReserveControlWork(1);
-                    if (cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None) valid = false;
+                    if (cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None || cell.TypedControlId.HasValue) valid = false;
                     foreach (DocumentBlock child in cell.Blocks)
                     {
                         c.ReserveControlWork(1);

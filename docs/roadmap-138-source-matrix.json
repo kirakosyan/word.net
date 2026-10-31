@@ -3,6 +3,33 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "typed-control-structural-owners",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "boundary": "One unbound rich-text wrapper around a plain body-table row or cell retains identity, literal metadata and static display. Structural mutation and nested children remain unsupported.",
+      "tests": [
+        { "class": "ContentControlStructuralOwnerTests", "method": "IndependentControlsMatchTextAndRelativeCellPositions" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "OrdinaryLoadingKeepsCachedTextWithoutCreatingTypedOwners" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "SimpleStructuralWrapperRetainsIdentityContentAndStaticDisplay" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralIdsShareTheGlobalNamespaceWithOrdinaryControls" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralCellPercentageWidthSurvivesSaving" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "AStructuralContentLockSurvivesMetadataEditsAndCannotBeBypassed" }
+      ]
+    },
+    {
+      "id": "typed-control-structural-protected",
+      "issue": 144,
+      "outcome": "rejected",
+      "boundary": "Structural wrappers with unsupported kinds, placeholders, nested controls, merged cells or unsupported widths, and mutation or binding operations on these owners, reject explicitly.",
+      "tests": [
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralWrappersRejectUnsupportedKindsAndProperties" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "NestedStructuralControlsAndMergedCellsRejectWithoutPublishingASession" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralCellsRejectUnpreservedOrInvalidWidths" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralWrappersCannotBecomeInsertionOrBindingTargets" },
+        { "class": "ContentControlBoundaryTests", "method": "MultipleRowsAndHeaderTableOwnersAreExplicitlyRejected" }
+      ]
+    },
+    {
       "id": "typed-control-inline-creation",
       "issue": 145,
       "outcome": "supported-bounded",
@@ -85,7 +112,7 @@
         { "class": "ContentControlStoryOwnerTests", "method": "StoryLocksAndCancellationLeaveTheDocumentUntouched" },
         { "class": "ContentControlStoryOwnerTests", "method": "GlobalControlLimitIncludesDistinctStoryParts" },
         { "class": "ContentControlStoryOwnerTests", "method": "StoryControlsCannotCrossBookmarksOrUseNestedOwners" },
-        { "class": "ContentControlBoundaryTests", "method": "TableRowAndHeaderTableOwnersAreExplicitlyRejected" }
+        { "class": "ContentControlBoundaryTests", "method": "MultipleRowsAndHeaderTableOwnersAreExplicitlyRejected" }
       ]
     },
     {

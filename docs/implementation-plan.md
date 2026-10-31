@@ -50,8 +50,9 @@ Pending #144 source admits a bounded inline child within an ordinary block
 rich-text control, including simple body-table cells, with parent/child lock,
 identity and binding checks. The [owner profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
 and [plain story profile](content-controls.md#unreleased-source-plain-header-and-footer-owners)
-record the bounded header/footer owners and remaining nesting, wrapper and
-repeated-row work; #144 stays open.
+record bounded header/footer owners. A [structural profile](content-controls.md#unreleased-source-single-row-and-cell-wrappers)
+also preserves a read-only single row or cell wrapper. Remaining nesting,
+structural editing and repeated-row work keep #144 open.
 Unreleased #145 source adds bounded inline control creation and explicit wrapper
 removal, with initial values, existing local bindings and lock/resource rules.
 Block creation and composition remain open; see the [creation profile](content-controls.md#unreleased-source-creating-an-inline-control)

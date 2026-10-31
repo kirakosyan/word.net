@@ -11,6 +11,8 @@ namespace WordNet.Formats;
 internal sealed partial class DocxReader
 {
     private readonly Dictionary<XElement, TemplateControl> rowControls = new Dictionary<XElement, TemplateControl>();
+    private readonly Dictionary<XElement, int> typedRowControls = new Dictionary<XElement, int>();
+    private readonly Dictionary<XElement, int> typedCellControls = new Dictionary<XElement, int>();
     private void RegisterRowControl(XElement element, TemplateControl control)
     {
 #if NET8_0_OR_GREATER
