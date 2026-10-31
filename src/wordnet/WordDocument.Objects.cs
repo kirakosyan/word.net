@@ -46,7 +46,7 @@ public sealed partial class WordDocument
         Guard.NotNull(definition, nameof(definition)); Guid id = Guid.NewGuid();
         lock (gate)
         {
-            _ = Edit((m, c) => { AddObject(m, new DocumentObjectData(definition, ChartObjectFormat.Create(definition, c), width, height, description, id)); return 1; }, cancellationToken, objectAware: true);
+            _ = Edit((m, c) => { AddObject(m, new DocumentObjectData(definition, ChartObjectFormat.Create(definition, c), width, height, description, id)); return 1; }, cancellationToken, objectAware: true, controlAware: true);
             return ObjectSnapshot(id);
         }
     }
@@ -69,7 +69,7 @@ public sealed partial class WordDocument
         Guard.NotNull(expression, nameof(expression)); Guid id = Guid.NewGuid();
         lock (gate)
         {
-            _ = Edit((m, c) => { AddObject(m, EquationData(expression, display, fontSize, description, id, c)); return 1; }, cancellationToken, objectAware: true);
+            _ = Edit((m, c) => { AddObject(m, EquationData(expression, display, fontSize, description, id, c)); return 1; }, cancellationToken, objectAware: true, controlAware: true);
             return ObjectSnapshot(id);
         }
     }
@@ -97,7 +97,7 @@ public sealed partial class WordDocument
                 return 1;
             }
         throw new ArgumentException("Object.Missing: Placement is unavailable.", nameof(handle));
-    }, cancellationToken, objectAware: true);
+    }, cancellationToken, objectAware: true, controlAware: true);
 
     private DocumentObject ChangeObject(DocumentObject handle, Func<DocumentObjectData, ConversionContext, DocumentObjectData> change, CancellationToken token)
     {
@@ -109,7 +109,7 @@ public sealed partial class WordDocument
                 foreach (ParagraphBlock p in m.BodyParagraphs)
                 { int i = p.Runs.IndexOf(old); if (i >= 0) { p.Runs[i] = new TextRun("", retainedObject: replacement); return 1; } }
                 throw new ArgumentException("Object.Missing: Placement is unavailable.", nameof(handle));
-            }, token, objectAware: true);
+            }, token, objectAware: true, controlAware: true);
             return ObjectSnapshot(handle.Id);
         }
     }

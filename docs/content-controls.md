@@ -220,8 +220,10 @@ handles fail. Saving and failed operations do not invalidate handles.
 Missing IDs are assigned deterministically after reserving all explicit IDs;
 duplicate IDs fail. Tags/aliases may repeat. Metadata title/author/custom-property
 edits preserve controls. Ordinary content edits, Replace, bookmarks, Append,
-Merge/MergeJson, document comparison and retained review/object combinations reject while typed controls
-are retained. Merge rejects before evaluating caller data getters/JSON. Use an
+Merge/MergeJson, document comparison and retained review combinations reject while typed controls
+are retained. Pending source permits admitted charts and equations in separate
+paragraph owners, with object and typed-control edits subject to their own locks.
+Merge rejects before evaluating caller data getters/JSON. Use an
 explicit display view for subsequent ordinary editing; no typed tag is promoted
 into executable template syntax.
 

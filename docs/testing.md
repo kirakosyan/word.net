@@ -100,8 +100,8 @@ records local test, matrix and package evidence and both corrected focused-test 
 Pending #147 object-fragment tests insert the independently authored P2 chart and
 equation fixture into body and simple-cell bookmarks twice, inspect schema and
 workbook bytes, and check independent edits and fixed output. Restyling, resource
-limits and cancellation are checked for atomic failure. Mixed typed-control/object
-composition and additional native, tagged or archival combinations remain unqualified.
+limits and cancellation are checked for atomic failure. Additional native, tagged
+or archival combinations remain unqualified.
 The [reference receipt](measurements/roadmap-138-object-fragment-reference.json)
 retains an initial LibreOffice Math omission and the successful rerun with its
 matching Math component, plus chart-value, text, bar geometry and OMML observations.
@@ -126,6 +126,13 @@ records schema checks, isolated store values and LibreOffice static text.
 The [exact-source receipt](measurements/roadmap-138-typed-fragment-431dbfc.json)
 records local suites, matrix and package checks and reproduces the independently
 rendered DOCX with the exact source/package assembly.
+
+Pending mixed-fragment tests insert controls and charts/equations together into
+body and simple-cell bookmarks, verify independent IDs and edits, and reject shared
+paragraph and structural owners. The [reference receipt](measurements/roadmap-138-mixed-fragment-reference.json)
+records editable XML/workbook values, reference chart geometry and text, as well
+as a different default text-extraction order. It does not qualify tagged, archival
+or native output or live Word editing.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated

@@ -63,7 +63,8 @@ and independent qualification criteria stay open.
 Pending #147 adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
 and [typed-control fragments](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 with independent identities and subsequent editing in body and simple-cell destinations.
-Mixed control/object fragments, glossary-backed controls and broader combination evidence remain open.
+Mixed control/object fragments require separate paragraph owners; glossary-backed
+sources and broader combination evidence remain open.
 Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
 cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
 and remaining acceptance/runtime qualification are separate from published 1.5.0.

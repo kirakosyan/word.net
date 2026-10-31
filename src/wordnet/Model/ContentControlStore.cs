@@ -30,7 +30,7 @@ internal sealed class ContentControlStore
     {
         if (!HasControls) return 0;
         if (Items.Count > 1024 || XmlStores.Count > 64 || GlossaryResources.Count > 4) throw new InvalidDataException("Limit.Controls: Too many controls or local XML resources.");
-        if (model.Review.HasHistory || model.ObjectCount != 0) throw new NotSupportedException("Control.ProtectedOwner: Retained review/objects cannot be combined with typed controls.");
+        if (model.Review.HasHistory) throw new NotSupportedException("Control.ProtectedOwner: Retained review cannot be combined with typed controls.");
         long chars = 0, nodes = 0; int listItems = 0; var placeholderCopies = new HashSet<ParagraphBlock>();
         foreach (ControlData item in Items.Values)
         {

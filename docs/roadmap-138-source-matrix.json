@@ -20,13 +20,12 @@
       "id": "typed-control-fragment-protected",
       "issue": 147,
       "outcome": "rejected",
-      "boundary": "Glossary-backed sources, date-policy conflicts, report owners, mixed objects, typed-control restyling, resource exhaustion and cancellation fail before committing.",
+      "boundary": "Glossary-backed sources, date-policy conflicts, report owners, typed-control restyling, resource exhaustion and cancellation fail before committing.",
       "tests": [
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentResourcesRestylingAndCancellationRejectAtomically" },
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentDatePoliciesMustMatch" },
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentsRejectReportOwnersAndRespectResourceLimits" },
-        { "class": "ContentControlFragmentTests", "method": "StructuralTableOwnersProtectOtherCellBookmarks" },
-        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsRejectTypedSourceAndDestinationAtomically" }
+        { "class": "ContentControlFragmentTests", "method": "StructuralTableOwnersProtectOtherCellBookmarks" }
       ]
     },
     {
@@ -42,12 +41,33 @@
       "id": "object-fragment-protected",
       "issue": 147,
       "outcome": "rejected",
-      "boundary": "Object fragment restyling, resource exhaustion and cancellation reject atomically; combinations with typed controls, report controls and retained history remain outside this profile.",
+      "boundary": "Object fragment restyling, resource exhaustion and cancellation reject atomically; report controls and retained history remain outside this profile.",
       "tests": [
         { "class": "ObjectFoundationTests", "method": "ObjectFragmentRestylingAndCancellationLeaveBothSessionsUntouched" },
         { "class": "ObjectFoundationTests", "method": "ObjectFragmentsWithSeparateReportControlsRejectBeforeInsertion" },
-        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsRejectTypedSourceAndDestinationAtomically" },
         { "class": "ObjectFoundationTests", "method": "ObjectFragmentRespectsTheDestinationResourceBudget" }
+      ]
+    },
+    {
+      "id": "mixed-control-object-fragments",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Separate typed-control and chart/equation paragraph owners can be composed and edited independently in body and simple-cell destinations.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MixedControlAndObjectFragmentsKeepSeparateEditableOwners" },
+        { "class": "ObjectFoundationTests", "method": "TypedFragmentCanJoinAnExistingObjectDocumentAndKeepLocks" }
+      ]
+    },
+    {
+      "id": "mixed-control-object-protected",
+      "issue": 147,
+      "outcome": "rejected",
+      "boundary": "Objects cannot share a typed-control paragraph or be placed inside a structural row or cell control owner; unqualified profiles and cancelled edits leave the session unchanged.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MixedObjectsCannotShareAnInlineControlParagraph" },
+        { "class": "ObjectFoundationTests", "method": "ObjectsInsideStructuralControlOwnersAreRejected" },
+        { "class": "ObjectFoundationTests", "method": "ControlCreationCannotSplitAnObjectParagraph" },
+        { "class": "ObjectFoundationTests", "method": "MixedOwnersRejectUnsupportedProfilesAndCancelledEditsAtomically" }
       ]
     },
     {

@@ -75,7 +75,7 @@ public sealed partial class WordDocument
                 if (data.Lock != ContentControlLock.Unlocked) data.Properties.Add(new XElement(ControlValues.W + "lock", new XAttribute(ControlValues.W + "val", data.Lock switch
                 { ContentControlLock.ControlLocked => "sdtLocked", ContentControlLock.ContentLocked => "contentLocked", _ => "sdtContentLocked" })));
                 ControlOwners.Normalize(m); return 1;
-            }, cancellationToken, controlAware: true);
+            }, cancellationToken, objectAware: true, controlAware: true);
             return ContentControls.Single(control => control.Id == assigned);
         }
     }

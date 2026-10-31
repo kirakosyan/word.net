@@ -148,7 +148,7 @@ internal sealed partial class DocxReader
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         document.ObjectCount = context.ObjectCount;
         reader.FinishTypedControls(document);
-        if (document.ObjectCount != 0) { ObjectSafety.Owners(document); context.Objects.Finish(document.CharacterCount, 0); }
+        if (document.ObjectCount != 0) { ObjectSafety.Owners(document, context); context.Objects.Finish(document.CharacterCount, 0); }
         return document;
     }
 

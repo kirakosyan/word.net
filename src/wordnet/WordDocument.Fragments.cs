@@ -88,10 +88,8 @@ public sealed partial class WordDocument
                 throw new NotSupportedException("Fragment.Table: Nested fragment tables are unsupported.");
             if (cellDestination && incoming.Controls.HasControls && incoming.Tables.Any())
                 throw new NotSupportedException("Fragment.ControlOwner: Typed-control fragments containing tables require a body destination.");
-            if ((m.Controls.HasControls && incoming.ObjectCount != 0) || (incoming.Controls.HasControls && m.ObjectCount != 0))
-                throw new NotSupportedException("Fragment.SourceStructure: Typed controls and retained objects cannot be combined in this profile.");
-            if ((incoming.ObjectCount != 0 || incoming.Controls.HasControls || m.Controls.HasControls) && FragmentHasReportControls(incoming, c)
-                || incoming.Controls.HasControls && FragmentHasReportControls(m, c))
+            if ((incoming.ObjectCount != 0 || m.ObjectCount != 0 || incoming.Controls.HasControls || m.Controls.HasControls)
+                && (FragmentHasReportControls(incoming, c) || FragmentHasReportControls(m, c)))
                 throw new NotSupportedException("Fragment.SourceStructure: Retained object or typed-control fragments cannot combine with report controls.");
             TextRun[] sourceRuns = incoming.Paragraphs.SelectMany(p => p.Runs).ToArray();
             if (sourceRuns.Any(r => r.Box != null))

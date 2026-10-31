@@ -127,11 +127,11 @@ body and simple-cell fragment destinations. Repeated insertion gives each placem
 a new identity, preserves its admitted chart graph or equation tree and description,
 and leaves the source session unchanged. Callers can update each inserted chart or
 equation independently. Admission checks the combined destination model and object
-budgets before committing. Fragments containing report controls, typed controls or
+budgets before committing. Fragments containing report controls or retained
 history remain unsupported with these objects, as do positioned text boxes.
 Object-bearing fragments retain source appearance; `UseDestination` rejects them.
 This increment does not qualify additional tagged, archival or native combinations;
-#147 remains open for mixed typed-control/object composition and remaining acceptance work.
+#147 remains open for its remaining acceptance and runtime qualification work.
 
 ### Unreleased source: typed controls in fragments
 
@@ -145,11 +145,18 @@ typed controls, provided the selected bookmark is outside every protected owner.
 
 Date controls require matching source and destination date policies. A fragment
 with typed controls and a table requires a body destination; glossary-backed source
-controls, report controls, retained objects or history cannot be combined with
+controls, report controls or history cannot be combined with
 these typed fragments. `UseDestination` rejects typed-control restyling. The source
 and combined destination are admitted against the destination's captured resource
-and work limits before committing. Broader resource graphs and mixed
-typed-control/object combinations remain open in #147.
+and work limits before committing. Broader resource graphs remain open in #147.
+
+The pending source permits admitted typed controls and retained chart/equation
+objects in the same document or fragment when their paragraph owners are
+separate. Objects cannot share a paragraph with an inline, block or structural
+typed control; this protects control locks and whole-owner edits. After insertion,
+typed values and bindings and object data/descriptions can be edited independently.
+Ordinary managed DOCX, PDF and XPS are covered by the bounded profile; native,
+tagged, archival and retained-review combinations retain their existing restrictions.
 
 ## Opt-in typed controls — merged source
 

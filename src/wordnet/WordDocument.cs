@@ -248,7 +248,7 @@ public sealed partial class WordDocument
         }
         if (bytes + nodes * 64L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Edited document exceeds aggregate resource limits.");
         model.ObjectCount = objects?.Placements ?? 0;
-        if (objects != null) { ObjectSafety.Owners(model); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
+        if (objects != null) { ObjectSafety.Owners(model, context); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
         foreach (TableBlock table in model.Tables) TableValidation.Validate(table, context);
     }
     private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Dotx or DocumentFormat.Odt or DocumentFormat.Ott or DocumentFormat.Pdf

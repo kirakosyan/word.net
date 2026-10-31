@@ -101,7 +101,7 @@ public sealed partial class WordDocument
             change(m, data, owner, c);
             if (owner.ParentId is int parent) ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
             ControlOwners.Normalize(m); return 1;
-        }, token, controlAware: true);
+        }, token, objectAware: true, controlAware: true);
     }
     /// <summary>Atomically sets a checkbox value and clears placeholder display. Content locks and stale handles reject.</summary>
     public DocumentEditResult SetControlChecked(DocumentContentControl handle, bool value, CancellationToken cancellationToken = default) =>
@@ -156,7 +156,7 @@ public sealed partial class WordDocument
             m.Controls.Items.Remove(data.Id);
             if (owner.ParentId is int parent) ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
             ControlOwners.Normalize(m); return 1;
-        }, cancellationToken, controlAware: true);
+        }, cancellationToken, objectAware: true, controlAware: true);
     }
     /// <summary>Replaces inline rich content with copied formatted text. Images, fields, boundaries and structural breaks are rejected.</summary>
     public DocumentEditResult ReplaceControlContent(DocumentContentControl handle, IEnumerable<DocumentText> runs, CancellationToken cancellationToken = default)
@@ -260,7 +260,7 @@ public sealed partial class WordDocument
             foreach (int parent in selected.Select(data => owners[data.Id].ParentId).Where(id => id.HasValue).Select(id => id!.Value).Distinct())
                 ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
             ControlOwners.Normalize(m); return selected.Count;
-        }, token, controlAware: true);
+        }, token, objectAware: true, controlAware: true);
     }
     private static void CheckNestedControlEdit(DocumentModel model, ControlOwner owner)
     {
