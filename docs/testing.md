@@ -105,6 +105,8 @@ and additional native, tagged or archival combinations remain unqualified.
 The [reference receipt](measurements/roadmap-138-object-fragment-reference.json)
 retains an initial LibreOffice Math omission and the successful rerun with its
 matching Math component, plus chart-value, text, bar geometry and OMML observations.
+The [exact-source receipt](measurements/roadmap-138-object-fragment-23c5069.json)
+records the complete local suites, package checks and byte-identical reference probe.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated
