@@ -125,7 +125,9 @@ difference is diagnosed and exact hosted qualification is separate.
 Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
 The later [stacked-bar and column profile](p2-objects-typography.md#unreleased-source-stacked-bars-and-columns)
 retains separate signed totals but diagnoses independent reference-position differences.
-The reference plot-position failures, circular charts, data labels and
+The later [point-label profile](p2-objects-typography.md#unreleased-source-chart-point-labels)
+adds bounded value/category labels with explicit fit and reference diagnostics.
+Reference plot and label failures, circular charts, other label forms and
 native/tagged/archive qualification remain open.
 Pending #164 adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
 in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.

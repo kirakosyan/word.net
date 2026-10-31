@@ -47,6 +47,14 @@ internal static class ChartObjectFormat
                     new XElement(C + "numCache", new XElement(C + "formatCode", "General"), V("ptCount", series.Values.Count),
                         series.Values.Select((v, p) => v.HasValue ? new XElement(C + "pt", new XAttribute("idx", p), new XElement(C + "v", v.Value.ToString("R", CultureInfo.InvariantCulture))) : null))))));
         }
+        if (definition.DataLabels != ChartDataLabels.None)
+        {
+            bool value = definition.DataLabels is ChartDataLabels.Value or ChartDataLabels.CategoryAndValue;
+            bool category = definition.DataLabels is ChartDataLabels.Category or ChartDataLabels.CategoryAndValue;
+            data.Add(new XElement(C + "dLbls", V("dLblPos", "ctr"), V("showLegendKey", 0), V("showVal", value ? 1 : 0), V("showCatName", category ? 1 : 0),
+                V("showSerName", 0), V("showPercent", 0), V("showBubbleSize", 0),
+                value && category ? new XElement(C + "separator", ", ") : null));
+        }
         if (stacked) data.Add(V("overlap", 100));
         data.Add(V("axId", 1), V("axId", 2));
         XElement Axis(string kind, int id, int cross, string position) => new XElement(C + kind, V("axId", id),
@@ -212,7 +220,8 @@ internal static class ChartObjectFormat
         XElement One(IEnumerable<XElement> elements) { XElement[] found = elements.Take(2).ToArray(); return found.Length == 1 ? found[0] : throw Invalid("Cardinality"); }
         long pointCount = series.Sum(s => (long)Count(One(s.Element(C + "val")?.Descendants(C + "ptCount") ?? Enumerable.Empty<XElement>())));
         if (pointCount > 10000) throw Invalid("PointLimit");
-        bool renderable = !root.Descendants(C + "dLbls").Any() && !root.Descendants(C + "trendline").Any() && !root.Descendants(C + "errBars").Any()
+        ChartDataLabels dataLabels = ParseDataLabels(root, data, isLine, out bool labelAppearance);
+        bool renderable = labelAppearance && !root.Descendants(C + "trendline").Any() && !root.Descendants(C + "errBars").Any()
             && !root.Descendants(C + "smooth").Any(e => (string?)e.Attribute("val") is not "0" and not "false")
             && !plot.Descendants(C + "scaling").Elements().Any(e => e.Name == C + "min" || e.Name == C + "max")
             && ((string?)chart.Element(C + "dispBlanksAs")?.Attribute("val") is null or "gap")
@@ -264,7 +273,52 @@ internal static class ChartObjectFormat
         string title = string.Concat(chart.Element(C + "title")?.Descendants(A + "t").Select(t => t.Value) ?? Enumerable.Empty<string>());
         ObjectText.Check(title, "title", 1024);
         string AxisTitle(XElement axis) => string.Concat(axis.Element(C + "title")?.Descendants(A + "t").Select(t => t.Value) ?? Enumerable.Empty<string>());
-        return (new ChartDefinition(kind, labels!, admitted, title, chart.Element(C + "legend") != null, AxisTitle(categories[0]), AxisTitle(values[0])), renderable);
+        return (new ChartDefinition(kind, labels!, admitted, title, chart.Element(C + "legend") != null, AxisTitle(categories[0]), AxisTitle(values[0])).WithDataLabels(dataLabels), renderable);
+    }
+    private static ChartDataLabels ParseDataLabels(XElement root, XElement data, bool line, out bool renderable)
+    {
+        XElement[] all = root.Descendants(C + "dLbls").ToArray();
+        renderable = all.Length == 0;
+        if (all.Length == 0) return ChartDataLabels.None;
+        XElement[] series = data.Elements(C + "ser").ToArray();
+        bool chartLabels = all.Length == 1 && all[0].Parent == data;
+        bool seriesLabels = all.Length == series.Length && series.All(s => s.Elements(C + "dLbls").Count() == 1)
+            && all.All(label => label.Parent != null && series.Contains(label.Parent));
+        if (line || !chartLabels && !seriesLabels) return ChartDataLabels.None;
+        ChartDataLabels? result = null;
+        foreach (XElement labels in all)
+        {
+            if (!TryParseDataLabels(labels, out ChartDataLabels current) || result.HasValue && result.Value != current) return ChartDataLabels.None;
+            result = current;
+        }
+        renderable = true;
+        return result ?? ChartDataLabels.None;
+    }
+    private static bool TryParseDataLabels(XElement labels, out ChartDataLabels result)
+    {
+        result = ChartDataLabels.None;
+        if (labels.Attributes().Any(a => !a.IsNamespaceDeclaration)) return false;
+        string[] allowed = { "dLblPos", "showVal", "showCatName", "showLegendKey", "showSerName", "showPercent", "showBubbleSize", "separator" };
+        if (labels.Elements().Any(e => e.Name.Namespace != C || !allowed.Contains(e.Name.LocalName, StringComparer.Ordinal))
+            || labels.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)) return false;
+        bool? ReadFlag(string name)
+        {
+            XElement? element = labels.Element(C + name);
+            if (element == null) return null;
+            if (element.HasElements || element.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "val") || element.Value.Length != 0) return null;
+            return (string?)element.Attribute("val") switch { "1" or "true" => true, "0" or "false" => false, _ => null };
+        }
+        XElement? position = labels.Element(C + "dLblPos");
+        if (position == null || position.HasElements || position.Value.Length != 0 || (string?)position.Attribute("val") != "ctr"
+            || position.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "val")) return false;
+        bool? value = ReadFlag("showVal"), category = ReadFlag("showCatName"), legend = ReadFlag("showLegendKey"), series = ReadFlag("showSerName"),
+            percent = ReadFlag("showPercent"), bubble = ReadFlag("showBubbleSize");
+        if (!value.HasValue || !category.HasValue || legend != false || series != false || percent != false || bubble != false) return false;
+        XElement? separator = labels.Element(C + "separator");
+        if (separator != null && (separator.HasElements || separator.Attributes().Any(a => !a.IsNamespaceDeclaration) || separator.Value != ", ")) return false;
+        if (value.Value && category.Value && separator == null) return false;
+        result = value.Value ? category.Value ? ChartDataLabels.CategoryAndValue : ChartDataLabels.Value : category.Value ? ChartDataLabels.Category : ChartDataLabels.None;
+        return true;
     }
     private static int Count(XElement count)
     { if (!int.TryParse((string?)count.Attribute("val"), NumberStyles.None, CultureInfo.InvariantCulture, out int value) || value is < 1 or > 10000) throw Invalid("PointLimit"); return value; }

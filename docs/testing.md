@@ -406,6 +406,14 @@ both complete suites, matrix, packages and reproduced specimens; its [performanc
 receipt](measurements/roadmap-138-stacked-performance-c1188c1.json) compares the
 same source with the preceding PR head under the unchanged gate.
 
+Pending #163 point-label tests cover editable chart-wide and uniform series flags,
+binding, signed points, fit, aggregate text bounds, cancellation and unsupported
+profiles. Independently generated XlsxWriter bar and column specimens use explicit
+flags and pass Open XML SDK validation; eight corrupted controls check graph,
+diagnostics, content, orientation and cross-format label positions. The
+[reference observation](measurements/roadmap-138-chart-labels-reference.json)
+records office text and position differences without changing the tolerance.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection

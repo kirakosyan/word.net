@@ -3,6 +3,27 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "chart-point-labels-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Editable explicit centred value/category labels on bars and columns retain workbook data and binding; ordinary managed vector positions diagnose independent reference differences.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsAreEditableAndCenteredInsideBothSignedBars" },
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsSurviveBindingWithoutChangingSource" },
+        { "class": "ObjectFoundationTests", "method": "ImportedSeriesLabelsMustBeUniformAndExplicit" }
+      ]
+    },
+    {
+      "id": "chart-point-labels-boundaries",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Strict reference loss, unqualified flags and profiles, unfittable zero labels, exhausted aggregate text and cancellation fail explicitly.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsRejectUnknownAppearanceAndUnfittableOrUnqualifiedOutput" },
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsChargeAggregateTextAndHonorCancellation" }
+      ]
+    },
+    {
       "id": "east-asian-managed-line-breaks",
       "issue": 165,
       "outcome": "supported-bounded",

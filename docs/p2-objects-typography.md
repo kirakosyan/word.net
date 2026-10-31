@@ -94,7 +94,7 @@ existing local workbook/cache agreement checks. Null values are gaps; zero value
 lie on the zero axis; finite negative and positive values extend to opposite sides.
 Categories run bottom to top, series and legend order follow the admitted source
 profile, and the default 150-percent gap is measured in one bar's thickness.
-Custom gaps/overlap, data labels, reversed or custom axes and other unqualified
+Custom gaps/overlap, unqualified data labels, reversed or custom axes and other unqualified
 appearances may remain editable when admitted but reject static rendering.
 
 Ordinary managed PDF/XPS/SVG output is available only in BestEffort or Lenient
@@ -105,8 +105,8 @@ confirms signed relative lengths, order and default-gap geometry, but its plot
 zero origin differs by 19.722 points and its category-label gap by 2.289 points.
 Both fail the existing 0.5-point absolute geometry tolerance; that threshold is
 unchanged and the failures remain open. This is not published 1.5.0 support or a
-claim of general Word/LibreOffice plot parity. Pie/doughnut charts and data labels
-remain open in #163.
+claim of general Word/LibreOffice plot parity. Pie/doughnut charts and broader
+data-label forms remain open in #163.
 
 ### Unreleased source: stacked bars and columns
 
@@ -121,7 +121,7 @@ deterministic orientation-specific order that matches the two-series office spec
 An all-null chart rejects with `Chart.EmptyData`; an all-zero chart uses the
 existing symmetric -1 to 1 value range.
 Percent-stacked charts,
-custom overlap, effects, data labels and unqualified appearances are excluded or
+custom overlap, effects, unqualified data labels and appearances are excluded or
 remain editable without static rendering. Nonfinite sums and resource overflows
 reject explicitly.
 
@@ -136,6 +136,35 @@ LibreOffice are 26.12 points for bars and 36.10 points for columns; reference ax
 origins differ by 20.67 and 17.08 points respectively. These failures remain open
 and are not evidence of Microsoft Word behavior. This profile is unreleased source,
 not public 1.5.0 support or full #163 acceptance.
+
+### Unreleased source: chart point labels
+
+Pending #163 adds `ChartDefinition.WithDataLabels(ChartDataLabels.Value)`,
+`Category`, or `CategoryAndValue` to create a new immutable chart snapshot;
+`None` is the existing default. Add/Update and prepared-data binding retain this
+selection, category/series data and local workbook. Labels apply to clustered and
+stacked bars and columns. A null value is a gap with no label. Values use
+invariant round-trip formatting; combined labels use a comma and space. Each label
+is centred inside its bar, with contrasting black or white text, and its measured
+width and height must fit. Zero-size bars therefore reject a requested label with
+`Chart.DataLabelFit` rather than omitting it. Total repeated text and layout work
+share the existing operation bounds and cancellation.
+
+Editable DOCX uses explicit centre positioning and show/hide flags. Imported
+chart-wide labels or uniform series labels are admitted only for this exact
+plain-value/category profile; implicit flags, custom formatting, per-point or
+nonuniform series labels and other appearances remain non-renderable. Binding
+rejects an appearance it cannot preserve. Line and circular labels are outside
+this increment. Native, tagged and archival rendering is unqualified and rejects.
+
+BestEffort/Lenient output reports `Chart.DataLabelApproximation`; Strict rejects
+the measured difference. The independent XlsxWriter and LibreOffice
+[reference observation](measurements/roadmap-138-chart-labels-reference.json)
+finds consistent label text and PDF/SVG/XPS vector origins, but label origins
+differ by up to 17.40 points for bars and 14.67 points for columns from the office
+reference, above the unchanged 0.5-point tolerance. The reference column also
+places one label outside its bar. These remain open reference differences, not
+evidence about Microsoft Word, a public 1.5.0 feature or full #163 acceptance.
 
 ### Equation authoring
 

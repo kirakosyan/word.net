@@ -42,6 +42,10 @@ APIs; its managed rendering approximation and profile restrictions are explicit.
 The later source appends `ChartKind.StackedColumn` and `ChartKind.StackedBar`,
 with independently accumulated positive and negative values and explicit
 reference-layout diagnostics; existing enum values and constructors remain intact.
+The pending `ChartDataLabels` enum and immutable `ChartDefinition.WithDataLabels`
+snapshot select bounded centred bar/column labels without changing the existing
+constructor. Prepared-data binding preserves this selection and rejects retained
+appearances it cannot preserve.
 
 Pending #153 admits a bounded standalone-equation/native-paragraph combination
 through the existing options and math-font APIs. It adds diagnostics but no public

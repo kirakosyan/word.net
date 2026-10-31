@@ -26,7 +26,8 @@ internal static class ChartLayout
         ChartDefinition chart = item.Chart!;
         bool horizontal = chart.Kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
         bool stacked = chart.Kind is ChartKind.StackedColumn or ChartKind.StackedBar;
-        if ((horizontal || stacked) && (context.Typography.Enabled
+        bool labels = chart.DataLabels != ChartDataLabels.None;
+        if ((horizontal || stacked || labels) && (context.Typography.Enabled
             || context.Destination == DocumentFormat.Pdf && !context.PreviewIntermediate
                 && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
             throw new NotSupportedException("Chart.BarProfile: Horizontal and stacked bars are qualified only for ordinary managed output.");
@@ -34,10 +35,14 @@ internal static class ChartLayout
             context.Loss("Chart.BarLayoutApproximation", "The bounded horizontal-bar plot area differs from independent reference geometry.");
         if (stacked)
             context.Loss("Chart.StackedLayoutApproximation", "Stacked-chart axis and plot positions differ from independent office reference geometry.");
+        if (labels)
+            context.Loss("Chart.DataLabelApproximation", "Centred point labels use the bounded managed chart layout and can differ from office output.");
         if (stacked && chart.Categories.Count * 32L > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.ChartStack: Stack accumulators exceed the resource allowance.");
+        long pointCount = (long)chart.Categories.Count * chart.Series.Count;
+        long repeatedLabels = labels ? chart.Categories.Sum(s => (long)s.Length) * chart.Series.Count + pointCount * 32 : 0;
         context.Objects.Render(chart.Title.Length + chart.CategoryTitle.Length + chart.ValueTitle.Length + chart.Categories.Sum(s => (long)s.Length)
-            + chart.Series.Sum(s => (long)s.Name.Length) + 128, (long)chart.Categories.Count * chart.Series.Count * (stacked ? 3 : 1) + chart.Categories.Count + chart.Series.Count + 32);
+            + chart.Series.Sum(s => (long)s.Name.Length) + repeatedLabels + 128, pointCount * ((stacked ? 3 : 1) + (labels ? 1 : 0)) + chart.Categories.Count + chart.Series.Count + 32);
         double[] finite = chart.Series.SelectMany(s => s.Values).Where(v => v.HasValue).Select(v => v!.Value).ToArray();
         if (finite.Length == 0) throw new NotSupportedException("Chart.EmptyData: At least one real value is required for rendering.");
         double min = Math.Min(0, finite.Min()), max = Math.Max(0, finite.Max());
@@ -115,7 +120,9 @@ internal static class ChartLayout
                     }
                     if (width < 0.25) throw new NotSupportedException("Chart.PointSpacing: Column width is below the qualified geometry bound.");
                     // Zero is a point on the baseline; a gap creates no primitive.
-                    result.Shapes.Add(new FixedShape(position, Math.Min(y, baseline), width, Math.Abs(y - baseline), series.Color));
+                    double rectangleY = Math.Min(y, baseline), rectangleHeight = Math.Abs(y - baseline);
+                    result.Shapes.Add(new FixedShape(position, rectangleY, width, rectangleHeight, series.Color));
+                    if (labels) DataLabel(result, chart, series, c, value.Value, position, rectangleY, width, rectangleHeight, font, measure, context);
                 }
                 else
                 {
@@ -192,7 +199,9 @@ internal static class ChartLayout
                     zero = X(side[c]); side[c] += value.Value; x = X(side[c]);
                 }
                 if (!Finite(x) || !Finite(y)) throw new InvalidDataException("Chart.Geometry: A plot coordinate is not finite.");
-                result.Shapes.Add(new FixedShape(Math.Min(x, zero), y, Math.Abs(x - zero), height, series.Color));
+                double rectangleX = Math.Min(x, zero), rectangleWidth = Math.Abs(x - zero);
+                result.Shapes.Add(new FixedShape(rectangleX, y, rectangleWidth, height, series.Color));
+                if (chart.DataLabels != ChartDataLabels.None) DataLabel(result, chart, series, c, value.Value, rectangleX, y, rectangleWidth, height, font, measure, context);
             }
             if (chart.ShowLegend)
             {
@@ -202,6 +211,33 @@ internal static class ChartLayout
             }
         }
         return result;
+    }
+    private static void DataLabel(ObjectVisual result, ChartDefinition chart, ChartSeries series, int category, double value,
+        double x, double y, double width, double height, int font, Func<string, int, double, double> measure, ConversionContext context)
+    {
+        context.CheckCancellation();
+        string number = value == 0 ? "0" : value.ToString("R", CultureInfo.InvariantCulture);
+        string label = chart.DataLabels switch
+        {
+            ChartDataLabels.Value => number,
+            ChartDataLabels.Category => chart.Categories[category],
+            ChartDataLabels.CategoryAndValue => chart.Categories[category] + ", " + number,
+            _ => throw new InvalidOperationException("Chart.DataLabels: Unknown label content."),
+        };
+        const double size = 8;
+        double textWidth = measure(label, font, size);
+        if (!Finite(textWidth) || textWidth + 4 > width || size + 4 > height)
+            throw new NotSupportedException("Chart.DataLabelFit: A point label does not fit inside its bar; zero-sized points cannot carry labels.");
+        if (label.Length == 0) return;
+        double Linear(int channel)
+        {
+            double value = channel / 255d;
+            return value <= 0.04045 ? value / 12.92 : Math.Pow((value + 0.055) / 1.055, 2.4);
+        }
+        int Hex(char digit) => digit <= '9' ? digit - '0' : digit - 'A' + 10;
+        int Channel(int index) => 16 * Hex(series.Color[index]) + Hex(series.Color[index + 1]);
+        double luminance = 0.2126 * Linear(Channel(0)) + 0.7152 * Linear(Channel(2)) + 0.0722 * Linear(Channel(4));
+        result.Text.Add(new PositionedText(label, x + (width - textWidth) / 2, y + height / 2 + size / 3, size, font, luminance < 0.179 ? "FFFFFF" : "000000"));
     }
     private static bool Finite(double v) => !double.IsNaN(v) && !double.IsInfinity(v);
 }

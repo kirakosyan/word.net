@@ -1,5 +1,11 @@
 # Architecture and implementation status
 
+Pending chart point labels are immutable chart metadata; explicit OOXML label
+flags and the existing local workbook survive editable DOCX and report binding.
+Managed vector placement measures each string, charges aggregate text and work,
+and rejects labels that do not fit inside the corresponding bar. Reference
+position differences are diagnosed; protected output combinations remain excluded.
+
 Pending stacked charts retain their chart/workbook graphs and apply bounded,
 separate positive and negative accumulators per category in managed vector layout.
 Axis and plot differences from an independent office reference are diagnosed;

@@ -236,6 +236,11 @@ Stacked bars and columns report `Chart.StackedLayoutApproximation` for the
 independently measured plot/axis differences; Strict rejects this loss.
 `Chart.Overlap` rejects unqualified stacked overlap and `Chart.Range` rejects
 nonfinite stacked totals. `Limit.ChartStack` bounds the temporary accumulators.
+Pending centred point labels report `Chart.DataLabelApproximation` for measured
+office-reference differences, which Strict rejects. `Chart.DataLabelFit` rejects
+labels too large for their bars, including zero-size points; labels are not
+silently dropped. `Chart.BindingAppearance` rejects report binding when the
+retained chart appearance is not preserved by the closed chart model.
 
 Unreleased #151 source reports `Typography.MergedTableSpacing` when conservative
 native line metrics may change merged-table row heights; Strict rejects this loss.
