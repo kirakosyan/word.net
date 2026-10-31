@@ -52,9 +52,10 @@ identity and binding checks. The [owner profile](content-controls.md#unreleased-
 and [plain story profile](content-controls.md#unreleased-source-plain-header-and-footer-owners)
 record the bounded header/footer owners and remaining nesting, wrapper and
 repeated-row work; #144 stays open.
-Unreleased #145 source adds explicit wrapper removal with preserved or deleted
-content and bounded lock/resource rules. Control creation, binding authoring and
-composition remain open; see the [removal profile](content-controls.md#unreleased-source-removing-an-admitted-control).
+Unreleased #145 source adds bounded inline control creation and explicit wrapper
+removal, with initial values, existing local bindings and lock/resource rules.
+Block creation and composition remain open; see the [creation profile](content-controls.md#unreleased-source-creating-an-inline-control)
+and [removal profile](content-controls.md#unreleased-source-removing-an-admitted-control).
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.

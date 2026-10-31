@@ -58,7 +58,9 @@ The [exact-source theme-style receipt](measurements/roadmap-138-theme-style-a502
 records the local suite, matrix and package results for that increment. Its first
 hosted Framework source guest failed before startup because the disposable runner
 had 37 GiB free and the VM admission check requires 60 GiB; no Framework tests ran
-in that guest. The failure and hosted job identity are retained in the receipt.
+in that guest. A fresh-runner retry passed, as did the actual Framework source and
+package guests in the push workflow; the failed attempt and both results remain in
+the receipt. They qualify that intermediate head only.
 Independent [conditional-border controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders/README.md)
 check outer-edge colors, enabled/disabled look flags, selected corners and a
 combined fill and border. Tests cover editable styles, inherited edges and resets,
@@ -90,10 +92,13 @@ graphs and an additional Word-derived date placeholder. The independently genera
 checks text and color. Character-style identity is lost with a diagnostic in this
 bounded increment, and strict mode rejects it.
 
-Pending #145 removal tests check all existing kinds, preserved run formatting,
+Pending #145 creation tests exercise all six kinds, local binding, source and saved
+OOXML, editing, selection and date modes, immutable inputs, Unicode offsets,
+locks, unsupported placements and rollback. Removal tests check preserved run formatting,
 deletion versus preservation, lock combinations, nested parents, stale/foreign
 handles, shared stories, table-cell schema, local resource retention and
-cancellation. Control creation and composition are not established by these tests.
+cancellation. Block creation, broader ownership and composition are not established
+by these tests.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

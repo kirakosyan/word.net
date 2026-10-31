@@ -99,6 +99,33 @@ pages, not Word execution or universal geometry. Table-wrapped or nested story
 controls, notes, comments, text boxes and typed-control composition remain outside
 this increment; #144 remains open.
 
+## Unreleased source: creating an inline control
+
+Pending #145 adds immutable `ContentControlDefinition` inputs and
+`InsertContentControl(paragraphIndex, offset, definition)` for an ordinary unstyled
+body or simple-table-cell paragraph. The index follows the current `Paragraphs`
+snapshot; the offset counts UTF-16 code units and must not split a Unicode scalar.
+The returned control is a fresh session handle. Each subsequent committed edit
+invalidates earlier mutation handles. Definitions and list items are copied and
+bounded before insertion, and IDs are assigned without colliding with existing
+typed controls.
+
+All six existing kinds are admitted inline. Text defaults to empty, list controls
+default to no selection, dates default to empty with a `yyyy-MM-dd` picture, and a
+checkbox defaults to an unchecked `-` glyph in Noto Sans (`X` when checked).
+The default lock is unlocked and no placeholder is invented. Definitions can
+provide initial values, a lock, literal tag/alias and, for supported scalar kinds,
+a `ContentControlBinding` to an already retained local XML store. The initial
+value is set before the lock, and the binding is not applied automatically; callers
+must explicitly synchronize it. Namespace mappings and list inputs are copied.
+Tags remain inert and no network resource is fetched.
+
+Creation rejects paragraphs with other controls, fields, links, bookmarks, objects,
+lists or structural breaks, along with styled paragraphs, repeated rows, merged or
+nested tables, text boxes and story owners. This increment does not create block
+controls or introduce a new local XML store. Template composition and broader
+placement remain open in #145 and #147.
+
 ## Unreleased source: removing an admitted control
 
 Pending #145 adds `RemoveControl(handle, preserveContent: true)` for admitted
@@ -113,8 +140,9 @@ lock protects its child, and a parent containing typed children cannot be remove
 An edited binding must first be applied, written back or detached. Retained local
 XML and glossary resources are never implicitly deleted: removing the final
 control is rejected while those resources remain. Removal is atomic on failure
-and cancellation. This increment does not create controls or establish their
-composition; the remaining #145 scope stays open.
+and cancellation. Checkbox metadata no longer supplies its control-specific glyph
+fallback after removal; retained text and run formatting become ordinary content.
+Template composition and the remaining #145 scope stay open.
 
 ## Load, inspect and edit
 

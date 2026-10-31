@@ -24,8 +24,14 @@
   "hosted": {
     "pullRequestRun": "https://github.com/kirakosyan/word.net/actions/runs/41166033261",
     "framework472SourceJob": "https://github.com/kirakosyan/word.net/actions/runs/41166033261/job/124436688834",
-    "framework472SourceResult": "Failed before VM startup: the runner had 37 GiB free while the admission check requires 60 GiB. No Framework tests ran in this guest; qualification is not established by this attempt."
+    "framework472SourceResult": "Failed before VM startup: the runner had 37 GiB free while the admission check requires 60 GiB. No Framework tests ran in this guest; qualification is not established by this attempt.",
+    "framework472SourceRetry": "https://github.com/kirakosyan/word.net/actions/runs/41166033261/job/124442826463",
+    "framework472SourceRetryResult": "Passed on a fresh runner; the retried PR workflow completed successfully.",
+    "pushRun": "https://github.com/kirakosyan/word.net/actions/runs/41166028491",
+    "pushResult": "Passed, including actual Framework 4.7.2 source and package guests.",
+    "framework472PackageInitialJob": "https://github.com/kirakosyan/word.net/actions/runs/41166033261/job/124438715359",
+    "framework472PackageInitialResult": "Passed."
   },
   "independentEvidence": "Five reproducible synthetic DOCX controls and their LibreOffice PDFs compare blue theme tokens, red stored fallbacks and tint/shade variants. LibreOffice rendered the red fallback in the theme variants, so strict non-DOCX output rejects the difference; DOCX reference metadata is retained. Fixtures, tool versions and hashes are in tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes. No Word execution or complete theme-table-style qualification is claimed.",
-  "qualification": "Hosted qualification, remaining table/theme scope, final review, merge and package publication are not established for this intermediate commit."
+  "qualification": "Both hosted workflows passed for this intermediate commit after the recorded source-guest retry. Later commits, remaining table/theme scope, final review, merge and package publication are not established by those results."
 }

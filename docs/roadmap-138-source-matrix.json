@@ -3,6 +3,34 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "typed-control-inline-creation",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "Immutable definitions create each existing typed kind at an explicit Unicode-safe position in an ordinary unstyled body or simple-cell paragraph. Initial values, locks and explicit existing local bindings remain editable under their declared rules.",
+      "tests": [
+        { "class": "ContentControlCreationTests", "method": "ProgrammaticFormCreatesAllSixKindsAndKeepsThemEditable" },
+        { "class": "ContentControlCreationTests", "method": "InsertionSplitsOnlyAtUnicodeScalarBoundariesAndKeepsOtherText" },
+        { "class": "ContentControlCreationTests", "method": "IdsAvoidExistingControlsAndHandlesBecomeStaleAfterInsertion" },
+        { "class": "ContentControlCreationTests", "method": "CreatedControlCanUseAnExistingLocalBindingOnlyWhenExplicitlyApplied" },
+        { "class": "ContentControlCreationTests", "method": "InitialContentLockAppliesAfterTheInitialValueIsInstalled" },
+        { "class": "ContentControlCreationTests", "method": "DefinitionsCopyItemsAndKeepEmptySelectionDistinctFromNoSelection" },
+        { "class": "ContentControlCreationTests", "method": "MultilineAndDateOnlyDefinitionsUseTheSessionsExplicitPolicies" }
+      ]
+    },
+    {
+      "id": "typed-control-creation-protected",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "Creation rejects invalid definitions, unsafe locations or bindings, existing protected owners, repeat rows and merged or nested tables without mutating the session.",
+      "tests": [
+        { "class": "ContentControlCreationTests", "method": "InvalidDefinitionsLocationsBindingsAndCancellationAreAtomic" },
+        { "class": "ContentControlCreationTests", "method": "ExistingProtectedOwnersCannotBeSplitOrBypassed" },
+        { "class": "ContentControlCreationTests", "method": "SimpleCellCreationIsEditableButNestedAndMergedTablesRejectAtomically" },
+        { "class": "ContentControlCreationTests", "method": "ARepeatRowCannotReceiveANewTypedControl" },
+        { "class": "ContentControlCreationTests", "method": "GlobalControlLimitPreventsInsertionWithoutChangingExistingOwners" }
+      ]
+    },
+    {
       "id": "typed-control-removal",
       "issue": 145,
       "outcome": "supported-bounded",
