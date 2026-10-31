@@ -32,8 +32,8 @@ public sealed partial class WordDocument
     /// <summary>Replaces a dedicated body bookmark paragraph with a private copy of an admitted document fragment.</summary>
     /// <remarks>Load caller-supplied DOCX or safe HTML into a separate session first. The placeholder must
     /// occupy one whole body paragraph. Source appearance is retained; section geometry and stories are
-    /// not imported. Admitted chart and equation placements receive independent identities. Both sessions
-    /// remain unchanged if validation, cancellation or admission fails.</remarks>
+    /// not imported. Admitted chart, equation and typed-control placements receive independent identities.
+    /// Both sessions remain unchanged if validation, cancellation or admission fails.</remarks>
     public DocumentEditResult InsertFragmentAtBookmark(string name, WordDocument fragment, CancellationToken cancellationToken = default)
         => InsertFragment(name, fragment, cellDestination: false, FragmentFieldHandling.Reject, CompositionStyle.KeepSource, cancellationToken);
 
@@ -47,8 +47,8 @@ public sealed partial class WordDocument
 
     /// <summary>Replaces a dedicated bookmark paragraph in a simple body-table cell with a private fragment copy.</summary>
     /// <remarks>The host must be a single unmerged cell in a top-level body table. The bookmark must own
-    /// the whole paragraph. Source sections/stories, nested tables, fields, typed controls, review history
-    /// and positioned text boxes remain unsupported. Admitted charts and equations retain their source
+    /// the whole paragraph. Source sections/stories, nested tables, fields, review history and positioned
+    /// text boxes remain unsupported. Admitted charts, equations and typed controls retain their source
     /// appearance and receive independent placement identities. Both sessions remain unchanged on failure.</remarks>
     public DocumentEditResult InsertFragmentAtTableCellBookmark(string name, WordDocument fragment, CancellationToken cancellationToken = default)
         => InsertFragment(name, fragment, cellDestination: true, FragmentFieldHandling.Reject, CompositionStyle.KeepSource, cancellationToken);
@@ -73,8 +73,8 @@ public sealed partial class WordDocument
             if (fragment.diagnostics.Any(d => d.Severity == DiagnosticSeverity.Warning
                 || d.Code is "Field.UnsupportedUsedCachedResult" or "Field.OrphanInstruction" or "Field.DuplicateSeparator"))
                 throw new NotSupportedException("Fragment.SourceLoss: Resolve source load losses before inserting a fragment.");
-            if (fragment.model.Controls.HasControls || fragment.model.Review.HasHistory)
-                throw new NotSupportedException("Fragment.SourceStructure: Typed controls and retained history are unsupported in fragments.");
+            if (fragment.model.Review.HasHistory)
+                throw new NotSupportedException("Fragment.SourceStructure: Retained history is unsupported in fragments.");
             var context = new ConversionContext(options, cancellationToken);
             Admit(fragment.model, context); incoming = new DocumentCloner(context).Copy(fragment.model);
         }
@@ -86,19 +86,13 @@ public sealed partial class WordDocument
                 throw new NotSupportedException("Fragment.Section: Fragment section breaks and stories are unsupported.");
             if (incoming.Tables.Any(table => table.Rows.SelectMany(row => row).SelectMany(cell => cell.Blocks).Any(block => block is TableBlock)))
                 throw new NotSupportedException("Fragment.Table: Nested fragment tables are unsupported.");
-            if (incoming.ObjectCount != 0)
-                foreach (DocumentBlock block in DocumentModel.Expand(incoming.AllBlocks).Distinct())
-                {
-                    c.ReserveControlWork(1);
-                    if (block.Control != null || block.NestedControl != null || block is TableBlock table && table.RowControls.Count != 0)
-                        throw new NotSupportedException("Fragment.SourceStructure: Object-bearing fragments cannot contain report controls.");
-                    if (block is ParagraphBlock paragraph)
-                        foreach (TextRun run in paragraph.Runs)
-                        {
-                            c.ReserveControlWork(1);
-                            if (run.Control != null) throw new NotSupportedException("Fragment.SourceStructure: Object-bearing fragments cannot contain report controls.");
-                        }
-                }
+            if (cellDestination && incoming.Controls.HasControls && incoming.Tables.Any())
+                throw new NotSupportedException("Fragment.ControlOwner: Typed-control fragments containing tables require a body destination.");
+            if ((m.Controls.HasControls && incoming.ObjectCount != 0) || (incoming.Controls.HasControls && m.ObjectCount != 0))
+                throw new NotSupportedException("Fragment.SourceStructure: Typed controls and retained objects cannot be combined in this profile.");
+            if ((incoming.ObjectCount != 0 || incoming.Controls.HasControls || m.Controls.HasControls) && FragmentHasReportControls(incoming, c)
+                || incoming.Controls.HasControls && FragmentHasReportControls(m, c))
+                throw new NotSupportedException("Fragment.SourceStructure: Retained object or typed-control fragments cannot combine with report controls.");
             TextRun[] sourceRuns = incoming.Paragraphs.SelectMany(p => p.Runs).ToArray();
             if (sourceRuns.Any(r => r.Box != null))
                 throw new NotSupportedException("Fragment.Structure: Positioned text boxes are unsupported in fragments.");
@@ -166,19 +160,23 @@ public sealed partial class WordDocument
                                 c.CheckCancellation();
                                 if (cell.Content[index] is ParagraphBlock p && p.Runs.Any(r => r.Bookmark == name))
                                     matches.Add((cell.Content, index, p, table.Control != null || table.NestedControl != null
-                                        || table.RowControls.ContainsKey(row) || cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None, cell));
+                                        || table.RowControls.ContainsKey(row) || table.TypedRowControls.Count != 0 || cell.TypedControlId.HasValue
+                                        || table.Rows.Any(cells => cells.Any(candidate => candidate.TypedControlId.HasValue))
+                                        || cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None, cell));
                             }
             }
             else
                 for (int index = 0; index < m.Blocks.Count; index++)
                     if (m.Blocks[index] is ParagraphBlock p && p.Runs.Any(r => r.Bookmark == name)) matches.Add((m.Blocks, index, p, false, null));
-            if (matches.Count != 1 || matches[0].Protected || matches[0].Paragraph.Control != null || matches[0].Paragraph.NestedControl != null)
+            if (matches.Count != 1 || matches[0].Protected || matches[0].Paragraph.Control != null || matches[0].Paragraph.NestedControl != null
+                || matches[0].Paragraph.TypedControlId.HasValue)
                 throw new InvalidDataException(cellDestination
                     ? "Fragment.Placeholder: A unique unwrapped bookmark paragraph in one simple top-level body-table cell is required."
                     : "Fragment.Placeholder: A unique unwrapped body bookmark paragraph is required.");
             ParagraphBlock placeholder = matches[0].Paragraph;
             int start = placeholder.Runs.FindIndex(r => r.Bookmark == name), end = placeholder.Runs.FindIndex(r => r.Bookmark == "/" + name);
             if (start != 0 || end != placeholder.Runs.Count - 1 || end <= start
+                || placeholder.Runs.Any(r => r.TypedControlId.HasValue)
                 || placeholder.Runs.Skip(1).Take(end - 1).Any(r => r.Bookmark != null || r.Control != null || r.Note != null || r.Image != null || r.FieldInstruction != null || r.Link != null || r.Box != null || r.Object != null))
                 throw new NotSupportedException("Fragment.Placeholder: The bookmark must own the complete plain-text placeholder paragraph.");
             var pending = new Stack<TextRun>(m.Paragraphs.SelectMany(p => p.Runs)); long work = 0;
@@ -208,13 +206,18 @@ public sealed partial class WordDocument
                 if (run.FieldChildren != null) foreach (TextRun child in run.FieldChildren.Values) pending.Push(child);
                 if (run.FieldCache != null) foreach (TextRun child in run.FieldCache) pending.Push(child);
             }
-            string prefix = UniquePrefix(m, c, reservedReferences); int nextId = 1; RemapTemplateControlIds(incoming, TemplateControlIds(m), ref nextId, c);
+            string prefix = UniquePrefix(m, c, reservedReferences); int nextId = 1;
+            HashSet<int> usedControlIds = TemplateControlIds(m); usedControlIds.UnionWith(m.Controls.Items.Keys);
+            RemapTemplateControlIds(incoming, usedControlIds, ref nextId, c);
+            MergeFragmentControls(m, incoming, usedControlIds, ref nextId, c);
             incoming.CustomProperties.Clear(); MergeMetadata(m, incoming, prefix, c);
             Remap(incoming, prefix, m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
             if (style == CompositionStyle.UseDestination)
             {
                 if (incoming.ObjectCount != 0)
                     throw new NotSupportedException("Object.Restyle: Fragment objects retain source appearance only.");
+                if (incoming.Controls.HasControls)
+                    throw new NotSupportedException("Control.Restyle: Fragment controls retain source appearance only.");
                 if (incoming.Tables.Any(table => table.Style != null))
                     throw new NotSupportedException("Table.StyleRestyle: Resolve table styles before applying destination appearance.");
                 if (incoming.HasControlDisplay) throw new NotSupportedException("Fragment.Structure: Detached typed-control display cannot be restyled during fragment insertion.");
@@ -246,6 +249,6 @@ public sealed partial class WordDocument
             }
             m.Notes.AddRange(incoming.Notes);
             ValidateRanges(m); return incoming.Blocks.Count;
-        }, cancellationToken, objectAware: true);
+        }, cancellationToken, objectAware: true, controlAware: true);
     }
 }

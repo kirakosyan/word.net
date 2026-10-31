@@ -55,14 +55,15 @@ also preserves a read-only single row or cell wrapper. Remaining nesting,
 structural editing and repeated-row work keep #144 open.
 Unreleased #145 source adds bounded inline control creation and explicit wrapper
 removal, with initial values, existing local bindings and lock/resource rules.
-Block creation and composition remain open; see the [creation profile](content-controls.md#unreleased-source-creating-an-inline-control)
+Block creation and broader composition remain open; see the [creation profile](content-controls.md#unreleased-source-creating-an-inline-control)
 and [removal profile](content-controls.md#unreleased-source-removing-an-admitted-control).
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.
 Pending #147 adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
-with independent placement identities and subsequent editing in body and simple-cell
-destinations. Typed-control composition and broader combination evidence remain open.
+and [typed-control fragments](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+with independent identities and subsequent editing in body and simple-cell destinations.
+Mixed control/object fragments, glossary-backed controls and broader combination evidence remain open.
 Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
 cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
 and remaining acceptance/runtime qualification are separate from published 1.5.0.

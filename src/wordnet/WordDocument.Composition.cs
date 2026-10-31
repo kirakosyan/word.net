@@ -189,6 +189,8 @@ public sealed partial class WordDocument
                 {
                     ControlDisplay = r.ControlDisplay,
                     ControlGlyph = r.ControlGlyph,
+                    TypedControlId = r.TypedControlId,
+                    BidiLevel = r.BidiLevel,
                     FieldChildren = r.FieldChildren,
                     FieldCache = cache,
                     Revision = r.Revision == null ? null : prefix + "r" + r.Revision,

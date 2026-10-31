@@ -154,7 +154,8 @@ Creation rejects paragraphs with other controls, fields, links, bookmarks, objec
 lists or structural breaks, along with styled paragraphs, repeated rows, merged or
 nested tables, text boxes and story owners. This increment does not create block
 controls or introduce a new local XML store. Template composition and broader
-placement remain open in #145 and #147.
+placement remain open in #145 and #147. A separate pending [fragment profile](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+admits independently identified copies of created or imported controls and local bindings.
 
 ## Unreleased source: removing an admitted control
 
@@ -173,7 +174,7 @@ XML and glossary resources are never implicitly deleted: removing the final
 control is rejected while those resources remain. Removal is atomic on failure
 and cancellation. Checkbox metadata no longer supplies its control-specific glyph
 fallback after removal; retained text and run formatting become ordinary content.
-Template composition and the remaining #145 scope stay open.
+Broader template composition and the remaining #145 scope stay open.
 
 ## Load, inspect and edit
 

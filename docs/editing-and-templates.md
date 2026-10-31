@@ -68,9 +68,9 @@ body bookmark paragraph with a private copy of a separately loaded DOCX or safe
 HTML session. Callers load sources explicitly; streams remain theirs. Source
 formatting is kept, colliding styles and list/bookmark/note/template-control IDs
 are remapped, and the destination section is used. Sections/stories, nested tables,
-typed controls, history, positioned text boxes, source load warnings and
+history, positioned text boxes, source load warnings and
 informational diagnostics for omitted/flattened field instructions are rejected.
-Published 1.5.0 also rejects retained chart and equation fragments; the pending
+Published 1.5.0 also rejects typed controls, retained chart and equation fragments; the pending
 source subset is described below.
 This original overload also rejects fields. Internal links must resolve
 in the fragment. Target REF/PAGEREF fields or links to the placeholder must be
@@ -131,7 +131,25 @@ budgets before committing. Fragments containing report controls, typed controls 
 history remain unsupported with these objects, as do positioned text boxes.
 Object-bearing fragments retain source appearance; `UseDestination` rejects them.
 This increment does not qualify additional tagged, archival or native combinations;
-#147 remains open for typed-control composition and the remaining acceptance work.
+#147 remains open for mixed typed-control/object composition and remaining acceptance work.
+
+### Unreleased source: typed controls in fragments
+
+Pending #147 source also accepts admitted typed-control fragments at whole-paragraph
+body and simple-cell bookmarks, including bounded nested owners. Each insertion
+remaps control IDs and copies local XML stores to new deterministic document-local
+identities. Binding caches and their apply/write-back state are preserved; insertion
+does not synchronize them. Copies can be edited and synchronized independently,
+and the source session is unchanged. A destination can already contain admitted
+typed controls, provided the selected bookmark is outside every protected owner.
+
+Date controls require matching source and destination date policies. A fragment
+with typed controls and a table requires a body destination; glossary-backed source
+controls, report controls, retained objects or history cannot be combined with
+these typed fragments. `UseDestination` rejects typed-control restyling. The source
+and combined destination are admitted against the destination's captured resource
+and work limits before committing. Broader resource graphs and mixed
+typed-control/object combinations remain open in #147.
 
 ## Opt-in typed controls — merged source
 

@@ -3,6 +3,33 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "typed-control-fragment-body-cell",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Admitted typed controls retain nested ownership and isolated local XML bindings through repeated body or simple-cell insertion; created control kinds remain editable.",
+      "tests": [
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentsCopyNestedOwnersAndIsolateLocalBindingStores" },
+        { "class": "ContentControlFragmentTests", "method": "ProgrammaticallyCreatedKindsRemainEditableAfterFragmentInsertion" },
+        { "class": "ContentControlFragmentTests", "method": "WordDerivedNestedFragmentPreservesItsChildrenAndStaticText" },
+        { "class": "ContentControlFragmentTests", "method": "StructuralFragmentsKeepWrapperInBodyButRejectNestedCellInsertion" },
+        { "class": "ContentControlFragmentTests", "method": "ImportedChildCannotBypassItsParentContentLock" },
+        { "class": "ContentControlFragmentTests", "method": "ImportedCachedPlaceholderCanBeRestoredWithoutAffectingItsSource" }
+      ]
+    },
+    {
+      "id": "typed-control-fragment-protected",
+      "issue": 147,
+      "outcome": "rejected",
+      "boundary": "Glossary-backed sources, date-policy conflicts, report owners, mixed objects, typed-control restyling, resource exhaustion and cancellation fail before committing.",
+      "tests": [
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentResourcesRestylingAndCancellationRejectAtomically" },
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentDatePoliciesMustMatch" },
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentsRejectReportOwnersAndRespectResourceLimits" },
+        { "class": "ContentControlFragmentTests", "method": "StructuralTableOwnersProtectOtherCellBookmarks" },
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsRejectTypedSourceAndDestinationAtomically" }
+      ]
+    },
+    {
       "id": "object-fragment-body-cell",
       "issue": 147,
       "outcome": "supported-bounded",
@@ -15,7 +42,7 @@
       "id": "object-fragment-protected",
       "issue": 147,
       "outcome": "rejected",
-      "boundary": "Object fragment restyling, resource exhaustion and cancellation reject atomically; typed controls, report controls and retained history remain outside this profile.",
+      "boundary": "Object fragment restyling, resource exhaustion and cancellation reject atomically; combinations with typed controls, report controls and retained history remain outside this profile.",
       "tests": [
         { "class": "ObjectFoundationTests", "method": "ObjectFragmentRestylingAndCancellationLeaveBothSessionsUntouched" },
         { "class": "ObjectFoundationTests", "method": "ObjectFragmentsWithSeparateReportControlsRejectBeforeInsertion" },

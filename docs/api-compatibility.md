@@ -19,6 +19,11 @@ profiles for bounds and exclusions. These signatures are pending source work,
 not part of the published 1.5.0 API; exact-framework and package qualification
 are reported separately.
 
+Pending #147 broadens existing fragment methods to admit the separately documented
+[typed-control](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+and [chart/equation](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+profiles without adding signatures. Protected-owner and resource failures remain explicit.
+
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)

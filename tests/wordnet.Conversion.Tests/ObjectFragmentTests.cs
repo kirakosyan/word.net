@@ -116,11 +116,12 @@ public sealed partial class ObjectFoundationTests
         string bookmark = "<w:p><w:bookmarkStart w:id='1' w:name='one'/><w:r><w:t>Insert</w:t></w:r><w:bookmarkEnd w:id='1'/></w:p>";
         WordDocument typed = ControlTestDocuments.LoadBody(control + bookmark, new ConversionOptions(FidelityMode.Lenient));
         WordDocument target = ObjectFragmentTarget(false); WordDocument objects = LoadObjects(Input());
+        target.InsertFragmentAtBookmark("one", objects, TestContext.Current.CancellationToken);
         byte[] beforeTyped = SaveObjects(typed), beforeTarget = SaveObjects(target), beforeObjects = SaveObjects(objects);
-        var sourceError = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("one", typed, TestContext.Current.CancellationToken));
+        var sourceError = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("two", typed, TestContext.Current.CancellationToken));
         Assert.StartsWith("Fragment.SourceStructure:", sourceError.Message, StringComparison.Ordinal);
         var targetError = Assert.Throws<NotSupportedException>(() => typed.InsertFragmentAtBookmark("one", objects, TestContext.Current.CancellationToken));
-        Assert.StartsWith("Control.ProtectedOwner:", targetError.Message, StringComparison.Ordinal);
+        Assert.StartsWith("Fragment.SourceStructure:", targetError.Message, StringComparison.Ordinal);
         Assert.Equal(beforeTyped, SaveObjects(typed)); Assert.Equal(beforeTarget, SaveObjects(target)); Assert.Equal(beforeObjects, SaveObjects(objects));
     }
 

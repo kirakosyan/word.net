@@ -101,6 +101,9 @@ subject to the source reader's security and resource diagnostics. Unreleased sou
 reports `Fragment.CachedFields` when a
 caller explicitly opts in to retained field results that can be stale; unresolved
 or unsupported source references still fail.
+Pending typed-fragment boundaries use `Fragment.ControlOwner`,
+`Fragment.ControlResources`, `Fragment.ControlDateMode` and `Control.Restyle` for
+unqualified destinations, glossary resources, date policies and restyling.
 
 ## P2 control diagnostics — merged source
 

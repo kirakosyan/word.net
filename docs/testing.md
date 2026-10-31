@@ -100,8 +100,8 @@ records local test, matrix and package evidence and both corrected focused-test 
 Pending #147 object-fragment tests insert the independently authored P2 chart and
 equation fixture into body and simple-cell bookmarks twice, inspect schema and
 workbook bytes, and check independent edits and fixed output. Restyling, resource
-limits and cancellation are checked for atomic failure. Typed-control composition
-and additional native, tagged or archival combinations remain unqualified.
+limits and cancellation are checked for atomic failure. Mixed typed-control/object
+composition and additional native, tagged or archival combinations remain unqualified.
 The [reference receipt](measurements/roadmap-138-object-fragment-reference.json)
 retains an initial LibreOffice Math omission and the successful rerun with its
 matching Math component, plus chart-value, text, bar geometry and OMML observations.
@@ -112,6 +112,14 @@ The [Framework verifier failure record](measurements/roadmap-138-framework-41170
 retains a hosted failure where all 2,003 guest tests passed but the host compared
 that total for equality with an older 1,925-test minimum. The corrected verifier
 keeps the minimum and no-skip requirements and reports the actual test count.
+
+Pending typed-fragment tests check all six created kinds, nested parent/child locks,
+global IDs, deterministic independent binding stores, repeated insertion, explicit
+binding synchronization and editable DOCX. A Word-derived nested fixture checks
+static text. Glossary resources, mismatched date policies, report owners, restyling,
+resource exhaustion and cancellation remain explicit rejection or failure cases.
+The [independent binding reference](measurements/roadmap-138-typed-fragment-reference.json)
+records schema checks, isolated store values and LibreOffice static text.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated
