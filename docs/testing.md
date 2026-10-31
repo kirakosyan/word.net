@@ -108,6 +108,11 @@ matching Math component, plus chart-value, text, bar geometry and OMML observati
 The [exact-source receipt](measurements/roadmap-138-object-fragment-23c5069.json)
 records the complete local suites, package checks and byte-identical reference probe.
 
+The [Framework verifier failure record](measurements/roadmap-138-framework-41170714031.json)
+retains a hosted failure where all 2,003 guest tests passed but the host compared
+that total for equality with an older 1,925-test minimum. The corrected verifier
+keeps the minimum and no-skip requirements and reports the actual test count.
+
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated
 [LibreOffice observation](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/date-style-reference.json)
