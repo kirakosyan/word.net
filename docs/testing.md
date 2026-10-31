@@ -112,6 +112,9 @@ The [Framework verifier failure record](measurements/roadmap-138-framework-41170
 retains a hosted failure where all 2,003 guest tests passed but the host compared
 that total for equality with an older 1,925-test minimum. The corrected verifier
 keeps the minimum and no-skip requirements and reports the actual test count.
+Both [package-guest reports](measurements/roadmap-138-framework-411707-package-guests.json)
+also record 2,003 passing cases with the same verifier failure; their original
+hosted conclusions remain failures.
 
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit
@@ -120,6 +123,9 @@ static text. Glossary resources, mismatched date policies, report owners, restyl
 resource exhaustion and cancellation remain explicit rejection or failure cases.
 The [independent binding reference](measurements/roadmap-138-typed-fragment-reference.json)
 records schema checks, isolated store values and LibreOffice static text.
+The [exact-source receipt](measurements/roadmap-138-typed-fragment-431dbfc.json)
+records local suites, matrix and package checks and reproduces the independently
+rendered DOCX with the exact source/package assembly.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated
