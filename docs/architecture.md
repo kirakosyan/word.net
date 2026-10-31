@@ -1,9 +1,10 @@
 # Architecture and implementation status
 
-Unreleased #142 direct table borders stay on the table model through cloning and
-DOCX writing. Managed layout, HTML and ODT compute the applicable outside and
-inside edges from the current rows. Unsupported border conflicts and pagination
-combinations are diagnosed; table styles and conditional regions remain open.
+Unreleased #142 direct table borders and clear RGB shading stay on the table model
+through cloning and DOCX writing. Managed layout, HTML and ODT compute the
+applicable outside and inside edges and cell fills from the current rows.
+Unsupported conflicts and pagination combinations are diagnosed; table styles
+and conditional regions remain open.
 
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot

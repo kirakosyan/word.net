@@ -220,18 +220,44 @@ internal sealed partial class DocxReader
         XElement[] borderSets = properties?.Elements(W + "tblBorders").ToArray() ?? Array.Empty<XElement>();
         if (borderSets.Length > 1) throw new InvalidDataException("Docx.TableBorders: Duplicate table border sets.");
         if (borderSets.Length == 1) ReadTableBorders(borderSets[0], table);
-        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd" && e.Name != W + "tblBorders") == true)
-            context.Loss("Docx.TableFormatting", "Unsupported table properties such as styles and shading are not retained.");
+        XElement[] shading = properties?.Elements(W + "shd").ToArray() ?? Array.Empty<XElement>();
+        if (shading.Length > 1) throw new InvalidDataException("Docx.TableShading: Duplicate table shading properties.");
+        if (shading.Length == 1) ReadTableShading(shading[0], table);
+        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd" && e.Name != W + "tblBorders" && e.Name != W + "shd") == true)
+            context.Loss("Docx.TableFormatting", "Unsupported table properties such as styles and spacing are not retained.");
         if (element.Element(W + "tblGrid")?.Elements().Any(e => e.Name != W + "gridCol") == true)
             context.Loss("Docx.TableGrid", "Table grid revisions are not retained.");
         foreach (XElement column in element.Element(W + "tblGrid")?.Elements(W + "gridCol") ?? Enumerable.Empty<XElement>())
             table.ColumnWidths.Add(column.Attribute(W + "w") != null ? Integer(column, W + "w", 1, 31680) / 20.0 : 0);
     }
 
+    private void ReadTableShading(XElement shading, TableBlock table)
+    {
+        string pattern = (string?)shading.Attribute(W + "val") ?? throw new InvalidDataException("Docx.TableShading: Table shading requires a pattern.");
+        if (pattern != "clear") context.Loss("Table.ShadingApproximated", "Only clear table shading is retained; other patterns use the background color.");
+        if (shading.HasElements || shading.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value)))
+            context.Loss("Table.ShadingApproximated", "Unsupported table-shading content is not retained.");
+        if (shading.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val" && a.Name != W + "fill" && a.Name != W + "color"
+            && a.Name != W + "themeFill" && a.Name != W + "themeFillTint" && a.Name != W + "themeFillShade"
+            && a.Name != W + "themeColor" && a.Name != W + "themeTint" && a.Name != W + "themeShade"))
+            context.Loss("Table.ShadingApproximated", "Unsupported table-shading attributes are not retained.");
+        string? foreground = (string?)shading.Attribute(W + "color");
+        if (foreground != null && foreground != "auto")
+        {
+            _ = ReadRgb(foreground);
+            context.Loss("Table.ShadingApproximated", "The foreground color of table shading is not retained.");
+        }
+        _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
+        table.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", ReadRgb((string?)shading.Attribute(W + "fill")));
+        if (table.Background == null) context.Loss("Table.ShadingColor", "Automatic or missing table-shading colors are not retained.");
+    }
+
     private void ReadTableBorders(XElement source, TableBlock table)
     {
         if (source.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration))
             context.Loss("Table.BorderApproximated", "Unsupported table-border set attributes are not retained.");
+        if (source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value)))
+            context.Loss("Table.BorderApproximated", "Unsupported table-border set content is not retained.");
         foreach (XElement border in source.Elements())
         {
             context.CheckCancellation();
@@ -240,6 +266,8 @@ internal sealed partial class DocxReader
             { context.Loss("Table.BorderApproximated", "Direction-dependent and unsupported table borders are omitted."); continue; }
             if (table.Borders.ContainsKey(side)) throw new InvalidDataException("Docx.TableBorders: Duplicate table border side.");
             string style = (string?)border.Attribute(W + "val") ?? throw new InvalidDataException("Docx.TableBorders: A table border requires a style.");
+            if (border.HasElements || border.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value)))
+                context.Loss("Table.BorderApproximated", "Unsupported table-border content is not retained.");
             if (style is not ("single" or "nil" or "none"))
             { context.Loss("Table.BorderApproximated", "An unsupported table border style uses a single line."); style = "single"; }
             if (border.Attribute(W + "space") != null && Integer(border, W + "space", 0, 31) != 0

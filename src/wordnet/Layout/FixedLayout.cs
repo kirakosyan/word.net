@@ -494,7 +494,7 @@ internal static partial class FixedLayout
 
         void RenderTable(TableBlock table)
         {
-            bool reportedBorderRepeat = false;
+            bool reportedBorderRepeat = false, reportedShadingRepeat = false;
             double tablePageLeft = settings.Left;
             double tableWidth = settings.Width - settings.Left - settings.Right;
             ListCounter tableCounter = counter.Copy();
@@ -574,6 +574,11 @@ internal static partial class FixedLayout
                     context.Loss("Table.BorderRepeat", "Direct table borders on repeated headers are approximated across pages.");
                     reportedBorderRepeat = true;
                 }
+                if (repeat && table.HeaderRowCount > 0 && table.Background != null && !reportedShadingRepeat)
+                {
+                    context.Loss("Table.ShadingRepeat", "Direct table shading on repeated headers is not independently qualified.");
+                    reportedShadingRepeat = true;
+                }
                 AdvanceColumn();
                 double available = settings.Width - settings.Left - settings.Right;
                 if (sourceSettings.ExplicitColumns.Count != 0 && Math.Abs(available - tableWidth) > 0.01)
@@ -590,6 +595,8 @@ internal static partial class FixedLayout
             {
                 if (table.Borders.Count != 0)
                     context.Loss("Table.BorderSplit", "Direct table borders on split rows are approximated across pages.");
+                if (table.Background != null)
+                    context.Loss("Table.ShadingSplit", "Direct table shading on split rows is not independently qualified.");
                 if (row.Cells.All(c => c.RowSpan == 1) && row.Cells.SelectMany(c => c.Lines).SelectMany(l => l.Items).Any(i => i.Field?.Note != null))
                 {
                     bool nonSplitting = row.NonSplitting; row.NonSplitting = false;
@@ -705,7 +712,7 @@ internal static partial class FixedLayout
                         width = Math.Max(1, Math.Min(width, settings.Width - settings.Right - left));
                         padding = new CellPadding();
                     }
-                    var preparedCell = new CellLayout { Source = cell, Table = table.Borders.Count == 0 ? null : table, Row = r, CellIndex = cellIndex, Left = left, Width = width, Padding = padding, Column = column, Merge = cell.Merge };
+                    var preparedCell = new CellLayout { Source = cell, Table = table.Borders.Count == 0 && table.Background == null ? null : table, Row = r, CellIndex = cellIndex, Left = left, Width = width, Padding = padding, Column = column, Merge = cell.Merge };
                     if (cell.Merge != VerticalMerge.Continue)
                     {
                         DocumentBlock[] blocks = cell.Blocks.ToArray();
@@ -801,7 +808,8 @@ internal static partial class FixedLayout
 
         IEnumerable<FixedShape> CellShapes(CellLayout cell, double top, double height)
         {
-            if (cell.Source.Background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, cell.Source.Background);
+            string? background = cell.Source.Background ?? cell.Table?.Background;
+            if (background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, background);
             IEnumerable<KeyValuePair<string, CellBorder>> borders = cell.Table == null ? cell.Source.Borders : cell.Table.CellBorders(cell.Row, cell.CellIndex);
             foreach (var border in borders.Where(b => b.Value.Width > 0))
             {

@@ -29,3 +29,23 @@ inside and bottom horizontal edges were 72.5, 86.2 and 99.8 points from the top;
 the managed renderer used 72, 84.65 and 97.30 points. These observed placement
 differences remain unresolved, not passing parity results; exact-commit and
 other-runtime qualification remain separate.
+
+## Table-shading controls and retained reference failure
+
+`generate.py --shading` constructs the same table with a direct, clear
+`FFF3C0` table fill. The checked DOCX and LibreOffice PDF SHA-256 values are
+`6dc4782ffe751858a0a99f4039f3270cf042cc03ddc3d2b50887d461be8eac2d` and
+`c6bbd1ec3472ba524d74d9cde5982deef232ece5b13981c6e347d185f1681497`.
+LibreOffice did **not** paint the table-level fill in this probe. This failed
+reference result is retained and cannot qualify table-shading parity.
+
+`generate.py --cell-shading` creates a separate control with the same color
+applied directly to each cell. Its checked DOCX and LibreOffice PDF SHA-256 values
+are `a27a29a562f611f7da073d17d0b886447e727343c22c3067d2a3d513376fda35` and
+`9f993f53e3c6795d5c2eb8f6473fe1a00d662a3f350b1cc32c9b255d4d0edc34`.
+LibreOffice painted the direct-cell color, which checks the reference pipeline
+and color only. Table and cell shading have different padding and precedence
+semantics, so the control is not evidence that their geometry is equivalent.
+Both PDFs use the pinned Liberation Sans font and license described above.
+The separate [ODT probe record](../../../../docs/measurements/roadmap-138-table-shading-reference.json)
+documents the source hashes, ODF schema checks and LibreOffice reopening result.

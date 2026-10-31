@@ -9,6 +9,12 @@ Malformed duplicate sides fail with `Docx.TableBorders`. Other destinations use
 `Table.Decoration` when they cannot retain the border. Strict mode rejects these
 losses before staged output is copied.
 
+For pending direct table shading, `Table.ShadingConflict`, `Table.ShadingStory`,
+`Table.ShadingRepeat` and `Table.ShadingSplit` identify unqualified owners or
+pagination. `Table.ShadingApproximated` and `Table.ShadingColor` report patterns,
+unsupported attributes or automatic fills; duplicate shading properties fail
+with `Docx.TableShading`. Unsupported destinations use `Table.Decoration`.
+
 Unreleased review displays reject unsupported history, owners or output profiles
 with `Review.DisplayProfile`, and reject source sessions carrying load-loss warnings
 with `Review.DisplaySourceLoss`. `Limit.ReviewDisplay` bounds added marks,

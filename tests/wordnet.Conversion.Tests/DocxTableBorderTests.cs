@@ -11,7 +11,7 @@ using Xunit;
 
 namespace WordNet.Tests;
 
-public sealed class DocxTableBorderTests
+public sealed partial class DocxTableBorderTests
 {
     private static readonly XNamespace W = TestDocuments.W;
     private static readonly string[] BorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
@@ -21,8 +21,8 @@ public sealed class DocxTableBorderTests
     private const string Section = "<w:sectPr><w:pgSz w:w='12240' w:h='15840'/><w:pgMar w:top='1440' w:bottom='1440' w:left='1440' w:right='1440' w:header='0' w:footer='0' w:gutter='0'/></w:sectPr>";
     private static string Cell(string text, string properties = "") => "<w:tc><w:tcPr><w:tcW w:type='dxa' w:w='2400'/>" + properties
         + "</w:tcPr><w:p><w:r><w:rPr><w:rFonts w:ascii='Liberation Sans' w:hAnsi='Liberation Sans'/><w:sz w:val='22'/></w:rPr><w:t>" + text + "</w:t></w:r></w:p></w:tc>";
-    private static byte[] Input(string borders = Borders, string firstCellProperties = "") => TestDocuments.Docx(TestDocuments.Body(
-        "<w:tbl><w:tblPr><w:tblW w:type='dxa' w:w='4800'/>" + borders + "<w:tblLayout w:type='fixed'/></w:tblPr>"
+    private static byte[] Input(string borders = Borders, string firstCellProperties = "", string shading = "") => TestDocuments.Docx(TestDocuments.Body(
+        "<w:tbl><w:tblPr><w:tblW w:type='dxa' w:w='4800'/>" + borders + shading + "<w:tblLayout w:type='fixed'/></w:tblPr>"
         + "<w:tblGrid><w:gridCol w:w='2400'/><w:gridCol w:w='2400'/></w:tblGrid>"
         + "<w:tr>" + Cell("A", firstCellProperties) + Cell("B") + "</w:tr><w:tr>" + Cell("C") + Cell("D") + "</w:tr></w:tbl>" + Section));
     private static byte[] Convert(byte[] source, DocumentFormat format, FidelityMode mode = FidelityMode.BestEffort)

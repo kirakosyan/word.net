@@ -232,7 +232,8 @@ internal sealed class HtmlFormat
                 if (cell.Merge != VerticalMerge.Continue)
                 {
                     CellPadding p = cell.Padding ?? new CellPadding();
-                    string decoration = cell.Background == null ? "" : "background-color:#" + cell.Background + ";";
+                    string? background = cell.Background ?? table.Background;
+                    string decoration = background == null ? "" : "background-color:#" + background + ";";
                     foreach (var border in table.CellBorders(r, cellIndex))
                         decoration += "border-" + border.Key + ":" + (border.Value.Width == 0 ? "none"
                             : Pt(border.Value.Width) + " " + (border.Value.Style == "single" ? "solid" : border.Value.Style) + " #" + border.Value.Color) + ";";

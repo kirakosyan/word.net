@@ -381,6 +381,8 @@ internal sealed partial class DocxWriter
                 .Where(side => table.Borders.ContainsKey(side)).Select(side => new XElement(W + side,
                     new XAttribute(W + "val", table.Borders[side].Style), new XAttribute(W + "sz", Math.Round(table.Borders[side].Width * 8)),
                     new XAttribute(W + "color", table.Borders[side].Color)))));
+        if (table.Background != null) element.Element(W + "tblPr")!.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
+            new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", table.Background)));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",

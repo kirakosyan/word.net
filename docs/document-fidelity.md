@@ -11,14 +11,24 @@ and line widths are used; theme references use the bounded local resolution and
 retain the existing theme-loss diagnostic. Automatic colors use black and are
 diagnosed. Destinations that omit borders report `Table.Decoration`.
 
+The same pending work admits direct, clear table shading with an explicit RGB
+fill on ordinary simple body tables. The table-level shading remains editable in
+DOCX and is applied across the cell extents in managed fixed output, HTML and ODT.
+Direct cell shading together with a table fill, patterns, automatic fills and
+unqualified owners or pagination are diagnosed rather than silently accepted.
+The table-level extent and precedence follow the public
+[OOXML shading description](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.shading?view=openxml-3.0.1).
+
 Individually bordered, merged, nested or irregular cells, tables in stories or
 text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
-and strict rejection. Table styles, conditional regions, table shading and full
+and strict rejection. Table styles, conditional regions and full
 border-conflict precedence remain outside this increment. The independent
 [LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
 checks the six edge colors and grid relationships. It also retains measured
 horizontal and vertical placement differences; pixel-identical placement is not
-established.
+established. LibreOffice omitted the table-level fill in the separate shading
+probe while a direct-cell control painted its fill. That failed reference result
+is retained; the control checks color but does not establish table-shading parity.
 This is unreleased source and does not qualify published packages or every runtime.
 
 Unreleased source adds an explicit managed PDF/SVG display for bounded retained

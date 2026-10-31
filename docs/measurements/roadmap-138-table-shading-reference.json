@@ -1,0 +1,23 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "scope": "Synthetic clear RGB table shading, output as ODT and reopened by LibreOffice; this is a working-tree probe, not final source or platform qualification.",
+  "sourceBase": "4f54e3205e192770b39efa3e9ce9c76f09a51f5f",
+  "workingTreeSourceSha256": {
+    "src/wordnet/Formats/DocxReader.Fidelity.cs": "e0ba591bfae83c06c52678e4621afb691c43821d243cbece584c9e2e1e9a1b9f",
+    "src/wordnet/Formats/DocxReader.cs": "98cb201071eeb6de926bc6f7293035264daa7f6788a36d8bacf7551dd94c03a9",
+    "src/wordnet/Formats/DocxWriter.cs": "98830a39a09e72215fda337a92e9983295860a93bd82ff97858d7966fcf67ec6",
+    "src/wordnet/Formats/HtmlFormat.cs": "77964d85b8bcbb3031e4d15ca745fe1a040b70ee16f35e5b67e787bd6c43ba90",
+    "src/wordnet/Formats/OdtFormat.Writer.cs": "0740655533f0f2578b92c2f3ba3a3474af2330ed09857c4864cce87dca6da062",
+    "src/wordnet/Internal/DocumentCloner.cs": "20716dd05ca4dca46f07e7a3fd587e592c11eac7c5b97544c20d541a0c3c4b44",
+    "src/wordnet/Internal/FidelityChecks.cs": "7c17a3a8b61ffb29300b7fa12015597849cd15b18913b701c5617e842d53288b",
+    "src/wordnet/Layout/FixedLayout.cs": "bc75e749deb78db75709c4b703d90b0841774a9f33759c49445a1f8857d8f737",
+    "src/wordnet/Model/DocumentModel.cs": "69096af260654cd766f47d6e40013a575fb78eb791018be011f219e40c1e87e2"
+  },
+  "input": { "fixture": "tests/wordnet.Conversion.Tests/Fixtures/TableBorders/table-shading.docx", "sha256": "6dc4782ffe751858a0a99f4039f3270cf042cc03ddc3d2b50887d461be8eac2d" },
+  "odt": { "sha256": "cc94c3142431199e3310a360d73e4d9207cd9f2806dcc291d393a9e75ff18fa5", "odf13Schemas": "content, styles, metadata and manifest passed pinned Relax NG validation", "fill": "#FFF3C0", "readingOrder": "ABCD" },
+  "libreOffice": { "version": "24.2.7.2 420(Build:2)", "reopenedOdtPdfSha256": "e9914f27bb48fb4b4608eb30fd953f33c6d4899abaf52bb913a58930ae24cc2b", "matchingFillPaths": 4, "readingOrder": "ABCD" },
+  "retainedFailure": "LibreOffice did not render the input DOCX table-level fill. A separate direct-cell control rendered the same color; it does not prove equivalent padding or table-shading parity.",
+  "limits": "Generated ODT/PDF hashes describe this probe only; the source, full runtime and package gates, styled/merged/nested cases and final roadmap acceptance remain open."
+}

@@ -88,7 +88,7 @@ internal static class FidelityChecks
         {
             if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Rows.SelectMany(r => r).Any(c => c.Content.OfType<TableBlock>().Any())).Select(t => t.Location),
                 "Table.NestedFlattened", "Nested tables retain their text in reading order as cell paragraphs in this output profile.");
-            if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Borders.Count != 0 || t.Rows.SelectMany(r => r).Any(c => c.Background != null || c.Borders.Count > 0 || c.VerticalAlignment != "top")).Select(t => t.Location),
+            if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Background != null || t.Borders.Count != 0 || t.Rows.SelectMany(r => r).Any(c => c.Background != null || c.Borders.Count > 0 || c.VerticalAlignment != "top")).Select(t => t.Location),
                 "Table.Decoration", "This output profile omits cell shading, borders and vertical alignment while retaining cell content.");
             if (format != DocumentFormat.Rtf) LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Appearance.HasValues
                 && (format is not DocumentFormat.Pdf and not DocumentFormat.Xps || r.Appearance.Underline && !(r.ControlDisplay && !context.Typography.Enabled && context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17) || r.Appearance.Strike || r.Appearance.Background != null || r.Appearance.VerticalAlignment != null))).Select(p => p.Location),

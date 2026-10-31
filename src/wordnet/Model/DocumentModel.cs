@@ -111,6 +111,7 @@ internal sealed class TableBlock : DocumentBlock
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
+    internal string? Background { get; set; }
     // Direct table borders remain separate from cell overrides so that row edits
     // and report expansion compute their outside and inside edges afresh.
     internal Dictionary<string, CellBorder> Borders { get; } = new Dictionary<string, CellBorder>();

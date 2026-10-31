@@ -5,6 +5,16 @@ HTML/ODT color output, report-row expansion, disabled edges, destination losses,
 conflicts and pagination rejection. A [pinned-font LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
 independently checks color, grid geometry and reading order. It is not proof of
 pixel-identical placement, conditional styles or untested runtimes.
+The [exact-source border receipt](measurements/roadmap-138-table-borders-4f54e32.json)
+records local suite and package checks, including the failed first pack attempt.
+Additional direct table-shading tests cover editable markup, output colors,
+report-row expansion and diagnosed unsupported combinations. LibreOffice did not
+render the table-level shading in the retained probe; its separate direct-cell
+control confirms color but does not qualify table-shading parity.
+The [working-tree ODT probe](measurements/roadmap-138-table-shading-reference.json)
+also passed pinned ODF 1.3 schemas and reopened in LibreOffice with the expected
+fill and text. `eng/verify-table-shading-odt.py` checks the synthetic ODT against
+locally supplied, checksum-pinned schemas without network access.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

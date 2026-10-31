@@ -3,6 +3,33 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "direct-table-shading",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Clear explicit RGB table fill is retained in DOCX and painted for simple body cells after row expansion. LibreOffice omitted the table-level fill in the independent probe, so reference parity remains unqualified.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "DirectTableShadingRemainsEditableAndFillsSimpleCells" },
+        { "class": "DocxTableBorderTests", "method": "IndependentReferenceRetainsTheMissingTableShadingResultAndChecksTheCellControl" },
+        { "class": "DocxTableBorderTests", "method": "RepeatedReportRowsRecomputeTableShading" }
+      ]
+    },
+    {
+      "id": "direct-table-shading-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Direct-cell conflicts, unsupported shading, stories, fixed-page repetition/splits and destinations that omit shading reject in strict mode; unexpected border content is diagnosed.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "TableAndDirectCellShadingConflictIsDiagnosedBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "MergedAndNestedTableShadingRemainExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "UnsupportedTableShadingUsesExplicitLossDiagnostics" },
+        { "class": "DocxTableBorderTests", "method": "UnsupportedDestinationReportsTableShadingLoss" },
+        { "class": "DocxTableBorderTests", "method": "MultipageTableShadingApproximationsRemainExplicit" },
+        { "class": "DocxTableBorderTests", "method": "TableShadingInHeaderStoriesRemainsExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateTableShadingFailsBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "UnexpectedTableBorderChildIsDiagnosedBeforeWriting" }
+      ]
+    },
+    {
       "id": "direct-table-borders",
       "issue": 142,
       "outcome": "supported-bounded",
