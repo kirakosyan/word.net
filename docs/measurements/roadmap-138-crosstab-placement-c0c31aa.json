@@ -1,0 +1,30 @@
+{
+  "roadmap": 138,
+  "issue": 158,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "c0c31aa15a3a14850703b47a0c6a76bf23de1e31",
+  "scope": "A prepared cross-tab replaces a dedicated whole body-bookmark paragraph in its original section. Cell destinations, repeat-region insertion and deeper report nesting remain unsupported.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed with unchanged dependencies.",
+    "releaseBuild": "All five target frameworks and the net472 test project compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2065, "failed": 0, "skipped": 0, "trxSha256": "a3244f3b2167e57dab32feba8769fbd11109560fe4be1a6ed761896796fc1c02"},
+    "net10ConversionAndEnglishOcr": {"passed": 2065, "failed": 0, "skipped": 0, "trxSha256": "e6cc9deff729e79823ee340c517bdb63af5f80b7b5c18c25f9dd4213db9c9e87"},
+    "capabilityMatrix": {"profiles": 57, "testMethods": 306, "net10CasesPassed": 535},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API validation and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "29e4cffd2e5a6943ad488d26e9e91bcd51777c481bf23aab8e7f70ec26e87f22",
+      "wordnet.Fonts.1.5.0.nupkg": "8d3948de306a3a4ffc9a6bb19e5ebb09add2f6ad1d0ebd914e21f57b36a6030e",
+      "wordnet.Ocr.1.5.0.nupkg": "7238cc3dbb62e642d02447670314722d888e32549097f4bbf14a39653898cde6"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-crosstab-placement-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "593eca47de18964786be9547ce63980ceaf964099b1eec2b96bd1dee9b5b52d5",
+    "reproducedDocxSha256": "2bff3707715879771767cbe0bc771ac5f34a5b9c9d8c032719805d4063e7cd95",
+    "result": "The source and local-package assemblies were identical. The committed probe using that assembly reproduced the independently rendered DOCX byte for byte; Open XML SDK 3.5.1 reported zero errors. The checker verified hand-calculated decimal cells, total 7.5, header and row order, and the recorded LibreOffice text and word-box positions."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. The earlier a34ef58 push performance failure remains recorded separately. This increment does not complete #158 or roadmap #138."
+}

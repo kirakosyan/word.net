@@ -1,0 +1,24 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "scope": "Hosted actual Windows Server 2019 .NET Framework 4.7.2 source and local-package guest qualification of the a34ef58 push and GitHub's corresponding PR merge commit; no newer source is qualified by these runs.",
+  "frameworkRelease": 461814,
+  "casesPerGuest": {"passed": 2042, "failed": 0, "skipped": 0},
+  "validation": "The host checked Framework release and guest evidence, commit and asset identities, library and test hashes, the minimum case floor and complete TRX counters. Successful guest artifacts remain attached to their respective workflow runs.",
+  "push": {
+    "run": "https://github.com/kirakosyan/word.net/actions/runs/41173685676",
+    "workflowConclusion": "failure: the separate performance gate exceeded its unchanged ratio limit",
+    "commit": "a34ef58806ef5f2e80d0a25bdd190dc6010bac12",
+    "source": {"job": 124460687444, "artifact": 13033201184, "librarySha256": "fe7b75466d4aaa313727ae97946c7933f0d148c4c983d206a538f8c00e019761", "testSha256": "f96be144e73756431f7951ccacaac778dee637e06d3ef6521c97d2c877c00402"},
+    "package": {"job": 124462320986, "artifact": 13032722957, "librarySha256": "39e151f739ab1ba9769ef1d950a8a2525551123e19c8f1f3fe37b542fb3ff50c", "testSha256": "906d1f157474761114b1587d2094d05336dcf2d877611b2dbbd55693c37dc953"}
+  },
+  "pullRequest": {
+    "run": "https://github.com/kirakosyan/word.net/actions/runs/41173688890",
+    "workflowConclusion": "success",
+    "headCommit": "a34ef58806ef5f2e80d0a25bdd190dc6010bac12",
+    "guestMergeCommit": "48646c6a4046007df23172ffada6a1e7447bdcb2",
+    "source": {"job": 124460663613, "artifact": 13032682119, "librarySha256": "cff768ba53d607c430e1bd105a060b37b178b9b57072a671ef50d5812c1da208", "testSha256": "331be0aa3611d8b9496edbe19936d2f2009ce1425f3869289635ef3ac3358ebf"},
+    "package": {"job": 124462797196, "artifact": 13033511080, "librarySha256": "681991e0407b138db06bdbf41315ec27b6b280eda1d15c26f22ff733101a6dbf", "testSha256": "dc0d535c48129e659738c6073bb3e5c5ca8de91e5135fd1a6e3b439d85f6c449"}
+  },
+  "performanceReceipt": "docs/measurements/roadmap-138-performance-a34ef58.json"
+}

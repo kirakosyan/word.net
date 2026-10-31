@@ -115,6 +115,9 @@ keeps the minimum and no-skip requirements and reports the actual test count.
 Both [package-guest reports](measurements/roadmap-138-framework-411707-package-guests.json)
 also record 2,003 passing cases with the same verifier failure; their original
 hosted conclusions remain failures.
+The later [Framework receipt](measurements/roadmap-138-framework-a34ef58.json)
+records four successful 2,042-case source and package guests and distinguishes the
+push head from GitHub's PR merge commit.
 
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit
@@ -182,6 +185,8 @@ surrounding text, multi-page header repetition, the destination section's width,
 unsafe references, nesting, reentrancy and cancellation. The [independent reference](measurements/roadmap-138-crosstab-placement-reference.json)
 checks hand-calculated cells and LibreOffice text and geometry. It does not qualify
 cell destinations, repeat-region insertion or unrestricted report nesting.
+The [exact-source receipt](measurements/roadmap-138-crosstab-placement-c0c31aa.json)
+records the complete local suites, package checks and reproduced reference document.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
