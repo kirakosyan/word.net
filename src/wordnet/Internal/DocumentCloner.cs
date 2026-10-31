@@ -76,6 +76,7 @@ internal sealed class DocumentCloner
                 LeftIndent = table.LeftIndent
             };
             copy.ColumnWidths.AddRange(table.ColumnWidths); copy.NonSplittingRows.UnionWith(table.NonSplittingRows);
+            foreach (var border in table.Borders) copy.Borders.Add(border.Key, Border(border.Value));
             foreach (var item in table.RowRevisions) copy.RowRevisions.Add(item.Key, item.Value);
             foreach (var item in table.RowLefts) copy.RowLefts.Add(item.Key, item.Value);
             foreach (var item in table.RowHeights) copy.RowHeights.Add(item.Key, item.Value);

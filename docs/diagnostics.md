@@ -1,5 +1,14 @@
 # Conversion diagnostics
 
+Pending direct table-border support reports `Table.BorderConflict` for unqualified
+merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and
+`Table.BorderSplit` identify fixed-page approximations. `Table.BorderApproximated`
+and `Table.BorderColor` report unsupported border effects or automatic colors.
+`Table.BorderStory` identifies tables outside the qualified body profile.
+Malformed duplicate sides fail with `Docx.TableBorders`. Other destinations use
+`Table.Decoration` when they cannot retain the border. Strict mode rejects these
+losses before staged output is copied.
+
 Unreleased review displays reject unsupported history, owners or output profiles
 with `Review.DisplayProfile`, and reject source sessions carrying load-loss warnings
 with `Review.DisplaySourceLoss`. `Limit.ReviewDisplay` bounds added marks,

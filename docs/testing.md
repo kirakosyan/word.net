@@ -1,5 +1,11 @@
 # Conversion tests and qualification
 
+Pending #142 direct-border tests inspect editable WordprocessingML, fixed-page and
+HTML/ODT color output, report-row expansion, disabled edges, destination losses,
+conflicts and pagination rejection. A [pinned-font LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
+independently checks color, grid geometry and reading order. It is not proof of
+pixel-identical placement, conditional styles or untested runtimes.
+
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output
 inspection, cultures, graph failures, atomic caches and report/edit refresh. The

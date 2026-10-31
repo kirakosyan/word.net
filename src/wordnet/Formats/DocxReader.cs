@@ -558,6 +558,13 @@ internal sealed partial class DocxReader
             }
         }
 
+        if (table.Borders.Count != 0 && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
+            context.Loss("Table.BorderStory", "Direct table borders outside the ordinary document body are not independently qualified.");
+        if (table.Borders.Count != 0 && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
+            || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
+                || cell.Borders.Count != 0 || cell.Content.OfType<TableBlock>().Any())
+                || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
+            context.Loss("Table.BorderConflict", "Direct table borders on merged, nested, irregular or individually bordered cells use an approximation.");
         AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
     }

@@ -111,6 +111,9 @@ internal sealed class TableBlock : DocumentBlock
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
+    // Direct table borders remain separate from cell overrides so that row edits
+    // and report expansion compute their outside and inside edges afresh.
+    internal Dictionary<string, CellBorder> Borders { get; } = new Dictionary<string, CellBorder>();
     internal Dictionary<int, double> RowLefts { get; } = new Dictionary<int, double>();
 
     internal double[] ColumnEdges()
@@ -123,6 +126,28 @@ internal sealed class TableBlock : DocumentBlock
     internal List<List<TableCell>> Rows { get; } = new List<List<TableCell>>();
     internal HashSet<int> NonSplittingRows { get; } = new HashSet<int>();
     internal Dictionary<int, (double Height, bool Exact)> RowHeights { get; } = new Dictionary<int, (double, bool)>();
+
+    internal IEnumerable<KeyValuePair<string, CellBorder>> CellBorders(int row, int column) =>
+        Borders.Count == 0 ? Rows[row][column].Borders : ResolveCellBorders(row, column);
+
+    private IEnumerable<KeyValuePair<string, CellBorder>> ResolveCellBorders(int row, int column)
+    {
+        TableCell cell = Rows[row][column];
+        foreach (var border in cell.Borders) yield return border;
+        for (int i = 0; i < 4; i++)
+        {
+            string side = i switch { 0 => "top", 1 => "bottom", 2 => "left", _ => "right" };
+            string inherited = i switch
+            {
+                0 => row == 0 ? "top" : "insideH",
+                1 => row == Rows.Count - 1 ? "bottom" : "insideH",
+                2 => column == 0 ? "left" : "insideV",
+                _ => column == Rows[row].Count - 1 ? "right" : "insideV"
+            };
+            if (!cell.Borders.ContainsKey(side) && Borders.TryGetValue(inherited, out CellBorder? border))
+                yield return new KeyValuePair<string, CellBorder>(side, border);
+        }
+    }
 }
 
 internal enum VerticalMerge { None, Start, Continue }

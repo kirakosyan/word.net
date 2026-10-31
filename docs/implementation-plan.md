@@ -24,6 +24,9 @@ retains selected editable text references in a reconstructed theme, with loss
 diagnostics for the remaining theme semantics. The
 [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
 records its remaining script, drawing and style-precedence work.
+Pending #142 source retains a bounded set of [direct table borders](document-fidelity.md#unreleased-source-direct-table-borders),
+with explicit losses for unqualified conflicts and pagination. Table-style
+inheritance, conditional regions, shading and full independent qualification remain open.
 Pending source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships, including one Word-authored placeholder derivative.
 The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)

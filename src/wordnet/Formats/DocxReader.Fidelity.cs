@@ -217,12 +217,44 @@ internal sealed partial class DocxReader
             if ((string?)indent.Attribute(W + "type") == "dxa") table.LeftIndent = Integer(indent, W + "w", -31680, 31680) / 20.0;
             else context.Loss("Docx.TableIndent", "Nonabsolute table indentation is not retained.");
         }
-        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd") == true)
-            context.Loss("Docx.TableFormatting", "Table borders, shading and styles are not retained.");
+        XElement[] borderSets = properties?.Elements(W + "tblBorders").ToArray() ?? Array.Empty<XElement>();
+        if (borderSets.Length > 1) throw new InvalidDataException("Docx.TableBorders: Duplicate table border sets.");
+        if (borderSets.Length == 1) ReadTableBorders(borderSets[0], table);
+        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd" && e.Name != W + "tblBorders") == true)
+            context.Loss("Docx.TableFormatting", "Unsupported table properties such as styles and shading are not retained.");
         if (element.Element(W + "tblGrid")?.Elements().Any(e => e.Name != W + "gridCol") == true)
             context.Loss("Docx.TableGrid", "Table grid revisions are not retained.");
         foreach (XElement column in element.Element(W + "tblGrid")?.Elements(W + "gridCol") ?? Enumerable.Empty<XElement>())
             table.ColumnWidths.Add(column.Attribute(W + "w") != null ? Integer(column, W + "w", 1, 31680) / 20.0 : 0);
+    }
+
+    private void ReadTableBorders(XElement source, TableBlock table)
+    {
+        if (source.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration))
+            context.Loss("Table.BorderApproximated", "Unsupported table-border set attributes are not retained.");
+        foreach (XElement border in source.Elements())
+        {
+            context.CheckCancellation();
+            string side = border.Name.LocalName;
+            if (border.Name.Namespace != W || side is not ("top" or "left" or "bottom" or "right" or "insideH" or "insideV"))
+            { context.Loss("Table.BorderApproximated", "Direction-dependent and unsupported table borders are omitted."); continue; }
+            if (table.Borders.ContainsKey(side)) throw new InvalidDataException("Docx.TableBorders: Duplicate table border side.");
+            string style = (string?)border.Attribute(W + "val") ?? throw new InvalidDataException("Docx.TableBorders: A table border requires a style.");
+            if (style is not ("single" or "nil" or "none"))
+            { context.Loss("Table.BorderApproximated", "An unsupported table border style uses a single line."); style = "single"; }
+            if (border.Attribute(W + "space") != null && Integer(border, W + "space", 0, 31) != 0
+                || border.Attributes().Any(a => (a.Name == W + "shadow" || a.Name == W + "frame") && a.Value is not ("0" or "false" or "off")))
+                context.Loss("Table.BorderApproximated", "Border spacing, shadow and frame effects are not retained.");
+            if (border.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val" && a.Name != W + "sz" && a.Name != W + "color"
+                && a.Name != W + "space" && a.Name != W + "shadow" && a.Name != W + "frame"
+                && a.Name != W + "themeColor" && a.Name != W + "themeTint" && a.Name != W + "themeShade"))
+                context.Loss("Table.BorderApproximated", "Unsupported table-border attributes are not retained.");
+            if (style == "single" && ((string?)border.Attribute(W + "color") is null or "auto") && border.Attribute(W + "themeColor") == null)
+                context.Loss("Table.BorderColor", "Automatic table-border colors use black.");
+            string? color = ThemeReference(border, "themeColor", "themeTint", "themeShade", ReadRgb((string?)border.Attribute(W + "color")));
+            double width = border.Attribute(W + "sz") == null ? 0.5 : Integer(border, W + "sz", 0, 255) / 8.0;
+            table.Borders.Add(side, new CellBorder { Style = style, Color = color ?? "000000", Width = style is "nil" or "none" ? 0 : width });
+        }
     }
 
     private void ReadCellGeometry(XElement? defaults, XElement? properties, TableCell cell)

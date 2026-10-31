@@ -1,5 +1,26 @@
 # Formatting and image profile
 
+## Unreleased source: direct table borders
+
+Pending #142 work reads direct `w:tblBorders` on a simple rectangular DOCX
+table. The supported `single`, `none` and `nil` edges are retained as table
+properties in editable DOCX and resolved for ordinary managed PDF/XPS/SVG, HTML
+and ODT output. Outside and inside edges are recalculated after supported row
+expansion, so added rows do not inherit a stale outside edge. Explicit RGB colors
+and line widths are used; theme references use the bounded local resolution and
+retain the existing theme-loss diagnostic. Automatic colors use black and are
+diagnosed. Destinations that omit borders report `Table.Decoration`.
+
+Individually bordered, merged, nested or irregular cells, tables in stories or
+text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
+and strict rejection. Table styles, conditional regions, table shading and full
+border-conflict precedence remain outside this increment. The independent
+[LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
+checks the six edge colors and grid relationships. It also retains measured
+horizontal and vertical placement differences; pixel-identical placement is not
+established.
+This is unreleased source and does not qualify published packages or every runtime.
+
 Unreleased source adds an explicit managed PDF/SVG display for bounded retained
 text revisions, with textual labels as well as colors and searchable deleted PDF
 text. An explicit numbered policy also shows supported comments, format changes and

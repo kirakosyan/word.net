@@ -14,6 +14,7 @@ namespace WordNet.Formats;
 internal sealed partial class DocxWriter
 {
     private static readonly XNamespace W = DocxPackage.Word;
+    private static readonly string[] TableBorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
     private readonly ConversionContext context;
     private DocumentModel model = null!;
     private readonly Dictionary<string, int> bookmarkIds = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -375,6 +376,11 @@ internal sealed partial class DocxWriter
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
             new XElement(W + "tblW", new XAttribute(W + "w", table.WidthPercent.HasValue ? Math.Round(table.WidthPercent.Value * 50).ToString(CultureInfo.InvariantCulture) : table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.WidthPercent.HasValue ? "pct" : table.Width.HasValue ? "dxa" : "auto"))));
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
+        if (table.Borders.Count != 0)
+            element.Element(W + "tblPr")!.Add(new XElement(W + "tblBorders", TableBorderSides
+                .Where(side => table.Borders.ContainsKey(side)).Select(side => new XElement(W + side,
+                    new XAttribute(W + "val", table.Borders[side].Style), new XAttribute(W + "sz", Math.Round(table.Borders[side].Width * 8)),
+                    new XAttribute(W + "color", table.Borders[side].Color)))));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",

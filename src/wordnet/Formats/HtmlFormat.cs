@@ -226,16 +226,16 @@ internal sealed class HtmlFormat
         for (int r = 0; r < table.Rows.Count; r++)
         {
             context.CheckCancellation();
-            var row = new XElement("tr"); int column = 0;
+            var row = new XElement("tr"); int column = 0, cellIndex = 0;
             foreach (TableCell cell in table.Rows[r])
             {
                 if (cell.Merge != VerticalMerge.Continue)
                 {
                     CellPadding p = cell.Padding ?? new CellPadding();
                     string decoration = cell.Background == null ? "" : "background-color:#" + cell.Background + ";";
-                    foreach (var border in cell.Borders)
-                        decoration += "border-" + border.Key + ":" + Pt(border.Value.Width) + " "
-                            + (border.Value.Style == "single" ? "solid" : border.Value.Style) + " #" + border.Value.Color + ";";
+                    foreach (var border in table.CellBorders(r, cellIndex))
+                        decoration += "border-" + border.Key + ":" + (border.Value.Width == 0 ? "none"
+                            : Pt(border.Value.Width) + " " + (border.Value.Style == "single" ? "solid" : border.Value.Style) + " #" + border.Value.Color) + ";";
                     var output = new XElement("td", new XAttribute("style", "vertical-align:" + (cell.VerticalAlignment == "center" ? "middle" : cell.VerticalAlignment)
                         + ";padding:" + Pt(p.Top) + " " + Pt(p.Right) + " " + Pt(p.Bottom) + " " + Pt(p.Left)
                         + ";" + decoration + (cell.WidthPercent.HasValue ? "width:" + Number(cell.WidthPercent.Value) + "%;" : cell.CellWidth.HasValue ? "width:" + Pt(cell.CellWidth.Value) + ";" : "")));
@@ -248,7 +248,7 @@ internal sealed class HtmlFormat
                     }
                     Blocks(output, cell.Blocks); row.Add(output);
                 }
-                column += cell.ColumnSpan;
+                column += cell.ColumnSpan; cellIndex++;
             }
             rows.Add(row);
         }

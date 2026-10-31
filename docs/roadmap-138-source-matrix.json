@@ -3,6 +3,33 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "direct-table-borders",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Simple rectangular tables retain explicit direct table borders and recompute outside/inside edges after row expansion. Independent LibreOffice evidence confirms colors and grid relationships while retaining measured placement differences.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "DirectTableBordersRemainEditableAndPaintAllSixEdges" },
+        { "class": "DocxTableBorderTests", "method": "LibreOfficeReferenceAgreesOnBorderColorsAndRelativeGridGeometry" },
+        { "class": "DocxTableBorderTests", "method": "DisabledTableEdgeStaysDisabledInEditableAndRenderedOutputs" },
+        { "class": "DocxTableBorderTests", "method": "RepeatedReportRowsRecomputeTheOutsideAndInsideBorders" },
+        { "class": "DocxTableBorderTests", "method": "SynthesizedEmptyGridCellsResolveTheirDefaultFontBeforeFixedLayout" }
+      ]
+    },
+    {
+      "id": "direct-table-borders-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Conflicting or merged cells, unsupported stories, repeated/split fixed-page rows and destinations that omit table borders reject in strict mode; duplicate sides fail without writing.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConflictingCellsAreDiagnosedAndStrictOutputIsUntouched" },
+        { "class": "DocxTableBorderTests", "method": "UnsupportedDestinationReportsTableBorderLossBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "MultipageTableBorderApproximationsRemainExplicit" },
+        { "class": "DocxTableBorderTests", "method": "TableBordersInHeaderStoriesRemainExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "AutomaticColorsAndBorderEffectsRemainDiagnosed" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateTableBorderSidesFailBeforeOutput" }
+      ]
+    },
+    {
       "id": "comparison-paragraph-format",
       "issue": 150,
       "outcome": "supported-bounded",

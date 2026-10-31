@@ -227,11 +227,11 @@ internal static partial class OdtFormat
             var headers = new XElement(B + "table-header-rows"); if (table.HeaderRowCount > 0) element.Add(headers);
             for (int r = 0; r < table.Rows.Count; r++)
             {
-                var row = new XElement(B + "table-row"); (r < table.HeaderRowCount ? headers : element).Add(row); int column = 0;
+                var row = new XElement(B + "table-row"); (r < table.HeaderRowCount ? headers : element).Add(row); int column = 0, cellIndex = 0;
                 foreach (TableCell cell in table.Rows[r])
                 {
                     if (cell.Merge == VerticalMerge.Continue)
-                    { for (int i = 0; i < cell.ColumnSpan; i++) row.Add(new XElement(B + "covered-table-cell")); column += cell.ColumnSpan; continue; }
+                    { for (int i = 0; i < cell.ColumnSpan; i++) row.Add(new XElement(B + "covered-table-cell")); column += cell.ColumnSpan; cellIndex++; continue; }
                     var target = new XElement(B + "table-cell");
                     if (cell.ColumnSpan > 1) target.Add(new XAttribute(B + "number-columns-spanned", cell.ColumnSpan));
                     if (cell.Merge == VerticalMerge.Start)
@@ -252,13 +252,13 @@ internal static partial class OdtFormat
                         appearance.Add(new XAttribute(F + "padding-left", Points(cell.Padding.Left)), new XAttribute(F + "padding-right", Points(cell.Padding.Right)),
                             new XAttribute(F + "padding-top", Points(cell.Padding.Top)), new XAttribute(F + "padding-bottom", Points(cell.Padding.Bottom)));
                     }
-                    foreach (var border in cell.Borders)
+                    foreach (var border in table.CellBorders(r, cellIndex))
                         appearance.Add(new XAttribute(F + "border-" + border.Key, border.Value.Width == 0 ? "none" : Points(border.Value.Width) + " " + (border.Value.Style == "single" ? "solid" : border.Value.Style) + " #" + border.Value.Color));
                     if (cell.VerticalAlignment != "top") appearance.Add(new XAttribute(S + "vertical-align", cell.VerticalAlignment == "center" ? "middle" : cell.VerticalAlignment));
                     target.Add(new XAttribute(B + "style-name", Appearance("table-cell", appearance)));
                     if (cell.Content.OfType<TableBlock>().Any()) Loss("NestedTableLoss");
                     Blocks(cell.Paragraphs, target, false);
-                    row.Add(target); for (int i = 1; i < cell.ColumnSpan; i++) row.Add(new XElement(B + "covered-table-cell")); column += cell.ColumnSpan;
+                    row.Add(target); for (int i = 1; i < cell.ColumnSpan; i++) row.Add(new XElement(B + "covered-table-cell")); column += cell.ColumnSpan; cellIndex++;
                 }
             }
             return element;
