@@ -204,6 +204,30 @@ jobs:
             artifacts/roadmap-138/accessible-archive-controls/*.xml
             artifacts/roadmap-138/accessible-archive-controls/*.stderr
           if-no-files-found: error
+      - name: Independently qualify local dictionary hyphenation
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          source=artifacts/roadmap-138/accessible-box
+          font=src/wordnet/Resources/Fonts/NotoSans-Regular.ttf
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-hyphenation.py "$source/dictionary-hyphenation-source.docx" "$source/dictionary-hyphenation-saved.docx" "$source/dictionary-hyphenation.pdf" "$font"
+          artifacts/p2-venv/bin/python eng/test-roadmap-138-hyphenation-checker.py "$source/dictionary-hyphenation-source.docx" "$source/dictionary-hyphenation-saved.docx" "$source/dictionary-hyphenation.pdf" "$font" artifacts/roadmap-138/hyphenation-controls
+          reference=artifacts/roadmap-138/hyphenation-reference
+          artifacts/p2-venv/bin/python eng/generate-roadmap-138-hyphenation.py --output "$reference"
+          mkdir -p "$reference/office"
+          libreoffice "-env:UserInstallation=file://$GITHUB_WORKSPACE/$reference/lo-profile" --headless --convert-to pdf --outdir "$reference/office" "$reference/justified-reference.docx"
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-hyphenation-justified.py "$source/dictionary-hyphenation-justified.pdf" "$source/dictionary-hyphenation-left-control.pdf" "$reference/justified-reference.docx" "$reference/office/justified-reference.pdf"
+          artifacts/p2-venv/bin/python eng/test-roadmap-138-hyphenation-justified-checker.py "$source/dictionary-hyphenation-justified.pdf" "$source/dictionary-hyphenation-left-control.pdf" "$reference/justified-reference.docx" "$reference/office/justified-reference.pdf" "$reference/changed-reference.docx"
+      - name: Retain hyphenation qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-hyphenation
+          path: |
+            artifacts/roadmap-138/accessible-box/dictionary-hyphenation*
+            artifacts/roadmap-138/hyphenation-controls/*
+            artifacts/roadmap-138/hyphenation-reference/*.docx
+            artifacts/roadmap-138/hyphenation-reference/office/*.pdf
+          if-no-files-found: error
       - name: Retain roadmap independent qualification evidence
         if: always() && matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

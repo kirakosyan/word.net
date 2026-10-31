@@ -274,6 +274,15 @@ and accessibility combinations remain open.
 The [exact-source receipt](measurements/roadmap-138-preset-shapes-6b4b3a8.json)
 records complete local suites, package checks and the repeated specimens.
 
+Pending #164 tests copied local dictionaries, explicit language and limits,
+retained editable/searchable text, visible hyphen outlines, unqualified profiles,
+pagination, cancellation and strict loss behavior. The [independent observation](measurements/roadmap-138-hyphenation-reference.json)
+checks a python-docx source against Pyphen's US English points, three PDF readers,
+font outline metrics and corrupted controls. The justified LibreOffice reference
+retains the 0.58-point origin and 2.26-point following-line differences at the
+unchanged 0.5-point tolerance. The first-line-only search highlight and broader
+typography and full #164 acceptance remain open.
+
 Pending #167 preview-layout tests check opt-in text privacy, selected pages,
 immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
 and resource limits. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)

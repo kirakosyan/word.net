@@ -10,6 +10,7 @@ using UglyToad.PdfPig.Graphics.Operations.MarkedContent;
 using UglyToad.PdfPig.Graphics.Operations.PathConstruction;
 using UglyToad.PdfPig.Graphics.Operations.PathPainting;
 using UglyToad.PdfPig.Graphics.Operations.SpecialGraphicsState;
+using UglyToad.PdfPig.Graphics.Operations.TextState;
 using UglyToad.PdfPig.Outline.Destinations;
 using UglyToad.PdfPig.Tokens;
 using UglyToad.PdfPig.Writer;
@@ -129,7 +130,18 @@ internal static class PdfFormat
                         }
                         string color = text.Color ?? "000000";
                         target.SetTextAndFillColor(Convert.ToByte(color.Substring(0, 2), 16), Convert.ToByte(color.Substring(2, 2), 16), Convert.ToByte(color.Substring(4, 2), 16));
-                        if (text.NativeShape != null)
+                        if (text.LogicalCarrier)
+                        {
+                            var measured = target.MeasureText(text.Text, text.Size, new PdfPoint(0, 0), fonts[text.Font]);
+                            double original = measured.Count == 0 ? 0 : measured[measured.Count - 1].EndBaseLine.X;
+                            if (original <= 0 || text.CarrierWidth <= 0) throw new InvalidDataException("Hyphenation.Carrier: Logical text has no measurable carrier.");
+                            target.CurrentStream.Operations.Add(Push.Value);
+                            target.CurrentStream.Operations.Add(new SetHorizontalScaling(text.CarrierWidth / original * 100));
+                            target.SetTextRenderingMode(TextRenderingMode.Neither);
+                            target.AddText(text.Text, text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), fonts[text.Font]);
+                            target.CurrentStream.Operations.Add(Pop.Value);
+                        }
+                        else if (text.NativeShape != null)
                         {
                             if (tags == null) native.Draw(target, text, page.Settings.Height, carrier!);
                             else PdfNativeText.DrawCarrier(target, text, page.Settings.Height, carrier!);

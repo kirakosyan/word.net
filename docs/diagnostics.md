@@ -259,6 +259,16 @@ profile or mixes positioned drawings with chart/equation objects. Existing
 `Pdf.TagsConformance`, language, title, semantic-owner and resource checks remain
 in force; they run before caller output is copied.
 
+Pending #164 reports `Hyphenation.SearchGeometry` when a dictionary break uses
+an original-word text carrier whose search highlight covers only the first line;
+Strict rejects the loss. `Hyphenation.JustificationApproximation` reports the
+measured word-origin and following-line differences for justified breaks.
+`Hyphenation.Profile`, `Hyphenation.Owner`,
+`Hyphenation.SoftHyphen`, `Hyphenation.WordWidth` and `Hyphenation.Pagination`
+reject unqualified combinations. `Limit.HyphenationDictionary` and
+`Limit.HyphenationWork` bound local resources and lookup/candidate work. Messages
+do not contain source words or dictionary entries.
+
 Pending #161 reports `Shape.PresetAlternative` when non-DOCX output would lose
 the title or description of a newly supported rectangle, triangle or diamond,
 or a title on an earlier admitted vector. Strict rejects that loss; the bounded

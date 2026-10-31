@@ -60,6 +60,14 @@ internal sealed class ConversionContext
     internal bool RenderingPreview { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }
     internal TypographyOptions Typography { get; }
+    internal HyphenationOptions Hyphenation { get; }
+    internal bool HyphenationUsed { get; set; }
+    private int hyphenationWork;
+    internal void ReserveHyphenationWork()
+    {
+        CheckCancellation();
+        if (++hyphenationWork > Hyphenation.MaximumWork) throw new InvalidDataException("Limit.HyphenationWork: Dictionary lookup or candidate work exceeds the configured bound.");
+    }
     internal List<OcrPage> OcrPages { get; } = new List<OcrPage>();
     private long metadataBytes;
     private int metadataRegions;
@@ -109,6 +117,7 @@ internal sealed class ConversionContext
     {
         Options = options;
         Typography = (options.Typography ?? throw new ArgumentException("Typography options must not be null.")).Snapshot();
+        Hyphenation = (options.Hyphenation ?? throw new ArgumentException("Hyphenation options must not be null.")).Snapshot();
         OcrMetadata = (options.OcrMetadata ?? throw new ArgumentException("OCR metadata options must not be null.")).Snapshot();
         CancellationToken = cancellationToken;
     }

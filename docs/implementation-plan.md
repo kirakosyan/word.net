@@ -114,6 +114,10 @@ gradients and broader non-DOCX alternative semantics remain open.
 Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
 The reference plot-position failure, stacked/circular charts, data labels and
 native/tagged/archive qualification remain open.
+Pending #164 adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
+in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.
+The measured search-highlight and justified-reference differences, soft hyphens,
+native/accessible text, other owners and full acceptance remain open.
 Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
 inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification

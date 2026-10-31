@@ -94,6 +94,10 @@ Pending #156 combines the existing bounded tag tree with archive output intent,
 embedded fonts and one XMP packet carrying both identification schemas. It
 requires UA semantics and rejects unqualified mixed object/drawing ownership;
 archive and accessibility validation remain independent checks.
+Pending #164 snapshots a bounded caller-provided word/break lexicon. For admitted
+managed PDF words it draws visible split glyph outlines and one invisible original
+word carrier; diagnosed search-highlight and justified-reference differences
+prevent strict output.
 Pending #161 maps three default preset polygons through the existing drawing anchor
 and vector path pipeline. Editable title/description metadata is retained; output
 loss is diagnosed where the selected profile cannot preserve it, while groups and

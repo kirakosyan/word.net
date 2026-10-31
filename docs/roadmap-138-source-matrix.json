@@ -3,6 +3,34 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "local-hyphenation-diagnosed",
+      "issue": 164,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit local English break entries hyphenate plain left or justified one-page managed PDF while diagnosing first-line-only search geometry and measured justified-reference differences.",
+      "tests": [
+        { "class": "DictionaryHyphenationTests", "method": "BrokenWordKeepsOneSearchableLogicalWordAndVisibleGlyphPaths" },
+        { "class": "DictionaryHyphenationTests", "method": "JustifiedParagraphRetainsSearchableTextAndMovesTheVisibleSplitWord" },
+        { "class": "DictionaryHyphenationTests", "method": "LocalDictionaryDoesNotChangeEditableSourceText" },
+        { "class": "DictionaryHyphenationTests", "method": "UnusedDictionaryLeavesDefaultPdfBytesUnchanged" },
+        { "class": "DictionaryHyphenationTests", "method": "TrailingSpaceDoesNotHyphenateAWordThatFitsOnTheLine" },
+        { "class": "DictionaryHyphenationTests", "method": "ImmutableLexiconCanBeUsedConcurrentlyWithoutSharedLayoutState" }
+      ]
+    },
+    {
+      "id": "local-hyphenation-boundaries",
+      "issue": 164,
+      "outcome": "rejected",
+      "boundary": "Strict geometry loss, invalid dictionaries, soft hyphens, overlong tokens, exhausted work, unsupported profiles, multipage layouts and cancellation fail before publishing output.",
+      "tests": [
+        { "class": "DictionaryHyphenationTests", "method": "StrictRejectsTheQualifiedSearchHighlightDifferenceWithoutChangingOutput" },
+        { "class": "DictionaryHyphenationTests", "method": "LocalDictionaryIsValidatedAndCopied" },
+        { "class": "DictionaryHyphenationTests", "method": "UnqualifiedProfilesAndCancellationLeaveOutputUntouched" },
+        { "class": "DictionaryHyphenationTests", "method": "UnsupportedTextAndExhaustedLimitsFailBeforeOutput" },
+        { "class": "DictionaryHyphenationTests", "method": "SpaceWiderThanTheColumnFailsExplicitly" },
+        { "class": "DictionaryHyphenationTests", "method": "MultipleRunsRequireSeparateOwnershipQualification" }
+      ]
+    },
+    {
       "id": "basic-preset-polygons",
       "issue": 161,
       "outcome": "supported-bounded",

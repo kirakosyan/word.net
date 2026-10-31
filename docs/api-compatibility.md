@@ -50,6 +50,10 @@ decorative vector artifacts in the bounded managed accessible-PDF profile.
 Pending #156 appends `PdfConformance.PdfA2a` without changing existing values or
 defaults. It requires the explicit `PdfAccessibility.PdfUa1` semantic profile.
 
+Pending #164 adds `HyphenationLexicon`, `HyphenationOptions` and the additive
+`ConversionOptions.Hyphenation` property. A null dictionary preserves default
+layout; the initial one-page managed PDF profile reports its search-geometry loss.
+
 Pending #161 adds three default vector preset geometries using existing conversion
 and session methods, without new public signatures. It also diagnoses loss of
 their authored alternatives and vector titles; existing API shapes remain intact.

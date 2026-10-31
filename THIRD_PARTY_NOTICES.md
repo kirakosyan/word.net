@@ -181,3 +181,10 @@ Java 26.2.2 (MPL-2.0); a JRE-only development host may use Eclipse ECJ 3.40.0
 (EPL-2.0) to compile it. URLs/hashes are in `eng/p2-tool-pins.json`; downloaded jars
 remain ignored artifacts. The test-only System.Text.Json 10.0.12 reference-vector
 reader is MIT licensed and private to the test project, with reviewed lock files.
+
+The unreleased roadmap #138 independent fixture tools also use python-docx 1.2.0
+(MIT), pypdf 6.10.0 (BSD-3-Clause) and Pyphen 0.17.2 (GPL-2.0-or-later,
+LGPL-2.1-or-later or MPL-1.1). The sampled US English hyphenation data has its
+own BSD-style notice; its provenance and hash are recorded in the measurement.
+These external development tools and their dictionaries are not included in the
+converter's runtime dependencies or production packages.

@@ -141,6 +141,37 @@ case. Indic shaping, CJK line breaking and hyphenation remain separate follow-up
 Native typography with tagged/PDF-UA, PDF/A output or XPS is explicitly unsupported in this
 increment. English-only OCR is unchanged.
 
+### Unreleased source: local dictionary hyphenation
+
+Pending #164 accepts a caller-supplied `HyphenationLexicon` for explicitly
+selected `en` or `en-US`. Entries contain ASCII letters and internal break
+markers, for example `ex-tra-or-di-nary`; the immutable lexicon copies entries
+and never discovers or downloads a dictionary. It admits at most 25,000 words
+and 1 MiB of ASCII entries. `HyphenationOptions` controls minimum prefix and
+suffix lengths, consecutive hyphenated lines, and aggregate lookup/candidate work.
+The default null lexicon leaves existing output unchanged.
+
+The initial profile admits only plain left-aligned or justified one-run body paragraphs on a
+single physical page in ordinary managed PDF. It rejects selected-page, native,
+tagged, archival, preview, multicolumn, structured-owner, tabs/manual breaks, authored soft-hyphen,
+unbreakable overlong-token and multipage combinations. A visible font-outline
+hyphen is excluded from searchable text; a single invisible text carrier retains
+the original word. The carrier's search highlight covers the first line rather
+than both visible fragments. BestEffort/Lenient report
+`Hyphenation.SearchGeometry`, and Strict rejects that loss before output is copied.
+Justified lines also report `Hyphenation.JustificationApproximation`: the tested
+LibreOffice reference differs by 0.58 points in one word origin and 2.26 points
+in the following line's top position, above the unchanged 0.5-point tolerance.
+Independent readers, dictionary points, font-outline checks and corruption
+controls are recorded in the [observation](measurements/roadmap-138-hyphenation-reference.json).
+This does not qualify arbitrary dictionaries, scripts, paragraph owners or full
+#164 acceptance.
+
+```csharp
+var options = new ConversionOptions(FidelityMode.BestEffort);
+options.Hyphenation.Dictionary = new HyphenationLexicon("en-US", new[] { "ex-tra-or-di-nary" });
+```
+
 ## Semantic PDF and PDF/UA-1
 
 `Pdf.Accessibility = PdfAccessibility.Tagged` exports source heading/P, list
