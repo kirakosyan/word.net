@@ -202,6 +202,25 @@ public sealed class ContentControlNestedOwnerTests
     }
 
     [Fact]
+    public void SharedBindingCannotWriteThroughASecondLockedParent()
+    {
+        const string path = "/p:invoice/p:customer/@name";
+        string first = Parent(Control(2, "<w:text/>", "old", Binding(path)));
+        string second = Control(10, "<w:richText/>", "", "<w:lock w:val='contentLocked'/>", block: true,
+            content: Control(11, "<w:text/>", "old", Binding(path)));
+        WordDocument document = Load(WithStore(first + second));
+        document.SetControlText(ById(document, 2), "attempt", TestContext.Current.CancellationToken);
+        Assert.Contains("Binding.Conflict", Assert.Throws<InvalidOperationException>(() => document.WriteBackControlBindings(new[] { ById(document, 2) },
+            TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
+        Assert.Contains("Control.Locked", Assert.Throws<InvalidOperationException>(() => document.WriteBackControlBindings(new[] { ById(document, 2), ById(document, 11) },
+            TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
+        Assert.Equal("old", ById(document, 11).DisplayText);
+        document.ApplyControlBindings(new[] { ById(document, 2) }, TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        Assert.Equal("Ada & Co", (string?)Xml(saved, "customXml/item1.xml").Descendants(XName.Get("customer", "urn:wordnet:controls")).Single().Attribute("name"));
+    }
+
+    [Fact]
     public void MultipleChildrenRetainTheirOrderAndSelectionIndependently()
     {
         string children = Control(2, Choices, "Alpha") + Run(" | ") + Control(3, "<w:comboBox><w:listItem w:value='a'/></w:comboBox>", "a")
@@ -215,6 +234,32 @@ public sealed class ContentControlNestedOwnerTests
         byte[] saved = Save(document); Validate(saved);
         Assert.Equal(ControlOrder, Xml(saved, "word/document.xml").Descendants(W + "sdtPr").Elements(W + "id").Select(id => (string?)id.Attribute(W + "val")));
         Assert.Equal("BeforeBeta|free|revisedafter", Compact(Pdf(Load(saved))));
+    }
+
+    [Fact]
+    public void ChildrenInSeparateParentParagraphsRetainTheirOwnersAndOrder()
+    {
+        string outer = "<w:sdt><w:sdtPr><w:id w:val='1'/><w:richText/></w:sdtPr><w:sdtContent>"
+            + "<w:p>" + Run("First ") + Control(2, "<w:text/>", "one") + "</w:p>"
+            + "<w:p>" + Run("Second ") + Control(3, "<w:text/>", "two") + "</w:p></w:sdtContent></w:sdt>";
+        byte[] source = Package(Document(outer)); Validate(source); WordDocument document = Load(source);
+        Assert.Equal("First one\nSecond two", ById(document, 1).DisplayText);
+        document.SetControlText(ById(document, 3), "changed", TestContext.Current.CancellationToken);
+        Assert.Equal("First one\nSecond changed", ById(document, 1).DisplayText);
+        Assert.Equal(1, ById(document, 2).ParentId); Assert.Equal(1, ById(document, 3).ParentId);
+        byte[] saved = Save(document); Validate(saved);
+        XElement wrapper = Xml(saved, "word/document.xml").Descendants(W + "sdt").First();
+        Assert.Equal(2, wrapper.Element(W + "sdtContent")!.Elements(W + "p").Count());
+        Assert.Equal("Second changed", string.Concat(ById(Load(saved), 1).Content[1].Runs.Select(run => run.Text)));
+    }
+
+    [Fact]
+    public void NestedXmlRespectsTheConfiguredDepthLimit()
+    {
+        string child = Control(2, "<w:text/>", "value");
+        var options = new ConversionOptions(maximumNestingDepth: 7);
+        Assert.Single(LoadBody("<w:p>" + child + "</w:p>", options).ContentControls);
+        Assert.Contains("Limit.NestingDepth", Assert.Throws<InvalidDataException>(() => LoadBody(Parent(child), options)).Message, StringComparison.Ordinal);
     }
 
     [Fact]

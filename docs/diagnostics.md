@@ -29,6 +29,12 @@ Unresolved references and unsupported transforms retain `Docx.ThemeColor`.
 interior edges, competing whole-table or direct-cell borders, or overlapping
 conditional edges; admitted conditional style borders remain editable in DOCX.
 
+For the pending nested-control subset, `Control.Locked` also rejects a child
+mutation or binding operation when its parent's content is locked.
+`Control.ProtectedOwner` rejects parent replacement while typed children exist,
+unqualified parent states and deeper or unsupported owners. Binding conflicts
+retain the existing `Binding.Conflict` failure and atomicity contract.
+
 Pending direct table-border support reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and
 `Table.BorderSplit` identify fixed-page approximations. `Table.BorderApproximated`

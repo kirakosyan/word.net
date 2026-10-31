@@ -242,7 +242,30 @@ internal sealed class TableBlock : DocumentBlock
     internal Dictionary<int, (double Height, bool Exact)> RowHeights { get; } = new Dictionary<int, (double, bool)>();
 
     internal IEnumerable<KeyValuePair<string, CellBorder>> CellBorders(int row, int column) =>
-        !HasTableBorders ? Rows[row][column].Borders : ResolveCellBorders(row, column);
+        !HasTableBorders ? Rows[row][column].Borders
+        : Look != null && Style?.EffectiveRegionBorders.Count > 0 ? ResolveCellBorders(row, column) : ResolveOrdinaryCellBorders(row, column);
+
+    // Keep the existing direct/whole-table path and paint order when no
+    // conditional border participates; it does not need a per-cell map.
+    private IEnumerable<KeyValuePair<string, CellBorder>> ResolveOrdinaryCellBorders(int row, int column)
+    {
+        TableCell cell = Rows[row][column];
+        IReadOnlyDictionary<string, CellBorder> defaults = Borders.Count != 0 ? Borders : Style!.EffectiveBorders;
+        foreach (var border in cell.Borders) yield return border;
+        for (int i = 0; i < 4; i++)
+        {
+            string side = i switch { 0 => "top", 1 => "bottom", 2 => "left", _ => "right" };
+            string inherited = i switch
+            {
+                0 => row == 0 ? "top" : "insideH",
+                1 => row == Rows.Count - 1 ? "bottom" : "insideH",
+                2 => column == 0 ? "left" : "insideV",
+                _ => column == Rows[row].Count - 1 ? "right" : "insideV"
+            };
+            if (!cell.Borders.ContainsKey(side) && defaults.TryGetValue(inherited, out CellBorder? border))
+                yield return new KeyValuePair<string, CellBorder>(side, border);
+        }
+    }
 
     private Dictionary<string, CellBorder> ResolveCellBorders(int row, int column)
     {

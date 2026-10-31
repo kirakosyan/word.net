@@ -22,6 +22,12 @@ Conditional region borders remain structured per side in the style chain, and
 qualified outer edges are resolved against the current grid. Interior, competing
 or overlapping edges and unqualified inherited rendering are diagnosed.
 
+Pending typed-control ownership indexes inline children within an admitted rich
+block parent. Parent IDs are exposed on detached snapshots; edits enforce both
+owners' locks, reject parent replacement while children exist and refresh the
+parent's value state after child or binding changes. Other nested owners stay
+outside this bounded subset.
+
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot
 through the shared layout without modifying the source review store; unsupported

@@ -21,6 +21,11 @@
     }
   },
   "earlierAttempts": "The first packaging invocation used the unavailable pwsh executable and did not start packaging; the installed powershell command completed all three packages and archive verification.",
+  "hosted": {
+    "pullRequestRun": "https://github.com/kirakosyan/word.net/actions/runs/41166033261",
+    "framework472SourceJob": "https://github.com/kirakosyan/word.net/actions/runs/41166033261/job/124436688834",
+    "framework472SourceResult": "Failed before VM startup: the runner had 37 GiB free while the admission check requires 60 GiB. No Framework tests ran in this guest; qualification is not established by this attempt."
+  },
   "independentEvidence": "Five reproducible synthetic DOCX controls and their LibreOffice PDFs compare blue theme tokens, red stored fallbacks and tint/shade variants. LibreOffice rendered the red fallback in the theme variants, so strict non-DOCX output rejects the difference; DOCX reference metadata is retained. Fixtures, tool versions and hashes are in tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes. No Word execution or complete theme-table-style qualification is claimed.",
   "qualification": "Hosted qualification, remaining table/theme scope, final review, merge and package publication are not established for this intermediate commit."
 }

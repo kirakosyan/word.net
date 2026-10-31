@@ -109,6 +109,17 @@ public sealed partial class DocxTableBorderTests
     }
 
     [Fact]
+    public void ExistingDirectCellBorderPaintOrderSurvivesConditionalStyleSupport()
+    {
+        byte[] source = Input(firstCellProperties: "<w:tcBorders><w:left w:val='single' w:sz='8' w:color='BB5500'/></w:tcBorders>");
+        using PdfDocument pdf = PdfDocument.Open(Convert(source, DocumentFormat.Pdf));
+        var paths = pdf.GetPage(1).Paths.Where(path => path.IsStroked && path.StrokeColor != null).ToArray();
+        int direct = Array.FindIndex(paths, path => HasStroke(path, 187 / 255d, 85 / 255d, 0));
+        int inherited = Array.FindIndex(paths, path => HasStroke(path, 1, 0, 0));
+        Assert.True(direct >= 0 && inherited > direct);
+    }
+
+    [Fact]
     public void DisabledTableEdgeStaysDisabledInEditableAndRenderedOutputs()
     {
         string borders = Borders.Replace("<w:insideH w:val='single' w:sz='8' w:color='00FFFF'/>", "<w:insideH w:val='nil'/>");

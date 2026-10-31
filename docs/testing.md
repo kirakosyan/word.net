@@ -55,13 +55,25 @@ conditional references. Tests check editable token/fallback retention, re-resolv
 an edited theme, child overrides, malformed or missing references, comparison and
 strict output rejection; they do not establish Word rendering parity.
 The [exact-source theme-style receipt](measurements/roadmap-138-theme-style-a502c6c.json)
-records the local suite, matrix and package results for that increment.
+records the local suite, matrix and package results for that increment. Its first
+hosted Framework source guest failed before startup because the disposable runner
+had 37 GiB free and the VM admission check requires 60 GiB; no Framework tests ran
+in that guest. The failure and hosted job identity are retained in the receipt.
 Independent [conditional-border controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders/README.md)
 check outer-edge colors, enabled/disabled look flags, selected corners and a
 combined fill and border. Tests cover editable styles, inherited edges and resets,
 composition, comparison, report expansion and explicit conflict losses. The
 reference omitted the inherited edge; interior and competing-edge precedence,
 pixel-identical geometry and Word execution remain unqualified.
+The [exact-source conditional-border receipt](measurements/roadmap-138-conditional-borders-0567bf8.json)
+records its local suite, matrix and package checks, including earlier failed attempts.
+
+Pending #144 nested-control tests check all existing child kinds, parent/child
+locks, local placeholders, explicit binding and conflicts, stale handles, simple
+cell ownership, editable schema and detached display. A [Word-derived synthetic
+nested fixture](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners/README.md)
+and LibreOffice PDF independently check text order. This does not establish Word
+execution, deeper nesting, row wrappers, story owners or repeated-row identity.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

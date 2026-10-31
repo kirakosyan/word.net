@@ -3,6 +3,38 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "nested-control-block-inline",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "boundary": "An unbound, non-placeholder block rich-text parent in the body or a simple cell retains its inline typed children, their IDs and parent identity, order, values, placeholders and explicit local bindings.",
+      "tests": [
+        { "class": "ContentControlNestedOwnerTests", "method": "WordDerivedNestedFixtureMatchesIndependentTextOrderAndKeepsBothChildren" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedInlineEditKeepsWrapperOrderIdentityAndDetachedDisplay" },
+        { "class": "ContentControlNestedOwnerTests", "method": "ParentValueStateFollowsTheCurrentNestedText" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedDateInSimpleCellRefreshesParentStateAndRemainsEditable" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedChildCanRestoreItsLocalPlaceholderWithoutReplacingTheParent" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedChildBindingIsExplicitAndKeepsItsParentAndLocalStore" },
+        { "class": "ContentControlNestedOwnerTests", "method": "OrdinaryLoadingStillUsesCachedTextWithoutCreatingTypedOwners" },
+        { "class": "ContentControlNestedOwnerTests", "method": "MultipleChildrenRetainTheirOrderAndSelectionIndependently" },
+        { "class": "ContentControlNestedOwnerTests", "method": "ChildrenInSeparateParentParagraphsRetainTheirOwnersAndOrder" }
+      ]
+    },
+    {
+      "id": "nested-control-protected-boundaries",
+      "issue": 144,
+      "outcome": "rejected",
+      "boundary": "Child edits honor parent and child locks; replacing a parent with children, conflicting bindings, deeper nesting and unqualified parent kinds or states reject atomically.",
+      "tests": [
+        { "class": "ContentControlNestedOwnerTests", "method": "ChildMutationHonorsTheParentsContentLock" },
+        { "class": "ContentControlNestedOwnerTests", "method": "ParentReplacementAndChildOwnLockCannotBypassProtectedOwners" },
+        { "class": "ContentControlNestedOwnerTests", "method": "DivergentNestedBindingsRejectAtomicallyAndCanBeReapplied" },
+        { "class": "ContentControlNestedOwnerTests", "method": "LockedParentAlsoBlocksNestedBindingOperations" },
+        { "class": "ContentControlNestedOwnerTests", "method": "SharedBindingCannotWriteThroughASecondLockedParent" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedXmlRespectsTheConfiguredDepthLimit" },
+        { "class": "ContentControlNestedOwnerTests", "method": "UnqualifiedParentAndDeeperOwnershipAreRejected" }
+      ]
+    },
+    {
       "id": "conditional-outer-border-styles",
       "issue": 142,
       "outcome": "supported-bounded",
@@ -204,6 +236,7 @@
       "boundary": "Conflicting or merged cells, unsupported stories, repeated/split fixed-page rows and destinations that omit table borders reject in strict mode; duplicate sides fail without writing.",
       "tests": [
         { "class": "DocxTableBorderTests", "method": "ConflictingCellsAreDiagnosedAndStrictOutputIsUntouched" },
+        { "class": "DocxTableBorderTests", "method": "ExistingDirectCellBorderPaintOrderSurvivesConditionalStyleSupport" },
         { "class": "DocxTableBorderTests", "method": "UnsupportedDestinationReportsTableBorderLossBeforeWriting" },
         { "class": "DocxTableBorderTests", "method": "MultipageTableBorderApproximationsRemainExplicit" },
         { "class": "DocxTableBorderTests", "method": "TableBordersInHeaderStoriesRemainExplicitlyUnsupported" },
