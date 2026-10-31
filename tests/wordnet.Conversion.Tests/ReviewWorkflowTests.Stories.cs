@@ -122,6 +122,8 @@ public sealed partial class ReviewWorkflowTests
         }
         WordDocument original = Load(Fixture(false)), revised = Load(Fixture(true)); byte[] before = Save(original);
         Assert.Throws<System.NotSupportedException>(() => DocumentComparison.Compare(original, revised, new ComparisonOptions("Reviewer", Time), Policy(), TestContext.Current.CancellationToken));
+        Assert.Throws<System.NotSupportedException>(() => DocumentComparison.Compare(original, revised,
+            new ComparisonOptions("Reviewer", Time) { CompareStoryText = false }, Policy(), TestContext.Current.CancellationToken));
         Assert.Equal(before, Save(original));
     }
 }

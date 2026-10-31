@@ -3,6 +3,32 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "comparison-ignored-stories-and-runs",
+      "issue": 150,
+      "outcome": "supported-bounded",
+      "boundary": "Optional story-text and supported run-format exclusions retain original matching values while selected text and admitted structural changes are tracked.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "IgnoredRunFormattingRetainsOriginalAppearanceAndDoesNotChangeInputs" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingKeepsExplicitResetAgainstInheritedBold" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingStillTracksChangedTextAndPreservesOriginalUnchangedText" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingCanCoexistWithStructuralInsertion" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredCellFormattingCanCoexistWithRowInsertion" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredSharedStoryTextKeepsTheOriginalThroughBodyEdits" },
+        { "class": "ReviewWorkflowTests", "method": "SelectedStoryTextCanIgnoreItsRunFormatting" }
+      ]
+    },
+    {
+      "id": "comparison-ignored-unsupported-owners",
+      "issue": 150,
+      "outcome": "rejected",
+      "boundary": "Excluded categories do not bypass the existing unsupported formatting or shared-story topology admission checks.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "IgnoredRunFormattingDoesNotAdmitUnsupportedProperties" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingNormalizationsUseTheCombinedWorkBudget" },
+        { "class": "ReviewWorkflowTests", "method": "ComparisonRejectsSharedStoryTopologyChangesEvenWhenTextMatches" }
+      ]
+    },
+    {
       "id": "table-formula-numeric",
       "issue": 159,
       "outcome": "supported-bounded",

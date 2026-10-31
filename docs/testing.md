@@ -6,6 +6,12 @@ inspection, cultures, graph failures, atomic caches and report/edit refresh. The
 independent probe's percentage-picture limitations are recorded with the fixture;
 it does not qualify a public package or untested runtime.
 
+Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
+check the retained original appearance/story, inherited-format resets, text and
+structural changes, combined work budgets, unchanged input sessions and rejection
+of unsupported properties and story topology.
+They do not establish paragraph-property history or runtime/package qualification.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)

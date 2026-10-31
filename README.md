@@ -16,6 +16,7 @@ Unreleased source adds [bounded DOTX/OTT identities and format inspection](https
 Pending source work also adds [bounded matrix equations](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-bounded-matrix-equations) with explicit limits and a caller-selected MATH font.
 Pending source work adds [bounded sum, product and integral expressions](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-n-ary-equations) with explicit limits and operator-size fallback diagnostics.
 Pending source work also adds [bounded table formulas](https://github.com/kirakosyan/word.net/blob/main/docs/table-formulas.md) with dependency-aware cache refresh and explicit numeric-cell limits.
+Pending source work adds [comparison selection](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-comparison-selection) for ordinary story text and run formatting.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.

@@ -1,5 +1,20 @@
 # Bounded DOCX review workflows
 
+## Unreleased source: comparison selection
+
+Pending #150 work adds two opt-out policies to `ComparisonOptions`, both enabled
+by default. Setting `CompareStoryText = false` leaves admitted header/footer text
+at the original document's value. Setting `CompareRunFormatting = false` leaves
+the original bold, italic, size and color on matching text; newly inserted text
+keeps its revised formatting. Text changes in selected stories or the body can
+still be tracked. These policies retain the existing source admission, section and
+shared-story topology checks, budgets and atomicity. Unsupported formatting and
+structured owners still fail rather than being hidden by an ignore option.
+
+These switches do not yet implement paragraph-property revisions or every story
+and formatting category requested by #150. They are pending source work, not part
+of published 1.5.0; exact runtime and package qualification remain separate.
+
 ## Unreleased source: detached text-revision display
 
 The pending roadmap #138 work adds an explicit display for retained text insertions

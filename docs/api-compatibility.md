@@ -27,6 +27,10 @@ evaluation without adding a public API. Its deterministic culture, cached-result
 fallback and per-table limits are part of the documented behavior; it is not yet
 available in the published 1.5.0 packages.
 
+Pending #150 adds default-enabled `ComparisonOptions.CompareStoryText` and
+`CompareRunFormatting` switches. See the [selection profile](review-workflows.md#unreleased-source-comparison-selection)
+for original-value retention and remaining unsupported paragraph-property history.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
