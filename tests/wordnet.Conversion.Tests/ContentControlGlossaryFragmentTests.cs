@@ -75,9 +75,12 @@ public sealed class ContentControlGlossaryFragmentTests
     {
         string type = kind switch
         {
-            0 => "<w:text/>", 1 => Checkbox(), 2 => Choices,
+            0 => "<w:text/>",
+            1 => Checkbox(),
+            2 => Choices,
             3 => Choices.Replace("dropDownList", "comboBox"),
-            4 => "<w:date><w:dateFormat w:val='yyyy-MM-dd'/></w:date>", _ => "<w:richText/>"
+            4 => "<w:date><w:dateFormat w:val='yyyy-MM-dd'/></w:date>",
+            _ => "<w:richText/>"
         };
         string prompt = kind == 1 ? "-" : "Choose";
         string fragment = kind == 5 ? Control(1, type, prompt, Placeholder, block: true)
