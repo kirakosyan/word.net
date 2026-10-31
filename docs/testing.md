@@ -49,6 +49,11 @@ record that LibreOffice rendered the explicit style but omitted its implicit
 default. Tests also validate editable default identity, composition conflicts,
 new-table behavior, comparison, invalid flags and untouched outputs. They do not
 qualify default-style rendering in Word or unused style definitions.
+Separate [theme-fill controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes/README.md)
+retain LibreOffice's red-fallback observations for plain, tinted and shaded
+conditional references. Tests check editable token/fallback retention, re-resolving
+an edited theme, child overrides, malformed or missing references, comparison and
+strict output rejection; they do not establish Word rendering parity.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output
@@ -157,6 +162,8 @@ font-catalog flag. The tests retain the source's missing list-placeholder refere
 as negatives, alongside malformed or active font metadata. The first nine-case
 working-tree run failed six cases because the prior validator rejected that font
 flag before reaching the controls; the follow-up admits the bounded Boolean flag.
+The [exact-source glossary receipt](measurements/roadmap-138-glossary-f7d6a7f.json)
+records that increment's local checks and the failed attempts.
 Broader Office-authored
 kinds and resource-graph acceptance required by
 #143 remain outstanding. On the local Linux x64 working tree containing these

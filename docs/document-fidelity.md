@@ -81,6 +81,17 @@ confirm the specified colors and regions in LibreOffice. LibreOffice did not
 honor size-two bands in separate controls; those retained failures do not qualify
 non-unit band rendering or establish Word behavior.
 
+For a clear conditional cell fill, a bounded local theme can retain its color
+token, one tint or shade, and the original RGB/automatic/omitted fallback in the
+editable style chain. Best-effort output resolves the local theme; strict non-DOCX
+output rejects `Table.StyleThemeColor` when the effective style contains such a
+reference. LibreOffice's [independent theme controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes/README.md)
+painted the stored fallback instead, so the observed difference remains open.
+An incomplete theme, an unresolved token or simultaneous tint and shade use the
+existing `Docx.ThemeColor` loss and fallback. DOCX theme reconstruction still
+reports `Docx.ThemeData`; whole-table, direct-cell and border theme references
+retain their earlier loss boundaries.
+
 Individually bordered, merged, nested or irregular cells, tables in stories or
 text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
 and strict rejection. Style-level paragraph and run properties, conditional
@@ -131,7 +142,7 @@ missing document themes rather than silently changing references.
 Typed controls continue to reject theme references, including references inherited
 from document styles, because their admitted editable formatting is narrower.
 
-Mixed-script font selection, conditional table styles and drawings, other DrawingML
+Mixed-script font selection, remaining table-style theme combinations and drawings, other DrawingML
 color transforms, simultaneous tint/shade, and the full style/reset precedence
 remain unqualified. See the [testing record](testing.md)
 and the [initial 1.5.0 controls](fidelity-138-initial.md#additional-independent-controls).

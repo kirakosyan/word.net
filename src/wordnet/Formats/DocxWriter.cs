@@ -509,7 +509,7 @@ internal sealed partial class DocxWriter
         {
             context.CheckCancellation(); sourceIds.Add(style.Id);
             metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256
-                + ((long)style.Regions.Count + style.EffectiveRegions.Count) * 128);
+                + ((long)style.Regions.Count + style.EffectiveRegions.Count + style.RegionThemes.Count + style.EffectiveRegionThemes.Count) * 128);
             if (metadataBytes > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
         }
         var assigned = new HashSet<string>(reserved, StringComparer.Ordinal); int sequence = 0;
@@ -565,8 +565,15 @@ internal sealed partial class DocxWriter
             if (properties.HasElements) style.Add(properties);
             foreach (string region in TableStyleRegions)
                 if (definition.Regions.TryGetValue(region, out string? color))
+                {
+                    definition.RegionThemes.TryGetValue(region, out TableThemeColor? reference);
                     style.Add(new XElement(W + "tblStylePr", new XAttribute(W + "type", region), new XElement(W + "tcPr",
-                        new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", color)))));
+                        new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"),
+                            reference == null ? new XAttribute(W + "fill", color) : reference.Fallback == null ? null : new XAttribute(W + "fill", reference.Fallback),
+                            reference == null ? null : new XAttribute(W + "themeFill", reference.Token),
+                            reference?.Tint == null ? null : new XAttribute(W + "themeFillTint", reference.Tint),
+                            reference?.Shade == null ? null : new XAttribute(W + "themeFillShade", reference.Shade)))));
+                }
             styles.Add(style);
         }
 

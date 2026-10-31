@@ -113,6 +113,7 @@ internal sealed class TableBlock : DocumentBlock
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal string? Background { get; set; }
+    internal TableThemeColor? BackgroundTheme { get; set; }
     internal TableStyle? Style { get; set; }
     internal bool UsesDefaultStyle { get; set; }
     internal TableStyleLook? Look { get; set; }
@@ -227,7 +228,7 @@ internal sealed class TableBlock : DocumentBlock
 internal sealed class TableStyle
 {
     internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background,
-        IDictionary<string, string> regions, int? rowBandSize, int? columnBandSize)
+        IDictionary<string, string> regions, IDictionary<string, TableThemeColor> regionThemes, int? rowBandSize, int? columnBandSize)
     {
         Id = id; Name = name; BasedOn = basedOn; Background = background;
         var specified = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
@@ -245,6 +246,15 @@ internal sealed class TableStyle
         if (basedOn != null) foreach (var region in basedOn.EffectiveRegions) effectiveRegions.Add(region.Key, region.Value);
         foreach (var region in specifiedRegions) effectiveRegions[region.Key] = region.Value;
         Regions = specifiedRegions; EffectiveRegions = effectiveRegions;
+        var specifiedThemes = new Dictionary<string, TableThemeColor>(regionThemes, System.StringComparer.Ordinal);
+        var effectiveThemes = new Dictionary<string, TableThemeColor>(System.StringComparer.Ordinal);
+        if (basedOn != null) foreach (var region in basedOn.EffectiveRegionThemes) effectiveThemes.Add(region.Key, region.Value);
+        foreach (string region in specifiedRegions.Keys)
+        {
+            if (specifiedThemes.TryGetValue(region, out TableThemeColor? value)) effectiveThemes[region] = value;
+            else effectiveThemes.Remove(region);
+        }
+        RegionThemes = specifiedThemes; EffectiveRegionThemes = effectiveThemes;
         RowBandSize = rowBandSize; ColumnBandSize = columnBandSize;
         EffectiveRowBandSize = rowBandSize ?? basedOn?.EffectiveRowBandSize;
         EffectiveColumnBandSize = columnBandSize ?? basedOn?.EffectiveColumnBandSize;
@@ -258,10 +268,24 @@ internal sealed class TableStyle
     internal string? EffectiveBackground { get; }
     internal IReadOnlyDictionary<string, string> Regions { get; }
     internal IReadOnlyDictionary<string, string> EffectiveRegions { get; }
+    internal IReadOnlyDictionary<string, TableThemeColor> RegionThemes { get; }
+    internal IReadOnlyDictionary<string, TableThemeColor> EffectiveRegionThemes { get; }
     internal int? RowBandSize { get; }
     internal int? ColumnBandSize { get; }
     internal int? EffectiveRowBandSize { get; }
     internal int? EffectiveColumnBandSize { get; }
+}
+
+// Captured only for a resolved, bounded theme and clear conditional cell fill.
+internal sealed class TableThemeColor
+{
+    internal TableThemeColor(string token, string? tint, string? shade, string? fallback)
+    { Token = token; Tint = tint; Shade = shade; Fallback = fallback; }
+    internal string Token { get; }
+    internal string? Tint { get; }
+    internal string? Shade { get; }
+    internal string? Fallback { get; }
+    internal bool Same(TableThemeColor? other) => other != null && Token == other.Token && Tint == other.Tint && Shade == other.Shade && Fallback == other.Fallback;
 }
 
 // A validated mask and its explicitly specified, agreeing flags. Omitted flags

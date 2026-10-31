@@ -328,6 +328,7 @@ internal sealed partial class DocxReader
                 context.Loss("Docx.TableStyleData", "Unsupported whole-table style properties are not retained.");
         }
         var regionColors = new Dictionary<string, string>(StringComparer.Ordinal);
+        var regionThemes = new Dictionary<string, TableThemeColor>(StringComparer.Ordinal);
         var seenRegions = new HashSet<string>(StringComparer.Ordinal);
         foreach (XElement condition in source.Elements(W + "tblStylePr"))
         {
@@ -353,17 +354,18 @@ internal sealed partial class DocxReader
                     context.Loss("Docx.TableStyleData", "Unsupported conditional cell properties are not retained.");
                 if (shading.Length == 1)
                 {
-                    var conditional = new TableBlock(); ReadTableShading(shading[0], conditional);
+                    var conditional = new TableBlock(); ReadTableShading(shading[0], conditional, retainConditionalTheme: true);
                     if (conditional.Background != null) regionColors.Add(type, conditional.Background);
+                    if (conditional.BackgroundTheme != null) regionThemes.Add(type, conditional.BackgroundTheme);
                 }
             }
         }
         visiting.Remove(id);
         tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256
-            + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0)) * 128);
+            + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0) + regionThemes.Count + (parent?.EffectiveRegionThemes.Count ?? 0)) * 128);
         if (tableStyles.Count >= 10000 || tableStyleBytes > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
-        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, rowBandSize, columnBandSize);
+        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, regionThemes, rowBandSize, columnBandSize);
         tableStyles.Add(id, result); return result;
     }
 
@@ -379,7 +381,7 @@ internal sealed partial class DocxReader
         return value;
     }
 
-    private void ReadTableShading(XElement shading, TableBlock table)
+    private void ReadTableShading(XElement shading, TableBlock table, bool retainConditionalTheme = false)
     {
         string pattern = (string?)shading.Attribute(W + "val") ?? throw new InvalidDataException("Docx.TableShading: Table shading requires a pattern.");
         if (pattern != "clear") context.Loss("Table.ShadingApproximated", "Only clear table shading is retained; other patterns use the background color.");
@@ -396,7 +398,18 @@ internal sealed partial class DocxReader
             context.Loss("Table.ShadingApproximated", "The foreground color of table shading is not retained.");
         }
         _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
-        table.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", ReadRgb((string?)shading.Attribute(W + "fill")));
+        string? fallback = (string?)shading.Attribute(W + "fill"), token = (string?)shading.Attribute(W + "themeFill");
+        string? tint = (string?)shading.Attribute(W + "themeFillTint"), shade = (string?)shading.Attribute(W + "themeFillShade");
+        string? fallbackRgb = ReadRgb(fallback);
+        if (token != null && !ThemeAppearance.ValidColorToken(token) || !ThemeAppearance.ValidTransform(tint) || !ThemeAppearance.ValidTransform(shade))
+            throw new InvalidDataException("Docx.ThemeColor: Invalid theme color reference or transform.");
+        string? resolved = retainConditionalTheme && pattern == "clear" && token != null && theme?.Package != null ? theme.Color(token, tint, shade) : null;
+        if (resolved != null)
+        {
+            table.Background = resolved;
+            table.BackgroundTheme = new TableThemeColor(token!, tint, shade, fallback);
+        }
+        else table.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", fallbackRgb);
         if (table.Background == null) context.Loss("Table.ShadingColor", "Automatic or missing table-shading colors are not retained.");
     }
 

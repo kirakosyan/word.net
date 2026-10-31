@@ -31,6 +31,8 @@ unqualified rendering, conflicts and pagination. Used implicit defaults remain
 editable, with their unresolved static rendering difference reported. Non-unit rendered bands,
 conditional borders, full style precedence and independent qualification remain
 open; the table-level shading reference failure is retained.
+Conditional theme fills retain bounded editable references and fallback values,
+while independent static rendering differences remain explicit.
 Pending source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships, including `notTrueType` font metadata and additional
 Word-authored rich-text, plain-text and date control derivatives.

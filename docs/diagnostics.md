@@ -22,6 +22,9 @@ coincident first/last regions on a single row or column. `Table.StyleInheritance
 reports unqualified rendering that relies on inherited conditional regions.
 `Table.StyleBandSize` reports unqualified rendering of explicitly selected non-unit bands; sizes above Word's
 documented limit use `Docx.TableStyleData`.
+`Table.StyleThemeColor` reports an effective conditional theme-fill reference in
+non-DOCX output because the independent renderer uses its stored fallback instead.
+Unresolved references and unsupported transforms retain `Docx.ThemeColor`.
 
 Pending direct table-border support reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and

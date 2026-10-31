@@ -15,6 +15,9 @@ unsupported style properties, conflicts and pagination are diagnosed.
 Used implicit table defaults retain document-level identity and per-table omission
 of explicit references; cloning and compatible composition preserve that state.
 Unqualified static default rendering and conflicting composition are explicit.
+Conditional style fills also retain bounded theme tokens, transforms and original
+fallbacks alongside resolved RGB values. The effective chain tracks explicit child
+overrides; static theme-color differences are diagnosed rather than hidden.
 
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot

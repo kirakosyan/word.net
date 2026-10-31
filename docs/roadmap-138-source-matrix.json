@@ -3,6 +3,32 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "conditional-theme-fill-editing",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "A complete bounded local theme retains clear conditional fill tokens, one tint or shade, and the original fallback in editable DOCX; explicit child fills replace inherited theme references.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConditionalThemeFillKeepsItsReferenceAndReportsReferenceColorDifference" },
+        { "class": "DocxTableBorderTests", "method": "ChangingTheRetainedThemeChangesTheConditionalFillAfterReload" },
+        { "class": "DocxTableBorderTests", "method": "OmittedAndAutomaticFallbacksRemainDistinctInEditableStyles" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitChildFillReplacesInheritedThemeSemanticsWithoutFlatteningTheParent" },
+        { "class": "DocxTableBorderTests", "method": "InheritedConditionalThemeIsRetainedAndBothRenderingDifferencesAreReported" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalThemeReferenceSurvivesReportExpansion" },
+        { "class": "DocxTableBorderTests", "method": "CompositionKeepsConflictingConditionalThemeStyleFallbacksIndependent" }
+      ]
+    },
+    {
+      "id": "conditional-theme-fill-unqualified",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Static conditional theme colors differ from LibreOffice's stored fallback; missing themes, conflicting transforms, malformed metadata and changed editable references remain explicit.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ComparisonCannotIgnoreDifferentThemeFallbackMetadata" },
+        { "class": "DocxTableBorderTests", "method": "MalformedConditionalThemeFillFailsBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "UnresolvedConditionalThemeUsesDiagnosedFallback" }
+      ]
+    },
+    {
       "id": "used-default-table-styles",
       "issue": 142,
       "outcome": "supported-bounded",
