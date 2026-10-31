@@ -143,12 +143,20 @@ does not synchronize them. Copies can be edited and synchronized independently,
 and the source session is unchanged. A destination can already contain admitted
 typed controls, provided the selected bookmark is outside every protected owner.
 
+Admitted static glossary entries and their local styles, settings, font-table and
+web-settings resources can be copied with the controls. Each copied entry receives
+a new document-local name and GUID where present; placeholder references follow
+the new name. Compatible resources are retained once. Different bytes for the same
+resource kind or part conflicts reject before insertion; source load losses still
+reject rather than being flattened implicitly. No active or external relationships
+are admitted.
+
 Date controls require matching source and destination date policies. A fragment
-with typed controls and a table requires a body destination; glossary-backed source
-controls, report controls or history cannot be combined with
-these typed fragments. `UseDestination` rejects typed-control restyling. The source
-and combined destination are admitted against the destination's captured resource
-and work limits before committing. Broader resource graphs remain open in #147.
+with typed controls and a table requires a body destination; report controls or
+history cannot be combined with these typed fragments. `UseDestination` rejects
+typed-control restyling. The source and combined destination are admitted against
+the destination's captured resource and work limits before committing. Broader
+resource-graph merging remains open in #147.
 
 The pending source permits admitted typed controls and retained chart/equation
 objects in the same document or fragment when their paragraph owners are

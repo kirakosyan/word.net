@@ -20,12 +20,27 @@
       "id": "typed-control-fragment-protected",
       "issue": 147,
       "outcome": "rejected",
-      "boundary": "Glossary-backed sources, date-policy conflicts, report owners, typed-control restyling, resource exhaustion and cancellation fail before committing.",
+      "boundary": "Conflicting glossary resources, date-policy conflicts, report owners, typed-control restyling, resource exhaustion and cancellation fail before committing.",
       "tests": [
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentResourcesRestylingAndCancellationRejectAtomically" },
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentDatePoliciesMustMatch" },
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentsRejectReportOwnersAndRespectResourceLimits" },
         { "class": "ContentControlFragmentTests", "method": "StructuralTableOwnersProtectOtherCellBookmarks" }
+      ]
+    },
+    {
+      "id": "typed-control-fragment-glossary",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Admitted local glossary entries and compatible resources are copied with new document-local entry identities and placeholder references; conflicting resource bytes reject atomically.",
+      "tests": [
+        { "class": "ContentControlGlossaryFragmentTests", "method": "GlossaryFragmentsRenameEntriesAndKeepIndependentPlaceholderValues" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "ANewGlossaryGetsAnIsolatedPackagePartAndRemainsEditable" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "EveryAdmittedControlKindKeepsItsCopiedGlossaryPlaceholder" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "IdenticalLocalGlossaryResourcesAreCopiedOnceAcrossRepeatedInsertions" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "CombinedGlossaryEntryLimitFailsWithoutMutatingEitherSession" },
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentResourcesRestylingAndCancellationRejectAtomically" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryWithUnresolvedLoadLossCannotBeInsertedSilently" }
       ]
     },
     {

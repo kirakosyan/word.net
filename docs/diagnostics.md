@@ -103,7 +103,7 @@ caller explicitly opts in to retained field results that can be stale; unresolve
 or unsupported source references still fail.
 Pending typed-fragment boundaries use `Fragment.ControlOwner`,
 `Fragment.ControlResources`, `Fragment.ControlDateMode` and `Control.Restyle` for
-unqualified destinations, glossary resources, date policies and restyling.
+unqualified destinations, conflicting glossary resources, date policies and restyling.
 `Object.Owner` also rejects an object sharing any paragraph owned by a typed
 control, including structural row/cell wrappers. Reports and retained history
 remain outside the mixed-fragment profile.

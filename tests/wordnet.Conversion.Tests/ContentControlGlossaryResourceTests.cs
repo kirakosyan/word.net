@@ -123,6 +123,20 @@ public sealed class ContentControlGlossaryResourceTests
         Assert.StartsWith("Docx.ThemeFont:", error.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void WordAuthoredGlossaryWithUnresolvedLoadLossCannotBeInsertedSilently()
+    {
+        WordDocument source = Load(WordAuthoredGlossary(), new ConversionOptions(FidelityMode.Lenient));
+        Assert.Contains(source.Diagnostics, d => d.Code == "Docx.ThemeFont");
+        var target = WordDocument.Create(new ConversionOptions(FidelityMode.Lenient));
+        target.AddParagraph("Insert", cancellationToken: TestContext.Current.CancellationToken);
+        target.AddBookmark("slot", 0, 0, 6, TestContext.Current.CancellationToken);
+        byte[] beforeSource = Save(source), beforeTarget = Save(target);
+        var error = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Fragment.SourceLoss:", error.Message, StringComparison.Ordinal);
+        Assert.Equal(beforeSource, Save(source)); Assert.Equal(beforeTarget, Save(target));
+    }
+
     private static byte[] WordAuthoredGlossary()
     {
         string control = Fixture("OfficeWordParts/control.xml");

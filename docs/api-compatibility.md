@@ -22,7 +22,8 @@ are reported separately.
 Pending #147 broadens existing fragment methods to admit the separately documented
 [typed-control](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 and [chart/equation](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
-profiles, including mixed fragments with separate owners, without adding signatures.
+profiles, including mixed fragments with separate owners and bounded local glossary
+copying, without adding signatures.
 Protected-owner and resource failures remain explicit.
 
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable

@@ -119,13 +119,20 @@ hosted conclusions remain failures.
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit
 binding synchronization and editable DOCX. A Word-derived nested fixture checks
-static text. Glossary resources, mismatched date policies, report owners, restyling,
-resource exhaustion and cancellation remain explicit rejection or failure cases.
+static text. Conflicting glossary resources, mismatched date policies, report
+owners, restyling, resource exhaustion and cancellation remain explicit rejection
+or failure cases.
 The [independent binding reference](measurements/roadmap-138-typed-fragment-reference.json)
 records schema checks, isolated store values and LibreOffice static text.
 The [exact-source receipt](measurements/roadmap-138-typed-fragment-431dbfc.json)
 records local suites, matrix and package checks and reproduces the independently
 rendered DOCX with the exact source/package assembly.
+
+Pending glossary-fragment tests exercise all six control kinds, repeated entry and
+GUID remapping, placeholder restoration, compatible local resource retention,
+conflicts and entry limits. The [independent reference](measurements/roadmap-138-glossary-fragment-reference.json)
+checks generated package relationships, two distinct entries and LibreOffice text;
+it does not establish live Word execution or unrestricted resource merging.
 
 Pending mixed-fragment tests insert controls and charts/equations together into
 body and simple-cell bookmarks, verify independent IDs and edits, and reject shared

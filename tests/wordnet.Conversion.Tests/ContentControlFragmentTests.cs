@@ -210,11 +210,26 @@ public sealed class ContentControlFragmentTests
     public void TypedFragmentResourcesRestylingAndCancellationRejectAtomically()
     {
         string metadata = "<w:placeholder><w:docPart w:val='Prompt'/></w:placeholder><w:showingPlcHdr/>";
-        WordDocument glossary = Load(WithGlossary("<w:p>" + Control(3, "<w:text/>", "Choose", metadata) + "</w:p>"));
+        byte[] withResource = Modify(WithGlossary("<w:p>" + Control(3, "<w:text/>", "Choose", metadata) + "</w:p>"), zip =>
+        {
+            AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "settings", "settings", "settings.xml");
+            Put(zip, "word/glossary/settings.xml", new XElement(W + "settings").ToString());
+            Override(zip, "word/glossary/settings.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+        });
+        WordDocument glossary = Load(withResource);
+        string host = "<w:p>" + Control(8, "<w:text/>", "Host", metadata) + "</w:p>" + Bookmark("one", 1);
+        byte[] conflicting = Modify(WithGlossary(host, "Host"), zip =>
+        {
+            AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "settings", "settings", "settings.xml");
+            Put(zip, "word/glossary/settings.xml", new XElement(W + "settings", new XElement(W + "view", new XAttribute(W + "val", "print"))).ToString());
+            Override(zip, "word/glossary/settings.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+        });
+        WordDocument conflictTarget = Load(conflicting); byte[] beforeConflict = Save(conflictTarget);
         WordDocument target = Load(WithStore(TargetBody(false)), new ConversionOptions(FidelityMode.Lenient));
         byte[] before = Save(target), beforeGlossary = Save(glossary);
-        var resources = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("one", glossary, TestContext.Current.CancellationToken));
+        var resources = Assert.Throws<NotSupportedException>(() => conflictTarget.InsertFragmentAtBookmark("one", glossary, TestContext.Current.CancellationToken));
         Assert.StartsWith("Fragment.ControlResources:", resources.Message, StringComparison.Ordinal);
+        Assert.Equal(beforeConflict, Save(conflictTarget));
         WordDocument source = Fragment(); byte[] sourceBefore = Save(source);
         var options = new FragmentInsertionOptions { Style = CompositionStyle.UseDestination };
         var restyle = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmarkWithOptions("one", source, options, TestContext.Current.CancellationToken));
