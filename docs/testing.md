@@ -401,6 +401,10 @@ authored XlsxWriter chart/workbook fixtures passed Open XML SDK validation, and
 eight corrupted controls exercise graph, diagnostics, output content, legend and vector
 checks. The [reference observation](measurements/roadmap-138-stacked-reference.json)
 retains both LibreOffice placement failures at the unchanged 0.5-point tolerance.
+The [exact-source receipt](measurements/roadmap-138-stacked-c1188c1.json) records
+both complete suites, matrix, packages and reproduced specimens; its [performance
+receipt](measurements/roadmap-138-stacked-performance-c1188c1.json) compares the
+same source with the preceding PR head under the unchanged gate.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and

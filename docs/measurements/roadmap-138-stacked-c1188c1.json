@@ -1,0 +1,140 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "c1188c13dcd50555b2cb1ad7bc29ede38fb0a781",
+  "scope": "Diagnosed ordinary managed stacked bars and columns; independent office placement, pie/doughnut charts, point labels and protected profiles remain open at this source.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "575468e1d65211569117b406898acf8ed5c804ce5361f0886b3ebe6985c04cc6",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2310,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "526a773b6992ecc1c9d2d9da3ade4d8beb031a75054da0f700bf963d84c66f82"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2310,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "5229ddd6bf17aec0b7eb06d3b768ddb7d2e6cdc6d1baa0f08cccaf492ac5a4b0"
+    },
+    "capabilityMatrix": {
+      "profiles": 93,
+      "testMethods": 448,
+      "net10CasesPassed": 782
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "a5982bf6f165f6c219b332bda62baeafddd3eec54f59861ef31fc9d9059d0a39",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "4dac431905100a5943e4c106504f2b8d51c27ac8dee2351fcfcbfb1cf7f0b03f",
+      "wordnet.Fonts.1.5.0.nupkg": "bc1ac86629df29fc84257461b2ff0bd66da4a671f20222e2e98061c7f57dd5c8",
+      "wordnet.Ocr.1.5.0.nupkg": "257355ed5a542083af1f508820f6529566873454001daa11e73bac4bb89c573e"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 176.58335,
+      "CandidateMedianMilliseconds": 137.0885,
+      "Ratio": 0.7763387658009661,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 41719016,
+      "PeakSampledManagedBytes": 27545280,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-stacked-performance-c1188c1.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-stacked-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "b5d70e4165410c0078b0c6057d7f916491b1287ed132b6d8f28761d5099606f6",
+    "checkerLogSha256": "09ad94a6dc3d86d0f8e291c781dc1ebf08a97e8466bdf9b7c8066ce23cae9aba",
+    "savedSchemaLogSha256": "2c65569442ee79a0cb2415ad57d2f3c918b5a27437f443a79e9d8b251167db27",
+    "openXml": "Two independently authored source and exact-source saved DOCX passed Open XML SDK 3.5.1.",
+    "documents": {
+      "bar": {
+        "inputDocxSha256": "b43fe842d162519106d09ab026892565177d9155314d317d7556173467eed3ee",
+        "savedDocxSha256": "4fe89611ca95e09590c5b38e106128b9b076036d014fa0c4f76163a85006a458",
+        "pdfSha256": "48c53d3c388d004bfa83a7659955536ef75f05eb9a15dc5beb8304e29f27fb5f",
+        "xpsSha256": "5b4a79adc9fe8c698c0763f26cc23cef4819a77883b355612fa571115dbbf18c",
+        "svgSha256": "07b91b766a29f8ffcf122eca424680685822c65ef84400eba4d8c09f1dc85b58",
+        "diagnosticsSha256": "faadbb288160579ce963e00d4601c3b7952f577840c48e4ced017a53b19c4f6d",
+        "referencePdfSha256": "0dee62eda74e5e34aa9ba281b3a328720ff67c0f4df58fa1bb6a610b5daef738"
+      },
+      "column": {
+        "inputDocxSha256": "eb9ad99be0f11e9a7f760f3cb15c9caec8673c16c5b047fb6ed4cd99ce1829a5",
+        "savedDocxSha256": "f127c1a708cb8fbf70e3a7b7f14fc7e199095b4239c4cfc89736f198dea42581",
+        "pdfSha256": "0466d218ea7535c2b84932f1b2aacf3a7b54af9bd135780344cfc536f1de28e1",
+        "xpsSha256": "5da72052aa3d3654cd0fe2998c49e9c8e9b76b389d28b87438388a4632127e4f",
+        "svgSha256": "02a2d5d93858d76f5bc885378b6bea34a96b005be0863ce96d2a0f117017a8aa",
+        "diagnosticsSha256": "faadbb288160579ce963e00d4601c3b7952f577840c48e4ced017a53b19c4f6d",
+        "referencePdfSha256": "a2b235af262b2ccc747e56ca5e9b0fc3f498c5120bed8a55cf032cb03415e63f"
+      }
+    },
+    "result": {
+      "specimens": [
+        {
+          "kind": "bar",
+          "graph": {
+            "chartSha256": "f081f0ba926b5581c17afda849f88b4f0e24aa84c5deaae1a2719146dfaca130",
+            "workbookSha256": "ce0ed7a56a3c523246c315f03e8196f972a3c002134a3d31bdc14e60e5dde172"
+          },
+          "pdfSvgMaxDeltaPt": 1.904296874499778e-05,
+          "pdfXpsMaxDeltaPt": 4.999999998744897e-05,
+          "referenceMaxDeltaPt": 26.118011474609375,
+          "referenceAxisDeltaPt": 20.67132568359375,
+          "geometryTolerancePt": 0.5,
+          "referenceFidelityPassed": false,
+          "actualAxisPt": 137.42132568359375,
+          "referenceAxisPt": 116.75,
+          "actualLegendOrder": [
+            "North",
+            "South"
+          ],
+          "referenceLegendOrder": [
+            "North",
+            "South"
+          ]
+        },
+        {
+          "kind": "column",
+          "graph": {
+            "chartSha256": "d75c042518725e0f39c33ce236e07bbbf53dc134f5b6574de9f7c53e4ca8183c",
+            "workbookSha256": "ce0ed7a56a3c523246c315f03e8196f972a3c002134a3d31bdc14e60e5dde172"
+          },
+          "pdfSvgMaxDeltaPt": 1.4990234376455192e-05,
+          "pdfXpsMaxDeltaPt": 6.303710938482254e-05,
+          "referenceMaxDeltaPt": 36.10054016113281,
+          "referenceAxisDeltaPt": 17.0838623046875,
+          "geometryTolerancePt": 0.5,
+          "referenceFidelityPassed": false,
+          "actualAxisPt": 142.6666717529297,
+          "referenceAxisPt": 159.7505340576172,
+          "actualLegendOrder": [
+            "South",
+            "North"
+          ],
+          "referenceLegendOrder": [
+            "South",
+            "North"
+          ]
+        }
+      ],
+      "negativeControls": {
+        "missing bar diagnostic": "Missing independent reference-difference diagnostic",
+        "missing column diagnostic": "Missing independent reference-difference diagnostic",
+        "wrong reference": "Signed stack lengths differ from input values",
+        "changed editable data": "Editable chart data changed",
+        "changed SVG geometry": "PDF, SVG and XPS stacked geometry differ",
+        "changed XPS geometry": "PDF, SVG and XPS stacked geometry differ",
+        "changed legend order": "Stacked legend order differs from the independent reference",
+        "missing PDF content": "Missing logical category or legend text"
+      }
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, full #163 acceptance and roadmap #138 remain open."
+}
