@@ -301,6 +301,9 @@ combinations are not qualified by these specimens.
 The [exact-source receipt](measurements/roadmap-138-gradients-5549be0.json)
 records the complete local suites, package checks and repeated independent files;
 hosted exact-head and actual Framework qualification remain separate.
+The later [PR source-guest failure](measurements/roadmap-138-framework-6d021ea-pr-source-failure.json)
+occurred during its OCR download before tests began and is retained independently
+of any retry or push-side guest results.
 
 Pending #165 tests all 19,338 unmodified Unicode 17 default line-break cases,
 grapheme-safe use in managed PDF, nonbreaking spaces, font and owner rejection,
@@ -312,6 +315,11 @@ differs by up to 1.2 points and the simplified Chinese numeric-wrap sample diffe
 by 44.7 points horizontally and 16.01 vertically. Six corrupted controls verify
 the checks. The [reference receipt](measurements/roadmap-138-cjk-reference.json)
 retains both differences, the CFF source-face failure and earlier test failures.
+The [exact-source receipt](measurements/roadmap-138-cjk-5dd89f1.json) records
+the complete local suites, capability matrix, package checks and repeated
+independent specimens. Its [performance evidence](measurements/roadmap-138-cjk-performance-5dd89f1.json)
+retains the first failed harness build and the measured comparison. Hosted
+exact-head and actual Framework qualification remain separate.
 Other office implementations, broader fallback, grapheme shaping and output profiles
 remain unqualified.
 
