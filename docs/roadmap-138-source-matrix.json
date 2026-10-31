@@ -3,6 +3,26 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "basic-preset-polygons",
+      "issue": 161,
+      "outcome": "supported-bounded",
+      "boundary": "Unrotated default rectangle, triangle and diamond anchors retain editable geometry and render managed PDF/XPS/SVG polygons; source alternative metadata remains in DOCX.",
+      "tests": [
+        { "class": "PresetVectorShapeTests", "method": "PresetsRetainEditableGeometryAndRenderVectorPaths" },
+        { "class": "PresetVectorShapeTests", "method": "PresetAlternativeMetadataSurvivesDocxAndItsLossIsExplicit" }
+      ]
+    },
+    {
+      "id": "preset-polygon-boundaries",
+      "issue": 161,
+      "outcome": "rejected",
+      "boundary": "Hidden, adjusted, rotated, out-of-page or unknown presets and tagged/archive output reject in Strict; lenient omission is diagnosed and cancellation is atomic.",
+      "tests": [
+        { "class": "PresetVectorShapeTests", "method": "UnqualifiedPresetsFailBeforeOutput" },
+        { "class": "PresetVectorShapeTests", "method": "UnsupportedAdjustmentsAreDiagnosedAndCancellationPreservesOutput" }
+      ]
+    },
+    {
       "id": "native-standalone-equations-diagnosed",
       "issue": 153,
       "outcome": "supported-bounded",

@@ -247,6 +247,12 @@ box owner, placement, content or output combination before copying output.
 text-box title or description; Strict rejects it. Oversized text-box alternatives
 fail with `Shape.TextBoxAlternative` before use.
 
+Pending #161 reports `Shape.PresetAlternative` when non-DOCX output would lose
+the title or description of a newly supported rectangle, triangle or diamond,
+or a title on an earlier admitted vector. Strict rejects that loss. Hidden shapes,
+unqualified transforms and adjustments remain explicit vector-profile failures
+or diagnosed omission under the existing lenient conversion policy.
+
 ## Merged P1 diagnostics
 
 Report preprocessing rejects invalid paths/types/cycles, arithmetic failures and

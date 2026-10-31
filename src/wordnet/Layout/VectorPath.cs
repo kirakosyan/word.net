@@ -37,6 +37,18 @@ internal static class VectorPath
             Line(x + r, y + h); Curve(x + r - k * r, y + h, x, y + h - r + k * r, x, y + h - r);
             Line(x, y + r); Curve(x, y + r - k * r, x + r - k * r, y, x + r, y);
         }
+        else if (shape.Geometry == "rect")
+        {
+            Move(x, y); Line(x + w, y); Line(x + w, y + h); Line(x, y + h);
+        }
+        else if (shape.Geometry == "triangle")
+        {
+            Move(x + w / 2, y); Line(x + w, y + h); Line(x, y + h);
+        }
+        else if (shape.Geometry == "diamond")
+        {
+            Move(x + w / 2, y); Line(x + w, y + h / 2); Line(x + w / 2, y + h); Line(x, y + h / 2);
+        }
         else throw new InvalidOperationException("Shape.Vector: Unknown vector geometry.");
         result.Add(new Command('Z')); return result;
     }

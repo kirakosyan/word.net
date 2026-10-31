@@ -95,3 +95,24 @@ and native typography combinations remain unsupported, even with alternative tex
 These additions belong to 1.5.0; earlier 1.4.0 packages exclude them.
 See the [qualification record](roadmap-102-p6-qualification.md) and
 [release notes](releases/1.5.0.md) for exact-source and package evidence.
+
+### Unreleased source: basic preset shapes
+
+Pending #161 adds anchored, unrotated default `rect`, `triangle` and `diamond`
+presets to the existing opaque RGB fill/stroke profile. Editable DOCX retains the
+preset, original anchor and bounded alternative title and description. Ordinary
+managed PDF/XPS and SVG preview use polygon paths, with no screenshot substitution.
+The [independent observation](measurements/roadmap-138-preset-shapes-reference.json)
+checks source/saved schema, PDF vertices and edges against LibreOffice, and XPS/SVG
+vertices at the unchanged 0.5-point tolerance. It does not establish Word execution
+or all positions, strokes and application-specific appearance.
+
+Non-DOCX output does not retain authored title or description for these new
+presets: BestEffort/Lenient report `Shape.PresetAlternative`, while Strict rejects
+the loss. Alternative titles on previously admitted vector presets are now retained
+in DOCX and diagnosed when a non-DOCX output would lose them. Hidden new presets,
+custom adjustments, rotations, groups, arrow presets, gradients, ambiguous layers,
+native typography and tagged/archive output remain unqualified. In ordinary
+Lenient/BestEffort conversion an unsupported shape may be omitted only with the
+existing `Shape.VectorUnsupported` diagnostic; strict and editable sessions reject.
+This increment is not in the published 1.5.0 package.

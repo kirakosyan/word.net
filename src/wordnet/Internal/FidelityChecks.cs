@@ -15,6 +15,13 @@ internal static class FidelityChecks
                 using var location = context.At(paragraph.Location);
                 context.Loss("Shape.TextBoxAlternative", "This destination does not retain the text box's authored alternative title or description.");
             }
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx))
+            foreach (ParagraphBlock paragraph in model.Paragraphs.Where(p => p.Runs.Any(r => r.Box is PositionedBox box
+                && box.Geometry != null && (box.AlternativeTitle.Length != 0 || (box.Geometry is "rect" or "triangle" or "diamond") && box.AlternativeText.Length != 0))))
+            {
+                using var location = context.At(paragraph.Location);
+                context.Loss("Shape.PresetAlternative", "This destination does not retain the preset shape's authored alternative title or description.");
+            }
         if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && model.Theme != null)
             context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.UsesDefaultStyle))

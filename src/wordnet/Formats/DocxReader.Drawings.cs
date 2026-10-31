@@ -156,8 +156,10 @@ internal sealed partial class DocxReader
             throw new NotSupportedException("Shape.Vector: Only a single anchored vector shape is supported.");
         XElement? properties = shapes[0].Element(wps + "spPr");
         XElement? geometry = properties?.Element(A + "prstGeom"); string? kind = (string?)geometry?.Attribute("prst");
-        if (kind is not "line" and not "ellipse" and not "roundRect")
+        if (kind is not "line" and not "ellipse" and not "roundRect" and not "rect" and not "triangle" and not "diamond")
         { context.Loss("Shape.VectorUnsupported", "The drawing geometry is outside the admitted vector profile."); return null; }
+        if ((kind is "rect" or "triangle" or "diamond") && (string?)anchor.Element(Wp + "docPr")?.Attribute("hidden") is not null and not "0" and not "false" and not "off")
+            throw new NotSupportedException("Shape.Vector: Hidden preset shapes are outside the fixed-output profile.");
         if (properties == null || geometry == null || properties.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
             || properties.Elements().Any(e => e.Name != A + "xfrm" && e.Name != A + "prstGeom" && e.Name != A + "solidFill" && e.Name != A + "noFill" && e.Name != A + "ln")
             || geometry.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "prst") || geometry.Elements().Any(e => e.Name != A + "avLst" || e.HasElements || e.Attributes().Any(a => !a.IsNamespaceDeclaration))
@@ -181,9 +183,10 @@ internal sealed partial class DocxReader
             Width = cx / 12700.0,
             Height = cy / 12700.0,
             Anchor = ReadAnchor(anchor),
-            AlternativeText = (string?)anchor.Element(Wp + "docPr")?.Attribute("descr") ?? ""
+            AlternativeText = (string?)anchor.Element(Wp + "docPr")?.Attribute("descr") ?? "",
+            AlternativeTitle = (string?)anchor.Element(Wp + "docPr")?.Attribute("title") ?? ""
         };
-        if (box.AlternativeText.Length > 1024) throw new InvalidDataException("Shape.Vector: Alternative text exceeds its bound.");
+        if (box.AlternativeText.Length > 1024 || box.AlternativeTitle.Length > 1024) throw new InvalidDataException("Shape.Vector: Alternative text or title exceeds its bound.");
         if (box.Anchor.UnqualifiedLayer) throw new NotSupportedException("Shape.DrawingOrder: Nonzero vector drawing layers are unsupported.");
         XElement? fill = properties.Element(A + "solidFill");
         if (properties.Element(A + "noFill") is XElement noFill && (noFill.HasElements || noFill.Attributes().Any(a => !a.IsNamespaceDeclaration)))
