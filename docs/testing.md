@@ -133,6 +133,9 @@ GUID remapping, placeholder restoration, compatible local resource retention,
 conflicts and entry limits. The [independent reference](measurements/roadmap-138-glossary-fragment-reference.json)
 checks generated package relationships, two distinct entries and LibreOffice text;
 it does not establish live Word execution or unrestricted resource merging.
+The [exact-source receipt](measurements/roadmap-138-glossary-fragment-6d219a1.json)
+records complete local suites and package checks, and a separate four-resource
+specimen with a restored styled placeholder and independent static text.
 
 Pending mixed-fragment tests insert controls and charts/equations together into
 body and simple-cell bookmarks, verify independent IDs and edits, and reject shared
