@@ -1,0 +1,23 @@
+{
+  "roadmap": 138,
+  "issue": 150,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "8a92c1b4e1fbc94d3b12d760810fc5b510870bd2",
+  "scope": "Unreleased bounded paragraph-property revisions and comparison selection for matching body and simple-cell structure; structural insertion/deletion combined with paragraph-format differences is outside this measured commit.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed",
+    "net8ConversionAndEnglishOcr": { "passed": 1728, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1728, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 22, "testMethods": 109, "net10CasesPassed": 197 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed API and archive validation against this commit",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "0d6f181fcbb22ea9f7b4bcfdd52990951d5e64f82138b1b9fa499a5a7a2987ef",
+      "wordnet.Fonts.1.5.0.nupkg": "173a1478741e115f889e4fa88135f94f21fb397560a00579acec635cec19a84f",
+      "wordnet.Ocr.1.5.0.nupkg": "80d49d1ad92facbe83c591267f7454879f391e900878d7b30432e9b2e2a67a66"
+    }
+  },
+  "qualification": "Hosted qualification, remaining comparison categories, final review, merge and package publication are not established for this commit by this local record."
+}

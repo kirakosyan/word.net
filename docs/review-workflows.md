@@ -20,7 +20,8 @@ package qualification remain separate.
 Pending #150 comparison tracks alignment, left/right/first-line indentation,
 before/after/line spacing and keep/page-break controls for ordinary body paragraphs
 and direct paragraphs in unmerged simple body-table cells when the surrounding
-document topology matches. `CompareParagraphFormatting = false` keeps the original
+document topology matches. It also tracks formatting on a matched, unchanged body
+paragraph while other body paragraphs are inserted or deleted. `CompareParagraphFormatting = false` keeps the original
 resolved values instead. Paragraph style and mark formatting must match, and lists,
 headings, custom tabs, direction changes, controls and structured runs are outside
 this profile. Matching style inheritance is resolved before comparison; output
@@ -37,12 +38,15 @@ history only when the previous style matches; paragraph-mark and section propert
 remain outside the previous-property element, and unsupported owners or property
 changes are rejected. Ordinary loads keep their existing explicit
 accepted-state loss diagnostic. Review display and destination-style composition
-reject this history until it is decided. Structural insertion/deletion combined with
-paragraph-format differences remains outside this initial profile.
+reject this history until it is decided. Paragraph-format differences in table cells
+combined with structural changes, and formatting changes on moved paragraphs, remain
+outside this profile. Structural alignment does not infer a match between edited
+paragraph text and a separate insertion or deletion.
 
 The source tests inspect independent OOXML and Open XML SDK validation, compare
 accepted/rejected PDF glyph positions, and cover inherited resets, cells, sections,
-composition, selective decisions, budgets and unsupported owners. This remains
+composition, selective decisions, independent insertions and deletions, budgets and
+unsupported owners. This remains
 unreleased source; the broader #150 acceptance and exact-platform/package
 qualification remain open.
 

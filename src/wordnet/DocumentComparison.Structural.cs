@@ -15,7 +15,7 @@ public static partial class DocumentComparison
 {
     private static readonly XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
     private static void CompareStructure(DocumentModel left, DocumentModel right, ComparisonOptions comparison,
-        ConversionOptions options, ConversionContext context, bool ignoreRunFormatting, int priorWork, out int usedWork, out int usedTokens)
+        ConversionOptions options, ConversionContext context, bool ignoreRunFormatting, bool compareParagraphFormatting, int priorWork, out int usedWork, out int usedTokens)
     {
         long structuralItems = (long)left.Blocks.Count + right.Blocks.Count
             + left.Tables.Sum(t => (long)t.Rows.Count) + right.Tables.Sum(t => (long)t.Rows.Count);
@@ -92,10 +92,38 @@ public static partial class DocumentComparison
             var newCounts = bKeys.GroupBy(k => k, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
             if (movedKeys.Any(k => oldCounts[k] != 1 || newCounts[k] != 1))
                 throw new NotSupportedException("Comparison.Move: Duplicate paragraph candidates are ambiguous across sections.");
+            ReserveAdditionalWork(checked(aKeys.Length + bKeys.Length));
+            var oldIndices = aKeys.Select((key, index) => (key, index)).Where(item => movedKeys.Contains(item.key)).ToDictionary(item => item.key, item => item.index, StringComparer.Ordinal);
+            var newIndices = bKeys.Select((key, index) => (key, index)).Where(item => movedKeys.Contains(item.key)).ToDictionary(item => item.key, item => item.index, StringComparer.Ordinal);
+            foreach (string key in movedKeys)
+            {
+                context.CheckCancellation();
+                if (left.Blocks[oldIndices[key]] is ParagraphBlock oldParagraph && right.Blocks[newIndices[key]] is ParagraphBlock newParagraph
+                    && !ParagraphFormatSnapshot.Same(oldParagraph, newParagraph))
+                    throw new NotSupportedException("Comparison.Move: Paragraph formatting changes on moved paragraphs are unsupported.");
+            }
         }
         foreach (var pair in alignedBlocks)
         {
-            if (pair.A >= 0 && pair.B >= 0) { blocks.Add(left.Blocks[pair.A]); continue; }
+            if (pair.A >= 0 && pair.B >= 0)
+            {
+                if (left.Blocks[pair.A] is ParagraphBlock oldParagraph && right.Blocks[pair.B] is ParagraphBlock newParagraph
+                    && !ParagraphFormatSnapshot.Same(oldParagraph, newParagraph))
+                {
+                    ReserveAdditionalWork(1);
+                    if (!ReviewStore.OrdinaryParagraphFormat(oldParagraph) || !ReviewStore.OrdinaryParagraphFormat(newParagraph))
+                        throw new NotSupportedException("Comparison.ParagraphFormat: Paragraph-property changes require ordinary body paragraphs.");
+                    if (compareParagraphFormatting)
+                    {
+                        string id = Guid.NewGuid().ToString("N"); var previous = new ParagraphFormatSnapshot(oldParagraph);
+                        new ParagraphFormatSnapshot(newParagraph).Apply(oldParagraph);
+                        oldParagraph.ParagraphFormatRevision = id; oldParagraph.PreviousParagraphFormat = previous;
+                        left.Review.Revisions.Add(id, new ReviewRecord { Id = id, Author = comparison.Author, Date = comparison.Timestamp, Structure = "paragraph-format" });
+                    }
+                    else oldParagraph.ExplicitParagraphFormat = true;
+                }
+                blocks.Add(left.Blocks[pair.A]); continue;
+            }
             DocumentBlock changed = pair.A >= 0 ? left.Blocks[pair.A] : right.Blocks[pair.B];
             if (changed is not ParagraphBlock p) throw new NotSupportedException("Comparison.Move: Table moves are unsupported.");
             bool deletion = pair.A >= 0; string key = deletion ? aKeys[pair.A] : bKeys[pair.B];
@@ -200,10 +228,14 @@ public static partial class DocumentComparison
         }
         Dictionary<DocumentBlock, XElement> Elements(DocumentModel document)
         {
-            DocumentModel comparisonDocument = document;
+            DocumentModel comparisonDocument = new DocumentCloner(context).Copy(document);
+            foreach (ParagraphBlock paragraph in comparisonDocument.Blocks.OfType<ParagraphBlock>())
+            {
+                if (!ReviewStore.OrdinaryParagraphFormat(paragraph)) continue;
+                ReserveAdditionalWork(1); NeutralParagraphFormat(paragraph);
+            }
             if (ignoreRunFormatting)
             {
-                comparisonDocument = new DocumentCloner(context).Copy(document);
                 foreach (ParagraphBlock paragraph in comparisonDocument.BodyParagraphs)
                 {
                     ReserveAdditionalWork(checked(paragraph.Runs.Count + 1));

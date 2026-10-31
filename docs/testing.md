@@ -10,8 +10,9 @@ Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection
 of unsupported properties and story topology. Additional [paragraph-history tests](review-workflows.md#unreleased-source-paragraph-format-revisions)
-validate OOXML, decisions, PDF geometry, inherited resets, cells, composition,
-section ordering and unsupported-owner controls. They do not establish untested
+validate OOXML, independent decisions alongside separate paragraph insertions and
+deletions, PDF geometry, inherited resets, cells, composition, section ordering and
+unsupported-owner controls. They do not establish untested
 structural combinations or runtime/package qualification.
 
 ## 1.5.0 roadmap #102 delivery

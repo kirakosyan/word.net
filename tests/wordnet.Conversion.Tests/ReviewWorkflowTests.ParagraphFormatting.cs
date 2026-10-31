@@ -182,14 +182,82 @@ public sealed partial class ReviewWorkflowTests
         Assert.NotNull(Part(rejected).Descendants(W + "pPr").First().Element(W + "rPr")!.Element(W + "b"));
     }
 
-    [Fact]
-    public void ParagraphFormattingRetainsExistingStructuralAndDisplayBoundaries()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ParagraphFormattingAndSeparateStructuralInsertionsKeepIndependentDecisions(bool ignoreFormatting)
     {
         WordDocument original = Load(Input(ParagraphWith(OldParagraphProperties, "A") + P("B")));
         WordDocument revised = Load(Input(ParagraphWith(NewParagraphProperties, "A") + P("Inserted") + P("B")));
-        byte[] before = Save(original);
+        byte[] before = Save(original), after = Save(revised);
+        var options = new ComparisonOptions("Reviewer", Time) { CompareParagraphFormatting = !ignoreFormatting };
+        WordDocument compared = DocumentComparison.Compare(original, revised, options, Policy(), TestContext.Current.CancellationToken);
+        byte[] bytes = Save(compared); Schema(bytes);
+        Assert.Equal(ignoreFormatting ? 0 : 1, Part(bytes).Descendants(W + "pPrChange").Count());
+        Assert.Equal(ignoreFormatting ? 0 : 1, compared.Revisions.Count(r => r.Structure == "paragraph-format"));
+        WordDocument loaded = Load(bytes);
+        byte[] accepted = Save(loaded.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken));
+        byte[] rejected = Save(loaded.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken));
+        Schema(accepted); Schema(rejected);
+        Assert.Equal("AInsertedB", string.Concat(Part(accepted).Descendants(W + "t").Select(e => e.Value)));
+        Assert.Equal("AB", string.Concat(Part(rejected).Descendants(W + "t").Select(e => e.Value)));
+        Assert.Equal(ignoreFormatting ? "left" : "center", (string?)Part(accepted).Descendants(W + "jc").FirstOrDefault()?.Attribute(W + "val") ?? "left");
+        Assert.Equal("left", (string?)Part(rejected).Descendants(W + "jc").FirstOrDefault()?.Attribute(W + "val") ?? "left");
+        using (PdfDocument expected = PdfDocument.Open(Save(ignoreFormatting ? original : revised, DocumentFormat.Pdf)))
+        using (PdfDocument actual = PdfDocument.Open(Save(Load(accepted), DocumentFormat.Pdf)))
+            Assert.Equal(expected.GetPage(1).Letters[0].BoundingBox.Left, actual.GetPage(1).Letters[0].BoundingBox.Left, 3);
+        if (!ignoreFormatting)
+        {
+            loaded.ApplyRevisions(new[] { Assert.Single(loaded.Revisions, r => r.Structure == "paragraph-format") }, ReviewDecision.Reject, TestContext.Current.CancellationToken);
+            byte[] selectivelyAccepted = Save(loaded.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken));
+            Assert.Equal("AInsertedB", string.Concat(Part(selectivelyAccepted).Descendants(W + "t").Select(e => e.Value)));
+            Assert.Equal("left", (string?)Part(selectivelyAccepted).Descendants(W + "jc").First().Attribute(W + "val"));
+        }
+        Assert.Equal(before, Save(original)); Assert.Equal(after, Save(revised));
+    }
+
+    [Fact]
+    public void ParagraphFormattingCanBeDecidedSeparatelyFromADeletedParagraph()
+    {
+        WordDocument original = Load(Input(ParagraphWith(OldParagraphProperties, "A") + P("Removed") + P("B")));
+        WordDocument revised = Load(Input(ParagraphWith(NewParagraphProperties, "A") + P("B")));
+        WordDocument result = DocumentComparison.Compare(original, revised, new ComparisonOptions("Reviewer", Time), Policy(), TestContext.Current.CancellationToken);
+        byte[] bytes = Save(result); Schema(bytes); WordDocument loaded = Load(bytes);
+        byte[] accepted = Save(loaded.CreateReviewView(ReviewDecision.Accept, cancellationToken: TestContext.Current.CancellationToken));
+        byte[] rejected = Save(loaded.CreateReviewView(ReviewDecision.Reject, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal("AB", string.Concat(Part(accepted).Descendants(W + "t").Select(e => e.Value)));
+        Assert.Equal("ARemovedB", string.Concat(Part(rejected).Descendants(W + "t").Select(e => e.Value)));
+        Assert.Equal("center", (string?)Part(accepted).Descendants(W + "jc").First().Attribute(W + "val"));
+        Assert.Equal("left", (string?)Part(rejected).Descendants(W + "jc").First().Attribute(W + "val"));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ParagraphFormattingChangesOnMovedParagraphsRemainExplicitlyUnsupported(bool ignoreFormatting)
+    {
+        WordDocument original = Load(Input(P("A") + ParagraphWith(OldParagraphProperties, "Move") + P("B") + P("C")));
+        WordDocument revised = Load(Input(P("A") + P("B") + P("C") + ParagraphWith(NewParagraphProperties, "Move")));
+        byte[] before = Save(original), after = Save(revised);
+        var options = new ComparisonOptions("Reviewer", Time) { CompareParagraphFormatting = !ignoreFormatting };
+        Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(original, revised, options, Policy(), TestContext.Current.CancellationToken));
+        Assert.Equal(before, Save(original)); Assert.Equal(after, Save(revised));
+    }
+
+    [Fact]
+    public void CellParagraphFormattingWithStructuralEditsRemainsExplicitlyUnsupported()
+    {
+        string Table(string properties) => "<w:tbl><w:tr><w:tc>" + ParagraphWith(properties, "Cell") + "</w:tc></w:tr></w:tbl>";
+        WordDocument original = Load(Input(Table(OldParagraphProperties) + P("End")));
+        WordDocument revised = Load(Input(Table(NewParagraphProperties) + P("Inserted") + P("End")));
+        byte[] before = Save(original), after = Save(revised);
         Assert.Throws<NotSupportedException>(() => DocumentComparison.Compare(original, revised, new ComparisonOptions("Reviewer", Time), Policy(), TestContext.Current.CancellationToken));
-        Assert.Equal(before, Save(original));
+        Assert.Equal(before, Save(original)); Assert.Equal(after, Save(revised));
+    }
+
+    [Fact]
+    public void ParagraphFormattingRetainsDisplayBoundaries()
+    {
         WordDocument result = DocumentComparison.Compare(Load(Input(ParagraphWith(OldParagraphProperties, "A"))), Load(Input(ParagraphWith(NewParagraphProperties, "A"))),
             new ComparisonOptions("Reviewer", Time), Policy(), TestContext.Current.CancellationToken);
         Assert.Throws<NotSupportedException>(() => result.CreateReviewDisplay(cancellationToken: TestContext.Current.CancellationToken));

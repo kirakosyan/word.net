@@ -6,7 +6,7 @@
       "id": "comparison-paragraph-format",
       "issue": 150,
       "outcome": "supported-bounded",
-      "boundary": "Ordinary body and simple-cell paragraph properties use explicit resolved snapshots, review decisions and schema-valid OOXML when surrounding topology matches.",
+      "boundary": "Ordinary body and simple-cell paragraph properties use explicit resolved snapshots, review decisions and schema-valid OOXML when surrounding topology matches. Unchanged matching body paragraphs can also carry format history while other paragraphs are inserted or deleted.",
       "tests": [
         { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryRoundTripsAndBothDecisionsMatchIndependentGeometry" },
         { "class": "ReviewWorkflowTests", "method": "ParagraphAndTextChangesHaveIndependentAttributedDecisions" },
@@ -16,16 +16,20 @@
         { "class": "ReviewWorkflowTests", "method": "ImportedParagraphFormattingHistoryUsesPriorAndCurrentProperties" },
         { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingInsideSimpleCellsAndAtSectionBoundariesIsSchemaValid" },
         { "class": "ReviewWorkflowTests", "method": "ParagraphMarkFormattingRemainsUnchangedAcrossPropertyHistory" },
-        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryComposesWithDistinctIdsAndRejectsRestyling" }
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryComposesWithDistinctIdsAndRejectsRestyling" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingAndSeparateStructuralInsertionsKeepIndependentDecisions" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingCanBeDecidedSeparatelyFromADeletedParagraph" }
       ]
     },
     {
       "id": "comparison-paragraph-format-unsupported",
       "issue": 150,
       "outcome": "rejected",
-      "boundary": "Structural combinations, unsupported history owners, style-embedded history and exhausted work budgets fail without changing the source sessions.",
+      "boundary": "Cell formatting combined with structural edits, formatting on moved paragraphs, unsupported history owners, style-embedded history and exhausted work budgets fail without changing the source sessions; display rejects paragraph-format history.",
       "tests": [
-        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingRetainsExistingStructuralAndDisplayBoundaries" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingRetainsDisplayBoundaries" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingChangesOnMovedParagraphsRemainExplicitlyUnsupported" },
+        { "class": "ReviewWorkflowTests", "method": "CellParagraphFormattingWithStructuralEditsRemainsExplicitlyUnsupported" },
         { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingUsesTheComparisonBudgetAndCancellationAtomically" },
         { "class": "ReviewWorkflowTests", "method": "OrdinaryConversionDiagnosesDiscardedParagraphHistoryAndKeepsStrictOutputUntouched" },
         { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryRejectsUnsupportedOwners" },

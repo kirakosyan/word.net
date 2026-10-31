@@ -73,7 +73,7 @@ public static partial class DocumentComparison
         int tokenCount = 0, work = 0, bodyCount = 0;
         byte[] leftStructure = Structure(left), rightStructure = Structure(right);
         bool structural = !leftStructure.SequenceEqual(rightStructure) || ReorderedPlainParagraphs(left, right);
-        if (structural) CompareStructure(left, right, comparisonOptions, options, context, !compareRunFormatting, work, out work, out tokenCount);
+        if (structural) CompareStructure(left, right, comparisonOptions, options, context, !compareRunFormatting, compareParagraphFormatting, work, out work, out tokenCount);
         ParagraphBlock[] bodyA = structural ? Array.Empty<ParagraphBlock>() : left.BodyParagraphs.ToArray();
         ParagraphBlock[] bodyB = structural ? Array.Empty<ParagraphBlock>() : right.BodyParagraphs.ToArray();
         HashSet<ParagraphBlock> formatOwnersA = ReviewStore.ParagraphFormatOwners(left), formatOwnersB = ReviewStore.ParagraphFormatOwners(right);
