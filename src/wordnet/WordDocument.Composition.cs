@@ -44,6 +44,8 @@ public sealed partial class WordDocument
             Remap(incoming, prefix, m.Notes.Count == 0 ? 0 : m.Notes.Max(n => n.PartId));
             if (style == CompositionStyle.UseDestination)
             {
+                if (incoming.Tables.Any(table => table.Style != null))
+                    throw new NotSupportedException("Table.StyleRestyle: Resolve table styles before applying destination appearance.");
                 if (incoming.Review.Revisions.Values.Any(r => r.Structure is "format" or "paragraph-format" || r.MoveSide.Length != 0))
                     throw new NotSupportedException("Review.Composition: Resolve formatting and move history before applying destination styles.");
                 if (incoming.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object != null)) throw new NotSupportedException("Object.Restyle: Object composition retains source appearance only.");

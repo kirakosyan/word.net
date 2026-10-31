@@ -74,7 +74,8 @@ internal sealed class DocumentCloner
                 ManagedImplicitAutoFit = table.ManagedImplicitAutoFit,
                 LayoutExplicit = table.LayoutExplicit,
                 LeftIndent = table.LeftIndent,
-                Background = table.Background
+                Background = table.Background,
+                Style = table.Style
             };
             copy.ColumnWidths.AddRange(table.ColumnWidths); copy.NonSplittingRows.UnionWith(table.NonSplittingRows);
             foreach (var border in table.Borders) copy.Borders.Add(border.Key, Border(border.Value));

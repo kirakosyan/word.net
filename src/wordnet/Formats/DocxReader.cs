@@ -15,7 +15,10 @@ internal sealed partial class DocxReader
     private readonly ConversionContext context;
     private readonly Dictionary<string, XElement> relationships;
     private readonly Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
+    private readonly Dictionary<string, TableStyle> tableStyles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
+    private long tableStyleBytes;
     private string? defaultStyle;
+    private bool hasDefaultTableStyle;
     private ParagraphAlignment defaultAlignment;
     private ParagraphLayout defaultLayout = new ParagraphLayout();
     private TextStyle defaultRun = new TextStyle();
@@ -218,6 +221,7 @@ internal sealed partial class DocxReader
                 if (defaultStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last paragraph style marked default is used, following the document format default-style rule.");
                 defaultStyle = id;
             }
+            if ((string?)style.Attribute(W + "type") == "table" && IsTrue((string?)style.Attribute(W + "default"))) hasDefaultTableStyle = true;
         }
     }
 
@@ -510,7 +514,7 @@ internal sealed partial class DocxReader
                 var cell = new TableCell();
                 var pendingBookmarks = new List<TextRun>();
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
-                if (table.Background != null && !reportedShadingConflict && rowChild.Element(W + "tcPr")?.Element(W + "shd") != null)
+                if (table.EffectiveBackground != null && !reportedShadingConflict && rowChild.Element(W + "tcPr")?.Element(W + "shd") != null)
                 {
                     context.Loss("Table.ShadingConflict", "Table shading combined with direct cell shading is not independently qualified.");
                     reportedShadingConflict = true;
@@ -564,20 +568,20 @@ internal sealed partial class DocxReader
             }
         }
 
-        if (table.Borders.Count != 0 && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
-            context.Loss("Table.BorderStory", "Direct table borders outside the ordinary document body are not independently qualified.");
-        if (table.Background != null && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
-            context.Loss("Table.ShadingStory", "Direct table shading outside the ordinary document body is not independently qualified.");
-        if (table.Borders.Count != 0 && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
+        if (table.HasTableBorders && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
+            context.Loss("Table.BorderStory", "Table borders outside the ordinary document body are not independently qualified.");
+        if (table.EffectiveBackground != null && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
+            context.Loss("Table.ShadingStory", "Table shading outside the ordinary document body is not independently qualified.");
+        if (table.HasTableBorders && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
             || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
                 || cell.Borders.Count != 0 || cell.Content.OfType<TableBlock>().Any())
                 || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
-            context.Loss("Table.BorderConflict", "Direct table borders on merged, nested, irregular or individually bordered cells use an approximation.");
-        if (table.Background != null && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
+            context.Loss("Table.BorderConflict", "Table borders on merged, nested, irregular or individually bordered cells use an approximation.");
+        if (table.EffectiveBackground != null && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
             || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
                 || cell.Content.OfType<TableBlock>().Any())
                 || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
-            context.Loss("Table.ShadingConflict", "Direct table shading on merged, nested or irregular cells uses an approximation.");
+            context.Loss("Table.ShadingConflict", "Table shading on merged, nested or irregular cells uses an approximation.");
         AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
     }

@@ -206,6 +206,19 @@ internal sealed partial class DocxReader
     private void ReadTableGeometry(XElement element, TableBlock table)
     {
         XElement? properties = element.Element(W + "tblPr");
+        XElement[] styleReferences = properties?.Elements(W + "tblStyle").ToArray() ?? Array.Empty<XElement>();
+        if (styleReferences.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate table style references.");
+        if (styleReferences.Length == 1)
+        {
+            string id = DocxPackage.RequiredAttribute(styleReferences[0], W + "val");
+            if (string.IsNullOrWhiteSpace(id) || id.Length > 1024) throw new InvalidDataException("Docx.TableStyle: Invalid table style identifier.");
+            if (styleReferences[0].HasElements || styleReferences[0].Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+                || styleReferences[0].Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "val"))
+                context.Loss("Docx.TableStyleData", "Unsupported table-style reference metadata is not retained.");
+            table.Style = ResolveTableStyle(id, new HashSet<string>(StringComparer.Ordinal));
+        }
+        else if (hasDefaultTableStyle)
+            context.Loss("Docx.TableStyleDefault", "Implicit default table styles are not applied or retained.");
         table.Width = ReadWidth(properties?.Element(W + "tblW"), value => table.WidthPercent = value);
         string? layout = (string?)properties?.Element(W + "tblLayout")?.Attribute(W + "type");
         if (layout is not null and not "fixed" and not "autofit") throw new InvalidDataException("Docx.TableLayout: Invalid layout type.");
@@ -223,12 +236,55 @@ internal sealed partial class DocxReader
         XElement[] shading = properties?.Elements(W + "shd").ToArray() ?? Array.Empty<XElement>();
         if (shading.Length > 1) throw new InvalidDataException("Docx.TableShading: Duplicate table shading properties.");
         if (shading.Length == 1) ReadTableShading(shading[0], table);
-        if (properties?.Elements().Any(e => e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd" && e.Name != W + "tblBorders" && e.Name != W + "shd") == true)
+        if (table.Style != null && (borderSets.Length != 0 || shading.Length != 0))
+            context.Loss("Table.StyleConflict", "Direct table borders or shading combined with a table style are not independently qualified.");
+        if (properties?.Elements().Any(e => e.Name != W + "tblStyle" && e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd" && e.Name != W + "tblBorders" && e.Name != W + "shd") == true)
             context.Loss("Docx.TableFormatting", "Unsupported table properties such as styles and spacing are not retained.");
         if (element.Element(W + "tblGrid")?.Elements().Any(e => e.Name != W + "gridCol") == true)
             context.Loss("Docx.TableGrid", "Table grid revisions are not retained.");
         foreach (XElement column in element.Element(W + "tblGrid")?.Elements(W + "gridCol") ?? Enumerable.Empty<XElement>())
             table.ColumnWidths.Add(column.Attribute(W + "w") != null ? Integer(column, W + "w", 1, 31680) / 20.0 : 0);
+    }
+
+    private TableStyle? ResolveTableStyle(string id, HashSet<string> visiting)
+    {
+        context.CheckCancellation();
+        if (string.IsNullOrWhiteSpace(id) || id.Length > 1024) throw new InvalidDataException("Docx.TableStyle: Invalid table style identifier.");
+        if (tableStyles.TryGetValue(id, out TableStyle? cached)) return cached;
+        if (!styles.TryGetValue(id, out XElement? source) || (string?)source.Attribute(W + "type") != "table")
+        { context.Loss("Docx.TableStyleMissing", "A missing or non-table style is not applied or retained."); return null; }
+        if (!visiting.Add(id) || visiting.Count > Math.Min(64, context.Options.MaximumNestingDepth))
+            throw new InvalidDataException("Docx.TableStyleCycle: Table-style inheritance cycles or exceeds the nesting limit.");
+        XElement[] names = source.Elements(W + "name").ToArray(), parents = source.Elements(W + "basedOn").ToArray(), properties = source.Elements(W + "tblPr").ToArray();
+        if (names.Length > 1 || parents.Length > 1 || properties.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate table style properties.");
+        string name = names.Length == 0 ? id : DocxPackage.RequiredAttribute(names[0], W + "val");
+        if (name.Length > 1024) throw new InvalidDataException("Limit.TableStyles: A table style name is too long.");
+        if (source.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "type" && attribute.Name != W + "styleId")
+            || source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+            || source.Elements().Any(child => child.Name != W + "name" && child.Name != W + "basedOn" && child.Name != W + "tblPr")
+            || names.Concat(parents).Any(child => child.HasElements || child.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+                || child.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "val")))
+            context.Loss("Docx.TableStyleData", "Unsupported table-style properties or metadata are not retained.");
+        TableStyle? parent = parents.Length == 0 ? null : ResolveTableStyle(DocxPackage.RequiredAttribute(parents[0], W + "val"), visiting);
+        var appearance = new TableBlock();
+        if (properties.Length != 0)
+        {
+            XElement container = properties[0];
+            XElement[] borders = container.Elements(W + "tblBorders").ToArray(), shading = container.Elements(W + "shd").ToArray();
+            if (borders.Length > 1 || shading.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate style appearance properties.");
+            if (borders.Length != 0) ReadTableBorders(borders[0], appearance);
+            if (shading.Length != 0) ReadTableShading(shading[0], appearance);
+            if (container.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)
+                || container.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+                || container.Elements().Any(child => child.Name != W + "tblBorders" && child.Name != W + "shd"))
+                context.Loss("Docx.TableStyleData", "Unsupported whole-table style properties are not retained.");
+        }
+        visiting.Remove(id);
+        tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256);
+        if (tableStyles.Count >= 10000 || tableStyleBytes > context.Options.MaximumExpandedBytes)
+            throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
+        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background);
+        tableStyles.Add(id, result); return result;
     }
 
     private void ReadTableShading(XElement shading, TableBlock table)

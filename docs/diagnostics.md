@@ -1,5 +1,16 @@
 # Conversion diagnostics
 
+For pending whole-table style support, `Docx.TableStyleData` and
+`Docx.TableStyleMissing` report unsupported style metadata or an unresolved table
+style. `Docx.TableStyleDefault` reports an implicit default style that is not
+applied. `Docx.TableStyleCycle` and `Limit.TableStyles` reject cyclic, overdeep or
+excessive style data. `Table.StyleConflict` diagnoses combined style and direct
+table borders or shading, and `Table.StyleRestyle` rejects destination restyling
+of a styled incoming table. `Comparison.TableStyle` rejects changed style chains.
+Non-DOCX editable output reports `Table.StyleOutput` as a loss of style identity;
+static output reports `Table.StyleStaticOutput` as information when it resolves
+the style appearance. Existing border and shading diagnostics still apply.
+
 Pending direct table-border support reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and
 `Table.BorderSplit` identify fixed-page approximations. `Table.BorderApproximated`

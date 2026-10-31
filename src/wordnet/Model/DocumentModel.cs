@@ -112,6 +112,9 @@ internal sealed class TableBlock : DocumentBlock
     internal double LeftIndent { get; set; }
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal string? Background { get; set; }
+    internal TableStyle? Style { get; set; }
+    internal string? EffectiveBackground => Background ?? Style?.EffectiveBackground;
+    internal bool HasTableBorders => Borders.Count != 0 || Style?.EffectiveBorders.Count > 0;
     // Direct table borders remain separate from cell overrides so that row edits
     // and report expansion compute their outside and inside edges afresh.
     internal Dictionary<string, CellBorder> Borders { get; } = new Dictionary<string, CellBorder>();
@@ -129,11 +132,12 @@ internal sealed class TableBlock : DocumentBlock
     internal Dictionary<int, (double Height, bool Exact)> RowHeights { get; } = new Dictionary<int, (double, bool)>();
 
     internal IEnumerable<KeyValuePair<string, CellBorder>> CellBorders(int row, int column) =>
-        Borders.Count == 0 ? Rows[row][column].Borders : ResolveCellBorders(row, column);
+        !HasTableBorders ? Rows[row][column].Borders : ResolveCellBorders(row, column);
 
     private IEnumerable<KeyValuePair<string, CellBorder>> ResolveCellBorders(int row, int column)
     {
         TableCell cell = Rows[row][column];
+        IReadOnlyDictionary<string, CellBorder> defaults = Borders.Count != 0 ? Borders : Style!.EffectiveBorders;
         foreach (var border in cell.Borders) yield return border;
         for (int i = 0; i < 4; i++)
         {
@@ -145,10 +149,37 @@ internal sealed class TableBlock : DocumentBlock
                 2 => column == 0 ? "left" : "insideV",
                 _ => column == Rows[row].Count - 1 ? "right" : "insideV"
             };
-            if (!cell.Borders.ContainsKey(side) && Borders.TryGetValue(inherited, out CellBorder? border))
+            if (!cell.Borders.ContainsKey(side) && defaults.TryGetValue(inherited, out CellBorder? border))
                 yield return new KeyValuePair<string, CellBorder>(side, border);
         }
     }
+}
+
+// This closed, immutable snapshot contains only the admitted whole-table style
+// properties. Unsupported style elements are diagnosed before construction.
+internal sealed class TableStyle
+{
+    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background)
+    {
+        Id = id; Name = name; BasedOn = basedOn; Background = background;
+        var specified = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
+        var effective = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
+        if (basedOn != null) foreach (var border in basedOn.EffectiveBorders) effective.Add(border.Key, border.Value);
+        foreach (var border in borders)
+        {
+            var copy = new CellBorder { Color = border.Value.Color, Style = border.Value.Style, Width = border.Value.Width };
+            specified.Add(border.Key, copy); effective[border.Key] = copy;
+        }
+        Borders = specified; EffectiveBorders = effective;
+        EffectiveBackground = background ?? basedOn?.EffectiveBackground;
+    }
+    internal string Id { get; }
+    internal string Name { get; }
+    internal TableStyle? BasedOn { get; }
+    internal IReadOnlyDictionary<string, CellBorder> Borders { get; }
+    internal IReadOnlyDictionary<string, CellBorder> EffectiveBorders { get; }
+    internal string? Background { get; }
+    internal string? EffectiveBackground { get; }
 }
 
 internal enum VerticalMerge { None, Start, Continue }

@@ -10,6 +10,12 @@ internal static class FidelityChecks
     {
         if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && model.Theme != null)
             context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.Style != null))
+        {
+            if (format is DocumentFormat.Doc or DocumentFormat.Rtf or DocumentFormat.Odt or DocumentFormat.Ott)
+                context.Loss("Table.StyleOutput", "This editable destination does not retain the DOCX table-style reference or inheritance.");
+            else context.Report("Table.StyleStaticOutput", "This output computes the table appearance without retaining an editable DOCX table-style reference.");
+        }
         if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in model.Paragraphs)
                 for (int i = 0; i < paragraph.Runs.Count; i++)
@@ -88,7 +94,7 @@ internal static class FidelityChecks
         {
             if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Rows.SelectMany(r => r).Any(c => c.Content.OfType<TableBlock>().Any())).Select(t => t.Location),
                 "Table.NestedFlattened", "Nested tables retain their text in reading order as cell paragraphs in this output profile.");
-            if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.Background != null || t.Borders.Count != 0 || t.Rows.SelectMany(r => r).Any(c => c.Background != null || c.Borders.Count > 0 || c.VerticalAlignment != "top")).Select(t => t.Location),
+            if (format is not DocumentFormat.Pdf and not DocumentFormat.Xps) LossAt(tables.Where(t => t.EffectiveBackground != null || t.HasTableBorders || t.Rows.SelectMany(r => r).Any(c => c.Background != null || c.Borders.Count > 0 || c.VerticalAlignment != "top")).Select(t => t.Location),
                 "Table.Decoration", "This output profile omits cell shading, borders and vertical alignment while retaining cell content.");
             if (format != DocumentFormat.Rtf) LossAt(paragraphs.Where(p => p.Runs.Any(r => r.Appearance.HasValues
                 && (format is not DocumentFormat.Pdf and not DocumentFormat.Xps || r.Appearance.Underline && !(r.ControlDisplay && !context.Typography.Enabled && context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17) || r.Appearance.Strike || r.Appearance.Background != null || r.Appearance.VerticalAlignment != null))).Select(p => p.Location),

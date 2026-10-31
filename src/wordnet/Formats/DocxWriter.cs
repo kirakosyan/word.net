@@ -20,6 +20,8 @@ internal sealed partial class DocxWriter
     private readonly Dictionary<string, int> bookmarkIds = new Dictionary<string, int>(StringComparer.Ordinal);
     private readonly List<XElement> relationships = new List<XElement>();
     private readonly HashSet<string> usedStyles = new HashSet<string>(StringComparer.Ordinal);
+    private readonly Dictionary<TableStyle, string> tableStyleIds = new Dictionary<TableStyle, string>();
+    private readonly List<TableStyle> tableStyleOrder = new List<TableStyle>();
 
     private DocxWriter(ConversionContext context)
     {
@@ -31,6 +33,7 @@ internal sealed partial class DocxWriter
         var writer = new DocxWriter(context) { model = document };
         _ = LinkedTextBoxes.Validate(document, context);
         ObjectOutputBudget(document, context);
+        writer.PrepareTableStyles(document);
         if (DocumentReferences.HasFields(document)) _ = DocumentReferences.Refresh(document, context, paginate: false);
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
@@ -96,7 +99,7 @@ internal sealed partial class DocxWriter
         writer.WriteStories(document, archive, types);
         writer.WriteReview(archive, types);
         writer.WriteTypedParts(archive, types);
-        if (writer.usedStyles.Count > 0)
+        if (writer.usedStyles.Count > 0 || writer.tableStyleOrder.Count > 0)
         {
             types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/styles.xml"),
                 new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml")));
@@ -374,13 +377,11 @@ internal sealed partial class DocxWriter
     private XElement Table(TableBlock table)
     {
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
+            table.Style == null ? null : new XElement(W + "tblStyle", new XAttribute(W + "val", tableStyleIds[table.Style])),
             new XElement(W + "tblW", new XAttribute(W + "w", table.WidthPercent.HasValue ? Math.Round(table.WidthPercent.Value * 50).ToString(CultureInfo.InvariantCulture) : table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.WidthPercent.HasValue ? "pct" : table.Width.HasValue ? "dxa" : "auto"))));
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
         if (table.Borders.Count != 0)
-            element.Element(W + "tblPr")!.Add(new XElement(W + "tblBorders", TableBorderSides
-                .Where(side => table.Borders.ContainsKey(side)).Select(side => new XElement(W + side,
-                    new XAttribute(W + "val", table.Borders[side].Style), new XAttribute(W + "sz", Math.Round(table.Borders[side].Width * 8)),
-                    new XAttribute(W + "color", table.Borders[side].Color)))));
+            element.Element(W + "tblPr")!.Add(TableBorders(table.Borders));
         if (table.Background != null) element.Element(W + "tblPr")!.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
             new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", table.Background)));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
@@ -465,6 +466,49 @@ internal sealed partial class DocxWriter
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
     private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));
 
+    private static XElement TableBorders(IReadOnlyDictionary<string, CellBorder> borders) => new XElement(W + "tblBorders", TableBorderSides
+        .Where(side => borders.ContainsKey(side)).Select(side => new XElement(W + side,
+            new XAttribute(W + "val", borders[side].Style), new XAttribute(W + "sz", Math.Round(borders[side].Width * 8)),
+            new XAttribute(W + "color", borders[side].Color))));
+
+    private void PrepareTableStyles(DocumentModel document)
+    {
+        var styles = new List<TableStyle>(); var seen = new HashSet<TableStyle>();
+        foreach (TableBlock table in document.Tables)
+        {
+            context.CheckCancellation();
+            var pending = new Stack<TableStyle>(); TableStyle? current = table.Style;
+            while (current != null && seen.Add(current))
+            { context.CheckCancellation(); pending.Push(current); current = current.BasedOn; }
+            while (pending.Count != 0) styles.Add(pending.Pop());
+            if (styles.Count > 10000) throw new InvalidDataException("Limit.TableStyles: Too many retained table styles.");
+        }
+        if (styles.Count == 0) return;
+        var reserved = new HashSet<string>(document.Styles.Keys, StringComparer.Ordinal) { "WordnetCode", "WordnetCodeBlock" };
+        foreach (ParagraphBlock paragraph in document.Paragraphs)
+        { context.CheckCancellation(); if (paragraph.StyleId != null) reserved.Add(paragraph.StyleId); }
+        foreach (int level in Enumerable.Range(1, 9)) reserved.Add("Heading" + level.ToString(CultureInfo.InvariantCulture));
+        var sourceIds = new HashSet<string>(StringComparer.Ordinal);
+        long metadataBytes = 0;
+        foreach (TableStyle style in styles)
+        {
+            context.CheckCancellation(); sourceIds.Add(style.Id);
+            metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256);
+            if (metadataBytes > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
+        }
+        var assigned = new HashSet<string>(reserved, StringComparer.Ordinal); int sequence = 0;
+        foreach (TableStyle style in styles)
+        {
+            context.CheckCancellation(); string id = style.Id;
+            if (assigned.Contains(id))
+            {
+                do { id = "WordnetTableStyle" + (sequence++).ToString(CultureInfo.InvariantCulture); }
+                while (assigned.Contains(id) || sourceIds.Contains(id));
+            }
+            assigned.Add(id); tableStyleIds.Add(style, id); tableStyleOrder.Add(style);
+        }
+    }
+
     private XElement Styles()
     {
         var styles = new XElement(W + "styles");
@@ -486,6 +530,20 @@ internal sealed partial class DocxWriter
                     new XAttribute(W + "ascii", "Consolas"), new XAttribute(W + "hAnsi", "Consolas"))));
             }
 
+            styles.Add(style);
+        }
+
+        foreach (TableStyle definition in tableStyleOrder)
+        {
+            context.CheckCancellation();
+            var style = new XElement(W + "style", new XAttribute(W + "type", "table"), new XAttribute(W + "styleId", tableStyleIds[definition]),
+                new XElement(W + "name", new XAttribute(W + "val", definition.Name)),
+                definition.BasedOn == null ? null : new XElement(W + "basedOn", new XAttribute(W + "val", tableStyleIds[definition.BasedOn])));
+            var properties = new XElement(W + "tblPr");
+            if (definition.Borders.Count != 0) properties.Add(TableBorders(definition.Borders));
+            if (definition.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
+                new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.Background)));
+            if (properties.HasElements) style.Add(properties);
             styles.Add(style);
         }
 

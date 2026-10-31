@@ -19,12 +19,27 @@ unqualified owners or pagination are diagnosed rather than silently accepted.
 The table-level extent and precedence follow the public
 [OOXML shading description](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.shading?view=openxml-3.0.1).
 
+For the same simple-table profile, a bounded `w:basedOn` chain of table styles
+may provide whole-table borders and clear explicit RGB shading through `w:tblPr`.
+Child edges override inherited edges, including explicit `nil` and `none` resets.
+Implicit default table styles are diagnosed rather than applied.
+DOCX saves retain an editable style reference and chain; composition remaps
+colliding style identifiers. Fixed output, HTML and ODT resolve the appearance
+from the chain and current rows. Non-DOCX editable outputs report that the style
+identity is lost; static outputs report that the style has been resolved.
+Cycles, excessive chain depth and resource-limit violations fail, and unqualified
+style metadata or properties are diagnosed. Combining styles with direct table
+border or shading overrides is not admitted in strict mode. Comparison rejects
+table-style changes, including when other formatting categories are ignored.
+
 Individually bordered, merged, nested or irregular cells, tables in stories or
 text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
-and strict rejection. Table styles, conditional regions and full
-border-conflict precedence remain outside this increment. The independent
+and strict rejection. Conditional regions and `tblLook`, style-level paragraph,
+run and cell properties, and full border-conflict precedence remain outside this
+increment. The independent
 [LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
-checks the six edge colors and grid relationships. It also retains measured
+checks six edge colors, grid relationships, style inheritance and an inherited
+edge reset. It also retains measured
 horizontal and vertical placement differences; pixel-identical placement is not
 established. LibreOffice omitted the table-level fill in the separate shading
 probe while a direct-cell control painted its fill. That failed reference result

@@ -30,6 +30,23 @@ the managed renderer used 72, 84.65 and 97.30 points. These observed placement
 differences remain unresolved, not passing parity results; exact-commit and
 other-runtime qualification remain separate.
 
+## Whole-table style inheritance
+
+`generate-style.py` derives a synthetic input from the border fixture: the
+six edges are defined in a `Base` table style and the table references a
+`Derived` style that uses `w:basedOn`. The checked DOCX SHA-256 is
+`c4baac3ea3086c989d26d0242a24b30a15abf77dca309e6cc96e744891f22941`.
+LibreOffice 24.2.7.2 rendered the inherited border colors in the pinned-font
+`table-style.pdf` (SHA-256
+`8744f6b680ce3b68a1c9bdaedc40c3c35e019ac271ac5ee125a261d5e859da77`).
+The same 5.4-point horizontal and smaller vertical differences recorded above
+remain; this control does not qualify conditional regions or general style parity.
+`generate-style-reset.py` adds a child-style `nil` top border. LibreOffice
+omitted the inherited red top while retaining the other five border colors.
+The reset DOCX and PDF hashes are
+`51620b97e678a21a44314272823271755b589fb6ac475a4e57d9cfc20585ee09` and
+`38c012471f1cf582429dbaa8942ddf9b119bdaf1d6bddb60751403ec17a5d920`.
+
 ## Table-shading controls and retained reference failure
 
 `generate.py --shading` constructs the same table with a direct, clear

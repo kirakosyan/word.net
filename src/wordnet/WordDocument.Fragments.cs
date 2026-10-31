@@ -198,6 +198,8 @@ public sealed partial class WordDocument
             Remap(incoming, prefix, m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
             if (style == CompositionStyle.UseDestination)
             {
+                if (incoming.Tables.Any(table => table.Style != null))
+                    throw new NotSupportedException("Table.StyleRestyle: Resolve table styles before applying destination appearance.");
                 if (incoming.HasControlDisplay) throw new NotSupportedException("Fragment.Structure: Detached typed-control display cannot be restyled during fragment insertion.");
                 if (placeholder.IsCodeBlock || incoming.BodyParagraphs.Any(p => p.IsCodeBlock
                     || p.Runs.Any(r => r.Code || r.FieldCache?.Any(cached => cached.Code) == true)))

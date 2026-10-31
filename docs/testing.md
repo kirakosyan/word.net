@@ -15,6 +15,13 @@ The [working-tree ODT probe](measurements/roadmap-138-table-shading-reference.js
 also passed pinned ODF 1.3 schemas and reopened in LibreOffice with the expected
 fill and text. `eng/verify-table-shading-odt.py` checks the synthetic ODT against
 locally supplied, checksum-pinned schemas without network access.
+The [exact-source shading receipt](measurements/roadmap-138-table-shading-57481ba.json)
+records local checks for that increment. Whole-table style tests additionally
+check editable inheritance and edge resets, collision-safe composition,
+report expansion, comparison and explicit unsupported combinations. Independent
+LibreOffice fixtures confirm inherited border colors and a disabled inherited
+edge, while the measured placement differences and shading-reference limitation
+remain.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

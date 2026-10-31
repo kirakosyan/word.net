@@ -3,6 +3,31 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "whole-table-style-inheritance",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Bounded whole-table style chains retain explicit borders and clear RGB shading in editable DOCX; collision-safe composition and report expansion preserve their appearance. Independent LibreOffice fixtures confirm inherited colors and an edge reset, with measured placement differences.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "InheritedTableStyleRemainsEditableAndMatchesReferenceBorderColors" },
+        { "class": "DocxTableBorderTests", "method": "ChildStyleCanExplicitlyDisableAnInheritedBorder" },
+        { "class": "DocxTableBorderTests", "method": "ConflictingStyleIdentifiersAreRemappedDuringComposition" },
+        { "class": "DocxTableBorderTests", "method": "InheritedStyleAppearanceSurvivesReportRowExpansion" },
+        { "class": "DocxTableBorderTests", "method": "InheritedClearTableShadingIsRetainedAndEditableOutputLossIsExplicit" }
+      ]
+    },
+    {
+      "id": "whole-table-style-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Implicit default styles, conditional regions, unsupported style metadata, direct table or cell conflicts, changed styles in comparison and destination restyling remain explicitly unsupported. Cyclic and overdeep chains fail before output.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "UnsupportedStyleCombinationsFailBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "CyclicAndOverdeepTableStylesFailWithoutWriting" },
+        { "class": "DocxTableBorderTests", "method": "DestinationRestylingRejectsStyledFragmentsWithoutChangingEitherSession" },
+        { "class": "DocxTableBorderTests", "method": "ChangedTableStylesCannotBeHiddenByComparisonOptions" }
+      ]
+    },
+    {
       "id": "direct-table-shading",
       "issue": 142,
       "outcome": "supported-bounded",

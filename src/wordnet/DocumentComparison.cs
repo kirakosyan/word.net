@@ -63,6 +63,10 @@ public static partial class DocumentComparison
         DocumentModel left = original.ComparisonSnapshot(context), right = revised.ComparisonSnapshot(context);
         if (!(left.Theme == null && right.Theme == null) && !(left.Theme?.Same(right.Theme) ?? false))
             throw new NotSupportedException("Comparison.ThemeConflict: Documents with different or missing themes cannot be compared without resolving their document-wide theme.");
+        TableStyle?[] leftStyles = left.Tables.Select(table => table.Style).ToArray(), rightStyles = right.Tables.Select(table => table.Style).ToArray();
+        if ((leftStyles.Any(style => style != null) || rightStyles.Any(style => style != null))
+            && (leftStyles.Length != rightStyles.Length || leftStyles.Where((style, index) => !SameTableStyle(style, rightStyles[index], context)).Any()))
+            throw new NotSupportedException("Comparison.TableStyle: Table-style changes are outside the comparison profile.");
         foreach (DocumentModel snapshot in new[] { left, right })
             foreach (ParagraphBlock paragraph in snapshot.BodyParagraphs)
             { List<TextRun> combined = RunCoalescer.Combine(paragraph.Runs); paragraph.Runs.Clear(); paragraph.Runs.AddRange(combined); }
@@ -228,6 +232,20 @@ public static partial class DocumentComparison
             }
             return false;
         }
+    }
+    private static bool SameTableStyle(TableStyle? left, TableStyle? right, ConversionContext context)
+    {
+        while (left != null && right != null)
+        {
+            context.CheckCancellation();
+            if (left.Id != right.Id || left.Name != right.Name || left.Background != right.Background || left.Borders.Count != right.Borders.Count)
+                return false;
+            foreach (var border in left.Borders)
+                if (!right.Borders.TryGetValue(border.Key, out CellBorder? other) || border.Value.Style != other.Style
+                    || border.Value.Color != other.Color || border.Value.Width != other.Width) return false;
+            left = left.BasedOn; right = right.BasedOn;
+        }
+        return left == null && right == null;
     }
     private static TextRun Neutral(TextRun r)
     {
