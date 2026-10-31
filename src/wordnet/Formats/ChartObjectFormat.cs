@@ -306,6 +306,7 @@ internal static class ChartObjectFormat
         else if (tx?.Element(C + "strRef") != null) { string[] names = Strings(tx, workbook); if (names.Length != 1) throw Invalid("SeriesName"); seriesName = names[0]; }
         ObjectText.Check(seriesName, "series", 1024);
         ChartKind kind = data.Name == C + "pieChart" ? ChartKind.Pie : ChartKind.Doughnut;
+        ChartDataLabels labels = ParseDataLabels(root, data, false, out bool labelAppearance);
         bool SafeLegendText(XElement properties)
         {
             string[] names = { "bodyPr", "lstStyle", "p", "pPr", "defRPr", "endParaRPr" };
@@ -315,22 +316,22 @@ internal static class ChartObjectFormat
                     && e.Attributes().All(a => a.IsNamespaceDeclaration || e.Name == A + "pPr" && a.Name == "rtl" && a.Value is "0" or "false"
                         || e.Name == A + "endParaRPr" && a.Name == "lang"));
         }
-        bool renderable = (string?)data.Element(C + "firstSliceAng")?.Attribute("val") == "0" && data.Elements(C + "firstSliceAng").Count() == 1
+        bool renderable = labelAppearance && (string?)data.Element(C + "firstSliceAng")?.Attribute("val") == "0" && data.Elements(C + "firstSliceAng").Count() == 1
             && (kind == ChartKind.Pie ? !data.Elements(C + "holeSize").Any() : data.Elements(C + "holeSize").Count() == 1 && (string?)data.Element(C + "holeSize")?.Attribute("val") == "50")
             && root.Elements().All(e => e.Name == C + "lang" || e.Name == C + "chart" || e.Name == C + "externalData" || e.Name == C + "printSettings")
             && chart.Elements().All(e => e.Name == C + "title" || e.Name == C + "plotArea" || e.Name == C + "legend" || e.Name == C + "plotVisOnly" || e.Name == C + "dispBlanksAs")
             && plot.Elements().All(e => e.Name == C + "layout" || e == data)
             && ((string?)chart.Element(C + "plotVisOnly")?.Attribute("val") is null or "1" or "true")
-            && data.Elements().All(e => e.Name == C + "varyColors" || e.Name == C + "ser" || e.Name == C + "firstSliceAng" || e.Name == C + "holeSize")
+            && data.Elements().All(e => e.Name == C + "varyColors" || e.Name == C + "ser" || e.Name == C + "dLbls" || e.Name == C + "firstSliceAng" || e.Name == C + "holeSize")
             && data.Elements(C + "varyColors").Count() <= 1 && ((string?)data.Element(C + "varyColors")?.Attribute("val") is null or "0" or "1" or "false" or "true")
-            && item.Elements().All(e => e.Name == C + "idx" || e.Name == C + "order" || e.Name == C + "tx" || e.Name == C + "spPr" || e.Name == C + "dPt" || e.Name == C + "cat" || e.Name == C + "val")
+            && item.Elements().All(e => e.Name == C + "idx" || e.Name == C + "order" || e.Name == C + "tx" || e.Name == C + "spPr" || e.Name == C + "dPt" || e.Name == C + "dLbls" || e.Name == C + "cat" || e.Name == C + "val")
             && item.Elements(C + "idx").Count() == 1 && item.Elements(C + "cat").Count() == 1 && item.Elements(C + "val").Count() == 1 && item.Elements(C + "tx").Count() <= 1
             && item.Elements(C + "order").Count() == 1 && (string?)item.Element(C + "order")?.Attribute("val") == "0"
             && item.Elements(C + "spPr").Count() <= 1 && item.Elements(C + "spPr").All(p => !p.Attributes().Any(a => !a.IsNamespaceDeclaration)
                 && p.Elements().Count() <= 1 && p.Elements().All(e => e.Name == A + "solidFill" && !e.Attributes().Any(a => !a.IsNamespaceDeclaration)
                     && e.Elements().Count() == 1 && e.Element(A + "srgbClr") != null))
             && chart.Elements(C + "title").Count() <= 1 && chart.Elements(C + "legend").Count() <= 1
-            && !root.Descendants(C + "dLbls").Any() && !root.Descendants(C + "extLst").Any() && !root.Descendants(C + "style").Any()
+            && !root.Descendants(C + "extLst").Any() && !root.Descendants(C + "style").Any()
             && !root.Descendants(C + "manualLayout").Any() && !root.Descendants(C + "dTable").Any() && !root.Descendants(C + "explosion").Any()
             && !root.Descendants(C + "legendEntry").Any() && root.Descendants(C + "txPr").All(SafeLegendText)
             && !root.Descendants(C + "overlay").Any(e => (string?)e.Attribute("val") is not "0" and not "false")
@@ -375,7 +376,7 @@ internal static class ChartObjectFormat
         var slices = new List<ChartSlice>();
         for (int i = 0; i < values.Length; i++) { context.CheckCancellation(); slices.Add(new ChartSlice(categories[i], values[i], colors[i])); }
         string title = string.Concat(chart.Element(C + "title")?.Descendants(A + "t").Select(t => t.Value) ?? Enumerable.Empty<string>());
-        return (ChartDefinition.CreateCircular(kind, slices, seriesName, title, chart.Element(C + "legend") != null), renderable);
+        return (ChartDefinition.CreateCircular(kind, slices, seriesName, title, chart.Element(C + "legend") != null).WithDataLabels(labels), renderable);
     }
     private static ChartDataLabels ParseDataLabels(XElement root, XElement data, bool line, out bool renderable)
     {

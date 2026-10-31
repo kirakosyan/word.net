@@ -75,7 +75,6 @@ public sealed partial class ObjectFoundationTests
         Assert.Throws<ArgumentOutOfRangeException>(() => new ChartSlice("A", double.NaN, "2468AC"));
         Assert.Throws<ArgumentException>(() => ChartDefinition.CreateCircular(ChartKind.Pie, Enumerable.Repeat(new ChartSlice("A", 1, "2468AC"), 65)));
         ChartDefinition definition = ChartDefinition.CreateCircular(ChartKind.Pie, CircularSlices(), showLegend: false);
-        Assert.Throws<NotSupportedException>(() => definition.WithDataLabels(ChartDataLabels.Value));
         var options = new ConversionOptions(FidelityMode.Lenient); var doc = WordDocument.Create(options);
         doc.AddChart(definition, cancellationToken: TestContext.Current.CancellationToken); byte[] saved = SaveObjects(doc);
         byte[] changedAngle = Xml(saved, "word/charts/chart1.xml", xml => xml.Descendants(C + "firstSliceAng").Single().SetAttributeValue("val", "45"));
@@ -119,10 +118,10 @@ public sealed partial class ObjectFoundationTests
         var huge = ChartDefinition.CreateCircular(ChartKind.Pie, new[] { new ChartSlice("A", double.MaxValue, "2468AC"), new ChartSlice("B", double.MaxValue, "C03040") }, showLegend: false);
         var options = new ConversionOptions(FidelityMode.Lenient); var graph = ChartObjectFormat.Create(huge, Context(options));
         var item = new DocumentObjectData(huge, graph, 320, 240, "Extreme values");
-        ObjectVisual visual = ChartLayout.Create(item, 0, (_, _, _) => 1, Context(options));
+        ObjectVisual visual = ChartLayout.Create(item, 0, (_, _, _) => 1, Context(options), true);
         Assert.Equal(2, visual.Shapes.Count); Assert.All(visual.Shapes, shape => Assert.Equal(Math.PI, shape.SectorSweep, 8));
         var limited = Context(new ConversionOptions(FidelityMode.Lenient, maximumCharacters: 32));
-        var exhausted = Assert.Throws<InvalidDataException>(() => ChartLayout.Create(item, 0, (_, _, _) => 1, limited));
+        var exhausted = Assert.Throws<InvalidDataException>(() => ChartLayout.Create(item, 0, (_, _, _) => 1, limited, true));
         Assert.StartsWith("Object.LayoutLimit:", exhausted.Message, StringComparison.Ordinal);
         var tiny = ChartDefinition.CreateCircular(ChartKind.Doughnut, new[] { new ChartSlice("A", double.MaxValue, "2468AC"), new ChartSlice("B", double.Epsilon, "C03040") }, showLegend: false);
         var doc = WordDocument.Create(options); doc.AddChart(tiny, cancellationToken: TestContext.Current.CancellationToken);

@@ -1,0 +1,254 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "workingTreeParent": "3319dbc66fbd6e3fa61f68441a14ff2e202b5aea",
+  "executedWorkingTreeNet10AssemblySha256": "60393009eca022ab637287abcbc0f77e1a9d0ad3e2a736786ebf45cc969650be",
+  "scope": "Diagnosed ordinary managed printable-ASCII pie and doughnut point labels in embedded Noto Sans regular; office placement/reading order, other text/font and protected profiles remain open.",
+  "provenance": "Two synthetic XlsxWriter 3.2.9 BSD-2-Clause labelled charts use an existing synthetic MIT OPC shell with enlarged page/chart and local workbook with two values adjusted; regeneration is byte-identical. Open XML SDK 3.5.1 validated sources, saved DOCX and API-authored DOCX. Offline LibreOffice 24.2.7.2 image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 rendered sources, reopened saved documents and API-authored charts. PyMuPDF 1.27.2.2 and pypdf 6.10.0 inspected text, reading order and vector geometry. FontTools 4.61.1 independently inspected the embedded OFL Noto Sans face and sampled cubic-arc error. No Microsoft Word reference was available.",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "schemaLogSha256": "59b3d6de33476ade4ddf9409d5d7c0d75c4df52ea9a28b1d3cf7e5bebcb23229",
+  "checkerLogSha256": "43239a70db6c74f01852c76e7c993e718497c8d045cf6aa6105fbdd5675c4f8e",
+  "initialAnalyzerLogSha256": "74c67f2230e6d8fae2f88b8c58656c07e51aaf3a7be957f169144bfbbf89d8e4",
+  "secondAnalyzerLogSha256": "507f679c7f7acba2253013c343671e5a91a930c776c85a3c3c40f7a51f1eca11",
+  "priorObservations": [
+    "An initial focused build rejected an IndexOf expression under CA2249; the portable StartsWith form corrected it.",
+    "A later focused build rejected the Framework-compatible hash expression under CA1850 and CA1872 on modern targets; a conditional modern hash implementation corrected it.",
+    "The first working output interleaved each point label with its legend entry. Managed output now orders title, all labels, then all legend entries; the original PDF hashes are retained here, and the independent office reading order still differs.",
+    "A font review narrowed circular labels to printable ASCII in the embedded Noto Sans regular face, and added half-point curved-arc clearance; both limits are independently checked."
+  ],
+  "tools": {
+    "eng/generate-roadmap-138-circular-label-fixtures.py": "fe294efe503f8b7c0f80da5682eee6037fc8cf40ab5b2dc9e588793ab8cb5f0a",
+    "eng/roadmap-138-circular-label-probe.cs": "f4fa3f07dd66b241f33b943cf514186032e9761cfad33260680fb2db70f42cc5",
+    "eng/check-roadmap-138-circular-labels.py": "b441b61bc0d50f840ade3e51b83793ce7259a4a8edd3b2559b529a9217c83dd6",
+    "eng/check-roadmap-138-circular-label-font.py": "23a1cc380ffe1e130273c7a2d5d03e89055b3f2cc7b546b41ad8abe5ad7fd7a7",
+    "eng/verify-roadmap-138-circular-labels.py": "1a0f4ecff17ac443217d8be7f3dcfe986d6c0435943e0d996974d27f58d2dfc8"
+  },
+  "documents": {
+    "pie": {
+      "inputDocxSha256": "2d6236f776b06acb734c0a61c342d4061d09b56f850f40c7d335b453c40f935c",
+      "regeneratedInputDocxSha256": "2d6236f776b06acb734c0a61c342d4061d09b56f850f40c7d335b453c40f935c",
+      "savedDocxSha256": "7508c1ed20bd9e90b79ceb112e48fa5a2c291c9a6a052c1ba256f58f6331bdd9",
+      "authoredDocxSha256": "ec328de2ed37606f23f7c06a5624cf671064d1c38097ea7d00f3470f50e5037d",
+      "pdfSha256": "b2dd6887391a8bdbd772841719dc8727e01be84858501449a70139a8f7491bb6",
+      "xpsSha256": "9d6032889db40431122c24348f2b0f95660e2f50dcdf480613bb9e083f693cfb",
+      "svgSha256": "9fb90da05c78c4523013dc033ab33d25bddc32a71e341d75a4a9eab60a705bcc",
+      "diagnosticsSha256": "1ec5908e9c64e86c83966e925203f6d5f7d38d971c7d1f3e4dc2be309e91217c",
+      "referencePdfSha256": "baf05f00873c94dee18a55e0aaf39357fde8647467b1bdc587d97c41170a4275",
+      "referenceReopenedSavedPdfSha256": "627ef97a69e216f88d75fbd9d159fe88dfc0e3c780f7f545c1b1a96f56f49701",
+      "referenceAuthoredPdfSha256": "41e2bacac8a7b2e7e9580a967d1abd527665840da2170a75cea8a67667206d54",
+      "initialInterleavedPdfSha256": "efdf04c7ebafd4a5548b46cb34e4046442030489c957413e660c2cdadc37769b"
+    },
+    "doughnut": {
+      "inputDocxSha256": "c668ae3eb36ce4208bb6a88632319ab6d6e5bd9f69b6c23f2b1f84d3fe5ead51",
+      "regeneratedInputDocxSha256": "c668ae3eb36ce4208bb6a88632319ab6d6e5bd9f69b6c23f2b1f84d3fe5ead51",
+      "savedDocxSha256": "53fa032f676418c4b4f7396d3671cb074b5e016cd702ef2501765d1142327468",
+      "authoredDocxSha256": "c04044ad244cbdfa8a2eeaf62a7fb0678ec8bed472a508151484527b9d48abdb",
+      "pdfSha256": "ac31ee6a70b6aea26643cf0913eb087a6af1b25022c2e1f44f82720f85bcc095",
+      "xpsSha256": "377a987db5582057b3660695b4253abd004a81a8711fc153a558bec27dd86c31",
+      "svgSha256": "8a9e09746368c301330939eadf6f4704ecbadfdf1060f911685b26d837cc5195",
+      "diagnosticsSha256": "1ec5908e9c64e86c83966e925203f6d5f7d38d971c7d1f3e4dc2be309e91217c",
+      "referencePdfSha256": "cf346fc08a4af896df7f8267e62a1e5fd7fadf46edec3e33079eed2775d51543",
+      "referenceReopenedSavedPdfSha256": "8e4d7d1dd231073c59621550fcba9d3d8ed074e5ffaff9a938b67fd28a6035bd",
+      "referenceAuthoredPdfSha256": "8b04350321950bc3844b22c3eccb6e3f8841cae04c6f5f32213da6811263b5f9",
+      "initialInterleavedPdfSha256": "9e5d977cc85b085a2c3a0e1b1dfc1cd72759c2884f90a03e6ff25c746a27cebb"
+    }
+  },
+  "result": {
+    "specimens": [
+      {
+        "kind": "pie",
+        "graph": {
+          "chartSha256": "2478675433c6aae01333e148cbe2ac0671da009ec257fec4fa1068b164d01304",
+          "workbookSha256": "8b6d9370134299c273198008a6ad362e357da4116a6a07b7e10f96ef23a7aecc"
+        },
+        "actualReadingOrder": [
+          "Independent shares",
+          "First, 6",
+          "Second, 6",
+          "First",
+          "Second"
+        ],
+        "referenceReadingOrder": [
+          "First, 6",
+          "Second, 6",
+          "Independent shares",
+          "First",
+          "Second"
+        ],
+        "actualLabelsContained": [
+          true,
+          true
+        ],
+        "referenceLabelsContained": [
+          true,
+          true
+        ],
+        "pdfSvgLabelOriginMaxDeltaPt": 1.0505859364684511e-05,
+        "pdfXpsLabelOriginMaxDeltaPt": 4.350585939505436e-05,
+        "referenceLabelOriginMaxDeltaPt": 48.7550048828125,
+        "pdfSvgMaxDeltaPt": 1.52587890625e-05,
+        "pdfXpsMaxDeltaPt": 3.0517578125e-05,
+        "actualRasterBoundsPt": [
+          80.5,
+          56.0,
+          406.0,
+          382.0
+        ],
+        "referenceRasterBoundsPt": [
+          93.5,
+          83.5,
+          390.0,
+          379.5
+        ],
+        "referenceMaxDeltaPt": 27.5,
+        "rasterResolutionPt": 0.5,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "sectorProportions": [
+          1,
+          1
+        ],
+        "doughnutHoleChecked": false
+      },
+      {
+        "kind": "doughnut",
+        "graph": {
+          "chartSha256": "ac6b5fb7daece609c190afe912a2b890fd1fd8e66b3e1eeb5646744f90f26e38",
+          "workbookSha256": "8b6d9370134299c273198008a6ad362e357da4116a6a07b7e10f96ef23a7aecc"
+        },
+        "actualReadingOrder": [
+          "Independent shares",
+          "First, 6",
+          "Second, 6",
+          "First",
+          "Second"
+        ],
+        "referenceReadingOrder": [
+          "First, 6",
+          "Second, 6",
+          "Independent shares",
+          "First",
+          "Second"
+        ],
+        "actualLabelsContained": [
+          true,
+          true
+        ],
+        "referenceLabelsContained": [
+          true,
+          true
+        ],
+        "pdfSvgLabelOriginMaxDeltaPt": 1.0505859364684511e-05,
+        "pdfXpsLabelOriginMaxDeltaPt": 4.350585939505436e-05,
+        "referenceLabelOriginMaxDeltaPt": 13.053878784179688,
+        "pdfSvgMaxDeltaPt": 3.0517578125e-05,
+        "pdfXpsMaxDeltaPt": 6.103515625e-05,
+        "actualRasterBoundsPt": [
+          80.5,
+          56.0,
+          406.0,
+          382.0
+        ],
+        "referenceRasterBoundsPt": [
+          97.0,
+          83.5,
+          393.5,
+          379.5
+        ],
+        "referenceMaxDeltaPt": 27.5,
+        "rasterResolutionPt": 0.5,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "sectorProportions": [
+          1,
+          1
+        ],
+        "doughnutHoleChecked": true
+      }
+    ],
+    "fontGeometry": {
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "unitsPerEm": 1000,
+      "fontSizePt": 8,
+      "paddingPt": 2,
+      "boundedGlyphs": 95,
+      "minimumLeftPt": -0.624,
+      "maximumRightOverhangPt": 0.344,
+      "minimumBottomPt": -1.928,
+      "maximumTopPt": 6.128,
+      "sampledArcRadiusPt": 720,
+      "sampledMaximumArcDeviationPt": 0.196220859655849,
+      "arcClearancePt": 0.5
+    },
+    "negativeControls": {
+      "missing pie diagnostic": "Missing independent circular or label diagnostic",
+      "missing doughnut diagnostic": "Missing independent circular or label diagnostic",
+      "missing label diagnostic": "Missing independent circular or label diagnostic",
+      "missing circular diagnostic": "Missing independent circular or label diagnostic",
+      "wrong reference": "Circular centre or doughnut hole changed",
+      "changed editable slice value": "Slice values changed",
+      "changed label flags": "Point label appearance or explicit flags changed",
+      "changed SVG sector": "PDF, SVG and XPS sector geometry differs",
+      "changed SVG label": "Missing SVG point labels",
+      "changed XPS sector": "PDF, SVG and XPS sector geometry differs",
+      "changed XPS label origin": "PDF, SVG and XPS point-label origins differ",
+      "changed legend order": "Point-label or legend order changed",
+      "missing PDF content": "Missing or duplicated point label or category legend",
+      "font ink exceeds padding": "Printable ASCII ink exceeds the circular-label padding",
+      "arc deviation exceeds clearance": "Sampled cubic-arc deviation exceeds the half-point clearance"
+    },
+    "officeRoundtrips": {
+      "pie": {
+        "authoredGraph": {
+          "chartSha256": "5b3ff50f0b3b601598c99b55e90a640eae874ab670dbfe7100f58692209ba086",
+          "workbookSha256": "079a2c8d6090ab78e4b0d7be106d4f2afa820399ac8c36aad76758246ec904b5"
+        },
+        "referenceBoundsPt": [
+          93.5,
+          83.5,
+          390.0,
+          379.5
+        ],
+        "savedBoundsPt": [
+          93.5,
+          83.5,
+          390.0,
+          379.5
+        ],
+        "authoredBoundsPt": [
+          93.5,
+          83.5,
+          390.0,
+          379.5
+        ],
+        "legendTolerancePt": 0.001
+      },
+      "doughnut": {
+        "authoredGraph": {
+          "chartSha256": "290e1792278f53de8cfe8bcf236d79d594ca231e375a31d8318e75ecbf9e0b37",
+          "workbookSha256": "079a2c8d6090ab78e4b0d7be106d4f2afa820399ac8c36aad76758246ec904b5"
+        },
+        "referenceBoundsPt": [
+          97.0,
+          83.5,
+          393.5,
+          379.5
+        ],
+        "savedBoundsPt": [
+          97.0,
+          83.5,
+          393.5,
+          379.5
+        ],
+        "authoredBoundsPt": [
+          97.0,
+          83.5,
+          393.5,
+          379.5
+        ],
+        "legendTolerancePt": 0.001
+      }
+    }
+  }
+}

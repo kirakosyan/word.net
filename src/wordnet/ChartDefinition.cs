@@ -46,7 +46,7 @@ public sealed class ChartSlice
     public string Color { get; }
 }
 
-/// <summary>Plain, centred labels for admitted bar and column chart points.</summary>
+/// <summary>Plain, centred labels for admitted bar, column and circular chart points.</summary>
 public enum ChartDataLabels
 {
     /// <summary>No point labels.</summary>
@@ -91,8 +91,8 @@ public sealed class ChartDefinition
     {
         if (labels is not ChartDataLabels.None and not ChartDataLabels.Value and not ChartDataLabels.Category and not ChartDataLabels.CategoryAndValue)
             throw new ArgumentOutOfRangeException(nameof(labels));
-        if (labels != ChartDataLabels.None && source.Kind is ChartKind.Line or ChartKind.Pie or ChartKind.Doughnut)
-            throw new NotSupportedException("Chart.DataLabels: Point labels are supported on bars and columns only.");
+        if (labels != ChartDataLabels.None && source.Kind == ChartKind.Line)
+            throw new NotSupportedException("Chart.DataLabels: Point labels are supported on bar, column and circular charts only.");
         Kind = source.Kind; Categories = source.Categories; Series = source.Series; Title = source.Title;
         ShowLegend = source.ShowLegend; CategoryTitle = source.CategoryTitle; ValueTitle = source.ValueTitle; DataLabels = labels; SliceColors = source.SliceColors;
     }
@@ -162,6 +162,7 @@ public sealed class ChartDefinition
     /// <summary>Gets the immutable per-category colours of a circular chart, or an empty list for other chart types.</summary>
     public IReadOnlyList<string> SliceColors { get; } = Array.Empty<string>();
     /// <summary>Creates an immutable snapshot with the requested bounded data labels.</summary>
+    /// <remarks>Rendering circular labels requires printable ASCII and the embedded Noto Sans regular face; other forms reject.</remarks>
     public ChartDefinition WithDataLabels(ChartDataLabels labels) => new ChartDefinition(this, labels);
 }
 

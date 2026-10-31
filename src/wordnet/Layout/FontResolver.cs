@@ -26,6 +26,7 @@ internal sealed class FontResolver
     internal List<byte[]> Data { get; } = new List<byte[]>();
     internal int MathIndex { get; private set; } = -1;
     internal MathFont? Math { get; private set; }
+    internal bool IsEmbeddedRegular(int index) => defaultFaces.TryGetValue(0, out int embedded) && embedded == index;
 
     internal FontResolver(DocumentModel model, ConversionContext context, bool recordUsage = false)
     {

@@ -126,7 +126,8 @@ Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md
 The later [stacked-bar and column profile](p2-objects-typography.md#unreleased-source-stacked-bars-and-columns)
 retains separate signed totals but diagnoses independent reference-position differences.
 The later [point-label profile](p2-objects-typography.md#unreleased-source-chart-point-labels)
-adds bounded value/category labels with explicit fit and reference diagnostics.
+adds bounded value/category labels on bars, columns and circular sectors with
+explicit fit and reference diagnostics.
 The [circular-chart profile](p2-objects-typography.md#unreleased-source-circular-charts)
 adds diagnosed single-series pie and doughnut vectors. Reference plot and label
 failures, other circular and label forms and

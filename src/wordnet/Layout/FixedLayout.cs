@@ -1412,8 +1412,13 @@ internal static partial class FixedLayout
                 {
                     if (paragraph.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed || sourceSettings.ExplicitColumns.Count != 0)
                         throw new NotSupportedException("Object.Flow: Justification/distribution and explicit multi-column object flow are outside this profile.");
-                    ObjectVisual visual = retained.Chart != null ? ChartLayout.Create(retained, resolver.Resolve(new TextRun(""), false), Measure, context)
-                        : new MathLayout(resolver.Math!, resolver.MathIndex, data[resolver.MathIndex], context).Create(retained);
+                    ObjectVisual visual;
+                    if (retained.Chart != null)
+                    {
+                        int chartFont = resolver.Resolve(new TextRun(""), false);
+                        visual = ChartLayout.Create(retained, chartFont, Measure, context, resolver.IsEmbeddedRegular(chartFont));
+                    }
+                    else visual = new MathLayout(resolver.Math!, resolver.MathIndex, data[resolver.MathIndex], context).Create(retained);
                     if (visual.Width > width || visual.Ascent + visual.Descent > settings.Height - settings.Top - settings.Bottom)
                         throw new NotSupportedException("Object.Frame: Object geometry exceeds printable space.");
                     if (retained.Display && line.Items.Count != 0 || x > left && x + visual.Width > left + width) Finish(false);

@@ -118,11 +118,11 @@ public sealed partial class ObjectFoundationTests
         var graph = ChartObjectFormat.Create(definition, Context(new ConversionOptions(FidelityMode.Lenient)));
         var item = new DocumentObjectData(definition, graph, 360, 240, "Bounded labels");
         var limited = Context(new ConversionOptions(FidelityMode.Lenient, maximumCharacters: 150));
-        var error = Assert.Throws<InvalidDataException>(() => ChartLayout.Create(item, 0, (_, _, _) => 1, limited));
+        var error = Assert.Throws<InvalidDataException>(() => ChartLayout.Create(item, 0, (_, _, _) => 1, limited, true));
         Assert.StartsWith("Object.LayoutLimit:", error.Message, StringComparison.Ordinal);
         using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
         var context = new WordNet.Internal.ConversionContext(new ConversionOptions(FidelityMode.Lenient), cancelled.Token);
-        Assert.Throws<OperationCanceledException>(() => ChartLayout.Create(item, 0, (_, _, _) => 1, context));
+        Assert.Throws<OperationCanceledException>(() => ChartLayout.Create(item, 0, (_, _, _) => 1, context, true));
     }
 
     [Fact]

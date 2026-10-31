@@ -238,9 +238,13 @@ independently measured plot/axis differences; Strict rejects this loss.
 nonfinite stacked totals. `Limit.ChartStack` bounds the temporary accumulators.
 Pending centred point labels report `Chart.DataLabelApproximation` for measured
 office-reference differences, which Strict rejects. `Chart.DataLabelFit` rejects
-labels too large for their bars, including zero-size points; labels are not
-silently dropped. `Chart.BindingAppearance` rejects report binding when the
+labels too large for their bars or circular sectors, including zero-size points
+and labels intersecting a hole or sector boundary; labels are not silently
+dropped. `Chart.BindingAppearance` rejects report binding when the
 retained chart appearance is not preserved by the closed chart model.
+`Chart.DataLabelText` rejects non-ASCII circular point labels and
+`Chart.DataLabelFont` rejects a replacement for the embedded Noto Sans regular
+face in that profile, whose ink bounds are independently checked.
 Pending pie and doughnut charts report `Chart.CircularLayoutApproximation` for
 their independently measured frame differences; Strict rejects this loss.
 `Chart.SliceValue` rejects negative or nonfinite values, `Chart.Slices` bounds

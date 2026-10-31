@@ -9,7 +9,8 @@ remain outside this increment.
 Pending chart point labels are immutable chart metadata; explicit OOXML label
 flags and the existing local workbook survive editable DOCX and report binding.
 Managed vector placement measures each string, charges aggregate text and work,
-and rejects labels that do not fit inside the corresponding bar. Reference
+and rejects labels that do not fit inside the corresponding bar or circular sector.
+Circular labels also check the hole, sector boundaries and mutual overlap. Reference
 position differences are diagnosed; protected output combinations remain excluded.
 
 Pending stacked charts retain their chart/workbook graphs and apply bounded,

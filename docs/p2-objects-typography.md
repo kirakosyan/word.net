@@ -143,19 +143,20 @@ Pending #163 adds `ChartDefinition.WithDataLabels(ChartDataLabels.Value)`,
 `Category`, or `CategoryAndValue` to create a new immutable chart snapshot;
 `None` is the existing default. Add/Update and prepared-data binding retain this
 selection, category/series data and local workbook. Labels apply to clustered and
-stacked bars and columns. A null value is a gap with no label. Values use
+stacked bars and columns and the circular profile below. A null value is a gap with no label. Values use
 invariant round-trip formatting; combined labels use a comma and space. Each label
-is centred inside its bar, with contrasting black or white text, and its measured
-width and height must fit. Zero-size bars therefore reject a requested label with
-`Chart.DataLabelFit` rather than omitting it. Total repeated text and layout work
+is centred inside its bar or sector, with contrasting black or white text, and its measured
+width and height must fit. Zero-size points in an otherwise renderable chart reject
+a requested label with `Chart.DataLabelFit` rather than omitting it; an all-empty
+circular chart retains `Chart.EmptyData`. Total repeated text and layout work
 share the existing operation bounds and cancellation.
 
 Editable DOCX uses explicit centre positioning and show/hide flags. Imported
 chart-wide labels or uniform series labels are admitted only for this exact
 plain-value/category profile; implicit flags, custom formatting, per-point or
 nonuniform series labels and other appearances remain non-renderable. Binding
-rejects an appearance it cannot preserve. Line and circular labels are outside
-this increment. Native, tagged and archival rendering is unqualified and rejects.
+rejects an appearance it cannot preserve. Line labels are outside this increment.
+Native, tagged and archival rendering is unqualified and rejects.
 
 BestEffort/Lenient output reports `Chart.DataLabelApproximation`; Strict rejects
 the measured difference. The independent XlsxWriter and LibreOffice
@@ -183,7 +184,7 @@ the same slice count so colours cannot silently shift.
 
 Only explicit per-slice solid-RGB colours, no-outline flags and a zero start are renderable;
 doughnuts also require the 50-percent hole. Negative values, multiple series, axes, custom angles/holes, exploded
-slices, data labels, nonuniform effects or formatting, implicit slice colours and
+slices, unqualified data labels, nonuniform effects or formatting, implicit slice colours and
 other unqualified appearances reject or remain editable without static output.
 Native typography and tagged or archival output remain unqualified. Ordinary
 managed PDF/XPS/SVG uses `Chart.CircularLayoutApproximation` in BestEffort or
@@ -195,6 +196,36 @@ tested outputs. Their [reference observation](measurements/roadmap-138-circular-
 records a 23.5-point maximum raster-bound difference from LibreOffice at the
 unchanged 0.5-point geometry tolerance. This remains open, is not a Microsoft Word
 result and does not qualify public 1.5.0 packages or all of #163.
+
+### Unreleased source: labels on circular slices
+
+The pending point-label profile also admits `Value`, `Category` and
+`CategoryAndValue` on the circular charts above. Each label is placed horizontally
+at 72 percent of the radius along its sector's angular midpoint. Its padded text
+bounds must fit inside the outer circle and the sector, outside the doughnut hole,
+and without touching another label or sector edge. If any point does not fit,
+`Chart.DataLabelFit` rejects the output instead of clipping or omitting text. Null
+values remain gaps; zero-size slices reject requested labels when positive slices
+otherwise render. Aggregate text and pairwise fit work are bounded. Reading order
+is chart title, labels in source order, then the category legend in source order.
+An additional 0.5-point clearance covers the bounded cubic arc; a numerical
+control samples the admitted range through the maximum 720-point radius.
+The circular-label profile requires printable ASCII and the embedded Noto Sans
+regular face; a non-ASCII label or caller replacement of that face rejects with
+`Chart.DataLabelText` or `Chart.DataLabelFont`. FontTools independently checks that
+the admitted glyph ink stays within the fit padding. Line charts, custom label
+positions, per-point styles and protected output profiles remain unqualified.
+
+Two independently authored, schema-validated XlsxWriter fixtures and their
+saved/API-authored DOCX round trips preserve the labels and the equal slice
+proportions. The [reference observation](measurements/roadmap-138-circular-labels-reference.json)
+records title/label reading-order differences and label-origin differences of
+48.76 points for pie and 13.05 points for doughnut, with 27.5-point frame
+differences, all against the unchanged 0.5-point geometry tolerance. Managed
+PDF/SVG/XPS origins agree within 0.1 point and both labels fit in the tested
+sectors. BestEffort/Lenient reports both `Chart.DataLabelApproximation` and
+`Chart.CircularLayoutApproximation`; Strict rejects the measured loss. These are
+not Microsoft Word results, public 1.5.0 support or full #163 acceptance.
 
 ### Equation authoring
 

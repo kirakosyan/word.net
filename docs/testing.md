@@ -418,6 +418,14 @@ records both full suites, matrix, packages and reproduced specimens. Its
 [performance receipt](measurements/roadmap-138-chart-labels-performance-9f038d0.json)
 retains both rounds and the visible timing drift under the unchanged gate.
 
+Pending circular-slice label tests check immutable editing and binding, null and
+zero handling, sector and hole containment, reading order, cancellation and
+bounded pairwise fit work. The independent [reference observation](measurements/roadmap-138-circular-labels-reference.json)
+checks XlsxWriter-authored pie and doughnut labels, saved and API-authored DOCX,
+cross-format vector/text geometry, embedded ASCII font ink bounds, sampled arc
+clearance, LibreOffice output and 15 corrupted controls.
+The measured office origin and reading-order differences remain open.
+
 Pending #163 circular-chart tests cover immutable slice data, editable graph and
 binding, signed-value and slice-count rejection, normalized extreme values,
 sector angles, the annular hole, limits and protected profiles. The independent

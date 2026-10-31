@@ -20,18 +20,21 @@ internal sealed class ObjectVisual
 
 internal static class ChartLayout
 {
-    internal static ObjectVisual Create(DocumentObjectData item, int font, Func<string, int, double, double> measure, ConversionContext context)
+    internal static ObjectVisual Create(DocumentObjectData item, int font, Func<string, int, double, double> measure, ConversionContext context, bool embeddedRegular)
     {
+        context.CheckCancellation();
         if (!item.Renderable) throw new NotSupportedException("Chart.Appearance: The retained chart appearance is outside the static rendering profile.");
         ChartDefinition chart = item.Chart!;
         bool horizontal = chart.Kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
         bool stacked = chart.Kind is ChartKind.StackedColumn or ChartKind.StackedBar;
         bool circular = chart.Kind is ChartKind.Pie or ChartKind.Doughnut;
         bool labels = chart.DataLabels != ChartDataLabels.None;
+        if (circular && labels && !embeddedRegular)
+            throw new NotSupportedException("Chart.DataLabelFont: Circular point labels require the embedded Noto Sans regular face.");
         if ((horizontal || stacked || labels || circular) && (context.Typography.Enabled
             || context.Destination == DocumentFormat.Pdf && !context.PreviewIntermediate
                 && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
-            throw new NotSupportedException("Chart.BarProfile: Horizontal and stacked bars are qualified only for ordinary managed output.");
+            throw new NotSupportedException("Chart.BarProfile: Horizontal, stacked, circular and point-label charts are qualified only for ordinary managed output.");
         if (chart.Kind == ChartKind.ClusteredBar)
             context.Loss("Chart.BarLayoutApproximation", "The bounded horizontal-bar plot area differs from independent reference geometry.");
         if (stacked)
@@ -45,7 +48,8 @@ internal static class ChartLayout
         long pointCount = (long)chart.Categories.Count * chart.Series.Count;
         long repeatedLabels = labels ? chart.Categories.Sum(s => (long)s.Length) * chart.Series.Count + pointCount * 32 : 0;
         context.Objects.Render(chart.Title.Length + chart.CategoryTitle.Length + chart.ValueTitle.Length + chart.Categories.Sum(s => (long)s.Length)
-            + chart.Series.Sum(s => (long)s.Name.Length) + repeatedLabels + 128, pointCount * ((stacked ? 3 : circular ? 6 : 1) + (labels ? 1 : 0)) + chart.Categories.Count + chart.Series.Count + 32);
+            + chart.Series.Sum(s => (long)s.Name.Length) + repeatedLabels + 128, pointCount * ((stacked ? 3 : circular ? 6 : 1) + (labels ? 1 : 0))
+            + (circular && labels ? pointCount * pointCount : 0) + chart.Categories.Count + chart.Series.Count + 32);
         if (circular) return Circular(item, chart, font, measure, context);
         double[] finite = chart.Series.SelectMany(s => s.Values).Where(v => v.HasValue).Select(v => v!.Value).ToArray();
         if (finite.Length == 0) throw new NotSupportedException("Chart.EmptyData: At least one real value is required for rendering.");
@@ -149,6 +153,8 @@ internal static class ChartLayout
         double[] values = chart.Series[0].Values.Select(value => value ?? 0).ToArray();
         double maximum = values.Max();
         if (maximum <= 0) throw new NotSupportedException("Chart.EmptyData: At least one positive slice is required for rendering.");
+        if (chart.DataLabels != ChartDataLabels.None && chart.Series[0].Values.Any(value => value.HasValue && value.Value == 0))
+            throw new NotSupportedException("Chart.DataLabelFit: Zero-sized slices cannot carry labels.");
         double total = values.Sum(value => value / maximum);
         if (!Finite(total) || total <= 0) throw new NotSupportedException("Chart.Range: Slice proportions cannot be resolved.");
         var result = new ObjectVisual { Width = item.Width, Ascent = item.Height };
@@ -168,6 +174,7 @@ internal static class ChartLayout
             double width = measure(chart.Title, font, size); Text(chart.Title, (item.Width - width) / 2, -item.Height + 16, item.Width - 16);
         }
         double cursor = -Math.PI / 2, end = cursor + 2 * Math.PI;
+        var labelBounds = new List<(double Left, double Top, double Right, double Bottom)>();
         int last = Array.FindLastIndex(values, value => value > 0);
         for (int i = 0; i < values.Length; i++)
         {
@@ -179,11 +186,16 @@ internal static class ChartLayout
                     throw new NotSupportedException("Chart.SliceSpacing: A positive slice is too small to render reliably.");
                 result.Shapes.Add(new FixedShape(x, y, diameter, diameter, chart.SliceColors[i], geometry: "sector", sectorStart: cursor,
                     sectorSweep: sweep, sectorHole: chart.Kind == ChartKind.Doughnut ? 0.5 : 0));
+                if (chart.DataLabels != ChartDataLabels.None)
+                    CircularDataLabel(result, chart, i, values[i], x, y, diameter, cursor, sweep, font, measure, context, labelBounds);
                 cursor += sweep;
             }
-            if (chart.ShowLegend)
+        }
+        if (chart.ShowLegend)
+        {
+            for (int i = 0; i < values.Length; i++)
             {
-                double baseline = top + 10 + i * 14;
+                context.CheckCancellation(); double baseline = top + 10 + i * 14;
                 if (baseline + 4 > bottom) throw new NotSupportedException("Chart.LabelFit: The category legend does not fit the frame.");
                 result.Shapes.Add(new FixedShape(right + 8, baseline - 6, 8, 6, chart.SliceColors[i]));
                 Text(chart.Categories[i], right + 20, baseline, legend - 22);
@@ -268,28 +280,79 @@ internal static class ChartLayout
         double x, double y, double width, double height, int font, Func<string, int, double, double> measure, ConversionContext context)
     {
         context.CheckCancellation();
+        string label = LabelText(chart, category, value);
+        const double size = 8;
+        double textWidth = measure(label, font, size);
+        if (!Finite(textWidth) || textWidth + 4 > width || size + 4 > height)
+            throw new NotSupportedException("Chart.DataLabelFit: A point label does not fit inside its bar; zero-sized points cannot carry labels.");
+        if (label.Length == 0) return;
+        result.Text.Add(new PositionedText(label, x + (width - textWidth) / 2, y + height / 2 + size / 3, size, font, LabelColor(series.Color)));
+    }
+    private static string LabelText(ChartDefinition chart, int category, double value)
+    {
         string number = value == 0 ? "0" : value.ToString("R", CultureInfo.InvariantCulture);
-        string label = chart.DataLabels switch
+        return chart.DataLabels switch
         {
             ChartDataLabels.Value => number,
             ChartDataLabels.Category => chart.Categories[category],
             ChartDataLabels.CategoryAndValue => chart.Categories[category] + ", " + number,
             _ => throw new InvalidOperationException("Chart.DataLabels: Unknown label content."),
         };
-        const double size = 8;
-        double textWidth = measure(label, font, size);
-        if (!Finite(textWidth) || textWidth + 4 > width || size + 4 > height)
-            throw new NotSupportedException("Chart.DataLabelFit: A point label does not fit inside its bar; zero-sized points cannot carry labels.");
-        if (label.Length == 0) return;
+    }
+    private static string LabelColor(string color)
+    {
         double Linear(int channel)
         {
             double value = channel / 255d;
             return value <= 0.04045 ? value / 12.92 : Math.Pow((value + 0.055) / 1.055, 2.4);
         }
         int Hex(char digit) => digit <= '9' ? digit - '0' : digit - 'A' + 10;
-        int Channel(int index) => 16 * Hex(series.Color[index]) + Hex(series.Color[index + 1]);
+        int Channel(int index) => 16 * Hex(color[index]) + Hex(color[index + 1]);
         double luminance = 0.2126 * Linear(Channel(0)) + 0.7152 * Linear(Channel(2)) + 0.0722 * Linear(Channel(4));
-        result.Text.Add(new PositionedText(label, x + (width - textWidth) / 2, y + height / 2 + size / 3, size, font, luminance < 0.179 ? "FFFFFF" : "000000"));
+        return luminance < 0.179 ? "FFFFFF" : "000000";
+    }
+    private static void CircularDataLabel(ObjectVisual result, ChartDefinition chart, int category, double value, double x, double y,
+        double diameter, double start, double sweep, int font, Func<string, int, double, double> measure, ConversionContext context,
+        List<(double Left, double Top, double Right, double Bottom)> bounds)
+    {
+        context.CheckCancellation();
+        string label = LabelText(chart, category, value);
+        if (label.Any(character => character is < ' ' or > '~'))
+            throw new NotSupportedException("Chart.DataLabelText: Circular point labels require printable ASCII text.");
+        // Keep an additional half point clear for cubic-arc approximation and rounding.
+        const double size = 8, margin = 2, curveAllowance = 0.5;
+        double width = measure(label, font, size), radius = diameter / 2, cx = x + radius, cy = y + radius;
+        if (!Finite(width)) throw new NotSupportedException("Chart.DataLabelFit: A circular label has nonfinite width.");
+        double middle = start + sweep / 2, centerX = cx + radius * 0.72 * Math.Cos(middle), centerY = cy + radius * 0.72 * Math.Sin(middle);
+        double left = centerX - width / 2 - margin, right = centerX + width / 2 + margin;
+        double top = centerY - size / 2 - margin, bottom = centerY + size / 2 + margin;
+        double inner = chart.Kind == ChartKind.Doughnut ? radius * 0.5 : 0;
+        double closestX = Math.Max(left, Math.Min(cx, right)) - cx, closestY = Math.Max(top, Math.Min(cy, bottom)) - cy;
+        if (Math.Sqrt(closestX * closestX + closestY * closestY) <= inner + curveAllowance)
+            throw new NotSupportedException("Chart.DataLabelFit: A circular label overlaps the centre or doughnut hole.");
+        foreach ((double px, double py) in new[] { (left, top), (right, top), (right, bottom), (left, bottom) })
+        {
+            double dx = px - cx, dy = py - cy, distance = Math.Sqrt(dx * dx + dy * dy);
+            double relative = (Math.Atan2(dy, dx) - start) % (2 * Math.PI); if (relative < 0) relative += 2 * Math.PI;
+            if (distance >= radius - curveAllowance || sweep < 2 * Math.PI - 1e-9 && (relative <= 0 || relative >= sweep))
+                throw new NotSupportedException("Chart.DataLabelFit: A circular label does not fit within its slice.");
+        }
+        bool RayHits(double angle)
+        {
+            double low = 0, high = radius;
+            bool Axis(double origin, double direction, double minimum, double maximum)
+            {
+                if (Math.Abs(direction) < 1e-12) return origin >= minimum && origin <= maximum;
+                double a = (minimum - origin) / direction, b = (maximum - origin) / direction;
+                low = Math.Max(low, Math.Min(a, b)); high = Math.Min(high, Math.Max(a, b)); return low <= high;
+            }
+            return Axis(cx, Math.Cos(angle), left, right) && Axis(cy, Math.Sin(angle), top, bottom) && high >= 0;
+        }
+        if (sweep < 2 * Math.PI - 1e-9 && (RayHits(start) || RayHits(start + sweep))
+            || bounds.Any(other => left <= other.Right && right >= other.Left && top <= other.Bottom && bottom >= other.Top))
+            throw new NotSupportedException("Chart.DataLabelFit: Circular labels or slice boundaries overlap.");
+        bounds.Add((left, top, right, bottom));
+        if (label.Length != 0) result.Text.Add(new PositionedText(label, centerX - width / 2, centerY + size / 3, size, font, LabelColor(chart.SliceColors[category])));
     }
     private static bool Finite(double v) => !double.IsNaN(v) && !double.IsInfinity(v);
 }

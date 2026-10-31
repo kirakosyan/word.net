@@ -79,7 +79,7 @@ public sealed class ChartDataBinding
                 if (values[0][i] < 0) throw new InvalidDataException("Chart.BindingSlices: Circular values cannot be negative.");
                 slices.Add(new ChartSlice(categories[i], values[0][i], original.SliceColors[i]));
             }
-            return ChartDefinition.CreateCircular(original.Kind, slices, series[0].Name, original.Title, original.ShowLegend);
+            return ChartDefinition.CreateCircular(original.Kind, slices, series[0].Name, original.Title, original.ShowLegend).WithDataLabels(original.DataLabels);
         }
         return new ChartDefinition(original.Kind, categories, series, original.Title, original.ShowLegend, original.CategoryTitle, original.ValueTitle).WithDataLabels(original.DataLabels);
     }

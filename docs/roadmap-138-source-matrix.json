@@ -3,6 +3,29 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "circular-point-labels-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit centred printable-ASCII slice labels with embedded Noto Sans retain editable data and binding; bounded managed output reports independent office position and reading-order differences.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsStayEditableAndFitTheirSectors" },
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsSurvivePreparedDataBinding" },
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsPrecedeTheCategoryLegendInReadingOrder" },
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsUseContrastForLightAndDarkSlices" }
+      ]
+    },
+    {
+      "id": "circular-point-labels-boundaries",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Zero-sized, unfittable, non-ASCII or unqualified-font labels, strict reference loss, exhausted fit work and cancellation fail explicitly; null points remain gaps.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsRejectUnfittableAndUnqualifiedCasesBeforeOutput" },
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsRejectUnqualifiedTextAndFontFaces" },
+        { "class": "ObjectFoundationTests", "method": "CircularPointLabelsTreatMissingValuesAsGapsAndBoundOverlapWork" }
+      ]
+    },
+    {
       "id": "circular-charts-diagnosed",
       "issue": 163,
       "outcome": "supported-bounded",
