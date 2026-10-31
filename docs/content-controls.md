@@ -110,6 +110,14 @@ invalidates earlier mutation handles. Definitions and list items are copied and
 bounded before insertion, and IDs are assigned without colliding with existing
 typed controls.
 
+```csharp
+WordDocument form = WordDocument.Create();
+form.AddParagraph("Name: ");
+DocumentContentControl name = form.InsertContentControl(0, 6,
+    new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Ada"));
+form.SetControlText(name, "Grace");
+```
+
 All six existing kinds are admitted inline. Text defaults to empty, list controls
 default to no selection, dates default to empty with a `yyyy-MM-dd` picture, and a
 checkbox defaults to an unchecked `-` glyph in Noto Sans (`X` when checked).

@@ -96,6 +96,29 @@ public sealed class ContentControlCreationTests
     }
 
     [Fact]
+    public void BoundComboCannotUseFreeTextThatCollidesWithAStoredItemValue()
+    {
+        string body = "<w:p>" + Control(1, "<w:text/>", "cached", Binding("/p:invoice/p:customer/@name")) + "</w:p><w:p>" + Run("New: ") + "</w:p>";
+        WordDocument document = Load(WithStore(body)); byte[] before = Save(document);
+        var binding = new ContentControlBinding(StoreId, "/p:invoice/p:customer/@name", new Dictionary<string, string> { ["p"] = "urn:wordnet:controls" });
+        var definition = new ContentControlDefinition(ContentControlKind.ComboBox, initialText: "a", items: Choices, binding: binding);
+        Assert.Throws<ArgumentException>(() => document.InsertContentControl(1, 5, definition, TestContext.Current.CancellationToken));
+        Assert.Equal(before, Save(document)); Assert.Single(document.ContentControls);
+    }
+
+    [Fact]
+    public void BoundComboWithAnEmptyStoredValueCanStartWithoutASelection()
+    {
+        string body = "<w:p>" + Control(1, "<w:text/>", "cached", Binding("/p:invoice/p:customer/@name")) + "</w:p><w:p>" + Run("New: ") + "</w:p>";
+        WordDocument document = Load(WithStore(body));
+        var binding = new ContentControlBinding(StoreId, "/p:invoice/p:customer/@name", new Dictionary<string, string> { ["p"] = "urn:wordnet:controls" });
+        var definition = new ContentControlDefinition(ContentControlKind.ComboBox, items: new[] { new ContentControlListItem("Empty", "") }, binding: binding);
+        DocumentContentControl created = document.InsertContentControl(1, 5, definition, TestContext.Current.CancellationToken);
+        Assert.Null(created.SelectedValue); Assert.Null(created.FreeText); Assert.Equal(ContentControlValueState.Empty, created.State);
+        Assert.Equal(ContentControlBindingState.Unevaluated, created.BindingState); Validate(Save(document));
+    }
+
+    [Fact]
     public void InvalidDefinitionsLocationsBindingsAndCancellationAreAtomic()
     {
         Assert.Throws<ArgumentException>(() => new ContentControlDefinition(ContentControlKind.RichText, items: Choices));

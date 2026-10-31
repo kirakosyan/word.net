@@ -42,6 +42,12 @@ public sealed partial class WordDocument
                 if (m.Controls.Items.Count == 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
                 assigned = 1; while (m.Controls.Items.ContainsKey(assigned)) assigned++;
                 ControlData data = CreateControlData(definition, assigned, c);
+                if (definition.Binding != null)
+                {
+                    XElement binding = ControlBindingElement(definition.Binding);
+                    data.Binding = ControlBindings.Read(binding, c); _ = ControlBindings.Resolve(data.Binding, m.Controls, c);
+                    data.Properties.Add(binding);
+                }
                 int runIndex = SplitControlInsertionRun(paragraph, offset, c);
                 var run = new TextRun("") { TypedControlId = assigned };
                 paragraph.Runs.Insert(runIndex, run); m.Controls.Items.Add(assigned, data);
@@ -56,19 +62,15 @@ public sealed partial class WordDocument
                     case ContentControlKind.DropDownList: ControlValues.SetSelection(data, owner, definition.SelectedValue, c); break;
                     case ContentControlKind.ComboBox:
                         if (definition.SelectedValue != null) ControlValues.SetSelection(data, owner, definition.SelectedValue, c);
-                        else ControlValues.SetCombo(data, owner, definition.InitialText ?? "", c);
+                        else if (definition.InitialText == null) ControlValues.SetSelection(data, owner, null, c);
+                        else ControlValues.SetCombo(data, owner, definition.InitialText, c);
                         break;
                     case ContentControlKind.Date:
                         _ = ControlValues.DateDisplay(data, m.Controls.DateMode == ContentControlDateMode.DateOnly ? ContentControlDateValue.FromDate(2000, 1, 1)
                             : ContentControlDateValue.FromInstant(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero)));
                         ControlValues.SetDate(data, owner, definition.DateValue, m.Controls.DateMode, c); break;
                 }
-                if (definition.Binding != null)
-                {
-                    XElement binding = ControlBindingElement(definition.Binding);
-                    data.Binding = ControlBindings.Read(binding, c); _ = ControlBindings.Resolve(data.Binding, m.Controls, c);
-                    data.Properties.Add(binding); data.BindingState = ContentControlBindingState.Unevaluated;
-                }
+                if (data.Binding != null) data.BindingState = ContentControlBindingState.Unevaluated;
                 data.Lock = definition.Lock;
                 if (data.Lock != ContentControlLock.Unlocked) data.Properties.Add(new XElement(ControlValues.W + "lock", new XAttribute(ControlValues.W + "val", data.Lock switch
                 { ContentControlLock.ControlLocked => "sdtLocked", ContentControlLock.ContentLocked => "contentLocked", _ => "sdtContentLocked" })));

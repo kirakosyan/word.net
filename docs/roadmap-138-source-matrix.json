@@ -12,6 +12,7 @@
         { "class": "ContentControlCreationTests", "method": "InsertionSplitsOnlyAtUnicodeScalarBoundariesAndKeepsOtherText" },
         { "class": "ContentControlCreationTests", "method": "IdsAvoidExistingControlsAndHandlesBecomeStaleAfterInsertion" },
         { "class": "ContentControlCreationTests", "method": "CreatedControlCanUseAnExistingLocalBindingOnlyWhenExplicitlyApplied" },
+        { "class": "ContentControlCreationTests", "method": "BoundComboWithAnEmptyStoredValueCanStartWithoutASelection" },
         { "class": "ContentControlCreationTests", "method": "InitialContentLockAppliesAfterTheInitialValueIsInstalled" },
         { "class": "ContentControlCreationTests", "method": "DefinitionsCopyItemsAndKeepEmptySelectionDistinctFromNoSelection" },
         { "class": "ContentControlCreationTests", "method": "MultilineAndDateOnlyDefinitionsUseTheSessionsExplicitPolicies" }
@@ -27,6 +28,7 @@
         { "class": "ContentControlCreationTests", "method": "ExistingProtectedOwnersCannotBeSplitOrBypassed" },
         { "class": "ContentControlCreationTests", "method": "SimpleCellCreationIsEditableButNestedAndMergedTablesRejectAtomically" },
         { "class": "ContentControlCreationTests", "method": "ARepeatRowCannotReceiveANewTypedControl" },
+        { "class": "ContentControlCreationTests", "method": "BoundComboCannotUseFreeTextThatCollidesWithAStoredItemValue" },
         { "class": "ContentControlCreationTests", "method": "GlobalControlLimitPreventsInsertionWithoutChangingExistingOwners" }
       ]
     },
