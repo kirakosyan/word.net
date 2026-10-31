@@ -3,6 +3,30 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "created-block-control-body",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "An empty ordinary body paragraph can become one of six typed block controls with explicit values, locks, local bindings, subsequent edits and admitted fragment composition.",
+      "tests": [
+        { "class": "ContentControlBlockCreationTests", "method": "EmptyBodyParagraphsBecomeEditableTypedBlockControls" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedBlockUsesExplicitBindingAndUpdatesTheExistingLocalStore" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedBlockRemainsIndependentAfterFragmentComposition" },
+        { "class": "ContentControlBlockCreationTests", "method": "BlockCreationInstallsValueBeforeItsContentLock" },
+        { "class": "ContentControlBlockCreationTests", "method": "BlockWrapperRemovalPreservesOrExplicitlyDeletesContent" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedControlIdsAvoidSeparateTemplateOwners" }
+      ]
+    },
+    {
+      "id": "created-block-control-unsupported-owner",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "Nonempty, styled and cell placeholders reject without changing their owner; cancellation remains atomic.",
+      "tests": [
+        { "class": "ContentControlBlockCreationTests", "method": "BlockCreationRejectsNonemptyStyledAndCellOwnersAtomically" },
+        { "class": "ContentControlBlockCreationTests", "method": "RetainedTemplateWrappersCountTowardTheCreationLimit" }
+      ]
+    },
+    {
       "id": "preview-layout-body-glyphs",
       "issue": 167,
       "outcome": "supported-bounded",

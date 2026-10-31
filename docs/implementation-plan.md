@@ -55,7 +55,9 @@ also preserves a read-only single row or cell wrapper. Remaining nesting,
 structural editing and repeated-row work keep #144 open.
 Unreleased #145 source adds bounded inline control creation and explicit wrapper
 removal, with initial values, existing local bindings and lock/resource rules.
-Block creation and broader composition remain open; see the [creation profile](content-controls.md#unreleased-source-creating-an-inline-control)
+It also creates typed blocks in [empty ordinary body paragraphs](content-controls.md#unreleased-source-creating-a-block-control),
+with collision-safe IDs across typed and retained template controls. Cell/story
+block creation, broader composition and qualification remain open; see the [inline profile](content-controls.md#unreleased-source-creating-an-inline-control)
 and [removal profile](content-controls.md#unreleased-source-removing-an-admitted-control).
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance

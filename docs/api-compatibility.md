@@ -150,6 +150,11 @@ remote service, publishing credential or repository checkout is required there.
 
 ## Bucket 4 additive API
 
+Unreleased #145 source adds the provider-neutral `WordDocument.InsertBlockContentControl`
+for an empty ordinary body paragraph and keeps the existing inline creation API.
+See the [bounded block profile](content-controls.md#unreleased-source-creating-a-block-control);
+it is not in published 1.5.0 packages.
+
 Unreleased #167 source adds `PreviewOptions.Layout` and immutable preview-layout
 snapshot types. They expose no provider or model types; text is opt-in and
 unqualified geometry is nullable. See the [snapshot profile](interoperability.md#unreleased-source-preview-layout-snapshots).

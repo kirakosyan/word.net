@@ -134,6 +134,8 @@ Unreleased #145 removal uses `Control.Resources` when the final wrapper still ow
 retained local XML or glossary resources. `Control.BindingDirty`, `Control.Locked`,
 `Control.ProtectedOwner` and `Control.StaleHandle` reject the corresponding removal
 before the session is changed.
+Block creation also uses `Control.ProtectedOwner` for nonempty, styled or
+unsupported owners; `Limit.Controls` bounds ID and owner traversal before commit.
 
 Unreleased #141 source rejects incompatible document-wide themes before
 composition or comparison with `Composition.ThemeConflict` or

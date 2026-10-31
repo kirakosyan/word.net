@@ -171,8 +171,11 @@ OOXML, editing, selection and date modes, immutable inputs, Unicode offsets,
 locks, unsupported placements and rollback. Removal tests check preserved run formatting,
 deletion versus preservation, lock combinations, nested parents, stale/foreign
 handles, shared stories, table-cell schema, local resource retention and
-cancellation. Block creation, broader ownership and composition are not established
-by these tests.
+cancellation. Pending block-creation tests exercise all six kinds, saved schema,
+existing local bindings, locks, IDs across typed/template owners, fragment copying
+and atomic rejection. The [independent form observation](measurements/roadmap-138-block-controls-reference.json)
+checks direct block owners, IDs, static values and LibreOffice text; cell/story
+block creation and broader ownership remain outside this increment.
 The [exact-source control receipt](measurements/roadmap-138-controls-1c0dce7.json)
 records the full local suites, matrix, package checks and independent form output.
 

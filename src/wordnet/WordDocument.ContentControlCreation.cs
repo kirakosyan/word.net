@@ -40,7 +40,7 @@ public sealed partial class WordDocument
                 if (offset > 0 && offset < text.Length && char.IsHighSurrogate(text[offset - 1]) && char.IsLowSurrogate(text[offset]))
                     throw new ArgumentException("Control.Location: The offset cannot split a Unicode scalar.", nameof(offset));
                 if (m.Controls.Items.Count == 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
-                assigned = 1; while (m.Controls.Items.ContainsKey(assigned)) assigned++;
+                assigned = NewControlId(m, c);
                 ControlData data = CreateControlData(definition, assigned, c);
                 if (definition.Binding != null)
                 {
@@ -52,32 +52,106 @@ public sealed partial class WordDocument
                 var run = new TextRun("") { TypedControlId = assigned };
                 paragraph.Runs.Insert(runIndex, run); m.Controls.Items.Add(assigned, data);
                 ControlOwner owner = ControlOwners.Index(m, c)[assigned];
-                switch (data.Kind)
-                {
-                    case ContentControlKind.PlainText: ControlValues.SetPlain(data, owner, definition.InitialText ?? "", c); break;
-                    case ContentControlKind.RichText:
-                        string richText = definition.InitialText ?? ""; ControlValues.CheckText(richText, c);
-                        owner.SetRuns(assigned, new[] { new TextRun(richText) }); data.State = richText.Length == 0 ? ContentControlValueState.Empty : ContentControlValueState.Value; break;
-                    case ContentControlKind.Checkbox: ControlValues.SetChecked(data, owner, definition.IsChecked, c); break;
-                    case ContentControlKind.DropDownList: ControlValues.SetSelection(data, owner, definition.SelectedValue, c); break;
-                    case ContentControlKind.ComboBox:
-                        if (definition.SelectedValue != null) ControlValues.SetSelection(data, owner, definition.SelectedValue, c);
-                        else if (definition.InitialText == null) ControlValues.SetSelection(data, owner, null, c);
-                        else ControlValues.SetCombo(data, owner, definition.InitialText, c);
-                        break;
-                    case ContentControlKind.Date:
-                        _ = ControlValues.DateDisplay(data, m.Controls.DateMode == ContentControlDateMode.DateOnly ? ContentControlDateValue.FromDate(2000, 1, 1)
-                            : ContentControlDateValue.FromInstant(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero)));
-                        ControlValues.SetDate(data, owner, definition.DateValue, m.Controls.DateMode, c); break;
-                }
-                if (data.Binding != null) data.BindingState = ContentControlBindingState.Unevaluated;
-                data.Lock = definition.Lock;
-                if (data.Lock != ContentControlLock.Unlocked) data.Properties.Add(new XElement(ControlValues.W + "lock", new XAttribute(ControlValues.W + "val", data.Lock switch
-                { ContentControlLock.ControlLocked => "sdtLocked", ContentControlLock.ContentLocked => "contentLocked", _ => "sdtContentLocked" })));
+                InitializeCreatedControl(m, data, owner, definition, c);
                 ControlOwners.Normalize(m); return 1;
             }, cancellationToken, objectAware: true, controlAware: true);
             return ContentControls.Single(control => control.Id == assigned);
         }
+    }
+
+    /// <summary>Replaces an empty ordinary body paragraph with a new typed block content control.</summary>
+    /// <remarks>The paragraph must be an unstyled top-level body paragraph with no existing content or protected owner.
+    /// The definition supplies the initial value and lock. Local bindings must resolve against an existing store.</remarks>
+    public DocumentContentControl InsertBlockContentControl(int paragraphIndex, ContentControlDefinition definition, CancellationToken cancellationToken = default)
+    {
+        Guard.NotNull(definition, nameof(definition));
+        lock (gate)
+        {
+            int assigned = 0;
+            _ = Edit((m, c) =>
+            {
+                ParagraphBlock? paragraph = null; int current = 0;
+                if (paragraphIndex >= 0)
+                    foreach (ParagraphBlock candidate in m.BodyParagraphs)
+                    {
+                        c.ReserveControlWork(1);
+                        if (current++ == paragraphIndex) { paragraph = candidate; break; }
+                    }
+                if (paragraph == null) throw new ArgumentOutOfRangeException(nameof(paragraphIndex));
+                foreach (TextRun existing in paragraph.Runs) c.ReserveControlWork(1);
+                bool body = false;
+                foreach (DocumentBlock block in m.Blocks) { c.ReserveControlWork(1); if (ReferenceEquals(block, paragraph)) { body = true; break; } }
+                if (!body || !ContentProfiles.OrdinaryParagraph(paragraph)
+                    || paragraph.StyleId != null || paragraph.HeadingLevel != 0 || paragraph.IsCodeBlock || paragraph.Text.Length != 0
+                    || paragraph.Layout.Left != 0 || paragraph.Layout.Right != 0 || paragraph.Layout.FirstLine != 0 || paragraph.Layout.Tabs.Count != 0
+                    || paragraph.Runs.Count > 1 || paragraph.Runs.Any(HasBlockInsertionStyle) || paragraph.Mark is TextRun mark && HasBlockInsertionStyle(mark))
+                    throw new NotSupportedException("Control.ProtectedOwner: Block creation requires an empty ordinary unstyled body paragraph.");
+                if (m.Controls.Items.Count == 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
+                assigned = NewControlId(m, c);
+                ControlData data = CreateControlData(definition, assigned, c); data.Inline = false;
+                if (definition.Binding != null)
+                {
+                    XElement binding = ControlBindingElement(definition.Binding);
+                    data.Binding = ControlBindings.Read(binding, c); _ = ControlBindings.Resolve(data.Binding, m.Controls, c);
+                    data.Properties.Add(binding);
+                }
+                paragraph.TypedControlId = assigned; m.Controls.Items.Add(assigned, data);
+                ControlOwner owner = ControlOwners.Index(m, c)[assigned];
+                InitializeCreatedControl(m, data, owner, definition, c);
+                ControlOwners.Normalize(m); return 1;
+            }, cancellationToken, objectAware: true, controlAware: true);
+            return ContentControls.Single(control => control.Id == assigned);
+        }
+    }
+
+    private static bool HasBlockInsertionStyle(TextRun run) => run.Bold || run.Italic || run.Code || run.FontSize.HasValue || run.Color != null || run.ExplicitFormat
+        || run.Appearance.HasValues || run.Appearance.ThemeFontAscii != null || run.Appearance.ThemeFontHighAnsi != null
+        || run.Appearance.ThemeColor != null || run.Appearance.ThemeTint != null || run.Appearance.ThemeShade != null || run.Appearance.ReviewCompanions != null;
+
+    private static int NewControlId(DocumentModel model, ConversionContext c)
+    {
+        var used = new HashSet<int>(model.Controls.Items.Keys);
+        var templates = new HashSet<TemplateControl>();
+        foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
+        {
+            c.ReserveControlWork(1);
+            Add(block.Control); Add(block.NestedControl);
+            if (block is TableBlock table) foreach (TemplateControl control in table.RowControls.Values) Add(control);
+            if (block is ParagraphBlock paragraph) foreach (TextRun run in paragraph.Runs) { c.ReserveControlWork(1); Add(run.Control); }
+        }
+        if (model.Controls.Items.Count + templates.Count >= 1024)
+            throw new InvalidDataException("Limit.Controls: At most 1024 total typed and retained template controls are admitted when creating a control.");
+        int next = 1;
+        while (used.Contains(next)) { c.ReserveControlWork(1); next = checked(next + 1); }
+        return next;
+
+        void Add(TemplateControl? control) { c.ReserveControlWork(1); if (control != null && templates.Add(control) && control.Id is int id) used.Add(id); }
+    }
+
+    private static void InitializeCreatedControl(DocumentModel model, ControlData data, ControlOwner owner, ContentControlDefinition definition, ConversionContext c)
+    {
+        switch (data.Kind)
+        {
+            case ContentControlKind.PlainText: ControlValues.SetPlain(data, owner, definition.InitialText ?? "", c); break;
+            case ContentControlKind.RichText:
+                string richText = definition.InitialText ?? ""; ControlValues.CheckText(richText, c);
+                owner.SetRuns(data.Id, new[] { new TextRun(richText) }); data.State = richText.Length == 0 ? ContentControlValueState.Empty : ContentControlValueState.Value; break;
+            case ContentControlKind.Checkbox: ControlValues.SetChecked(data, owner, definition.IsChecked, c); break;
+            case ContentControlKind.DropDownList: ControlValues.SetSelection(data, owner, definition.SelectedValue, c); break;
+            case ContentControlKind.ComboBox:
+                if (definition.SelectedValue != null) ControlValues.SetSelection(data, owner, definition.SelectedValue, c);
+                else if (definition.InitialText == null) ControlValues.SetSelection(data, owner, null, c);
+                else ControlValues.SetCombo(data, owner, definition.InitialText, c);
+                break;
+            case ContentControlKind.Date:
+                _ = ControlValues.DateDisplay(data, model.Controls.DateMode == ContentControlDateMode.DateOnly ? ContentControlDateValue.FromDate(2000, 1, 1)
+                    : ContentControlDateValue.FromInstant(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero)));
+                ControlValues.SetDate(data, owner, definition.DateValue, model.Controls.DateMode, c); break;
+        }
+        if (data.Binding != null) data.BindingState = ContentControlBindingState.Unevaluated;
+        data.Lock = definition.Lock;
+        if (data.Lock != ContentControlLock.Unlocked) data.Properties.Add(new XElement(ControlValues.W + "lock", new XAttribute(ControlValues.W + "val", data.Lock switch
+        { ContentControlLock.ControlLocked => "sdtLocked", ContentControlLock.ContentLocked => "contentLocked", _ => "sdtContentLocked" })));
     }
 
     private static ControlData CreateControlData(ContentControlDefinition definition, int id, ConversionContext c)

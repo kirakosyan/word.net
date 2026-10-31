@@ -130,7 +130,7 @@ snapshot; the offset counts UTF-16 code units and must not split a Unicode scala
 The returned control is a fresh session handle. Each subsequent committed edit
 invalidates earlier mutation handles. Definitions and list items are copied and
 bounded before insertion, and IDs are assigned without colliding with existing
-typed controls.
+typed or retained template controls.
 
 ```csharp
 WordDocument form = WordDocument.Create();
@@ -156,6 +156,31 @@ nested tables, text boxes and story owners. This increment does not create block
 controls or introduce a new local XML store. Template composition and broader
 placement remain open in #145 and #147. A separate pending [fragment profile](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 admits independently identified copies of created or imported controls and local bindings.
+
+## Unreleased source: creating a block control
+
+Pending #145 source also adds `InsertBlockContentControl(paragraphIndex, definition)`.
+It replaces one empty, unstyled top-level body paragraph with an admitted typed
+block wrapper, sets the definition's initial value, and returns a fresh handle.
+All six kinds use the same value, lock and existing-local-binding policies as inline
+creation. The paragraph must have no protected content, direct run or paragraph-mark
+style, or multiple empty runs. Nonempty paragraphs and cell/story owners reject
+atomically. IDs avoid both typed and retained template-control IDs; the existing
+1,024-control limit includes both categories when creating a new wrapper.
+
+```csharp
+WordDocument form = WordDocument.Create();
+form.AddParagraph("");
+DocumentContentControl note = form.InsertBlockContentControl(0,
+    new ContentControlDefinition(ContentControlKind.RichText, initialText: "Draft"));
+form.ReplaceControlParagraphs(note, new[] { new ContentControlParagraph(new[] { new DocumentText("Final") }) });
+```
+
+Created blocks can be edited, removed and composed within the existing bounded
+fragment profile. The [independent form observation](measurements/roadmap-138-block-controls-reference.json)
+records schema, ownership, ID and static LibreOffice text checks. Cell/story block
+creation, broader owners and full #145 qualification remain open; this source
+increment is not part of the published 1.5.0 packages.
 
 ## Unreleased source: removing an admitted control
 
