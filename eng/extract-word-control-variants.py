@@ -37,7 +37,17 @@ def main():
         for source, name in PARTS.items():
             data = archive.read(source).decode('utf-8-sig').replace('\r\n', '\n').replace('\r', '\n')
             (args.output / name).write_text(data, encoding='utf-8', newline='\n')
-    print('Extracted seven control subtrees and six glossary parts; other document content and metadata were not copied.')
+        styles = ET.fromstring(archive.read('word/styles.xml'))
+        selected = ET.Element(W + 'styles')
+        wanted = {'DefaultParagraphFont', 'PlaceholderText'}
+        for style in styles.findall(W + 'style'):
+            if style.get(W + 'styleId') in wanted:
+                style.tail = None
+                selected.append(style)
+        if {style.get(W + 'styleId') for style in selected} != wanted:
+            parser.error('The pinned input must contain both expected character styles.')
+        (args.output / 'main-character-styles.xml').write_bytes(ET.tostring(selected, encoding='utf-8') + b'\n')
+    print('Extracted seven control subtrees, six glossary parts and two character styles; other document content and metadata were not copied.')
 
 
 if __name__ == '__main__':

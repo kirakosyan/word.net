@@ -116,6 +116,11 @@ an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.
 This profile is included in 1.5.0.
 
+Unreleased #143 source uses `Control.CharacterStyle` when an admitted typed-control
+run's bounded character style is resolved into direct formatting. The editable
+style identity is not retained; Strict mode rejects this loss. Unsafe, missing,
+cyclic and unqualified style definitions remain hard failures.
+
 Unreleased #141 source rejects incompatible document-wide themes before
 composition or comparison with `Composition.ThemeConflict` or
 `Comparison.ThemeConflict`. These are hard failures, not loss diagnostics.

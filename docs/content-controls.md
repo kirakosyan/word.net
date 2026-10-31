@@ -32,8 +32,13 @@ save/reload. No font or other resource is fetched. Missing and cyclic style base
 duplicate, dangling, external, nested, active or unknown relationships and
 unlisted metadata fail explicitly.
 The font flag is preserved as metadata; it does not embed, execute or fetch a font.
-An authored list control whose named glossary entry is absent remains unsupported,
-as do character-style references within ordinary control runs.
+An authored list control whose named glossary entry is absent remains unsupported.
+Unreleased source can resolve a bounded main-document character-style chain in a
+control run, including the Word-authored date-placeholder example. Its resolved
+appearance is materialized and `Control.CharacterStyle` reports that editable
+character-style identity is lost; Strict mode rejects the loss. Missing, cyclic,
+script-dependent and behavior-bearing styles remain unsupported. This is not a
+claim that arbitrary character-style references survive editing.
 
 The fixture's theme-dependent defaults retain the existing `Docx.ThemeFont` and
 other applicable fallback diagnostics; Strict mode rejects those losses. When

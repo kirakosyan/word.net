@@ -40,7 +40,9 @@ conditional outer edges and their editable style metadata are retained, with
 unqualified inheritance and border conflicts reported.
 Pending source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships, including `notTrueType` font metadata and additional
-Word-authored rich-text, plain-text and date control derivatives.
+Word-authored rich-text, plain-text and date control derivatives. A bounded main
+character-style chain can be materialized in non-strict mode with an explicit loss;
+its editable style identity remains unqualified.
 The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
 records its subset, diagnostics and the broader control and resource evidence still
 required before the leaf can be accepted.

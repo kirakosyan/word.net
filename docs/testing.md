@@ -73,9 +73,22 @@ locks, local placeholders, explicit binding and conflicts, stale handles, simple
 cell ownership, editable schema and detached display. A [Word-derived synthetic
 nested fixture](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners/README.md)
 and LibreOffice PDF independently check text order. This does not establish Word
-execution, deeper nesting, row wrappers, story owners or repeated-row identity.
+execution, deeper nesting, row wrappers, nested story owners or repeated-row identity.
 The [exact-source nested-owner receipt](measurements/roadmap-138-nested-2fa1a71.json)
 records the local suite, capability matrix and package checks.
+
+Pending #144 plain story-owner tests check all six control kinds in top-level
+header and footer placements, selected page variants, shared inherited stories,
+IDs, binding conflicts, locks and cancellation. A [synthetic Word-derived story
+reference](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StoryOwners/README.md)
+compares two-page LibreOffice text placement; it does not establish Word execution,
+other story ownership or repeated report-row identity.
+
+Pending #143 character-style tests cover inherited/overridden color, invalid style
+graphs and an additional Word-derived date placeholder. The independently generated
+[LibreOffice observation](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/date-style-reference.json)
+checks text and color. Character-style identity is lost with a diagnostic in this
+bounded increment, and strict mode rejects it.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

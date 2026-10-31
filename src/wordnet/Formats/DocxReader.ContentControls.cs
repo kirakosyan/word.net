@@ -229,6 +229,8 @@ internal sealed partial class DocxReader
             else if (e.Name == W + "sz") { Leaf(e, W + "val"); _ = Integer(e, W + "val", 1, 3168); }
             else if (e.Name == W + "color")
             { Leaf(e, W + "val"); string value = DocxPackage.RequiredAttribute(e, W + "val"); if (value != "auto" && (value.Length != 6 || value.Any(c => !Uri.IsHexDigit(c)) || !uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _))) throw new InvalidDataException("Control.Malformed: Invalid RGB color."); }
+            else if (e.Name == W + "rStyle" && rpr.Parent?.Name == W + "r" && rpr.Ancestors(W + "sdtContent").Any())
+                ValidateTypedCharacterStyle(e);
             else throw new NotSupportedException("Control.Unsupported: The run properties are outside the admitted control text profile.");
         }
     }

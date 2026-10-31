@@ -419,6 +419,18 @@
       ]
     },
     {
+      "id": "control-character-style-materialization",
+      "issue": 143,
+      "outcome": "supported-bounded",
+      "boundary": "A bounded main-document character-style chain on an ordinary typed-control run resolves to direct appearance in non-strict modes; editable style identity is lost with an explicit diagnostic and Strict rejects it.",
+      "tests": [
+        { "class": "ContentControlCharacterStyleTests", "method": "BoundedCharacterStyleMatchesAnExplicitIndependentColorControl" },
+        { "class": "ContentControlWordVariantsTests", "method": "WordAuthoredDatePlaceholderWithLocalCharacterStyleRetainsItsResolvedAppearance" },
+        { "class": "ContentControlWordVariantsTests", "method": "CharacterStylesDoNotAdmitMissingCyclicOrUnqualifiedBehavior" },
+        { "class": "ContentControlWordVariantsTests", "method": "ResolvingTheCharacterStyleDoesNotInventAMissingWordPlaceholder" }
+      ]
+    },
+    {
       "id": "glossary-inert-local",
       "issue": 143,
       "outcome": "supported-bounded",

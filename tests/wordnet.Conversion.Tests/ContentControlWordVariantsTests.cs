@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text.Json;
 using System.Xml.Linq;
+using UglyToad.PdfPig;
 using Xunit;
 using static WordNet.Tests.ControlTestDocuments;
 
@@ -15,13 +17,19 @@ public sealed class ContentControlWordVariantsTests
         ("styles", "styles"), ("settings", "settings"), ("fontTable", "font-table"), ("webSettings", "web-settings")
     };
 
-    private static byte[] Authored(string name, bool inline = false, bool stripCharacterStyle = false)
+    private static byte[] Authored(string name, bool inline = false, bool stripCharacterStyle = false, bool includeMainStyles = false)
     {
         XElement control = XElement.Parse(Fixture("OfficeWordVariants/" + name + ".xml"));
         if (stripCharacterStyle) control.Descendants(W + "rStyle").Remove();
         string body = inline ? new XElement(W + "p", control).ToString(SaveOptions.DisableFormatting) : control.ToString(SaveOptions.DisableFormatting);
         return Modify(Package(Document(body)), zip =>
         {
+            if (includeMainStyles)
+            {
+                AddRelationship(zip, "word/_rels/document.xml.rels", "styles", "styles", "styles.xml");
+                Put(zip, "word/styles.xml", Fixture("OfficeWordVariants/main-character-styles.xml"));
+                Override(zip, "word/styles.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+            }
             AddRelationship(zip, "word/_rels/document.xml.rels", "glossary", "glossaryDocument", "glossary/document.xml");
             Put(zip, "word/glossary/document.xml", Fixture("OfficeWordVariants/glossary-document.xml"));
             Put(zip, "word/glossary/_rels/document.xml.rels", Fixture("OfficeWordVariants/glossary-relationships.xml"));
@@ -101,6 +109,16 @@ public sealed class ContentControlWordVariantsTests
     [Theory]
     [InlineData("combo-dangling")]
     [InlineData("dropdown-dangling")]
+    public void ResolvingTheCharacterStyleDoesNotInventAMissingWordPlaceholder(string name)
+    {
+        byte[] source = Authored(name, includeMainStyles: true); Validate(source);
+        var error = Assert.Throws<NotSupportedException>(() => Load(source, new ConversionOptions(FidelityMode.Lenient)));
+        Assert.Contains("placeholder reference", error.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("combo-dangling")]
+    [InlineData("dropdown-dangling")]
     [InlineData("date-placeholder")]
     public void AuthoredControlCharacterStyleReferencesAreStillExplicitlyUnsupported(string name)
     {
@@ -109,6 +127,64 @@ public sealed class ContentControlWordVariantsTests
         var error = Assert.Throws<NotSupportedException>(() => WordDocument.LoadWithControls(input, out _,
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken));
         Assert.StartsWith("Control.Unsupported:", error.Message, StringComparison.Ordinal); Assert.True(input.CanRead);
+    }
+
+    [Fact]
+    public void WordAuthoredDatePlaceholderWithLocalCharacterStyleRetainsItsResolvedAppearance()
+    {
+        using JsonDocument reference = JsonDocument.Parse(Fixture("OfficeWordVariants/date-style-reference.json"));
+        string referenceText = reference.RootElement.GetProperty("text").GetString()!;
+        string referenceColor = reference.RootElement.GetProperty("color").GetString()!;
+        byte[] source = Authored("date-placeholder", includeMainStyles: true); Validate(source);
+        using (var input = new MemoryStream(source))
+            Assert.Contains("Control.CharacterStyle", Assert.Throws<NotSupportedException>(() => WordDocument.LoadWithControls(input, out _,
+                new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
+        WordDocument document = Load(source, new ConversionOptions(FidelityMode.Lenient));
+        Assert.Contains(document.Diagnostics, diagnostic => diagnostic.Code == "Control.CharacterStyle");
+        Assert.True(Assert.Single(document.ContentControls).ShowingPlaceholder);
+        Assert.Equal(referenceText, Assert.Single(document.ContentControls).DisplayText);
+        using (PdfDocument pdf = PdfDocument.Open(Save(document, DocumentFormat.Pdf)))
+        {
+            Assert.Equal(referenceText, pdf.GetPage(1).Text);
+            Assert.All(pdf.GetPage(1).Letters, letter =>
+            {
+                var color = letter.Color.ToRGBValues();
+                Assert.Equal(Convert.ToInt32(referenceColor.Substring(0, 2), 16) / 255.0, color.r, 2);
+                Assert.Equal(Convert.ToInt32(referenceColor.Substring(2, 2), 16) / 255.0, color.g, 2);
+                Assert.Equal(Convert.ToInt32(referenceColor.Substring(4, 2), 16) / 255.0, color.b, 2);
+            });
+        }
+        document.SetControlDate(Assert.Single(document.ContentControls), ContentControlDateValue.FromInstant(new DateTimeOffset(2024, 2, 29, 0, 0, 0, TimeSpan.Zero)), TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        Assert.Empty(Xml(saved, "word/document.xml").Descendants(W + "rStyle"));
+        Assert.Equal("808080", (string?)Xml(saved, "word/document.xml").Descendants(W + "color").Single().Attribute(W + "val"));
+        Assert.Equal("2/29/2024", Assert.Single(Load(saved, new ConversionOptions(FidelityMode.Lenient)).ContentControls).DisplayText);
+        document.ShowControlPlaceholder(Assert.Single(document.ContentControls), TestContext.Current.CancellationToken);
+        Assert.Equal("Click here to enter a date.", Assert.Single(document.ContentControls).DisplayText);
+    }
+
+    [Theory]
+    [InlineData("missing")]
+    [InlineData("paragraph")]
+    [InlineData("cycle")]
+    [InlineData("active")]
+    [InlineData("script")]
+    public void CharacterStylesDoNotAdmitMissingCyclicOrUnqualifiedBehavior(string scenario)
+    {
+        byte[] source = Authored("date-placeholder", includeMainStyles: true);
+        source = Modify(source, zip =>
+        {
+            XDocument styles = Xml(zip, "word/styles.xml"); XElement target = styles.Descendants(W + "style").Single(e => (string?)e.Attribute(W + "styleId") == "PlaceholderText");
+            if (scenario == "missing") target.Remove();
+            else if (scenario == "paragraph") target.SetAttributeValue(W + "type", "paragraph");
+            else if (scenario == "cycle") target.Element(W + "basedOn")!.SetAttributeValue(W + "val", "PlaceholderText");
+            else if (scenario == "active") target.Add(new XElement(W + "link", new XAttribute(W + "val", "unexpected")));
+            else target.Element(W + "rPr")!.Add(new XElement(W + "szCs", new XAttribute(W + "val", "22")));
+            Put(zip, "word/styles.xml", styles.ToString(SaveOptions.DisableFormatting));
+        });
+        Exception? error = Record.Exception(() => Load(source, new ConversionOptions(FidelityMode.Lenient)));
+        Assert.True(error is InvalidDataException or NotSupportedException);
+        Assert.Contains(scenario is "missing" or "paragraph" ? "Control.Unsupported" : "Control.Style", error!.Message, StringComparison.Ordinal);
     }
 
     [Theory]
