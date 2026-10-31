@@ -262,6 +262,8 @@ records both validators, metadata/font/ParentTree checks and separate corruption
 controls. The archive validator alone accepted a missing-language control; the UA
 validator rejected it, so neither verdict substitutes for the other. Notes,
 mixed object/drawing ownership and native output remain unqualified.
+The [exact-source receipt](measurements/roadmap-138-accessible-archive-9cdbe58.json)
+records both complete local suites, the capability matrix and package checks.
 
 Pending #161 tests default rectangle, triangle and diamond presets, editable
 alternative metadata, PDF/XPS/SVG output, invalid adjustments and output bounds.
