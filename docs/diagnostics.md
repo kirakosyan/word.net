@@ -359,6 +359,22 @@ catalog below includes that merged profile; see [editing limits](editing-and-tem
 and [revision-specific evidence](testing.md). No bucket-4 diagnostic contract is
 advertised yet.
 
+## Unreleased template-inspection findings
+
+`Plan.MissingPath`, `Plan.PathType`, `Plan.ParentType`, `Plan.InvalidField`,
+`Plan.InvalidControl`, `Plan.InvalidControlPath` and `Plan.InvalidControlStructure`
+identify definite problems in the narrow inspected profile. `Plan.OptionalPath`,
+`Plan.OptionalParent`, `Plan.PathTypeUnknown`, `Plan.ParentTypeUnknown`,
+`Plan.ControlCoverage`, `Plan.RepeatScope`, `Plan.OwnerCoverage`,
+`Plan.FieldCoverage`, `Plan.LocationCoverage`, `Plan.UninspectedCoverage`,
+`Plan.ProtectedOwner` and `Plan.ReuseUnavailable` describe uncertainty or a
+protected owner; they never mean that output is safe. Each includes a stable
+`Remediation.*` identifier and may carry opaque path and part aliases. Source
+diagnostic codes, severity and counts are preserved without messages or source
+values. A common retained phase is exposed when known; omitted locations set
+`LocationsTruncated` and produce `Plan.LocationCoverage`. See the
+[profile and example](editing-and-templates.md#unreleased-source-bounded-template-inspection).
+
 ## Inspect before conversion
 
 `WordConverter.Inspect` and `InspectAsync` consume input from the current position,

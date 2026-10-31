@@ -2,6 +2,11 @@
 
 ## Unreleased roadmap #138 API work
 
+Pending #171 adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
+and privacy-safe `TemplateInspection` snapshots. Its ordinary-body field scope and
+explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
+It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
+
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`
 snapshot property for admitted nested typed owners. This additive property does
 not change existing constructor or method signatures; handles retain their

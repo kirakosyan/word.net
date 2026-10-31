@@ -12,6 +12,49 @@ The [compatibility-plan design](template-compatibility-plan-design.md) describes
 future typed requirements and loss policies; template-plan compilation and policy
 enforcement are not implemented by that design.
 
+## Unreleased source: bounded template inspection
+
+Pending #171 adds `WordConverter.InspectTemplate` for a DOCX and an explicitly
+declared `TemplateDataSchema`. It parses using the same editable DOCX context as
+`WordDocument.Load`; the requested later destination is recorded but not assessed.
+It checks ordinary body `MERGEFIELD` paths and
+date/number switches without binding values, calling data getters or writing output.
+Declare each dotted parent as a `Mapping`; missing, optional, incorrectly typed or
+undeclared parents produce findings. A scalar with an unspecified precise type is
+unknown for a date or number switch. Declarations are a caller promise, not a check
+that a later data object actually contains a value.
+
+```csharp
+var schema = new TemplateDataSchema(
+    new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+    new TemplateSchemaPath("Customer.Name", TemplatePathType.Scalar),
+    new TemplateSchemaPath("Total", TemplatePathType.Number));
+using var input = File.OpenRead("invoice.docx");
+TemplateInspection report = new WordConverter().InspectTemplate(
+    input, schema, DocumentFormat.Pdf);
+```
+
+The [local example](../examples/WordNet.TemplateLint/Program.cs) prints JSON:
+`dotnet run --project examples/WordNet.TemplateLint -- invoice.docx`. Change its
+schema declarations to match the template. Exit 2 denotes a definite inspected
+path/control problem; exit 1 includes unknown coverage and must not be treated as
+approval. Findings contain opaque `path-0001` and `part-0001` aliases, stable codes
+and remediation identifiers. Part aliases have **part-level** precision; they are
+not XML child positions. `GetSensitivePathAliases()` and
+`GetSensitivePartAliases()` explicitly reveal their mappings. Default JSON excludes
+those mappings and data values, but the SHA-256 of input bytes can still fingerprint
+a document and must be protected.
+
+This report always sets `IsReusable` to false: it does not bind effective options,
+fonts, providers or engine identities and cannot authorize #172 policy execution.
+Controls and repeat scopes, tables, stories, notes, text boxes, other fields,
+destination compatibility, layout, writing and independent validation remain
+uninspected or unknown. Invalid input and resource limits throw instead of returning
+a partial report. Streams are consumed from their current positions and left open;
+inspection performs no merge. Up to 4,096 declared paths, requirements, findings and
+aliases and 100,000 work items are admitted, in addition to conversion input bounds.
+The API is unreleased source, and full #171 acceptance remains open.
+
 Pending #144 source supports an inline typed child inside an admitted rich-text
 block control. Inspect the child's `ParentId` snapshot and reacquire handles after
 each edit; parent content locks protect children, and replacing a parent containing

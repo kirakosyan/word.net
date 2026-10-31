@@ -1,5 +1,11 @@
 # Architecture and implementation status
 
+Pending template inspection parses a bounded DOCX using the existing editable model
+and the same merge-field grammar, compares admitted body paths to an immutable
+declaration, and returns part-level opaque aliases. It does not read caller values,
+write output or claim a reusable environment identity. Uninspected controls, scopes,
+owners and later pipeline stages remain explicit unknowns.
+
 Unreleased #142 direct table borders and clear RGB shading stay on the table model
 through cloning and DOCX writing. Managed layout, HTML and ODT compute the
 applicable outside and inside edges and cell fills from the current rows.

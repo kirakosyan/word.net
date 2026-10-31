@@ -1130,6 +1130,24 @@
       ]
     },
     {
+      "id": "template-inspection-body-fields",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Non-reusable inspection compares declared body merge paths and typed switches without binding data or disclosing names by default; later output and other owners remain unknown.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "DeclaredBodyFieldsMatchActualMergeWithoutDisclosingNames" },
+        { "class": "TemplateInspectionTests", "method": "MissingPathPredictionMatchesTheActualMergeFailure" },
+        { "class": "TemplateInspectionTests", "method": "FormattingSwitchChecksOnlyWhatTheSchemaEstablishes" },
+        { "class": "TemplateInspectionTests", "method": "NestedPathsNeedDeclaredRequiredMappingParents" },
+        { "class": "TemplateInspectionTests", "method": "InvalidAndNonMergeFieldsAreReportedWithoutEvaluatingTheClock" },
+        { "class": "TemplateInspectionTests", "method": "SourceDiagnosticRetainsSeverityCountAndKnownPhase" },
+        { "class": "TemplateInspectionTests", "method": "TruncatedSourceLocationsKeepTheirCountAndUncertainty" },
+        { "class": "TemplateInspectionTests", "method": "RequestedDestinationDoesNotChangeTemplatePathInspection" },
+        { "class": "TemplateInspectionTests", "method": "RepeatsAndUninspectedOwnersStayUnknown" },
+        { "class": "TemplateInspectionTests", "method": "CurrentPositionBoundsCancellationAndSchemaSnapshotsAreEnforced" }
+      ]
+    },
+    {
       "id": "nary-equation-managed",
       "issue": 169,
       "outcome": "supported-bounded",

@@ -210,7 +210,7 @@ public sealed partial class WordDocument
         foreach (ConversionDiagnostic d in diagnostics) context.Inherit(d);
         return context;
     }
-    private static void Admit(DocumentModel model, ConversionContext context)
+    internal static void Admit(DocumentModel model, ConversionContext context)
     {
         context.CheckCancellation();
         GradientBudget.Check(model, context);

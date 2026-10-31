@@ -1,0 +1,129 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-10-31",
+  "workingTreeParent": "5b3650b65f5216f8ff9e9f477bb2ec50f2859346",
+  "executedWorkingTreeNet10AssemblySha256": "19467fb09725a99014faad32fda6d688f5bd3e47d2c94191b3c7d2bb249ca44a",
+  "scope": "Non-reusable ordinary body merge-field inspection. Repeat scope, controls, owners, output and environment identity remain unknown; full compatibility plans and policy enforcement are not implemented.",
+  "provenance": "Four synthetic documents independently authored with python-docx 1.2.0, normalized ZIP timestamps and byte-identical regeneration. Four source DOCX and one actual merged DOCX passed Open XML SDK 3.5.1. Independently loaded merged text was checked with python-docx; missing/type cases were checked against actual merge failures.",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "inputSchemaLogSha256": "0c04a7509b4bf4ab47b312e4e8a2a8ed348ee1f633913b66fe24962b65638242",
+  "mergedSchemaLogSha256": "edf7f2767f844743167aa1b90d399e13fdad6aaf7b0d549f7c6e0710a778ab70",
+  "checkerLogSha256": "7fe0b73d05804af0e1920e27d0bcf4d9e9e1a4d55578ce2a5bcbad24d00f639a",
+  "tools": {
+    "eng/generate-roadmap-138-template-lint.py": "1f727bcb60934d05c6f708f14189818eb724b142fbf24c4bfad91e8bf40b202d",
+    "eng/roadmap-138-template-lint-probe.cs": "7a745df9f508eeb00ef07e5d166671c74c199ed559ec33a280f4391327e93b82",
+    "eng/verify-roadmap-138-template-lint.py": "c36dfee4542499561f104c4d071aa803143fe70b8801d3bc59732b342a0c710d"
+  },
+  "documents": {
+    "valid": {
+      "inputDocxSha256": "8fded7ef47f65963bed7282563155fc8c7fd2cb87861f0dfe3fcf4a097910afe",
+      "reportSha256": "73bae772ce5a4daffb858799a020a8868823688e5067027cab2033bddea8d6bb",
+      "resultSha256": "284d1e8c4918248233df17642bbb940c001e1fa856c18aab86ba6dbe7813eb13",
+      "mergedDocxSha256": "a5eb5e32070d8c1fcda8387350c6281f6dac04ca6ac135ebd5882d95b0923f87"
+    },
+    "missing": {
+      "inputDocxSha256": "f205f7bddc6b206b219a821949f5efd691f69165065159d509c6dd4c933d476d",
+      "reportSha256": "171ddcb68a838129aaa0ec3d4066ebded63e78b7ba1fa770ac2291e1be8a29f8",
+      "resultSha256": "2e4fcc3c34bbd2700d4fe509b969200f75ebb3cf1369d0aa970e267272897cc8",
+      "mergedDocxSha256": null
+    },
+    "type": {
+      "inputDocxSha256": "9b85ae745696c771def51ce1c2fd0dc75c7ccf6d2c65ef0488c856557e15ccae",
+      "reportSha256": "f75cd208874bab380aff70ba80280b58f12b3c0db00d952b7d7fc53f2b6ec7c2",
+      "resultSha256": "7f936ed29c4b7850de2b6dea93a5f17adc025b0fde37320a96e1d373513e3024",
+      "mergedDocxSha256": null
+    },
+    "repeat": {
+      "inputDocxSha256": "44ee232c3a4be2643dec7bade72aa1bb55fc809e5005eddfc1f50f2b6d064324",
+      "reportSha256": "d982f2cede738bbb97c4ba9f66269412f1cf3356f1917bb8d2ebcf3a725342eb",
+      "resultSha256": "6949cc683829cec821cf8bd90841c6ef13e62709bf0ac732d453f7c3cb986e5d",
+      "mergedDocxSha256": null
+    }
+  },
+  "result": {
+    "specimens": {
+      "valid": {
+        "codes": [
+          "Plan.UninspectedCoverage",
+          "Plan.ReuseUnavailable",
+          "Docx.ThemeFont",
+          "Docx.RunFormatting",
+          "Docx.LanguageMetadata",
+          "Docx.AuxiliaryMetadata",
+          "Plan.LocationCoverage",
+          "Docx.Settings",
+          "Docx.PageLayout",
+          "Docx.AdditionalParts"
+        ],
+        "outcome": "passed"
+      },
+      "missing": {
+        "codes": [
+          "Plan.UninspectedCoverage",
+          "Plan.ReuseUnavailable",
+          "Docx.ThemeFont",
+          "Docx.RunFormatting",
+          "Docx.LanguageMetadata",
+          "Docx.AuxiliaryMetadata",
+          "Plan.LocationCoverage",
+          "Docx.Settings",
+          "Docx.PageLayout",
+          "Docx.AdditionalParts",
+          "Plan.MissingPath"
+        ],
+        "outcome": "Template.MissingValue"
+      },
+      "type": {
+        "codes": [
+          "Plan.UninspectedCoverage",
+          "Plan.ReuseUnavailable",
+          "Docx.ThemeFont",
+          "Docx.RunFormatting",
+          "Docx.LanguageMetadata",
+          "Docx.AuxiliaryMetadata",
+          "Plan.LocationCoverage",
+          "Docx.Settings",
+          "Docx.PageLayout",
+          "Docx.AdditionalParts",
+          "Plan.PathType"
+        ],
+        "outcome": "Template.Format"
+      },
+      "repeat": {
+        "codes": [
+          "Plan.UninspectedCoverage",
+          "Plan.ReuseUnavailable",
+          "Docx.ThemeFont",
+          "Docx.RunFormatting",
+          "Docx.LanguageMetadata",
+          "Docx.AuxiliaryMetadata",
+          "Plan.LocationCoverage",
+          "Docx.Settings",
+          "Docx.PageLayout",
+          "Docx.AdditionalParts",
+          "Plan.ControlCoverage",
+          "Plan.RepeatScope",
+          "Plan.OwnerCoverage"
+        ],
+        "outcome": "not-performed"
+      }
+    },
+    "negativeControls": {
+      "removed missing finding": "rejected",
+      "forged reuse": "rejected",
+      "leaked name": "rejected",
+      "incorrect repeat outcome": "rejected"
+    }
+  },
+  "originalFailuresRetained": [
+    {
+      "failure": "The first diagnostic-retention test expected a language warning, but editing retains that metadata and no such warning was produced; one of ten tests failed. The corrected test uses a theme-color loss actually observed by the editor.",
+      "trxSha256": "ef926437bb69a0f9cc8ce6a48be54d5c1a0de999fd471daa37c5959eb6fdd47b"
+    },
+    {
+      "failure": "Initial builds exposed cross-framework analyzer requirements (CA1720, CA1822 and CA1872); the first all-target build failed the net8 CA1872 rule. The code was corrected separately for net10, net8 and older frameworks; no analyzer or target was disabled."
+    }
+  ],
+  "qualification": "Working-tree reference only. Exact-commit source, full runtime, package and hosted qualification are tracked separately."
+}

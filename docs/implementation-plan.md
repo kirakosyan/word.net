@@ -12,6 +12,9 @@ are separate facts; publication is outside this roadmap's implementation request
 The proposed [compatibility-plan and loss-policy contract](template-compatibility-plan-design.md)
 is a design and executable schema example for #170, not an implementation of #171
 or #172. Their compilation, enforcement and independent outcome evidence remain open.
+Pending #171 adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
+for declared ordinary body merge fields. It explicitly retains uninspected scopes,
+output and environment identity; full plan compilation and #172 remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the

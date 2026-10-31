@@ -373,7 +373,7 @@ public sealed partial class WordDocument
         }
     }, token);
 
-    private static (string Kind, string Path) Tag(string tag)
+    internal static (string Kind, string Path) Tag(string tag)
     {
         int colon = tag.IndexOf(':');
         if (colon < 0) throw new NotSupportedException("Template.Tag: Unsupported content-control tag.");
@@ -381,7 +381,7 @@ public sealed partial class WordDocument
         if (kind is not "merge" and not "image" and not "if" and not "repeat") throw new NotSupportedException("Template.Tag: Unsupported content-control operation.");
         ValidatePath(kind == "if" && Starts(path, '!') ? path.Substring(1) : path); return (kind, path);
     }
-    private static (string Path, string? Format, string? Switch) MergeField(string instruction)
+    internal static (string Path, string? Format, string? Switch) MergeField(string instruction)
     {
         if (instruction.Length > 4096) throw new InvalidDataException("Template.FieldSyntax: Merge instruction exceeds its bound.");
         string[] args = Regex.Matches(instruction, "\"([^\"]*)\"|(\\S+)", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1)).Cast<Match>().Select(m => m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value).ToArray();

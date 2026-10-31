@@ -304,6 +304,18 @@ hosted exact-head and actual Framework qualification remain separate.
 The later [PR source-guest failure](measurements/roadmap-138-framework-6d021ea-pr-source-failure.json)
 occurred during its OCR download before tests began and is retained independently
 of any retry or push-side guest results.
+The [separate successful guests](measurements/roadmap-138-framework-6d021ea-successes.json)
+passed 2,253 cases each on actual Framework 4.7.2 for push source/package and
+PR-merge package, with verified cleanup and exact binary/artifact identities.
+
+Pending #171 tests compare body merge-path findings with actual successful and
+missing-data merges, and exercise types, parent declarations, repeat uncertainty,
+privacy, input bounds, stream ownership, cancellation and schema snapshots. They
+do not qualify reusable plan identity, output stages or other owners.
+The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
+checks four synthetic templates against actual merges, an independent DOCX reader,
+Open XML schema validation and deliberately corrupted reports; it also preserves
+the initial diagnostic-fixture and framework-analyzer failures.
 
 Pending #165 tests all 19,338 unmodified Unicode 17 default line-break cases,
 grapheme-safe use in managed PDF, nonbreaking spaces, font and owner rejection,

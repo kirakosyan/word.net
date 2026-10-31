@@ -109,7 +109,7 @@ public sealed partial class WordDocument
         while (used.Contains(i)) { context.CheckCancellation(); i = checked(i + 1); }
         return "wn" + i.ToString(CultureInfo.InvariantCulture) + "_";
     }
-    private static IEnumerable<TemplateControl> TemplateControls(DocumentModel model)
+    internal static IEnumerable<TemplateControl> TemplateControls(DocumentModel model)
     {
         foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
         {
