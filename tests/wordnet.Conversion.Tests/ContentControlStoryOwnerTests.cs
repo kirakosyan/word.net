@@ -145,7 +145,10 @@ public sealed class ContentControlStoryOwnerTests
     {
         string type = kind switch
         {
-            "rich" => "<w:richText/>", "plain" => "<w:text/>", "checkbox" => Checkbox(), "dropdown" => Choices,
+            "rich" => "<w:richText/>",
+            "plain" => "<w:text/>",
+            "checkbox" => Checkbox(),
+            "dropdown" => Choices,
             "combo" => "<w:comboBox><w:listItem w:displayText='Alpha' w:value='a'/></w:comboBox>",
             _ => "<w:date w:fullDate='2000-01-01T00:00:00Z'><w:dateFormat w:val='yyyy-MM-dd'/><w:lid w:val='en-US'/><w:calendar w:val='gregorian'/></w:date>"
         };
