@@ -246,6 +246,9 @@ original 0.5-point absolute geometry tolerance. BestEffort and Lenient diagnose
 that approximation; Strict, native, tagged and archival output are not qualified.
 The [exact-source receipt](measurements/roadmap-138-horizontal-bars-61ae229.json)
 records both complete suites, package checks and the reproduced specimen.
+The [local performance receipt](measurements/roadmap-138-performance-4eaa2d7.json)
+compares the same-source successor against the previous GitHub head with the
+unchanged threshold; the earlier hosted performance failure remains recorded.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
