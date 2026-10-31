@@ -3,6 +3,27 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "object-fragment-body-cell",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Admitted chart and equation fragments retain editable objects and isolated placement IDs at body or simple-cell bookmarks, using source appearance.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsRemainEditableAndIndependentAtBodyAndCellBookmarks" }
+      ]
+    },
+    {
+      "id": "object-fragment-protected",
+      "issue": 147,
+      "outcome": "rejected",
+      "boundary": "Object fragment restyling, resource exhaustion and cancellation reject atomically; typed controls, report controls and retained history remain outside this profile.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentRestylingAndCancellationLeaveBothSessionsUntouched" },
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsWithSeparateReportControlsRejectBeforeInsertion" },
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsRejectTypedSourceAndDestinationAtomically" },
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentRespectsTheDestinationResourceBudget" }
+      ]
+    },
+    {
       "id": "typed-control-structural-owners",
       "issue": 144,
       "outcome": "supported-bounded",

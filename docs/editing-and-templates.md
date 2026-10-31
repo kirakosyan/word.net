@@ -68,8 +68,10 @@ body bookmark paragraph with a private copy of a separately loaded DOCX or safe
 HTML session. Callers load sources explicitly; streams remain theirs. Source
 formatting is kept, colliding styles and list/bookmark/note/template-control IDs
 are remapped, and the destination section is used. Sections/stories, nested tables,
-typed controls, history, positioned/retained objects, source load warnings and
+typed controls, history, positioned text boxes, source load warnings and
 informational diagnostics for omitted/flattened field instructions are rejected.
+Published 1.5.0 also rejects retained chart and equation fragments; the pending
+source subset is described below.
 This original overload also rejects fields. Internal links must resolve
 in the fragment. Target REF/PAGEREF fields or links to the placeholder must be
 resolved before insertion; unrelated fields remain intact. Both sessions are
@@ -117,6 +119,19 @@ independent qualification.
 destination.InsertFragmentAtTableCellBookmarkWithOptions("Terms", clause,
     new FragmentInsertionOptions { Fields = FragmentFieldHandling.AcceptCachedResults });
 ```
+
+### Unreleased source: retained objects in fragments
+
+Pending #147 source admits the existing bounded chart and equation placements in
+body and simple-cell fragment destinations. Repeated insertion gives each placement
+a new identity, preserves its admitted chart graph or equation tree and description,
+and leaves the source session unchanged. Callers can update each inserted chart or
+equation independently. Admission checks the combined destination model and object
+budgets before committing. Fragments containing report controls, typed controls or
+history remain unsupported with these objects, as do positioned text boxes.
+Object-bearing fragments retain source appearance; `UseDestination` rejects them.
+This increment does not qualify additional tagged, archival or native combinations;
+#147 remains open for typed-control composition and the remaining acceptance work.
 
 ## Opt-in typed controls — merged source
 

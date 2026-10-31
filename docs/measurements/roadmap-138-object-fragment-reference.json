@@ -1,0 +1,44 @@
+{
+  "roadmap": 138,
+  "issue": 147,
+  "recordedUtc": "2026-10-31",
+  "scope": "One synthetic body fragment inserts an independently authored chart/equation source, then updates the chart and equation. These observations cover only the selected chart values, text, basic geometry and OMML; they do not establish Word execution or the entire issue.",
+  "workingTreeParent": "c9f11e63f3cf536f921be7059e224a4403a576b4",
+  "probe": "eng/roadmap-138-object-fragment-probe.cs",
+  "probeSha256": "ebdbd400cd0a4a5e249d0e684dc70a730441716b6e08809cd8e83349c9c3ddb9",
+  "executedWorkingTreeNet10AssemblySha256": "56eeb5202104f99ec8cf383b8e97a316a29381ed45a99875136ab59c6db632dd",
+  "independentInput": "tests/wordnet.Conversion.Tests/Fixtures/P2/column.docx",
+  "inputSha256": "a39b50ecb9e5d4d0f11ef0ac1988aa976c5ab6b6ffd3c832867130bac4150ad8",
+  "inputProvenance": "P2/manifest.json records the independently generated MIT fixture and XlsxWriter 3.2.9 workbook provenance.",
+  "outputDocxSha256": "293b3d619ae3c178904ba1840cdf0d913e0d384cc7c3cd679322290ae069bb68",
+  "outputWorkbookSha256": "023fa0cd3686e1392afa20e4b2d8217671e8fa0f27cf5fdb5f34e161323ac39c",
+  "outputChartXmlSha256": "09a4a9ff58310d39ed958f130294a1b79edc85ba13f59d23cfe849569b15e16b",
+  "schema": "Open XML SDK 3.5.1 reported zero errors; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "initialReferenceAttempt": {
+    "image": "sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644",
+    "result": "LibreOffice rendered the edited chart but omitted both the original and edited equations. The image did not contain the LibreOffice Math component; this is retained as a reference-tool failure, not a passing equation result.",
+    "originalPdfSha256": "0f4321434aaf88b096d1c4d7b6e4caade1f3e63847e88456b6e8f3ab783daeef",
+    "outputPdfSha256": "95ee0a3ee4fc68330b2bf996da31fb167f289566869b782e5b8d45555f41a7bf"
+  },
+  "mathReference": {
+    "image": "sha256:f079ca18b57205e536d993743a16ff75f40490b387d41db8c044bdc5ccce523f",
+    "imageConstruction": "The initial image plus libreoffice-math and libreoffice-uiconfig-math version 4:24.2.7-0ubuntu0.24.04.7; Dockerfile SHA-256 b484d7699cc313691d252440d48d9f00128d91ecbd234c0c1c36ffaad8390d0d. No installed packages were upgraded.",
+    "producer": "LibreOffice 24.2.7.2 420(Build:2), writer_pdf_Export; Poppler 24.02.0 pdftotext and pdftoppm at 96 dpi; Pillow for pixel inspection.",
+    "fonts": {
+      "DejaVuSans.ttf": "ae7b7855e115a5966d8b1b3f80f254ccc117ec86f9965e202ee2940453837280",
+      "DejaVuSans-Bold.ttf": "5c1247acef7f2b8522a31742c76d6adcb5569bacc0be7ceaa4dc39dd252ce895",
+      "DejaVuSerif.ttf": "8f2c103bfa3fd5de71f1b92b18f21906b5a26871fb7e19a9a4c9af539c3cc7ab"
+    },
+    "originalPdfSha256": "f72c216c735b3f2565146ebcfb82bd4258514242a1c6709bfc3d292ab0cdd9b3",
+    "outputPdfSha256": "6481c37582f49a31936fbd06f8c1a8f9664be0687b11dd230dd1d7f1b6c97b6c",
+    "outputRasterSha256": "f813d7b141d211e1d3878a87bb2577d9d0f45f746c5252f100e8a5ad375663e3",
+    "outputTextSha256": "a511767a44b7b678633ae5210e74b91ffd87188b31963581a18264b2de373614",
+    "observedText": "Before, Quarterly, Sales, Q1, Q2, x/4, After; the original control displays x/2.",
+    "chartBarBoundsPixels": [[169, 269, 228, 328], [320, 208, 379, 328]],
+    "chartBarHeightRatio": 2.0166666666666666,
+    "checker": "eng/check-roadmap-138-object-reference.py",
+    "checkerSha256": "cdb81a7503e3c2435ad9cafc1b8857dcb0606d7cb347fa2c4071c49f7da20945",
+    "checkerResult": "The checker confirms chart caches and XLSX cells Q1=10/Q2=20, OMML numerator x and denominator 4, reference text order, two RGB 2468AC bars on one baseline and a height ratio between 1.95 and 2.05."
+  },
+  "limitations": "The generated DOCX, PDFs and raster are not committed. This is a working-tree observation with the executing DLL hash above; exact final-commit runtime and package evidence require separate checks. No Word, live editing or native/tagged/archive combination qualification is claimed."
+}

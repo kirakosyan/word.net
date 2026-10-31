@@ -43,6 +43,8 @@ Mutations stage complete graphs/expressions and resource admission before commit
 stale/foreign handles and cancellation leave the session unchanged. Chart editing
 rebuilds both caches and real XLSX cells. Equation editing emits genuine OMML.
 Ordinary operations that cannot safely retain/remap object owners reject explicitly.
+The unreleased [object-fragment profile](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+adds bounded body and simple-cell insertion while preserving editable placement identity.
 Object PDF/XPS/SVG export reports editable-object loss; PDF/A and tagged/UA object output and
 native-typography/object combinations remain outside this profile.
 
@@ -63,6 +65,7 @@ and its workbook graph. Removing a newly added object also removes its dedicated
 empty paragraph; imported paragraph/cell structure is retained. Ordinary paragraph/table appends and metadata edits retain
 objects; replacing an object owner, executing templates around it, restyling
 composition, review ranges and matching-structure comparison reject until aware.
+The pending object-fragment insertion above is a separate bounded composition path.
 
 A `ChartDefinition` copies category and series lists, finite nullable values,
 explicit RGB colours, title, legend choice and category/value axis titles.

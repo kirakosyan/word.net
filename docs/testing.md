@@ -97,6 +97,15 @@ structural mutation or repeated-row identity.
 The [exact-source receipt](measurements/roadmap-138-structural-c9f11e6.json)
 records local test, matrix and package evidence and both corrected focused-test failures.
 
+Pending #147 object-fragment tests insert the independently authored P2 chart and
+equation fixture into body and simple-cell bookmarks twice, inspect schema and
+workbook bytes, and check independent edits and fixed output. Restyling, resource
+limits and cancellation are checked for atomic failure. Typed-control composition
+and additional native, tagged or archival combinations remain unqualified.
+The [reference receipt](measurements/roadmap-138-object-fragment-reference.json)
+retains an initial LibreOffice Math omission and the successful rerun with its
+matching Math component, plus chart-value, text, bar geometry and OMML observations.
+
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated
 [LibreOffice observation](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/date-style-reference.json)

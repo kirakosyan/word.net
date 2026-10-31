@@ -60,6 +60,9 @@ and [removal profile](content-controls.md#unreleased-source-removing-an-admitted
 Unreleased #146 work adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.
+Pending #147 adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+with independent placement identities and subsequent editing in body and simple-cell
+destinations. Typed-control composition and broader combination evidence remain open.
 Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
 cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
 and remaining acceptance/runtime qualification are separate from published 1.5.0.
