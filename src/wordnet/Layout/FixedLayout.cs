@@ -808,7 +808,7 @@ internal static partial class FixedLayout
 
         IEnumerable<FixedShape> CellShapes(CellLayout cell, double top, double height)
         {
-            string? background = cell.Source.Background ?? cell.Table?.CellBackground(cell.Row);
+            string? background = cell.Source.Background ?? cell.Table?.CellBackground(cell.Row, cell.CellIndex);
             if (background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, background);
             IEnumerable<KeyValuePair<string, CellBorder>> borders = cell.Table == null ? cell.Source.Borders : cell.Table.CellBorders(cell.Row, cell.CellIndex);
             foreach (var border in borders.Where(b => b.Value.Width > 0))

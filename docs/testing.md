@@ -29,6 +29,14 @@ check color, region and direct clear-cell precedence, editable inheritance and m
 report expansion, comparison, and diagnosed conflicts and pagination. The
 explicit-flag controls use the Office 2010 Open XML schema; tests do not infer
 portable behavior for conflicting flags or absent look masks.
+The [first-row exact-source receipt](measurements/roadmap-138-first-row-5cb70e4.json)
+records its local qualification. A separate [region reference](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleRegions/README.md)
+checks 4×4 and 2×2 grids, horizontal/vertical bands, edge and corner precedence,
+direct cell overrides and flags. It retains the independent conditional-style
+inheritance mismatch and checks the resulting output loss. It checks editable
+band-size inheritance and explicit loss for non-unit rendering. It retains
+LibreOffice's non-default band-size mismatch and one-row/column observations;
+these do not qualify those rendering cases or provide a Word execution.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

@@ -128,6 +128,14 @@ public sealed partial class DocxTableBorderTests
         Assert.Contains("Table.ShadingConflict", Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output,
             DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
         Assert.Equal(new byte[] { 42 }, output.ToArray());
+        if (name == "whole-and-condition")
+        {
+            input.Position = 0; WordDocument document = WordDocument.Load(input, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken);
+            byte[] saved = SaveStyle(document, DocumentFormat.Docx); Schema(saved);
+            XDocument styles = Part(saved, "word/styles.xml");
+            Assert.Contains(styles.Descendants(W + "shd"), element => (string?)element.Attribute(W + "fill") == "FFF3C0");
+            Assert.Contains(styles.Descendants(W + "shd"), element => (string?)element.Attribute(W + "fill") == "2266CC");
+        }
     }
 
     [Fact]
@@ -148,7 +156,7 @@ public sealed partial class DocxTableBorderTests
         XElement parent = styles.Descendants(W + "style").Single(style => (string?)style.Attribute(W + "styleId") == parentId);
         parent.Descendants(W + "shd").Single().SetAttributeValue(W + "fill", "884422");
         byte[] edited = TestDocuments.Docx(body.ToString(SaveOptions.DisableFormatting), styles: styles.ToString(SaveOptions.DisableFormatting)); Schema(edited);
-        using PdfDocument pdf = PdfDocument.Open(Convert(edited, DocumentFormat.Pdf, FidelityMode.Strict));
+        using PdfDocument pdf = PdfDocument.Open(ConvertWithInheritanceLoss(edited));
         Assert.DoesNotContain(pdf.GetPage(1).Paths, IsBlueFill);
         Assert.Equal(2, pdf.GetPage(1).Paths.Count(path => HasFill(path, 136 / 255.0, 68 / 255.0, 34 / 255.0)));
         Assert.Equal(saved, SaveStyle(document, DocumentFormat.Docx));
@@ -239,7 +247,7 @@ public sealed partial class DocxTableBorderTests
     [InlineData("unsupported-cell-property", "Docx.TableStyleData")]
     public void UnsupportedConditionalCombinationsLeaveOutputUntouched(string kind, string diagnostic)
     {
-        string condition = kind == "unsupported-region" ? FirstRowBlue.Replace("firstRow", "lastRow")
+        string condition = kind == "unsupported-region" ? FirstRowBlue.Replace("firstRow", "wholeTable")
             : kind == "unsupported-cell-property" ? FirstRowBlue.Replace("</w:tcPr>", "<w:vAlign w:val='center'/></w:tcPr>") : FirstRowBlue;
         string styles = TableStyles(kind == "whole-shading" ? Shading : "", condition);
         byte[] source = StyledInput(styles, table =>

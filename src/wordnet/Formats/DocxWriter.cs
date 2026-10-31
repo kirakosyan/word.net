@@ -15,6 +15,7 @@ internal sealed partial class DocxWriter
 {
     private static readonly XNamespace W = DocxPackage.Word;
     private static readonly string[] TableBorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
+    private static readonly string[] TableStyleRegions = { "band1Horz", "band2Horz", "band1Vert", "band2Vert", "firstCol", "lastCol", "firstRow", "lastRow", "nwCell", "neCell", "swCell", "seCell" };
     private readonly ConversionContext context;
     private DocumentModel model = null!;
     private readonly Dictionary<string, int> bookmarkIds = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -500,7 +501,8 @@ internal sealed partial class DocxWriter
         foreach (TableStyle style in styles)
         {
             context.CheckCancellation(); sourceIds.Add(style.Id);
-            metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256);
+            metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256
+                + ((long)style.Regions.Count + style.EffectiveRegions.Count) * 128);
             if (metadataBytes > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
         }
         var assigned = new HashSet<string>(reserved, StringComparer.Ordinal); int sequence = 0;
@@ -547,13 +549,16 @@ internal sealed partial class DocxWriter
                 new XElement(W + "name", new XAttribute(W + "val", definition.Name)),
                 definition.BasedOn == null ? null : new XElement(W + "basedOn", new XAttribute(W + "val", tableStyleIds[definition.BasedOn])));
             var properties = new XElement(W + "tblPr");
+            if (definition.RowBandSize.HasValue) properties.Add(new XElement(W + "tblStyleRowBandSize", new XAttribute(W + "val", definition.RowBandSize.Value)));
+            if (definition.ColumnBandSize.HasValue) properties.Add(new XElement(W + "tblStyleColBandSize", new XAttribute(W + "val", definition.ColumnBandSize.Value)));
             if (definition.Borders.Count != 0) properties.Add(TableBorders(definition.Borders));
             if (definition.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
                 new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.Background)));
             if (properties.HasElements) style.Add(properties);
-            if (definition.FirstRowBackground != null)
-                style.Add(new XElement(W + "tblStylePr", new XAttribute(W + "type", "firstRow"), new XElement(W + "tcPr",
-                    new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.FirstRowBackground)))));
+            foreach (string region in TableStyleRegions)
+                if (definition.Regions.TryGetValue(region, out string? color))
+                    style.Add(new XElement(W + "tblStylePr", new XAttribute(W + "type", region), new XElement(W + "tcPr",
+                        new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", color)))));
             styles.Add(style);
         }
 

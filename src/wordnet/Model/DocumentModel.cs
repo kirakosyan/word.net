@@ -115,9 +115,70 @@ internal sealed class TableBlock : DocumentBlock
     internal TableStyle? Style { get; set; }
     internal TableStyleLook? Look { get; set; }
     internal string? EffectiveBackground => Background ?? Style?.EffectiveBackground;
-    internal string? FirstRowBackground => Look?.FirstRow == true ? Style?.EffectiveFirstRowBackground : null;
-    internal bool HasTableShading => EffectiveBackground != null || FirstRowBackground != null;
-    internal string? CellBackground(int row) => row == 0 ? FirstRowBackground ?? EffectiveBackground : EffectiveBackground;
+    internal bool HasTableShading => EffectiveBackground != null || Look != null && Style?.EffectiveRegions.Count > 0;
+    internal bool HasUnqualifiedConditionalInheritance => Look != null && Style is TableStyle style && style.BasedOn is TableStyle parent
+        && Rows.Count > 0 && Rows[0].Count > 0
+        && parent.EffectiveRegions.Keys.Any(name => !style.Regions.ContainsKey(name) && RegionMayApply(name, style, Look));
+    private bool RegionMayApply(string name, TableStyle style, TableStyleLook look)
+    {
+        bool firstRow = look.Has(0x20), lastRow = look.Has(0x40), firstColumn = look.Has(0x80), lastColumn = look.Has(0x100);
+        return name switch
+        {
+            "firstRow" => firstRow,
+            "lastRow" => lastRow,
+            "firstCol" => firstColumn,
+            "lastCol" => lastColumn,
+            "nwCell" => firstRow && firstColumn,
+            "neCell" => firstRow && lastColumn,
+            "swCell" => lastRow && firstColumn,
+            "seCell" => lastRow && lastColumn,
+            "band1Horz" or "band2Horz" => !look.Has(0x200) && (style.EffectiveRowBandSize ?? 1) > 0
+                && Rows.Count > (firstRow ? 1 : 0) + (lastRow ? 1 : 0),
+            "band1Vert" or "band2Vert" => !look.Has(0x400) && (style.EffectiveColumnBandSize ?? 1) > 0
+                && Rows[0].Count > (firstColumn ? 1 : 0) + (lastColumn ? 1 : 0),
+            _ => true
+        };
+    }
+    internal bool HasUnqualifiedWholeConditionalShading => Style is TableStyle style && style.EffectiveBackground != null && style.EffectiveRegions.Count > 0;
+    internal bool HasAmbiguousDefaultBandSize => Look != null && Style != null
+        && (!Look.Has(0x200) && Style.EffectiveRowBandSize == null
+                && (Style.EffectiveRegions.ContainsKey("band1Horz") || Style.EffectiveRegions.ContainsKey("band2Horz"))
+            || !Look.Has(0x400) && Style.EffectiveColumnBandSize == null
+                && (Style.EffectiveRegions.ContainsKey("band1Vert") || Style.EffectiveRegions.ContainsKey("band2Vert")));
+    internal bool HasUnqualifiedRegionOverlap => Style?.EffectiveRegions.Count > 0 && Look != null
+        && (Rows.Count == 1 && Look.Has(0x20) && Look.Has(0x40)
+            || Rows.Count > 0 && Rows[0].Count == 1 && Look.Has(0x80) && Look.Has(0x100));
+    internal bool HasUnqualifiedBandSize => Look != null && Style != null
+        && (!Look.Has(0x200) && Style.EffectiveRowBandSize is int rows && rows != 1
+                && (Style.EffectiveRegions.ContainsKey("band1Horz") || Style.EffectiveRegions.ContainsKey("band2Horz"))
+            || !Look.Has(0x400) && Style.EffectiveColumnBandSize is int columns && columns != 1
+                && (Style.EffectiveRegions.ContainsKey("band1Vert") || Style.EffectiveRegions.ContainsKey("band2Vert")));
+    internal string? CellBackground(int row, int column)
+    {
+        string? color = EffectiveBackground;
+        if (Look == null || Style == null || Style.EffectiveRegions.Count == 0) return color;
+        IReadOnlyDictionary<string, string> regions = Style.EffectiveRegions;
+        bool firstRow = Look.Has(0x20), lastRow = Look.Has(0x40), firstColumn = Look.Has(0x80), lastColumn = Look.Has(0x100);
+        int rows = Rows.Count, columns = Rows[row].Count;
+        // Office applies row bands before column bands, then columns, rows and corners.
+        int rowStart = firstRow ? 1 : 0, columnStart = firstColumn ? 1 : 0;
+        int rowSize = Style.EffectiveRowBandSize ?? 1, columnSize = Style.EffectiveColumnBandSize ?? 1;
+        if (!Look.Has(0x200) && rowSize > 0 && row >= rowStart && row < rows - (lastRow ? 1 : 0))
+            color = Region(regions, (((row - rowStart) / rowSize) & 1) == 0 ? "band1Horz" : "band2Horz", color);
+        if (!Look.Has(0x400) && columnSize > 0 && column >= columnStart && column < columns - (lastColumn ? 1 : 0))
+            color = Region(regions, (((column - columnStart) / columnSize) & 1) == 0 ? "band1Vert" : "band2Vert", color);
+        if (firstColumn && column == 0) color = Region(regions, "firstCol", color);
+        if (lastColumn && column == columns - 1) color = Region(regions, "lastCol", color);
+        if (firstRow && row == 0) color = Region(regions, "firstRow", color);
+        if (lastRow && row == rows - 1) color = Region(regions, "lastRow", color);
+        if (firstRow && firstColumn && row == 0 && column == 0) color = Region(regions, "nwCell", color);
+        if (firstRow && lastColumn && row == 0 && column == columns - 1) color = Region(regions, "neCell", color);
+        if (lastRow && firstColumn && row == rows - 1 && column == 0) color = Region(regions, "swCell", color);
+        if (lastRow && lastColumn && row == rows - 1 && column == columns - 1) color = Region(regions, "seCell", color);
+        return color;
+    }
+    private static string? Region(IReadOnlyDictionary<string, string> regions, string name, string? fallback) =>
+        regions.TryGetValue(name, out string? color) ? color : fallback;
     internal bool HasTableBorders => Borders.Count != 0 || Style?.EffectiveBorders.Count > 0;
     // Direct table borders remain separate from cell overrides so that row edits
     // and report expansion compute their outside and inside edges afresh.
@@ -163,9 +224,10 @@ internal sealed class TableBlock : DocumentBlock
 // properties. Unsupported style elements are diagnosed before construction.
 internal sealed class TableStyle
 {
-    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background, string? firstRowBackground)
+    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background,
+        IDictionary<string, string> regions, int? rowBandSize, int? columnBandSize)
     {
-        Id = id; Name = name; BasedOn = basedOn; Background = background; FirstRowBackground = firstRowBackground;
+        Id = id; Name = name; BasedOn = basedOn; Background = background;
         var specified = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
         var effective = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
         if (basedOn != null) foreach (var border in basedOn.EffectiveBorders) effective.Add(border.Key, border.Value);
@@ -176,7 +238,14 @@ internal sealed class TableStyle
         }
         Borders = specified; EffectiveBorders = effective;
         EffectiveBackground = background ?? basedOn?.EffectiveBackground;
-        EffectiveFirstRowBackground = firstRowBackground ?? basedOn?.EffectiveFirstRowBackground;
+        var specifiedRegions = new Dictionary<string, string>(regions, System.StringComparer.Ordinal);
+        var effectiveRegions = new Dictionary<string, string>(System.StringComparer.Ordinal);
+        if (basedOn != null) foreach (var region in basedOn.EffectiveRegions) effectiveRegions.Add(region.Key, region.Value);
+        foreach (var region in specifiedRegions) effectiveRegions[region.Key] = region.Value;
+        Regions = specifiedRegions; EffectiveRegions = effectiveRegions;
+        RowBandSize = rowBandSize; ColumnBandSize = columnBandSize;
+        EffectiveRowBandSize = rowBandSize ?? basedOn?.EffectiveRowBandSize;
+        EffectiveColumnBandSize = columnBandSize ?? basedOn?.EffectiveColumnBandSize;
     }
     internal string Id { get; }
     internal string Name { get; }
@@ -185,8 +254,12 @@ internal sealed class TableStyle
     internal IReadOnlyDictionary<string, CellBorder> EffectiveBorders { get; }
     internal string? Background { get; }
     internal string? EffectiveBackground { get; }
-    internal string? FirstRowBackground { get; }
-    internal string? EffectiveFirstRowBackground { get; }
+    internal IReadOnlyDictionary<string, string> Regions { get; }
+    internal IReadOnlyDictionary<string, string> EffectiveRegions { get; }
+    internal int? RowBandSize { get; }
+    internal int? ColumnBandSize { get; }
+    internal int? EffectiveRowBandSize { get; }
+    internal int? EffectiveColumnBandSize { get; }
 }
 
 // A validated mask and its explicitly specified, agreeing flags. Omitted flags
@@ -197,6 +270,7 @@ internal sealed class TableStyleLook
     { Mask = mask; Flags = new Dictionary<string, bool>(flags, System.StringComparer.Ordinal); }
     internal int Mask { get; }
     internal bool FirstRow => (Mask & 0x20) != 0;
+    internal bool Has(int bit) => (Mask & bit) != 0;
     internal IReadOnlyDictionary<string, bool> Flags { get; }
 }
 

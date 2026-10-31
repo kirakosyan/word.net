@@ -32,27 +32,46 @@ style metadata or properties are diagnosed. Combining styles with direct table
 border or shading overrides is not admitted in strict mode. Comparison rejects
 table-style changes, including when other formatting categories are ignored.
 
-The source profile also retains a bounded `firstRow` conditional style containing
-clear explicit RGB cell shading, including inheritance. A qualified explicit
-four-digit `tblLook` bitmask enables or disables the first row; any accompanying
-explicit flags must agree with that mask. DOCX saves preserve the conditional
-style, inheritance chain, mask and explicitly supplied agreeing flags. Fixed
-output, HTML and ODT compute the fill from the current first row after report
-expansion. A direct clear explicit RGB cell fill overrides the conditional fill;
-other direct cell shading, including `nil`, remains diagnosed. Implicit look
-defaults, conflicting flags and mask bits, conditional cell properties other
-than clear shading, and combinations with whole-table shading remain diagnosed.
-A repeated first row or split row remains
-outside the fixed-page profile. The independent
-[LibreOffice controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleConditions/README.md)
-confirm the enabled and disabled colors and regions, with existing geometry
-differences retained. They do not establish portable behavior for conflicting
-flags or omitted masks.
+The source profile retains conditional clear RGB cell fills for first and last
+rows and columns, their corners, and horizontal and vertical bands. A qualified
+explicit four-digit `tblLook` mask selects the regions; explicit flags must agree
+with the mask. DOCX saves preserve conditional styles, inheritance, the mask and
+explicitly supplied agreeing flags. Fixed output, HTML and ODT recompute qualified
+fills from the current grid after report expansion. When output relies on a
+conditional region inherited from a parent style, strict non-DOCX output rejects
+with `Table.StyleInheritance`; best-effort output resolves the retained chain and
+reports the loss. LibreOffice omitted inherited regions in separate controls,
+so Word/reference parity for that combination is unqualified. A direct
+clear explicit RGB cell fill overrides conditional fills; other direct shading,
+including `nil`, remains diagnosed. Explicit style band sizes from zero through
+three are retained in editable DOCX, with inherited values and explicit resets.
+Unit bands render in the qualified subset. For zero, two or three, strict non-DOCX
+output rejects and best-effort output reports `Table.StyleBandSize`; it uses the
+OOXML grouping for positive sizes and Word's no-band behavior for zero. Larger
+sizes, direct-table band-size properties, implicit looks, conflicting flags and
+other conditional cell properties remain diagnosed. Combinations with whole-table
+style shading and overlapping first/last regions on a single row or column are
+retained in DOCX but reject strict non-DOCX output. Repeated headers and split rows
+remain unqualified.
+
+When regions overlap, this profile uses [Microsoft Office's documented order](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/2ac331d4-cf1e-4fa0-8bca-6da74411e284),
+which differs from the published [OOXML ordering](https://c-rex.net/samples/ooxml/e1/part4/OOXML_P4_DOCX_tblStylePr_topic_ID0EPR2T.html);
+`Table.StylePrecedence` reports potential differences. The [OOXML default band
+size is one](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.tablestylerowbandsize?view=openxml-3.0.1),
+while Microsoft's [Word notes](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/77519f5b-08b3-4547-9f5d-0c4d87854220)
+describe a default of zero. Omitted band sizes remain editable in DOCX but
+strict non-DOCX output rejects with `Table.StyleBandDefault`; best-effort output
+uses one and reports the loss. The independent
+[first-row](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleConditions/README.md)
+and [region controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleRegions/README.md)
+confirm the specified colors and regions in LibreOffice. LibreOffice did not
+honor size-two bands in separate controls; those retained failures do not qualify
+non-unit band rendering or establish Word behavior.
 
 Individually bordered, merged, nested or irregular cells, tables in stories or
 text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
-and strict rejection. Other conditional regions, style-level paragraph and run
-properties, other conditional cell properties, and full border-conflict
+and strict rejection. Style-level paragraph and run properties, conditional
+cell properties other than clear shading, and full border-conflict
 precedence remain outside this increment. The independent
 [LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
 checks six edge colors, grid relationships, style inheritance and an inherited

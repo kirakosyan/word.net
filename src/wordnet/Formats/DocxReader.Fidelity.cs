@@ -222,10 +222,18 @@ internal sealed partial class DocxReader
         XElement[] looks = properties?.Elements(W + "tblLook").ToArray() ?? Array.Empty<XElement>();
         if (looks.Length > 1) throw new InvalidDataException("Docx.TableLook: Duplicate table-look properties.");
         if (looks.Length == 1) table.Look = ReadTableLook(looks[0]);
-        if (table.Style?.EffectiveFirstRowBackground != null && table.Look == null)
-            context.Loss("Docx.TableLook", "Conditional first-row shading requires an explicit qualified table-look mask.");
-        if (table.Style?.EffectiveFirstRowBackground != null && table.EffectiveBackground != null)
-            context.Loss("Table.ShadingConflict", "Whole-table and conditional first-row shading together are not independently qualified.");
+        if (table.Style?.EffectiveRegions.Count > 0 && table.Look == null)
+            context.Loss("Docx.TableLook", "Conditional table shading requires an explicit qualified table-look mask.");
+        if (table.Style is TableStyle resolved && table.Look != null)
+        {
+            IReadOnlyDictionary<string, string> regions = resolved.EffectiveRegions;
+            bool horizontal = regions.ContainsKey("band1Horz") || regions.ContainsKey("band2Horz");
+            bool vertical = regions.ContainsKey("band1Vert") || regions.ContainsKey("band2Vert");
+            bool rows = regions.ContainsKey("firstRow") || regions.ContainsKey("lastRow");
+            bool columns = regions.ContainsKey("firstCol") || regions.ContainsKey("lastCol");
+            if (horizontal && vertical || rows && columns)
+                context.Report("Table.StylePrecedence", "Conditional regions resolve in the documented Office order, which differs from the published OOXML ordering.");
+        }
         table.Width = ReadWidth(properties?.Element(W + "tblW"), value => table.WidthPercent = value);
         string? layout = (string?)properties?.Element(W + "tblLayout")?.Attribute(W + "type");
         if (layout is not null and not "fixed" and not "autofit") throw new InvalidDataException("Docx.TableLayout: Invalid layout type.");
@@ -300,7 +308,7 @@ internal sealed partial class DocxReader
                 || child.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "val")))
             context.Loss("Docx.TableStyleData", "Unsupported table-style properties or metadata are not retained.");
         TableStyle? parent = parents.Length == 0 ? null : ResolveTableStyle(DocxPackage.RequiredAttribute(parents[0], W + "val"), visiting);
-        var appearance = new TableBlock();
+        var appearance = new TableBlock(); int? rowBandSize = null, columnBandSize = null;
         if (properties.Length != 0)
         {
             XElement container = properties[0];
@@ -308,25 +316,30 @@ internal sealed partial class DocxReader
             if (borders.Length > 1 || shading.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate style appearance properties.");
             if (borders.Length != 0) ReadTableBorders(borders[0], appearance);
             if (shading.Length != 0) ReadTableShading(shading[0], appearance);
+            rowBandSize = ReadStyleBandSize(container, "tblStyleRowBandSize");
+            columnBandSize = ReadStyleBandSize(container, "tblStyleColBandSize");
             if (container.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)
                 || container.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
-                || container.Elements().Any(child => child.Name != W + "tblBorders" && child.Name != W + "shd"))
+                || container.Elements().Any(child => child.Name != W + "tblBorders" && child.Name != W + "shd"
+                    && child.Name != W + "tblStyleRowBandSize" && child.Name != W + "tblStyleColBandSize"))
                 context.Loss("Docx.TableStyleData", "Unsupported whole-table style properties are not retained.");
         }
-        string? firstRowBackground = null; bool foundFirstRow = false;
+        var regionColors = new Dictionary<string, string>(StringComparer.Ordinal);
+        var seenRegions = new HashSet<string>(StringComparer.Ordinal);
         foreach (XElement condition in source.Elements(W + "tblStylePr"))
         {
             context.CheckCancellation();
-            if ((string?)condition.Attribute(W + "type") != "firstRow")
+            string? type = (string?)condition.Attribute(W + "type");
+            if (type is not ("firstRow" or "lastRow" or "firstCol" or "lastCol" or "band1Horz" or "band2Horz"
+                or "band1Vert" or "band2Vert" or "nwCell" or "neCell" or "swCell" or "seCell"))
             { context.Loss("Docx.TableStyleData", "Unsupported conditional table-style regions are not retained."); continue; }
-            if (foundFirstRow) throw new InvalidDataException("Docx.TableStyle: Duplicate first-row style conditions.");
-            foundFirstRow = true;
+            if (!seenRegions.Add(type)) throw new InvalidDataException("Docx.TableStyle: Duplicate table-style regions.");
             XElement[] cells = condition.Elements(W + "tcPr").ToArray();
             if (cells.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate conditional cell properties.");
             if (condition.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "type")
                 || condition.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
                 || condition.Elements().Any(child => child.Name != W + "tcPr") || cells.Length == 0)
-                context.Loss("Docx.TableStyleData", "Unsupported first-row style properties or metadata are not retained.");
+                context.Loss("Docx.TableStyleData", "Unsupported conditional style properties or metadata are not retained.");
             if (cells.Length == 1)
             {
                 XElement cell = cells[0]; XElement[] shading = cell.Elements(W + "shd").ToArray();
@@ -335,15 +348,32 @@ internal sealed partial class DocxReader
                     || cell.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
                     || cell.Elements().Any(child => child.Name != W + "shd") || shading.Length == 0)
                     context.Loss("Docx.TableStyleData", "Unsupported conditional cell properties are not retained.");
-                if (shading.Length == 1) { var conditional = new TableBlock(); ReadTableShading(shading[0], conditional); firstRowBackground = conditional.Background; }
+                if (shading.Length == 1)
+                {
+                    var conditional = new TableBlock(); ReadTableShading(shading[0], conditional);
+                    if (conditional.Background != null) regionColors.Add(type, conditional.Background);
+                }
             }
         }
         visiting.Remove(id);
-        tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256);
+        tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256
+            + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0)) * 128);
         if (tableStyles.Count >= 10000 || tableStyleBytes > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
-        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, firstRowBackground);
+        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, rowBandSize, columnBandSize);
         tableStyles.Add(id, result); return result;
+    }
+
+    private int? ReadStyleBandSize(XElement properties, string name)
+    {
+        XElement[] values = properties.Elements(W + name).ToArray();
+        if (values.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate table-style band sizes.");
+        if (values.Length == 0) return null;
+        XElement element = values[0]; int value = Integer(element, W + "val", 0, 999);
+        if (element.HasElements || element.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+            || element.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "val") || value > 3)
+            context.Loss("Docx.TableStyleData", "Unsupported band-size metadata or a size above Word's documented limit is not qualified.");
+        return value;
     }
 
     private void ReadTableShading(XElement shading, TableBlock table)

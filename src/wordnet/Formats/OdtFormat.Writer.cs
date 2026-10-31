@@ -246,7 +246,7 @@ internal static partial class OdtFormat
                         target.Add(new XAttribute(B + "number-rows-spanned", height));
                     }
                     var appearance = new XElement(S + "table-cell-properties");
-                    string? background = cell.Background ?? table.CellBackground(r);
+                    string? background = cell.Background ?? table.CellBackground(r, cellIndex);
                     if (background != null) appearance.Add(new XAttribute(F + "background-color", "#" + background));
                     if (cell.Padding != null)
                     {

@@ -3,15 +3,46 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "conditional-table-regions",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit table-look masks select first/last row and column, corner and unit-band cell fills; direct clear RGB cell shading wins. Bounded band sizes and style chains remain editable. LibreOffice matches the documented Office overlap order in the tested grids; the OOXML order and Word's documented band default differ and are reported.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConditionalRegionsMatchIndependentColorsAndRemainEditable" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalRegionsFollowInsertedReportRowsAndAcrossOutputFormats" },
+        { "class": "DocxTableBorderTests", "method": "DisabledInheritedRegionsDoNotPreventQualifiedOutput" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitUnitBandSizesMatchTheIndependentSingleWidthControl" }
+      ]
+    },
+    {
+      "id": "conditional-table-regions-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Non-DOCX rendering that relies on inherited conditional regions, omitted or non-unit band sizes, single-row/column overlapping first/last regions and nil cell shading remains unqualified. Reference controls retain the inheritance, band-size and degenerate-grid observations.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "OverlappingSingleRowOrColumnRegionsRemainUnqualified" },
+        { "class": "DocxTableBorderTests", "method": "OmittedBandSizeRetainsEditableSourceAndReportsConflictingDefaults" },
+        { "class": "DocxTableBorderTests", "method": "NondefaultBandSizesStayEditableWhileReferenceMismatchIsDiagnosed" },
+        { "class": "DocxTableBorderTests", "method": "ZeroBandSizeIsRetainedAndItsStaticOutputIsExplicitlyUnqualified" },
+        { "class": "DocxTableBorderTests", "method": "SizeThreeUsesBoundedBestEffortGroupingAndRetainsItsSource" },
+        { "class": "DocxTableBorderTests", "method": "NonunitBandGroupingRecomputesAfterReportExpansionWithLossReported" },
+        { "class": "DocxTableBorderTests", "method": "InvalidOrUnqualifiedBandSizesFailBeforeOutput" },
+        { "class": "DocxTableBorderTests", "method": "ChangedBandSizesCannotBeHiddenByComparisonOptions" },
+        { "class": "DocxTableBorderTests", "method": "NilCellShadingWithSeveralRegionsRemainsUnqualified" },
+        { "class": "DocxTableBorderTests", "method": "InheritedRegionReferenceDifferencesAreExplicit" },
+        { "class": "DocxTableBorderTests", "method": "InheritedConditionalRegionOverridesItsParentWithoutFlattening" },
+        { "class": "DocxTableBorderTests", "method": "ChildBandSizeOverridesTheInheritedSizeAndBothRemainEditable" }
+      ]
+    },
+    {
       "id": "first-row-style-shading",
       "issue": 142,
       "outcome": "supported-bounded",
-      "boundary": "A qualified explicit table-look mask selects clear first-row cell shading inherited through bounded styles; direct clear RGB cell fills override it. Editable DOCX retains the chain and look; independent LibreOffice controls verify colors and precedence, with geometry differences remaining.",
+      "boundary": "A qualified explicit table-look mask selects clear first-row cell shading; direct clear RGB cell fills override it. Editable DOCX retains the style chain and look; independent LibreOffice controls verify colors and precedence, with geometry differences remaining.",
       "tests": [
         { "class": "DocxTableBorderTests", "method": "FirstRowMaskMatchesIndependentReferenceAndRemainsEditable" },
         { "class": "DocxTableBorderTests", "method": "AgreeingExplicitLookFlagsAreRetained" },
         { "class": "DocxTableBorderTests", "method": "DirectClearCellColorOverridesTheFirstRowStyleLikeTheIndependentReference" },
-        { "class": "DocxTableBorderTests", "method": "InheritedFirstRowStyleCanBeEditedAfterDocxSave" },
         { "class": "DocxTableBorderTests", "method": "ConditionalStyleIdentifiersRemainIndependentDuringComposition" },
         { "class": "DocxTableBorderTests", "method": "FirstRowConditionReevaluatesAfterReportExpansion" }
       ]
@@ -20,13 +51,14 @@
       "id": "first-row-style-unsupported",
       "issue": 142,
       "outcome": "rejected",
-      "boundary": "Conflicting or omitted look semantics, unsupported conditional properties, nil/whole-table shading conflicts, changed style comparison and repeated fixed-page headers reject. Duplicate look or direct cell shading markup fails before output.",
+      "boundary": "Static output depending on inherited conditions, conflicting or omitted look semantics, unsupported conditional properties, nil/whole-table shading conflicts, changed style comparison and repeated fixed-page headers reject. Duplicate look or direct cell shading markup fails before output.",
       "tests": [
         { "class": "DocxTableBorderTests", "method": "UnsupportedConditionalCombinationsLeaveOutputUntouched" },
         { "class": "DocxTableBorderTests", "method": "AmbiguousLookReferenceResultsRemainExplicitlyUnsupported" },
         { "class": "DocxTableBorderTests", "method": "DuplicateTableLooksFailBeforeOutput" },
         { "class": "DocxTableBorderTests", "method": "DuplicateDirectCellShadingFailsBeforeOutput" },
         { "class": "DocxTableBorderTests", "method": "UnqualifiedShadingPrecedenceRetainsReferenceAndFailsBeforeOutput" },
+        { "class": "DocxTableBorderTests", "method": "InheritedFirstRowStyleCanBeEditedAfterDocxSave" },
         { "class": "DocxTableBorderTests", "method": "ConditionalStyleAndLookChangesCannotBeIgnoredByComparison" },
         { "class": "DocxTableBorderTests", "method": "ConditionalFirstRowRepeatedAcrossPagesIsExplicitlyUnsupported" }
       ]
@@ -48,7 +80,7 @@
       "id": "whole-table-style-unsupported",
       "issue": 142,
       "outcome": "rejected",
-      "boundary": "Implicit default styles, other conditional regions, unsupported style metadata, direct table or cell conflicts, changed styles in comparison and destination restyling remain explicitly unsupported. Cyclic and overdeep chains fail before output.",
+      "boundary": "Implicit default styles, unsupported conditional properties and metadata, direct table or cell conflicts, changed styles in comparison and destination restyling remain explicitly unsupported. Cyclic and overdeep chains fail before output.",
       "tests": [
         { "class": "DocxTableBorderTests", "method": "UnsupportedStyleCombinationsFailBeforeWriting" },
         { "class": "DocxTableBorderTests", "method": "CyclicAndOverdeepTableStylesFailWithoutWriting" },

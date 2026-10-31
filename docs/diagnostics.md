@@ -11,7 +11,15 @@ Non-DOCX editable output reports `Table.StyleOutput` as a loss of style identity
 static output reports `Table.StyleStaticOutput` as information when it resolves
 the style appearance. Existing border and shading diagnostics still apply.
 `Docx.TableLook` reports absent, unsupported or conflicting look settings for
-the bounded first-row condition; duplicate looks fail before output.
+bounded conditional regions; duplicate looks fail before output.
+`Table.StylePrecedence` reports that overlapping regions use Office's documented
+order instead of the different published OOXML order. `Table.StyleBandDefault`
+reports unqualified non-DOCX output when an omitted band size has different OOXML
+and documented Word defaults. `Table.StyleRegionOverlap` reports unqualified non-DOCX output for
+coincident first/last regions on a single row or column. `Table.StyleInheritance`
+reports unqualified rendering that relies on inherited conditional regions.
+`Table.StyleBandSize` reports unqualified rendering of explicitly selected non-unit bands; sizes above Word's
+documented limit use `Docx.TableStyleData`.
 
 Pending direct table-border support reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and

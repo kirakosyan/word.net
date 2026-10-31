@@ -517,9 +517,10 @@ internal sealed partial class DocxReader
                     throw new InvalidDataException("Docx.TableShading: Duplicate direct cell shading properties.");
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
                 XElement? directShading = rowChild.Element(W + "tcPr")?.Element(W + "shd");
-                bool admittedOverride = table.Style?.EffectiveFirstRowBackground != null && table.EffectiveBackground == null
+                bool admittedOverride = table.Style is TableStyle conditionalStyle && conditionalStyle.EffectiveRegions.Count > 0
+                    && table.EffectiveBackground == null
                     && directShading != null && QualifiedConditionalCellShading(directShading);
-                if ((table.HasTableShading || table.Style?.EffectiveFirstRowBackground != null) && !reportedShadingConflict && directShading != null && !admittedOverride)
+                if ((table.HasTableShading || table.Style?.EffectiveRegions.Count > 0) && !reportedShadingConflict && directShading != null && !admittedOverride)
                 {
                     context.Loss("Table.ShadingConflict", "Table shading combined with direct cell shading is not independently qualified.");
                     reportedShadingConflict = true;

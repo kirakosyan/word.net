@@ -10,6 +10,16 @@ internal static class FidelityChecks
     {
         if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && model.Theme != null)
             context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedRegionOverlap))
+            context.Loss("Table.StyleRegionOverlap", "Overlapping first/last regions on a single row or column are not independently qualified.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalInheritance))
+            context.Loss("Table.StyleInheritance", "Inherited conditional styles are retained in DOCX but their rendered inheritance is not independently qualified.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedWholeConditionalShading))
+            context.Loss("Table.ShadingConflict", "Whole-table and conditional shading are retained in DOCX but their combined appearance is not independently qualified.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasAmbiguousDefaultBandSize))
+            context.Loss("Table.StyleBandDefault", "Omitted band sizes use the OOXML default of one, while Microsoft documents a different Word default.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedBandSize))
+            context.Loss("Table.StyleBandSize", "Explicit non-unit table-style band sizes are retained in DOCX but their rendered appearance is not independently qualified.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.Style != null))
         {
             if (format is DocumentFormat.Doc or DocumentFormat.Rtf or DocumentFormat.Odt or DocumentFormat.Ott)
