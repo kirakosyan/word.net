@@ -141,7 +141,9 @@ The [performance observation](measurements/roadmap-138-performance-a34ef58.json)
 retains a hosted push failure at a 1.332 candidate/reference ratio against the
 unchanged 1.25 limit. A separate PR job passed against a different baseline and
 runner. The difference between the two push reference workers suggests variability
-but does not establish its cause or erase the failed gate.
+but does not establish its cause or erase the failed gate. A local repeat with the
+same source revisions passed the unchanged gate at a 0.855 ratio; its four full
+measurement reports are retained with the original hosted observation.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated
