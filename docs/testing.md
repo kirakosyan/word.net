@@ -282,6 +282,9 @@ Inkscape raster also checks SVG. The [observation](measurements/roadmap-138-grad
 retains an initial invisible-XPS failure, its corrected stop container, a failed
 remapped-accent reference comparison and corruption controls. Unsupported effects, alpha, other angles and conformance
 combinations are not qualified by these specimens.
+The [exact-source receipt](measurements/roadmap-138-gradients-5549be0.json)
+records the complete local suites, package checks and repeated independent files;
+hosted exact-head and actual Framework qualification remain separate.
 
 Pending #164 tests copied local dictionaries, explicit language and limits,
 retained editable/searchable text, visible hyphen outlines, unqualified profiles,
