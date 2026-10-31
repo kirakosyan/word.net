@@ -233,6 +233,14 @@ page/reference fields, nested instructions and unqualified output profiles;
 `Limit.TypographyFields` and the existing character/work limits bound expansion.
 The diagnostics do not include field values.
 
+Pending #153 reports `Typography.EquationReferenceApproximation` for native
+documents with standalone equations because the independent fraction geometry
+and paragraph spacing differ. It also reports `Typography.EquationDirectionalOrder`
+when directional paragraphs are present, reflecting the observed external Arabic
+extraction-order difference. Strict output already rejects editable-object loss.
+`Typography.ObjectProfile` rejects other native object owners; notes, charts,
+mixed inline equations and tagged/archive combinations remain unqualified.
+
 Pending #154 uses `Pdf.TextBoxReadingOrder` to reject an unsupported opt-in
 box owner, placement, content or output combination before copying output.
 `Shape.TextBoxAlternative` reports a non-DOCX destination's loss of an authored

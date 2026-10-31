@@ -91,6 +91,9 @@ Pending #152 [native scalar-field display](p2-objects-typography.md#unreleased-s
 refreshes bounded values before shaping in BestEffort/Lenient, with diagnosed
 vertical and directional differences. Lists, tabs, controls, reference fields,
 strict parity and conformance combinations remain open.
+Pending #153 admits [standalone equations beside native paragraphs](p2-objects-typography.md#unreleased-source-native-paragraphs-and-equations)
+with diagnosed reference differences. Notes, charts, mixed owners and full
+independent geometry and directional parity remain open.
 Pending #154 adds explicitly [anchor-ordered accessible text boxes](interoperability.md#unreleased-source-anchor-ordered-text-boxes)
 for a narrow ordinary-body profile. Notes, alternate text semantics, other owners,
 placement, native typography and complete independent qualification remain open.

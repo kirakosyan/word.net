@@ -80,6 +80,9 @@ and paints managed paths. See the [profile and exclusions](roadmap-102-p4-p5.md)
 Pending #152 snapshots admitted scalar results on the detached native layout model
 before bidi resolution and shaping. Its field expansion is bounded; known vertical
 and directional reference differences are diagnosed rather than treated as parity.
+Pending #153 lets a dedicated body equation paragraph keep its separate MATH
+layout while adjacent paragraphs use extended native shaping. Reference geometry
+and directional extraction differences are diagnosed; notes and charts stay rejected.
 Pending #154 builds a Div and paragraph subtree at an explicitly selected text-box
 anchor, using actual page MCIDs and link ParentTree associations. The opt-in is
 restricted to unambiguous unrotated body boxes; notes and other owners remain open.

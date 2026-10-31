@@ -47,6 +47,8 @@ The unreleased [object-fragment profile](editing-and-templates.md#unreleased-sou
 adds bounded body and simple-cell insertion while preserving editable placement identity.
 Object PDF/XPS/SVG export reports editable-object loss; PDF/A and tagged/UA object output and
 native-typography/object combinations remain outside this profile.
+The pending [standalone-equation increment](#unreleased-source-native-paragraphs-and-equations)
+is a separately diagnosed ordinary-output subset and does not change that released profile.
 
 Native typography remains opt-in and provider-based. Its qualified ordinary
 paragraph extensions preserve logical Unicode separately from glyph order, keep
@@ -244,6 +246,29 @@ structured or differently formatted caches, nested field instructions, lists,
 controls, tabs, tagged/archive combinations and other #152 owners remain outside
 this increment. Unresolved scalar results retain their existing explicit
 cached-result diagnostic.
+
+### Unreleased source: native paragraphs and equations
+
+Pending #153 admits a standalone equation as the only run in its own top-level
+body paragraph, with extended native bidi enabled and a caller-selected MATH font.
+Native Hindi/Latin or Arabic paragraphs use their existing shaping pipeline; the
+equation uses the separately bounded equation pipeline and is not shaped as
+ordinary paragraph text. Both display and inline OMML are admitted only in a
+dedicated equation paragraph. Ordinary PDF and page previews use this subset in
+BestEffort or Lenient mode; saving DOCX with native typography disabled retains
+the original equation. PDF
+reports the existing editable-object loss. Strict conversion rejects the loss.
+
+The [independent reference](measurements/roadmap-138-native-equation-reference.json)
+retains a fraction-rule width and position outside the unchanged 0.5-point geometry
+tolerance and a different Arabic Poppler extraction order. The reference renderer
+selected DejaVu Serif for math while the native output used STIX Two Math, so this
+comparison does not establish same-font parity. `Typography.EquationReferenceApproximation`
+reports the geometry difference and `Typography.EquationDirectionalOrder` reports
+directional paragraphs. These diagnostics contain no document text. Notes,
+charts, mixed inline equation/text, equation cells and stories, right-to-left
+equation owners, tagged or archival output and complete #153 qualification remain
+outside this increment. No live Word or public-package claim is made.
 
 ### Extended native typography
 

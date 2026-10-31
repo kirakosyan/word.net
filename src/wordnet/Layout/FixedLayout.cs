@@ -1464,7 +1464,8 @@ internal static partial class FixedLayout
                     line.Ascent = pointSize * kerning[face].Ascent / kerning[face].UnitsPerEm;
                     line.Descent = pointSize * kerning[face].Descent / kerning[face].UnitsPerEm;
                 }
-                if (native != null && line.Items.Count > 0) NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native, context.Typography.ExtendedBidi);
+                if (native != null && line.Items.Count > 0 && !(line.Items.Count == 1 && line.Items[0].Visual != null))
+                    NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native, context.Typography.ExtendedBidi);
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)
                 {
                     PositionedText? last = line.Items.LastOrDefault(i => i.Visual != null || i.Image != null || i.Text.TrimEnd(' ').Length > 0);

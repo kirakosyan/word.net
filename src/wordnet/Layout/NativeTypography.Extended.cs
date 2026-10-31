@@ -19,8 +19,8 @@ internal static partial class NativeTypography
     private static void PrepareExtended(DocumentModel model, ConversionContext context)
     {
         if (context.Destination == DocumentFormat.Xps) throw new NotSupportedException("Typography.Output: Native typography supports PDF and previews.");
-        if (model.Notes.Count != 0 || model.Review.HasHistory || model.ObjectCount != 0)
-            throw new NotSupportedException("Typography.Structure: Notes, objects and history remain outside extended typography.");
+        if (model.Notes.Count != 0 || model.Review.HasHistory)
+            throw new NotSupportedException("Typography.Structure: Notes and history remain outside extended typography.");
         PageSettings[] sections = model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null).Distinct().Cast<PageSettings>().ToArray();
         if (sections.SelectMany(s => s.Stories.Values).SelectMany(s => s).Any(b => b is not ParagraphBlock))
             throw new NotSupportedException("Typography.Story: Native headers and footers require ordinary paragraphs.");
@@ -77,11 +77,35 @@ internal static partial class NativeTypography
             context.Loss("Typography.FieldLayoutApproximation", "Native scalar-field baseline geometry differs from independent reference output.");
         }
         var coverage = new Dictionary<byte[], Func<string, bool>>(); var bundled = Enumerable.Range(0, 4).Select(FixedLayout.FontBytes).ToArray();
+        var bodyOwners = new HashSet<ParagraphBlock>(model.Blocks.OfType<ParagraphBlock>());
+        bool directionalObjects = model.ObjectCount != 0 && (context.Typography.Direction == TextDirection.RightToLeft
+            || model.Paragraphs.Any(p => p.RightToLeft == true || p.Runs.Any(r => r.Object == null
+                && (fieldValues.TryGetValue(r, out string? value) ? value : r.Text).Any(ch => Arabic(ch) || UnicodeBidi.Format(ch)))));
         foreach (ParagraphBlock p in model.Paragraphs)
         {
             context.CheckCancellation();
             if (p.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed)
                 throw new NotSupportedException("Typography.Alignment: Native paragraphs require ordinary horizontal left, center or right alignment.");
+            if (p.Runs.Any(r => r.Object != null))
+            {
+                // A standalone equation uses the separately bounded MATH
+                // pipeline. It is never passed through paragraph bidi shaping.
+                TextRun owner = p.Runs.First(r => r.Object != null);
+                if (!bodyOwners.Contains(p) || p.RightToLeft == true || context.Typography.Direction == TextDirection.RightToLeft
+                    || p.Control != null || p.NestedControls.Count != 0 || p.TypedControlId.HasValue
+                    || p.List != null || p.Runs.Count != 1 || p.Runs[0].Object is not DocumentObjectData { Equation: not null }
+                    || owner.Control != null || owner.TypedControlId.HasValue || owner.Link != null || owner.ControlDisplay
+                    || owner.Image != null || owner.Box != null || owner.Note != null || owner.Bookmark != null || owner.FieldInstruction != null
+                    || owner.Revision != null || owner.FormatRevision != null || owner.Comment != null)
+                    throw new NotSupportedException("Typography.ObjectProfile: Native typography permits only a standalone body equation paragraph.");
+                using (context.At(p.Location))
+                {
+                    if (directionalObjects)
+                        context.Loss("Typography.EquationDirectionalOrder", "An independent PDF reader can extract surrounding directional text in a different order from the reference.");
+                    context.Loss("Typography.EquationReferenceApproximation", "Native paragraph spacing and equation geometry differ from the independently rendered reference fixture.");
+                }
+                continue;
+            }
             TextRun[] joined = RunCoalescer.Combine(p.Runs, forRendering: true).Select(run => fieldValues.TryGetValue(run, out string? value)
                 ? new TextRun(value, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, appearance: run.Appearance.Copy()) : run).ToArray();
             if (p.Control != null || p.List != null || joined.Any(r => r.Object != null || r.Control != null || r.Image != null || r.Box != null || r.Note != null || r.FieldInstruction != null || r.Bookmark != null || r.Text.Contains('\t')))

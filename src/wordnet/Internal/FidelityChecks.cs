@@ -62,9 +62,11 @@ internal static class FidelityChecks
                     if (!model.FieldResults.ContainsKey(run)) model.FieldResults[run] = ScalarFields.Render(run, model, context);
             }
         }
-        if (model.ObjectCount != 0 && (context.Typography.Enabled || !context.PreviewIntermediate && format == DocumentFormat.Pdf
+        if (model.ObjectCount != 0 && (context.Typography.Enabled && !(context.Typography.ExtendedBidi
+            && format == DocumentFormat.Pdf && context.Options.Pdf.Accessibility == PdfAccessibility.None
+            && context.Options.Pdf.Conformance == PdfConformance.Pdf17) || !context.PreviewIntermediate && format == DocumentFormat.Pdf
             && context.Options.Pdf.Accessibility != PdfAccessibility.None && context.Options.Pdf.Conformance != PdfConformance.Pdf17))
-            throw new System.NotSupportedException("Object.Combination: Native typography with objects and combined archival/accessibility profiles remain unsupported.");
+            throw new System.NotSupportedException("Object.Combination: This native typography or combined archival/accessibility object profile remains unsupported.");
         if (model.ObjectCount != 0 && !context.PreviewIntermediate && format == DocumentFormat.Pdf && context.Options.Pdf.Accessibility != PdfAccessibility.None)
             foreach (TextRun run in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Object != null))
                 _ = ObjectAlternatives.Describe(run.Object!, context);

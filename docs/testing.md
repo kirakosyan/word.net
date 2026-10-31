@@ -224,6 +224,13 @@ tolerances; both are explicit losses and Strict rejects them.
 The [exact-source receipt](measurements/roadmap-138-native-fields-bc157ce.json)
 records the complete local suites, package checks and reproduced specimens.
 
+Pending #153 tests standalone equations beside Hindi and Arabic native text,
+SVG vectors, malformed objects, cancellation, resource bounds and unsupported
+owners. The [independent reference](measurements/roadmap-138-native-equation-reference.json)
+retains the fraction geometry and Arabic extraction failures, the reference math
+font difference, and the initial missing-Math-component failure. Notes and charts
+remain outside this increment.
+
 Pending #154 text-box tests exercise explicit anchor ordering, links, multiple
 boxes, page selection and unsupported semantic owners. The independent
 [reference observation](measurements/roadmap-138-accessible-box-reference.json)

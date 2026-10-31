@@ -35,6 +35,10 @@ Pending #163 adds `ChartKind.ClusteredBar` without changing existing enum values
 or chart constructors. It uses the existing immutable chart and report-binding
 APIs; its managed rendering approximation and profile restrictions are explicit.
 
+Pending #153 admits a bounded standalone-equation/native-paragraph combination
+through the existing options and math-font APIs. It adds diagnostics but no public
+signatures; notes, charts, mixed inline owners and conformance combinations remain open.
+
 Pending #154 adds `PdfTextBoxReadingOrder` and `PdfOptions.TextBoxReadingOrder`.
 The default rejects or diagnoses text boxes as before; `AnchorOrder` explicitly
 opts into the bounded source-order profile on all target frameworks.

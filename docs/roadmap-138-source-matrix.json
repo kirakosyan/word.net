@@ -3,6 +3,28 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "native-standalone-equations-diagnosed",
+      "issue": 153,
+      "outcome": "supported-bounded",
+      "boundary": "A dedicated body equation paragraph uses the MATH pipeline beside extended native paragraphs in BestEffort/Lenient, reporting measured reference and directional extraction differences.",
+      "tests": [
+        { "class": "NativeEquationTests", "method": "StandaloneEquationUsesMathGlyphsBetweenLogicalNativeParagraphs" },
+        { "class": "NativeEquationTests", "method": "SvgPreviewUsesLogicalLabelsAndVectorEquationGlyphs" },
+        { "class": "NativeEquationTests", "method": "RefreshedDirectionalFieldAlsoReportsEquationExtractionDifference" }
+      ]
+    },
+    {
+      "id": "native-object-combinations-unqualified",
+      "issue": 153,
+      "outcome": "rejected",
+      "boundary": "Notes, charts, mixed inline owners, cells, RTL equation owners, strict or tagged/archive output, missing fonts, malformed objects and exhausted work fail without publishing output.",
+      "tests": [
+        { "class": "NativeEquationTests", "method": "UnqualifiedCombinationsLeaveCallerOutputUnchanged" },
+        { "class": "NativeEquationTests", "method": "MalformedEquationAndExhaustedGlyphBudgetDoNotPublishOutput" },
+        { "class": "NativeEquationTests", "method": "ChartAndCancelledExportStayRejectedWithoutChangingOutput" }
+      ]
+    },
+    {
       "id": "accessible-anchor-ordered-boxes",
       "issue": 154,
       "outcome": "supported-bounded",
