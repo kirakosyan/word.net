@@ -10,6 +10,8 @@ public enum PdfConformance
     Pdf17 = 0,
     /// <summary>PDF/A-2 level B archival output.</summary>
     PdfA2b = 1,
+    /// <summary>PDF/A-2 level A archival output, with PDF/UA-1 semantics.</summary>
+    PdfA2a = 2,
 }
 
 /// <summary>Opt-in PDF accessibility profiles.</summary>
@@ -68,8 +70,10 @@ public sealed class PdfOptions
 
     internal PdfOptions Snapshot()
     {
-        if (Conformance is not PdfConformance.Pdf17 and not PdfConformance.PdfA2b)
+        if (Conformance is not PdfConformance.Pdf17 and not PdfConformance.PdfA2b and not PdfConformance.PdfA2a)
             throw new ArgumentOutOfRangeException(nameof(Conformance));
+        if (Conformance == PdfConformance.PdfA2a && Accessibility != PdfAccessibility.PdfUa1)
+            throw new NotSupportedException("Pdf.TaggedArchive: PDF/A-2a requires the PDF/UA-1 semantic profile.");
         if (TextBoxReadingOrder is not PdfTextBoxReadingOrder.Reject and not PdfTextBoxReadingOrder.AnchorOrder)
             throw new ArgumentOutOfRangeException(nameof(TextBoxReadingOrder));
         if (VectorSemantics is not PdfVectorSemantics.Reject and not PdfVectorSemantics.DescribedAtAnchor and not PdfVectorSemantics.Decorative)

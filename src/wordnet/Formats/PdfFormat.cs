@@ -32,10 +32,10 @@ internal static class PdfFormat
         var pageMap = indices.Select((p, i) => (p, i)).ToDictionary(pair => pair.p, pair => pair.i + 1);
         context.PageCount = pages.Count;
         using var buffer = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
-        byte[]? metadata = options.Conformance == PdfConformance.PdfA2b
-            ? System.Text.Encoding.UTF8.GetBytes(PdfExportMetadata.Xmp(model, context.FieldTime).ToString(System.Xml.Linq.SaveOptions.DisableFormatting)) : null;
+        byte[]? metadata = options.Conformance is PdfConformance.PdfA2b or PdfConformance.PdfA2a
+            ? System.Text.Encoding.UTF8.GetBytes(PdfExportMetadata.Xmp(model, context.FieldTime, options.Conformance == PdfConformance.PdfA2a).ToString(System.Xml.Linq.SaveOptions.DisableFormatting)) : null;
         string[]? labels = indices.Where((p, i) => p != i + 1).Any() || pages.Count != allPages.Count ? pages.Select(p => ListCounter.Number(p.PageNumber, p.SourceSettings.PageNumberFormat)).ToArray() : null;
-        PdfExportTokenWriter writer = tags == null ? new PdfExportTokenWriter(options.Compress, metadata, labels) : new PdfTaggedTokenWriter(options.Compress, labels, tags, tags.Xmp(model.Title), context);
+        PdfExportTokenWriter writer = tags == null ? new PdfExportTokenWriter(options.Compress, metadata, labels) : new PdfTaggedTokenWriter(options.Compress, labels, tags, metadata ?? tags.Xmp(model.Title), context);
         var builder = new PdfDocumentBuilder(buffer, false, PdfWriterType.Default, 1.7, writer);
         bool complete = false;
         try
@@ -47,9 +47,9 @@ internal static class PdfFormat
             builder.DocumentInformation.CreationDate = context.FieldTime.UtcDateTime.ToString("'D:'yyyyMMddHHmmss'Z'", CultureInfo.InvariantCulture);
             builder.DocumentInformation.ModifiedDate = builder.DocumentInformation.CreationDate;
             if (options.OutlineHeadings) builder.Bookmarks = PdfExportMetadata.Outlines(pages);
-            if (options.Conformance == PdfConformance.PdfA2b)
+            if (options.Conformance is PdfConformance.PdfA2b or PdfConformance.PdfA2a)
             {
-                builder.ArchiveStandard = PdfAStandard.A2B;
+                builder.ArchiveStandard = options.Conformance == PdfConformance.PdfA2a ? PdfAStandard.A2A : PdfAStandard.A2B;
             }
             var fonts = context.FontData.Select(bytes => builder.AddTrueTypeFont(bytes)).ToArray();
             var native = new PdfNativeText(context);

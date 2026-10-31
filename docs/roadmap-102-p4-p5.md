@@ -114,7 +114,9 @@ can preserve an admitted description as a Figure alternative. Alternative titles
 on previously admitted vector presets are retained in DOCX and diagnosed when an
 output would lose them. Hidden presets,
 custom adjustments, rotations, groups, arrow presets, gradients, ambiguous layers,
-native typography and archival output remain unqualified. In ordinary
+native typography and broader archival combinations remain unqualified; the
+separately opted-in [tagged archival profile](interoperability.md#unreleased-source-tagged-archival-pdf)
+admits the described bounded accessible vectors. In ordinary
 Lenient/BestEffort conversion an unsupported shape may be omitted only with the
 existing `Shape.VectorUnsupported` diagnostic; strict, editable, accessible,
 native and archival output reject unsupported vectors.

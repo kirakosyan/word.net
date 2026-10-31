@@ -38,12 +38,37 @@
       "id": "accessible-vector-boundaries",
       "issue": 155,
       "outcome": "rejected",
-      "boundary": "Unqualified owners, alternatives, hidden/unknown vectors, native and archive combinations fail before output; editing sessions cannot omit unknown vectors and cancellation is atomic.",
+      "boundary": "Unqualified owners, alternatives, hidden/unknown vectors, native and default archival combinations fail before output; editing sessions cannot omit unknown vectors and cancellation is atomic.",
       "tests": [
         { "class": "PdfAccessibleVectorTests", "method": "UnqualifiedOwnersAndSemanticsLeaveOutputUntouched" },
         { "class": "PdfAccessibleVectorTests", "method": "AccessibleOutputNeverDropsUnsupportedVectorsInLenientMode" },
         { "class": "PdfAccessibleVectorTests", "method": "EditableSessionCannotOmitAnUnknownVectorInLenientMode" },
         { "class": "PdfAccessibleVectorTests", "method": "PolicySnapshotInvalidValueAndCancellationAreExplicit" }
+      ]
+    },
+    {
+      "id": "accessible-tagged-archive",
+      "issue": 156,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit PDF/A-2a plus UA-1 retains managed document semantics, links, alpha images, chart/equation alternatives and separately opted-in positioned drawings with archive metadata and output intent.",
+      "tests": [
+        { "class": "PdfAccessibleArchiveTests", "method": "CombinedArchiveHasOneCoherentMetadataPacketAndSemanticLinks" },
+        { "class": "PdfAccessibleArchiveTests", "method": "ExplicitVectorAndTextBoxSemanticsSurviveCombinedConformance" },
+        { "class": "PdfAccessibleArchiveTests", "method": "ChartAndEquationRetainTheirAlternativesInCombinedOutput" },
+        { "class": "PdfAccessibleArchiveTests", "method": "DescribedAndDecorativeAlphaImagesRetainTheirSemantics" }
+      ]
+    },
+    {
+      "id": "accessible-archive-boundaries",
+      "issue": 156,
+      "outcome": "rejected",
+      "boundary": "Missing UA policy, author semantics, mixed positioned drawings and chart/equation objects, native output, exhausted work and cancellation fail before publishing output.",
+      "tests": [
+        { "class": "PdfAccessibleArchiveTests", "method": "ArchivalLevelARequiresTheCompleteUaProfile" },
+        { "class": "PdfAccessibleArchiveTests", "method": "UnqualifiedCombinationsLeaveCallerOutputUntouched" },
+        { "class": "PdfAccessibleArchiveTests", "method": "MissingVectorDescriptionAndExhaustedTagBudgetRemainAtomic" },
+        { "class": "PdfAccessibleArchiveTests", "method": "MixingPositionedDrawingsAndChartObjectsRequiresQualification" },
+        { "class": "PdfAccessibleArchiveTests", "method": "CancelledCombinedExportDoesNotPublishOutput" }
       ]
     },
     {

@@ -253,7 +253,15 @@ PDF/UA validation, ParentTree and source-order checks, and negative controls.
 The [exact-source receipt](measurements/roadmap-138-accessible-vectors-7e3876e.json)
 records both complete local suites, the capability matrix and package checks.
 The pending Linux workflow validates the generated corpus; hosted execution,
-screen-reader behavior, archival output and other drawing combinations remain open.
+screen-reader behavior and other drawing combinations remain open.
+
+Pending #156 tests PDF/A-2a and PDF/UA-1 together for bounded managed text,
+tables, links, alpha images, chart/equation alternatives and separate positioned drawings.
+The [independent observation](measurements/roadmap-138-accessible-archive-reference.json)
+records both validators, metadata/font/ParentTree checks and separate corruption
+controls. The archive validator alone accepted a missing-language control; the UA
+validator rejected it, so neither verdict substitutes for the other. Notes,
+mixed object/drawing ownership and native output remain unqualified.
 
 Pending #161 tests default rectangle, triangle and diamond presets, editable
 alternative metadata, PDF/XPS/SVG output, invalid adjustments and output bounds.

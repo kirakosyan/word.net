@@ -46,7 +46,9 @@ internal sealed class PdfTags
     {
         this.context = context; Options = options;
         if (options.Accessibility is < PdfAccessibility.None or > PdfAccessibility.PdfUa1) throw new ArgumentOutOfRangeException(nameof(options));
-        if (options.Conformance != PdfConformance.Pdf17) throw new NotSupportedException("Pdf.TagsConformance: Tagged PDF/A is outside the independently qualified profile.");
+        if (options.Conformance is not PdfConformance.Pdf17 and not PdfConformance.PdfA2a) throw new NotSupportedException("Pdf.TagsConformance: Tagged PDF/A-2b is outside the qualified profile.");
+        if (options.Conformance == PdfConformance.PdfA2a && model.ObjectCount != 0 && model.Paragraphs.Any(p => p.Runs.Any(r => r.Box != null)))
+            throw new NotSupportedException("Pdf.TaggedArchive: Mixing positioned drawings with charts or equations requires separate qualification.");
         if (context.Typography.Enabled)
         {
             if (!context.Typography.ExtendedBidi) throw new NotSupportedException("Pdf.TagsTypography: Tagged native paragraphs require the qualified ExtendedBidi profile.");

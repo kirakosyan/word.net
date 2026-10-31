@@ -90,6 +90,10 @@ Pending #155 attaches each explicitly described vector's fill and stroke to a
 single Figure at its admitted source anchor, with page MCIDs and ParentTree owners;
 explicitly decorative vectors instead paint as artifacts. Unsupported owners and
 semantic combinations reject before output is copied.
+Pending #156 combines the existing bounded tag tree with archive output intent,
+embedded fonts and one XMP packet carrying both identification schemas. It
+requires UA semantics and rejects unqualified mixed object/drawing ownership;
+archive and accessibility validation remain independent checks.
 Pending #161 maps three default preset polygons through the existing drawing anchor
 and vector path pipeline. Editable title/description metadata is retained; output
 loss is diagnosed where the selected profile cannot preserve it, while groups and

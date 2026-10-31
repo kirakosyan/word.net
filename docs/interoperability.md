@@ -159,7 +159,8 @@ this initial profile assumes the caller-specified document language applies thro
 
 `PdfAccessibility.PdfUa1` requires those semantics even under BestEffort. It rejects
 unsupported notes/text boxes, missing link relationships/destinations, vertically
-merged tables and combination with PDF/A or native typography. Ordinary PDF/PDF-A
+merged tables and, in the released profile, combination with PDF/A. Native
+typography requires its separately qualified profile. Ordinary PDF/PDF-A
 remain the defaults. Tagged mode reports missing semantics; tags alone do not establish
 UA compliance. Generated REF/PAGEREF/TOC links, repeated-header links and decorative-image
 links without a source Link relationship omit the annotation with `Pdf.LinkSemantics`
@@ -226,8 +227,9 @@ the paragraph with top-and-bottom wrapping and zero vertical offset. Figure fill
 and stroke share one semantic owner; page selection removes omitted owners. The
 explicit text-box anchor-order profile can be selected for separate paragraphs in
 the same document. Native typography, notes, histories, groups, adjustments,
-rotations, cell/story owners, arbitrary placement, and tagged PDF/A remain outside
-this increment. Unsupported or hidden vectors cannot be silently omitted from
+rotations, cell/story owners and arbitrary placement remain outside this increment.
+The separately selected tagged archival profile below admits these bounded vector
+cases. Unsupported or hidden vectors cannot be silently omitted from
 accessible output, even under Lenient. The [independent observation](measurements/roadmap-138-accessible-vectors-reference.json)
 records structure, geometry, schema and PDF/UA checks; it does not establish
 screen-reader or live Word behavior, published-package availability, or full #155
@@ -236,6 +238,32 @@ acceptance.
 ```csharp
 options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
 options.Pdf.VectorSemantics = PdfVectorSemantics.DescribedAtAnchor;
+```
+
+### Unreleased source: tagged archival PDF
+
+Pending #156 adds `PdfConformance.PdfA2a`, which requires the explicit
+`PdfAccessibility.PdfUa1` profile, document language and title. It embeds the
+document fonts, an archive output intent, PDF/A-2a and PDF/UA-1 identification
+in one XMP packet, and the existing logical structure and annotation ownership.
+Both the archive and accessibility rules must pass: archive validation alone does
+not prove reading order or accessibility. Existing ordinary PDF, PDF/A-2b and
+ordinary PDF/UA options and defaults remain separate.
+
+The tested managed subset includes ordinary headings, paragraphs, simple tables,
+links and described/decorative alpha images; supported chart/equation alternatives;
+and separately opted-in text boxes and vectors at their bounded anchors. Mixing positioned
+drawings with charts/equations, notes, native typography and unqualified owners or
+placements reject before output is copied. Source-semantic requirements and loss
+diagnostics still apply. Independent validators and structure checks are recorded
+in the [observation](measurements/roadmap-138-accessible-archive-reference.json);
+they do not certify arbitrary documents, screen-reader behavior, live Word, public
+packages or complete #156 acceptance.
+
+```csharp
+options.Pdf.Conformance = PdfConformance.PdfA2a;
+options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+options.Pdf.Language = "en-US";
 ```
 
 ## Physical pages and previews

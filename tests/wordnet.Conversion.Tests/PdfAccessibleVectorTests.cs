@@ -19,7 +19,7 @@ public sealed class PdfAccessibleVectorTests
     private static readonly XNamespace A = "http://schemas.openxmlformats.org/drawingml/2006/main";
     private const string Description = "Blue trend diagram";
 
-    private static byte[] Source(string description = Description, string change = "", string geometry = "triangle")
+    internal static byte[] Source(string description = Description, string change = "", string geometry = "triangle")
     {
         byte[] input = PresetVectorShapeTests.Source(geometry, description: description);
         using var original = new ZipArchive(new MemoryStream(input), ZipArchiveMode.Read); using var result = new MemoryStream();

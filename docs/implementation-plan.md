@@ -98,8 +98,12 @@ Pending #154 adds explicitly [anchor-ordered accessible text boxes](interoperabi
 for a narrow ordinary-body profile. Notes, alternate text semantics, other owners,
 placement, native typography and complete independent qualification remain open.
 Pending #155 adds explicitly [described or decorative vector semantics](interoperability.md#unreleased-source-accessible-vector-figures)
-for a bounded managed body-anchor profile. Arbitrary drawings, native and archival
+for a bounded managed body-anchor profile. Arbitrary drawings, native and broader archival
 combinations, screen-reader behavior and full acceptance remain open.
+Pending #156 combines [tagged PDF/A-2a and PDF/UA-1](interoperability.md#unreleased-source-tagged-archival-pdf)
+for independently checked managed body, box, vector and object cases. Notes,
+mixed positioned drawings and chart/equation objects, native output and full
+cross-feature/runtime acceptance remain open.
 Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;

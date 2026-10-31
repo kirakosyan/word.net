@@ -74,7 +74,7 @@ internal static class FidelityChecks
         if (model.ObjectCount != 0 && (context.Typography.Enabled && !(context.Typography.ExtendedBidi
             && format == DocumentFormat.Pdf && context.Options.Pdf.Accessibility == PdfAccessibility.None
             && context.Options.Pdf.Conformance == PdfConformance.Pdf17) || !context.PreviewIntermediate && format == DocumentFormat.Pdf
-            && context.Options.Pdf.Accessibility != PdfAccessibility.None && context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+            && context.Options.Pdf.Accessibility != PdfAccessibility.None && context.Options.Pdf.Conformance is not PdfConformance.Pdf17 and not PdfConformance.PdfA2a))
             throw new System.NotSupportedException("Object.Combination: This native typography or combined archival/accessibility object profile remains unsupported.");
         if (model.ObjectCount != 0 && !context.PreviewIntermediate && format == DocumentFormat.Pdf && context.Options.Pdf.Accessibility != PdfAccessibility.None)
             foreach (TextRun run in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Object != null))

@@ -254,6 +254,11 @@ vectors cannot be omitted from accessible, archival, native or editable-session
 output in Lenient mode. A preview does not inherit the tagged-PDF exemption
 from an alternative-loss diagnostic.
 
+Pending #156 rejects `Pdf.TaggedArchive` when PDF/A-2a lacks the complete UA-1
+profile or mixes positioned drawings with chart/equation objects. Existing
+`Pdf.TagsConformance`, language, title, semantic-owner and resource checks remain
+in force; they run before caller output is copied.
+
 Pending #161 reports `Shape.PresetAlternative` when non-DOCX output would lose
 the title or description of a newly supported rectangle, triangle or diamond,
 or a title on an earlier admitted vector. Strict rejects that loss; the bounded

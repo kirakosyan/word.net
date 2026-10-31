@@ -1036,7 +1036,7 @@ internal static partial class FixedLayout
                     if (box.Geometry != null)
                     {
                         bool taggedVector = !context.RenderingPreview && !context.Typography.Enabled && context.Destination == DocumentFormat.Pdf
-                            && context.Options.Pdf.Conformance == PdfConformance.Pdf17 && context.Options.Pdf.Accessibility != PdfAccessibility.None
+                            && (context.Options.Pdf.Conformance is PdfConformance.Pdf17 or PdfConformance.PdfA2a) && context.Options.Pdf.Accessibility != PdfAccessibility.None
                             && (context.Options.Pdf.VectorSemantics is PdfVectorSemantics.DescribedAtAnchor or PdfVectorSemantics.Decorative);
                         if (!ContentProfiles.ManagedFixedOutput(context) && !taggedVector)
                             throw new NotSupportedException("Shape.VectorProfile: Vector shapes require managed ordinary fixed output.");

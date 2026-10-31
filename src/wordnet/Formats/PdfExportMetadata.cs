@@ -16,23 +16,36 @@ internal static class PdfExportMetadata
     internal static string Producer => "wordnet " + (typeof(WordConverter).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
         ?.InformationalVersion.Split('+')[0] ?? typeof(WordConverter).Assembly.GetName().Version?.ToString() ?? "unknown");
 
-    internal static XDocument Xmp(DocumentModel model, DateTimeOffset time)
+    internal static XDocument Xmp(DocumentModel model, DateTimeOffset time, bool accessibleArchive = false)
     {
         XNamespace x = "adobe:ns:meta/", rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
             dc = "http://purl.org/dc/elements/1.1/", pdf = "http://ns.adobe.com/pdf/1.3/",
-            xmp = "http://ns.adobe.com/xap/1.0/", aid = "http://www.aiim.org/pdfa/ns/id/";
+            xmp = "http://ns.adobe.com/xap/1.0/", aid = "http://www.aiim.org/pdfa/ns/id/",
+            ua = "http://www.aiim.org/pdfua/ns/id/", extension = "http://www.aiim.org/pdfa/ns/extension/",
+            schema = "http://www.aiim.org/pdfa/ns/schema#", property = "http://www.aiim.org/pdfa/ns/property#";
         string instant = time.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture);
         return new XDocument(new XElement(x + "xmpmeta", new XAttribute(XNamespace.Xmlns + "x", x),
             new XElement(rdf + "RDF", new XAttribute(XNamespace.Xmlns + "rdf", rdf),
                 new XElement(rdf + "Description", new XAttribute(rdf + "about", ""),
-                    new XAttribute(XNamespace.Xmlns + "pdfaid", aid), new XAttribute(aid + "part", "2"), new XAttribute(aid + "conformance", "B"),
+                    new XAttribute(XNamespace.Xmlns + "pdfaid", aid), new XAttribute(aid + "part", "2"), new XAttribute(aid + "conformance", accessibleArchive ? "A" : "B"),
+                    accessibleArchive ? new XAttribute(XNamespace.Xmlns + "pdfuaid", ua) : null,
+                    accessibleArchive ? new XAttribute(ua + "part", "1") : null,
+                    accessibleArchive ? new XAttribute(XNamespace.Xmlns + "pdfaExtension", extension) : null,
+                    accessibleArchive ? new XAttribute(XNamespace.Xmlns + "pdfaSchema", schema) : null,
+                    accessibleArchive ? new XAttribute(XNamespace.Xmlns + "pdfaProperty", property) : null,
                     new XAttribute(XNamespace.Xmlns + "pdf", pdf), new XAttribute(pdf + "Producer", Producer),
                     new XAttribute(XNamespace.Xmlns + "xmp", xmp), new XAttribute(xmp + "CreateDate", instant),
                     new XAttribute(xmp + "ModifyDate", instant), new XAttribute(xmp + "MetadataDate", instant),
                     new XAttribute(XNamespace.Xmlns + "dc", dc),
                     new XElement(dc + "format", "application/pdf"),
                     new XElement(dc + "title", new XElement(rdf + "Alt", new XElement(rdf + "li", new XAttribute(XNamespace.Xml + "lang", "x-default"), model.Title))),
-                    new XElement(dc + "creator", new XElement(rdf + "Seq", new XElement(rdf + "li", model.Author)))))));
+                    new XElement(dc + "creator", new XElement(rdf + "Seq", new XElement(rdf + "li", model.Author))),
+                    accessibleArchive ? new XElement(extension + "schemas", new XElement(rdf + "Bag", new XElement(rdf + "li",
+                        new XAttribute(rdf + "parseType", "Resource"), new XElement(schema + "schema", "PDF/UA Universal Accessibility Schema"),
+                        new XElement(schema + "namespaceURI", ua.NamespaceName), new XElement(schema + "prefix", "pdfuaid"),
+                        new XElement(schema + "property", new XElement(rdf + "Seq", new XElement(rdf + "li", new XAttribute(rdf + "parseType", "Resource"),
+                            new XElement(property + "name", "part"), new XElement(property + "valueType", "Integer"),
+                            new XElement(property + "category", "internal"), new XElement(property + "description", "PDF/UA version identifier"))))))) : null))));
     }
 
     internal static Bookmarks Outlines(List<FixedPage> pages)
