@@ -46,11 +46,18 @@ internal sealed partial class DocxReader
                 id = next; ids.Add(id); context.Report("Control.IdAssigned", "A missing content-control ID was assigned deterministically in document order.");
             }
             bool inline = node.Parent?.Name == W + "p";
+            XElement[] parents = node.Ancestors(W + "sdt").ToArray();
+            if (parents.Length + 1 > context.Options.MaximumNestingDepth)
+                throw new InvalidDataException("Limit.NestingDepth: Typed controls exceed the nesting limit.");
+            if (parents.Length != 0 && (parents.Length != 1 || !inline || node.Parent?.Parent != parents[0].Element(W + "sdtContent")
+                || !typedNodes.TryGetValue(parents[0], out ControlData? parent) || parent.Inline || parent.Kind != ContentControlKind.RichText
+                || parent.Placeholder || parent.Binding != null))
+                throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
             if (!inline && node.Parent?.Name != W + "body" && node.Parent?.Name != W + "tc"
-                || node.Ancestors().Any(a => a.Name == W + "sdt" || a.Name == W + "fldSimple" || a.Name == W + "txbxContent"
+                || node.Ancestors().Any(a => a.Name == W + "fldSimple" || a.Name == W + "txbxContent"
                     || a.Name == W + "ins" || a.Name == W + "del" || a.Name == W + "moveFrom" || a.Name == W + "moveTo")
                 || !node.Ancestors(W + "body").Any())
-                throw new NotSupportedException("Control.ProtectedOwner: Typed controls require unnested ordinary body/cell paragraph owners.");
+                throw new NotSupportedException("Control.ProtectedOwner: Typed controls require admitted ordinary body/cell paragraph owners.");
             var data = ReadTypedProperties(properties, id, inline);
             if (node.Element(W + "sdtEndPr") is XElement end)
             {
@@ -209,6 +216,14 @@ internal sealed partial class DocxReader
         foreach (XElement e in content.Descendants())
         {
             context.ReserveControlWork(1);
+            if (e.Ancestors(W + "sdt").FirstOrDefault() != content.Parent) continue;
+            if (e.Name == W + "sdt")
+            {
+                if (data.Inline || data.Kind != ContentControlKind.RichText || data.Placeholder || data.Binding != null
+                    || e.Parent?.Name != W + "p" || e.Parent.Parent != content)
+                    throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
+                continue;
+            }
             if (e.Ancestors(W + "rPr").Any()) continue;
             if (e.Name == W + "rPr") { ValidateTypedRunProperties(e); continue; }
             if (e.Name == W + "pPr") { ValidateTypedParagraphProperties(e); continue; }
@@ -216,7 +231,7 @@ internal sealed partial class DocxReader
             if (e.Name == W + "p" || e.Name == W + "r")
             {
                 ValidateTypedTextOwnerAttributes(e);
-                if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" && child.Name != W + "proofErr" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br" && child.Name != W + "lastRenderedPageBreak")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
+                if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" && child.Name != W + "proofErr" && child.Name != W + "sdt" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br" && child.Name != W + "lastRenderedPageBreak")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
                 if (e.Elements(W + (e.Name == W + "p" ? "pPr" : "rPr")).Count() > 1) throw new InvalidDataException("Control.Malformed: Duplicate text property containers.");
             }
             else if (e.Name == W + "t") { Attributes(e, XNamespace.Xml + "space"); if (e.HasElements) throw new InvalidDataException("Control.Malformed: Text cannot contain XML markup."); }
@@ -229,7 +244,7 @@ internal sealed partial class DocxReader
                 ReportTypedEditorMetadata();
             }
             else if (e.Name == W + "lastRenderedPageBreak") { Leaf(e); renderedBreaks.Add(e); ReportTypedEditorMetadata(); }
-            else throw new NotSupportedException("Control.ProtectedOwner: Controls cannot contain fields, bookmarks, tables, revisions, objects or nested controls.");
+            else throw new NotSupportedException("Control.ProtectedOwner: Controls cannot contain fields, bookmarks, tables, revisions, objects or unsupported nested controls.");
         }
         foreach (XElement renderedBreak in renderedBreaks) renderedBreak.Remove();
     }
@@ -331,6 +346,8 @@ internal sealed partial class DocxReader
             ControlValues.Infer(data, owner, context);
             if (data.Binding != null) _ = ControlBindings.Resolve(data.Binding, typedControls, context);
         }
+        foreach (int parent in owners.Values.Where(owner => owner.ParentId.HasValue).Select(owner => owner.ParentId!.Value).Distinct())
+            ControlValues.Infer(typedControls.Items[parent], owners[parent], context);
         ControlOwners.Normalize(document);
     }
 }

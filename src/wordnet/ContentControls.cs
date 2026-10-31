@@ -184,10 +184,10 @@ public sealed class ContentControlBinding
 /// <summary>An immutable, session/version-scoped control snapshot. Reacquire after every committed edit.</summary>
 public sealed class DocumentContentControl
 {
-    internal DocumentContentControl(Guid session, long version, ControlData data, IReadOnlyList<ContentControlParagraph> content)
+    internal DocumentContentControl(Guid session, long version, ControlData data, int? parentId, IReadOnlyList<ContentControlParagraph> content)
     {
         Session = session; Version = version; Identity = data.Identity; Id = data.Id; Kind = data.Kind;
-        Tag = data.Tag; Alias = data.Alias; Owner = data.Inline ? "inline body/cell paragraph" : "block body/cell paragraphs";
+        Tag = data.Tag; Alias = data.Alias; ParentId = parentId; Owner = data.Inline ? "inline body/cell paragraph" : "block body/cell paragraphs";
         Lock = data.Lock; ShowingPlaceholder = data.Placeholder; State = data.State;
         IsChecked = data.Kind == ContentControlKind.Checkbox && !data.Placeholder ? data.Checked : null;
         SelectedValue = data.SelectedValue; DateValue = data.Placeholder ? null : data.DateValue; FreeText = data.FreeText;
@@ -200,6 +200,8 @@ public sealed class DocumentContentControl
     internal Guid Identity { get; }
     /// <summary>Gets the stable source OOXML ID; IDs are unique in a preserved session.</summary>
     public int Id { get; }
+    /// <summary>Gets the enclosing typed control's source ID, or null for a top-level control in this snapshot.</summary>
+    public int? ParentId { get; }
     /// <summary>Gets the typed kind.</summary>
     public ContentControlKind Kind { get; }
     /// <summary>Gets literal tag metadata, never implicitly executed.</summary>

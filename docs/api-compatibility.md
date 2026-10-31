@@ -2,6 +2,12 @@
 
 ## Unreleased roadmap #138 API work
 
+The pending #144 source adds the nullable `DocumentContentControl.ParentId`
+snapshot property for admitted nested typed owners. This additive property does
+not change existing constructor or method signatures; handles retain their
+session/version rules. See the [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
+for the ownership and locking limits. It is not in the published 1.5.0 API.
+
 `InsertFragmentAtTableCellBookmark`, the distinct fragment-options methods and
 `FragmentInsertionOptions` add bounded opt-in placement and field policies while
 retaining the original fragment signatures. `CreateReviewDisplay` returns a

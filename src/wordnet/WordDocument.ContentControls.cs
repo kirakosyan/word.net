@@ -50,7 +50,7 @@ public sealed partial class WordDocument
                 if (controlSnapshots != null && controlSnapshotsVersion == version) return controlSnapshots;
                 if (!model.Controls.HasControls) return Array.Empty<DocumentContentControl>();
                 var c = new ConversionContext(options, CancellationToken.None); var owners = ControlOwners.Index(model, c);
-                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, ControlContent(owners[d.Id], c))).ToList());
+                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, owners[d.Id].ParentId, ControlContent(owners[d.Id], c))).ToList());
                 controlSnapshotsVersion = version;
                 return controlSnapshots;
             }
@@ -95,9 +95,12 @@ public sealed partial class WordDocument
         Guard.NotNull(handle, nameof(handle));
         return Edit((m, c) =>
         {
-            ControlData data = ControlHandle(m, handle); ControlOwner owner = ControlOwners.Index(m, c)[data.Id];
+            ControlData data = ControlHandle(m, handle); var owners = ControlOwners.Index(m, c); ControlOwner owner = owners[data.Id];
+            CheckNestedControlEdit(m, owner);
             using var location = c.At(owner.Content.First().Location);
-            change(m, data, owner, c); ControlOwners.Normalize(m); return 1;
+            change(m, data, owner, c);
+            if (owner.ParentId is int parent) ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
+            ControlOwners.Normalize(m); return 1;
         }, token, controlAware: true);
     }
     /// <summary>Atomically sets a checkbox value and clears placeholder display. Content locks and stale handles reject.</summary>
@@ -210,11 +213,20 @@ public sealed partial class WordDocument
                 selected.Add(data);
             }
             var owners = ControlOwners.Index(m, c);
+            foreach (ControlData data in selected) CheckNestedControlEdit(m, owners[data.Id]);
             if (direction == 0) foreach (ControlData data in selected) ControlBindings.Apply(data, owners[data.Id], m.Controls, c);
             else if (direction == 1) ControlBindings.WriteBack(m, selected, owners, c);
             else foreach (ControlData data in selected) { data.Binding = null; data.BindingState = ContentControlBindingState.None; data.Properties.Elements(ControlValues.W + "dataBinding").Remove(); }
+            foreach (int parent in selected.Select(data => owners[data.Id].ParentId).Where(id => id.HasValue).Select(id => id!.Value).Distinct())
+                ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
             ControlOwners.Normalize(m); return selected.Count;
         }, token, controlAware: true);
+    }
+    private static void CheckNestedControlEdit(DocumentModel model, ControlOwner owner)
+    {
+        if (owner.HasChildren) throw new NotSupportedException("Control.ProtectedOwner: A parent containing typed children cannot be replaced or rebound.");
+        if (owner.ParentId is int parent && model.Controls.Items[parent].Lock is ContentControlLock.ContentLocked or ContentControlLock.ControlAndContentLocked)
+            throw new InvalidOperationException("Control.Locked: The parent content lock rejects this child mutation.");
     }
     private sealed class ControlInputBudget
     {

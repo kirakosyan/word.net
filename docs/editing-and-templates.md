@@ -12,6 +12,12 @@ The [compatibility-plan design](template-compatibility-plan-design.md) describes
 future typed requirements and loss policies; template-plan compilation and policy
 enforcement are not implemented by that design.
 
+Pending #144 source supports an inline typed child inside an admitted rich-text
+block control. Inspect the child's `ParentId` snapshot and reacquire handles after
+each edit; parent content locks protect children, and replacing a parent containing
+children is rejected. The [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
+documents supported owners, explicit bindings and remaining exclusions.
+
 
 ## Mixed report regions — merged source
 

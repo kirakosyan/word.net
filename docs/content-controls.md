@@ -44,6 +44,34 @@ resource graph and template combination required by #143, which remains open.
 Published 1.5.0 retains the earlier rejection below; ordinary loading remains
 separate from opt-in typed preservation.
 
+## Unreleased source: a bounded nested owner
+
+Pending #144 source admits inline typed children inside ordinary paragraphs of
+a block rich-text control in the body or an otherwise admitted simple table
+cell. The parent must not be showing a placeholder or have a local XML binding.
+All six existing child kinds retain their explicit values, local placeholders,
+bindings, source order and unique IDs. The immutable `ParentId` snapshot property
+identifies an immediate typed parent; it is null for top-level controls. Handles
+remain session/version scoped, so reacquire parent and child snapshots after edits.
+
+A parent's content lock blocks child value, placeholder and binding operations;
+the child's own lock also applies. Parent content replacement and binding changes
+are rejected while children exist, so a parent edit cannot erase a child or bypass
+its lock. Child edits and explicit binding application refresh the parent's value
+state. Shared XML targets retain the existing all-selected and agreement rules;
+failed edits and binding conflicts leave the document and local XML unchanged.
+The existing aggregate control/work limits and configured XML nesting limit apply.
+
+Editable DOCX preserves the wrapper hierarchy; ordinary managed PDF/XPS and an
+explicit display view show the child text. An independently assembled
+[Word-derived control](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners/README.md)
+and LibreOffice rendering check text order and the schema, without establishing a
+Word-authored nested template or Word execution. This is a limited source increment:
+deeper nesting, inline-in-inline and block children, row/cell/table wrappers,
+header/footer or other story owners, repeated report rows and typed-control
+composition remain outside this subset. #144 remains open. Ordinary loading is
+unchanged and does not create typed owners.
+
 ## Load, inspect and edit
 
 Typed preservation is opt-in for DOCX and, with the format-aware overload, DOTX.
@@ -99,7 +127,8 @@ All controls have inline owners in an ordinary body/table-cell paragraph, or blo
 owners containing ordinary body/cell paragraphs. A containing table is outside the
 control. Scalar controls have one formatting set and at most one paragraph;
 checkbox content, including placeholders, is one character. No row/cell/table
-wrappers, headers/footers, notes, boxes, section changes, nested controls, embedded
+wrappers, headers/footers, notes, boxes, section changes, nested controls except
+for the unreleased subset above, embedded
 objects or retained history inside a control. Crossing or enclosing field/bookmark
 ranges fail; independent fields/bookmarks wholly outside owners are retained. A
 closed body/cell bookmark immediately preceding a block control can be attached

@@ -40,7 +40,7 @@ internal static class ControlDisplay
     private static void MarkDisplay(DocumentModel model, ConversionContext c)
     {
         var owners = ControlOwners.Index(model, c);
-        foreach (ControlData data in model.Controls.Items.Values)
+        foreach (ControlData data in model.Controls.Items.Values.OrderBy(data => owners[data.Id].ParentId.HasValue ? 1 : 0))
         {
             ControlGlyph? hint = null;
             if (data.Kind == ContentControlKind.Checkbox && !data.Placeholder)
