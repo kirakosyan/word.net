@@ -193,6 +193,8 @@ vertical cells, repeated headers, pagination and atomic rejection. The independe
 [reference observation](measurements/roadmap-138-native-merged-reference.json)
 checks text and cell ownership while retaining the row-spacing and Arabic
 differences. It does not establish right-to-left, tagged, archival or strict parity.
+The [exact-source receipt](measurements/roadmap-138-native-merged-a91b49d.json)
+records complete local suites, package verification and the repeated specimen.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
