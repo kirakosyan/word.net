@@ -120,6 +120,8 @@ records four successful 2,042-case source and package guests and distinguishes t
 push head from GitHub's PR merge commit.
 The following [PR guest failure](measurements/roadmap-138-framework-bc9995f-failure.json)
 preserves an early VM exit without completed test evidence; it is not a Framework pass.
+The [fresh retry and other guests](measurements/roadmap-138-framework-bc9995f-retry.json)
+passed 2,065 cases each, while the original failure remains recorded.
 
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit
@@ -220,7 +222,9 @@ Pending #157 mixed-region tests cover three and five nested body levels, sibling
 order, empty collections, scope lookup, retained control IDs, notes and atomic
 reference/depth/row-limit failures. The independently authored [reference case](measurements/roadmap-138-deep-regions-reference.json)
 checks saved control hierarchy, cloned bookmarks and complete PDF text with
-LibreOffice and Poppler. Cell repeats and broader ownership remain unqualified.
+LibreOffice and Poppler. The [exact-source receipt](measurements/roadmap-138-deep-regions-b9d16fd.json)
+records both full local suites, package checks and the repeated specimen. Cell
+repeats and broader ownership remain unqualified.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
