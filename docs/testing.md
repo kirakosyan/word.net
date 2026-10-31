@@ -201,6 +201,8 @@ unsafe owners and atomic cancellation. Its [independent comparison](measurements
 retains the implicit-margin mismatch and checks the qualified explicit-margin
 DOCX, PDF text and selected column origins against LibreOffice. Nested header
 repetition and broader cell ownership remain unqualified.
+The [exact-source receipt](measurements/roadmap-138-crosstab-cell-96ca2fa.json)
+records both complete local suites, package checks and the repeated specimen.
 
 Pending #151 native merged-table tests exercise Hindi clusters, horizontal and
 vertical cells, repeated headers, pagination and atomic rejection. The independent
