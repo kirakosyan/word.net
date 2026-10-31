@@ -249,6 +249,8 @@ The [independent observation](measurements/roadmap-138-preset-shapes-reference.j
 compares authored polygon vertices and edges with LibreOffice at 0.5 points and
 includes substituted-geometry controls. Groups, arrows and broader appearance
 and accessibility combinations remain open.
+The [exact-source receipt](measurements/roadmap-138-preset-shapes-6b4b3a8.json)
+records complete local suites, package checks and the repeated specimens.
 
 Pending #167 preview-layout tests check opt-in text privacy, selected pages,
 immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
