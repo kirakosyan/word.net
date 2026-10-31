@@ -216,6 +216,12 @@ checks DOCX schema and LibreOffice-extracted values; the [exact-source receipt](
 records complete local suites, package checks and the reproduced specimen. Cell
 and story block creation remain open.
 
+Pending #157 mixed-region tests cover three and five nested body levels, sibling
+order, empty collections, scope lookup, retained control IDs, notes and atomic
+reference/depth/row-limit failures. The independently authored [reference case](measurements/roadmap-138-deep-regions-reference.json)
+checks saved control hierarchy, cloned bookmarks and complete PDF text with
+LibreOffice and Poppler. Cell repeats and broader ownership remain unqualified.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection

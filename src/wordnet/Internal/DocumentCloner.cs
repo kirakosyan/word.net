@@ -90,7 +90,9 @@ internal sealed class DocumentCloner
             result = copy;
         }
         blocks.Add(source, result);
-        result.TypedControlId = source.TypedControlId; result.Section = Section(source.Section); result.Location = source.Location; result.Control = Control(source.Control); result.NestedControl = Control(source.NestedControl); return result;
+        result.TypedControlId = source.TypedControlId; result.Section = Section(source.Section); result.Location = source.Location; result.Control = Control(source.Control);
+        if (source.NestedControl != null) foreach (TemplateControl nested in source.NestedControls) result.AppendNestedControl(Control(nested)!);
+        return result;
     }
     internal TableCell Cell(TableCell source)
     {

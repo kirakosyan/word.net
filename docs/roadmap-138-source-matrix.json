@@ -3,6 +3,29 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "deep-mixed-body-regions",
+      "issue": 157,
+      "outcome": "supported-bounded",
+      "boundary": "Distinct-path mixed body repeats retain nested ownership, scope order and cloned identities across a finite depth; cached descendants keep unique IDs.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailExpandsThreeLevelsAndSiblingRegions" },
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailSupportsFiveLevelsAndPreservesDeepIdsWhenCached" },
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailRemapsDeepNotesAndLooksUpEnclosingValues" }
+      ]
+    },
+    {
+      "id": "deep-mixed-boundaries",
+      "issue": 157,
+      "outcome": "rejected",
+      "boundary": "Cross-boundary references, configured depth or aggregate row exhaustion fail without committing; existing unsupported object and table owners stay excluded.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailEnforcesDeepLimitsAndReferenceBoundariesAtomically" },
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailRejectsRepeatedAncestorPathsAtomically" },
+        { "class": "EditingTemplateTests", "method": "MixedRegionBoundsRowsAndRejectsNestedTablesWithoutPartialEdits" },
+        { "class": "EditingTemplateTests", "method": "MixedRegionRejectsSectionBoundariesAndRetainedObjects" }
+      ]
+    },
+    {
       "id": "created-block-control-body",
       "issue": 145,
       "outcome": "supported-bounded",

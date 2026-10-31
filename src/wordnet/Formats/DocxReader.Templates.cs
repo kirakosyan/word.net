@@ -47,6 +47,8 @@ internal sealed partial class DocxReader
     {
         if (!context.Editing || element.Name != W + "sdt") return false;
         if (context.PreserveControls) return ReadTypedBlock(element, blocks);
+        if (element.Ancestors(W + "sdt").Count() + 1 > Math.Min(64, context.Options.MaximumNestingDepth))
+            throw new InvalidDataException("Limit.NestingDepth: Template controls exceed the nesting limit.");
         int start = blocks.Count;
         if (element.Element(W + "sdtContent") is XElement content) ReadBlocks(content, blocks);
         TemplateControl? control = ReadControl(element);
@@ -70,10 +72,10 @@ internal sealed partial class DocxReader
                 if (block.Control != null)
                 {
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
-                        && control.Tag != block.Control.Tag && block.NestedControl == null && hasTable)
-                    { block.NestedControl = block.Control; block.Control = control; continue; }
+                        && control.Tag != block.Control.Tag && block.NestedControls.All(n => n.Tag.StartsWith("repeat:", StringComparison.Ordinal) && n.Tag != control.Tag) && hasTable)
+                    { block.PrependNestedControl(block.Control); block.Control = control; continue; }
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) || block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal))
-                    { block.Control.Executable = false; control.Executable = false; if (block.NestedControl != null) block.NestedControl.Executable = false; }
+                    { block.Control.Executable = false; control.Executable = false; foreach (TemplateControl nested in block.NestedControls) nested.Executable = false; }
                     context.Loss("Template.NestedBlockControls", "Nested controls sharing a block are outside the editable template profile.");
                 }
                 else block.Control = control;

@@ -86,12 +86,23 @@ public sealed partial class WordDocument
                         if (!prevalidated)
                         {
                             ValidateRegion(source.Blocks);
-                            foreach (var nested in source.Blocks.Where(b => b.NestedControl != null).GroupBy(b => b.NestedControl))
+                            var nestedGroups = new Dictionary<TemplateControl, List<DocumentBlock>>();
+                            var nestedOrder = new List<List<DocumentBlock>>();
+                            var nestedLast = new Dictionary<TemplateControl, int>();
+                            for (int index = 0; index < source.Blocks.Count; index++)
                             {
-                                DocumentBlock[] children = nested.ToArray(); int first = source.Blocks.IndexOf(children[0]);
-                                if (!source.Blocks.Skip(first).Take(children.Length).SequenceEqual(children)) throw new NotSupportedException("Template.RepeatRegion: Nested regions must be contiguous.");
-                                ValidateRegion(children);
+                                DocumentBlock child = source.Blocks[index];
+                                if (child.NestedControl == null) continue;
+                                foreach (TemplateControl nested in child.NestedControls)
+                                {
+                                    ReserveReferenceWork(1);
+                                    if (!nestedGroups.TryGetValue(nested, out List<DocumentBlock>? children))
+                                    { children = new List<DocumentBlock>(); nestedGroups.Add(nested, children); nestedOrder.Add(children); }
+                                    else if (nestedLast[nested] != index - 1) throw new NotSupportedException("Template.RepeatRegion: Nested regions must be contiguous.");
+                                    children.Add(child); nestedLast[nested] = index;
+                                }
                             }
+                            foreach (List<DocumentBlock> children in nestedOrder) ValidateRegion(children);
                         }
                         PageSettings? regionSection = block.Section;
                         foreach (DocumentBlock child in source.Blocks) child.Section = null;
@@ -101,6 +112,7 @@ public sealed partial class WordDocument
                         long itemStructure = checked(source.Paragraphs.Sum(p => (p.Runs.Count + 1L) * 64L)
                             + source.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Image != null).Sum(r => (long)r.Image!.Bytes.Length)
                             + source.Tables.Sum(t => t.Rows.Sum(row => (row.Count + 1L) * 128L))
+                            + DocumentModel.Expand(source.Blocks).Sum(b => b.NestedControls.Count * 16L)
                             + TemplateControls(source).Distinct().Sum(control => ((long)control.Tag.Length + (control.Alias?.Length ?? 0)) * 2 + 64));
                         var generated = new List<DocumentBlock>();
                         foreach (object? item in sequence as List<object?> ?? new List<object?>())
@@ -112,12 +124,16 @@ public sealed partial class WordDocument
                             structuralExpansion = checked(structuralExpansion + itemStructure);
                             LimitExpansion();
                             DocumentModel clone = new DocumentCloner(c).Copy(source);
-                            foreach (DocumentBlock child in clone.Blocks) { child.Control = child.NestedControl; child.NestedControl = null; }
+                            foreach (DocumentBlock child in clone.Blocks)
+                            {
+                                child.Control = child.NestedControl;
+                                if (child.NestedControl != null) child.RemoveOuterNestedControl();
+                            }
                             RemapTemplateControlIds(clone, controlIds, ref nextControlId, c);
                             Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max());
                             foreach (DocumentBlock child in clone.Blocks) child.Section = regionSection;
                             m.Notes.AddRange(clone.Notes); parentScopes.Add(scope);
-                            try { Blocks(clone.Blocks, item, depth + 1, true, true); foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1); }
+                            try { Blocks(clone.Blocks, item, depth + 1, true, true); ProcessReferencedNotes(clone, item, depth + 1); }
                             finally { parentScopes.RemoveAt(parentScopes.Count - 1); }
                             generated.AddRange(clone.Blocks);
                         }
@@ -175,7 +191,7 @@ public sealed partial class WordDocument
                         RemapTemplateControlIds(clone, controlIds, ref nextControlId, c);
                         Remap(clone, prefix + (++identity).ToString(CultureInfo.InvariantCulture) + "_", m.Notes.Select(n => n.PartId).DefaultIfEmpty().Max(), isolateCounters: false, isolateExternalReferences: false);
                         m.Notes.AddRange(clone.Notes); Add(((TableBlock)clone.Blocks[0]).Rows[0], item, depth + 1);
-                        foreach (DocumentNote note in clone.Notes) ProcessNote(note, item, depth + 1);
+                        ProcessReferencedNotes(clone, item, depth + 1);
                     }
                     changes++;
                 }
@@ -201,6 +217,18 @@ public sealed partial class WordDocument
             table.RowHeights.Clear(); foreach (var item in heights) table.RowHeights.Add(item.Key, item.Value);
             table.RowLefts.Clear(); foreach (var item in lefts) table.RowLefts.Add(item.Key, item.Value);
             table.NonSplittingRows.Clear(); table.NonSplittingRows.UnionWith(nonsplitting); table.RowControls.Clear(); foreach (var item in controls) table.RowControls.Add(item.Key, item.Value);
+        }
+        void ProcessReferencedNotes(DocumentModel clone, object? scope, int depth)
+        {
+            if (clone.Notes.Count == 0) return;
+            var referencedNotes = new HashSet<DocumentNote>();
+            foreach (ParagraphBlock paragraph in DocumentModel.Expand(clone.Blocks).OfType<ParagraphBlock>())
+                foreach (TextRun run in paragraph.Runs)
+                {
+                    ReserveReferenceWork(1);
+                    if (run.Note != null) referencedNotes.Add(run.Note);
+                }
+            foreach (DocumentNote note in clone.Notes) if (referencedNotes.Contains(note)) ProcessNote(note, scope, depth);
         }
         void ProcessNote(DocumentNote note, object? scope, int depth)
         {
@@ -297,6 +325,7 @@ public sealed partial class WordDocument
         void ValidateRegion(IEnumerable<DocumentBlock> region)
         {
             if (originalRuns == null) throw new InvalidDataException("Template.RepeatRegion: Missing original region context.");
+            ReserveReferenceWork(originalRuns.Count);
             var paragraphs = new HashSet<ParagraphBlock>(DocumentModel.Expand(region).OfType<ParagraphBlock>());
             TextRun[] bodyRuns = paragraphs.SelectMany(p => originalRuns.TryGetValue(p, out TextRun[]? runs) ? (IEnumerable<TextRun>)runs : p.Runs).ToArray();
             var notes = new HashSet<DocumentNote>(bodyRuns.Where(r => r.Note != null).Select(r => r.Note!));
@@ -320,8 +349,7 @@ public sealed partial class WordDocument
             var result = new HashSet<string>(StringComparer.Ordinal); sequences = new HashSet<string>(StringComparer.OrdinalIgnoreCase); var pending = new Stack<TextRun>(runs);
             while (pending.Count != 0)
             {
-                c.CheckCancellation();
-                if (++referenceWork > Math.Max(4096L, c.Options.MaximumCharacters * 64L)) throw new InvalidDataException("Limit.TemplateWork: Reference traversal exceeds the aggregate work limit.");
+                ReserveReferenceWork(1);
                 TextRun run = pending.Pop();
                 if (run.Link != null && Starts(run.Link, '#')) result.Add(run.Link.Substring(1));
                 if (run.FieldInstruction != null)
@@ -335,6 +363,13 @@ public sealed partial class WordDocument
                 if (run.FieldCache != null) foreach (TextRun child in run.FieldCache) pending.Push(child);
             }
             return result;
+        }
+        void ReserveReferenceWork(long amount)
+        {
+            c.CheckCancellation();
+            if (amount > Math.Max(4096L, c.Options.MaximumCharacters * 64L) - referenceWork)
+                throw new InvalidDataException("Limit.TemplateWork: Reference traversal exceeds the aggregate work limit.");
+            referenceWork += amount;
         }
     }, token);
 

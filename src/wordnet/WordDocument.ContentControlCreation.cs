@@ -115,7 +115,7 @@ public sealed partial class WordDocument
         foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
         {
             c.ReserveControlWork(1);
-            Add(block.Control); Add(block.NestedControl);
+            Add(block.Control); if (block.NestedControl != null) foreach (TemplateControl nested in block.NestedControls) Add(nested);
             if (block is TableBlock table) foreach (TemplateControl control in table.RowControls.Values) Add(control);
             if (block is ParagraphBlock paragraph) foreach (TextRun run in paragraph.Runs) { c.ReserveControlWork(1); Add(run.Control); }
         }

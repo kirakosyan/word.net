@@ -48,6 +48,27 @@ because their targets cannot be checked reliably. Generated blocks, rows, cells,
 images and metadata consume the existing limits before commit; cancellation and
 failures leave the original session unchanged. This profile is included in 1.5.0.
 
+### Unreleased source: deeper mixed report regions
+
+Pending #157 extends the same body profile to multiple nested `repeat:Path`
+regions, bounded by `TemplateOptions.MaximumDepth`, the conversion nesting limit
+and an absolute maximum of 64 control levels. Each ancestor path must differ from
+its descendant paths, and each enclosing repeat containing another block repeat
+must contain a simple table within its subtree. Sibling regions keep document
+order; zero records remove only that region. Lookup still searches the current
+item, then enclosing body items from nearest to farthest, then the root. Existing
+nested row repeats retain their distinct item-then-root lookup behavior.
+
+Every repeated boundary is checked for crossing bookmarks, fields, links,
+sequence counters and shared notes before expansion. A clone remaps contained
+bookmark, note, list and retained control identities for each generated item; the
+aggregate row, character, byte and reference-work budgets apply across all levels.
+`KeepCached` retains unresolved nested wrappers with distinct control IDs. Nested
+tables, overlapping non-repeat wrappers, same-path ancestors, section breaks,
+positioned objects and unresolved links or field structures remain outside this
+profile. More ownership combinations and the full acceptance/runtime evidence for
+#157 remain open; this change is not in the published 1.5.0 packages.
+
 `AddCrossTab(records, aggregation, includeTotals, token)` appends an editable
 table from explicit `CrossTabRecord` values. Keys are non-empty Unicode strings,
 ordered by first appearance using ordinal equality; null/empty keys and control
@@ -77,8 +98,8 @@ The bookmark must own its entire unwrapped paragraph and cannot be a list item,
 heading, code block or paragraph with keep/page-break behavior, or be enclosed by
 another bookmark. Crossing body ranges and links or REF/PAGEREF
 fields to the placeholder reject before data enumeration. Cell destinations,
-repeat-region insertion, horizontal tiling and deeper report nesting remain open
-in #158 and #157; no table is shrunk or silently truncated to fit.
+repeat-region insertion and horizontal tiling remain open in #158; no table is
+shrunk or silently truncated to fit.
 
 `InsertFragmentAtBookmark(name, fragment, token)` replaces a dedicated plain
 body bookmark paragraph with a private copy of a separately loaded DOCX or safe
@@ -224,7 +245,7 @@ section. Expansion preserves order/appearance and remaps closed bookmarks, numbe
 and notes. Item scope precedes root scope; an empty collection removes the region.
 Generated body blocks and table rows share MaximumRows; character/byte/depth limits
 still apply before commit. Cross-region bookmarks, positioned objects, section
-changes and overlapping nested block controls reject execution. Malformed repeat
+changes and unsupported overlapping block controls reject execution. Malformed repeat
 regions cannot be serialized into executable partial controls. Single-row repeats
 retain their existing behavior.
 
@@ -397,7 +418,7 @@ Content-control `w:tag/@w:val` values use this exact grammar:
 False values are null, false, numeric zero, an empty string or an empty array.
 Conditions can contain scalar fields/inline controls. Nesting controls that share
 the same block, row or run group is outside the profile and diagnosed on load,
-except for the one-level mixed master-detail body repeats described above.
+except for the bounded mixed master-detail body repeats described above.
 Merge rejects these flattened nested constructs before executing any condition.
 Block controls inside cells are supported; cell-level table wrappers are diagnosed
 and cannot execute. Multi-block/multi-row control boundaries survive DOCX save/load,

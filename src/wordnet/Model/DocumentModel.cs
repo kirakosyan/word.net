@@ -66,7 +66,14 @@ internal abstract class DocumentBlock
 {
     internal int? TypedControlId { get; set; }
     internal TemplateControl? Control { get; set; }
-    internal TemplateControl? NestedControl { get; set; }
+    // Ordered from the outermost child to the innermost child; ordinary blocks
+    // do not allocate a list. Existing owner checks reject any nested control.
+    private List<TemplateControl>? nestedControls;
+    internal IReadOnlyList<TemplateControl> NestedControls => (IReadOnlyList<TemplateControl>?)nestedControls ?? System.Array.Empty<TemplateControl>();
+    internal TemplateControl? NestedControl => nestedControls == null || nestedControls.Count == 0 ? null : nestedControls[0];
+    internal void PrependNestedControl(TemplateControl control) => (nestedControls ??= new List<TemplateControl>()).Insert(0, control);
+    internal void AppendNestedControl(TemplateControl control) => (nestedControls ??= new List<TemplateControl>()).Add(control);
+    internal void RemoveOuterNestedControl() => nestedControls!.RemoveAt(0);
     internal SourceLocation? Location { get; set; }
     internal PageSettings? Section { get; set; }
 }

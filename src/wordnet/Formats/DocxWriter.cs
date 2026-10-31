@@ -443,24 +443,33 @@ internal sealed partial class DocxWriter
     private IEnumerable<XElement> Blocks(IEnumerable<DocumentBlock> blocks) => BlockGroups(blocks).Select(g => g.Content);
     private IEnumerable<(DocumentBlock First, DocumentBlock Last, XElement Content)> BlockGroups(IEnumerable<DocumentBlock> blocks, bool includeSections = false)
     {
-        DocumentBlock? first = null, last = null; XElement? group = null, nested = null; TemplateControl? nestedControl = null;
+        DocumentBlock? first = null, last = null; XElement? group = null;
+        var activeControls = new List<TemplateControl>(); var nestedContents = new List<XElement>();
         foreach (DocumentBlock block in blocks)
         {
             if (first != null && (!HasControl(block) || !SameControl(first, block)))
-            { yield return (first, last!, group!); first = null; group = null; nested = null; nestedControl = null; }
+            { yield return (first, last!, group!); first = null; group = null; activeControls.Clear(); nestedContents.Clear(); }
             if (first != null && includeSections && !ReferenceEquals(last!.Section, block.Section))
                 AttachSection(group!.Element(W + "sdtContent")!, last.Section ?? new PageSettings());
             XElement element = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
             if (!HasControl(block)) { yield return (block, block, element); continue; }
-            if (first == null) { first = block; group = BlockControl(block, block.NestedControl == null ? element : null); }
-            else if (block.NestedControl == null) group!.Element(W + "sdtContent")!.Add(element);
-            if (block.NestedControl != null)
+            if (first == null) { first = block; group = BlockControl(block, null); }
+            int common = 0;
+            while (common < activeControls.Count && common < block.NestedControls.Count
+                && ReferenceEquals(activeControls[common], block.NestedControls[common])) common++;
+            if (common < activeControls.Count)
             {
-                if (!ReferenceEquals(nestedControl, block.NestedControl))
-                { nestedControl = block.NestedControl; nested = Control(nestedControl, null); group!.Element(W + "sdtContent")!.Add(nested); }
-                nested!.Element(W + "sdtContent")!.Add(element);
+                activeControls.RemoveRange(common, activeControls.Count - common);
+                nestedContents.RemoveRange(common, nestedContents.Count - common);
             }
-            else { nested = null; nestedControl = null; }
+            XElement parent = common == 0 ? group!.Element(W + "sdtContent")! : nestedContents[common - 1];
+            for (int depth = common; depth < block.NestedControls.Count; depth++)
+            {
+                TemplateControl control = block.NestedControls[depth]; XElement wrapper = Control(control, null);
+                parent.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!;
+                activeControls.Add(control); nestedContents.Add(parent);
+            }
+            parent.Add(element);
             last = block;
         }
         if (first != null) yield return (first, last!, group!);

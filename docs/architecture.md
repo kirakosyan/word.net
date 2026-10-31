@@ -82,6 +82,10 @@ and paints managed paths. See the [profile and exclusions](roadmap-102-p4-p5.md)
 
 PR #135 keeps a bounded second block-control owner for one nested master-detail
 region. Cloning remaps identities and lookup walks an explicit item-scope stack.
+Pending #157 generalizes those body repeat owners to an ordered, bounded chain;
+the reader, writer and cloner preserve that chain, and every repeat boundary is
+checked before expansion. This does not expand typed-control or row-repeat
+ownership, and the published 1.5.0 profile remains unchanged.
 Cross-tabs build bounded simple tables with a conservative fit check; fragment
 insertion snapshots a separate admitted session, remaps metadata and commits a
 dedicated bookmark replacement atomically. See the
