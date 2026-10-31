@@ -58,6 +58,10 @@ Pending #161 adds three default vector preset geometries using existing conversi
 and session methods, without new public signatures. It also diagnoses loss of
 their authored alternatives and vector titles; existing API shapes remain intact.
 
+Pending #160 expands the existing text-box conversion paths without adding public
+signatures or runtime dependencies. New independently observed layout differences
+are surfaced through existing fidelity modes and diagnostics.
+
 Pending #162 extends the existing DOCX and managed conversion paths with bounded
 linear gradient paints. It adds no public signatures or new runtime dependencies;
 other gradient geometries, transparency and conformance combinations stay outside

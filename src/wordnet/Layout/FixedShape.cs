@@ -6,8 +6,8 @@ namespace WordNet.Layout;
 
 internal sealed class FixedShape
 {
-    internal FixedShape(double x, double y, double width, double height, string color, double stroke = 0, string style = "single", string? geometry = null, bool foreground = false, TextRun? sourceRun = null, LinearGradient? gradient = null)
-    { X = x; Y = y; Width = width; Height = height; Color = color; Stroke = stroke; Style = style; Geometry = geometry; Foreground = foreground; SourceRun = sourceRun; Gradient = gradient; }
+    internal FixedShape(double x, double y, double width, double height, string color, double stroke = 0, string style = "single", string? geometry = null, bool foreground = false, TextRun? sourceRun = null, LinearGradient? gradient = null, double rotation = 0, double rotationX = 0, double rotationY = 0)
+    { X = x; Y = y; Width = width; Height = height; Color = color; Stroke = stroke; Style = style; Geometry = geometry; Foreground = foreground; SourceRun = sourceRun; Gradient = gradient; Rotation = rotation; RotationX = rotationX; RotationY = rotationY; }
     internal double X { get; }
     internal double Y { get; }
     internal double Width { get; }
@@ -19,7 +19,10 @@ internal sealed class FixedShape
     internal bool Foreground { get; }
     internal TextRun? SourceRun { get; }
     internal LinearGradient? Gradient { get; }
-    internal FixedShape At(double x, double y) => new FixedShape(x, y, Width, Height, Color, Stroke, Style, Geometry, Foreground, SourceRun, Gradient);
+    internal double Rotation { get; }
+    internal double RotationX { get; }
+    internal double RotationY { get; }
+    internal FixedShape At(double x, double y) => new FixedShape(x, y, Width, Height, Color, Stroke, Style, Geometry, Foreground, SourceRun, Gradient, Rotation, RotationX + x - X, RotationY + y - Y);
     internal static IEnumerable<FixedShape> PaintOrder(IEnumerable<FixedShape> shapes)
     {
         FixedShape[] all = shapes.ToArray();

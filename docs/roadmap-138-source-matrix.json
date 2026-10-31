@@ -3,6 +3,33 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "general-rotation-diagnosed",
+      "issue": 160,
+      "outcome": "supported-bounded",
+      "boundary": "Editable general-angle rectangles and untransformed inline images/links render as managed vectors in BestEffort/Lenient, with independent office text-position differences and non-cardinal PDF hit bounds diagnosed.",
+      "tests": [
+        { "class": "BusinessFidelityTests", "method": "GeneralAngleBoxRetainsEditableRotationAndVectorFrame" },
+        { "class": "BusinessFidelityTests", "method": "FractionalDrawingAngleSurvivesEditableOutput" },
+        { "class": "BusinessFidelityTests", "method": "GeneralAngleBoxKeepsItsInlineImageAndVectorFrame" },
+        { "class": "BusinessFidelityTests", "method": "RotatedLinksUseTransformedHitBoundsAndDiagnoseNonCardinalBounds" },
+        { "class": "BusinessFidelityTests", "method": "RotatedLinkedImageKeepsItsPixelsAndTransformedAnnotation" },
+        { "class": "BusinessFidelityTests", "method": "GeneralRotationAdmitsTextAutofitButRejectsFittedInlineImages" }
+      ]
+    },
+    {
+      "id": "general-rotation-boundaries",
+      "issue": 160,
+      "outcome": "rejected",
+      "boundary": "Strict rejects independently differing new content; malformed transforms, unqualified flips/upright intent, fitted images, page-edge overflow, unsupported profiles and cancellation fail or diagnose before output.",
+      "tests": [
+        { "class": "BusinessFidelityTests", "method": "GeneralRotationDiagnosesReferenceDisagreementAndPreservesOutputOnStrictRejection" },
+        { "class": "BusinessFidelityTests", "method": "UprightTextInRotatedBoxIsDiagnosedAndInvalidRotationIsRejected" },
+        { "class": "BusinessFidelityTests", "method": "FlippedBoxIsDiagnosedInsteadOfSilentlyLosingTheFlip" },
+        { "class": "BusinessFidelityTests", "method": "UnsupportedRotationBoundsAndConformanceAreRejected" },
+        { "class": "BusinessFidelityTests", "method": "CancelledGeneralRotationDoesNotPublishOutput" }
+      ]
+    },
+    {
       "id": "opaque-cardinal-linear-gradients",
       "issue": 162,
       "outcome": "supported-bounded",

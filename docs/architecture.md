@@ -102,6 +102,10 @@ Pending #161 maps three default preset polygons through the existing drawing anc
 and vector path pipeline. Editable title/description metadata is retained; output
 loss is diagnosed where the selected profile cannot preserve it, while groups and
 transformed presets remain outside the profile.
+Pending #160 retains the raw signed OOXML rotation and applies one center-based
+transform to the frame, managed text, images and PDF link bounds. Rotated bounding
+boxes drive page admission and wrap exclusion. Independent reference discrepancies
+are explicit losses; the transform does not imply unrestricted Word layout parity.
 Pending #162 retains ordered opaque RGB and bounded local-theme gradient stops in
 the editable model. Cardinal gradients become clipped PDF axial shadings, XPS
 linear brushes and SVG gradient resources; aggregate stops and expanded paints

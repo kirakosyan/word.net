@@ -271,6 +271,38 @@ options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
 options.Pdf.VectorSemantics = PdfVectorSemantics.DescribedAtAnchor;
 ```
 
+### Unreleased source: general-angle text boxes
+
+Pending #160 preserves the signed DrawingML rotation value, in units of 1/60000
+degree, on editable rectangular DOCX text boxes. In ordinary managed PDF, XPS
+and SVG previews, the frame and supported content rotate around the frame center;
+the axis-aligned bounds of the four transformed corners determine page admission
+and wrap exclusion. Text stays selectable in PDF/XPS, and admitted inline PNG/JPEG
+pixels remain embedded rather than flattening the box into an image. A safe PDF
+link retains its target; its hit rectangle encloses the transformed content and
+therefore includes extra area for a non-cardinal angle. XPS link loss follows the
+existing destination diagnostic.
+
+This is a diagnosed non-strict profile. In five independently authored samples,
+LibreOffice 24.2.7.2 rotated the frame but positioned the box text horizontally;
+the PDF/XPS/SVG output instead rotates that text with the frame.
+The measured origin differences of 31–52 points exceed the unchanged 0.5-point
+comparison tolerance. `Shape.RotationReference` makes this disagreement explicit:
+Strict rejects the new arbitrary-angle cases and the new rotated image/link
+combinations before publishing output; BestEffort/Lenient render with a warning.
+Non-cardinal PDF links additionally report `Shape.RotatedLinkBounds`. This is an
+independent reference disagreement, not a determination of Microsoft Word behavior.
+
+The simple managed paragraph profile admits unanchored, untransformed inline
+images and safe links when autofit is off. Bounded text-only shrink-to-fit keeps
+its existing minimum-size and work limits. Fitted images/links, flipped boxes,
+upright text intent, transformed linked chains, nested structured content,
+native shaping, tagged and archival output are unsupported or diagnosed under
+their existing fidelity rules. Rotated boxes whose frame or stroke extends beyond
+the physical page are rejected. The [testing record](testing.md) describes the
+reference measurements and controls; this pending source is separate from the
+published 1.5.0 packages.
+
 ### Unreleased source: linear gradients
 
 Pending #162 preserves anchored, unrotated `ellipse`, `roundRect`, `rect`,

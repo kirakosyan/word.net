@@ -108,6 +108,10 @@ Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;
 broader compatibility and exact-runtime/package qualification remain open.
+Pending #160 retains [general-angle editable text boxes](interoperability.md#unreleased-source-general-angle-text-boxes)
+with managed vector output, bounded inline images and links. Independent office text
+and link placement differ, so Strict rejects the newly admitted cases and non-strict
+output reports the loss. Flips, upright text and other combinations remain open.
 Pending #161 adds [default rectangle, triangle and diamond presets](roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes)
 with independently checked managed vectors. Arrows, group membership, transforms,
 and broader non-DOCX alternative semantics remain open.

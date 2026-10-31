@@ -80,6 +80,13 @@ layout failures. `Shape.VectorOutput` reports a destination that cannot retain t
 vector; `Shape.TextBoxLayout` reports unsupported HTML box layout. See the
 [profile](roadmap-102-p4-p5.md) for supported combinations.
 
+Pending #160 uses `Shape.RotationReference` when independently measured rotated
+box content differs from an office reference. Strict rejects these newly admitted
+cases; BestEffort and Lenient render them with this warning. Non-cardinal PDF links
+also report `Shape.RotatedLinkBounds`: the clickable area is the enclosing rectangle,
+not a rotated polygon. `Shape.TextBoxLayout` reports unsupported upright text intent,
+and `Shape.GeometryApproximated` reports unsupported text-box flips.
+
 ## Mixed report regions — merged source
 
 PR #135 uses `Template.RepeatRegion` for invalid region structure or ownership and
@@ -607,9 +614,9 @@ conversion diagnostics.
 | `Pdf.Reconstruction` | Loss | PDF reading order is reconstructed into editable paragraphs; original page layout and vector graphics are not retained. |
 | `Revisions.Accepted` | Loss | Revision markup is rendered in its accepted state; revision history is not retained. |
 | `Shape.Appearance` | Loss | Unsupported text-box effects, theme fills and drawing appearance are not retained. |
-| `Shape.GeometryApproximated` | Loss | Only unrotated rectangular text boxes are supported. |
+| `Shape.GeometryApproximated` | Loss | Unsupported text-box geometry or flips are approximated. |
 | `Shape.TextBoxFlattened` | Loss | This destination retains text-box paragraphs as inline text. |
-| `Shape.TextBoxLayout` | Loss | Text-box autofit and vertical text are not supported. |
+| `Shape.TextBoxLayout` | Loss | An unqualified text-box layout, orientation or upright intent is not retained. |
 | `Table.AutomaticGrid` | Report | Automatic table columns use equal widths when fixed geometry is required. |
 | `Table.BorderApproximated` | Loss | An unsupported border style uses a single line. |
 | `Table.Decoration` | Loss | This output profile omits cell shading, borders and vertical alignment while retaining cell content. |

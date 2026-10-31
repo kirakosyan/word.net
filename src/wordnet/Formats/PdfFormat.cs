@@ -108,6 +108,7 @@ internal static class PdfFormat
                     {
                         var rectangle = new PdfRectangle(text.X, page.Settings.Height - text.Y, text.X + image.Width, page.Settings.Height - text.Y + image.Height);
                         var operations = target.CurrentStream.Operations;
+                        if (text.Rotation != 0) PushRotation(target, text.Rotation, text.RotationX, text.RotationY, page.Settings.Height);
                         operations.Add(Push.Value);
                         double angle = image.Rotation * Math.PI / 180, cosine = Math.Round(Math.Cos(angle)), sine = Math.Round(Math.Sin(angle));
                         operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine, text.X + image.Width / 2, page.Settings.Height - text.Y + image.Height / 2 }));
@@ -119,18 +120,15 @@ internal static class PdfFormat
                         var source = new PdfRectangle(left, bottom, left + fullWidth, bottom + fullHeight);
                         if (image.Extension == "png") target.AddPng(image.Bytes, source); else target.AddJpeg(image.Bytes, source);
                         operations.Add(Pop.Value);
-                        if (text.Link != null) AddLink(text.Link, rectangle, semantic);
+                        if (text.Rotation != 0) operations.Add(Pop.Value);
+                        if (text.Link != null) AddLink(text.Link, RotateRectangle(rectangle, text, page.Settings.Height), semantic);
                         if (image.AlternativeText.Length > 0 && !context.PreviewIntermediate && tags == null) context.Loss("Pdf.ImageAlternativeText", "This PDF profile does not create accessibility tags for images.");
                     }
                     else if (text.Text.Length > 0 || text.NativeShape != null)
                     {
                         if (text.Rotation != 0)
                         {
-                            double angle = text.Rotation * Math.PI / 180, cosine = Math.Round(Math.Cos(angle)), sine = Math.Round(Math.Sin(angle));
-                            double cx = text.RotationX, cy = page.Settings.Height - text.RotationY;
-                            target.CurrentStream.Operations.Add(Push.Value);
-                            target.CurrentStream.Operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
-                                cx - cosine * cx - sine * cy, cy + sine * cx - cosine * cy }));
+                            PushRotation(target, text.Rotation, text.RotationX, text.RotationY, page.Settings.Height);
                         }
                         string color = text.Color ?? "000000";
                         target.SetTextAndFillColor(Convert.ToByte(color.Substring(0, 2), 16), Convert.ToByte(color.Substring(2, 2), 16), Convert.ToByte(color.Substring(4, 2), 16));
@@ -158,7 +156,7 @@ internal static class PdfFormat
                             if (measured.Count > 0)
                             {
                                 var area = new PdfRectangle(text.X, page.Settings.Height - text.Y - text.Size * 0.25, text.NativeShape != null ? text.X + text.NativeShape.Width * text.Size : measured[measured.Count - 1].EndBaseLine.X, page.Settings.Height - text.Y + text.Size);
-                                AddLink(text.Link, area, semantic);
+                                AddLink(text.Link, RotateRectangle(area, text, page.Settings.Height), semantic);
                             }
                         }
                     }
@@ -194,9 +192,35 @@ internal static class PdfFormat
         }
     }
 
+    private static void PushRotation(PdfPageBuilder target, double angle, double x, double y, double pageHeight)
+    {
+        var (cosine, sine) = RotationTransform.Components(angle); double cy = pageHeight - y;
+        target.CurrentStream.Operations.Add(Push.Value);
+        target.CurrentStream.Operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
+            x - cosine * x - sine * cy, cy + sine * x - cosine * cy }));
+    }
+
+    private static PdfRectangle RotateRectangle(PdfRectangle rectangle, PositionedText text, double pageHeight)
+    {
+        if (text.Rotation == 0) return rectangle;
+        var points = new[] {
+            RotationTransform.Point(rectangle.Left, pageHeight - rectangle.Bottom, text.RotationX, text.RotationY, text.Rotation),
+            RotationTransform.Point(rectangle.Left, pageHeight - rectangle.Top, text.RotationX, text.RotationY, text.Rotation),
+            RotationTransform.Point(rectangle.Right, pageHeight - rectangle.Bottom, text.RotationX, text.RotationY, text.Rotation),
+            RotationTransform.Point(rectangle.Right, pageHeight - rectangle.Top, text.RotationX, text.RotationY, text.Rotation) };
+        return new PdfRectangle(points.Min(p => p.X), pageHeight - points.Max(p => p.Y), points.Max(p => p.X), pageHeight - points.Min(p => p.Y));
+    }
+
     private static void PaintVector(PdfPageBuilder target, FixedShape shape, double pageHeight, Dictionary<FixedShape, NameToken> gradients)
     {
         var ops = target.CurrentStream.Operations; ops.Add(Push.Value);
+        if (shape.Rotation != 0)
+        {
+            var (cosine, sine) = RotationTransform.Components(shape.Rotation);
+            double cx = shape.RotationX, cy = pageHeight - shape.RotationY;
+            ops.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
+                cx - cosine * cx - sine * cy, cy + sine * cx - cosine * cy }));
+        }
         byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
         if (shape.Stroke == 0) target.SetTextAndFillColor(r, g, b);
         else { target.SetStrokeColor(r, g, b); ops.Add(new SetLineWidth(shape.Stroke)); }

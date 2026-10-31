@@ -31,7 +31,7 @@ internal sealed partial class DocxWriter
     {
         XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
         int id = drawingId++;
-        var properties = new XElement(wps + "spPr", new XElement(A + "xfrm", box.Rotation == 0 ? null : new XAttribute("rot", box.Rotation * 60000), new XElement(A + "off", new XAttribute("x", 0), new XAttribute("y", 0)),
+        var properties = new XElement(wps + "spPr", new XElement(A + "xfrm", box.RotationUnits == 0 ? null : new XAttribute("rot", box.RotationUnits), new XElement(A + "off", new XAttribute("x", 0), new XAttribute("y", 0)),
                 new XElement(A + "ext", new XAttribute("cx", Emu(box.Width)), new XAttribute("cy", Emu(box.Height)))),
             new XElement(A + "prstGeom", new XAttribute("prst", box.Geometry ?? "rect"), new XElement(A + "avLst")),
             box.Gradient != null ? Gradient(box.Gradient)

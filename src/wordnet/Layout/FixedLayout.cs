@@ -43,7 +43,7 @@ internal sealed class FixedHeading
 
 internal sealed class PositionedText
 {
-    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null, int rotation = 0, double rotationX = 0, double rotationY = 0, bool logicalCarrier = false, double carrierWidth = 0)
+    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null, double rotation = 0, double rotationX = 0, double rotationY = 0, bool logicalCarrier = false, double carrierWidth = 0)
     { Visual = visual; SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; Rotation = rotation; RotationX = rotationX; RotationY = rotationY; LogicalCarrier = logicalCarrier; CarrierWidth = carrierWidth; }
     internal ObjectVisual? Visual { get; }
     internal string Text { get; }
@@ -60,7 +60,7 @@ internal sealed class PositionedText
     internal TextRun? SourceRun { get; }
     internal ShapedWord? NativeShape { get; }
     internal bool IsLabel { get; }
-    internal int Rotation { get; }
+    internal double Rotation { get; }
     internal double RotationX { get; }
     internal double RotationY { get; }
     internal bool LogicalCarrier { get; }
@@ -68,7 +68,7 @@ internal sealed class PositionedText
     internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel, Visual, Rotation, RotationX, RotationY, LogicalCarrier, CarrierWidth);
     internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX + x - X, RotationY + y - Y, LogicalCarrier, CarrierWidth);
     internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX, RotationY, LogicalCarrier, CarrierWidth);
-    internal PositionedText Rotated(int rotation, double x, double y) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, rotation, x, y, LogicalCarrier, CarrierWidth);
+    internal PositionedText Rotated(double rotation, double x, double y) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, rotation, x, y, LogicalCarrier, CarrierWidth);
 }
 
 internal static partial class FixedLayout
@@ -1015,8 +1015,15 @@ internal static partial class FixedLayout
                 bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
         }
 
-        static (double X, double Y, double Width, double Height, string Wrap) RotatedBounds((double X, double Y, double Width, double Height, string Wrap) bounds, int rotation)
-            => rotation is 90 or 270 ? (bounds.X + (bounds.Width - bounds.Height) / 2, bounds.Y + (bounds.Height - bounds.Width) / 2, bounds.Height, bounds.Width, bounds.Wrap) : bounds;
+        static (double X, double Y, double Width, double Height, string Wrap) RotatedBounds((double X, double Y, double Width, double Height, string Wrap) bounds, double rotation)
+        {
+            if (rotation == 0 || rotation == 180) return bounds;
+            if (rotation == 90 || rotation == 270)
+                return (bounds.X + (bounds.Width - bounds.Height) / 2, bounds.Y + (bounds.Height - bounds.Width) / 2, bounds.Height, bounds.Width, bounds.Wrap);
+            var components = RotationTransform.Components(rotation); double c = Math.Abs(components.Cosine), s = Math.Abs(components.Sine);
+            double width = c * bounds.Width + s * bounds.Height, height = s * bounds.Width + c * bounds.Height;
+            return (bounds.X + (bounds.Width - width) / 2, bounds.Y + (bounds.Height - height) / 2, width, height, bounds.Wrap);
+        }
 
         void Place(Line line, double top)
         {
@@ -1082,8 +1089,13 @@ internal static partial class FixedLayout
                     }
                     if ((box.Rotation != 0 || box.ShrinkToFit) && (!ContentProfiles.ManagedFixedOutput(context)))
                         throw new NotSupportedException("Shape.TextBoxProfile: Rotated or fitted boxes require managed ordinary fixed output.");
-                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, decorations: false, structuralHistory: true))))
+                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, decorations: false, structuralHistory: true, inlineImagesAndLinks: box.Rotation != 0 && !box.ShrinkToFit))))
                         throw new NotSupportedException("Shape.TextBoxContent: Rotated or fitted boxes support ordinary managed paragraphs only.");
+                    if (box.Rotation != 0 && (box.Rotation % 90 != 0 || box.Blocks.OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Image != null || r.Link != null))))
+                        context.Loss("Shape.RotationReference", "An independent office reference positions the contents of this rotated text box differently.");
+                    if (box.Rotation % 90 != 0 && context.Destination == DocumentFormat.Pdf && !context.RenderingPreview
+                        && box.Blocks.OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Link != null)))
+                        context.Loss("Shape.RotatedLinkBounds", "Non-cardinal links use an axis-aligned bounding rectangle around the rotated target.");
                     var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y, validate: box.Rotation == 0);
                     var visualBounds = RotatedBounds(bounds, box.Rotation);
                     CheckDrawingOrder(box.Anchor, visualBounds, box.Rotation != 0 || box.ShrinkToFit || model.HasLinkedTextBoxes && box.StoryId != null);
@@ -1107,7 +1119,15 @@ internal static partial class FixedLayout
                         Source = new TableCell { Background = box.Fill }
                     };
                     if (box.Border != null) foreach (string side in new[] { "left", "top", "right", "bottom" }) cell.Source.Borders.Add(side, box.Border);
-                    destination.Shapes.AddRange(CellShapes(cell, visualBounds.Y, visualBounds.Height));
+                    if (box.Rotation % 90 == 0) destination.Shapes.AddRange(CellShapes(cell, visualBounds.Y, visualBounds.Height));
+                    else
+                    {
+                        double cx = bounds.X + bounds.Width / 2, cy = bounds.Y + bounds.Height / 2;
+                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(bounds.X, bounds.Y, bounds.Width, bounds.Height, box.Fill,
+                            geometry: "rect", rotation: box.Rotation, rotationX: cx, rotationY: cy));
+                        if (box.Border != null && box.Border.Width > 0) destination.Shapes.Add(new FixedShape(bounds.X, bounds.Y, bounds.Width, bounds.Height, box.Border.Color, box.Border.Width,
+                            geometry: "rect", rotation: box.Rotation, rotationX: cx, rotationY: cy));
+                    }
                     double boxTop = bounds.Y + boxPadding.Top;
                     var boxLines = new List<Line>();
                     double chainOffset = 0;
@@ -1159,8 +1179,8 @@ internal static partial class FixedLayout
                             foreach (PositionedText text in boxLine.Items)
                             {
                                 context.ReserveBoxFitWork(checked(text.Text.Length + 1));
-                                if (text.Text.Length != 0 && (text.X < bounds.X + boxPadding.Left
-                                    || text.X + Measure(text.Text, text.Font, text.Size) > bounds.X + box.Width - boxPadding.Right + 0.001))
+                                if ((text.Text.Length != 0 || text.Image != null) && (text.X < bounds.X + boxPadding.Left
+                                    || text.X + (text.Image?.Width ?? Measure(text.Text, text.Font, text.Size)) > bounds.X + box.Width - boxPadding.Right + 0.001))
                                     throw new NotSupportedException("Layout.TextBoxOverflow: Rotated text exceeds its frame width.");
                             }
                     if (box.ShrinkToFit)

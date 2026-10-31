@@ -265,6 +265,19 @@ mixed object/drawing ownership and native output remain unqualified.
 The [exact-source receipt](measurements/roadmap-138-accessible-archive-9cdbe58.json)
 records both complete local suites, the capability matrix and package checks.
 
+Pending #160 uses five synthetic python-docx/Pillow drawings to inspect repeated
+editable saves, vector bounds, selectable text, image pixels and PDF links in
+PDF/XPS/SVG. Pinned PyMuPDF and an offline LibreOffice reference measure frame
+geometry at 0.5 points and retain separate text-origin and direction verdicts.
+All five reference text positions differ by more than 0.5 points; the diagnostic
+is required rather than treating these specimens as a parity pass. The
+[observation](measurements/roadmap-138-rotation-reference.json) retains each
+measurement, file hash and earlier failed checks. Six corrupted
+controls test angles, reference selection, diagnostics, transforms, links and
+image identity. Flips, upright intent, page edges, cancellation and autofit
+boundaries also have targeted tests. Other office implementations and hosted
+runtime results require separate evidence.
+
 Pending #161 tests default rectangle, triangle and diamond presets, editable
 alternative metadata, PDF/XPS/SVG output, invalid adjustments and output bounds.
 The [independent observation](measurements/roadmap-138-preset-shapes-reference.json)

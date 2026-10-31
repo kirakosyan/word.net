@@ -70,7 +70,7 @@ internal static class XpsFormat
             }
             if (t.Text.Length > 0) element.Add(new XAttribute("UnicodeString", t.Text[0] == '{' ? "{}" + t.Text : t.Text));
             if (t.Rotation == 0) return element;
-            double angle = t.Rotation * System.Math.PI / 180, c = System.Math.Round(System.Math.Cos(angle)), s = System.Math.Round(System.Math.Sin(angle));
+            var (c, s) = RotationTransform.Components(t.Rotation);
             return new XElement(xps + "Canvas", new XAttribute("RenderTransform", c.ToString(CultureInfo.InvariantCulture) + "," + s.ToString(CultureInfo.InvariantCulture) + ","
                 + (-s).ToString(CultureInfo.InvariantCulture) + "," + c.ToString(CultureInfo.InvariantCulture) + ","
                 + Number(t.RotationX - c * t.RotationX + s * t.RotationY) + "," + Number(t.RotationY - s * t.RotationX - c * t.RotationY)), element);
@@ -83,6 +83,13 @@ internal static class XpsFormat
                 var path = new XElement(xps + "Path", new XAttribute("Data", data),
                     shape.Gradient != null ? null : shape.Stroke == 0 ? new XAttribute("Fill", "#FF" + shape.Color) : new XAttribute("Stroke", "#FF" + shape.Color),
                     shape.Stroke == 0 ? null : new XAttribute("StrokeThickness", Number(shape.Stroke)));
+                if (shape.Rotation != 0)
+                {
+                    var (c, s) = RotationTransform.Components(shape.Rotation);
+                    path.Add(new XAttribute("RenderTransform", c.ToString("0.########", CultureInfo.InvariantCulture) + "," + s.ToString("0.########", CultureInfo.InvariantCulture) + ","
+                        + (-s).ToString("0.########", CultureInfo.InvariantCulture) + "," + c.ToString("0.########", CultureInfo.InvariantCulture) + ","
+                        + Number(shape.RotationX - c * shape.RotationX + s * shape.RotationY) + "," + Number(shape.RotationY - s * shape.RotationX - c * shape.RotationY)));
+                }
                 if (shape.Gradient is LinearGradient gradient)
                 {
                     var ends = gradient.Endpoints(shape.X, shape.Y, shape.Width, shape.Height);
@@ -119,11 +126,16 @@ internal static class XpsFormat
             string transform = Matrix(a) + "," + Matrix(b) + "," + Matrix(k) + "," + Matrix(d) + ","
                 + Number(text.X + image.Width / 2 - a * image.FrameWidth / 2 - k * image.FrameHeight / 2) + ","
                 + Number(text.Y - image.Height / 2 - b * image.FrameWidth / 2 - d * image.FrameHeight / 2);
-            return new XElement(xps + "Canvas", new XAttribute("RenderTransform", transform),
+            var canvas = new XElement(xps + "Canvas", new XAttribute("RenderTransform", transform),
                 new XElement(xps + "Path", new XAttribute("Data", "M 0,0 l " + Number(image.FrameWidth) + ",0 0," + Number(image.FrameHeight) + " " + Number(-image.FrameWidth) + ",0 Z"),
                     new XElement(xps + "Path.Fill", new XElement(xps + "ImageBrush", new XAttribute("ImageSource", path), new XAttribute("ViewboxUnits", "Absolute"), new XAttribute("ViewportUnits", "Absolute"),
                         new XAttribute("Viewbox", Matrix(image.CropLeft * naturalWidth) + "," + Matrix(image.CropTop * naturalHeight) + "," + Matrix((1 - image.CropLeft - image.CropRight) * naturalWidth) + "," + Matrix((1 - image.CropTop - image.CropBottom) * naturalHeight)),
                         new XAttribute("Viewport", "0,0," + Number(image.FrameWidth) + "," + Number(image.FrameHeight))))));
+            if (text.Rotation == 0) return canvas;
+            var (cosine, sine) = RotationTransform.Components(text.Rotation);
+            return new XElement(xps + "Canvas", new XAttribute("RenderTransform", Matrix(cosine) + "," + Matrix(sine) + "," + Matrix(-sine) + "," + Matrix(cosine) + ","
+                + Number(text.RotationX - cosine * text.RotationX + sine * text.RotationY) + ","
+                + Number(text.RotationY - sine * text.RotationX - cosine * text.RotationY)), canvas);
         }
         void Xml(string name, XElement root) => PackageArchive.Write(archive, name, TextFormat.Utf8.GetBytes(root.ToString(SaveOptions.DisableFormatting)));
     }

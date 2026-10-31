@@ -307,7 +307,10 @@ The business-document profiles added for roadmap #32 are described in
   overflowing content into the frame, with diagnostics. Other destinations flatten
   boxes while retaining nested text, images, links and run formatting where supported. Rotated boxes,
   vertical text, arbitrary geometry, autofit and nested table content are outside the
-  fixed-page text-box profile. Reflowable HTML reports inline-frame placement.
+  fixed-page text-box profile described here. The bounded quarter-turn and autofit
+  release profile is described in [P4/P5](roadmap-102-p4-p5.md); pending #160 adds
+  diagnosed [general-angle boxes](interoperability.md#unreleased-source-general-angle-text-boxes).
+  Reflowable HTML reports inline-frame placement.
 - Continuous, next/odd/even-page sections retain physical page geometry. Equal-width
   one-to-three-column bodies fill sequentially, with explicit column/page breaks.
   Final columns are not balanced. Incompatible continuous geometry reports a new-page

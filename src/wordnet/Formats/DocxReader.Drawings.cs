@@ -106,9 +106,7 @@ internal sealed partial class DocxReader
         {
             if (!int.TryParse(rotation.Value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int raw))
                 throw new InvalidDataException("Shape.Rotation: Invalid drawing rotation.");
-            int normalized = (int)(((long)raw % 21600000 + 21600000) % 21600000);
-            if (normalized % 5400000 != 0) context.Loss("Shape.GeometryApproximated", "Only quarter-turn text-box rotation is supported.");
-            else box.Rotation = normalized / 60000;
+            box.RotationUnits = raw;
         }
         foreach (string name in new[] { "flipH", "flipV" })
         {
@@ -130,6 +128,9 @@ internal sealed partial class DocxReader
         XElement? body = drawing.Descendants(wps + "bodyPr").FirstOrDefault();
         if (body != null)
         {
+            string? upright = (string?)body.Attribute("upright");
+            if (upright is not null and not "true" and not "false" and not "1" and not "0" and not "on" and not "off")
+                throw new InvalidDataException("Shape.TextBoxLayout: Invalid upright flag.");
             box.Padding.Left = Inset("lIns", 7.2); box.Padding.Right = Inset("rIns", 7.2); box.Padding.Top = Inset("tIns", 3.6); box.Padding.Bottom = Inset("bIns", 3.6);
             XElement? fit = body.Element(A + "normAutofit");
             if (fit != null)
@@ -139,8 +140,9 @@ internal sealed partial class DocxReader
                     throw new NotSupportedException("Shape.Autofit: Only the default bounded shrink-to-fit intent is supported.");
                 box.ShrinkToFit = true;
             }
-            if (body.Elements().Any(e => e.Name != A + "noAutofit" && e.Name != A + "normAutofit") || (string?)body.Attribute("vert") is string vertical && vertical != "horz")
-                context.Loss("Shape.TextBoxLayout", "Unsupported text-box autofit and vertical text are not retained.");
+            if (body.Elements().Any(e => e.Name != A + "noAutofit" && e.Name != A + "normAutofit") || (string?)body.Attribute("vert") is string vertical && vertical != "horz"
+                || IsTrue(upright))
+                context.Loss("Shape.TextBoxLayout", "Unsupported text-box autofit, text orientation or upright intent is not retained.");
         }
         if ((box.Rotation != 0 || box.ShrinkToFit) && box.Anchor.UnqualifiedLayer)
             context.Loss("Shape.DrawingOrder", "The drawing layer or placement is outside the rotated/fit profile.");

@@ -22,7 +22,10 @@ internal sealed class PositionedBox
     internal DrawingAnchor Anchor { get; set; } = new DrawingAnchor();
     internal double Width { get; set; }
     internal double Height { get; set; }
-    internal int Rotation { get; set; }
+    // DrawingML uses signed 1/60000-degree units. Keep the source integer for
+    // editable output while rendering its equivalent bounded turn.
+    internal int RotationUnits { get; set; }
+    internal double Rotation => ((RotationUnits % 21600000L + 21600000L) % 21600000L) / 60000.0;
     internal bool ShrinkToFit { get; set; }
     internal int? StoryId { get; set; }
     internal bool ImplicitStoryId { get; set; }
