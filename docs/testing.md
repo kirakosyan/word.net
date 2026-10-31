@@ -307,6 +307,8 @@ of any retry or push-side guest results.
 The [separate successful guests](measurements/roadmap-138-framework-6d021ea-successes.json)
 passed 2,253 cases each on actual Framework 4.7.2 for push source/package and
 PR-merge package, with verified cleanup and exact binary/artifact identities.
+The [PR source retry](measurements/roadmap-138-framework-6d021ea-pr-source-retry.json)
+also passed 2,253 cases with verified cleanup; the original setup failure remains.
 
 Pending #171 tests compare body merge-path findings with actual successful and
 missing-data merges, and exercise types, parent declarations, repeat uncertainty,
@@ -316,6 +318,11 @@ The [independent observation](measurements/roadmap-138-template-inspection-refer
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
 the initial diagnostic-fixture and framework-analyzer failures.
+The [exact-source receipt](measurements/roadmap-138-template-inspection-0230fcb.json)
+records both complete local suites, the matrix, package verification and repeated
+independent examples. Its [performance record](measurements/roadmap-138-template-inspection-performance-0230fcb.json)
+passes the unchanged gate but notes substantial host timing drift between reference
+rounds. Hosted checks for this newer source remain separate.
 
 Pending #165 tests all 19,338 unmodified Unicode 17 default line-break cases,
 grapheme-safe use in managed PDF, nonbreaking spaces, font and owner rejection,

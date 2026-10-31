@@ -1,0 +1,39 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "pullRequest": 174,
+  "head": "6d021ea7e85ca28c689aaf821f0e4356cc2a075c",
+  "mergeCommit": "3e05d5f437724b625c10f660b87abf790a48da27",
+  "testedTree": "419ce08687184cefb57fbe45d34390d108be5a75",
+  "workflowRun": 41195330728,
+  "attempt": 2,
+  "job": 124529868235,
+  "asset": "source",
+  "frameworkRelease": 461814,
+  "jitMode": "legacy",
+  "passed": 2253,
+  "failed": 0,
+  "skipped": 0,
+  "librarySha256": "b3cde71a05938ba686b587069c07dff749c8c4694af7afcb62081949d5786b5c",
+  "testSha256": "1e2497fde8efab4731b01a8fb16cef82cbb2240f7afa18c0dc5a9e25b2ecee79",
+  "setupArtifact": 13040563020,
+  "setupArtifactSha256": "001c9c99eba932df7d6cef07b159b3d36362cf50843fcb0da592ae86a0cfd174",
+  "resultArtifact": 13041962500,
+  "resultArtifactSha256": "04116235156a11154165c3de20ade0b7fe4cbfeedb63fde066d194a5b8b493c6",
+  "memberSha256": {
+    "bundle.json": "00b06393bef9d1b8af2d2da7aeca450f5ec43cc068eb8d1c1ecd818e058706c1",
+    "status.json": "a05814bd31cad8e2fd425c94fa1a2b95ee5ddebf6ed0b2946ca2c25f2819067c",
+    "environment.json": "15abf96889da9fa067c964f13e0605fb58c5218efc0728bb69f77fafb335472f",
+    "cleanup.json": "1145c08e61bccf98e342fb50784535b1f7ce655b29577edbfdc3021e00002eba",
+    "verification.json": "0d22b9a0b02c09e79aea4cdd2ad5134cd71c0f217c8bbb1833f016a9b911aa5f",
+    "net472.trx": "8fb66c7052abdac862520352760587d817885d06b877ee14a42fc829adc14c66"
+  },
+  "cleanup": {
+    "containersRemoved": true,
+    "networkRemoved": true,
+    "stateRemoved": true,
+    "imageRemoved": true
+  },
+  "previousFailure": "docs/measurements/roadmap-138-framework-6d021ea-pr-source-failure.json",
+  "qualification": "The first PR source guest failed before tests during its OCR download; this independently successful rerun does not erase that failure. These results qualify the specified prior merge tree, not later commits."
+}
