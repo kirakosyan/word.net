@@ -126,7 +126,9 @@ public sealed class ContentControlAcceptanceEdgeTests
     {
         byte[] chart = File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "P2", "column.docx"));
         byte[] mixed = Modify(chart, zip => { XDocument xml = Xml(zip, "word/document.xml"); xml.Root!.Element(W + "body")!.AddFirst(XElement.Parse(Control(1, "<w:richText/>", "Control", block: true))); Put(zip, "word/document.xml", xml.ToString()); });
-        Assert.Throws<NotSupportedException>(() => Load(mixed));
+        WordDocument separate = Load(mixed); Assert.Single(separate.ContentControls); Assert.Equal(2, separate.Objects.Count);
+        separate.ReplaceControlParagraphs(separate.ContentControls[0], new[] { new ContentControlParagraph(new[] { new DocumentText("Changed") }) }, TestContext.Current.CancellationToken);
+        Assert.Equal(2, separate.Objects.Count); Validate(Save(separate));
         WordDocument document = LoadBody("<w:p>" + Run("Outside") + "</w:p>" + Control(1, Checkbox(), "-", block: true));
         var range = document.GetReviewRange(0, 0, 1, TestContext.Current.CancellationToken);
         Assert.Throws<NotSupportedException>(() => document.RecordReplacement(range, "Changed", "Author", DateTimeOffset.MinValue, TestContext.Current.CancellationToken)); Assert.Equal("Outside", document.Paragraphs[0].Text); Assert.False(document.ContentControls[0].IsChecked);

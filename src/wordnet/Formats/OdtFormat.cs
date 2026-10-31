@@ -57,9 +57,9 @@ internal static partial class OdtFormat
         if (color.Length != 7 || color[0] != '#' || color.Skip(1).Any(c => !Uri.IsHexDigit(c))) throw Invalid("Color");
         return color.Substring(1).ToUpperInvariant();
     }
-    internal static DocumentModel Read(Stream input, ConversionContext context)
+    internal static DocumentModel Read(Stream input, ConversionContext context, bool template = false)
     {
-        using var package = new OdfPackage(input, context); return new Reader(package, context).Read();
+        using var package = new OdfPackage(input, context, template); return new Reader(package, context).Read();
     }
     private sealed class Reader
     {

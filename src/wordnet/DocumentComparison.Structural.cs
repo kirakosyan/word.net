@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml.Linq;
 using WordNet.Formats;
 using WordNet.Internal;
+using WordNet.Layout;
 using WordNet.Model;
 
 namespace WordNet;
@@ -14,7 +15,7 @@ public static partial class DocumentComparison
 {
     private static readonly XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
     private static void CompareStructure(DocumentModel left, DocumentModel right, ComparisonOptions comparison,
-        ConversionOptions options, ConversionContext context, out int usedWork, out int usedTokens)
+        ConversionOptions options, ConversionContext context, bool ignoreRunFormatting, bool compareParagraphFormatting, int priorWork, out int usedWork, out int usedTokens)
     {
         long structuralItems = (long)left.Blocks.Count + right.Blocks.Count
             + left.Tables.Sum(t => (long)t.Rows.Count) + right.Tables.Sum(t => (long)t.Rows.Count);
@@ -30,7 +31,7 @@ public static partial class DocumentComparison
                     || table.Rows.Any(row => row.Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock))))
                     throw new NotSupportedException("Comparison.Structure: Merged, nested, controlled and individually sized rows are outside structural alignment.");
         }
-        int work = 0, items = 0; long metadataBytes = 0;
+        int work = priorWork, items = 0; long metadataBytes = 0;
         List<PageSettings?> leftSections = Sections(left, context), rightSections = Sections(right, context);
         if (leftSections.Count > 64 || rightSections.Count > 64) throw new InvalidDataException("Comparison.WorkLimit: At most 64 sections are supported.");
         if (leftSections.Count != rightSections.Count || StoryTopology(leftSections) != StoryTopology(rightSections)
@@ -91,10 +92,38 @@ public static partial class DocumentComparison
             var newCounts = bKeys.GroupBy(k => k, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
             if (movedKeys.Any(k => oldCounts[k] != 1 || newCounts[k] != 1))
                 throw new NotSupportedException("Comparison.Move: Duplicate paragraph candidates are ambiguous across sections.");
+            ReserveAdditionalWork(checked(aKeys.Length + bKeys.Length));
+            var oldIndices = aKeys.Select((key, index) => (key, index)).Where(item => movedKeys.Contains(item.key)).ToDictionary(item => item.key, item => item.index, StringComparer.Ordinal);
+            var newIndices = bKeys.Select((key, index) => (key, index)).Where(item => movedKeys.Contains(item.key)).ToDictionary(item => item.key, item => item.index, StringComparer.Ordinal);
+            foreach (string key in movedKeys)
+            {
+                context.CheckCancellation();
+                if (left.Blocks[oldIndices[key]] is ParagraphBlock oldParagraph && right.Blocks[newIndices[key]] is ParagraphBlock newParagraph
+                    && !ParagraphFormatSnapshot.Same(oldParagraph, newParagraph))
+                    throw new NotSupportedException("Comparison.Move: Paragraph formatting changes on moved paragraphs are unsupported.");
+            }
         }
         foreach (var pair in alignedBlocks)
         {
-            if (pair.A >= 0 && pair.B >= 0) { blocks.Add(left.Blocks[pair.A]); continue; }
+            if (pair.A >= 0 && pair.B >= 0)
+            {
+                if (left.Blocks[pair.A] is ParagraphBlock oldParagraph && right.Blocks[pair.B] is ParagraphBlock newParagraph
+                    && !ParagraphFormatSnapshot.Same(oldParagraph, newParagraph))
+                {
+                    ReserveAdditionalWork(1);
+                    if (!ReviewStore.OrdinaryParagraphFormat(oldParagraph) || !ReviewStore.OrdinaryParagraphFormat(newParagraph))
+                        throw new NotSupportedException("Comparison.ParagraphFormat: Paragraph-property changes require ordinary body paragraphs.");
+                    if (compareParagraphFormatting)
+                    {
+                        string id = Guid.NewGuid().ToString("N"); var previous = new ParagraphFormatSnapshot(oldParagraph);
+                        new ParagraphFormatSnapshot(newParagraph).Apply(oldParagraph);
+                        oldParagraph.ParagraphFormatRevision = id; oldParagraph.PreviousParagraphFormat = previous;
+                        left.Review.Revisions.Add(id, new ReviewRecord { Id = id, Author = comparison.Author, Date = comparison.Timestamp, Structure = "paragraph-format" });
+                    }
+                    else oldParagraph.ExplicitParagraphFormat = true;
+                }
+                blocks.Add(left.Blocks[pair.A]); continue;
+            }
             DocumentBlock changed = pair.A >= 0 ? left.Blocks[pair.A] : right.Blocks[pair.B];
             if (changed is not ParagraphBlock p) throw new NotSupportedException("Comparison.Move: Table moves are unsupported.");
             bool deletion = pair.A >= 0; string key = deletion ? aKeys[pair.A] : bKeys[pair.B];
@@ -190,7 +219,7 @@ public static partial class DocumentComparison
             foreach (PageSettings? section in sections)
             {
                 context.CheckCancellation(); copy.FinalSection = section;
-                DocumentModel normalized = new DocumentCloner(context).Copy(copy); NormalizePlainStories(normalized, context);
+                DocumentModel normalized = new DocumentCloner(context).Copy(copy); NormalizePlainStories(normalized, context, ignoreRunFormatting, ReserveAdditionalWork);
                 using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(normalized, stream, context);
                 metadataBytes += stream.Length;
                 if (metadataBytes > options.MaximumExpandedBytes) throw new InvalidDataException("Comparison.ResourceLimit: Section metadata comparison exceeds its byte allowance.");
@@ -199,7 +228,22 @@ public static partial class DocumentComparison
         }
         Dictionary<DocumentBlock, XElement> Elements(DocumentModel document)
         {
-            XElement[] elements = Body(document).Element(W + "body")!.Elements().Where(e => e.Name != W + "sectPr").ToArray();
+            DocumentModel comparisonDocument = new DocumentCloner(context).Copy(document);
+            foreach (ParagraphBlock paragraph in comparisonDocument.Blocks.OfType<ParagraphBlock>())
+            {
+                if (!ReviewStore.OrdinaryParagraphFormat(paragraph)) continue;
+                ReserveAdditionalWork(1); NeutralParagraphFormat(paragraph);
+            }
+            if (ignoreRunFormatting)
+            {
+                foreach (ParagraphBlock paragraph in comparisonDocument.BodyParagraphs)
+                {
+                    ReserveAdditionalWork(checked(paragraph.Runs.Count + 1));
+                    List<TextRun> normalized = RunCoalescer.Combine(paragraph.Runs.Select(Neutral).ToList());
+                    paragraph.Runs.Clear(); paragraph.Runs.AddRange(normalized);
+                }
+            }
+            XElement[] elements = Body(comparisonDocument).Element(W + "body")!.Elements().Where(e => e.Name != W + "sectPr").ToArray();
             var result = new Dictionary<DocumentBlock, XElement>(); int index = 0;
             if (document.Blocks.Count == 0 && elements.Length == 1 && elements[0].Name == W + "p" && !elements[0].HasElements) return result;
             for (int i = 0; i < document.Blocks.Count; i++)
@@ -219,6 +263,12 @@ public static partial class DocumentComparison
             if (index < elements.Length && (index + 1 != elements.Length || document.Blocks.Count == 0 || document.Blocks[document.Blocks.Count - 1] is not TableBlock || !SyntheticBreak(elements[index])))
                 throw new NotSupportedException("Comparison.Structure: Unexpected synthetic body content.");
             return result;
+        }
+        void ReserveAdditionalWork(int count)
+        {
+            context.CheckCancellation();
+            if (count > comparison.MaximumSteps - work) throw new InvalidDataException("Comparison.WorkLimit: Formatting normalization exceeds its work allowance.");
+            work += count;
         }
         static bool SyntheticBreak(XElement element) => element.Name == W + "p" && element.Elements().Count() == 1
             && element.Element(W + "pPr")?.Elements().Count() == 1 && element.Element(W + "pPr")?.Element(W + "sectPr") != null;

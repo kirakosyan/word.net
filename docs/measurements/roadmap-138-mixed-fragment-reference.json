@@ -1,0 +1,29 @@
+{
+  "roadmap": 138,
+  "issue": 147,
+  "recordedUtc": "2026-10-31",
+  "scope": "A synthetic bound text control and independently authored P2 chart/equation source are composed into one body fragment, then inserted, synchronized and edited. This checks one combination and does not establish live Word editing or every owner/profile.",
+  "workingTreeParent": "431dbfcd6350ec3522b8d40cbf0023edbb710689",
+  "executedWorkingTreeNet10AssemblySha256": "2c0cad961050bdf0d2de8c26a4749606b5133a173628d7c836c1a7e2a9776c6e",
+  "controlInputSha256": "c9af96c8faf95ad4a80e313a14443fc6aa503abb299e963d6beed29a36e396bb",
+  "objectInput": "tests/wordnet.Conversion.Tests/Fixtures/P2/column.docx",
+  "objectInputSha256": "a39b50ecb9e5d4d0f11ef0ac1988aa976c5ab6b6ffd3c832867130bac4150ad8",
+  "probe": "eng/roadmap-138-mixed-fragment-probe.cs",
+  "probeSha256": "20d06a67307212abcc8747205ee061d0905426d966ca726225b5b309bfbf89d5",
+  "outputDocxSha256": "969fbefc04f7a281ca25d61eae2e5d860420086109bc775d454d24b9fb2eca3a",
+  "schema": "Open XML SDK 3.5.1 reported zero errors; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "reference": {
+    "producer": "LibreOffice 24.2.7.2 420(Build:2), writer_pdf_Export, with matching LibreOffice Math; image sha256:f079ca18b57205e536d993743a16ff75f40490b387d41db8c044bdc5ccce523f. Repository Noto Sans fonts were mounted read-only.",
+    "extractor": "Poppler 24.02.0 pdftotext -layout and pdftoppm at 96 dpi; Pillow for pixels",
+    "pdfSha256": "7338e47b348065e2e1df9f6d8b8ac79e7928ca433751928db236858f08b1f591",
+    "layoutTextSha256": "fc29d67f00825bbe6a0b6004634dbae0562436943e3a9bf495cf3d63debb92fa",
+    "rasterSha256": "a669b5fb0062d9e1e0d81ae8e9b0a4fdc506117028a6b5f548cf4602a93c0065",
+    "checker": "eng/check-roadmap-138-mixed-fragment.py",
+    "checkerSha256": "02fc4e534c50961523fad7323429ac941899eab5b0ce82049060e6ad86bd62f1",
+    "objectChecker": "eng/check-roadmap-138-object-reference.py",
+    "objectCheckerSha256": "cdb81a7503e3c2435ad9cafc1b8857dcb0606d7cb347fa2c4071c49f7da20945",
+    "result": "The local XML store and cached control both contain Bea; chart caches and XLSX cells contain Q1=10/Q2=20, OMML contains x/4, and layout-ordered reference text retains Before, Name: Bea, chart labels, equation and After. Two RGB 2468AC bars have a 1.9836 height ratio and a shared baseline."
+  },
+  "retainedObservation": "The first check mistakenly used default pdftotext rather than the existing -layout policy. Default extraction placed Q1 and Q2 after the following equation and paragraph even though their bounding boxes and raster place them above. Its text SHA-256 is e702540f50317edeb06a15e48fce8426626d1aadae0b1e353be09aed328ea8c7; the initial checker failed and this logical-extraction difference remains visible. A separate preliminary render without the mounted Noto fonts has SHA-256 5ca07995238edc72ddea2085b20f998e611d2cdf0ecb0744325c9bb78e3d6adc and was not used for the passing observation.",
+  "limitations": "Generated DOCX/PDF/raster files are scratch artifacts. This is a working-tree observation with the executing DLL hash above; exact-commit and package qualification require separate checks. No live Word, tagged, archival or native profile is qualified."
+}

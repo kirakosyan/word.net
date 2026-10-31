@@ -1,5 +1,9 @@
 # DOCX and ODT exchange
 
+Unreleased #166 source adds bounded ODT/OTT document sessions and selected
+template-format directions; see the [template-format profile](template-formats.md).
+The release profile below describes published 1.5.0 behavior.
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
@@ -10,8 +14,8 @@ qualification requirements. Earlier release receipts below remain historical evi
 
 The P1 implementation merged in PR #85 and ships in 1.3.0 with `DocumentFormat.Odt = 12`.
 `CanConvert` enables DOCX → ODT, ODT → DOCX and, since 1.4.0, direct ODT → PDF.
-ODT document sessions, same-format conversion, DOC/ODT and other ODT exchanges
-remain unsupported. Direct PDF export uses the same bounded ODF reader and shared
+In 1.5.0, ODT document sessions, same-format conversion, DOC/ODT and other ODT
+exchanges remain unsupported. Direct PDF export uses the same bounded ODF reader and shared
 layout without an intermediate DOCX.
 
 ```csharp

@@ -15,7 +15,10 @@ internal sealed partial class DocxReader
     private readonly ConversionContext context;
     private readonly Dictionary<string, XElement> relationships;
     private readonly Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
+    private readonly Dictionary<string, TableStyle> tableStyles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
+    private long tableStyleBytes;
     private string? defaultStyle;
+    private string? defaultTableStyle;
     private ParagraphAlignment defaultAlignment;
     private ParagraphLayout defaultLayout = new ParagraphLayout();
     private TextStyle defaultRun = new TextStyle();
@@ -30,8 +33,15 @@ internal sealed partial class DocxReader
         this.relationships = relationships;
     }
 
-    internal static DocumentModel Read(Stream input, ConversionContext context)
+    internal static DocumentModel Read(Stream input, ConversionContext context, bool template = false)
     {
+        if (template || context.TemplateExchange)
+        {
+            ZipSecurity.Result security = ZipSecurity.Examine(input, context);
+            if (security == ZipSecurity.Result.Protected) throw new NotSupportedException("Docx.Encryption: Encrypted ZIP entries are unsupported.");
+            if (security == ZipSecurity.Result.Unsupported) throw new NotSupportedException("Docx.Container: ZIP64 or unsupported ZIP directory features are outside the template profile.");
+            if (security == ZipSecurity.Result.Invalid) throw new InvalidDataException("Docx.Container: Invalid ZIP directory or local entry header.");
+        }
         using var package = new DocxPackage(input, context);
         var rootRelations = package.ReadRelationships("").Values;
         var mainRelations = rootRelations
@@ -43,18 +53,22 @@ internal sealed partial class DocxReader
 
         string main = DocxPackage.ResolvePart("", mainRelations[0]);
         XDocument types = package.ReadXml("[Content_Types].xml");
-        if (types.Root?.Name != DocxPackage.ContentTypes + "Types"
-            || !types.Root.Elements(DocxPackage.ContentTypes + "Override").Any(item =>
-                (string?)item.Attribute("PartName") == "/" + main && (string?)item.Attribute("ContentType") == DocxPackage.MainContentType))
+        if (types.Root == null || DocxPackage.ContentTypeFor(types.Root, main, context) != (template ? DocxPackage.TemplateContentType : DocxPackage.MainContentType))
         {
-            throw new InvalidDataException("Docx.ContentType: A non-macro DOCX main document content type is required.");
+            throw new InvalidDataException("Docx.ContentType: The requested non-macro DOCX or DOTX main content type is required.");
         }
 
         var reader = new DocxReader(context, package.ReadRelationships(main)) { mainPart = main };
+        if ((template || context.TemplateExchange) && (package.PartNames.Any(name => name.EndsWith("vbaProject.bin", StringComparison.OrdinalIgnoreCase))
+            || types.Root!.Elements().Any(e => DocxPackage.ContainsIgnoreCase((string?)e.Attribute("ContentType") ?? "", "vbaProject")
+                || DocxPackage.ContainsIgnoreCase((string?)e.Attribute("ContentType") ?? "", "macroEnabled"))
+            || reader.relationships.Values.Any(r => DocxPackage.ContainsIgnoreCase((string?)r.Attribute("Type") ?? "", "vbaProject"))))
+            throw new NotSupportedException("Docx.ActiveContent: Macro-bearing templates are unsupported.");
         var knownParts = new HashSet<string>(StringComparer.Ordinal)
         {
             "[Content_Types].xml", "_rels/.rels", main, DocxPackage.RelationshipPartName(main),
         };
+        reader.ReadTheme(package, main);
         XElement[] styleRelations = reader.relationships.Values.Where(relation =>
             (string?)relation.Attribute("Type") == DocxPackage.DocumentRelationships.NamespaceName + "/styles").ToArray();
         if (styleRelations.Length > 1)
@@ -91,7 +105,7 @@ internal sealed partial class DocxReader
         }
 
         reader.PrepareTypedControls(source);
-        var document = new DocumentModel();
+        var document = new DocumentModel { Theme = reader.theme?.Package };
         reader.ValidateReviewSource(bodies[0]);
         reader.ReadBlocks(bodies[0], document.Blocks);
         if (reader.sectionCount > 0 && bodies[0].Element(W + "sectPr") == null)
@@ -99,6 +113,12 @@ internal sealed partial class DocxReader
         reader.PruneTocParagraphs(document.Blocks);
         document.FinalSection = reader.finalSection;
         document.Notes.AddRange(reader.notes.Values.Where(n => n.Number > 0));
+        TableBlock[] implicitTables = document.Tables.Where(table => table.UsesDefaultStyle).ToArray();
+        if (reader.defaultTableStyle != null && (implicitTables.Length != 0 || reader.tableStyles.ContainsKey(reader.defaultTableStyle)))
+        {
+            document.DefaultTableStyle = reader.ResolveTableStyle(reader.defaultTableStyle, new HashSet<string>(StringComparer.Ordinal));
+            foreach (TableBlock table in implicitTables) table.Style = document.DefaultTableStyle;
+        }
         var noteCounters = new Dictionary<(bool Endnote, PageSettings? Section), int>();
         var numberedNotes = new HashSet<DocumentNote>();
         foreach (DocumentBlock block in document.Blocks)
@@ -128,7 +148,7 @@ internal sealed partial class DocxReader
             context.Loss("Docx.AdditionalParts", "Unrecognized parts such as headers, annotations or embedded content are not preserved in this conversion profile.");
         document.ObjectCount = context.ObjectCount;
         reader.FinishTypedControls(document);
-        if (document.ObjectCount != 0) { ObjectSafety.Owners(document); context.Objects.Finish(document.CharacterCount, 0); }
+        if (document.ObjectCount != 0) { ObjectSafety.Owners(document, context); context.Objects.Finish(document.CharacterCount, 0); }
         return document;
     }
 
@@ -158,11 +178,12 @@ internal sealed partial class DocxReader
             }
             if (settings && root.Element(W + "evenAndOddHeaders") is XElement parity) evenAndOdd = IsOn(parity);
             if (settings && root.Elements().Any(e => e.Name != W + "proofState" && e.Name != W + "zoom"
-                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl" && e.Name != W + "evenAndOddHeaders"))
+                && e.Name != W + "rsids" && e.Name != W + "defaultTabStop" && e.Name != W + "characterSpacingControl" && e.Name != W + "evenAndOddHeaders"
+                && (e.Name != W + "clrSchemeMapping" || theme?.Package == null)))
                 context.Loss("Docx.Settings", "Unsupported document settings may affect layout or editing behavior and are not retained.");
             if (settings && root.Elements().Any(e => e.Name == W + "defaultTabStop" || e.Name == W + "characterSpacingControl"))
                 context.Loss("Docx.Settings", "Tab and character-spacing settings are not retained.");
-            context.Report("Docx.AuxiliaryMetadata", "Document properties, font/theme catalogs and editor metadata are not retained; unsupported content formatting is diagnosed separately.");
+            context.Report("Docx.AuxiliaryMetadata", "Some document properties, font catalogs and editor metadata are not retained; theme retention is bounded and unsupported formatting is diagnosed separately.");
         }
     }
 
@@ -172,6 +193,17 @@ internal sealed partial class DocxReader
         if (root.Name != W + "styles")
         {
             throw new InvalidDataException("Docx.Styles: Invalid style namespace.");
+        }
+        bool styleHistory = false; int styleScan = 0;
+        foreach (XElement element in root.Descendants())
+        {
+            if ((++styleScan & 255) == 0) context.CheckCancellation();
+            if (element.Name == W + "pPrChange") { styleHistory = true; break; }
+        }
+        if (styleHistory)
+        {
+            if (context.PreserveReview) throw new NotSupportedException("Review.ParagraphFormat: Paragraph-property history cannot occur in style definitions.");
+            context.Loss("Revisions.Accepted", "Paragraph style history is omitted in the accepted-state conversion profile.");
         }
 
         var defaults = new TextStyle { Layout = defaultLayout.Copy() };
@@ -194,6 +226,16 @@ internal sealed partial class DocxReader
             {
                 if (defaultStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last paragraph style marked default is used, following the document format default-style rule.");
                 defaultStyle = id;
+            }
+            if ((string?)style.Attribute(W + "type") == "table" && style.Attribute(W + "default") is XAttribute tableDefault)
+            {
+                if (tableDefault.Value is not ("true" or "1" or "on" or "false" or "0" or "off"))
+                    throw new InvalidDataException("Docx.TableStyle: Invalid default table-style flag.");
+                if (IsTrue(tableDefault.Value))
+                {
+                    if (defaultTableStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last table style marked default is used, following the document format default-style rule.");
+                    defaultTableStyle = id;
+                }
             }
         }
     }
@@ -262,6 +304,7 @@ internal sealed partial class DocxReader
             style = ResolveStyle(styleId, new HashSet<string>(StringComparer.Ordinal));
         }
 
+        TextStyle inheritedParagraph = style.Copy();
         ReadParagraphProperties(properties, style);
         ListItem? list = ResolveList(style);
         if (list?.Definition?[list.Level] is ListLevel listLevel && listLevel.LayoutProperties.Count > 0)
@@ -279,6 +322,7 @@ internal sealed partial class DocxReader
         var paragraph = new ParagraphBlock { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
+        ReadParagraphFormatRevision(element, properties, paragraph, inheritedParagraph);
         return paragraph;
     }
 
@@ -371,7 +415,9 @@ internal sealed partial class DocxReader
                 {
                     PositionedBox? shape;
                     try { shape = ReadVectorShape(child); }
-                    catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict)
+                    catch (NotSupportedException) when (!context.Editing && !context.PreserveReview && context.EffectiveMode != FidelityMode.Strict
+                        && !context.Typography.Enabled && (context.Destination != DocumentFormat.Pdf
+                            || context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17))
                     { context.Loss("Shape.VectorUnsupported", "The drawing is outside the admitted vector profile and is omitted."); shape = null; }
                     if (shape != null) Emit(runs, new TextRun("", box: shape));
                     continue;
@@ -430,6 +476,7 @@ internal sealed partial class DocxReader
         var table = new TableBlock { Location = context.Location };
         var pendingTableBookmarks = new List<TextRun>();
         ReadTableGeometry(element, table);
+        bool reportedShadingConflict = false;
         foreach (XElement child in TableContents(element))
         {
             context.CheckCancellation();
@@ -447,6 +494,7 @@ internal sealed partial class DocxReader
 
             using var rowLocation = context.At(XmlSourceLocation.Create(child, mainPart));
             if (rowControls.TryGetValue(child, out TemplateControl? control)) table.RowControls.Add(table.Rows.Count, control);
+            if (typedRowControls.TryGetValue(child, out int rowControl)) table.TypedRowControls.Add(table.Rows.Count, rowControl);
             var cells = new List<TableCell>();
             foreach (XElement rowChild in TableContents(child))
             {
@@ -482,8 +530,20 @@ internal sealed partial class DocxReader
 
                 using var cellLocation = context.At(XmlSourceLocation.Create(rowChild, mainPart));
                 var cell = new TableCell();
+                if (typedCellControls.TryGetValue(rowChild, out int cellControl)) cell.TypedControlId = cellControl;
                 var pendingBookmarks = new List<TextRun>();
+                if (rowChild.Element(W + "tcPr")?.Elements(W + "shd").Skip(1).Any() == true)
+                    throw new InvalidDataException("Docx.TableShading: Duplicate direct cell shading properties.");
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
+                XElement? directShading = rowChild.Element(W + "tcPr")?.Element(W + "shd");
+                bool admittedOverride = table.Style is TableStyle conditionalStyle && conditionalStyle.EffectiveRegions.Count > 0
+                    && table.EffectiveBackground == null
+                    && directShading != null && QualifiedConditionalCellShading(directShading);
+                if ((table.HasTableShading || table.Style?.EffectiveRegions.Count > 0) && !reportedShadingConflict && directShading != null && !admittedOverride)
+                {
+                    context.Loss("Table.ShadingConflict", "Table shading combined with direct cell shading is not independently qualified.");
+                    reportedShadingConflict = true;
+                }
                 foreach (XElement content in TableContents(rowChild))
                 {
                     if (content.Name == W + "tcPr") continue;
@@ -533,6 +593,20 @@ internal sealed partial class DocxReader
             }
         }
 
+        if (table.HasTableBorders && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
+            context.Loss("Table.BorderStory", "Table borders outside the ordinary document body are not independently qualified.");
+        if (table.HasTableShading && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
+            context.Loss("Table.ShadingStory", "Table shading outside the ordinary document body is not independently qualified.");
+        if (table.HasTableBorders && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
+            || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
+                || cell.Borders.Count != 0 || cell.Content.OfType<TableBlock>().Any())
+                || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
+            context.Loss("Table.BorderConflict", "Table borders on merged, nested, irregular or individually bordered cells use an approximation.");
+        if (table.HasTableShading && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
+            || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
+                || cell.Content.OfType<TableBlock>().Any())
+                || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
+            context.Loss("Table.ShadingConflict", "Table shading on merged, nested or irregular cells uses an approximation.");
         AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
     }
@@ -541,6 +615,14 @@ internal sealed partial class DocxReader
     {
         foreach (XElement child in container.Elements())
         {
+            if (context.PreserveControls && child.Name == W + "sdt" && typedNodes.TryGetValue(child, out ControlData? typed)
+                && typed.Structure != ControlStructure.None)
+            {
+                XElement nested = child.Element(W + "sdtContent")!.Elements().Single();
+                var owners = typed.Structure == ControlStructure.Row ? typedRowControls : typedCellControls;
+                if (owners.ContainsKey(nested)) throw new InvalidDataException("Control.ProtectedOwner: A structural owner cannot have multiple typed wrappers.");
+                owners.Add(nested, typed.Id); yield return nested; continue;
+            }
             if (child.Name == W + "sdt" || child.Name == W + "sdtContent" || child.Name == W + "customXml")
             {
                 if (context.Editing && container.Name == W + "tc" && child.Name == W + "sdt") { yield return child; continue; }
@@ -646,6 +728,12 @@ internal sealed partial class DocxReader
                 if (property.Elements().Any(e => e.Name != W + "numId" && e.Name != W + "ilvl")) context.Loss("Docx.ListRevision", "Numbering revisions are not retained.");
             }
             else if (ReadLayoutProperty(property, style.Layout)) { }
+            else if (property.Name == W + "pPrChange")
+            {
+                if (context.PreserveReview && properties.Parent?.Name != W + "p")
+                    throw new NotSupportedException("Review.ParagraphFormat: Paragraph-property history requires a paragraph owner.");
+                if (!context.PreserveReview) context.Loss("Revisions.Accepted", "Paragraph formatting history is omitted in the accepted-state conversion profile.");
+            }
             else if (property.Name == W + "rPr") { /* Paragraph mark is resolved separately from text runs. */ }
             else if (property.Name != W + "pStyle" && property.Name != W + "sectPr")
             {
@@ -691,19 +779,46 @@ internal sealed partial class DocxReader
                 style.Bold ^= character.Bold;
                 style.Italic ^= character.Italic;
                 style.FontSize = character.FontSize ?? style.FontSize;
-                if (character.Appearance.FontFamily != null) style.Appearance.FontFamily = character.Appearance.FontFamily;
+                if (character.Appearance.FontFamily != null)
+                {
+                    style.Appearance.FontFamily = character.Appearance.FontFamily;
+                    style.Appearance.ThemeFontAscii = character.Appearance.ThemeFontAscii;
+                    style.Appearance.ThemeFontHighAnsi = character.Appearance.ThemeFontHighAnsi;
+                }
                 style.Appearance.Underline |= character.Appearance.Underline;
                 style.Appearance.Strike |= character.Appearance.Strike;
                 style.Appearance.Background = character.Appearance.Background ?? style.Appearance.Background;
                 style.Appearance.VerticalAlignment = character.Appearance.VerticalAlignment ?? style.Appearance.VerticalAlignment;
-                if (character.HasColor) { style.Color = character.Color; style.HasColor = true; }
+                if (character.HasColor)
+                {
+                    style.Color = character.Color; style.HasColor = true;
+                    style.Appearance.ThemeColor = character.Appearance.ThemeColor;
+                    style.Appearance.ThemeTint = character.Appearance.ThemeTint;
+                    style.Appearance.ThemeShade = character.Appearance.ThemeShade;
+                }
             }
             else if (property.Name == W + "sz") style.FontSize = Integer(property, W + "val", 2, 3276) / 2.0;
             else if (property.Name == W + "rFonts" && !knownCodeStyle)
             {
-                style.Appearance.FontFamily = (string?)property.Attribute(W + "ascii") ?? (string?)property.Attribute(W + "hAnsi") ?? style.Appearance.FontFamily;
-                if (property.Attributes().Any(a => a.Name.LocalName.EndsWith("Theme", StringComparison.Ordinal)))
-                    context.Loss("Docx.ThemeFont", "Theme fonts without a resolved family use the explicit family or output fallback.");
+                string? explicitFamily = (string?)property.Attribute(W + "ascii") ?? (string?)property.Attribute(W + "hAnsi");
+                string? ascii = (string?)property.Attribute(W + "asciiTheme"), high = (string?)property.Attribute(W + "hAnsiTheme");
+                string? token = ascii ?? high;
+                style.Appearance.FontFamily = (token == null ? null : theme?.Font(token)) ?? explicitFamily ?? style.Appearance.FontFamily;
+                if (token != null || explicitFamily != null)
+                {
+                    style.Appearance.ThemeFontAscii = theme?.Package != null && ascii != null && theme.Font(ascii) != null ? ascii : null;
+                    style.Appearance.ThemeFontHighAnsi = theme?.Package != null && high != null && theme.Font(high) != null ? high : null;
+                }
+                if (HasThemeFont(property))
+                {
+                    ValidateThemeFonts(property);
+                    context.Loss("Docx.ThemeFont", "Theme fonts use the bounded local scheme or a fallback; unsupported references and other theme semantics are not retained.");
+                }
+            }
+            else if (property.Name == W + "rFonts" && knownCodeStyle && HasThemeFont(property))
+            {
+                ValidateThemeFonts(property);
+                context.Loss("Docx.ThemeFont", "Code-style theme fonts use the existing code appearance; editable theme semantics are not retained.");
             }
             else if (property.Name == W + "u")
             {
@@ -751,6 +866,8 @@ internal sealed partial class DocxReader
                     if (fill.Length != 6 || !uint.TryParse(fill, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _)) throw new InvalidDataException("Docx.Color: Invalid shading color.");
                     style.Appearance.Background = fill.ToUpperInvariant();
                 }
+                style.Appearance.Background = ThemeReference(property, "themeFill", "themeFillTint", "themeFillShade", style.Appearance.Background);
+                _ = ThemeReference(property, "themeColor", "themeTint", "themeShade", null);
                 if ((string?)property.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
                     context.Loss("Docx.Shading", "Patterned shading uses the solid background color.");
             }
@@ -760,8 +877,20 @@ internal sealed partial class DocxReader
                 if (value != "auto" && (value.Length != 6 || !uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _)))
                     throw new InvalidDataException("Docx.Color: Expected six RGB hexadecimal digits or auto.");
                 style.Color = value == "auto" ? null : value.ToUpperInvariant();
+                string? colorTheme = (string?)property.Attribute(W + "themeColor");
+                if (colorTheme != null && !ThemeAppearance.ValidColorToken(colorTheme)
+                    || !ThemeAppearance.ValidTransform((string?)property.Attribute(W + "themeTint")) || !ThemeAppearance.ValidTransform((string?)property.Attribute(W + "themeShade")))
+                    throw new InvalidDataException("Docx.ThemeColor: Invalid theme color reference or transform.");
+                string? tint = (string?)property.Attribute(W + "themeTint"), shade = (string?)property.Attribute(W + "themeShade");
+                bool supported = colorTheme != null && property.Attributes().All(a => a.IsNamespaceDeclaration || a.Name == W + "val" || a.Name == W + "themeColor" || a.Name == W + "themeTint" || a.Name == W + "themeShade");
+                string? resolved = supported ? theme?.Color(colorTheme!, tint, shade) : null;
+                style.Color = resolved ?? style.Color;
+                style.Appearance.ThemeColor = resolved != null && theme?.Package != null ? colorTheme : null;
+                style.Appearance.ThemeTint = style.Appearance.ThemeColor != null ? tint : null;
+                style.Appearance.ThemeShade = style.Appearance.ThemeColor != null ? shade : null;
                 style.HasColor = true;
-                if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val")) context.Loss("Docx.ThemeColor", "Theme color uses its stored RGB fallback.");
+                if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val"))
+                    context.Loss("Docx.ThemeColor", "Theme colors use the bounded local scheme or stored RGB fallback; some editable references and other theme semantics are not retained.");
             }
             else if (companions != null && IsReviewCompanion(property)) { /* Retained explicit mirrored formatting and language/proofing metadata. */ }
             else if (property.Name == W + "lang")

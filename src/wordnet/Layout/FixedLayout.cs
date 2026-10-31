@@ -43,8 +43,8 @@ internal sealed class FixedHeading
 
 internal sealed class PositionedText
 {
-    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null, int rotation = 0, double rotationX = 0, double rotationY = 0)
-    { Visual = visual; SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; Rotation = rotation; RotationX = rotationX; RotationY = rotationY; }
+    internal PositionedText(string text, double x, double y, double size, int font, string? color = null, DocumentImage? image = null, string? link = null, TextRun? field = null, PositionedBox? box = null, ParagraphBlock? sourceParagraph = null, TextRun? sourceRun = null, ShapedWord? nativeShape = null, bool label = false, ObjectVisual? visual = null, double rotation = 0, double rotationX = 0, double rotationY = 0, bool logicalCarrier = false, double carrierWidth = 0)
+    { Visual = visual; SourceParagraph = sourceParagraph; SourceRun = sourceRun; NativeShape = nativeShape; IsLabel = label; Box = box; Text = text; X = x; Y = y; Size = size; Font = font; Color = color; Image = image; Link = link; Field = field; Rotation = rotation; RotationX = rotationX; RotationY = rotationY; LogicalCarrier = logicalCarrier; CarrierWidth = carrierWidth; }
     internal ObjectVisual? Visual { get; }
     internal string Text { get; }
     internal double X { get; }
@@ -60,13 +60,15 @@ internal sealed class PositionedText
     internal TextRun? SourceRun { get; }
     internal ShapedWord? NativeShape { get; }
     internal bool IsLabel { get; }
-    internal int Rotation { get; }
+    internal double Rotation { get; }
     internal double RotationX { get; }
     internal double RotationY { get; }
-    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel, Visual, Rotation, RotationX, RotationY);
-    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX + x - X, RotationY + y - Y);
-    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX, RotationY);
-    internal PositionedText Rotated(int rotation, double x, double y) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, rotation, x, y);
+    internal bool LogicalCarrier { get; }
+    internal double CarrierWidth { get; }
+    internal PositionedText Reshaped(ShapedWord shape) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, shape, IsLabel, Visual, Rotation, RotationX, RotationY, LogicalCarrier, CarrierWidth);
+    internal PositionedText At(double x, double y) => new PositionedText(Text, x, y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX + x - X, RotationY + y - Y, LogicalCarrier, CarrierWidth);
+    internal PositionedText WithText(string text) => new PositionedText(text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, Rotation, RotationX, RotationY, LogicalCarrier, CarrierWidth);
+    internal PositionedText Rotated(double rotation, double x, double y) => new PositionedText(Text, X, Y, Size, Font, Color, Image, Link, Field, Box, SourceParagraph, SourceRun, NativeShape, IsLabel, Visual, rotation, x, y, LogicalCarrier, CarrierWidth);
 }
 
 internal static partial class FixedLayout
@@ -96,6 +98,9 @@ internal static partial class FixedLayout
         internal double Width { get; set; }
         internal double Extent { get; set; }
         internal TableCell Source { get; set; } = null!;
+        internal TableBlock? Table { get; set; }
+        internal int Row { get; set; }
+        internal int CellIndex { get; set; }
         internal int RowSpan { get; set; } = 1;
         internal VerticalMerge Merge { get; set; }
         internal double Height => Padding.Top + Lines.Sum(l => l.Height) + Padding.Bottom;
@@ -124,8 +129,82 @@ internal static partial class FixedLayout
         using var buffer = new MemoryStream(); stream.CopyTo(buffer); return buffer.ToArray();
     }
 
+    private static bool UnsupportedEastAsianText(string text, ConversionContext context)
+    {
+        context.CheckCancellation();
+        for (int i = 0; i < text.Length; i++)
+        {
+            if ((i & 255) == 0) context.CheckCancellation(); char c = text[i];
+            if (c is '\t' or '\n' or '\f' or '\v' or '\u00ad' || char.IsSurrogate(c)
+                || UnicodeLineBreakData.GetCategory(c) is UnicodeLineBreakData.Category.Mn or UnicodeLineBreakData.Category.Mc
+                || UnicodeLineBreakData.GetBreak(c) is UnicodeLineBreakData.Break.ZW or UnicodeLineBreakData.Break.ZWJ or UnicodeLineBreakData.Break.WJ
+                    or UnicodeLineBreakData.Break.BK or UnicodeLineBreakData.Break.CR or UnicodeLineBreakData.Break.LF or UnicodeLineBreakData.Break.NL)
+                return true;
+        }
+        return false;
+    }
+
     internal static List<FixedPage> Create(DocumentModel model, ConversionContext context)
     {
+        if (context.Typography.Enabled && model.Paragraphs.Any(p => p.Runs.Any(r => r.Box?.Gradient != null)))
+            throw new NotSupportedException("Shape.GradientProfile: Gradient shapes with native typography require separate qualification.");
+        if (context.Typography.EastAsianLineBreak != EastAsianLineBreakLanguage.None)
+        {
+            PdfOptions pdf = context.Options.Pdf ?? throw new ArgumentException("PDF options must not be null.");
+            if (context.Destination != DocumentFormat.Pdf || context.RenderingPreview || context.PreviewIntermediate || context.Typography.Enabled
+                || context.Typography.Direction == TextDirection.RightToLeft || pdf.Accessibility != PdfAccessibility.None
+                || pdf.Conformance != PdfConformance.Pdf17 || pdf.Pages.Count != 0 || context.Options.BalanceFinalColumns)
+                throw new NotSupportedException("Layout.EastAsianProfile: East Asian breaks currently require ordinary managed PDF without page selection or preview.");
+            if (model.Notes.Count != 0 || model.ObjectCount != 0 || model.Review.HasHistory || model.Blocks.Any(b => b is not ParagraphBlock p
+                || p.Alignment != ParagraphAlignment.Left || p.HeadingLevel != 0 || p.RightToLeft == true || p.Runs.Count != 1
+                || !ContentProfiles.OrdinaryParagraph(p, decorations: false) || UnsupportedEastAsianText(p.Runs[0].Text, context)))
+                throw new NotSupportedException("Layout.EastAsianOwner: East Asian breaks require single-run ordinary body paragraphs without unqualified shaping or controls.");
+            if (model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null)
+                .Any(s => s!.Columns != 1 || s.Stories.Any(story => story.Value.Count != 0)))
+                throw new NotSupportedException("Layout.EastAsianOwner: Columns and header/footer stories require separate qualification.");
+            DiagnosticPhase prior = context.Phase; context.Phase = DiagnosticPhase.Layout;
+            try
+            {
+                foreach (ParagraphBlock paragraph in model.Blocks.OfType<ParagraphBlock>())
+                {
+                    string text = paragraph.Runs[0].Text; bool punctuation = false, wide = false, latinNumber = false;
+                    for (int i = 0; i < text.Length; i++)
+                    {
+                        if ((i & 255) == 0) context.CheckCancellation(); char c = text[i];
+                        punctuation |= c is '\u3001' or '\u3002'; wide |= UnicodeLineBreakData.GetEastAsian(c) == UnicodeLineBreakData.EastAsian.Wide;
+                        latinNumber |= c is >= '0' and <= '9' or >= 'A' and <= 'Z' or >= 'a' and <= 'z';
+                    }
+                    if (context.Typography.EastAsianLineBreak == EastAsianLineBreakLanguage.Japanese && punctuation)
+                    {
+                        using var location = context.At(paragraph.Location);
+                        context.Loss("Layout.EastAsianPunctuationReference", "Japanese punctuation positioning differs from an independent office reference.");
+                    }
+                    if (wide && latinNumber)
+                    {
+                        using var location = context.At(paragraph.Location);
+                        context.Loss("Layout.EastAsianMixedReference", "Mixed East Asian and Latin-number line breaks differ from an independent office reference.");
+                    }
+                }
+            }
+            finally { context.Phase = prior; }
+        }
+        if (context.Hyphenation.Dictionary != null)
+        {
+            PdfOptions pdf = context.Options.Pdf ?? throw new ArgumentException("PDF options must not be null.");
+            if (context.Destination != DocumentFormat.Pdf || context.RenderingPreview || context.PreviewIntermediate || context.Typography.Enabled
+                || pdf.Accessibility != PdfAccessibility.None || pdf.Conformance != PdfConformance.Pdf17
+                || pdf.Pages.Count != 0 || context.Options.BalanceFinalColumns)
+                throw new NotSupportedException("Hyphenation.Profile: Dictionary breaks currently require ordinary managed PDF without page selection or preview.");
+            if (model.Notes.Count != 0 || model.ObjectCount != 0 || model.Review.HasHistory || model.Blocks.Any(b => b is not ParagraphBlock p
+                || p.Alignment is not ParagraphAlignment.Left and not ParagraphAlignment.Justified || p.HeadingLevel != 0 || p.List != null || p.Control != null || p.NestedControl != null
+                || p.TypedControlId.HasValue || p.StructuralRevision != null || p.ParagraphFormatRevision != null || p.Runs.Count != 1
+                || p.Runs.Any(r => r.Image != null || r.Box != null || r.Note != null || r.Object != null || r.FieldInstruction != null
+                    || r.Bookmark != null || r.Link != null || r.Control != null || r.TypedControlId.HasValue || r.ControlDisplay
+                    || r.Revision != null || r.FormatRevision != null || r.Comment != null || r.Text.Any(c => c is '\t' or '\n' or '\f' or '\v'))))
+                throw new NotSupportedException("Hyphenation.Owner: Dictionary breaks currently require plain, left-aligned body paragraphs with one run each.");
+            if (model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null).Any(s => s!.Columns != 1))
+                throw new NotSupportedException("Hyphenation.Owner: Multicolumn text requires separate qualification.");
+        }
         DiagnosticPhase previousPhase = context.Phase;
         context.Phase = DiagnosticPhase.Layout;
         bool references = DocumentReferences.HasFields(model);
@@ -155,6 +234,9 @@ internal static partial class FixedLayout
                 context.Loss("Field.LayoutDidNotConverge", "Calculated references did not stabilize within four layout passes.");
         }
         if (context.Options.BalanceFinalColumns) pages = BalanceColumns(model, context, pages);
+        if (context.HasGradient) GradientBudget.CheckPages(pages, context);
+        if (context.HyphenationUsed && pages.Count != 1)
+            throw new NotSupportedException("Hyphenation.Pagination: Hyphenated words cannot yet cross physical page boundaries.");
         if (styleReferences) StyleReferences.ReportUnresolved(model, context);
         context.Phase = previousPhase;
         return pages;
@@ -491,6 +573,7 @@ internal static partial class FixedLayout
 
         void RenderTable(TableBlock table)
         {
+            bool reportedBorderRepeat = false, reportedShadingRepeat = false;
             double tablePageLeft = settings.Left;
             double tableWidth = settings.Width - settings.Left - settings.Right;
             ListCounter tableCounter = counter.Copy();
@@ -536,6 +619,9 @@ internal static partial class FixedLayout
                 {
                     if (end - r > 1 || table.NonSplittingRows.Contains(r) || r < table.HeaderRowCount)
                     {
+                        if (end - r > 1 && context.Typography.Enabled && context.Typography.ExtendedBidi
+                            && rows.Skip(r).Take(end - r).SelectMany(row => row.Cells).Any(cell => cell.RowSpan > 1))
+                            throw new NotSupportedException("Typography.MergedGroupHeight: A vertically merged native table group cannot exceed the available page height.");
                         if (context.EffectiveMode != FidelityMode.Lenient)
                             throw new NotSupportedException("Layout.TableGroupHeight: A non-splitting row or vertically merged group exceeds a page.");
                         context.ReportStrictRejection(end - r > 1 ? "Table.MergedGroupSplit" : "Table.RowForcedSplit", "An oversized row/group is split at line boundaries to retain its content.");
@@ -565,6 +651,16 @@ internal static partial class FixedLayout
 
             void TablePage(bool repeat)
             {
+                if (repeat && table.HeaderRowCount > 0 && table.HasTableBorders && !reportedBorderRepeat)
+                {
+                    context.Loss("Table.BorderRepeat", "Direct table borders on repeated headers are approximated across pages.");
+                    reportedBorderRepeat = true;
+                }
+                if (repeat && table.HeaderRowCount > 0 && table.HasTableShading && !reportedShadingRepeat)
+                {
+                    context.Loss("Table.ShadingRepeat", "Direct table shading on repeated headers is not independently qualified.");
+                    reportedShadingRepeat = true;
+                }
                 AdvanceColumn();
                 double available = settings.Width - settings.Left - settings.Right;
                 if (sourceSettings.ExplicitColumns.Count != 0 && Math.Abs(available - tableWidth) > 0.01)
@@ -579,6 +675,10 @@ internal static partial class FixedLayout
 
             void SplitRow(RowLayout row, bool repeat, int rowIndex)
             {
+                if (table.HasTableBorders)
+                    context.Loss("Table.BorderSplit", "Direct table borders on split rows are approximated across pages.");
+                if (table.HasTableShading)
+                    context.Loss("Table.ShadingSplit", "Direct table shading on split rows is not independently qualified.");
                 if (row.Cells.All(c => c.RowSpan == 1) && row.Cells.SelectMany(c => c.Lines).SelectMany(l => l.Items).Any(i => i.Field?.Note != null))
                 {
                     bool nonSplitting = row.NonSplitting; row.NonSplitting = false;
@@ -678,7 +778,7 @@ internal static partial class FixedLayout
                 context.CheckCancellation();
                 List<TableCell> source = table.Rows[r];
                 var row = new RowLayout { NonSplitting = table.NonSplittingRows.Contains(r) }; rows.Add(row);
-                int columns = source.Sum(c => c.ColumnSpan), column = 0;
+                int columns = source.Sum(c => c.ColumnSpan), column = 0, cellIndex = 0;
                 double left = origin + table.LeftIndent, total = edges[edges.Length - 1];
                 foreach (TableCell cell in source)
                 {
@@ -694,7 +794,7 @@ internal static partial class FixedLayout
                         width = Math.Max(1, Math.Min(width, settings.Width - settings.Right - left));
                         padding = new CellPadding();
                     }
-                    var preparedCell = new CellLayout { Source = cell, Left = left, Width = width, Padding = padding, Column = column, Merge = cell.Merge };
+                    var preparedCell = new CellLayout { Source = cell, Table = !table.HasTableBorders && !table.HasTableShading ? null : table, Row = r, CellIndex = cellIndex, Left = left, Width = width, Padding = padding, Column = column, Merge = cell.Merge };
                     if (cell.Merge != VerticalMerge.Continue)
                     {
                         DocumentBlock[] blocks = cell.Blocks.ToArray();
@@ -715,7 +815,7 @@ internal static partial class FixedLayout
                         }
                     }
                     row.Cells.Add(preparedCell);
-                    left += width; column += cell.ColumnSpan;
+                    left += width; column += cell.ColumnSpan; cellIndex++;
                 }
             }
             for (int r = 0; r < rows.Count; r++)
@@ -764,7 +864,7 @@ internal static partial class FixedLayout
             {
                 using var location = context.At(paragraph.Location);
                 double line = 0;
-                foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs))
+                foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs, forRendering: true))
                 {
                     shapingLevel = run.BidiLevel;
                     if (run.Image != null) { minimum = Math.Max(minimum, run.Image.Width); line += run.Image.Width; continue; }
@@ -790,8 +890,10 @@ internal static partial class FixedLayout
 
         IEnumerable<FixedShape> CellShapes(CellLayout cell, double top, double height)
         {
-            if (cell.Source.Background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, cell.Source.Background);
-            foreach (var border in cell.Source.Borders.Where(b => b.Value.Width > 0))
+            string? background = cell.Source.Background ?? cell.Table?.CellBackground(cell.Row, cell.CellIndex);
+            if (background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, background);
+            IEnumerable<KeyValuePair<string, CellBorder>> borders = cell.Table == null ? cell.Source.Borders : cell.Table.CellBorders(cell.Row, cell.CellIndex);
+            foreach (var border in borders.Where(b => b.Value.Width > 0))
             {
                 bool vertical = border.Key is "left" or "right";
                 yield return new FixedShape(cell.Left + (border.Key == "right" ? cell.Width : 0), top + (border.Key == "bottom" ? height : 0),
@@ -968,8 +1070,15 @@ internal static partial class FixedLayout
                 bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
         }
 
-        static (double X, double Y, double Width, double Height, string Wrap) RotatedBounds((double X, double Y, double Width, double Height, string Wrap) bounds, int rotation)
-            => rotation is 90 or 270 ? (bounds.X + (bounds.Width - bounds.Height) / 2, bounds.Y + (bounds.Height - bounds.Width) / 2, bounds.Height, bounds.Width, bounds.Wrap) : bounds;
+        static (double X, double Y, double Width, double Height, string Wrap) RotatedBounds((double X, double Y, double Width, double Height, string Wrap) bounds, double rotation)
+        {
+            if (rotation == 0 || rotation == 180) return bounds;
+            if (rotation == 90 || rotation == 270)
+                return (bounds.X + (bounds.Width - bounds.Height) / 2, bounds.Y + (bounds.Height - bounds.Width) / 2, bounds.Height, bounds.Width, bounds.Wrap);
+            var components = RotationTransform.Components(rotation); double c = Math.Abs(components.Cosine), s = Math.Abs(components.Sine);
+            double width = c * bounds.Width + s * bounds.Height, height = s * bounds.Width + c * bounds.Height;
+            return (bounds.X + (bounds.Width - width) / 2, bounds.Y + (bounds.Height - height) / 2, width, height, bounds.Wrap);
+        }
 
         void Place(Line line, double top)
         {
@@ -1012,7 +1121,10 @@ internal static partial class FixedLayout
                     PositionedBox box = item.Box;
                     if (box.Geometry != null)
                     {
-                        if (!ContentProfiles.ManagedFixedOutput(context))
+                        bool taggedVector = !context.RenderingPreview && !context.Typography.Enabled && context.Destination == DocumentFormat.Pdf
+                            && (context.Options.Pdf.Conformance is PdfConformance.Pdf17 or PdfConformance.PdfA2a) && context.Options.Pdf.Accessibility != PdfAccessibility.None
+                            && (context.Options.Pdf.VectorSemantics is PdfVectorSemantics.DescribedAtAnchor or PdfVectorSemantics.Decorative);
+                        if (!ContentProfiles.ManagedFixedOutput(context) && !taggedVector)
                             throw new NotSupportedException("Shape.VectorProfile: Vector shapes require managed ordinary fixed output.");
                         var vectorBounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y);
                         double halfStroke = (box.Border?.Width ?? 0) / 2;
@@ -1021,14 +1133,24 @@ internal static partial class FixedLayout
                         if (vectorBounds.X - halfStroke < 0 || vectorBounds.Y - halfStroke < 0
                             || vectorBounds.X + vectorBounds.Width + halfStroke > settings.Width || vectorBounds.Y + vectorBounds.Height + halfStroke > settings.Height)
                             throw new NotSupportedException("Layout.AnchorBounds: Vector strokes must fit inside the physical page.");
-                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Fill, geometry: box.Geometry, foreground: !box.Anchor.Behind));
-                        if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind));
+                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Fill, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun));
+                        if (box.Gradient != null)
+                        {
+                            context.ReserveGradientPaint(box.Gradient.Stops.Length);
+                            destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Gradient.Stops[0].Color, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun, gradient: box.Gradient));
+                        }
+                        if (box.Border != null) destination.Shapes.Add(new FixedShape(vectorBounds.X, vectorBounds.Y, vectorBounds.Width, vectorBounds.Height, box.Border.Color, box.Border.Width, geometry: box.Geometry, foreground: !box.Anchor.Behind, sourceRun: item.SourceRun));
                         RememberExclusion(box.Anchor, vectorBounds); continue;
                     }
                     if ((box.Rotation != 0 || box.ShrinkToFit) && (!ContentProfiles.ManagedFixedOutput(context)))
                         throw new NotSupportedException("Shape.TextBoxProfile: Rotated or fitted boxes require managed ordinary fixed output.");
-                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, decorations: false, structuralHistory: true))))
+                    if ((box.Rotation != 0 || box.ShrinkToFit) && (box.Blocks.Any(b => b is not ParagraphBlock p || !ContentProfiles.OrdinaryParagraph(p, textHistory: true, formatHistory: true, comments: true, decorations: false, structuralHistory: true, inlineImagesAndLinks: box.Rotation != 0 && !box.ShrinkToFit))))
                         throw new NotSupportedException("Shape.TextBoxContent: Rotated or fitted boxes support ordinary managed paragraphs only.");
+                    if (box.Rotation != 0 && (box.Rotation % 90 != 0 || box.Blocks.OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Image != null || r.Link != null))))
+                        context.Loss("Shape.RotationReference", "An independent office reference positions the contents of this rotated text box differently.");
+                    if (box.Rotation % 90 != 0 && context.Destination == DocumentFormat.Pdf && !context.RenderingPreview
+                        && box.Blocks.OfType<ParagraphBlock>().Any(p => p.Runs.Any(r => r.Link != null)))
+                        context.Loss("Shape.RotatedLinkBounds", "Non-cardinal links use an axis-aligned bounding rectangle around the rotated target.");
                     var bounds = DrawingBounds(box.Anchor, box.Width, box.Height, top + item.Y, validate: box.Rotation == 0);
                     var visualBounds = RotatedBounds(bounds, box.Rotation);
                     CheckDrawingOrder(box.Anchor, visualBounds, box.Rotation != 0 || box.ShrinkToFit || model.HasLinkedTextBoxes && box.StoryId != null);
@@ -1052,7 +1174,15 @@ internal static partial class FixedLayout
                         Source = new TableCell { Background = box.Fill }
                     };
                     if (box.Border != null) foreach (string side in new[] { "left", "top", "right", "bottom" }) cell.Source.Borders.Add(side, box.Border);
-                    destination.Shapes.AddRange(CellShapes(cell, visualBounds.Y, visualBounds.Height));
+                    if (box.Rotation % 90 == 0) destination.Shapes.AddRange(CellShapes(cell, visualBounds.Y, visualBounds.Height));
+                    else
+                    {
+                        double cx = bounds.X + bounds.Width / 2, cy = bounds.Y + bounds.Height / 2;
+                        if (box.Fill != null) destination.Shapes.Add(new FixedShape(bounds.X, bounds.Y, bounds.Width, bounds.Height, box.Fill,
+                            geometry: "rect", rotation: box.Rotation, rotationX: cx, rotationY: cy));
+                        if (box.Border != null && box.Border.Width > 0) destination.Shapes.Add(new FixedShape(bounds.X, bounds.Y, bounds.Width, bounds.Height, box.Border.Color, box.Border.Width,
+                            geometry: "rect", rotation: box.Rotation, rotationX: cx, rotationY: cy));
+                    }
                     double boxTop = bounds.Y + boxPadding.Top;
                     var boxLines = new List<Line>();
                     double chainOffset = 0;
@@ -1104,8 +1234,8 @@ internal static partial class FixedLayout
                             foreach (PositionedText text in boxLine.Items)
                             {
                                 context.ReserveBoxFitWork(checked(text.Text.Length + 1));
-                                if (text.Text.Length != 0 && (text.X < bounds.X + boxPadding.Left
-                                    || text.X + Measure(text.Text, text.Font, text.Size) > bounds.X + box.Width - boxPadding.Right + 0.001))
+                                if ((text.Text.Length != 0 || text.Image != null) && (text.X < bounds.X + boxPadding.Left
+                                    || text.X + (text.Image?.Width ?? Measure(text.Text, text.Font, text.Size)) > bounds.X + box.Width - boxPadding.Right + 0.001))
                                     throw new NotSupportedException("Layout.TextBoxOverflow: Rotated text exceeds its frame width.");
                             }
                     if (box.ShrinkToFit)
@@ -1192,7 +1322,8 @@ internal static partial class FixedLayout
             scaled.Shapes.AddRange(line.Shapes.Select(s => new FixedShape(line.Origin + (s.X - line.Origin) * factor, s.Y * factor, s.Width * factor, s.Height * factor, s.Color, s.Stroke * factor, s.Style)));
             foreach (PositionedText item in line.Items)
                 scaled.Items.Add(new PositionedText(item.Text, line.Origin + (item.X - line.Origin) * factor, item.Y * factor,
-                    item.Size * factor, item.Font, item.Color, item.Image?.Scaled(factor), item.Link, item.Field, item.Box, item.SourceParagraph, item.SourceRun, item.NativeShape, item.IsLabel));
+                    item.Size * factor, item.Font, item.Color, item.Image?.Scaled(factor), item.Link, item.Field, item.Box, item.SourceParagraph, item.SourceRun, item.NativeShape, item.IsLabel,
+                    logicalCarrier: item.LogicalCarrier, carrierWidth: item.CarrierWidth * factor));
             return scaled;
         }
 
@@ -1236,7 +1367,7 @@ internal static partial class FixedLayout
             double tabOrigin = left;
             left += paragraph.Layout.Left;
             width -= paragraph.Layout.Left + paragraph.Layout.Right;
-            List<TextRun> runs = context.Typography.Enabled || context.Options.Pdf.Accessibility != PdfAccessibility.None ? new List<TextRun>(paragraph.Runs) : RunCoalescer.Combine(paragraph.Runs);
+            List<TextRun> runs = context.Typography.Enabled || context.Options.Pdf.Accessibility != PdfAccessibility.None ? new List<TextRun>(paragraph.Runs) : RunCoalescer.Combine(paragraph.Runs, forRendering: true);
             TextRun? listLabel = null;
             if (paragraph.List != null)
             {
@@ -1271,6 +1402,7 @@ internal static partial class FixedLayout
                 if (drawing.Box != null) bounds = RotatedBounds(bounds, drawing.Box.Rotation);
                 if (anchor.Wrap != "none") exclusions.Add((bounds.X - anchor.Distance.Left, bounds.Y - anchor.Distance.Top, bounds.Width + anchor.Distance.Left + anchor.Distance.Right, bounds.Height + anchor.Distance.Top + anchor.Distance.Bottom, anchor.Wrap));
             }
+            int consecutiveHyphens = 0;
             double x = left;
             Line line = NewLine(); x = left;
             foreach (TextRun run in runs)
@@ -1315,6 +1447,16 @@ internal static partial class FixedLayout
                     context.ReportStrictRejection("Layout.TextScaledToFit", "Oversized text is reduced to fit printable space.");
                 }
                 string runText = DocumentFields.Render(run, model, renderPage == 0 ? pages[pages.Count - 1].PageNumber : renderPage, totalPages, renderSectionPages, context);
+                if (context.Hyphenation.Dictionary != null && runText.Any(c => c == '\u00ad'))
+                    throw new NotSupportedException("Hyphenation.SoftHyphen: Authored soft hyphens require separate qualification.");
+                bool eastAsian = context.Typography.EastAsianLineBreak != EastAsianLineBreakLanguage.None;
+                if (eastAsian)
+                    for (int i = 0; i < runText.Length; i++)
+                    {
+                        if ((i & 255) == 0) context.CheckCancellation();
+                        if (maps[font] == null || !maps[font]!.TryGetGlyphIndex(runText[i], out int glyph) || glyph == 0)
+                            throw new NotSupportedException("Layout.EastAsianGlyph: Configure a caller font that covers the complete run.");
+                    }
                 runText = ManagedText(runText, font);
                 foreach (char character in runText)
                     if (!(context.Typography.ExtendedBidi && (UnicodeBidi.Format(character) || character is '\u200c' or '\u200d')) && character is not '\n' and not '\t' and not '\f' and not '\v' && (maps[font] == null || !maps[font]!.TryGetGlyphIndex(character, out int glyph) || glyph == 0))
@@ -1328,8 +1470,17 @@ internal static partial class FixedLayout
                 }
                 if (model.TocTargets.TryGetValue(run, out List<string>? targets) && targets.Count > 0) activeLink = "#" + targets[0];
                 var token = new StringBuilder();
+                HashSet<int>? breakOffsets = null;
+                if (eastAsian)
+                {
+                    if (runText.Length * 160L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Layout.LineBreakLimit: Segmentation exceeds the resource allowance.");
+                    var graphemeOffsets = new HashSet<int>(UnicodeBoundaries.Find(runText, false, context));
+                    breakOffsets = new HashSet<int>(UnicodeLineBreak.Find(runText, context).Where(graphemeOffsets.Contains));
+                }
+                int offset = 0;
                 foreach (char c in runText)
                 {
+                    offset++;
                     if (c == '\t')
                     {
                         Flush();
@@ -1351,7 +1502,7 @@ internal static partial class FixedLayout
                         x = position;
                     }
                     else if (c is '\n' or '\f' or '\v') { Flush(); line.BreakAfter = c == '\n' ? '\0' : c; Finish(); tocLine++; if (targets != null && tocLine < targets.Count) activeLink = "#" + targets[tocLine]; }
-                    else { token.Append(c); if (c == ' ') Flush(); }
+                    else { token.Append(c); if (breakOffsets == null ? c == ' ' : breakOffsets.Contains(offset)) Flush(); }
                 }
                 Flush();
 
@@ -1359,6 +1510,17 @@ internal static partial class FixedLayout
                 {
                     if (token.Length == 0) return;
                     string value = token.ToString(); token.Clear(); double advance = Measure(value, font, size);
+                    if (TryHyphenate(value, advance)) return;
+                    if (context.Hyphenation.Dictionary != null && advance > width)
+                    {
+                        if (eastAsian) throw new NotSupportedException("Layout.LineBreakWidth: An unbreakable East Asian text span cannot fit the column.");
+                        string word = value.TrimEnd(' '); double wordWidth = Measure(word, font, size);
+                        if (wordWidth > width) throw new NotSupportedException("Hyphenation.WordWidth: The token has no qualified break that fits the line.");
+                        if (word.Length != 0) Add(word, wordWidth);
+                        string spaces = value.Substring(word.Length);
+                        if (spaces.Length != 0) Add(spaces, Measure(spaces, font, size));
+                        return;
+                    }
                     if (native != null && value.Length > 1 && value[value.Length - 1] == ' ')
                     {
                         string word = value.TrimEnd(' '); if (word.Length > 0) Add(word, Measure(word, font, size));
@@ -1366,7 +1528,56 @@ internal static partial class FixedLayout
                     }
                     else if (advance <= width) Add(value, advance);
                     else if (native != null) throw new NotSupportedException("Typography.WordWidth: A shaped word cannot fit the column; hyphenation is outside this profile.");
+                    else if (eastAsian) throw new NotSupportedException("Layout.LineBreakWidth: An unbreakable East Asian text span cannot fit the column.");
                     else foreach (char c in value) Add(c.ToString(), Measure(c.ToString(), font, size));
+                }
+                bool TryHyphenate(string value, double advance)
+                {
+                    HyphenationLexicon? dictionary = context.Hyphenation.Dictionary;
+                    if (dictionary == null || x + advance <= left + width || consecutiveHyphens >= context.Hyphenation.MaximumConsecutiveLines) return false;
+                    string word = value.TrimEnd(' ');
+                    if (word.Length < context.Hyphenation.MinimumPrefix + context.Hyphenation.MinimumSuffix || word.Length > 128
+                        || word.Any(c => !(c is >= 'a' and <= 'z' or >= 'A' and <= 'Z'))) return false;
+                    context.ReserveHyphenationWork();
+                    if (x + Measure(word, font, size) <= left + width) return false;
+                    if (!dictionary.TryGetBreaks(word, out int[] points)) return false;
+                    int selected = 0; double firstWidth = 0; string suffix = "", prefix = "", spaces = value.Substring(word.Length);
+                    for (int i = points.Length - 1; i >= 0; i--)
+                    {
+                        context.ReserveHyphenationWork();
+                        int point = points[i];
+                        if (point < context.Hyphenation.MinimumPrefix || word.Length - point < context.Hyphenation.MinimumSuffix) continue;
+                        string first = word.Substring(0, point); first = string.Concat(first, "-"); string rest = word.Substring(point);
+                        double firstAdvance = Measure(first, font, size);
+                        if (x + firstAdvance <= left + width && Measure(rest + spaces, font, size) <= continuationWidth)
+                        { selected = point; firstWidth = firstAdvance; suffix = rest; prefix = first; break; }
+                    }
+                    if (selected == 0) return false;
+                    context.Loss("Hyphenation.SearchGeometry", "The logical word remains searchable, but its search highlight is confined to the first line of a broken word.");
+                    if (paragraph.Alignment == ParagraphAlignment.Justified)
+                        context.Loss("Hyphenation.JustificationApproximation", "Justified word positions and following-line spacing differ from an independent reference.");
+                    context.HyphenationUsed = true;
+                    line.Items.Add(new PositionedText(word, x, 0, size, font, run.Color, sourceParagraph: paragraph, sourceRun: run,
+                        logicalCarrier: true, carrierWidth: firstWidth));
+                    AddVisual(prefix); Finish(false, hyphenated: true);
+                    AddVisual(suffix);
+                    if (spaces.Length != 0) Add(spaces, Measure(spaces, font, size));
+                    return true;
+                }
+                void AddVisual(string value)
+                {
+                    MeasuredText shaped = Shape(value, font, size); int units = checked((int)kerning[font].UnitsPerEm);
+                    var glyphs = new ShapedGlyph[value.Length];
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        if (maps[font] == null || !maps[font]!.TryGetGlyphIndex(value[i], out int glyph) || glyph == 0)
+                            throw new NotSupportedException("Hyphenation.Glyph: A required word or hyphen glyph is unavailable.");
+                        glyphs[i] = new ShapedGlyph(glyph, i, 0, shaped.X[i] * units / size, -shaped.Y[i] * units / size);
+                    }
+                    line.Items.Add(new PositionedText("", x, 0, size, font, run.Color, nativeShape: new ShapedWord(glyphs, units), carrierWidth: shaped.Width));
+                    x += shaped.Width;
+                    line.Ascent = Math.Max(line.Ascent, size * kerning[font].Ascent / units);
+                    line.Descent = Math.Max(line.Descent, size * kerning[font].Descent / units);
                 }
                 void Add(string value, double advance)
                 {
@@ -1432,8 +1643,9 @@ internal static partial class FixedLayout
                     Descent = native == null ? 0 : baseSize * 0.5
                 };
             }
-            void Finish(bool lastLine = true)
+            void Finish(bool lastLine = true, bool hyphenated = false)
             {
+                consecutiveHyphens = hyphenated ? consecutiveHyphens + 1 : 0;
                 if (line.Height == 0)
                 {
                     TextRun prototype = runs.FirstOrDefault(r => r.Image == null && r.Box == null) ?? paragraph.Mark ?? new TextRun("");
@@ -1441,11 +1653,12 @@ internal static partial class FixedLayout
                     line.Ascent = pointSize * kerning[face].Ascent / kerning[face].UnitsPerEm;
                     line.Descent = pointSize * kerning[face].Descent / kerning[face].UnitsPerEm;
                 }
-                if (native != null && line.Items.Count > 0) NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native, context.Typography.ExtendedBidi);
+                if (native != null && line.Items.Count > 0 && !(line.Items.Count == 1 && line.Items[0].Visual != null))
+                    NativeTypography.Reorder(line.Items, left, NativeTypography.BaseRtl(paragraph, context.Typography), native, context.Typography.ExtendedBidi);
                 if (paragraph.Alignment is ParagraphAlignment.Center or ParagraphAlignment.Right)
                 {
-                    PositionedText? last = line.Items.LastOrDefault(i => i.Visual != null || i.Image != null || i.Text.TrimEnd(' ').Length > 0);
-                    double end = last == null ? left : last.X + (last.Visual?.Width ?? last.Image?.Width ?? Measure(last.Text.TrimEnd(' '), last.Font, last.Size));
+                    PositionedText? last = line.Items.LastOrDefault(VisibleEnd);
+                    double end = last == null ? left : last.X + EndWidth(last);
                     double shift = Math.Max(0, left + width - end) / (paragraph.Alignment == ParagraphAlignment.Center ? 2 : 1);
                     for (int i = 0; i < line.Items.Count; i++) line.Items[i] = line.Items[i].At(line.Items[i].X + shift, line.Items[i].Y);
                 }
@@ -1463,10 +1676,10 @@ internal static partial class FixedLayout
                         }
                         line.Items.Clear(); line.Items.AddRange(characters);
                     }
-                    PositionedText? last = line.Items.LastOrDefault(i => i.Visual != null || i.Image != null || i.Text.TrimEnd(' ').Length > 0);
+                    PositionedText? last = line.Items.LastOrDefault(VisibleEnd);
                     if (last != null)
                     {
-                        double end = last.X + (last.Visual?.Width ?? last.Image?.Width ?? Measure(last.Text.TrimEnd(' '), last.Font, last.Size));
+                        double end = last.X + EndWidth(last);
                         int lastIndex = line.Items.IndexOf(last);
                         bool distributed = paragraph.Alignment == ParagraphAlignment.Distributed;
                         int gaps = distributed ? lastIndex : line.Items.Take(lastIndex).Sum(item => item.Text.Count(c => c == ' '));
@@ -1499,6 +1712,10 @@ internal static partial class FixedLayout
                 }
                 left = continuationLeft; width = continuationWidth; line = NewLine(); x = left;
             }
+            bool VisibleEnd(PositionedText item) => !item.LogicalCarrier && (item.Visual != null || item.Image != null
+                || item.NativeShape != null && item.CarrierWidth > 0 || item.Text.TrimEnd(' ').Length > 0);
+            double EndWidth(PositionedText item) => item.Visual?.Width ?? item.Image?.Width
+                ?? (item.NativeShape != null && item.CarrierWidth > 0 ? item.CarrierWidth : Measure(item.Text.TrimEnd(' '), item.Font, item.Size));
         }
 
         double Measure(string value, int font, double size) => Shape(value, font, size).Width;

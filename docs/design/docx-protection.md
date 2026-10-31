@@ -1,5 +1,8 @@
 # ADR B5-CRYPTO: explicit DOCX package protection
 
+This is a historical proposal. The owner subsequently cancelled encryption,
+decryption and signatures; no implementation or publication is authorized by it.
+
 Design proposal for [#30](https://github.com/kirakosyan/word.net/issues/30),
 2026-10-17. Password-protected documents remain unsupported. No cryptography,
 password API, new dependency or unsupported-feature diagnostic changes here.

@@ -1,0 +1,113 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "workingTreeParent": "c1188c13dcd50555b2cb1ad7bc29ede38fb0a781",
+  "executedWorkingTreeNet10AssemblySha256": "a84fe7a52eb97fc945a47f84f95812587e2166eebefb9357d44d643578072cc3",
+  "scope": "Diagnosed ordinary managed centred value/category labels on bars and columns; office geometry, circular charts and protected profiles remain unqualified.",
+  "provenance": "Synthetic XlsxWriter 3.2.9 BSD-2-Clause charts with explicit disabled flag elements, existing synthetic MIT OPC shell and local workbook with one data value changed. Regeneration is byte-identical. Open XML SDK 3.5.1 validated both source and saved DOCX. Offline LibreOffice 24.2.7.2 image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 rendered originals and reopened saved files; text and label bounds matched within 0.001 pt. PyMuPDF 1.27.2.2 and pypdf 6.10.0 inspected PDF content and geometry. No Microsoft Word reference was available.",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "priorObservations": [
+    "Initial fixture generation failed on a malformed XPath expression; it was corrected before regeneration.",
+    "XlsxWriter initially omitted disabled flags; LibreOffice added a series name to each category/value label. Explicit false flags removed the extra name, and labels with implicit flags remain non-renderable.",
+    "The first comparison rejected a LibreOffice column label extending outside its bar; the checker now preserves that reference observation while still requiring the managed labels to fit.",
+    "The first focused build failed CA1846 on substring-based color parsing; it was corrected before the passing focused suite."
+  ],
+  "tools": {
+    "eng/generate-roadmap-138-chart-label-fixtures.py": "8b822c3fd825e27517fc01fbddb6936788fcf92b614d49149565b32a86eee424",
+    "eng/roadmap-138-chart-label-probe.cs": "3e15992a36e64bfe02c95c8b3ca82f1fe3b7b8478453a2cfea151ac5fd01ea1d",
+    "eng/check-roadmap-138-chart-labels.py": "edcd9bfedb1464eaa99daab55c01af701e6c62b9d834e02033dbddf068ebc6c9",
+    "eng/verify-roadmap-138-chart-labels.py": "814e1a5d44ad9fad698bb038bab54ca31e1a1b3d4aafe918844099f22edb43e7"
+  },
+  "checkerLogSha256": "77b1b81126712a5832958b312935d34291f80d8c57861200298c20e1480f85f6",
+  "documents": {
+    "bar": {
+      "inputDocxSha256": "dab21948084e9d90faede51fe2f2f9104f3f8efb73e3d23067458eb14e3940f3",
+      "regeneratedInputDocxSha256": "dab21948084e9d90faede51fe2f2f9104f3f8efb73e3d23067458eb14e3940f3",
+      "savedDocxSha256": "7819fbba5bc7d448a3e27d792527eee5faf7b298f1a20f6e0a679ddfaac61daf",
+      "pdfSha256": "ac7aabecf84d7fb31369101360ebec927dbb0efa1b794e9dec868368ffd53b5a",
+      "xpsSha256": "b56e78b55d2db9c7cafcade226ffee019675e53e13c5c8105ac5fc9a97b9354d",
+      "svgSha256": "eade834338bb50984eb5c2f50963b59b7fe661fa3550be88583144507e512ba0",
+      "diagnosticsSha256": "5fdcfedf86b070737582a26e3d24740873b63147bc60975d7d56aa0b76aa731c",
+      "referencePdfSha256": "061b4547e7e9e6f416af9887f19ecb236cb3b85bb8a4d7ed6c3f72e120eb20ab",
+      "referenceReopenedSavedPdfSha256": "e34951b227174752474d727db29cd811981c049e2eb4d8550d5ea4c14d9ee1a4",
+      "omittedFlagsInputSha256": "d7d5f0208a633028e4796dead9acce00f20bf205f7c4ea6ab65f3f49f0a1c047",
+      "omittedFlagsReferencePdfSha256": "b2ecab8ec34de60219dc77224f41141a367d2d472d01fa681032cadd3fa7774e"
+    },
+    "column": {
+      "inputDocxSha256": "dd8a44045279d2a57436de24898ab0106559a4c562858b087f3248f5836530f8",
+      "regeneratedInputDocxSha256": "dd8a44045279d2a57436de24898ab0106559a4c562858b087f3248f5836530f8",
+      "savedDocxSha256": "a07377b28e324a80a71a4037d350fc56b6d1eb3963b4538948e0794961c07c84",
+      "pdfSha256": "208d852749919a59ef2d600fad24ef41e0fea1871ce7b96f2c0c283e3ed48583",
+      "xpsSha256": "13be29313ecfa9a13c0608c0b99e99ca20a8e78758f31ef16c1e9bdd0395db88",
+      "svgSha256": "206583aca057d3e8488a7ad161452922f2d8e19367416a9e74e26973271f7a01",
+      "diagnosticsSha256": "53d8fa8e730314b541539683ca59c75f635b9ac53a65b8c66929afaa24ba378d",
+      "referencePdfSha256": "460c29fabb6c26c5d341fb4b4e128501a75ef53180ef777775e1a8631b1a9e2c",
+      "referenceReopenedSavedPdfSha256": "ae87edd1bb41dfb022fad1d99737c5787f3c305be60995cc9d79c9ad87f6e22b",
+      "omittedFlagsInputSha256": "975d34f42b347e76e52a082394c0a2aa8a2f00463a9d06c5d2e898845509cfd2",
+      "omittedFlagsReferencePdfSha256": "137832dc13a7c820da3d4d3c8a56b0ed2fd2deab671cbac64b0633619e6ebd27"
+    }
+  },
+  "result": {
+    "specimens": [
+      {
+        "kind": "bar",
+        "graph": {
+          "chartSha256": "50a36e82fc6b0f324b0b530da37fdd827947816a0ef5ffc944eb78c5275a5608",
+          "workbookSha256": "222ae92c524339f5ae109c61a12a87090a33cc8326c41e6c27837667650c57cb"
+        },
+        "labelOrder": [
+          "First, 10",
+          "Second, 8"
+        ],
+        "pdfSvgOriginMaxDeltaPt": 6.103515630684342e-06,
+        "pdfXpsOriginMaxDeltaPt": 2.824707030413265e-05,
+        "referenceOriginMaxDeltaPt": 17.395004272460938,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "actualLabelsContained": [
+          true,
+          true
+        ],
+        "referenceLabelsContained": [
+          true,
+          true
+        ]
+      },
+      {
+        "kind": "column",
+        "graph": {
+          "chartSha256": "857ce4ace9e326cb76c7e42a1d8843169d3b839c08e3c430abe8fd658ae490f4",
+          "workbookSha256": "222ae92c524339f5ae109c61a12a87090a33cc8326c41e6c27837667650c57cb"
+        },
+        "labelOrder": [
+          "First, 10",
+          "Second, 8"
+        ],
+        "pdfSvgOriginMaxDeltaPt": 7.454101563553195e-06,
+        "pdfXpsOriginMaxDeltaPt": 2.5183105464066102e-05,
+        "referenceOriginMaxDeltaPt": 14.663864135742188,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "actualLabelsContained": [
+          true,
+          true
+        ],
+        "referenceLabelsContained": [
+          true,
+          false
+        ]
+      }
+    ],
+    "negativeControls": {
+      "missing bar diagnostic": "Missing label reference-difference diagnostic",
+      "missing column diagnostic": "Missing label reference-difference diagnostic",
+      "wrong reference": "Reference or actual chart orientation changed",
+      "changed series-label flag": "Point label appearance or explicit flags changed",
+      "changed SVG label": "Missing SVG point labels",
+      "changed XPS label origin": "PDF, SVG and XPS label origins differ",
+      "changed PDF label origin": "Point-label reading order changed",
+      "missing PDF content": "Missing, duplicated or reordered chart point labels or bars"
+    }
+  }
+}

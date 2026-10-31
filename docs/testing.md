@@ -1,5 +1,432 @@
 # Conversion tests and qualification
 
+Pending #142 direct-border tests inspect editable WordprocessingML, fixed-page and
+HTML/ODT color output, report-row expansion, disabled edges, destination losses,
+conflicts and pagination rejection. A [pinned-font LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
+independently checks color, grid geometry and reading order. It is not proof of
+pixel-identical placement, conditional styles or untested runtimes.
+The [exact-source border receipt](measurements/roadmap-138-table-borders-4f54e32.json)
+records local suite and package checks, including the failed first pack attempt.
+Additional direct table-shading tests cover editable markup, output colors,
+report-row expansion and diagnosed unsupported combinations. LibreOffice did not
+render the table-level shading in the retained probe; its separate direct-cell
+control confirms color but does not qualify table-shading parity.
+The [working-tree ODT probe](measurements/roadmap-138-table-shading-reference.json)
+also passed pinned ODF 1.3 schemas and reopened in LibreOffice with the expected
+fill and text. `eng/verify-table-shading-odt.py` checks the synthetic ODT against
+locally supplied, checksum-pinned schemas without network access.
+The [exact-source shading receipt](measurements/roadmap-138-table-shading-57481ba.json)
+records local checks for that increment. Whole-table style tests additionally
+check editable inheritance and edge resets, collision-safe composition,
+report expansion, comparison and explicit unsupported combinations. Independent
+LibreOffice fixtures confirm inherited border colors and a disabled inherited
+edge, while the measured placement differences and shading-reference limitation
+remain.
+The [exact-source table-style receipt](measurements/roadmap-138-table-styles-771760a.json)
+records the inheritance increment. Additional independently rendered first-row
+[enabled/disabled look fixtures](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleConditions/README.md)
+check color, region and direct clear-cell precedence, editable inheritance and masks, explicit flag retention,
+report expansion, comparison, and diagnosed conflicts and pagination. The
+explicit-flag controls use the Office 2010 Open XML schema; tests do not infer
+portable behavior for conflicting flags or absent look masks.
+The [first-row exact-source receipt](measurements/roadmap-138-first-row-5cb70e4.json)
+records its local qualification. A separate [region reference](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleRegions/README.md)
+checks 4×4 and 2×2 grids, horizontal/vertical bands, edge and corner precedence,
+direct cell overrides and flags. It retains the independent conditional-style
+inheritance mismatch and checks the resulting output loss. It checks editable
+band-size inheritance and explicit loss for non-unit rendering. It retains
+LibreOffice's non-default band-size mismatch and one-row/column observations;
+these do not qualify those rendering cases or provide a Word execution.
+The [exact-source region receipt](measurements/roadmap-138-table-regions-541aef9.json)
+records the local build, suite, matrix and package results for that increment.
+The default-style increment's first .NET 8 full run encountered a full temporary
+filesystem; the [failure record](measurements/roadmap-138-default-5fc8215-disk-failure.json)
+retains the 444 affected test names and messages and the original TRX hash. The
+[exact-source receipt](measurements/roadmap-138-default-style-5fc8215.json)
+records the successful complete retry, .NET 10 suite, matrix and package checks.
+The independent [default-style controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleDefaults/README.md)
+record that LibreOffice rendered the explicit style but omitted its implicit
+default. Tests also validate editable default identity, composition conflicts,
+new-table behavior, comparison, invalid flags and untouched outputs. They do not
+qualify default-style rendering in Word or unused style definitions.
+Separate [theme-fill controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes/README.md)
+retain LibreOffice's red-fallback observations for plain, tinted and shaded
+conditional references. Tests check editable token/fallback retention, re-resolving
+an edited theme, child overrides, malformed or missing references, comparison and
+strict output rejection; they do not establish Word rendering parity.
+The [exact-source theme-style receipt](measurements/roadmap-138-theme-style-a502c6c.json)
+records the local suite, matrix and package results for that increment. Its first
+hosted Framework source guest failed before startup because the disposable runner
+had 37 GiB free and the VM admission check requires 60 GiB; no Framework tests ran
+in that guest. A fresh-runner retry passed, as did the actual Framework source and
+package guests in the push workflow; the failed attempt and both results remain in
+the receipt. They qualify that intermediate head only.
+Independent [conditional-border controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders/README.md)
+check outer-edge colors, enabled/disabled look flags, selected corners and a
+combined fill and border. Tests cover editable styles, inherited edges and resets,
+composition, comparison, report expansion and explicit conflict losses. The
+reference omitted the inherited edge; interior and competing-edge precedence,
+pixel-identical geometry and Word execution remain unqualified.
+The [exact-source conditional-border receipt](measurements/roadmap-138-conditional-borders-0567bf8.json)
+records its local suite, matrix and package checks, including earlier failed attempts.
+
+Pending #144 nested-control tests check all existing child kinds, parent/child
+locks, local placeholders, explicit binding and conflicts, stale handles, simple
+cell ownership, editable schema and detached display. A [Word-derived synthetic
+nested fixture](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners/README.md)
+and LibreOffice PDF independently check text order. This does not establish Word
+execution, deeper nesting, nested structural or story owners, structural editing
+or repeated-row identity.
+The [exact-source nested-owner receipt](measurements/roadmap-138-nested-2fa1a71.json)
+records the local suite, capability matrix and package checks.
+
+Pending #144 plain story-owner tests check all six control kinds in top-level
+header and footer placements, selected page variants, shared inherited stories,
+IDs, binding conflicts, locks and cancellation. A [synthetic Word-derived story
+reference](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StoryOwners/README.md)
+compares two-page LibreOffice text placement; it does not establish Word execution,
+other story ownership or repeated report-row identity.
+
+Pending #144 structural-owner tests preserve single plain row and cell wrappers,
+check metadata, locking, display views, owner identity and protected operations,
+and reject nested controls, merged cells and unsupported or malformed cell widths.
+Two independently authored inputs and
+[LibreOffice observations](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StructuralOwners/reference.json)
+check text and relative cell positions. They do not establish live Word execution,
+structural mutation or repeated-row identity.
+The [exact-source receipt](measurements/roadmap-138-structural-c9f11e6.json)
+records local test, matrix and package evidence and both corrected focused-test failures.
+
+Pending #147 object-fragment tests insert the independently authored P2 chart and
+equation fixture into body and simple-cell bookmarks twice, inspect schema and
+workbook bytes, and check independent edits and fixed output. Restyling, resource
+limits and cancellation are checked for atomic failure. Additional native, tagged
+or archival combinations remain unqualified.
+The [reference receipt](measurements/roadmap-138-object-fragment-reference.json)
+retains an initial LibreOffice Math omission and the successful rerun with its
+matching Math component, plus chart-value, text, bar geometry and OMML observations.
+The [exact-source receipt](measurements/roadmap-138-object-fragment-23c5069.json)
+records the complete local suites, package checks and byte-identical reference probe.
+
+The [Framework verifier failure record](measurements/roadmap-138-framework-41170714031.json)
+retains a hosted failure where all 2,003 guest tests passed but the host compared
+that total for equality with an older 1,925-test minimum. The corrected verifier
+keeps the minimum and no-skip requirements and reports the actual test count.
+Both [package-guest reports](measurements/roadmap-138-framework-411707-package-guests.json)
+also record 2,003 passing cases with the same verifier failure; their original
+hosted conclusions remain failures.
+The later [Framework receipt](measurements/roadmap-138-framework-a34ef58.json)
+records four successful 2,042-case source and package guests and distinguishes the
+push head from GitHub's PR merge commit.
+The following [PR guest failure](measurements/roadmap-138-framework-bc9995f-failure.json)
+preserves an early VM exit without completed test evidence; it is not a Framework pass.
+The [fresh retry and other guests](measurements/roadmap-138-framework-bc9995f-retry.json)
+passed 2,065 cases each, while the original failure remains recorded.
+The later [exact-head push receipt](measurements/roadmap-138-framework-fbe9a3d-push.json)
+records both actual Framework guests passing 2,105 cases. Its separate PR Linux
+[failure](measurements/roadmap-138-ci-fbe9a3d-linux-failure.json) remains recorded.
+The [PR retry](measurements/roadmap-138-framework-fbe9a3d-pr-retry.json) passed
+all jobs, including both actual Framework guests at 2,105 cases each. These
+results do not qualify later source.
+
+Pending typed-fragment tests check all six created kinds, nested parent/child locks,
+global IDs, deterministic independent binding stores, repeated insertion, explicit
+binding synchronization and editable DOCX. A Word-derived nested fixture checks
+static text. Conflicting glossary resources, mismatched date policies, report
+owners, restyling, resource exhaustion and cancellation remain explicit rejection
+or failure cases.
+The [independent binding reference](measurements/roadmap-138-typed-fragment-reference.json)
+records schema checks, isolated store values and LibreOffice static text.
+The [exact-source receipt](measurements/roadmap-138-typed-fragment-431dbfc.json)
+records local suites, matrix and package checks and reproduces the independently
+rendered DOCX with the exact source/package assembly.
+
+Pending glossary-fragment tests exercise all six control kinds, repeated entry and
+GUID remapping, placeholder restoration, compatible local resource retention,
+conflicts and entry limits. The [independent reference](measurements/roadmap-138-glossary-fragment-reference.json)
+checks generated package relationships, two distinct entries and LibreOffice text;
+it does not establish live Word execution or unrestricted resource merging.
+The [exact-source receipt](measurements/roadmap-138-glossary-fragment-6d219a1.json)
+records complete local suites and package checks, and a separate four-resource
+specimen with a restored styled placeholder and independent static text.
+
+Pending mixed-fragment tests insert controls and charts/equations together into
+body and simple-cell bookmarks, verify independent IDs and edits, and reject shared
+paragraph and structural owners. The [reference receipt](measurements/roadmap-138-mixed-fragment-reference.json)
+records editable XML/workbook values, reference chart geometry and text, as well
+as a different default text-extraction order. It does not qualify tagged, archival
+or native output or live Word editing.
+The [exact-source receipt](measurements/roadmap-138-mixed-fragment-fb29555.json)
+records the complete local suites, matrix and package checks and reproduces the
+independently rendered DOCX with the exact source/package assembly.
+
+The [performance observation](measurements/roadmap-138-performance-a34ef58.json)
+retains a hosted push failure at a 1.332 candidate/reference ratio against the
+unchanged 1.25 limit. A separate PR job passed against a different baseline and
+runner. The difference between the two push reference workers suggests variability
+but does not establish its cause or erase the failed gate. A local repeat with the
+same source revisions passed the unchanged gate at a 0.855 ratio; its four full
+measurement reports are retained with the original hosted observation.
+
+Pending #143 character-style tests cover inherited/overridden color, invalid style
+graphs and an additional Word-derived date placeholder. The independently generated
+[LibreOffice observation](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/date-style-reference.json)
+checks text and color. Character-style identity is lost with a diagnostic in this
+bounded increment, and strict mode rejects it.
+
+Pending #145 creation tests exercise all six kinds, local binding, source and saved
+OOXML, editing, selection and date modes, immutable inputs, Unicode offsets,
+locks, unsupported placements and rollback. Removal tests check preserved run formatting,
+deletion versus preservation, lock combinations, nested parents, stale/foreign
+handles, shared stories, table-cell schema, local resource retention and
+cancellation. Pending block-creation tests exercise all six kinds, saved schema,
+existing local bindings, locks, IDs across typed/template owners, fragment copying
+and atomic rejection. The [independent form observation](measurements/roadmap-138-block-controls-reference.json)
+checks direct block owners, IDs, static values and LibreOffice text; cell/story
+block creation and broader ownership remain outside this increment.
+The [exact-source control receipt](measurements/roadmap-138-controls-1c0dce7.json)
+records the full local suites, matrix, package checks and independent form output.
+
+Pending #159 source work has a [table formula test profile](table-formulas.md):
+independently authored DOCX and LibreOffice numeric checks, schema and fixed-output
+inspection, cultures, graph failures, atomic caches and report/edit refresh. The
+independent probe's percentage-picture limitations are recorded with the fixture;
+it does not qualify a public package or untested runtime.
+
+Pending #158 body-bookmark cross-tab tests check editable grid and totals,
+surrounding text, multi-page header repetition, the destination section's width,
+unsafe references, nesting, reentrancy and cancellation. The [independent reference](measurements/roadmap-138-crosstab-placement-reference.json)
+checks hand-calculated cells and LibreOffice text and geometry. It does not qualify
+cell destinations, repeat-region insertion or unrestricted report nesting.
+The [exact-source receipt](measurements/roadmap-138-crosstab-placement-c0c31aa.json)
+records the complete local suites, package checks and reproduced reference document.
+
+The separate pending #158 cell profile checks fixed and inherited explicit
+margins, surrounding content, multi-page values, missing or ambiguous margins,
+unsafe owners and atomic cancellation. Its [independent comparison](measurements/roadmap-138-crosstab-cell-reference.json)
+retains the implicit-margin mismatch and checks the qualified explicit-margin
+DOCX, PDF text and selected column origins against LibreOffice. Nested header
+repetition and broader cell ownership remain unqualified.
+The [exact-source receipt](measurements/roadmap-138-crosstab-cell-96ca2fa.json)
+records both complete local suites, package checks and the repeated specimen.
+
+Pending #151 native merged-table tests exercise Hindi clusters, horizontal and
+vertical cells, repeated headers, pagination and atomic rejection. The independent
+[reference observation](measurements/roadmap-138-native-merged-reference.json)
+checks text and cell ownership while retaining the row-spacing and Arabic
+differences. It does not establish right-to-left, tagged, archival or strict parity.
+The [exact-source receipt](measurements/roadmap-138-native-merged-a91b49d.json)
+records complete local suites, package verification and the repeated specimen.
+
+Pending #152 native scalar-field tests exercise refreshed Hindi and Arabic values,
+invariant scalar expressions, editable field retention, aggregate bounds and
+atomic rejection. The [independent reference](measurements/roadmap-138-native-fields-reference.json)
+records the Hindi vertical and Arabic text-extraction failures at unchanged
+tolerances; both are explicit losses and Strict rejects them.
+The [exact-source receipt](measurements/roadmap-138-native-fields-bc157ce.json)
+records the complete local suites, package checks and reproduced specimens.
+
+Pending #153 tests standalone equations beside Hindi and Arabic native text,
+SVG vectors, malformed objects, cancellation, resource bounds and unsupported
+owners. The [independent reference](measurements/roadmap-138-native-equation-reference.json)
+retains the fraction geometry and Arabic extraction failures, the reference math
+font difference, and the initial missing-Math-component failure. Notes and charts
+remain outside this increment.
+The [exact-source receipt](measurements/roadmap-138-native-equation-4787103.json)
+records complete local suites, package checks and repeated independent specimens.
+
+Pending #154 text-box tests exercise explicit anchor ordering, links, multiple
+boxes, page selection and unsupported semantic owners. The independent
+[reference observation](measurements/roadmap-138-accessible-box-reference.json)
+records source/saved DOCX schema checks, pinned veraPDF, ParentTree and reading-order
+inspection and four corruption controls; it is not a screen-reader study.
+The [exact-source receipt](measurements/roadmap-138-accessible-box-42524ca.json)
+records complete local suites, package checks and the repeated specimens.
+The pending Linux workflow runs these checks with test-only pypdf 6.10.0 and
+retains the generated evidence; its hosted result requires a separate run.
+
+Pending #155 tests described and explicitly decorative vectors across all six
+admitted geometries, page selection, repeated figures, fill and stroke, and
+separately opted-in text boxes. The [independent observation](measurements/roadmap-138-accessible-vectors-reference.json)
+records independently authored DOCX, schema and LibreOffice geometry checks,
+PDF/UA validation, ParentTree and source-order checks, and negative controls.
+The [exact-source receipt](measurements/roadmap-138-accessible-vectors-7e3876e.json)
+records both complete local suites, the capability matrix and package checks.
+The pending Linux workflow validates the generated corpus; hosted execution,
+screen-reader behavior and other drawing combinations remain open.
+
+Pending #156 tests PDF/A-2a and PDF/UA-1 together for bounded managed text,
+tables, links, alpha images, chart/equation alternatives and separate positioned drawings.
+The [independent observation](measurements/roadmap-138-accessible-archive-reference.json)
+records both validators, metadata/font/ParentTree checks and separate corruption
+controls. The archive validator alone accepted a missing-language control; the UA
+validator rejected it, so neither verdict substitutes for the other. Notes,
+mixed object/drawing ownership and native output remain unqualified.
+The [exact-source receipt](measurements/roadmap-138-accessible-archive-9cdbe58.json)
+records both complete local suites, the capability matrix and package checks.
+
+Pending #160 uses five synthetic python-docx/Pillow drawings to inspect repeated
+editable saves, vector bounds, selectable text, image pixels and PDF links in
+PDF/XPS/SVG. Pinned PyMuPDF and an offline LibreOffice reference measure frame
+geometry at 0.5 points and retain separate text-origin and direction verdicts.
+All five reference text positions differ by more than 0.5 points; the diagnostic
+is required rather than treating these specimens as a parity pass. The
+[observation](measurements/roadmap-138-rotation-reference.json) retains each
+measurement, file hash and earlier failed checks. Six corrupted
+controls test angles, reference selection, diagnostics, transforms, links and
+image identity. Flips, upright intent, page edges, cancellation and autofit
+boundaries also have targeted tests. Other office implementations and hosted
+runtime results require separate evidence.
+The [exact-source receipt](measurements/roadmap-138-rotation-8737a8a.json) records
+both complete local suites, package and API checks, repeated samples and the
+[local performance comparison](measurements/roadmap-138-rotation-performance-8737a8a.json).
+
+Pending #161 tests default rectangle, triangle and diamond presets, editable
+alternative metadata, PDF/XPS/SVG output, invalid adjustments and output bounds.
+The [independent observation](measurements/roadmap-138-preset-shapes-reference.json)
+compares authored polygon vertices and edges with LibreOffice at 0.5 points and
+includes substituted-geometry controls. Groups, arrows and broader appearance
+and accessibility combinations remain open.
+The [exact-source receipt](measurements/roadmap-138-preset-shapes-6b4b3a8.json)
+records complete local suites, package checks and the repeated specimens.
+
+Pending #162 checks independently authored DrawingML gradients across four
+cardinal directions, five filled shapes and local-theme stops. Pinned readers
+inspect editable DOCX, PDF axial shading/clipping, XPS and SVG brushes, and sample
+PDF/XPS colors against an offline LibreOffice reference. Locally an independent
+Inkscape raster also checks SVG. The [observation](measurements/roadmap-138-gradients-reference.json)
+retains an initial invisible-XPS failure, its corrected stop container, a failed
+remapped-accent reference comparison and corruption controls. Unsupported effects, alpha, other angles and conformance
+combinations are not qualified by these specimens.
+The [exact-source receipt](measurements/roadmap-138-gradients-5549be0.json)
+records the complete local suites, package checks and repeated independent files;
+hosted exact-head and actual Framework qualification remain separate.
+The later [PR source-guest failure](measurements/roadmap-138-framework-6d021ea-pr-source-failure.json)
+occurred during its OCR download before tests began and is retained independently
+of any retry or push-side guest results.
+The [separate successful guests](measurements/roadmap-138-framework-6d021ea-successes.json)
+passed 2,253 cases each on actual Framework 4.7.2 for push source/package and
+PR-merge package, with verified cleanup and exact binary/artifact identities.
+The [PR source retry](measurements/roadmap-138-framework-6d021ea-pr-source-retry.json)
+also passed 2,253 cases with verified cleanup; the original setup failure remains.
+
+Pending #171 tests compare body merge-path findings with actual successful and
+missing-data merges, and exercise types, parent declarations, repeat uncertainty,
+privacy, input bounds, stream ownership, cancellation and schema snapshots. They
+do not qualify reusable plan identity, output stages or other owners.
+The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
+checks four synthetic templates against actual merges, an independent DOCX reader,
+Open XML schema validation and deliberately corrupted reports; it also preserves
+the initial diagnostic-fixture and framework-analyzer failures.
+The [exact-source receipt](measurements/roadmap-138-template-inspection-0230fcb.json)
+records both complete local suites, the matrix, package verification and repeated
+independent examples. Its [performance record](measurements/roadmap-138-template-inspection-performance-0230fcb.json)
+passes the unchanged gate but notes substantial host timing drift between reference
+rounds. Hosted checks for this newer source remain separate.
+
+Pending #165 tests all 19,338 unmodified Unicode 17 default line-break cases,
+grapheme-safe use in managed PDF, nonbreaking spaces, font and owner rejection,
+local dictionary interaction and cancellation. Four independently authored and
+schema-checked DOCX specimens use OFL-licensed, reproducibly subset test fonts;
+PyMuPDF, pypdf and offline LibreOffice compare selectable text and glyph origins at
+0.5 points. Plain Japanese and traditional Chinese pass; Japanese punctuation
+differs by up to 1.2 points and the simplified Chinese numeric-wrap sample differs
+by 44.7 points horizontally and 16.01 vertically. Six corrupted controls verify
+the checks. The [reference receipt](measurements/roadmap-138-cjk-reference.json)
+retains both differences, the CFF source-face failure and earlier test failures.
+The [exact-source receipt](measurements/roadmap-138-cjk-5dd89f1.json) records
+the complete local suites, capability matrix, package checks and repeated
+independent specimens. Its [performance evidence](measurements/roadmap-138-cjk-performance-5dd89f1.json)
+retains the first failed harness build and the measured comparison. Hosted
+exact-head and actual Framework qualification remain separate.
+Other office implementations, broader fallback, grapheme shaping and output profiles
+remain unqualified.
+
+Pending #164 tests copied local dictionaries, explicit language and limits,
+retained editable/searchable text, visible hyphen outlines, unqualified profiles,
+pagination, cancellation and strict loss behavior. The [independent observation](measurements/roadmap-138-hyphenation-reference.json)
+checks a python-docx source against Pyphen's US English points, three PDF readers,
+font outline metrics and corrupted controls. The justified LibreOffice reference
+retains the 0.58-point origin and 2.26-point following-line differences at the
+unchanged 0.5-point tolerance. The first-line-only search highlight and broader
+typography and full #164 acceptance remain open.
+The [exact-source receipt](measurements/roadmap-138-hyphenation-00bf1f8.json)
+records both complete local suites, the matrix, package checks and independent
+specimens. The [performance record](measurements/roadmap-138-hyphenation-performance-00bf1f8.json)
+retains an initial failed ratio and a passing repeat with substantial timing drift;
+hosted exact-head performance and Framework execution remain separate gates.
+
+Pending #167 preview-layout tests check opt-in text privacy, selected pages,
+immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
+and resource limits. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
+compares SVG glyph geometry using fontTools and bounds it within Poppler PDF word
+boxes. It does not qualify cell, object, native or review-owner identities.
+The [exact-source receipt](measurements/roadmap-138-layout-snapshot-5b6eb7e.json)
+records the complete local suites, package checks and reproduced reference geometry.
+
+Pending #145 block-control creation covers six typed kinds, initial values and
+locks, local bindings, wrapper removal, fragment isolation and protected-owner
+failures. Its [independent reference](measurements/roadmap-138-block-controls-reference.json)
+checks DOCX schema and LibreOffice-extracted values; the [exact-source receipt](measurements/roadmap-138-block-controls-e44ef15.json)
+records complete local suites, package checks and the reproduced specimen. Cell
+and story block creation remain open.
+
+Pending #157 mixed-region tests cover three and five nested body levels, sibling
+order, empty collections, scope lookup, retained control IDs, notes and atomic
+reference/depth/row-limit failures. The independently authored [reference case](measurements/roadmap-138-deep-regions-reference.json)
+checks saved control hierarchy, cloned bookmarks and complete PDF text with
+LibreOffice and Poppler. The [exact-source receipt](measurements/roadmap-138-deep-regions-b9d16fd.json)
+records both full local suites, package checks and the repeated specimen. Cell
+repeats and broader ownership remain unqualified.
+The [local performance receipt](measurements/roadmap-138-performance-8f6b5ea.json)
+compares the same-source successor with its previous head under the unchanged
+single-core gate; it does not erase the earlier hosted performance failure.
+
+Pending #163 clustered horizontal-bar tests check editable workbook data, signed
+vector geometry, binding and explicit rejection of unsupported forms. The
+[independent comparison](measurements/roadmap-138-horizontal-bars-reference.json)
+retains the initial label-placement problem and the remaining failures against the
+original 0.5-point absolute geometry tolerance. BestEffort and Lenient diagnose
+that approximation; Strict, native, tagged and archival output are not qualified.
+The [exact-source receipt](measurements/roadmap-138-horizontal-bars-61ae229.json)
+records both complete suites, package checks and the reproduced specimen.
+The [local performance receipt](measurements/roadmap-138-performance-4eaa2d7.json)
+compares the same-source successor against the previous GitHub head with the
+unchanged threshold; the earlier hosted performance failure remains recorded.
+
+Pending #163 stacked-bar and column tests cover signed accumulators, zero and
+missing values, editing and prepared-data binding, DOCX schema, vector output,
+overflow, unsupported overlap and protected output profiles. Two independently
+authored XlsxWriter chart/workbook fixtures passed Open XML SDK validation, and
+eight corrupted controls exercise graph, diagnostics, output content, legend and vector
+checks. The [reference observation](measurements/roadmap-138-stacked-reference.json)
+retains both LibreOffice placement failures at the unchanged 0.5-point tolerance.
+The [exact-source receipt](measurements/roadmap-138-stacked-c1188c1.json) records
+both complete suites, matrix, packages and reproduced specimens; its [performance
+receipt](measurements/roadmap-138-stacked-performance-c1188c1.json) compares the
+same source with the preceding PR head under the unchanged gate.
+
+Pending #163 point-label tests cover editable chart-wide and uniform series flags,
+binding, signed points, fit, aggregate text bounds, cancellation and unsupported
+profiles. Independently generated XlsxWriter bar and column specimens use explicit
+flags and pass Open XML SDK validation; eight corrupted controls check graph,
+diagnostics, content, orientation and cross-format label positions. The
+[reference observation](measurements/roadmap-138-chart-labels-reference.json)
+records office text and position differences without changing the tolerance.
+The [exact-source receipt](measurements/roadmap-138-chart-labels-9f038d0.json)
+records both full suites, matrix, packages and reproduced specimens. Its
+[performance receipt](measurements/roadmap-138-chart-labels-performance-9f038d0.json)
+retains both rounds and the visible timing drift under the unchanged gate.
+
+Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
+check the retained original appearance/story, inherited-format resets, text and
+structural changes, combined work budgets, unchanged input sessions and rejection
+of unsupported properties and story topology. Additional [paragraph-history tests](review-workflows.md#unreleased-source-paragraph-format-revisions)
+validate OOXML, independent decisions alongside separate paragraph insertions and
+deletions, PDF geometry, inherited resets, cells, composition, section ordering and
+unsupported-owner controls. They do not establish untested
+structural combinations or runtime/package qualification.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -8,16 +435,164 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
+The [compatibility-plan design](template-compatibility-plan-design.md) includes
+schema and example checks. Run `python -m pip install -r eng/template-plan-requirements.txt`
+in a development environment, then `python eng/test-template-plan-design.py`. These
+checks validate the design examples, not converter behavior, policy enforcement,
+independent output validation or any runtime/package qualification.
 
-## P4/P5 review and drawing profile
+The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) record a separate
+36-input source/public-package comparison and schema checks. They do not complete
+the additional controls and platform qualification required by roadmap #138.
+Run `python eng/test-roadmap-138-ledger.py` to check the derived failure index
+against its retained raw reports; the generated ledger remains dated baseline
+evidence, not a fresh execution or current-source qualification.
+
+The #140 documentation audit checked the current public package versions and
+release commit and reviewed all tracked Markdown links, including sample guides.
+Its [receipt](measurements/roadmap-138-documentation-audit.json) is documentation
+evidence, not a new runtime qualification or package publication.
+
+Unreleased #141 tests independently construct schema-validated OOXML themes and
+compare local Latin font and color resolution against explicit formatting with
+PdfPig coordinates/colors and XPS markup. A [Word-authored theme XML control](../tests/wordnet.Conversion.Tests/Fixtures/Theme/OfficeWordParts/README.md)
+is reused under its upstream MIT license with caller-configured open-font substitutions;
+it is not an interactive Word execution. Tests cover inherited/default styles,
+direct overrides, tint/shade endpoints, settings mappings, system-color fallbacks,
+headers and footnotes, direct cell shading/borders, missing and malformed parts,
+output atomicity and cancellation. The editable text subset is checked by changing
+the saved theme XML independently and comparing the new PDF font, color and glyph
+positions with explicit-format controls. Separate tests validate generated DOCX
+schema, theme mapping and composition conflicts and confirm source extensions and
+relationships are not copied. Typed-control tests reject inherited theme references
+before they could be emitted outside the admitted control profile.
+The tests do not establish complete editable theme preservation, every style
+interaction, script slot, conditional table style or drawing support, or
+public-package availability. On Linux x64, theme head `b47ff0a` passed the
+five-target Release build and both full .NET 8 and .NET 10 suites, 1,597 cases
+each including English OCR. Its complete [push](https://github.com/kirakosyan/word.net/actions/runs/41137881478)
+and [PR](https://github.com/kirakosyan/word.net/actions/runs/41137886101) workflows
+passed Windows/Linux x64 and ARM source/package lanes and actual Framework 4.7.2
+source/package execution. Those results do not qualify later template changes.
+
+Unreleased #166 tests construct independent DOCX/DOTX and ODF text/template
+packages. Open XML SDK validation, ODF mimetype/manifest checks, PdfPig text and
+XPS glyph inspection cover the advertised package identities and conversions.
+The tests also exercise typed controls, review and field retention, explicit
+mismatch and control loss, ZIP/CFB negatives, macro/protected classification,
+stream position and ownership, aggregate limits and cancellation. These checks
+do not establish general package validity or additional platform qualification.
+On template head `444bf2e`, locked restore, the five-target Release build and local
+core/fonts/OCR package checks passed on Linux x64; the complete .NET 8 and .NET 10
+suites each passed 1,609 cases with English OCR and no skips. The
+[local receipt](measurements/roadmap-138-template-444bf2e.json) records identities;
+hosted exact-head qualification is separate. Both hosted Windows Framework source
+lanes for `444bf2e` failed seven template tests: Framework's ZIP fixture generation
+emitted a compressed mimetype, and its ZIP API rejected a deliberately invalid
+entry name before inspection. The Linux x64 resource benchmark also failed because
+its direction guard still expected 40 pairs after the template routes were added.
+On `83ab990`, the portable fixtures fixed six of the seven Framework failures, but
+both Windows Framework source runs still failed the malformed-name test: Framework
+rejected the name while loading ZIP entries before the detector could classify it.
+On `5a654f5`, detection classified that input correctly, but both Framework runs
+passed 1,619 cases and failed the new conversion assertion because the DOCX reader
+enumerated the archive separately. The subsequent shared package-reader correction
+requires a fresh hosted run. The updated local resource benchmark retains the
+original 40-pair guard and passed 32 iterations across all 53 directions; hosted
+results are separate. An independent check used the authored
+[`Odt/text.odt`](../tests/wordnet.Conversion.Tests/Fixtures/Odt/README.md) fixture
+(SHA-256 `50f1feca909fa19bbb38aee93f5649f8451becc8a6d792b1b432bd832b133b09`).
+LibreOffice 24.2.7.2 opened generated OTT and DOTX outputs and recovered the
+expected synthetic text; the OTT also passed the pinned ODF 1.3 schemas. The
+[probe](../eng/roadmap-138-template-probe.cs) and
+[verification script](../eng/verify-template-identity.py) reproduce the checks.
+This observation does not qualify a public package.
+
+Unreleased #143 glossary tests use independently authored OPC/XML packages and
+Open XML schema checks for category metadata, bounded local resources, typed edits,
+bindings, placeholder display and byte/relationship preservation. Negative cases
+cover external, dangling, duplicate, nested, active and unsupported resources,
+default loading, cancellation and untouched output. A schema-validated derivative
+of a [Word-authored glossary](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
+now checks local resource preservation and independently inspected gray placeholder
+text in Lenient mode. Strict theme fallback and unsafe style graphs remain negative
+controls. [Additional Word-authored variants](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/README.md)
+exercise block/inline rich text, plain text, dates and the static `notTrueType`
+font-catalog flag. The tests retain the source's missing list-placeholder references
+as negatives, alongside malformed or active font metadata. The first nine-case
+working-tree run failed six cases because the prior validator rejected that font
+flag before reaching the controls; the follow-up admits the bounded Boolean flag.
+The [exact-source glossary receipt](measurements/roadmap-138-glossary-f7d6a7f.json)
+records that increment's local checks and the failed attempts.
+Broader Office-authored
+kinds and resource-graph acceptance required by
+#143 remain outstanding. On the local Linux x64 working tree containing these
+changes, the complete .NET 8 and .NET 10 suites each passed 1,620 cases with
+English OCR; the executable source matrix passed 84 mapped cases. Hosted Windows
+Framework and other platform results for this change remain separate and require
+their own exact-commit runs.
+
+Unreleased #146 tests independently validate inserted cell-fragment DOCX structure,
+host widths and bookmark/note identities with Open XML, and inspect PDF text,
+geometry, text colors and inline images with PdfPig. Field opt-in checks reference remapping, refreshed
+values, retained merge caches, isolated sequence counters, invalid switches,
+placeholder-style overrides, unsupported owners, cancellation and untouched
+source/destination sessions.
+The full #146 acceptance and cross-platform qualification remain open.
+
+The [unreleased source matrix](roadmap-138-source-matrix.json) maps bounded positive
+and negative combinations across the pending roadmap work to test methods. Run
+`python eng/verify-roadmap-138-source-matrix.py --run` after locked restore to
+validate the mapping and execute those tests; add `--framework net8.0` to use
+.NET 8. This is not public-package or platform qualification.
+
+Unreleased #148 review tests independently inspect Open XML history, PdfPig
+selectable text, mark color and coordinates, and SVG glyph paths and marked titles.
+They cover body and simple-cell revisions, multi-page text, source immutability,
+attribution escaping, profile and owner rejections, cancellation and bounds.
+Full issue acceptance and exact-runtime qualification remain open.
+Unreleased #149 tests inspect overlapping and table-cell anchors, comment bodies
+and independent list numbering, exact format snapshots and paired move endpoints in
+PDF/SVG. They also cover comments combined with moves or format history, empty and multipage notes,
+source preservation, unsupported structural changes, cancellation and bounds.
+The expanded local Linux x64 .NET 8 and .NET 10 suites each passed 1,578 cases
+without skips, with English OCR prepared in the launching process. Locked restore
+and the five-target Release build also passed. On annotation head `b0776aa`, the
+[push workflow](https://github.com/kirakosyan/word.net/actions/runs/41132995601)
+passed the Windows/Linux x64 and ARM source and package lanes, including actual
+Framework 4.7.2 [source](https://github.com/kirakosyan/word.net/actions/runs/41132995601/job/124334009444)
+and [package](https://github.com/kirakosyan/word.net/actions/runs/41132995601/job/124337339781)
+execution. This does not qualify the later theme changes.
+On earlier text-display head `ca732f2`, locked restore and the five-target Release build passed, and the
+complete .NET 8 and .NET 10 suites each passed 1,567 cases with English OCR
+prepared in the launching process and no skips. Its hosted Windows/Linux x64 and
+ARM source/package lanes passed. The push workflow's actual Framework 4.7.2
+[source](https://github.com/kirakosyan/word.net/actions/runs/41127722806/job/124317622187)
+and [package](https://github.com/kirakosyan/word.net/actions/runs/41127722806/job/124320865003)
+gates each passed exactly 1,567 cases with the required legacy JIT; the
+[PR workflow](https://github.com/kirakosyan/word.net/actions/runs/41127732182)
+also passed both gates. Both complete hosted workflows succeeded. That evidence
+belongs to `ca732f2`, not the later annotation or theme changes.
+
+For the earlier draft head `4d35259`, the actual Framework 4.7.2 source guest
+reported 1,522/1,522 passing with no skipped tests, but the
+[host gate](https://github.com/kirakosyan/word.net/actions/runs/41120440306/job/124293436141)
+failed because its bundle still required exactly 1,498. The
+[guest evidence](https://github.com/kirakosyan/word.net/actions/runs/41120440306/artifacts/13009293177)
+retains the test report and identity/cleanup records. The later fragment head
+required 1,559 cases; the subsequent text-display head required 1,567. The then-current
+suite required 1,592. Exact-head Framework execution remains a separate gate for later changes.
+
+
+## P4/P5 review and drawing profile — historical checkpoints
 
 The [P4/P5 profile](roadmap-102-p4-p5.md) has independently authored OOXML
 fixtures for formatting history, move ranges, sections, story variants, rotated
 and linked text boxes, autofit and vector geometry. Tests inspect Open XML schema,
 accepted/rejected output, PDF text and geometry, XPS paths and SVG outlines, with
 negative ownership, resource and unsupported-combination controls. Final source,
-package and platform qualification must be reported separately from the dated P3
-results below; no publication or new platform qualification is implied.
+package and platform qualification are reported separately from the dated P3
+results below; see the [1.5.0 release record](releases/1.5.0.md).
 
 On Linux x64, locked restore and the five-target Release build passed. The complete
 .NET 10 and .NET 8 suites each passed 1,471 tests with English OCR provisioned in
@@ -40,7 +615,7 @@ DOCX schema and content order, multipage selectable PDF, nested row repeats,
 inline images/conditions, identity remapping, boundary and resource failures,
 and cancellation. The image uses the existing `color-grid.png` fixture. These
 tests qualify this bounded source only; the P2 receipts below remain historical,
-and public 1.4.0 and platform qualification have not changed.
+and the earlier public 1.4.0 and platform qualification were unchanged at that checkpoint.
 On Linux x64 the full .NET 8 and .NET 10 conversion suites each passed 1,408/1,408
 with no skips and English OCR prepared in the test process. Locked restore,
 five-target Release build, formatting verification and local pack passed; the pack
@@ -51,8 +626,8 @@ cross-tab and fragment tests additionally inspect schema-valid DOCX and PDF text
 and geometry, caller-prepared totals, identity remapping, malicious/missing
 resources, expansion limits and failure atomicity. The runnable statement fixture
 is independently authored by `eng/generate-p3-template.py` under MIT and has a
-recorded SHA-256 manifest. Final full-suite and hosted results for the batch must
-be reported separately from the earlier 1,408-case run.
+recorded SHA-256 manifest. Final full-suite and hosted results for the batch are
+recorded separately from the earlier 1,408-case run in the 1.5.0 release evidence.
 
 The PR #135 review follow-up adds parent/child boundary references and shared-note
 negative controls, strict loading of inactive controls, legacy row-scope checks,
@@ -103,7 +678,7 @@ including source/package/Standard and actual Framework 4.7.2 source/package jobs
 passed; both Android API compilation runs also passed. The identical-tree
 [PR CI](https://github.com/kirakosyan/word.net/actions/runs/40331042390) was retrying
 an Ubuntu package-download timeout at merge. This qualifies the tested source tree
-separately from historical measurements, pending CI and public-package availability.
+separately from historical measurements; the PR-time CI and package status are historical.
 
 The [new baseline receipt](fidelity-103-baseline.md) measures clean source
 `ec7816b` and independently restored public 1.4.0 against all 24 original references
@@ -129,6 +704,28 @@ Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
 chart binding, scalar fields, structural comparison and qualified layout/native/object
 combinations. The [1.4.0 release notes](releases/1.4.0.md) record compatibility and
 qualification requirements. Earlier release receipts below remain historical evidence.
+
+## Unreleased matrix checks
+
+Pending #168 source tests independently construct OMML matrices and validate DOCX
+with Open XML SDK, inspect logical PDF marked content and vector paths, verify XPS
+and SVG output, and check column edges and the MATH baseline with the pinned font.
+They exercise copied inputs, snapshot updates, composition, empty cells, default
+and unsupported properties, limits and cancellation. These tests do not by
+themselves qualify other runtime or output profiles.
+The [414707d receipt](measurements/roadmap-138-matrix-414707d.json) records its
+local full-suite and package checks and the partial hosted observation at that time;
+later commits require their own exact-head checks.
+
+Pending #169 tests independently construct and schema-validate OMML sums, products
+and integrals, compare limit placement and display glyph selection to pinned MATH
+metrics, and inspect managed PDF/XPS/SVG vectors and logical text. They cover
+snapshot/composition, missing limits, nested matrices, unsupported properties,
+missing glyphs, explicit size fallback, cancellation and strict untouched output.
+The [independent font check](../eng/verify-nary-font.py) uses pinned FontTools 4.61.1
+to verify the font hash, display minimum, limit metrics, sum/product/integral
+variant glyphs and integral assembly parts. A bounded in-memory font control forces
+the assembly path. The Linux P2 CI lane runs the font check separately from the converter.
 
 ## Released 1.3.0 qualification
 
@@ -379,8 +976,9 @@ tree equals that head. Native Windows/Linux x64/ARM64 source and packed lanes pa
 including explicit Standard fallback on .NET 8/10 and the hosted Windows x64 Framework lane.
 The required suite is **828**, including 33 review regressions. Seven bucket-4 issues
 have verified acceptance and closure; roadmap #32 records completed buckets 1–4.
-This remains unreleased source, separate from published 1.1.0, actual-minimum-runtime
-qualification and exact-main-package release qualification.
+At that checkpoint this was unreleased source, separate from published 1.1.0,
+actual-minimum-runtime qualification and exact-main-package release qualification;
+the subsequent 1.2.0 release included it.
 
 PR [#35](https://github.com/kirakosyan/word.net/pull/35) was squash-merged on
 2026-10-17 as `0b2af843a40b8c866119594a887e8dac1f5c7340`, with **696** required
@@ -409,7 +1007,8 @@ checklist](implementation-plan.md) before interpreting an old count as current.
 
 ## Bucket 4 merged-source qualification
 
-The merged, unreleased implementation covers #20–#23 and #25–#27; see the
+The merged implementation covered #20–#23 and #25–#27 and was unreleased at this
+checkpoint; see the
 [bounded profiles/API](interoperability.md) and [decisions](interoperability-design.md).
 The required suite expands from 696 to **828** cases (795 initial plus 33 review regressions): 15 HTML, 21 RTF, 12 typography,
 10 accessibility, 16 previews, 14 geometric PDF reconstruction and 16 OCR metadata/control
@@ -763,7 +1362,8 @@ they had no image or affinity restriction and are not the acceptance measurement
 outlines, then validates each with veraPDF 1.30.2, pinned by image digest. **38/38 pass**.
 CI repeats this independent check and uploads its XML. Tests also assert metadata
 uniqueness, embedded/selectable text, compression controls, actual-page hierarchical
-outlines, PNG prediction/alpha and link flags. Tagged PDF remains optional/unimplemented.
+outlines, PNG prediction/alpha and link flags. Tagged PDF was not implemented at
+this historical checkpoint; later opt-in profiles are documented above.
 PNG admission bounds chunk lengths and zlib expansion to the declared scanline
 geometry (including Adam7) before provider allocations, verifies Adler32 and checks
 cancellation. Regressions reject excessive IDAT expansion and absent chunk payloads.

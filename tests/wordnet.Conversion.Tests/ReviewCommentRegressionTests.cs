@@ -61,5 +61,35 @@ public sealed partial class ReviewWorkflowTests
         WordDocument doc = Load(stream.ToArray()); Assert.Equal("Bulleted comment", Assert.Single(doc.Comments).Text);
         byte[] saved = Save(doc); Schema(saved);
         Assert.Single(Part(saved, "word/comments.xml").Descendants(W + "numPr"));
+        string display = ReviewPdf(doc.CreateReviewDisplay(Numbered(), TestContext.Current.CancellationToken));
+        Assert.Contains("•", display, StringComparison.Ordinal); Assert.Contains("Bulleted comment", display, StringComparison.Ordinal);
+        Assert.Equal(saved, Save(doc));
+    }
+
+    [Fact]
+    public void ReviewAnnotationListsKeepIndependentCommentCounters()
+    {
+        string properties = "<w:numPr><w:ilvl w:val='0'/><w:numId w:val='1'/></w:numPr>";
+        string bodyList = "<w:p><w:pPr>" + properties + "</w:pPr><w:r><w:t>Body list</w:t></w:r></w:p>";
+        string anchor = "<w:p><w:commentRangeStart w:id='1'/><w:r><w:t>Anchor</w:t></w:r><w:commentRangeEnd w:id='1'/>"
+            + "<w:r><w:commentReference w:id='1'/></w:r></w:p>";
+        string Item(string value) => "<w:p><w:pPr>" + properties + "</w:pPr><w:r><w:t>" + value + "</w:t></w:r></w:p>";
+        string comment = "<w:comments xmlns:w='" + W + "'><w:comment w:id='1' w:author='Author'>" + Item("First") + Item("Second") + "</w:comment></w:comments>";
+        byte[] bytes = TestDocuments.Docx(TestDocuments.Body(bodyList + anchor),
+            "<Relationship Id='comments' Type='" + TestDocuments.R + "/comments' Target='comments.xml'/><Relationship Id='numbers' Type='" + TestDocuments.R + "/numbering' Target='numbering.xml'/>",
+            extra: new KeyValuePair<string, string>("word/comments.xml", comment));
+        using var stream = new MemoryStream(); stream.Write(bytes, 0, bytes.Length);
+        using (var zip = new ZipArchive(stream, ZipArchiveMode.Update, true))
+        using (var writer = new StreamWriter(zip.CreateEntry("word/numbering.xml").Open(), new UTF8Encoding(false)))
+            writer.Write("<w:numbering xmlns:w='" + W + "'><w:abstractNum w:abstractNumId='0'><w:lvl w:ilvl='0'><w:start w:val='1'/><w:numFmt w:val='decimal'/><w:lvlText w:val='%1.'/></w:lvl></w:abstractNum><w:num w:numId='1'><w:abstractNumId w:val='0'/></w:num></w:numbering>");
+        WordDocument source = Load(stream.ToArray()); byte[] before = Save(source);
+        DocumentReviewDisplay display = source.CreateReviewDisplay(Numbered(), TestContext.Current.CancellationToken);
+        using var output = new MemoryStream(); display.SavePdf(output, TestContext.Current.CancellationToken);
+        using var pdf = UglyToad.PdfPig.PdfDocument.Open(output.ToArray());
+        var page = pdf.GetPage(1); string text = page.Text;
+        Assert.Contains("1.", text, StringComparison.Ordinal); Assert.Contains("2.", text, StringComparison.Ordinal); Assert.DoesNotContain("3.", text, StringComparison.Ordinal);
+        Assert.Equal(2, (text.Length - text.Replace("1.", "").Length) / "1.".Length);
+        Assert.Contains("First", text, StringComparison.Ordinal); Assert.Contains("Second", text, StringComparison.Ordinal);
+        Assert.Equal(before, Save(source));
     }
 }

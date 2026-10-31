@@ -57,7 +57,7 @@ internal sealed partial class DocxReader
         if (glossary.Length == 0) return;
         string glossaryPart = ControlPart(mainPart, glossary[0]);
         RequireControlPart(glossaryPart, GlossaryType, contentTypes);
-        if (package.ReadRelationships(glossaryPart).Count != 0) throw new NotSupportedException("Control.Unsupported: Glossary entries cannot have external or resource relationships.");
+        ReadGlossaryResources(glossaryPart, contentTypes);
         XElement root = TypedXml(glossaryPart);
         if (root.Name != W + "glossaryDocument") throw new InvalidDataException("Control.Malformed: Invalid glossary root.");
         Attributes(root);
@@ -86,6 +86,17 @@ internal sealed partial class DocxReader
                     if (property.Elements().Count() != 1 || property.Element(W + leaf) is not XElement value) throw new NotSupportedException("Control.Unsupported: Only static placeholder glossary behavior is admitted.");
                     Leaf(value, W + "val"); if ((string?)value.Attribute(W + "val") != (leaf == "type" ? "bbPlcHdr" : "content")) throw new NotSupportedException("Control.Unsupported: Only static placeholder glossary behavior is admitted.");
                 }
+                else if (property.Name == W + "category")
+                {
+                    Attributes(property);
+                    if (property.Elements().Count() != 2 || property.Element(W + "name") is not XElement categoryName || property.Element(W + "gallery") is not XElement gallery)
+                        throw new InvalidDataException("Control.Malformed: Glossary categories require exactly one name and gallery.");
+                    Leaf(categoryName, W + "val"); Leaf(gallery, W + "val");
+                    string nameValue = DocxPackage.RequiredAttribute(categoryName, W + "val");
+                    string galleryValue = DocxPackage.RequiredAttribute(gallery, W + "val");
+                    if (nameValue.Length is 0 or > 256) throw new InvalidDataException("Limit.Controls: Glossary category name exceeds its bound.");
+                    if (galleryValue is not "default" and not "placeholder") throw new NotSupportedException("Control.Unsupported: Only static placeholder glossary categories are admitted.");
+                }
                 else throw new NotSupportedException("Control.Unsupported: Unknown glossary entry behavior.");
             }
             string name = (string?)properties.Element(W + "name")?.Attribute(W + "val") ?? throw new InvalidDataException("Control.Malformed: A glossary entry requires a name.");
@@ -93,8 +104,46 @@ internal sealed partial class DocxReader
             if (typedControls.GlossaryContent.ContainsKey(name)) throw new InvalidDataException("Control.Malformed: Duplicate glossary entry names.");
             if (body.Elements().Count() != 1 || body.Element(W + "p") is not XElement paragraph) throw new NotSupportedException("Control.Unsupported: A placeholder glossary entry must contain one ordinary paragraph.");
             var validation = new ControlData { Kind = ContentControlKind.RichText, Inline = false };
-            ValidateTypedContent(body, validation);
-            ParagraphBlock content = ReadParagraph(paragraph); ValidateTypedRuns(validation, content.Runs);
+            ParagraphBlock content;
+            if (glossaryStyleReader == null)
+            {
+                ValidateTypedContent(body, validation);
+                content = ReadParagraph(paragraph);
+            }
+            else
+            {
+                // Validate the ordinary content independently, allowing only a
+                // resolved character-style reference from the local glossary.
+                var checkedBody = new XElement(body);
+                foreach (XElement style in checkedBody.Descendants(W + "rStyle").ToArray())
+                {
+                    context.ReserveControlWork(1);
+                    if (style.Parent?.Name != W + "rPr" || style.Parent.Parent?.Name != W + "r")
+                        throw new NotSupportedException("Control.Unsupported: A glossary style reference must belong to an ordinary run.");
+                    Leaf(style, W + "val"); string id = DocxPackage.RequiredAttribute(style, W + "val");
+                    if (!glossaryStyleReader.styles.TryGetValue(id, out XElement? definition) || (string?)definition.Attribute(W + "type") != "character")
+                        throw new NotSupportedException("Control.Unsupported: A placeholder requires a local character style.");
+                    if (style.Parent.Elements(W + "rStyle").Count() != 1) throw new InvalidDataException("Control.Malformed: Duplicate glossary character styles.");
+                    style.Remove();
+                }
+                ValidateTypedContent(checkedBody, validation);
+                if (glossaryScriptFormatting) { RequireTypedDefaultScript(paragraph); ReportTypedEditorMetadata(); }
+                content = glossaryStyleReader.ReadParagraph(paragraph);
+                // Local style identities do not belong to the main document's
+                // style graph. Materialize their admitted resolved appearance.
+                content.StyleId = null;
+                IEnumerable<TextRun> styledRuns = content.Mark == null ? content.Runs : content.Runs.Concat(new[] { content.Mark });
+                foreach (TextRun run in styledRuns)
+                {
+                    if (run.Appearance.ThemeFontAscii != null || run.Appearance.ThemeFontHighAnsi != null || run.Appearance.ThemeColor != null)
+                    {
+                        context.Loss("Control.GlossaryTheme", "Glossary-local theme references use their resolved appearance without retaining editable theme identity.");
+                        run.Appearance.ThemeFontAscii = null; run.Appearance.ThemeFontHighAnsi = null;
+                        run.Appearance.ThemeColor = null; run.Appearance.ThemeTint = null; run.Appearance.ThemeShade = null;
+                    }
+                }
+            }
+            ValidateTypedRuns(validation, content.Runs);
             typedControls.GlossaryContent.Add(name, content);
         }
         typedControls.GlossaryPart = glossaryPart; typedControls.Glossary = new XElement(root);

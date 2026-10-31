@@ -1,0 +1,33 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "attempt": 1,
+  "result": "success",
+  "sourceHead": "3a20bb4de556382607c03001e361506ea22d7a3f",
+  "tree": "afaa23c5f2cf786af61db857c304e7ecb5758e7b",
+  "jobs": "All 11 jobs passed: four source/modern-runtime platforms, performance, four package platforms and actual Framework 4.7.2 source/package guests.",
+  "scope": "These hosted results apply to this tree and do not qualify subsequent commits. No package was published.",
+  "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41192396336",
+  "frameworkSource": {
+    "job": 124516038074,
+    "frameworkRelease": 461814,
+    "cases": 2227,
+    "librarySha256": "534e8a9460c0c89cf8cf7fc39dbab9487e60438484388971410af48fe2636959",
+    "testSha256": "fe65b4ca13cdbf656c60f29b197f5ea150772b7ed291be17e6cb3ba816ae9514",
+    "inputArtifactId": 13039583131,
+    "inputArtifactSha256": "a5ad8699246a0c40193b9642ca1afaae8e092879790e2778034eff829165283e",
+    "resultArtifactId": 13040168079,
+    "resultArtifactSha256": "92a253a5a7c312c469f3b056b856446c2798a918db9feeb8e6fb72bb00e07709"
+  },
+  "frameworkPackage": {
+    "job": 124518272020,
+    "frameworkRelease": 461814,
+    "cases": 2227,
+    "librarySha256": "1493612133b46598f4be59c54cf671d439e9dce6a4be13b868a27de8c81cb414",
+    "testSha256": "9b868a2e7e2a3c72252b31fad3fd45f07a00381ef9727c398d4ef50fe778ab5f",
+    "inputArtifactId": 13039379307,
+    "inputArtifactSha256": "72223b337186be56ea8872e66127c566b6fb0b7878fbeec264eecd32e424f96c",
+    "resultArtifactId": 13040850345,
+    "resultArtifactSha256": "3a809bc36a5b9199bac79c144e9826a619b89c019633398650f63431355735d8"
+  }
+}

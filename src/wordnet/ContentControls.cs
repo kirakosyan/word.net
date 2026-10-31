@@ -100,7 +100,8 @@ public sealed class ContentControlDateValue
 /// <summary>An immutable source list item. A missing display label uses its stored value.</summary>
 public sealed class ContentControlListItem
 {
-    internal ContentControlListItem(string? displayText, string value) { DisplayText = displayText; Value = value; }
+    /// <summary>Creates an item with an optional display label and a non-null stored value.</summary>
+    public ContentControlListItem(string? displayText, string value) { Guard.NotNull(value, nameof(value)); DisplayText = displayText; Value = value; }
     /// <summary>Gets the optional source display label.</summary>
     public string? DisplayText { get; }
     /// <summary>Gets the ordinal stored value, which can be empty.</summary>
@@ -171,6 +172,24 @@ public sealed class ContentControlParagraph
 /// <summary>Detached local XML binding metadata. It never exposes or executes a general XPath engine.</summary>
 public sealed class ContentControlBinding
 {
+    /// <summary>Creates detached binding metadata. The target must resolve in an existing local store when attached; no general XPath is executed.</summary>
+    public ContentControlBinding(string storeItemId, string path, IReadOnlyDictionary<string, string>? namespaceMappings = null)
+    {
+        Guard.NotNull(storeItemId, nameof(storeItemId)); Guard.NotNull(path, nameof(path));
+        StoreItemId = ControlBindings.StoreId(storeItemId); Path = path;
+        if (path.Length is 0 or > 1024) throw new ArgumentException("Binding.Path: Path length must be between 1 and 1024.", nameof(path));
+        var copy = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (namespaceMappings != null)
+            foreach (var mapping in namespaceMappings)
+            {
+                if (copy.Count == 16) throw new InvalidDataException("Limit.Controls: Too many namespace mappings.");
+                if (mapping.Key == null || mapping.Value == null || mapping.Key.Length is 0 or > 64 || mapping.Value.Length is 0 or > 1024
+                    || mapping.Value.Contains('\'') && mapping.Value.Contains('"'))
+                    throw new ArgumentException("Binding.Path: Namespace mappings must be bounded and representable as quoted declarations.", nameof(namespaceMappings));
+                copy.Add(mapping.Key, mapping.Value);
+            }
+        NamespaceMappings = new ReadOnlyDictionary<string, string>(copy);
+    }
     internal ContentControlBinding(ControlBinding data)
     { StoreItemId = data.StoreId; Path = data.Path; NamespaceMappings = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(data.Namespaces, StringComparer.Ordinal)); }
     /// <summary>Gets the local store GUID.</summary>
@@ -181,13 +200,80 @@ public sealed class ContentControlBinding
     public IReadOnlyDictionary<string, string> NamespaceMappings { get; }
 }
 
+/// <summary>An immutable definition for inserting one bounded inline typed control.</summary>
+public sealed class ContentControlDefinition
+{
+    /// <summary>Copies a definition. Text is literal; list values and labels must be unique; optional binding targets must already exist locally.</summary>
+    public ContentControlDefinition(ContentControlKind kind, string? initialText = null, IEnumerable<ContentControlListItem>? items = null,
+        string? selectedValue = null, bool isChecked = false, ContentControlDateValue? dateValue = null, bool multiLine = false,
+        string? dateFormat = null, string? tag = null, string? alias = null, ContentControlLock editLock = ContentControlLock.Unlocked,
+        ContentControlBinding? binding = null)
+    {
+        if (kind is < ContentControlKind.Checkbox or > ContentControlKind.PlainText) throw new ArgumentOutOfRangeException(nameof(kind));
+        if (editLock is < ContentControlLock.Unlocked or > ContentControlLock.ControlAndContentLocked) throw new ArgumentOutOfRangeException(nameof(editLock));
+        if (kind is not ContentControlKind.RichText and not ContentControlKind.PlainText and not ContentControlKind.ComboBox && initialText != null
+            || kind is not ContentControlKind.DropDownList and not ContentControlKind.ComboBox && (items != null || selectedValue != null)
+            || kind != ContentControlKind.Checkbox && isChecked || kind != ContentControlKind.Date && (dateValue != null || dateFormat != null)
+            || kind != ContentControlKind.PlainText && multiLine || kind == ContentControlKind.RichText && binding != null
+            || kind == ContentControlKind.ComboBox && selectedValue != null && initialText != null)
+            throw new ArgumentException("Control.Definition: Values are incompatible with the selected kind.");
+        if ((tag?.Length ?? 0) > 256 || (alias?.Length ?? 0) > 256 || (dateFormat?.Length ?? 0) > 256
+            || (initialText?.Length ?? 0) > 4 * 1024 * 1024 || (selectedValue?.Length ?? 0) > 1024)
+            throw new InvalidDataException("Limit.Controls: Definition metadata exceeds its bound.");
+        var copied = new List<ContentControlListItem>();
+        if (items != null)
+            foreach (ContentControlListItem item in items)
+            {
+                if (item == null) throw new ArgumentException("Control.Definition: List items cannot be null.", nameof(items));
+                if (copied.Count == 256) throw new InvalidDataException("Limit.Controls: Too many list items.");
+                copied.Add(item);
+            }
+        if (copied.Any(item => item.Value.Length > 1024 || item.Label.Length is 0 or > 1024)
+            || copied.Select(item => item.Value).Distinct(StringComparer.Ordinal).Count() != copied.Count
+            || copied.Select(item => item.Label).Distinct(StringComparer.Ordinal).Count() != copied.Count)
+            throw new ArgumentException("Control.Definition: List values and effective labels must be unique and bounded.", nameof(items));
+        if (selectedValue != null && copied.All(item => item.Value != selectedValue))
+            throw new ArgumentException("Control.Definition: The initial selection must name a list item.", nameof(selectedValue));
+        Kind = kind; InitialText = initialText; Items = new ReadOnlyCollection<ContentControlListItem>(copied); SelectedValue = selectedValue;
+        IsChecked = isChecked; DateValue = dateValue; MultiLine = multiLine; DateFormat = dateFormat ?? "yyyy-MM-dd";
+        Tag = tag; Alias = alias; Lock = editLock; Binding = binding;
+    }
+    /// <summary>Gets the requested supported kind.</summary>
+    public ContentControlKind Kind { get; }
+    /// <summary>Gets the initial literal text, or null.</summary>
+    public string? InitialText { get; }
+    /// <summary>Gets the copied list items.</summary>
+    public IReadOnlyList<ContentControlListItem> Items { get; }
+    /// <summary>Gets the initial stored selection, or null.</summary>
+    public string? SelectedValue { get; }
+    /// <summary>Gets the initial checkbox state.</summary>
+    public bool IsChecked { get; }
+    /// <summary>Gets the initial date, or null.</summary>
+    public ContentControlDateValue? DateValue { get; }
+    /// <summary>Gets whether plain text allows LF soft breaks.</summary>
+    public bool MultiLine { get; }
+    /// <summary>Gets the explicit bounded date picture.</summary>
+    public string DateFormat { get; }
+    /// <summary>Gets literal tag metadata.</summary>
+    public string? Tag { get; }
+    /// <summary>Gets optional alias metadata.</summary>
+    public string? Alias { get; }
+    /// <summary>Gets the initial lock, applied after the initial value.</summary>
+    public ContentControlLock Lock { get; }
+    /// <summary>Gets the optional explicit local binding.</summary>
+    public ContentControlBinding? Binding { get; }
+}
+
 /// <summary>An immutable, session/version-scoped control snapshot. Reacquire after every committed edit.</summary>
 public sealed class DocumentContentControl
 {
-    internal DocumentContentControl(Guid session, long version, ControlData data, IReadOnlyList<ContentControlParagraph> content)
+    internal DocumentContentControl(Guid session, long version, ControlData data, int? parentId, bool story, ControlStructure structure, IReadOnlyList<ContentControlParagraph> content)
     {
         Session = session; Version = version; Identity = data.Identity; Id = data.Id; Kind = data.Kind;
-        Tag = data.Tag; Alias = data.Alias; Owner = data.Inline ? "inline body/cell paragraph" : "block body/cell paragraphs";
+        Tag = data.Tag; Alias = data.Alias; ParentId = parentId;
+        Owner = structure == ControlStructure.Row ? "body table row" : structure == ControlStructure.Cell ? "body table cell"
+            : story ? (data.Inline ? "inline header/footer paragraph" : "block header/footer paragraphs")
+            : (data.Inline ? "inline body/cell paragraph" : "block body/cell paragraphs");
         Lock = data.Lock; ShowingPlaceholder = data.Placeholder; State = data.State;
         IsChecked = data.Kind == ContentControlKind.Checkbox && !data.Placeholder ? data.Checked : null;
         SelectedValue = data.SelectedValue; DateValue = data.Placeholder ? null : data.DateValue; FreeText = data.FreeText;
@@ -200,6 +286,8 @@ public sealed class DocumentContentControl
     internal Guid Identity { get; }
     /// <summary>Gets the stable source OOXML ID; IDs are unique in a preserved session.</summary>
     public int Id { get; }
+    /// <summary>Gets the enclosing typed control's source ID, or null for a top-level control in this snapshot.</summary>
+    public int? ParentId { get; }
     /// <summary>Gets the typed kind.</summary>
     public ContentControlKind Kind { get; }
     /// <summary>Gets literal tag metadata, never implicitly executed.</summary>

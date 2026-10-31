@@ -68,12 +68,17 @@ internal sealed partial class DocxReader
         XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
         XElement? anchor = drawing.Element(Wp + "anchor");
         XElement extent = (anchor ?? drawing.Element(Wp + "inline"))?.Element(Wp + "extent") ?? throw new InvalidDataException("Docx.TextBox: Missing extent.");
+        XElement? description = (anchor ?? drawing.Element(Wp + "inline"))?.Element(Wp + "docPr");
         var box = new PositionedBox
         {
             Width = Integer(extent, "cx", 1, 20116800) / 12700.0,
             Height = Integer(extent, "cy", 1, 20116800) / 12700.0,
-            Anchor = anchor == null ? new DrawingAnchor { Wrap = "topAndBottom" } : ReadAnchor(anchor)
+            Anchor = anchor == null ? new DrawingAnchor { Wrap = "topAndBottom" } : ReadAnchor(anchor),
+            AlternativeText = (string?)description?.Attribute("descr") ?? "",
+            AlternativeTitle = (string?)description?.Attribute("title") ?? ""
         };
+        if (box.AlternativeText.Length > 1024 || box.AlternativeTitle.Length > 1024)
+            throw new InvalidDataException("Shape.TextBoxAlternative: Alternative text or title exceeds its bound.");
         XElement? head = drawing.Descendants(wps + "txbx").FirstOrDefault();
         XElement? continuation = drawing.Descendants(wps + "linkedTxbx").FirstOrDefault();
         if (head != null && continuation != null || content == null && continuation == null && head == null)
@@ -101,9 +106,7 @@ internal sealed partial class DocxReader
         {
             if (!int.TryParse(rotation.Value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int raw))
                 throw new InvalidDataException("Shape.Rotation: Invalid drawing rotation.");
-            int normalized = (int)(((long)raw % 21600000 + 21600000) % 21600000);
-            if (normalized % 5400000 != 0) context.Loss("Shape.GeometryApproximated", "Only quarter-turn text-box rotation is supported.");
-            else box.Rotation = normalized / 60000;
+            box.RotationUnits = raw;
         }
         foreach (string name in new[] { "flipH", "flipV" })
         {
@@ -125,6 +128,9 @@ internal sealed partial class DocxReader
         XElement? body = drawing.Descendants(wps + "bodyPr").FirstOrDefault();
         if (body != null)
         {
+            string? upright = (string?)body.Attribute("upright");
+            if (upright is not null and not "true" and not "false" and not "1" and not "0" and not "on" and not "off")
+                throw new InvalidDataException("Shape.TextBoxLayout: Invalid upright flag.");
             box.Padding.Left = Inset("lIns", 7.2); box.Padding.Right = Inset("rIns", 7.2); box.Padding.Top = Inset("tIns", 3.6); box.Padding.Bottom = Inset("bIns", 3.6);
             XElement? fit = body.Element(A + "normAutofit");
             if (fit != null)
@@ -134,8 +140,9 @@ internal sealed partial class DocxReader
                     throw new NotSupportedException("Shape.Autofit: Only the default bounded shrink-to-fit intent is supported.");
                 box.ShrinkToFit = true;
             }
-            if (body.Elements().Any(e => e.Name != A + "noAutofit" && e.Name != A + "normAutofit") || (string?)body.Attribute("vert") is string vertical && vertical != "horz")
-                context.Loss("Shape.TextBoxLayout", "Unsupported text-box autofit and vertical text are not retained.");
+            if (body.Elements().Any(e => e.Name != A + "noAutofit" && e.Name != A + "normAutofit") || (string?)body.Attribute("vert") is string vertical && vertical != "horz"
+                || IsTrue(upright))
+                context.Loss("Shape.TextBoxLayout", "Unsupported text-box autofit, text orientation or upright intent is not retained.");
         }
         if ((box.Rotation != 0 || box.ShrinkToFit) && box.Anchor.UnqualifiedLayer)
             context.Loss("Shape.DrawingOrder", "The drawing layer or placement is outside the rotated/fit profile.");
@@ -151,10 +158,17 @@ internal sealed partial class DocxReader
             throw new NotSupportedException("Shape.Vector: Only a single anchored vector shape is supported.");
         XElement? properties = shapes[0].Element(wps + "spPr");
         XElement? geometry = properties?.Element(A + "prstGeom"); string? kind = (string?)geometry?.Attribute("prst");
-        if (kind is not "line" and not "ellipse" and not "roundRect")
-        { context.Loss("Shape.VectorUnsupported", "The drawing geometry is outside the admitted vector profile."); return null; }
+        if (kind is not "line" and not "ellipse" and not "roundRect" and not "rect" and not "triangle" and not "diamond")
+        {
+            if (context.Editing || context.PreserveReview || context.Typography.Enabled || context.Destination == DocumentFormat.Pdf
+                && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+                throw new NotSupportedException("Shape.VectorUnsupported: The drawing geometry is outside the admitted vector profile.");
+            context.Loss("Shape.VectorUnsupported", "The drawing geometry is outside the admitted vector profile."); return null;
+        }
+        if ((string?)anchor.Element(Wp + "docPr")?.Attribute("hidden") is not null and not "0" and not "false" and not "off")
+            throw new NotSupportedException("Shape.Vector: Hidden vector shapes are outside the fixed-output profile.");
         if (properties == null || geometry == null || properties.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
-            || properties.Elements().Any(e => e.Name != A + "xfrm" && e.Name != A + "prstGeom" && e.Name != A + "solidFill" && e.Name != A + "noFill" && e.Name != A + "ln")
+            || properties.Elements().Any(e => e.Name != A + "xfrm" && e.Name != A + "prstGeom" && e.Name != A + "solidFill" && e.Name != A + "gradFill" && e.Name != A + "noFill" && e.Name != A + "ln")
             || geometry.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "prst") || geometry.Elements().Any(e => e.Name != A + "avLst" || e.HasElements || e.Attributes().Any(a => !a.IsNamespaceDeclaration))
             || geometry.Elements().Count() > 1 || shapes[0].Elements().Any(e => e.Name != wps + "cNvSpPr" && e.Name != wps + "spPr" && e.Name != wps + "bodyPr")
             || shapes[0].Element(wps + "cNvSpPr") is XElement visual && (visual.Attributes().Any(a => !a.IsNamespaceDeclaration) || visual.HasElements)
@@ -176,18 +190,22 @@ internal sealed partial class DocxReader
             Width = cx / 12700.0,
             Height = cy / 12700.0,
             Anchor = ReadAnchor(anchor),
-            AlternativeText = (string?)anchor.Element(Wp + "docPr")?.Attribute("descr") ?? ""
+            AlternativeText = (string?)anchor.Element(Wp + "docPr")?.Attribute("descr") ?? "",
+            AlternativeTitle = (string?)anchor.Element(Wp + "docPr")?.Attribute("title") ?? ""
         };
-        if (box.AlternativeText.Length > 1024) throw new InvalidDataException("Shape.Vector: Alternative text exceeds its bound.");
+        if (box.AlternativeText.Length > 1024 || box.AlternativeTitle.Length > 1024) throw new InvalidDataException("Shape.Vector: Alternative text or title exceeds its bound.");
         if (box.Anchor.UnqualifiedLayer) throw new NotSupportedException("Shape.DrawingOrder: Nonzero vector drawing layers are unsupported.");
         XElement? fill = properties.Element(A + "solidFill");
+        XElement? gradient = properties.Element(A + "gradFill");
         if (properties.Element(A + "noFill") is XElement noFill && (noFill.HasElements || noFill.Attributes().Any(a => !a.IsNamespaceDeclaration)))
             throw new NotSupportedException("Shape.Vector: Extended no-fill metadata is unsupported.");
-        if (kind != "line" && fill == null && properties.Element(A + "noFill") == null)
+        if (kind != "line" && fill == null && gradient == null && properties.Element(A + "noFill") == null)
             throw new NotSupportedException("Shape.Vector: Explicit fill or no-fill is required.");
-        if (fill != null && properties.Element(A + "noFill") != null || kind == "line" && fill != null)
+        if ((fill != null ? 1 : 0) + (gradient != null ? 1 : 0) + (properties.Element(A + "noFill") != null ? 1 : 0) > 1
+            || kind == "line" && (fill != null || gradient != null))
             throw new NotSupportedException("Shape.Vector: Conflicting or unsupported fills.");
         if (fill != null) box.Fill = SolidColor(fill);
+        if (gradient != null) box.Gradient = ReadGradient(gradient);
         XElement? line = properties.Element(A + "ln");
         if (line != null)
         {
@@ -202,7 +220,7 @@ internal sealed partial class DocxReader
             }
             else if (line.Element(A + "noFill") == null) throw new NotSupportedException("Shape.Vector: The stroke must specify a solid color or no fill.");
         }
-        if (box.Fill == null && box.Border == null) throw new NotSupportedException("Shape.Vector: Invisible or unspecified vector appearance is unsupported.");
+        if (box.Fill == null && box.Gradient == null && box.Border == null) throw new NotSupportedException("Shape.Vector: Invisible or unspecified vector appearance is unsupported.");
         return box;
         static string SolidColor(XElement solid)
         {
@@ -211,5 +229,52 @@ internal sealed partial class DocxReader
                 throw new NotSupportedException("Shape.Vector: Only opaque RGB colors are supported.");
             return ReadRgb(DocxPackage.RequiredAttribute(children[0], "val")) ?? throw new InvalidDataException("Shape.Vector: Missing RGB color.");
         }
+    }
+
+    private LinearGradient ReadGradient(XElement gradient)
+    {
+        XElement[] parts = gradient.Elements().ToArray();
+        if (gradient.Attributes().Any(a => !a.IsNamespaceDeclaration) || parts.Length != 2
+            || parts[0].Name != A + "gsLst" || parts[1].Name != A + "lin")
+            throw new NotSupportedException("Shape.Gradient: Only simple linear gradients are supported.");
+        XElement list = parts[0], linear = parts[1];
+        if (list.Attributes().Any(a => !a.IsNamespaceDeclaration) || list.Elements().Any(e => e.Name != A + "gs")
+            || linear.HasElements || linear.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "ang" && a.Name != "scaled"))
+            throw new NotSupportedException("Shape.Gradient: Extended stops or linear-shading metadata are unsupported.");
+        int angle = Integer(linear, "ang", 0, 21599999);
+        if (angle is not (0 or 5400000 or 10800000 or 16200000))
+            throw new NotSupportedException("Shape.Gradient: Only cardinal linear angles are qualified.");
+        string scaledValue = (string?)linear.Attribute("scaled") ?? "1";
+        if (scaledValue is not ("0" or "1" or "false" or "true" or "off" or "on"))
+            throw new InvalidDataException("Shape.Gradient: Invalid gradient scaling flag.");
+        XElement[] items = list.Elements().ToArray();
+        if (items.Length is < 2 or > 8) throw new InvalidDataException("Limit.GradientStops: A gradient requires two to eight stops.");
+        context.ReserveGradientStops(items.Length);
+        var stops = new GradientStop[items.Length]; int previous = -1;
+        for (int i = 0; i < items.Length; i++)
+        {
+            context.CheckCancellation(); XElement stop = items[i];
+            if (stop.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "pos"))
+                throw new NotSupportedException("Shape.Gradient: Extended stop metadata is unsupported.");
+            int position = Integer(stop, "pos", 0, 100000);
+            if (position <= previous) throw new NotSupportedException("Shape.Gradient: Duplicate or unordered stops are unsupported.");
+            XElement[] colors = stop.Elements().ToArray();
+            if (colors.Length != 1 || colors[0].HasElements
+                || colors[0].Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "val"))
+                throw new NotSupportedException("Shape.Gradient: Stops require untransformed opaque RGB or local theme colors.");
+            string value = DocxPackage.RequiredAttribute(colors[0], "val"), color; string? scheme = null; bool mappingDifference = false;
+            if (colors[0].Name == A + "srgbClr")
+                color = ReadRgb(value) ?? throw new InvalidDataException("Shape.Gradient: Missing RGB stop color.");
+            else if (colors[0].Name == A + "schemeClr" && value is ("accent1" or "accent2" or "accent3" or "accent4" or "accent5" or "accent6"))
+            {
+                scheme = value;
+                color = theme?.Package == null ? throw new NotSupportedException("Shape.Gradient: Theme stops require a complete retained local theme.")
+                    : theme.Color(value, null, null) ?? throw new NotSupportedException("Shape.Gradient: The theme stop does not resolve.");
+                mappingDifference = !theme.Colors.TryGetValue(value, out string? direct) || color != direct;
+            }
+            else throw new NotSupportedException("Shape.Gradient: Unsupported stop color.");
+            stops[i] = new GradientStop(position, color, scheme, mappingDifference); previous = position;
+        }
+        return new LinearGradient(angle, IsTrue(scaledValue), stops);
     }
 }

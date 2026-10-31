@@ -12,7 +12,7 @@ The additive `ReportData.Prepare(data, plan, options, cancellationToken)` API
 snapshots named input once, then stages collection operations and named computed
 values. It returns ordinary immutable merge data through `Values`; pass that to
 existing `WordDocument.Merge`. Caller objects and document sessions are untouched.
-This P1 implementation merged in PR #85 and is separate from published packages.
+This P1 implementation merged in PR #85 and is included in the published 1.5.0 packages.
 
 Plans use immutable DTOs, ASCII identifier paths and explicit expression nodes.
 There is no expression language, callback, database access or formula execution.
@@ -47,7 +47,7 @@ rows are counted across collections; collection evaluation also bounds generated
 rows. No computed output may replace an existing root identifier.
 PR #135 adds bounded mixed paragraph/simple-table body repeats; see the
 [template profile](editing-and-templates.md#mixed-report-regions--merged-source)
-for ownership, limits and the pending-source status. Other unsupported body repeat
+for ownership and limits. Other unsupported body repeat
 structures remain non-executable. DOCX save can retain
 their cached content while omitting the unsafe repeat tag with a
 `Template.ControlStructure` loss; it does not silently turn them into executable templates.

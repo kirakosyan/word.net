@@ -1,0 +1,1029 @@
+{
+  "roadmap": 138,
+  "issue": 160,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "8737a8a2d8477973d5b92555eaaeb1a7d0c06a43",
+  "scope": "Diagnosed ordinary managed general-angle text boxes and bounded inline images/links; independent text and link placement disagrees with LibreOffice. Full issue acceptance remains open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker on this source.",
+    "format": "Solution verification passed on identical source.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2269,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "bffc7b020ce0cbf8f78093987e691b0cc32c6afbceac2dc1d9301578bc3e3d1e"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2269,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "f1605c4af36c26324cb5476b20e6a03d7ea5c6461270276853539df051b9ad83"
+    },
+    "capabilityMatrix": {
+      "profiles": 88,
+      "testMethods": 418,
+      "net10CasesPassed": 741
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API validation and archive verification against this source commit; no package was published.",
+    "packageVerificationLogSha256": "1d1f4b804417dc0d983594d5b1b3bb673b6d5f56ed851d969340ac98813cb6a6",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "d4adf7dfa189dd626ec65c6c2701f4a847859d597fd71a38cab96a0d72d9e3ea",
+      "wordnet.Fonts.1.5.0.nupkg": "9c36330639cd4329f0d0c10485fb8257eac58b2a567bb577d00e5bf7f025652f",
+      "wordnet.Ocr.1.5.0.nupkg": "15947aa065a0888242da1a83f3fb79832eba3ce8e8ab950c4459619a0679a78c"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 43.067949999999996,
+      "CandidateMedianMilliseconds": 40.60435,
+      "Ratio": 0.9427973702022038,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 39531704.0,
+      "PeakSampledManagedBytes": 27291968.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-rotation-performance-8737a8a.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-rotation-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "eab4726ec059d4ea1ee0de0577903fd3b972c3560e4bd893598f52e51ceacb9d",
+    "checkerLogSha256": "fccd8a3a0edd8cf5d0cbb01cc95cc93bd9f6e150fe498dfc002beb4a4e290c4c",
+    "documents": {
+      "plain-30": {
+        "sourceDocx": "9cef860b907b1c00751cdbd3557195bdbfc32d9e229270a482ed3445aee4978a",
+        "savedDocx": "2456bc181aa88914b7b47e508a1e02e5ddd7423e022ec03360c8288a71482009",
+        "savedAgainDocx": "2456bc181aa88914b7b47e508a1e02e5ddd7423e022ec03360c8288a71482009",
+        "pdf": "e6d3fa43db0d3a45796242b44cde23dbfe8445f252693119e5b4e53ac7944211",
+        "xps": "901952b42f98265fdaa0ef593de1538bfc6e7fc0a8a1743e287b62cd93ca1b0a",
+        "svg": "b8c992d4074cbdfce87058ef21a51f2a503b9bb0f7253b11575267a0b1faae5e",
+        "referencePdf": "311b703658d53a7d166c6c739d42c8401f7de9db2aa73d4543346eaaf7daa415",
+        "diagnostics": "5f1b30854b426083d65721cefab0d40b7b677e5b6e0e3c68f885eb8756aef45e"
+      },
+      "plain-45": {
+        "sourceDocx": "876dd6482f1786b4eca3de68b2e6aba91cc76f191d76e4cc6d11e873294ae4de",
+        "savedDocx": "3aaa2b791a8065ba571426111e8c6798594dbdedc24ab22c7f983b89438f4db1",
+        "savedAgainDocx": "3aaa2b791a8065ba571426111e8c6798594dbdedc24ab22c7f983b89438f4db1",
+        "pdf": "ddac00f4ee4d698cdf8c126b0791a44456fce19669880c1b2805b57928dc3c0d",
+        "xps": "2921a1807f4604bf1301dbefad4e9da9a57cbab8cfc645b32c8f3cea3ad8b087",
+        "svg": "38c173c05eefab10365e674ca203f0bf3a04bf2bae0dc9d77481f78e49f548da",
+        "referencePdf": "b38e8c3eb5e860d15341e9d62ddeb9839a1ae2f5aa0c766967ac7326212dbab4",
+        "diagnostics": "5f1b30854b426083d65721cefab0d40b7b677e5b6e0e3c68f885eb8756aef45e"
+      },
+      "plain-fractional": {
+        "sourceDocx": "63e6c2fc38a9885c91fdf8768a7c9a293af0c565b1fb2873ed441deec00eff2d",
+        "savedDocx": "fadbdb062a38675f4ffeec79e194f050a39baee33319a23eb6f4c02d0c7e2667",
+        "savedAgainDocx": "fadbdb062a38675f4ffeec79e194f050a39baee33319a23eb6f4c02d0c7e2667",
+        "pdf": "e675e333772c722b4f49e8c63a4554715b7211302debf9cbf84bea90644517b8",
+        "xps": "f96f191984c1f4da37235e860ae9c578f3b9c90078ebbfb2652b467334d86d47",
+        "svg": "6260f48dc1ef45ebbda4bbd2b31d946e511e8fd64f7a69d582383e864c3e26c9",
+        "referencePdf": "6aba65e9cb7b9fd6b024bcb05acda2bd04f6d378a863a9fe892b6144315d69d4",
+        "diagnostics": "5f1b30854b426083d65721cefab0d40b7b677e5b6e0e3c68f885eb8756aef45e"
+      },
+      "linked-image-45": {
+        "sourceDocx": "f8aeb2b371c41e652a862638b83f36d23f45a667cc80fa01e84a7b1fb76cef19",
+        "savedDocx": "4bfcaea3849eb636d673814ff7b5211b4b18d3bb2f788e39bc50a8991e248fb7",
+        "savedAgainDocx": "4bfcaea3849eb636d673814ff7b5211b4b18d3bb2f788e39bc50a8991e248fb7",
+        "pdf": "e8c8ac6ad3006cf6370c2ab640079d61a6cba94cba76ec81dcdf0daae4c9587d",
+        "xps": "4c269c46a33cd24dfedc5f2838e8172510cea09f44742a97b0fbb5ce3d459d4a",
+        "svg": "dcb40f4a448e9e2500a61178eecd3d08aa39166e53eccda09976958ab1d2fd42",
+        "referencePdf": "da764fefa5d8ea2718f7fe9230667ed3d99070b32e4b7f2ba1795f4c42d24374",
+        "diagnostics": "f4d67efcd884a91fe335f02f3d7a7cea38a9cab3c1ffb7dde466d03ce2c8cb9f"
+      },
+      "linked-image-90": {
+        "sourceDocx": "8cb9305c7a30e2a18742992553278dda66de965293ee43a3881651eb9aeb8a87",
+        "savedDocx": "f8571b89971a5cedbdffcbddbad28c4ca134e4d25f445077eef0ec5f554bc33e",
+        "savedAgainDocx": "f8571b89971a5cedbdffcbddbad28c4ca134e4d25f445077eef0ec5f554bc33e",
+        "pdf": "663a561f446da12f6421154bf0f1f20161834b24b98c2a87c10854def1f96723",
+        "xps": "6c0a53122de3ef3c39bd0f43be6f8f7d4c5ec84757cb9a3ce7f555ff679c3b22",
+        "svg": "ab08421df522ca42b32e418c18a1cfb67c7353a04f6941ae3b9b2795514f2812",
+        "referencePdf": "09b3bd7c5f704d33271dc41642d8034d818f00b3484f3b020b6c6879dbc60af1",
+        "diagnostics": "5f1b30854b426083d65721cefab0d40b7b677e5b6e0e3c68f885eb8756aef45e"
+      }
+    },
+    "result": {
+      "specimens": [
+        {
+          "rawAngle": 1800000,
+          "linkedImage": false,
+          "repeatedSaveChecked": true,
+          "editableImageSha256": null,
+          "shapeBounds": {
+            "pdf": [
+              89.37823486328125,
+              70.3590087890625,
+              250.62176513671875,
+              209.64105224609375
+            ],
+            "xps": [
+              89.37818908691406,
+              70.3589859008789,
+              250.62176513671875,
+              209.64105224609375
+            ],
+            "svg": [
+              89.37821960449219,
+              70.35897827148438,
+              250.6217803955078,
+              209.64102172851562
+            ],
+            "reference": [
+              89.3499984741211,
+              70.4000244140625,
+              250.60000610351562,
+              209.70001220703125
+            ]
+          },
+          "shapeMaxDeviationPt": {
+            "pdf": 3.609471622212368e-05,
+            "xps": 3.609471622212368e-05,
+            "svg": 5.5771380971236795e-06,
+            "reference": 0.058996055653722124
+          },
+          "geometryTolerancePt": 0.5,
+          "rasterSamples144Dpi": {
+            "pdf": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "xps": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "svg": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "reference": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ]
+          },
+          "rasterChannelTolerance": 8,
+          "textDirectionDegrees": 30.00000044529205,
+          "referenceDirectionDegrees": 0.0,
+          "textOrigin": [
+            127.93411254882812,
+            87.26025390625
+          ],
+          "referenceTextOrigin": [
+            96.6500015258789,
+            84.20001220703125
+          ],
+          "textOriginDifferencePt": 31.43343254806656,
+          "referenceTextFidelityPassed": false,
+          "referenceTextTolerancePt": 0.5,
+          "referenceTextAngleDifferenceDegrees": 30.000000445292045,
+          "pdfLinkBounds": null,
+          "referenceLinkBounds": null,
+          "diagnostics": [
+            "Docx.AdditionalParts",
+            "Docx.AuxiliaryMetadata",
+            "Docx.LanguageMetadata",
+            "Docx.PageLayout",
+            "Docx.RunFormatting",
+            "Docx.Settings",
+            "Docx.ThemeFont",
+            "Font.Substituted",
+            "Shape.RotationReference"
+          ]
+        },
+        {
+          "rawAngle": 2700000,
+          "linkedImage": false,
+          "repeatedSaveChecked": true,
+          "editableImageSha256": null,
+          "shapeBounds": {
+            "pdf": [
+              92.21826171875,
+              62.218292236328125,
+              247.78173828125,
+              217.78176879882812
+            ],
+            "xps": [
+              92.21824645996094,
+              62.218231201171875,
+              247.78176879882812,
+              217.78175354003906
+            ],
+            "svg": [
+              92.21826171875,
+              62.21826171875,
+              247.78175354003906,
+              217.78176879882812
+            ],
+            "reference": [
+              92.19999694824219,
+              62.20001220703125,
+              247.75,
+              217.75
+            ]
+          },
+          "shapeMaxDeviationPt": {
+            "pdf": 3.8166848355558614e-05,
+            "xps": 2.2868307894441386e-05,
+            "svg": 2.2868307894441386e-05,
+            "reference": 0.03174593052023056
+          },
+          "geometryTolerancePt": 0.5,
+          "rasterSamples144Dpi": {
+            "pdf": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "xps": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "svg": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "reference": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ]
+          },
+          "rasterChannelTolerance": 8,
+          "textDirectionDegrees": 45.0,
+          "referenceDirectionDegrees": 0.0,
+          "textOrigin": [
+            143.01751708984375,
+            78.16989135742188
+          ],
+          "referenceTextOrigin": [
+            99.5,
+            76.04998779296875
+          ],
+          "textOriginDifferencePt": 43.56912077133786,
+          "referenceTextFidelityPassed": false,
+          "referenceTextTolerancePt": 0.5,
+          "referenceTextAngleDifferenceDegrees": 45.0,
+          "pdfLinkBounds": null,
+          "referenceLinkBounds": null,
+          "diagnostics": [
+            "Docx.AdditionalParts",
+            "Docx.AuxiliaryMetadata",
+            "Docx.LanguageMetadata",
+            "Docx.PageLayout",
+            "Docx.RunFormatting",
+            "Docx.Settings",
+            "Docx.ThemeFont",
+            "Font.Substituted",
+            "Shape.RotationReference"
+          ]
+        },
+        {
+          "rawAngle": 2700001,
+          "linkedImage": false,
+          "repeatedSaveChecked": true,
+          "editableImageSha256": null,
+          "shapeBounds": {
+            "pdf": [
+              92.21826171875,
+              62.218231201171875,
+              247.78173828125,
+              217.78173828125
+            ],
+            "xps": [
+              92.21826171875,
+              62.21824645996094,
+              247.7817840576172,
+              217.7817840576172
+            ],
+            "svg": [
+              92.21826171875,
+              62.21826171875,
+              247.78173828125,
+              217.78176879882812
+            ],
+            "reference": [
+              92.19999694824219,
+              62.20001220703125,
+              247.75,
+              217.75
+            ]
+          },
+          "shapeMaxDeviationPt": {
+            "pdf": 1.669764044720523e-05,
+            "xps": 4.4297771012224985e-05,
+            "svg": 1.6697640432994376e-05,
+            "reference": 0.031752101187692006
+          },
+          "geometryTolerancePt": 0.5,
+          "rasterSamples144Dpi": {
+            "pdf": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "xps": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "svg": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "reference": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ]
+          },
+          "rasterChannelTolerance": 8,
+          "textDirectionDegrees": 45.000016903855354,
+          "referenceDirectionDegrees": 0.0,
+          "textOrigin": [
+            143.01751708984375,
+            78.16986083984375
+          ],
+          "referenceTextOrigin": [
+            99.5,
+            76.04998779296875
+          ],
+          "textOriginDifferencePt": 43.56911928648214,
+          "referenceTextFidelityPassed": false,
+          "referenceTextTolerancePt": 0.5,
+          "referenceTextAngleDifferenceDegrees": 45.00001690385534,
+          "pdfLinkBounds": null,
+          "referenceLinkBounds": null,
+          "diagnostics": [
+            "Docx.AdditionalParts",
+            "Docx.AuxiliaryMetadata",
+            "Docx.LanguageMetadata",
+            "Docx.PageLayout",
+            "Docx.RunFormatting",
+            "Docx.Settings",
+            "Docx.ThemeFont",
+            "Font.Substituted",
+            "Shape.RotationReference"
+          ]
+        },
+        {
+          "rawAngle": 2700000,
+          "linkedImage": true,
+          "repeatedSaveChecked": true,
+          "editableImageSha256": "529dbd2e4e789454ce32c75a610540c66a00cd768a4c37b0eaf61557e1b5a75f",
+          "shapeBounds": {
+            "pdf": [
+              92.21826171875,
+              62.218292236328125,
+              247.78173828125,
+              217.78176879882812
+            ],
+            "xps": [
+              92.21824645996094,
+              62.218231201171875,
+              247.78176879882812,
+              217.78175354003906
+            ],
+            "svg": [
+              92.21826171875,
+              62.21826171875,
+              247.78175354003906,
+              217.78176879882812
+            ],
+            "reference": [
+              92.19999694824219,
+              62.20001220703125,
+              247.75,
+              217.75
+            ]
+          },
+          "shapeMaxDeviationPt": {
+            "pdf": 3.8166848355558614e-05,
+            "xps": 2.2868307894441386e-05,
+            "svg": 2.2868307894441386e-05,
+            "reference": 0.03174593052023056
+          },
+          "geometryTolerancePt": 0.5,
+          "rasterSamples144Dpi": {
+            "pdf": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "xps": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "svg": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "reference": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ]
+          },
+          "rasterChannelTolerance": 8,
+          "textDirectionDegrees": 45.0,
+          "referenceDirectionDegrees": 0.0,
+          "textOrigin": [
+            137.19024658203125,
+            83.99713134765625
+          ],
+          "referenceTextOrigin": [
+            99.5,
+            85.8499755859375
+          ],
+          "textOriginDifferencePt": 37.73576180741089,
+          "referenceTextFidelityPassed": false,
+          "referenceTextTolerancePt": 0.5,
+          "referenceTextAngleDifferenceDegrees": 45.0,
+          "pdfLinkBounds": [
+            135.24569702148438,
+            76.218994140625,
+            169.18186950683594,
+            110.1551513671875
+          ],
+          "referenceLinkBounds": [
+            99.39299774169922,
+            65.8499755859375,
+            135.7570037841797,
+            88.45001220703125
+          ],
+          "diagnostics": [
+            "Docx.AdditionalParts",
+            "Docx.AuxiliaryMetadata",
+            "Docx.LanguageMetadata",
+            "Docx.PageLayout",
+            "Docx.RunFormatting",
+            "Docx.Settings",
+            "Docx.ThemeFont",
+            "Font.Substituted",
+            "Shape.RotatedLinkBounds",
+            "Shape.RotationReference"
+          ]
+        },
+        {
+          "rawAngle": 5400000,
+          "linkedImage": true,
+          "repeatedSaveChecked": true,
+          "editableImageSha256": "529dbd2e4e789454ce32c75a610540c66a00cd768a4c37b0eaf61557e1b5a75f",
+          "shapeBounds": {
+            "pdf": [
+              130.0,
+              70.0,
+              210.0,
+              210.0
+            ],
+            "xps": [
+              129.99996948242188,
+              69.99996948242188,
+              210.0,
+              210.0
+            ],
+            "svg": [
+              130.0,
+              70.0,
+              210.0,
+              210.0
+            ],
+            "reference": [
+              129.89999389648438,
+              70.0,
+              209.89999389648438,
+              210.0
+            ]
+          },
+          "shapeMaxDeviationPt": {
+            "pdf": 0.0,
+            "xps": 3.0517578125e-05,
+            "svg": 0.0,
+            "reference": 0.100006103515625
+          },
+          "geometryTolerancePt": 0.5,
+          "rasterSamples144Dpi": {
+            "pdf": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "xps": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "svg": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ],
+            "reference": [
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                0,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ],
+              [
+                255,
+                255,
+                255
+              ]
+            ]
+          },
+          "rasterChannelTolerance": 8,
+          "textDirectionDegrees": 90.0,
+          "referenceDirectionDegrees": 0.0,
+          "textOrigin": [
+            186.4000244140625,
+            77.19999694824219
+          ],
+          "referenceTextOrigin": [
+            137.1999969482422,
+            93.5999755859375
+          ],
+          "textOriginDifferencePt": 51.861372927780614,
+          "referenceTextFidelityPassed": false,
+          "referenceTextTolerancePt": 0.5,
+          "referenceTextAngleDifferenceDegrees": 90.0,
+          "pdfLinkBounds": [
+            183.64999389648438,
+            77.20001220703125,
+            197.39999389648438,
+            111.4429931640625
+          ],
+          "referenceLinkBounds": [
+            137.09300231933594,
+            73.5999755859375,
+            173.45700073242188,
+            96.20001220703125
+          ],
+          "diagnostics": [
+            "Docx.AdditionalParts",
+            "Docx.AuxiliaryMetadata",
+            "Docx.LanguageMetadata",
+            "Docx.PageLayout",
+            "Docx.RunFormatting",
+            "Docx.Settings",
+            "Docx.ThemeFont",
+            "Font.Substituted",
+            "Shape.RotationReference"
+          ]
+        }
+      ],
+      "negativeControls": {
+        "wrong source angle": "ValueError: Editable angle changed.",
+        "wrong reference": "ValueError: Vector frame differs from analytic geometry by more than 0.5 pt.",
+        "missing diagnostic": "ValueError: Missing reference-disagreement diagnostic.",
+        "wrong vector transform": "ValueError: Vector frame differs from analytic geometry by more than 0.5 pt.",
+        "missing PDF link": "ValueError: PDF or reference link missing or changed.",
+        "changed editable image": "ValueError: Editable image bytes changed."
+      }
+    },
+    "openXml": "Five independent source DOCX files and ten exact-source saved/repeated DOCX files passed Open XML SDK 3.5.1.",
+    "toolWarnings": "LibreOffice reported a missing javaldx helper, and MuPDF sometimes reported No common ancestor in structure tree for reference PDFs. Outputs and negative controls were still checked."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, full #160 acceptance and roadmap #138 remain open."
+}

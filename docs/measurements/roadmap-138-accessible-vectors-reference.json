@@ -1,0 +1,138 @@
+{
+  "roadmap": 138,
+  "issue": 155,
+  "recordedUtc": "2026-10-31",
+  "scope": "Synthetic managed line, ellipse, round rectangle, rectangle, triangle and diamond vectors in dedicated body paragraphs with explicit described or decorative policy. Includes source-order, fill and stroke, page selection and separately opted-in text boxes. This working-tree observation does not qualify all #155 combinations.",
+  "workingTreeParent": "6b4b3a827685b47d54fdcd81bbeb12df8aa4628c",
+  "executedWorkingTreeNet10AssemblySha256": "f6b11637eb115b226cb8c891840c3c581746f86145146ebdde5fcce3409a1b8c",
+  "tools": {
+    "eng/generate-roadmap-138-accessible-vectors.py": "9b397da8865e6107bb6c8c9dbb6ce7b56ccc96b066b34016a52c5422f09554a9",
+    "eng/roadmap-138-accessible-vectors-probe.cs": "dd654aefdb57d6c470ab4bed66ee421bae763a4dae1b8ead48a6da876a8bfb2c",
+    "eng/check-roadmap-138-accessible-vectors.py": "2bcaed38769ad24113fb80cc6d0ee8ee7807e04c6b90023a0f06b305ef56e17d",
+    "eng/test-roadmap-138-accessible-vectors-checker.py": "ca0de94430655fe16171e96fcc903dc026c49dc7f68e2c5bcccb1dc3bcd8d018",
+    "eng/check-roadmap-138-vector-reference.py": "dfab225f32005260484da1de86c80f63aa6fd65c6ee01cf49ea014cf9b2c9f6a",
+    "eng/test-roadmap-138-vector-reference-checker.py": "8333880c4597284ea1cff09154dfe06659c0577f348552a3a235c642a43cc8ef"
+  },
+  "provenance": "Python-docx 1.2.0 (MIT) independently authored 19 synthetic DOCX files with normalized ZIP timestamps; two generations were byte-identical. Open XML SDK 3.5.1 reported zero errors for each source and each saved DOCX; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "documents": {
+    "box-decorative": {
+      "sourceSha256": "b05b9b823f311b50bc6645aabbe24b7379eb23a9f6287592a9b6dcf7a104bc5f",
+      "savedSha256": "2941fc0b271c6313a18134fa5e299fd205aeb239e96f5b32a25585a7ed18562e",
+      "pdfSha256": "02e1418d27c0f52063c20b8aa34b8a1ce0c3a9735713677be356edfeb622d2fd"
+    },
+    "box": {
+      "sourceSha256": "2f47219e0e016514db607d5116898b0fe0998817839b143c6ed4e72ba7fccb52",
+      "savedSha256": "0fa9b843f997ff0e96466285df5b4223fc4d245e4b04e3d56fd1c7bb6ab10e0f",
+      "pdfSha256": "e4dce864d391397666ce9b97c88c6a91c9eafc855ead4caaa03c46f1d81f9bd5"
+    },
+    "decorative": {
+      "sourceSha256": "423f0b8def2b2930679183211e018e5f5eb34b351189408b0d6d599706a4914f",
+      "savedSha256": "2dd4d34ec7c216c64fc4285ed30cfd0b8cd8da48cb4be192002f1c2318fba344",
+      "pdfSha256": "9d53b059bb82bd40675166abe80bd26bbbdef5ef4903157521180f97572622c6"
+    },
+    "described": {
+      "sourceSha256": "afeb3090167471cafd782864216ad9aefe85d5e3dcd6430259db1541edca275c",
+      "savedSha256": "cf93a7730403ff4db01df0e45b98683e7edbc17134ab7339bbc2a0c3dde0c14a",
+      "pdfSha256": "1eb4bf69e863919030fb566fb9ec8f00fd1075278654923536ad4e1728e80171"
+    },
+    "diamond-decorative": {
+      "sourceSha256": "551c57ca845a992a7714e9692ba13e928a6467de9b52b5d7e160f5a6c7179e04",
+      "savedSha256": "ba36a4efc719a993bc253be92cd82a1e7ec564159158917767cf7120966ea5d0",
+      "pdfSha256": "17ac5872daded584d3c05d097fc0b10b8086e66e686d62e3be08146790eef24a"
+    },
+    "diamond-described": {
+      "sourceSha256": "f223e6e4528f3f2b2f4db0e38769290d84b3c8e8827c2de1ab3a6434d0ac62a7",
+      "savedSha256": "95c064d2d39f7f35e2bdd495f67493d8d203e3f0161f485c7e35a8ca81648af6",
+      "pdfSha256": "8a3bcb5cf586682907708a98d7c3c7af5a7852030351a7c0e7a4a02bb71089fd"
+    },
+    "ellipse-decorative": {
+      "sourceSha256": "dd37e4f651b02934beb8391a3665f531a4c54b1f4bd199ac75b02f4bdbced195",
+      "savedSha256": "441c6591af89ae4bae96848366a1343dac6b47cc89fbdd2212188d9824bdef25",
+      "pdfSha256": "0f00ba3a4556881f5d4b71864c6162a703eaaa8d9bfe7f3b7cad336c25a35c2d"
+    },
+    "ellipse-described": {
+      "sourceSha256": "7e35683a930ff5bb40b8b48e834d6f35679bb7af9bc6d134c75e6e995f32305e",
+      "savedSha256": "d889c94761613a6e001f6796107b8880f0e478995fa7203575e01c8aae3ca1a4",
+      "pdfSha256": "e6c321f405eaa536b62f77fbe331fb2ba7ba086819257c6622b7f1a23039f55c"
+    },
+    "line-decorative": {
+      "sourceSha256": "5afdf5429a96cd522a779494f9005c0ded0d20c230597bfae4d5397deb53ca05",
+      "savedSha256": "372de2b96ab38ba1212b5c322d389413bbd38a421dcb94f5b967a7b02eb4c934",
+      "pdfSha256": "09f2d0aaf19a434b876a18a4df087f62963e196d2011ae2c402672c9ddeffd6f"
+    },
+    "line-described": {
+      "sourceSha256": "e0d73c4390b767b34cc1742cc8aed6191a07b8a3c2ebebc5aacf67eff845e95d",
+      "savedSha256": "d9f2fc9738720f488ee45acdabb56abfd37f841e9f45d81219fbb62d7101d3e9",
+      "pdfSha256": "4eebfdf1c8e0ebc4cb8c9f9c89209e48dddfd5e5e56bcb1b488ae88440f1c92e"
+    },
+    "rect-decorative": {
+      "sourceSha256": "10d6deed5ba4eee10152a0af422b08f78d363c8b0e9dea6680ad94737cc6b6ca",
+      "savedSha256": "cda5f5c664b895526208dadd391372b5688c20e0b73eadffda98f0f705343f8c",
+      "pdfSha256": "453306ce60c2724756936f70c826563fe173878a315643dfacb213a79f05dfcc"
+    },
+    "rect-described": {
+      "sourceSha256": "0075f66c2a8cc76753ab0f4882cdf3e899006d3cc73172aa0063b7fd0fee9cab",
+      "savedSha256": "eabc3e4e3a39cca30a63a87b7384017e0aee0124b422075e6a2383b96e477680",
+      "pdfSha256": "fb18db7a986b18b8a5c5246616d698565326f254c35fabff15e6f15cf3691814"
+    },
+    "roundRect-decorative": {
+      "sourceSha256": "09fd64378d7b51781857f7e0ae65ddf376fc0420dc51356d7ebeb27c49bed986",
+      "savedSha256": "fd0dba678c182ccc011d49a90d7d78b2edc29edc9dd85939d01f309335f1f4b6",
+      "pdfSha256": "47268915c1e0569ba6e482c20828febf4ab5dfc44596af178304b853498f9c7d"
+    },
+    "roundRect-described": {
+      "sourceSha256": "9d324beeda8a880d61daf52e2921708d6a3af44ec1360f01ed6d7e55356e69d2",
+      "savedSha256": "77ae33f6230f4f3fff776234e52259cfd58dd22066567e9a29ed797c527294eb",
+      "pdfSha256": "7a8ba225589dde8f6d5c72499f20edb526abc58ff1944cb01cdcf86fe9269e1b"
+    },
+    "selection": {
+      "sourceSha256": "bcb72b465a344680623c9ab95c002a49f56c3d0fbf95f41705784316d3508244",
+      "savedSha256": "5f88812119140fc90f830c392c70b15e3440eb157798b552fb07ca18527a6f2b",
+      "pdfSha256": "a4795cfd4e1520cc7d9b1ea2d83261c04e4663280ae7f10780efc93565044ec5"
+    },
+    "stroke": {
+      "sourceSha256": "175941de90580778a5b19c75a26daee474bf47497deb645d5bbdd834e15545e7",
+      "savedSha256": "98b60135a3a71ce36457c4b261a1b974bccae21b840b103609f67943946025a4",
+      "pdfSha256": "a85d29d237fccd725c8e4e5adfd95d451d1cfc0690ec89e34a2168c688927653"
+    },
+    "triangle-decorative": {
+      "sourceSha256": "423f0b8def2b2930679183211e018e5f5eb34b351189408b0d6d599706a4914f",
+      "savedSha256": "2dd4d34ec7c216c64fc4285ed30cfd0b8cd8da48cb4be192002f1c2318fba344",
+      "pdfSha256": "ecb2bca5d575e1580bee4d0c57ce1f7071bcd5328802306d5b432a39e01e87bf"
+    },
+    "triangle-described": {
+      "sourceSha256": "afeb3090167471cafd782864216ad9aefe85d5e3dcd6430259db1541edca275c",
+      "savedSha256": "cf93a7730403ff4db01df0e45b98683e7edbc17134ab7339bbc2a0c3dde0c14a",
+      "pdfSha256": "e2f3588441846ce19ad189c29595420aa66b808e6172fe681b08cc96ce7ac79c"
+    },
+    "two": {
+      "sourceSha256": "16ebc152e2304590bae4911afc1219b65a1021fb22760d1e13d7b70e3b01e3c8",
+      "savedSha256": "cc52a6abc75cf414b28423e14a94a05b3db85aab6237e8b97a943af61710fe05",
+      "pdfSha256": "e3bb73e6202a2795e122ccd8eb79a41afa4e5e92de8c36ecce71e4cf19ca5c16"
+    }
+  },
+  "untaggedNegativePdfSha256": "d76a62562f5740189139993cc16c32482159d68e331ff7cf5189dcfa3443f94c",
+  "veraPdfXmlSha256": "3df4d33fe249d7b74ad2217bf4ee4afaf4bf6be12d00abcf3cce963d8e6431da",
+  "independentValidation": "Offline pinned veraPDF 1.30.2 image sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb accepted all 19 positive PDF/UA-1 specimens and rejected the untagged control. Test-only pypdf 6.10.0 verified logical source order, alternative text, Figure marks, artifact paint and ParentTree ownership for every specimen. Reordered, altered-alternative, wrong-parent and untagged controls failed for the expected reasons.",
+  "geometry": {
+    "reference": "LibreOffice 24.2.7.2, network disabled, image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644",
+    "referencePdfSha256": "fcb6fced4dd284715fb8dbea13316271fa890892291ad07cde36dc855f882154",
+    "checker": "PyMuPDF 1.27.2.2 compared the authored and saved editable triangle and actual vector PDF against an independently rendered reference. Changed description and substituted, misplaced geometry controls failed.",
+    "actualBoundsPt": [
+      100.0,
+      60.5474853515625,
+      240.0,
+      140.5474853515625
+    ],
+    "referenceBoundsPt": [
+      100.0,
+      60.70001220703125,
+      240.0500030517578,
+      140.75
+    ],
+    "maximumVertexDifferencePt": 0.2085964717267737,
+    "tolerancePt": 0.5
+  },
+  "retainedEarlierAttempts": "Initial rejection tests supplied no document title and failed on Pdf.Title before reaching the intended vector errors; the tests now set the title. An initial lenient accessible conversion silently omitted unsupported vectors; accessible/native/archive conversions and editable sessions now reject instead. One subsequent session test executed a stale incremental binary because its source was edited during compilation; a fresh build passed. The clean verification environment initially lacked python-docx; it and its typing dependency are now pinned in eng/p2-requirements.txt.",
+  "limitations": "Generated DOCX, PDF and validator XML remain scratch artifacts. Figure descriptions, decorative intent and narrow top-level anchors were independently inspected, but no live Word or screen-reader execution is claimed. Native, archival, grouped, rotated, custom-adjusted, arbitrary-placement and other owner combinations remain open. Exact-commit, package and hosted-runtime qualification are separate."
+}

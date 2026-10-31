@@ -1,10 +1,14 @@
 # ADR B5-REVIEW: revisions, comments and comparison
 
+Historical design checkpoint: published 1.5.0 later added bounded opt-in review
+preservation, decisions, recording and comparison. The [review profile](../review-workflows.md)
+and [capability matrix](../roadmap-102-capability-matrix.json) define current limits.
+
 Design proposal for [#29](https://github.com/kirakosyan/word.net/issues/29),
 2026-10-17. The editing foundation (#11, PR #35) is merged. Its immutable paragraph
 snapshots and clone-before-commit sessions do not retain arbitrary review markup.
-Current `Revisions.Accepted` / `Comments.Ignored` losses and Strict rejection remain.
-Implementation requires an explicit change to the deferred-feature policy in
+At that checkpoint `Revisions.Accepted` / `Comments.Ignored` losses and Strict rejection applied.
+Implementation then required an explicit change to the deferred-feature policy in
 [AGENTS.md](../../AGENTS.md), through a separately scoped implementation PR.
 
 ## Decision: four separate capabilities

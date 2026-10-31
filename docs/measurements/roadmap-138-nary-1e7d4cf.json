@@ -1,0 +1,30 @@
+{
+  "roadmap": 138,
+  "issue": 169,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "1e7d4cf3a2ace346c09500e017295a7a7720cc30",
+  "scope": "Unreleased bounded n-ary authoring, OMML and managed MATH-font layout; not an accepted leaf or published package.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed",
+    "net8ConversionAndEnglishOcr": { "passed": 1666, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1666, "failed": 0, "skipped": 0 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed API and archive validation against this commit",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "98a74f2bce8ddd37324b584a6f99344e4fdf13223af01890dcd89ad913e3342e",
+      "wordnet.Fonts.1.5.0.nupkg": "596eff518ce0e38684eaf11d9fefc757307ffdc413d03aed384cfb3911c3a333",
+      "wordnet.Ocr.1.5.0.nupkg": "296bcb4a8c39b5e16a2016e9be1bfdd28ce1eb70dbe10232d206a5fda653b88f"
+    },
+    "independentFontMetrics": "FontTools 4.61.1 and the pinned STIX font validate operator variants, assembly and MATH constants via eng/verify-nary-font.py."
+  },
+  "previousFailure": {
+    "commit": "e4607ac861a963aa99c45b6a2f20ecd5d91400b4",
+    "net8": { "passed": 1658, "failed": 8, "skipped": 0 },
+    "net10": { "passed": 1658, "failed": 8, "skipped": 0 },
+    "cause": "The conformance-boundary test used an invalid n-ary element as its unsupported object. The operator is now recognized and the malformed source correctly fails during parsing.",
+    "correction": "The test now supplies a schema-validated unsupported bar construct and continues to verify conformance rejection and unchanged output."
+  },
+  "qualification": "Hosted Windows/Linux x64/ARM, actual Framework 4.7.2, final review, merge and package publication are not established for this commit by this local record."
+}

@@ -48,6 +48,11 @@ class EvidenceTests(unittest.TestCase):
                 self.write()
                 self.assertEqual(829, vm.validate_results(self.results, self.manifest)['cases'])
 
+    def test_additional_passing_cases_are_counted_without_weakening_the_minimum(self):
+        self.counters = {'total': 831, 'passed': 831, 'notExecuted': 0, 'failed': 0}
+        self.write()
+        self.assertEqual(831, vm.validate_results(self.results, self.manifest)['cases'])
+
     def test_guest_failure_newer_runtime_and_foreign_bundle_are_rejected(self):
         for key, value in [('passed', False), ('exactFramework472', False), ('frameworkRelease', 533320),
                            ('sourceCommit', 'f' * 40), ('testAsset', 'package'), ('testsSha256', 'f' * 64)]:
@@ -77,6 +82,11 @@ class EvidenceTests(unittest.TestCase):
     def test_skips_failures_timeouts_and_partial_suites_are_rejected(self):
         for counters in [{'total': 829, 'passed': 828, 'notExecuted': 1},
                          {'total': 829, 'passed': 828, 'failed': 1},
+                         {'total': 831, 'passed': 830, 'notExecuted': 1},
+                         {'total': 831, 'passed': 830, 'failed': 1},
+                         {'total': 831, 'passed': 831, 'executed': 830},
+                         {'total': 831, 'passed': 831, 'inconclusive': 1},
+                         {'total': 831, 'passed': 831, 'passedButRunAborted': 1},
                          {'total': 828, 'passed': 828},
                          {'total': 829, 'passed': 829, 'timeout': 1}]:
             with self.subTest(counters=counters):

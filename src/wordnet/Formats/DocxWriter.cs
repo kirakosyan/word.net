@@ -14,11 +14,15 @@ namespace WordNet.Formats;
 internal sealed partial class DocxWriter
 {
     private static readonly XNamespace W = DocxPackage.Word;
+    private static readonly string[] TableBorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
+    private static readonly string[] TableStyleRegions = { "band1Horz", "band2Horz", "band1Vert", "band2Vert", "firstCol", "lastCol", "firstRow", "lastRow", "nwCell", "neCell", "swCell", "seCell" };
     private readonly ConversionContext context;
     private DocumentModel model = null!;
     private readonly Dictionary<string, int> bookmarkIds = new Dictionary<string, int>(StringComparer.Ordinal);
     private readonly List<XElement> relationships = new List<XElement>();
     private readonly HashSet<string> usedStyles = new HashSet<string>(StringComparer.Ordinal);
+    private readonly Dictionary<TableStyle, string> tableStyleIds = new Dictionary<TableStyle, string>();
+    private readonly List<TableStyle> tableStyleOrder = new List<TableStyle>();
 
     private DocxWriter(ConversionContext context)
     {
@@ -30,6 +34,7 @@ internal sealed partial class DocxWriter
         var writer = new DocxWriter(context) { model = document };
         _ = LinkedTextBoxes.Validate(document, context);
         ObjectOutputBudget(document, context);
+        writer.PrepareTableStyles(document);
         if (DocumentReferences.HasFields(document)) _ = DocumentReferences.Refresh(document, context, paginate: false);
         writer.RegisterStories(document);
         var body = new XElement(W + "body");
@@ -68,7 +73,7 @@ internal sealed partial class DocxWriter
                 new XAttribute("ContentType", "application/vnd.openxmlformats-package.relationships+xml")),
             new XElement(contentTypes + "Default", new XAttribute("Extension", "xml"), new XAttribute("ContentType", "application/xml")),
             new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/document.xml"),
-                new XAttribute("ContentType", DocxPackage.MainContentType)));
+                new XAttribute("ContentType", context.Destination == DocumentFormat.Dotx ? DocxPackage.TemplateContentType : DocxPackage.MainContentType)));
 
         using var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true);
         var rootRelationships = new XElement(DocxPackage.Relationships + "Relationships", Relationship("rDocument", "officeDocument", "word/document.xml"));
@@ -91,10 +96,11 @@ internal sealed partial class DocxWriter
                 new XAttribute(XNamespace.Xmlns + "mc", "http://schemas.openxmlformats.org/markup-compatibility/2006"),
                 new XAttribute(XName.Get("Ignorable", "http://schemas.openxmlformats.org/markup-compatibility/2006"), "w14") } : null, body));
 
+        writer.WriteTheme(document, archive, types);
         writer.WriteStories(document, archive, types);
         writer.WriteReview(archive, types);
         writer.WriteTypedParts(archive, types);
-        if (writer.usedStyles.Count > 0)
+        if (writer.usedStyles.Count > 0 || writer.tableStyleOrder.Count > 0)
         {
             types.Add(new XElement(contentTypes + "Override", new XAttribute("PartName", "/word/styles.xml"),
                 new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml")));
@@ -122,7 +128,9 @@ internal sealed partial class DocxWriter
         if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
         XElement? properties = last.Element(W + "pPr");
         if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
-        properties.Add(Section(settings));
+        XElement? change = properties.Element(W + "pPrChange");
+        XElement section = Section(settings);
+        if (change == null) properties.Add(section); else change.AddBeforeSelf(section);
     }
 
     private XElement Paragraph(ParagraphBlock paragraph)
@@ -139,14 +147,15 @@ internal sealed partial class DocxWriter
 
         ParagraphLayout resolvedLayout = paragraph.Layout.Copy();
         resolvedLayout.After ??= paragraph.FallbackAfter;
-        ParagraphLayoutProperties(properties, resolvedLayout);
+        bool explicitParagraph = paragraph.ParagraphFormatRevision != null || paragraph.ExplicitParagraphFormat;
+        ParagraphLayoutProperties(properties, resolvedLayout, explicitParagraph);
         if (paragraph.List != null)
         {
             XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "tabs" || e.Name == W + "spacing" || e.Name == W + "ind");
             if (spacing == null) properties.Add(NumberingReference(paragraph.List));
             else spacing.AddBeforeSelf(NumberingReference(paragraph.List));
         }
-        if (paragraph.Alignment != ParagraphAlignment.Left)
+        if (paragraph.Alignment != ParagraphAlignment.Left || explicitParagraph)
             properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment switch
             { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
         if (paragraph.RightToLeft.HasValue)
@@ -160,6 +169,20 @@ internal sealed partial class DocxWriter
         XElement? markProperties = paragraph.Mark == null ? null : Run(paragraph.Mark).Element(W + "rPr");
         if (paragraph.StructuralRevision != null) { markProperties ??= new XElement(W + "rPr"); markProperties.AddFirst(Revision(paragraph.StructuralRevision)); }
         if (markProperties != null) properties.Add(markProperties);
+        if (paragraph.ParagraphFormatRevision != null)
+        {
+            ReviewRecord record = model.Review.Revisions[paragraph.ParagraphFormatRevision];
+            ParagraphFormatSnapshot previous = paragraph.PreviousParagraphFormat!;
+            ParagraphLayout oldLayout = previous.Layout.Copy(); oldLayout.After ??= previous.FallbackAfter;
+            var old = new XElement(W + "pPr");
+            if (style != null) old.Add(new XElement(W + "pStyle", new XAttribute(W + "val", style)));
+            ParagraphLayoutProperties(old, oldLayout, true);
+            old.Add(new XElement(W + "jc", new XAttribute(W + "val", previous.Alignment switch
+            { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
+            var change = new XElement(W + "pPrChange", new XAttribute(W + "id", ReviewId(reviewIds, record.Id)), new XAttribute(W + "author", record.Author));
+            if (record.Date.HasValue) change.Add(new XAttribute(W + "date", record.Date.Value.ToString("o", CultureInfo.InvariantCulture)));
+            change.Add(old); properties.Add(change);
+        }
         if (properties.HasElements) element.Add(properties);
 
         TemplateControl? currentControl = null; int? currentTypedControl = null;
@@ -253,7 +276,9 @@ internal sealed partial class DocxWriter
             usedStyles.Add("WordnetCode");
             properties.Add(new XElement(W + "rStyle", new XAttribute(W + "val", "WordnetCode")));
         }
-        if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily)));
+        if (appearance.FontFamily != null) properties.Add(new XElement(W + "rFonts", new XAttribute(W + "ascii", appearance.FontFamily), new XAttribute(W + "hAnsi", appearance.FontFamily),
+            appearance.ThemeFontAscii == null ? null : new XAttribute(W + "asciiTheme", appearance.ThemeFontAscii),
+            appearance.ThemeFontHighAnsi == null ? null : new XAttribute(W + "hAnsiTheme", appearance.ThemeFontHighAnsi)));
 
         XElement? companions = appearance.ReviewCompanions == null ? null : XElement.Parse(appearance.ReviewCompanions);
         if (run.Bold || run.FormatRevision != null || run.ExplicitFormat || companions?.Element(W + "bCs") != null)
@@ -269,7 +294,10 @@ internal sealed partial class DocxWriter
         if (companions?.Element(W + "iCs") is XElement italicCs) properties.Element(W + "i")!.AddAfterSelf(new XElement(italicCs));
         if (appearance.Strike) properties.Add(new XElement(W + "strike"));
         if (companions?.Element(W + "noProof") is XElement proof) properties.Add(new XElement(proof));
-        if (run.Color != null || run.FormatRevision != null || run.ExplicitFormat) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color ?? "auto")));
+        if (run.Color != null || run.FormatRevision != null || run.ExplicitFormat) properties.Add(new XElement(W + "color", new XAttribute(W + "val", run.Color ?? "auto"),
+            appearance.ThemeColor == null ? null : new XAttribute(W + "themeColor", appearance.ThemeColor),
+            appearance.ThemeTint == null ? null : new XAttribute(W + "themeTint", appearance.ThemeTint),
+            appearance.ThemeShade == null ? null : new XAttribute(W + "themeShade", appearance.ThemeShade)));
         if ((run.FontSize ?? fallbackFontSize) is double pointSize) properties.Add(new XElement(W + "sz", new XAttribute(W + "val", checked((int)Math.Round(pointSize * 2)))));
         if (companions?.Element(W + "szCs") is XElement sizeCs) properties.Add(new XElement(sizeCs));
         if (appearance.Underline) properties.Add(new XElement(W + "u", new XAttribute(W + "val", "single")));
@@ -350,9 +378,21 @@ internal sealed partial class DocxWriter
     private XElement Table(TableBlock table)
     {
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
+            table.Style == null || table.UsesDefaultStyle && ReferenceEquals(table.Style, model.DefaultTableStyle) ? null : new XElement(W + "tblStyle", new XAttribute(W + "val", tableStyleIds[table.Style])),
             new XElement(W + "tblW", new XAttribute(W + "w", table.WidthPercent.HasValue ? Math.Round(table.WidthPercent.Value * 50).ToString(CultureInfo.InvariantCulture) : table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.WidthPercent.HasValue ? "pct" : table.Width.HasValue ? "dxa" : "auto"))));
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
+        if (table.Borders.Count != 0)
+            element.Element(W + "tblPr")!.Add(TableBorders(table.Borders));
+        if (table.Background != null) element.Element(W + "tblPr")!.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
+            new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", table.Background)));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
+        if (table.Look != null)
+        {
+            var look = new XElement(W + "tblLook", new XAttribute(W + "val", table.Look.Mask.ToString("X4", CultureInfo.InvariantCulture)));
+            foreach (string flag in new[] { "firstRow", "lastRow", "firstColumn", "lastColumn", "noHBand", "noVBand" })
+                if (table.Look.Flags.TryGetValue(flag, out bool enabled)) look.Add(new XAttribute(W + flag, enabled ? "1" : "0"));
+            element.Element(W + "tblPr")!.Add(look);
+        }
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));
@@ -382,10 +422,13 @@ internal sealed partial class DocxWriter
                 if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
                     Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
                 if (cell.VerticalAlignment != "top") cellProperties.Add(new XElement(W + "vAlign", new XAttribute(W + "val", cell.VerticalAlignment)));
-                row.Add(new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Blocks(cell.Blocks)));
+                var content = new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Blocks(cell.Blocks));
+                row.Add(cell.TypedControlId is int cellControl ? TypedControl(cellControl, content) : content);
             }
 
-            if (table.RowControls.TryGetValue(index, out TemplateControl? control))
+            if (table.TypedRowControls.TryGetValue(index, out int typedRow))
+            { element.Add(TypedControl(typedRow, row)); previousControl = null; rowContent = null; }
+            else if (table.RowControls.TryGetValue(index, out TemplateControl? control))
             {
                 if (ReferenceEquals(previousControl, control)) rowContent!.Add(row);
                 else { XElement wrapper = Control(control, row); element.Add(wrapper); rowContent = wrapper.Element(W + "sdtContent"); }
@@ -400,24 +443,33 @@ internal sealed partial class DocxWriter
     private IEnumerable<XElement> Blocks(IEnumerable<DocumentBlock> blocks) => BlockGroups(blocks).Select(g => g.Content);
     private IEnumerable<(DocumentBlock First, DocumentBlock Last, XElement Content)> BlockGroups(IEnumerable<DocumentBlock> blocks, bool includeSections = false)
     {
-        DocumentBlock? first = null, last = null; XElement? group = null, nested = null; TemplateControl? nestedControl = null;
+        DocumentBlock? first = null, last = null; XElement? group = null;
+        var activeControls = new List<TemplateControl>(); var nestedContents = new List<XElement>();
         foreach (DocumentBlock block in blocks)
         {
             if (first != null && (!HasControl(block) || !SameControl(first, block)))
-            { yield return (first, last!, group!); first = null; group = null; nested = null; nestedControl = null; }
+            { yield return (first, last!, group!); first = null; group = null; activeControls.Clear(); nestedContents.Clear(); }
             if (first != null && includeSections && !ReferenceEquals(last!.Section, block.Section))
                 AttachSection(group!.Element(W + "sdtContent")!, last.Section ?? new PageSettings());
             XElement element = block is ParagraphBlock p ? Paragraph(p) : Table((TableBlock)block);
             if (!HasControl(block)) { yield return (block, block, element); continue; }
-            if (first == null) { first = block; group = BlockControl(block, block.NestedControl == null ? element : null); }
-            else if (block.NestedControl == null) group!.Element(W + "sdtContent")!.Add(element);
-            if (block.NestedControl != null)
+            if (first == null) { first = block; group = BlockControl(block, null); }
+            int common = 0;
+            while (common < activeControls.Count && common < block.NestedControls.Count
+                && ReferenceEquals(activeControls[common], block.NestedControls[common])) common++;
+            if (common < activeControls.Count)
             {
-                if (!ReferenceEquals(nestedControl, block.NestedControl))
-                { nestedControl = block.NestedControl; nested = Control(nestedControl, null); group!.Element(W + "sdtContent")!.Add(nested); }
-                nested!.Element(W + "sdtContent")!.Add(element);
+                activeControls.RemoveRange(common, activeControls.Count - common);
+                nestedContents.RemoveRange(common, nestedContents.Count - common);
             }
-            else { nested = null; nestedControl = null; }
+            XElement parent = common == 0 ? group!.Element(W + "sdtContent")! : nestedContents[common - 1];
+            for (int depth = common; depth < block.NestedControls.Count; depth++)
+            {
+                TemplateControl control = block.NestedControls[depth]; XElement wrapper = Control(control, null);
+                parent.Add(wrapper); parent = wrapper.Element(W + "sdtContent")!;
+                activeControls.Add(control); nestedContents.Add(parent);
+            }
+            parent.Add(element);
             last = block;
         }
         if (first != null) yield return (first, last!, group!);
@@ -433,6 +485,59 @@ internal sealed partial class DocxWriter
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
     private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));
+
+    private static XElement TableBorders(IReadOnlyDictionary<string, CellBorder> borders) => new XElement(W + "tblBorders", TableBorderSides
+        .Where(side => borders.ContainsKey(side)).Select(side => new XElement(W + side,
+            new XAttribute(W + "val", borders[side].Style), new XAttribute(W + "sz", Math.Round(borders[side].Width * 8)),
+            new XAttribute(W + "color", borders[side].Color))));
+
+    private void PrepareTableStyles(DocumentModel document)
+    {
+        var styles = new List<TableStyle>(); var seen = new HashSet<TableStyle>();
+        foreach (TableBlock table in document.Tables)
+        {
+            context.CheckCancellation();
+            if (table.UsesDefaultStyle && !ReferenceEquals(table.Style, document.DefaultTableStyle)
+                || document.DefaultTableStyle != null && table.Style == null)
+                throw new InvalidDataException("Docx.TableStyleDefault: A table's default-style identity is inconsistent with the document.");
+        }
+        foreach (TableStyle? style in document.Tables.Select(table => table.Style).Concat(new[] { document.DefaultTableStyle }))
+        {
+            context.CheckCancellation();
+            var pending = new Stack<TableStyle>(); TableStyle? current = style;
+            while (current != null && seen.Add(current))
+            { context.CheckCancellation(); pending.Push(current); current = current.BasedOn; }
+            while (pending.Count != 0) styles.Add(pending.Pop());
+            if (styles.Count > 10000) throw new InvalidDataException("Limit.TableStyles: Too many retained table styles.");
+        }
+        if (styles.Count == 0) return;
+        var reserved = new HashSet<string>(document.Styles.Keys, StringComparer.Ordinal) { "WordnetCode", "WordnetCodeBlock" };
+        foreach (ParagraphBlock paragraph in document.Paragraphs)
+        { context.CheckCancellation(); if (paragraph.StyleId != null) reserved.Add(paragraph.StyleId); }
+        foreach (int level in Enumerable.Range(1, 9)) reserved.Add("Heading" + level.ToString(CultureInfo.InvariantCulture));
+        var sourceIds = new HashSet<string>(StringComparer.Ordinal);
+        long metadataBytes = 0;
+        foreach (TableStyle style in styles)
+        {
+            context.CheckCancellation(); sourceIds.Add(style.Id);
+            metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256
+                + ((long)style.Regions.Count + style.EffectiveRegions.Count + style.RegionThemes.Count + style.EffectiveRegionThemes.Count) * 128);
+            metadataBytes = checked(metadataBytes + (style.RegionBorders.Sum(region => (long)region.Value.Count + 1)
+                + style.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1)) * 128);
+            if (metadataBytes > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
+        }
+        var assigned = new HashSet<string>(reserved, StringComparer.Ordinal); int sequence = 0;
+        foreach (TableStyle style in styles)
+        {
+            context.CheckCancellation(); string id = style.Id;
+            if (assigned.Contains(id))
+            {
+                do { id = "WordnetTableStyle" + (sequence++).ToString(CultureInfo.InvariantCulture); }
+                while (assigned.Contains(id) || sourceIds.Contains(id));
+            }
+            assigned.Add(id); tableStyleIds.Add(style, id); tableStyleOrder.Add(style);
+        }
+    }
 
     private XElement Styles()
     {
@@ -455,6 +560,39 @@ internal sealed partial class DocxWriter
                     new XAttribute(W + "ascii", "Consolas"), new XAttribute(W + "hAnsi", "Consolas"))));
             }
 
+            styles.Add(style);
+        }
+
+        foreach (TableStyle definition in tableStyleOrder)
+        {
+            context.CheckCancellation();
+            var style = new XElement(W + "style", new XAttribute(W + "type", "table"), new XAttribute(W + "styleId", tableStyleIds[definition]),
+                ReferenceEquals(definition, model.DefaultTableStyle) ? new XAttribute(W + "default", "1") : null,
+                new XElement(W + "name", new XAttribute(W + "val", definition.Name)),
+                definition.BasedOn == null ? null : new XElement(W + "basedOn", new XAttribute(W + "val", tableStyleIds[definition.BasedOn])));
+            var properties = new XElement(W + "tblPr");
+            if (definition.RowBandSize.HasValue) properties.Add(new XElement(W + "tblStyleRowBandSize", new XAttribute(W + "val", definition.RowBandSize.Value)));
+            if (definition.ColumnBandSize.HasValue) properties.Add(new XElement(W + "tblStyleColBandSize", new XAttribute(W + "val", definition.ColumnBandSize.Value)));
+            if (definition.Borders.Count != 0) properties.Add(TableBorders(definition.Borders));
+            if (definition.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
+                new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.Background)));
+            if (properties.HasElements) style.Add(properties);
+            foreach (string region in TableStyleRegions)
+                if (definition.Regions.ContainsKey(region) || definition.RegionBorders.ContainsKey(region))
+                {
+                    definition.Regions.TryGetValue(region, out string? color);
+                    definition.RegionThemes.TryGetValue(region, out TableThemeColor? reference);
+                    definition.RegionBorders.TryGetValue(region, out IReadOnlyDictionary<string, CellBorder>? conditionalBorders);
+                    style.Add(new XElement(W + "tblStylePr", new XAttribute(W + "type", region), new XElement(W + "tcPr",
+                        conditionalBorders == null ? null : new XElement(W + "tcBorders", TableBorderSides.Where(side => conditionalBorders.ContainsKey(side)).Select(side =>
+                            new XElement(W + side, new XAttribute(W + "val", conditionalBorders[side].Style), new XAttribute(W + "sz", Math.Round(conditionalBorders[side].Width * 8)),
+                                new XAttribute(W + "color", conditionalBorders[side].Color)))),
+                        color == null ? null : new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"),
+                            reference == null ? new XAttribute(W + "fill", color) : reference.Fallback == null ? null : new XAttribute(W + "fill", reference.Fallback),
+                            reference == null ? null : new XAttribute(W + "themeFill", reference.Token),
+                            reference?.Tint == null ? null : new XAttribute(W + "themeFillTint", reference.Tint),
+                            reference?.Shade == null ? null : new XAttribute(W + "themeFillShade", reference.Shade)))));
+                }
             styles.Add(style);
         }
 

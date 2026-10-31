@@ -45,19 +45,44 @@ internal sealed class ConversionContext
     }
     private long outlinePoints;
     internal void ReserveOutlinePoints(int count) { outlinePoints = checked(outlinePoints + count); if (outlinePoints > Options.MaximumExpandedBytes / 64) throw new InvalidDataException("Limit.FontOutlines: Expanded outline cache exceeds its point budget."); }
+    private int gradientStops;
+    private int gradientPaintStops;
+    internal bool HasGradient { get; set; }
+    internal void ReserveGradientStops(int count)
+    {
+        CheckCancellation(); HasGradient = true; gradientStops = checked(gradientStops + count);
+        if (gradientStops > 4096 || (long)gradientStops * 512 > Options.MaximumExpandedBytes)
+            throw new InvalidDataException("Limit.GradientPaint: Aggregate gradient paint resources exceed the document budget.");
+    }
+    internal void ReserveGradientPaint(int count)
+    {
+        CheckCancellation(); gradientPaintStops = checked(gradientPaintStops + count);
+        if (gradientPaintStops > 4096 || (long)gradientPaintStops * 512 > Options.MaximumExpandedBytes)
+            throw new InvalidDataException("Limit.GradientPaint: Expanded gradient paint work exceeds the document budget.");
+    }
     internal int? PageCount { get; set; }
     internal DocumentFormat Destination { get; set; }
     internal DiagnosticPhase Phase { get; set; }
     internal SourceLocation Location { get; set; } = new SourceLocation("document", "/");
     internal bool Inspecting { get; set; }
     internal bool Editing { get; set; }
+    internal bool TemplateExchange { get; set; }
     internal bool PreserveReview { get; set; }
     internal bool PreserveControls { get; set; }
     internal ContentControlDateMode ControlDateMode { get; set; }
     internal bool HtmlImport { get; set; }
     internal bool PreviewIntermediate { get; set; }
+    internal bool RenderingPreview { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }
     internal TypographyOptions Typography { get; }
+    internal HyphenationOptions Hyphenation { get; }
+    internal bool HyphenationUsed { get; set; }
+    private int hyphenationWork;
+    internal void ReserveHyphenationWork()
+    {
+        CheckCancellation();
+        if (++hyphenationWork > Hyphenation.MaximumWork) throw new InvalidDataException("Limit.HyphenationWork: Dictionary lookup or candidate work exceeds the configured bound.");
+    }
     internal List<OcrPage> OcrPages { get; } = new List<OcrPage>();
     private long metadataBytes;
     private int metadataRegions;
@@ -107,6 +132,7 @@ internal sealed class ConversionContext
     {
         Options = options;
         Typography = (options.Typography ?? throw new ArgumentException("Typography options must not be null.")).Snapshot();
+        Hyphenation = (options.Hyphenation ?? throw new ArgumentException("Hyphenation options must not be null.")).Snapshot();
         OcrMetadata = (options.OcrMetadata ?? throw new ArgumentException("OCR metadata options must not be null.")).Snapshot();
         CancellationToken = cancellationToken;
     }

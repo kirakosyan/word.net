@@ -11,7 +11,7 @@ public sealed class PdfAccessibilityTests
 {
     private static readonly string[] InvalidLanguages = { "en\n", "en-AA-AA", "en<script>" };
     private static readonly string[][] Headerless = { new[] { "A", "B" }, new[] { "1", "2" } };
-    private static WordDocument Source()
+    internal static WordDocument Source()
     {
         string table = "<w:tbl><w:tblGrid><w:gridCol w:w='2000'/><w:gridCol w:w='2000'/></w:tblGrid><w:tr><w:trPr><w:tblHeader/></w:trPr><w:tc>" + TestDocuments.TextParagraph("Product") + "</w:tc><w:tc>" + TestDocuments.TextParagraph("Price") + "</w:tc></w:tr><w:tr><w:tc>" + TestDocuments.TextParagraph("Service") + "</w:tc><w:tc>" + TestDocuments.TextParagraph("42.50") + "</w:tc></w:tr></w:tbl>";
         string heading = "<w:p><w:pPr><w:outlineLvl w:val='0'/></w:pPr><w:r><w:t>Invoice</w:t></w:r></w:p>";

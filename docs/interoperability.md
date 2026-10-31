@@ -1,5 +1,12 @@
 # Interoperability, typography and import
 
+## 1.5.0 release profile
+
+The current published packages include the bounded roadmap #102 additions. See the
+[release notes](releases/1.5.0.md) and [capability matrix](roadmap-102-capability-matrix.json)
+for supported combinations and their runtime qualification. Further compatibility
+work is planned in [roadmap #138](https://github.com/kirakosyan/word.net/issues/138).
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
@@ -19,8 +26,10 @@ The [architecture decision](interoperability-design.md) preceded implementation.
 
 ## Supported matrix and deployment
 
-The normal converter now has 36 directed Word exchanges: the original 28, two HTML
-exports, two HTML imports and four RTF exchanges. `DocumentFormat.Rtf` is appended;
+At the 1.2.0 checkpoint the converter had 36 directed Word exchanges: the original
+28, two HTML exports, two HTML imports and four RTF exchanges. The published 1.5.0
+profile has 40 enabled directions; see the [roadmap #99 profile](roadmap-99-implementation.md).
+`DocumentFormat.Rtf` is appended;
 existing enum values and constructors remain. `WordDocument.Load` accepts HTML/RTF;
 `Save` writes RTF. Public additions match all five target frameworks and contain no
 provider types. XPS remains output-only.
@@ -132,6 +141,77 @@ case. Indic shaping, CJK line breaking and hyphenation remain separate follow-up
 Native typography with tagged/PDF-UA, PDF/A output or XPS is explicitly unsupported in this
 increment. English-only OCR is unchanged.
 
+### Unreleased source: East Asian line breaking
+
+Pending #165 adds `Typography.EastAsianLineBreak` with `Japanese`,
+`SimplifiedChinese` and `TraditionalChinese` selections. `None` is the default
+and preserves the existing layout. The initial managed profile uses the same
+Unicode 17 default UAX #14 rules for all three selections, including conservative
+small-kana/nonstarter handling; it does not claim complete language-specific
+tailoring. It intersects break opportunities with extended grapheme boundaries,
+keeps ordinary and nonbreaking spaces in the logical text, and never splits an
+unbreakable span merely to make it fit.
+
+The current profile renders ordinary left-aligned, single-run body paragraphs to
+untagged PDF 1.7, without selected pages, stories or columns. The selected font
+must cover the complete run; configure an appropriate caller-supplied face.
+Existing family substitutions operate at run
+granularity and retain their diagnostics; per-glyph fallback is not qualified.
+Native shaping, combining marks, emoji/supplementary characters, zero-width and
+word-joiner controls, tables, images, fields, links, vertical text and accessible
+or archival output are rejected. An unbreakable span wider than the column fails
+with `Layout.LineBreakWidth`. The existing bounded local English hyphenation
+dictionary can be selected for admitted mixed text, subject to its own limits and
+search-geometry diagnostic.
+
+Independent LibreOffice measurements match the tested plain Japanese and traditional
+Chinese samples within 0.5 points. Japanese punctuation differs by up to 1.2 points,
+and a simplified Chinese sample wraps `123.45` differently, moving glyphs by up to
+44.7 points horizontally and 16.01 vertically. The original tolerances are unchanged.
+`Layout.EastAsianPunctuationReference` and `Layout.EastAsianMixedReference` reject
+the affected cases in Strict and warn in BestEffort/Lenient. An initial test using
+CID-keyed CFF Noto faces also failed in the existing CFF converter; the qualified
+fixtures are independently converted TrueType subsets and that CFF limitation stays open.
+The [testing record](testing.md) describes the conformance data and independent
+controls. These additions are unreleased source, not published 1.5.0 behavior.
+
+```csharp
+var options = new ConversionOptions(FidelityMode.BestEffort);
+options.Typography.EastAsianLineBreak = EastAsianLineBreakLanguage.Japanese;
+options.Fonts.Sources.Add(FontSource.FromFile("Noto Sans CJK JP", callerFontPath));
+```
+
+### Unreleased source: local dictionary hyphenation
+
+Pending #164 accepts a caller-supplied `HyphenationLexicon` for explicitly
+selected `en` or `en-US`. Entries contain ASCII letters and internal break
+markers, for example `ex-tra-or-di-nary`; the immutable lexicon copies entries
+and never discovers or downloads a dictionary. It admits at most 25,000 words
+and 1 MiB of ASCII entries. `HyphenationOptions` controls minimum prefix and
+suffix lengths, consecutive hyphenated lines, and aggregate lookup/candidate work.
+The default null lexicon leaves existing output unchanged.
+
+The initial profile admits only plain left-aligned or justified one-run body paragraphs on a
+single physical page in ordinary managed PDF. It rejects selected-page, native,
+tagged, archival, preview, multicolumn, structured-owner, tabs/manual breaks, authored soft-hyphen,
+unbreakable overlong-token and multipage combinations. A visible font-outline
+hyphen is excluded from searchable text; a single invisible text carrier retains
+the original word. The carrier's search highlight covers the first line rather
+than both visible fragments. BestEffort/Lenient report
+`Hyphenation.SearchGeometry`, and Strict rejects that loss before output is copied.
+Justified lines also report `Hyphenation.JustificationApproximation`: the tested
+LibreOffice reference differs by 0.58 points in one word origin and 2.26 points
+in the following line's top position, above the unchanged 0.5-point tolerance.
+Independent readers, dictionary points, font-outline checks and corruption
+controls are recorded in the [observation](measurements/roadmap-138-hyphenation-reference.json).
+This does not qualify arbitrary dictionaries, scripts, paragraph owners or full
+#164 acceptance.
+
+```csharp
+var options = new ConversionOptions(FidelityMode.BestEffort);
+options.Hyphenation.Dictionary = new HyphenationLexicon("en-US", new[] { "ex-tra-or-di-nary" });
+```
+
 ## Semantic PDF and PDF/UA-1
 
 `Pdf.Accessibility = PdfAccessibility.Tagged` exports source heading/P, list
@@ -150,7 +230,8 @@ this initial profile assumes the caller-specified document language applies thro
 
 `PdfAccessibility.PdfUa1` requires those semantics even under BestEffort. It rejects
 unsupported notes/text boxes, missing link relationships/destinations, vertically
-merged tables and combination with PDF/A or native typography. Ordinary PDF/PDF-A
+merged tables and, in the released profile, combination with PDF/A. Native
+typography requires its separately qualified profile. Ordinary PDF/PDF-A
 remain the defaults. Tagged mode reports missing semantics; tags alone do not establish
 UA compliance. Generated REF/PAGEREF/TOC links, repeated-header links and decorative-image
 links without a source Link relationship omit the annotation with `Pdf.LinkSemantics`
@@ -174,6 +255,149 @@ The tagged serializer buffers bounded generated tokens, discovers actual page an
 annotation references, appends sequential structure objects and rewrites offsets.
 It reimplements the public token-writer interface for final xref; there is no private
 reflection or guessed object-ID range. UTF-16BE hex preserves accessible descriptions.
+
+### Unreleased source: anchor-ordered text boxes
+
+Pending #154 adds `PdfTextBoxReadingOrder.AnchorOrder` as an explicit caller
+choice for tagged PDF and PDF/UA-1. The default `Reject` keeps the existing
+profile. An admitted unrotated, unlinked text box must be the only meaningful
+item in its own ordinary body paragraph, anchored at that paragraph with
+top-and-bottom wrapping on a one-column page. It may contain ordinary text
+paragraphs and supported links. The structure tree places its content at the
+source anchor without duplicating it; page selection rebuilds the relevant
+page and link associations. The caller is responsible for choosing this order.
+
+Authored text-box descriptions and titles are retained in editable DOCX but
+remain outside this semantic profile; other destinations report
+`Shape.TextBoxAlternative` when they cannot retain them. Notes, mixed or cell/story
+owners, linked/rotated/fitted boxes, native typography and arbitrary placement or
+wrapping remain outside this increment. The [independent observation](measurements/roadmap-138-accessible-box-reference.json)
+checks veraPDF, source order, page/annotation ParentTree mappings and corruption
+controls. It does not establish screen-reader or live Word behavior, published
+package availability or complete #154 acceptance.
+
+```csharp
+options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+options.Pdf.TextBoxReadingOrder = PdfTextBoxReadingOrder.AnchorOrder;
+```
+
+### Unreleased source: accessible vector figures
+
+Pending #155 adds `PdfOptions.VectorSemantics` for tagged PDF and PDF/UA-1.
+The default `Reject` preserves the previous behavior. `DescribedAtAnchor`
+requires a nonempty authored description on every admitted vector and places a
+Figure with that alternative at its source anchor in the logical structure.
+`Decorative` explicitly declares all admitted vectors decorative, requires each
+to have no authored description, and marks their paint as artifacts. Neither
+policy infers an author's intent. Separate vector titles are rejected.
+
+The bounded profile admits the existing unrotated line, ellipse, rounded rectangle,
+rectangle, triangle and diamond geometry. Each vector must be the sole item in an
+ordinary top-level body paragraph on a one-column page, unlayered and anchored to
+the paragraph with top-and-bottom wrapping and zero vertical offset. Figure fill
+and stroke share one semantic owner; page selection removes omitted owners. The
+explicit text-box anchor-order profile can be selected for separate paragraphs in
+the same document. Native typography, notes, histories, groups, adjustments,
+rotations, cell/story owners and arbitrary placement remain outside this increment.
+The separately selected tagged archival profile below admits these bounded vector
+cases. Unsupported or hidden vectors cannot be silently omitted from
+accessible output, even under Lenient. The [independent observation](measurements/roadmap-138-accessible-vectors-reference.json)
+records structure, geometry, schema and PDF/UA checks; it does not establish
+screen-reader or live Word behavior, published-package availability, or full #155
+acceptance.
+
+```csharp
+options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+options.Pdf.VectorSemantics = PdfVectorSemantics.DescribedAtAnchor;
+```
+
+### Unreleased source: general-angle text boxes
+
+Pending #160 preserves the signed DrawingML rotation value, in units of 1/60000
+degree, on editable rectangular DOCX text boxes. In ordinary managed PDF, XPS
+and SVG previews, the frame and supported content rotate around the frame center;
+the axis-aligned bounds of the four transformed corners determine page admission
+and wrap exclusion. Text stays selectable in PDF/XPS, and admitted inline PNG/JPEG
+pixels remain embedded rather than flattening the box into an image. A safe PDF
+link retains its target; its hit rectangle encloses the transformed content and
+therefore includes extra area for a non-cardinal angle. XPS link loss follows the
+existing destination diagnostic.
+
+This is a diagnosed non-strict profile. In five independently authored samples,
+LibreOffice 24.2.7.2 rotated the frame but positioned the box text horizontally;
+the PDF/XPS/SVG output instead rotates that text with the frame.
+The measured origin differences of 31–52 points exceed the unchanged 0.5-point
+comparison tolerance. `Shape.RotationReference` makes this disagreement explicit:
+Strict rejects the new arbitrary-angle cases and the new rotated image/link
+combinations before publishing output; BestEffort/Lenient render with a warning.
+Non-cardinal PDF links additionally report `Shape.RotatedLinkBounds`. This is an
+independent reference disagreement, not a determination of Microsoft Word behavior.
+
+The simple managed paragraph profile admits unanchored, untransformed inline
+images and safe links when autofit is off. Bounded text-only shrink-to-fit keeps
+its existing minimum-size and work limits. Fitted images/links, flipped boxes,
+upright text intent, transformed linked chains, nested structured content,
+native shaping, tagged and archival output are unsupported or diagnosed under
+their existing fidelity rules. Rotated boxes whose frame or stroke extends beyond
+the physical page are rejected. The [testing record](testing.md) describes the
+reference measurements and controls; this pending source is separate from the
+published 1.5.0 packages.
+
+### Unreleased source: linear gradients
+
+Pending #162 preserves anchored, unrotated `ellipse`, `roundRect`, `rect`,
+`triangle` and `diamond` shapes with an explicit linear fill. A gradient has two
+to eight strictly increasing stops from 0 to 100000, an explicit cardinal angle
+of 0, 90, 180 or 270 degrees, and opaque RGB colors or untransformed `accent1`
+through `accent6` colors resolved from a complete retained local theme. Editable
+DOCX keeps the stop positions, angle, scaling flag and admitted theme references.
+The existing solid RGB stroke profile can be used separately.
+
+Managed ordinary PDF uses clipped axial shading, XPS uses a clipped linear brush,
+and SVG preview uses a vector gradient. Each extends its first and last color
+beyond the endpoint stops and interpolates the encoded sRGB components linearly.
+Duplicate or unordered stops are rejected rather than reordered. Aggregate source
+and expanded paint-work limits apply across repeated pages and layout passes: at
+most 4,096 total stops, with 512 bytes of expansion budget per stop. PDF also
+limits the product of physical pages and shading resources to 4,096, with 4,096
+bytes of expansion budget per resulting resource; both budgets are checked against
+`MaximumExpandedBytes`. There is no remote theme or color lookup. When a local theme remaps an accent to a different color, the
+editable mapping survives and managed output uses that mapping; LibreOffice instead
+rendered the original accent in the independent reference. Strict rejects this
+unqualified difference and BestEffort/Lenient report `Shape.GradientThemeMapping`.
+Unsupported angles, transformations, color effects, alpha, groups,
+and tagged, archival or native output remain outside this profile. Strict and
+editable sessions reject unsupported vectors; ordinary BestEffort/Lenient can
+omit them only with a diagnostic. The [independent observation](measurements/roadmap-138-gradients-reference.json)
+records format structure, sampled colors, clipping and the corrected XPS-rendering
+failure. This source increment is not in the published 1.5.0 packages and does not
+claim live Word or complete #162 acceptance.
+
+### Unreleased source: tagged archival PDF
+
+Pending #156 adds `PdfConformance.PdfA2a`, which requires the explicit
+`PdfAccessibility.PdfUa1` profile, document language and title. It embeds the
+document fonts, an archive output intent, PDF/A-2a and PDF/UA-1 identification
+in one XMP packet, and the existing logical structure and annotation ownership.
+Both the archive and accessibility rules must pass: archive validation alone does
+not prove reading order or accessibility. Existing ordinary PDF, PDF/A-2b and
+ordinary PDF/UA options and defaults remain separate.
+
+The tested managed subset includes ordinary headings, paragraphs, simple tables,
+links and described/decorative alpha images; supported chart/equation alternatives;
+and separately opted-in text boxes and vectors at their bounded anchors. Mixing positioned
+drawings with charts/equations, notes, native typography and unqualified owners or
+placements reject before output is copied. Source-semantic requirements and loss
+diagnostics still apply. Independent validators and structure checks are recorded
+in the [observation](measurements/roadmap-138-accessible-archive-reference.json);
+they do not certify arbitrary documents, screen-reader behavior, live Word, public
+packages or complete #156 acceptance.
+
+```csharp
+options.Pdf.Conformance = PdfConformance.PdfA2a;
+options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+options.Pdf.Language = "en-US";
+```
 
 ## Physical pages and previews
 
@@ -203,6 +427,40 @@ DocumentPreview preview = new WordConverter().RenderPages(source, DocumentFormat
 foreach (PagePreview page in preview.Pages)
     File.WriteAllBytes($"page-{page.SourcePage}.png", page.GetBytes());
 ```
+
+### Unreleased source: preview layout snapshots
+
+The pending #167 source can attach an immutable snapshot to the same `RenderPages`
+layout used for the selected preview pages. Configure `PreviewOptions.Layout` to
+enable it. `MaximumFragments` bounds the number of positioned items (1–100,000),
+and the conversion expanded-byte and cancellation limits also apply. Text is absent
+by default; `IncludeText = true` explicitly returns the emitted item text.
+
+```csharp
+var options = new PreviewOptions { Layout = new LayoutSnapshotOptions { MaximumFragments = 5000 } };
+DocumentPreview rendered = new WordConverter().RenderPages(source, DocumentFormat.Docx, options);
+foreach (LayoutFragment fragment in rendered.Layout!.Fragments)
+    if (fragment.Source != null && fragment.Bounds != null)
+        Console.WriteLine($"{fragment.Source}: page {fragment.Page}, x={fragment.Bounds.X}, y={fragment.Bounds.Y}");
+```
+
+For simple top-level managed body paragraphs without fields, controls, lists,
+bookmarks, notes, images, text boxes or objects, `Source` identifies the paragraph
+using the same part/path form as diagnostics. `Bounds` is the union of measured
+glyph boxes in points with the origin at the page's upper-left corner. One source
+paragraph can yield several fragments or pages. The item order is the layout's
+emitted order, not a semantic reading-order promise. `ExtendsOutsidePage` reports
+page-boundary overflow; it is not a general clipping analysis. Source identities
+are valid for the captured source revision and are not permanent across edits.
+
+Only positioned items are listed. Unqualified owners, transformed/native text,
+fields and generated items return null bounds with an `UnavailableReason`, and
+`HasUnmappedGraphics` reports non-text shapes without pretending to locate them.
+Cell, object, note and story identities, arbitrary clipping, review displays and
+cross-edit identity remain open; requesting a detached review-display snapshot
+fails explicitly. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
+checks two simple paragraphs against font outlines, SVG and PDF. This source work
+does not establish full #167 acceptance or change published 1.5.0 capabilities.
 
 ## Digital PDF reconstruction
 

@@ -12,18 +12,40 @@ namespace WordNet.Formats;
 internal sealed partial class DocxReader
 {
     private readonly ContentControlStore typedControls = new ContentControlStore();
-    private readonly Dictionary<XElement, ControlData> typedNodes = new Dictionary<XElement, ControlData>();
+    private Dictionary<XElement, ControlData> typedNodes = new Dictionary<XElement, ControlData>();
+    private readonly Dictionary<string, XDocument> typedStorySources = new Dictionary<string, XDocument>(StringComparer.Ordinal);
     private static readonly XNamespace Cx = "http://schemas.openxmlformats.org/officeDocument/2006/customXml";
     private void PrepareTypedControls(XDocument source)
     {
         if (!context.PreserveControls) return;
         typedControls.DateMode = context.ControlDateMode;
-        XElement[] nodes = source.Descendants(W + "sdt").ToArray();
+        var sources = new List<(XDocument Document, string Part, bool Story)> { (source, mainPart, false) };
+        var storyKinds = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (XElement reference in source.Descendants(W + "sectPr").Elements().Where(element => element.Name == W + "headerReference" || element.Name == W + "footerReference"))
+        {
+            context.ReserveControlWork(1);
+            string id = DocxPackage.RequiredAttribute(reference, DocxPackage.DocumentRelationships + "id");
+            string kind = reference.Name == W + "headerReference" ? "header" : "footer";
+            if (!relationships.TryGetValue(id, out XElement? relation)
+                || (string?)relation.Attribute("Type") != DocxPackage.DocumentRelationships.NamespaceName + "/" + kind)
+                throw new InvalidDataException("Docx.HeaderFooter: A header/footer relationship is missing or has the wrong type.");
+            string part = DocxPackage.ResolvePart(mainPart, relation);
+            if (storyKinds.TryGetValue(part, out string? previous))
+            {
+                if (previous != kind) throw new InvalidDataException("Docx.HeaderFooter: A story part cannot be both header and footer.");
+                continue;
+            }
+            XDocument story = package.ReadXml(part);
+            if (story.Root?.Name != W + (kind == "header" ? "hdr" : "ftr")) throw new InvalidDataException("Docx.HeaderFooter: Invalid story root.");
+            storyKinds.Add(part, kind); typedStorySources.Add(part, story); sources.Add((story, part, true));
+        }
+        var nodes = sources.SelectMany(item => item.Document.Descendants(W + "sdt").Select(node => (Node: node, item.Part, item.Story))).ToArray();
         if (nodes.Length == 0) return;
         if (nodes.Length > 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
         var ids = new HashSet<int>();
-        foreach (XElement node in nodes)
+        foreach (var entry in nodes)
         {
+            XElement node = entry.Node;
             context.CheckCancellation(); Attributes(node);
             XElement[] props = node.Elements(W + "sdtPr").ToArray();
             if (props.Length != 1 || node.Elements(W + "sdtContent").Count() != 1 || node.Elements(W + "sdtEndPr").Count() > 1
@@ -34,9 +56,10 @@ internal sealed partial class DocxReader
                 throw new InvalidDataException("Control.DuplicateId: Control IDs must be unique signed integers.");
         }
         int next = 1;
-        foreach (XElement node in nodes)
+        foreach (var entry in nodes)
         {
-            using var location = context.At(XmlSourceLocation.Create(node, mainPart));
+            XElement node = entry.Node;
+            using var location = context.At(XmlSourceLocation.Create(node, entry.Part));
             XElement properties = node.Element(W + "sdtPr")!;
             int id;
             if (properties.Element(W + "id") is XElement identity) id = Integer(identity, W + "val", int.MinValue, int.MaxValue);
@@ -46,32 +69,105 @@ internal sealed partial class DocxReader
                 id = next; ids.Add(id); context.Report("Control.IdAssigned", "A missing content-control ID was assigned deterministically in document order.");
             }
             bool inline = node.Parent?.Name == W + "p";
-            if (!inline && node.Parent?.Name != W + "body" && node.Parent?.Name != W + "tc"
-                || node.Ancestors().Any(a => a.Name == W + "sdt" || a.Name == W + "fldSimple" || a.Name == W + "txbxContent"
+            ControlStructure structure = !entry.Story && node.Parent?.Name == W + "tbl" ? ControlStructure.Row
+                : !entry.Story && node.Parent?.Name == W + "tr" ? ControlStructure.Cell : ControlStructure.None;
+            XElement[] parents = node.Ancestors(W + "sdt").ToArray();
+            if (parents.Length + 1 > context.Options.MaximumNestingDepth)
+                throw new InvalidDataException("Limit.NestingDepth: Typed controls exceed the nesting limit.");
+            if (parents.Length != 0 && (parents.Length != 1 || !inline || node.Parent?.Parent != parents[0].Element(W + "sdtContent")
+                || !typedNodes.TryGetValue(parents[0], out ControlData? parent) || parent.Inline || parent.Kind != ContentControlKind.RichText
+                || parent.Placeholder || parent.Binding != null))
+                throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
+            if (entry.Story && (parents.Length != 0 || (inline ? node.Parent?.Parent != node.Document?.Root : node.Parent != node.Document?.Root))
+                || !entry.Story && (!inline && structure == ControlStructure.None && node.Parent?.Name != W + "body" && node.Parent?.Name != W + "tc" || !node.Ancestors(W + "body").Any())
+                || node.Ancestors().Any(a => a.Name == W + "fldSimple" || a.Name == W + "txbxContent"
                     || a.Name == W + "ins" || a.Name == W + "del" || a.Name == W + "moveFrom" || a.Name == W + "moveTo")
-                || !node.Ancestors(W + "body").Any())
-                throw new NotSupportedException("Control.ProtectedOwner: Typed controls require unnested ordinary body/cell paragraph owners.");
+                )
+                throw new NotSupportedException("Control.ProtectedOwner: Typed controls require admitted ordinary body, cell or plain header/footer owners.");
             var data = ReadTypedProperties(properties, id, inline);
+            data.Structure = structure;
             if (node.Element(W + "sdtEndPr") is XElement end)
             {
                 Attributes(end); if (end.Elements().Count() != 1 || end.Element(W + "rPr") is not XElement rpr) throw new NotSupportedException("Control.Unsupported: End properties require one admitted run property set.");
                 ValidateTypedRunProperties(rpr); data.EndProperties = new XElement(end);
             }
-            ValidateTypedContent(node.Element(W + "sdtContent")!, data);
+            if (structure == ControlStructure.None) ValidateTypedContent(node.Element(W + "sdtContent")!, data);
+            else ValidateTypedStructuralContent(node, data);
             typedControls.Items.Add(id, data); typedNodes.Add(node, data);
         }
         // A control may not intersect any source field/bookmark range, even when its marker is outside the wrapper.
-        var bookmarksOpen = new HashSet<string>(StringComparer.Ordinal); int fieldDepth = 0;
-        foreach (XElement element in source.Descendants())
+        foreach (var item in sources)
         {
-            context.ReserveControlWork(1);
-            if (element.Name == W + "sdt" && (fieldDepth != 0 || bookmarksOpen.Count != 0)) throw new NotSupportedException("Control.ProtectedOwner: Field/bookmark ranges cannot enclose or cross a control.");
-            if (element.Name == W + "bookmarkStart") bookmarksOpen.Add(DocxPackage.RequiredAttribute(element, W + "id"));
-            else if (element.Name == W + "bookmarkEnd") bookmarksOpen.Remove(DocxPackage.RequiredAttribute(element, W + "id"));
-            else if (element.Name == W + "fldChar")
-            { string? kind = (string?)element.Attribute(W + "fldCharType"); if (kind == "begin") fieldDepth++; else if (kind == "end") fieldDepth--; }
+            var bookmarksOpen = new HashSet<string>(StringComparer.Ordinal); int fieldDepth = 0;
+            foreach (XElement element in item.Document.Descendants())
+            {
+                context.ReserveControlWork(1);
+                if (element.Name == W + "sdt" && (fieldDepth != 0 || bookmarksOpen.Count != 0)) throw new NotSupportedException("Control.ProtectedOwner: Field/bookmark ranges cannot enclose or cross a control.");
+                if (element.Name == W + "bookmarkStart") bookmarksOpen.Add(DocxPackage.RequiredAttribute(element, W + "id"));
+                else if (element.Name == W + "bookmarkEnd") bookmarksOpen.Remove(DocxPackage.RequiredAttribute(element, W + "id"));
+                else if (element.Name == W + "fldChar")
+                { string? kind = (string?)element.Attribute(W + "fldCharType"); if (kind == "begin") fieldDepth++; else if (kind == "end") fieldDepth--; }
+            }
         }
         ReadTypedParts();
+    }
+
+    private void ValidateTypedStructuralContent(XElement node, ControlData data)
+    {
+        XElement? table = data.Structure == ControlStructure.Row ? node.Parent : node.Parent?.Parent;
+        if (table?.Name != W + "tbl" || table.Parent?.Name != W + "body" || data.Kind != ContentControlKind.RichText || data.Placeholder
+            || data.Properties.Element(W + "placeholder") != null || data.Binding != null)
+            throw new NotSupportedException("Control.ProtectedOwner: Structural controls require an unbound, non-placeholder rich wrapper in a top-level body table.");
+        XElement content = node.Element(W + "sdtContent")!; Attributes(content);
+        XName expected = W + (data.Structure == ControlStructure.Row ? "tr" : "tc");
+        if (content.Elements().Count() != 1 || content.Element(expected) is not XElement owner)
+            throw new NotSupportedException("Control.ProtectedOwner: Structural controls currently wrap exactly one row or cell.");
+        IEnumerable<XElement> cells;
+        if (data.Structure == ControlStructure.Row)
+        {
+            Attributes(owner);
+            if (owner.Elements().Any(e => e.Name != W + "tc") || !owner.Elements(W + "tc").Any())
+                throw new NotSupportedException("Control.ProtectedOwner: A wrapped row must contain ordinary cells without row properties.");
+            cells = owner.Elements(W + "tc");
+        }
+        else cells = new[] { owner };
+        foreach (XElement cell in cells)
+        {
+            context.ReserveControlWork(1); Attributes(cell);
+            if (cell.Elements(W + "tcPr").Count() > 1 || cell.Elements(W + "p").Count() != 1
+                || cell.Elements().Any(e => e.Name != W + "tcPr" && e.Name != W + "p"))
+                throw new NotSupportedException("Control.ProtectedOwner: A wrapped cell requires one ordinary paragraph and no nested structures.");
+            if (cell.Element(W + "tcPr") is XElement properties)
+            {
+                Attributes(properties);
+                if (properties.Elements().Count() > 1 || properties.Elements().Any(e => e.Name != W + "tcW"))
+                    throw new NotSupportedException("Control.ProtectedOwner: Merged or specially formatted wrapped cells are unsupported.");
+                if (properties.Element(W + "tcW") is XElement width)
+                {
+                    Leaf(width, W + "w", W + "type");
+                    string? type = (string?)width.Attribute(W + "type");
+                    if (type is not ("dxa" or "pct"))
+                        throw new NotSupportedException("Control.ProtectedOwner: Wrapped cell widths require an explicit absolute or percentage width.");
+                    _ = Integer(width, W + "w", 1, type == "pct" ? 5000 : 31680);
+                }
+            }
+            XElement paragraph = cell.Element(W + "p")!;
+            foreach (XElement element in paragraph.Descendants())
+            {
+                context.ReserveControlWork(1);
+                if (element.Name == W + "szCs" || element.Name == W + "bCs" || element.Name == W + "iCs" || element.Name == W + "lang")
+                    throw new NotSupportedException("Control.ScriptFormatting: Script-specific formatting in structural wrappers is unsupported.");
+                if (element.Name == W + "rFonts")
+                    foreach (XAttribute attribute in element.Attributes())
+                    {
+                        context.ReserveControlWork(1);
+                        if (attribute.Name == W + "cs" || attribute.Name == W + "eastAsia" || attribute.Name == W + "hint")
+                            throw new NotSupportedException("Control.ScriptFormatting: Script-specific formatting in structural wrappers is unsupported.");
+                    }
+            }
+            var wrapper = new XElement(W + "sdt", new XElement(W + "sdtContent", new XElement(paragraph)));
+            ValidateTypedContent(wrapper.Element(W + "sdtContent")!, new ControlData { Kind = ContentControlKind.RichText });
+        }
     }
     private ControlData ReadTypedProperties(XElement properties, int id, bool inline)
     {
@@ -195,6 +291,8 @@ internal sealed partial class DocxReader
             else if (e.Name == W + "sz") { Leaf(e, W + "val"); _ = Integer(e, W + "val", 1, 3168); }
             else if (e.Name == W + "color")
             { Leaf(e, W + "val"); string value = DocxPackage.RequiredAttribute(e, W + "val"); if (value != "auto" && (value.Length != 6 || value.Any(c => !Uri.IsHexDigit(c)) || !uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _))) throw new InvalidDataException("Control.Malformed: Invalid RGB color."); }
+            else if (e.Name == W + "rStyle" && rpr.Parent?.Name == W + "r" && rpr.Ancestors(W + "sdtContent").Any())
+                ValidateTypedCharacterStyle(e);
             else throw new NotSupportedException("Control.Unsupported: The run properties are outside the admitted control text profile.");
         }
     }
@@ -209,6 +307,14 @@ internal sealed partial class DocxReader
         foreach (XElement e in content.Descendants())
         {
             context.ReserveControlWork(1);
+            if (e.Ancestors(W + "sdt").FirstOrDefault() != content.Parent) continue;
+            if (e.Name == W + "sdt")
+            {
+                if (data.Inline || data.Kind != ContentControlKind.RichText || data.Placeholder || data.Binding != null
+                    || e.Parent?.Name != W + "p" || e.Parent.Parent != content)
+                    throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
+                continue;
+            }
             if (e.Ancestors(W + "rPr").Any()) continue;
             if (e.Name == W + "rPr") { ValidateTypedRunProperties(e); continue; }
             if (e.Name == W + "pPr") { ValidateTypedParagraphProperties(e); continue; }
@@ -216,7 +322,7 @@ internal sealed partial class DocxReader
             if (e.Name == W + "p" || e.Name == W + "r")
             {
                 ValidateTypedTextOwnerAttributes(e);
-                if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" && child.Name != W + "proofErr" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br" && child.Name != W + "lastRenderedPageBreak")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
+                if (e.Elements().Any(child => e.Name == W + "p" ? child.Name != W + "pPr" && child.Name != W + "r" && child.Name != W + "proofErr" && child.Name != W + "sdt" : child.Name != W + "rPr" && child.Name != W + "t" && child.Name != W + "tab" && child.Name != W + "br" && child.Name != W + "lastRenderedPageBreak")) throw new NotSupportedException("Control.ProtectedOwner: Unsupported nested text structure.");
                 if (e.Elements(W + (e.Name == W + "p" ? "pPr" : "rPr")).Count() > 1) throw new InvalidDataException("Control.Malformed: Duplicate text property containers.");
             }
             else if (e.Name == W + "t") { Attributes(e, XNamespace.Xml + "space"); if (e.HasElements) throw new InvalidDataException("Control.Malformed: Text cannot contain XML markup."); }
@@ -229,7 +335,7 @@ internal sealed partial class DocxReader
                 ReportTypedEditorMetadata();
             }
             else if (e.Name == W + "lastRenderedPageBreak") { Leaf(e); renderedBreaks.Add(e); ReportTypedEditorMetadata(); }
-            else throw new NotSupportedException("Control.ProtectedOwner: Controls cannot contain fields, bookmarks, tables, revisions, objects or nested controls.");
+            else throw new NotSupportedException("Control.ProtectedOwner: Controls cannot contain fields, bookmarks, tables, revisions, objects or unsupported nested controls.");
         }
         foreach (XElement renderedBreak in renderedBreaks) renderedBreak.Remove();
     }
@@ -278,6 +384,8 @@ internal sealed partial class DocxReader
             if (run.Image != null || run.FieldInstruction != null || run.Bookmark != null || run.Control != null || run.Object != null || run.Note != null || run.Box != null || run.Revision != null || run.Comment != null)
                 throw new NotSupportedException("Control.ProtectedOwner: Only ordinary formatted text is admitted inside a control.");
             if (run.Color != null && (run.Color.Length != 6 || run.Color.Any(c => !Uri.IsHexDigit(c)))) throw new InvalidDataException("Control.Malformed: Inherited color metadata must contain six RGB hex digits.");
+            if (run.Appearance.ThemeFontAscii != null || run.Appearance.ThemeFontHighAnsi != null || run.Appearance.ThemeColor != null)
+                throw new NotSupportedException("Control.Unsupported: Editable theme references are outside the admitted typed-control text profile.");
             if (run.Code || run.Appearance.Strike || run.Appearance.Background != null || run.Appearance.VerticalAlignment != null)
                 throw new NotSupportedException("Control.Unsupported: Inherited text properties exceed the control formatting profile.");
             if (first != null && data.Kind != ContentControlKind.RichText && !SameStyle(first, run)) throw new NotSupportedException("Control.Unsupported: Scalar controls require a single formatting set.");
@@ -329,6 +437,8 @@ internal sealed partial class DocxReader
             ControlValues.Infer(data, owner, context);
             if (data.Binding != null) _ = ControlBindings.Resolve(data.Binding, typedControls, context);
         }
+        foreach (int parent in owners.Values.Where(owner => owner.ParentId.HasValue).Select(owner => owner.ParentId!.Value).Distinct())
+            ControlValues.Infer(typedControls.Items[parent], owners[parent], context);
         ControlOwners.Normalize(document);
     }
 }

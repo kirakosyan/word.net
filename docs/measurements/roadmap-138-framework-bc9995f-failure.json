@@ -1,0 +1,18 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "scope": "Original PR actual Framework 4.7.2 source guest on the bc9995f head, before any retry.",
+  "run": "https://github.com/kirakosyan/word.net/actions/runs/41176942237",
+  "job": 124469124857,
+  "artifact": 13033628310,
+  "headCommit": "bc9995febfea04f0be9062b0090bd07426bfda86",
+  "guestMergeCommit": "440655fc957683e1c967a5e551dcb7277959a970",
+  "minimumRequiredCases": 2065,
+  "conclusion": "failure",
+  "observation": "The Windows 2019 QEMU guest started but exited before exporting complete qualification evidence. The artifact contains a setup manifest, host error, VM log and cleanup record; no guest TRX or completed case count is present. The VM log records repeated disk-inspection warnings, Windows Boot Manager activity and shutdown. The cause and whether any guest tests executed are unknown.",
+  "cleanup": {"containersRemoved": true, "networkRemoved": true, "stateRemoved": true, "imageRemoved": true},
+  "artifactZipSha256": "ef6fea150fdb84b9520a23ff2aad3f027bb35808bc4ce6e197f65f67dd9d5c82",
+  "bundleJsonSha256": "303905d41437592dd753d5bfbbbffb330b3a9f1fafa9052b636f65a9c047c8d8",
+  "vmLogSha256": "b5400c035afc7365c53610789638134c8ba8277c445b4a72da30fd9bb786961f",
+  "qualification": "This is not a Framework pass. The original failure remains recorded if a fresh guest is later retried."
+}

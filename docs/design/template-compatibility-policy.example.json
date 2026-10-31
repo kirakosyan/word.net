@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "planDigest": "48cf686f2c60bce1018b9bd12303e4116e3ffa67926614b167a6ae10b05a3544",
+  "requiredSemantics": [
+    "content.text"
+  ],
+  "allowedLosses": [
+    {
+      "code": "Docx.ThemeFont",
+      "location": {
+        "partId": "part-0001",
+        "childIndexes": [
+          1,
+          2,
+          1
+        ]
+      }
+    }
+  ]
+}

@@ -12,11 +12,24 @@ internal class PdfExportTokenWriter : TokenWriter
     private readonly bool compress;
     private readonly byte[]? metadata;
     private readonly string[]? labels;
-    internal PdfExportTokenWriter(bool compress, byte[]? metadata = null, string[]? labels = null) { this.compress = compress; this.metadata = metadata; this.labels = labels; }
+    private readonly DictionaryToken? shading;
+    internal PdfExportTokenWriter(bool compress, byte[]? metadata = null, string[]? labels = null, DictionaryToken? shading = null) { this.compress = compress; this.metadata = metadata; this.labels = labels; this.shading = shading; }
 
     protected override void WriteObject(ObjectToken objectToken, Stream outputStream)
     {
         IToken token = metadata == null ? objectToken.Data : ArchiveToken(objectToken.Data);
+        if (shading != null && token is DictionaryToken page && page.TryGet(NameToken.Type, out NameToken pageType) && pageType.Data == "Page")
+        {
+            var resourceName = NameToken.Create("Resources");
+            System.Collections.Generic.Dictionary<NameToken, IToken> resourceEntries;
+            if (!page.TryGet(resourceName, out IToken rawResources)) resourceEntries = new System.Collections.Generic.Dictionary<NameToken, IToken>();
+            else if (rawResources is DictionaryToken resources && !resources.Data.ContainsKey("Shading"))
+                resourceEntries = resources.Data.ToDictionary(p => NameToken.Create(p.Key), p => p.Value);
+            else throw new InvalidDataException("Shape.Gradient: Unexpected PDF page resource layout.");
+            var pageEntries = page.Data.ToDictionary(p => NameToken.Create(p.Key), p => p.Value);
+            resourceEntries[NameToken.Create("Shading")] = shading; pageEntries[resourceName] = new DictionaryToken(resourceEntries);
+            token = new DictionaryToken(pageEntries);
+        }
         if (labels != null && token is DictionaryToken dictionary && dictionary.TryGet(NameToken.Type, out NameToken type) && type.Data == "Catalog")
         {
             var entries = dictionary.Data.ToDictionary(p => NameToken.Create(p.Key), p => p.Value);

@@ -1,0 +1,35 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41189372674",
+  "attempt": 1,
+  "result": "success",
+  "sourceHead": "bc1a4a5fb770fe5d636dee558bfc846a4537ed27",
+  "testedPullRequestMerge": "1eb39dbc3f3a9ebe0aae720e3663a3fcb4f85c81",
+  "tree": "73a3495d4c09a5c90b9ca299ff9404bd5af7370b",
+  "treeIdentity": "The PR merge commit and source head have the same Git tree. The merge parents were bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7 and bc1a4a5fb770fe5d636dee558bfc846a4537ed27.",
+  "jobs": "All 11 jobs passed: four source/modern-runtime platforms, performance, four package platforms and actual Framework 4.7.2 source/package guests.",
+  "frameworkSource": {
+    "job": 124505630705,
+    "frameworkRelease": 461814,
+    "cases": 2161,
+    "librarySha256": "39a8099362b5d3f98cc6584239f00bc1e4f46d8b207940e091e0bcddbfe0a32c",
+    "testSha256": "8fad14d5a88a13017c8bbcfd2c133a732700f5cb6b79a79e1ea5322905688bcb",
+    "inputArtifactId": 13037899010,
+    "inputArtifactSha256": "fdc42310117ad66785121ab11ae9dfd9b89c7ea0e06001f9448c2dafa274c747",
+    "resultArtifactId": 13038398853,
+    "resultArtifactSha256": "0ae4ed7743a359569c263110b93258719a4b6c522d1305a71117b2583ae2b1fc"
+  },
+  "frameworkPackage": {
+    "job": 124507570850,
+    "frameworkRelease": 461814,
+    "cases": 2161,
+    "librarySha256": "f8e9a34b0474c660427f19fd26a7aaf645c221f8932f06c3ade08e9825753b36",
+    "testSha256": "6cf92cfc8fd36e1ca21763db5006ad69d363696bcc18c4961e2e2867e9889166",
+    "inputArtifactId": 13038344035,
+    "inputArtifactSha256": "773e1f68e04ccd1c034dab253cea8cf90195bde32f52e527236016020a988b6e",
+    "resultArtifactId": 13039670238,
+    "resultArtifactSha256": "dd05e15fabdc7557eb4518d266720ff08bb4f12955a6a532ff054542505d9c29"
+  },
+  "scope": "These hosted results apply to this tree and do not qualify subsequent commits. No package was published."
+}

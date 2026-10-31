@@ -1,0 +1,33 @@
+{
+  "roadmap": 138,
+  "issue": 152,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "bc157ceda6708b7a55f81729063edb91c697a969",
+  "scope": "Stable scalar field results are refreshed before extended native shaping in BestEffort/Lenient. Known baseline and directional extraction differences are explicit losses; strict, reference/page fields, lists, controls, tabs and tagged/archive combinations remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed; the host reported workspace-load warnings.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2116, "failed": 0, "skipped": 0, "trxSha256": "f118ac5d3638446a1ec1c41da9787c9798b125afbfc94b880b43e150c5a273ed"},
+    "net10ConversionAndEnglishOcr": {"passed": 2116, "failed": 0, "skipped": 0, "trxSha256": "2e93a9d57970c6f14f1c0fdaa01ed2dcd1c61a6dadd3409fd5c86dd7ac5b6829"},
+    "capabilityMatrix": {"profiles": 71, "testMethods": 351, "net10CasesPassed": 592},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "4891f4a9d414a23b253dc3559d9fe95106406ac01747476c4557124f7801003c",
+      "wordnet.Fonts.1.5.0.nupkg": "189ae5113a054b87c45fe8c7fe4a012138d3fb8e9088ba315ae3534721a547d8",
+      "wordnet.Ocr.1.5.0.nupkg": "e4c7905ab6f3f6f3c89c156cff265b6237349bea90c3dffa88a7af2e0b64cc3f"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-native-fields-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "4a08cfae2736d6c92760c06754304ffd1dc613b36be177de78d71aef173fbb17",
+    "reproducedHindiDocxSha256": "52c65f03a51865b3f9979789c15642ce322a24ae54425ecfb6aa47134732ef57",
+    "reproducedArabicDocxSha256": "6b4fca42115a924c866176a291fe714b5b85bb366b6f20568857ae1c55dbfc0b",
+    "hindiPdfSha256": "e3ce513ff3f3d5f99e894dc31f425991508d2ad7990bb52032d9b6c801e0b19a",
+    "arabicPdfSha256": "bc4ac060efe8e30b6b3ef78484a17e3862a5dded41a0a4aa27160d88d1ca3e4c",
+    "result": "The exact source and packaged assemblies were byte-identical. Both independently authored saved DOCX specimens reproduced byte for byte with no Open XML SDK errors. The retained 2.847-point Hindi vertical difference and Arabic Poppler extraction-order mismatch remain failures; the new diagnostics were observed."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. The other #152 combinations and independent parity gaps keep the issue and roadmap #138 open."
+}

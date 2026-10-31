@@ -92,6 +92,7 @@ public sealed partial class WordDocument
         _ = Edit((m, c) =>
         {
             TableBlock table = BuildSimpleTable(rows, m.FinalSection ?? m.Blocks.LastOrDefault()?.Section, firstRowIsHeader, c);
+            ApplyDefaultTableStyle(m, table);
             m.Blocks.Add(table); return 1;
         }, cancellationToken, objectAware: true);
     }
@@ -115,6 +116,13 @@ public sealed partial class WordDocument
         }
         if (table.Rows.Count == 0) throw new ArgumentException("A table must contain rows.", nameof(rows));
         return table;
+    }
+    private static void ApplyDefaultTableStyle(DocumentModel model, TableBlock table)
+    {
+        if (model.DefaultTableStyle is not TableStyle style) return;
+        if (style.EffectiveRegions.Count != 0 || style.EffectiveRegionBorders.Count != 0)
+            throw new NotSupportedException("Docx.TableLook: A newly created table cannot infer conditional default-style flags.");
+        table.Style = style; table.UsesDefaultStyle = true;
     }
     /// <summary>Appends a caller-supplied inline image as a paragraph.</summary>
     public void AddImage(TemplateImage image, CancellationToken cancellationToken = default) => AddParagraph(new[] { new DocumentText(image) }, cancellationToken: cancellationToken);
@@ -141,7 +149,7 @@ public sealed partial class WordDocument
         lock (gate)
         {
             using var operation = BeginOperation();
-            if (format != DocumentFormat.Docx && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
+            if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Review.HasHistory) throw new NotSupportedException("Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.");
             var context = Context(saveOptions ?? options, cancellationToken); context.Destination = format;
             DocumentModel copy = new DocumentCloner(context).Copy(model); Admit(copy, context);
             context.Phase = DiagnosticPhase.Destination; bool hadControls = copy.Controls.HasControls || copy.HasControlDisplay;
@@ -149,7 +157,7 @@ public sealed partial class WordDocument
             context.Phase = DiagnosticPhase.Write;
             using var output = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
             Write(copy, output, format, context); output.Position = 0;
-            if (format == DocumentFormat.Docx && copy.Controls.HasControls) ControlDisplay.CheckArchive(output, context);
+            if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && copy.Controls.HasControls) ControlDisplay.CheckArchive(output, context);
             Transfer(output, destination, context, context.Options.MaximumOutputBytes);
             return context.Result(output.Length);
         }
@@ -202,9 +210,10 @@ public sealed partial class WordDocument
         foreach (ConversionDiagnostic d in diagnostics) context.Inherit(d);
         return context;
     }
-    private static void Admit(DocumentModel model, ConversionContext context)
+    internal static void Admit(DocumentModel model, ConversionContext context)
     {
         context.CheckCancellation();
+        GradientBudget.Check(model, context);
         _ = LinkedTextBoxes.Validate(model, context);
         CustomPropertyValues.Validate(model, context);
         long controlMetadata = model.Controls.Admit(model, context);
@@ -212,7 +221,17 @@ public sealed partial class WordDocument
         if (model.HasControlDisplay)
             foreach (ControlGlyph glyph in model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.ControlGlyph != null).Select(r => r.ControlGlyph!).Distinct())
             { context.CheckCancellation(); controlMetadata = checked(controlMetadata + glyph.Text.Length + glyph.Font.Length + 32); }
+        static long ThemeReferences(TextRun run) => (long)(run.Appearance.ThemeFontAscii?.Length ?? 0) + (run.Appearance.ThemeFontHighAnsi?.Length ?? 0)
+            + (run.Appearance.ThemeColor?.Length ?? 0) + (run.Appearance.ThemeTint?.Length ?? 0) + (run.Appearance.ThemeShade?.Length ?? 0);
+        long themeReferences = model.Paragraphs.SelectMany(p => p.Runs)
+            .Concat(model.Review.Comments.Values.SelectMany(comment => comment.Body).SelectMany(p => p.Runs))
+            .Sum(run => ThemeReferences(run) + (run.PreviousFormat == null ? 0 : ThemeReferences(run.PreviousFormat))
+                + (run.FieldCache?.Sum(ThemeReferences) ?? 0));
         long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
+            + (model.Theme?.Xml.Length ?? 0) + (model.Theme?.Mapping?.Length ?? 0)
+            + themeReferences
+            + model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Box != null)
+                .Sum(r => (long)r.Box!.AlternativeText.Length + r.Box.AlternativeTitle.Length)
             + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
             + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));
@@ -232,10 +251,10 @@ public sealed partial class WordDocument
         }
         if (bytes + nodes * 64L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Edited document exceeds aggregate resource limits.");
         model.ObjectCount = objects?.Placements ?? 0;
-        if (objects != null) { ObjectSafety.Owners(model); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
+        if (objects != null) { ObjectSafety.Owners(model, context); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
         foreach (TableBlock table in model.Tables) TableValidation.Validate(table, context);
     }
-    private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Pdf
+    private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Dotx or DocumentFormat.Odt or DocumentFormat.Ott or DocumentFormat.Pdf
         or DocumentFormat.Markdown or DocumentFormat.Text or DocumentFormat.Azw3 or DocumentFormat.Epub or DocumentFormat.Mobi
         or DocumentFormat.Xps or DocumentFormat.Html or DocumentFormat.Rtf;
     private static void AddRuns(List<TextRun> destination, IEnumerable<DocumentText> runs, ConversionContext context)
@@ -295,7 +314,8 @@ public sealed partial class WordDocument
     }
     private static void Write(DocumentModel m, Stream output, DocumentFormat format, ConversionContext c)
     {
-        if (format == DocumentFormat.Docx) DocxWriter.Write(m, output, c);
+        if (format is DocumentFormat.Docx or DocumentFormat.Dotx) DocxWriter.Write(m, output, c);
+        else if (format is DocumentFormat.Odt or DocumentFormat.Ott) OdtFormat.Write(m, output, c);
         else if (format == DocumentFormat.Doc) DocFormat.Write(m, output, c);
         else if (format == DocumentFormat.Pdf) PdfFormat.Write(m, output, c);
         else if (format == DocumentFormat.Html) HtmlFormat.Write(m, output, c);

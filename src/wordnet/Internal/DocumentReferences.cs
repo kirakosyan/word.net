@@ -46,6 +46,7 @@ internal static class DocumentReferences
         }
         var previous = new Dictionary<TextRun, string>(model.FieldResults);
         model.FieldResults.Clear(); model.TocTargets.Clear();
+        TableFields.Refresh(model, context);
         var sequences = new Dictionary<string, int>(StringComparer.Ordinal);
         foreach (TextRun run in paragraphs.SelectMany(p => p.Runs).Where(r => r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "SEQ"))
         {
@@ -122,6 +123,25 @@ internal static class DocumentReferences
         if (!ValidSwitches(args, "\\o", "\\h", "\\u", "\\z", "\\n", "\\p")) return false;
         string[] levels = (Switch(args, "\\o") ?? "1-3").Split('-');
         return levels.Length == 2 && int.TryParse(levels[0], out int first) && int.TryParse(levels[1], out int last) && first >= 1 && last <= 6 && first <= last;
+    }
+
+    // Fragment insertion must not silently turn an unsupported reference into an accepted cache.
+    internal static bool SupportedFragmentReference(string instruction)
+    {
+        if (instruction.Count(c => c == '"') % 2 != 0) return false;
+        string[] args = Arguments(instruction);
+        if (args.Length < 2 || args[1].Length is 0 or > 256 || args[1][0] == '\\') return false;
+        string kind = DocumentFields.Kind(instruction);
+        // Hyperlink switches need a separate fixed-output link contract; retain only
+        // the currently supported text/list-number reference semantics here.
+        if (kind == "REF") return ValidSwitches(args, "\\n");
+        if (kind == "PAGEREF") return args.Length == 2;
+        if (kind != "SEQ" || !ValidSwitches(args, "\\r", "\\c", "\\n", "\\*")) return false;
+        string format = Switch(args, "\\*") ?? "decimal";
+        if (format.Equals("MERGEFORMAT", StringComparison.OrdinalIgnoreCase)) format = "decimal";
+        if (Format(format).Length == 0) return false;
+        string? restart = Switch(args, "\\r");
+        return restart == null || int.TryParse(restart, NumberStyles.None, CultureInfo.InvariantCulture, out int value) && value >= 0 && value < int.MaxValue;
     }
 
     private static string[] Arguments(string instruction)

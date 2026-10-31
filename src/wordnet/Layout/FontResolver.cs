@@ -49,7 +49,12 @@ internal sealed class FontResolver
                 _ = Resolve(new TextRun(""), paragraph.HeadingLevel > 0);
                 if (paragraph.List.Definition != null) foreach (ListLevel level in paragraph.List.Definition) _ = Resolve(level.Appearance.WithText(level.Pattern), paragraph.HeadingLevel > 0);
             }
-            foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs)) _ = Resolve(run, paragraph.HeadingLevel > 0);
+            // Empty paragraphs (including cells synthesized while validating an
+            // irregular table grid) need their mark/default face for line height.
+            // Resolve it before the fixed layout snapshots the font arrays.
+            if (paragraph.Runs.All(run => run.Box != null || run.Image?.Anchor != null))
+                _ = Resolve(paragraph.Mark ?? new TextRun(""), paragraph.HeadingLevel > 0);
+            foreach (TextRun run in RunCoalescer.Combine(paragraph.Runs, forRendering: true)) _ = Resolve(run, paragraph.HeadingLevel > 0);
         }
         if (model.ObjectCount != 0 && model.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object?.Equation != null))
         {

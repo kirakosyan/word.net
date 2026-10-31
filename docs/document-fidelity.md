@@ -1,5 +1,170 @@
 # Formatting and image profile
 
+## Unreleased source: direct table borders
+
+Pending #142 work reads direct `w:tblBorders` on a simple rectangular DOCX
+table. The supported `single`, `none` and `nil` edges are retained as table
+properties in editable DOCX and resolved for ordinary managed PDF/XPS/SVG, HTML
+and ODT output. Outside and inside edges are recalculated after supported row
+expansion, so added rows do not inherit a stale outside edge. Explicit RGB colors
+and line widths are used; theme references use the bounded local resolution and
+retain the existing theme-loss diagnostic. Automatic colors use black and are
+diagnosed. Destinations that omit borders report `Table.Decoration`.
+
+The same pending work admits direct, clear table shading with an explicit RGB
+fill on ordinary simple body tables. The table-level shading remains editable in
+DOCX and is applied across the cell extents in managed fixed output, HTML and ODT.
+Direct cell shading together with a table fill, patterns, automatic fills and
+unqualified owners or pagination are diagnosed rather than silently accepted.
+The table-level extent and precedence follow the public
+[OOXML shading description](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.shading?view=openxml-3.0.1).
+
+For the same simple-table profile, a bounded `w:basedOn` chain of table styles
+may provide whole-table borders and clear explicit RGB shading through `w:tblPr`.
+Child edges override inherited edges, including explicit `nil` and `none` resets.
+DOCX saves retain an editable style reference and chain; composition remaps
+colliding style identifiers. Fixed output, HTML and ODT resolve the appearance
+from the chain and current rows. Non-DOCX editable outputs report that the style
+identity is lost; static outputs report that the style has been resolved.
+Cycles, excessive chain depth and resource-limit violations fail, and unqualified
+style metadata or properties are diagnosed. Combining styles with direct table
+border or shading overrides is not admitted in strict mode. Comparison rejects
+table-style changes, including when other formatting categories are ignored.
+
+When a table uses the declared default style implicitly, or a used style's chain
+includes that default, the bounded default definition is retained in DOCX. The
+implicit table continues to omit `tblStyle`, while explicit references remain
+explicit. The last default declared for tables is selected as specified by
+[OOXML](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_style_topic_ID0E5ZQT.html).
+Unused, unreferenced default definitions are not reconstructed. Composition
+rejects conflicting defaults and combinations where adding a default would alter
+an otherwise unstyled table. New simple tables inherit an admitted whole-table
+default; new tables reject conditional defaults because their look flags cannot
+be inferred. Independent LibreOffice controls did not apply the implicit default
+that they rendered when explicitly referenced. Strict non-DOCX output therefore
+rejects `Docx.TableStyleDefault`; best-effort output applies the retained default
+and reports the difference. This is not evidence of Word behavior.
+
+The source profile retains conditional clear RGB cell fills for first and last
+rows and columns, their corners, and horizontal and vertical bands. A qualified
+explicit four-digit `tblLook` mask selects the regions; explicit flags must agree
+with the mask. DOCX saves preserve conditional styles, inheritance, the mask and
+explicitly supplied agreeing flags. Fixed output, HTML and ODT recompute qualified
+fills from the current grid after report expansion. When output relies on a
+conditional region inherited from a parent style, strict non-DOCX output rejects
+with `Table.StyleInheritance`; best-effort output resolves the retained chain and
+reports the loss. LibreOffice omitted inherited regions in separate controls,
+so Word/reference parity for that combination is unqualified. A direct
+clear explicit RGB cell fill overrides conditional fills; other direct shading,
+including `nil`, remains diagnosed. Explicit style band sizes from zero through
+three are retained in editable DOCX, with inherited values and explicit resets.
+Unit bands render in the qualified subset. For zero, two or three, strict non-DOCX
+output rejects and best-effort output reports `Table.StyleBandSize`; it uses the
+OOXML grouping for positive sizes and Word's no-band behavior for zero. Larger
+sizes, direct-table band-size properties, implicit looks, conflicting flags and
+other conditional cell properties remain diagnosed. Combinations with whole-table
+style shading and overlapping first/last regions on a single row or column are
+retained in DOCX but reject strict non-DOCX output. Repeated headers and split rows
+remain unqualified.
+
+When regions overlap, this profile uses [Microsoft Office's documented order](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/2ac331d4-cf1e-4fa0-8bca-6da74411e284),
+which differs from the published [OOXML ordering](https://c-rex.net/samples/ooxml/e1/part4/OOXML_P4_DOCX_tblStylePr_topic_ID0EPR2T.html);
+`Table.StylePrecedence` reports potential differences. The [OOXML default band
+size is one](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.tablestylerowbandsize?view=openxml-3.0.1),
+while Microsoft's [Word notes](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/77519f5b-08b3-4547-9f5d-0c4d87854220)
+describe a default of zero. Omitted band sizes remain editable in DOCX but
+strict non-DOCX output rejects with `Table.StyleBandDefault`; best-effort output
+uses one and reports the loss. The independent
+[first-row](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleConditions/README.md)
+and [region controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleRegions/README.md)
+confirm the specified colors and regions in LibreOffice. LibreOffice did not
+honor size-two bands in separate controls; those retained failures do not qualify
+non-unit band rendering or establish Word behavior.
+
+For a clear conditional cell fill, a bounded local theme can retain its color
+token, one tint or shade, and the original RGB/automatic/omitted fallback in the
+editable style chain. Best-effort output resolves the local theme; strict non-DOCX
+output rejects `Table.StyleThemeColor` when the effective style contains such a
+reference. LibreOffice's [independent theme controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes/README.md)
+painted the stored fallback instead, so the observed difference remains open.
+An incomplete theme, an unresolved token or simultaneous tint and shade use the
+existing `Docx.ThemeColor` loss and fallback. DOCX theme reconstruction still
+reports `Docx.ThemeData`; whole-table, direct-cell and border theme references
+retain their earlier loss boundaries.
+
+The editable style chain also retains the bounded `single`, `none` and `nil`
+conditional cell borders for the same look regions. Fixed output, HTML and ODT
+resolve individually qualified outside edges from the current grid, including
+after report expansion. Independent [border controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders/README.md)
+confirm distinct outer-edge colors, look flags, selected corners and a combined
+fill and border in LibreOffice. Conditional interior edges, competing borders
+from a whole-table style, and overlapping conditional
+edges remain editable but reject strict non-DOCX output with
+`Table.StyleBorderConflict`; best-effort reports the unqualified precedence.
+Direct cell borders also trigger the existing `Table.BorderConflict` loss.
+The independent renderer also omitted inherited conditional edges, so the
+existing `Table.StyleInheritance` loss applies when rendering depends on them.
+These observations do not establish Word behavior or pixel-identical placement.
+
+Individually bordered, merged, nested or irregular cells, tables in stories or
+text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
+and strict rejection. Style-level paragraph and run properties, conditional
+cell properties other than clear shading and bounded borders, and full border-conflict
+precedence remain outside this increment. The independent
+[LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
+checks six edge colors, grid relationships, style inheritance and an inherited
+edge reset. It also retains measured
+horizontal and vertical placement differences; pixel-identical placement is not
+established. LibreOffice omitted the table-level fill in the separate shading
+probe while a direct-cell control painted its fill. That failed reference result
+is retained; the control checks color but does not establish table-shading parity.
+This is unreleased source and does not qualify published packages or every runtime.
+
+Unreleased source adds an explicit managed PDF/SVG display for bounded retained
+text revisions, with textual labels as well as colors and searchable deleted PDF
+text. An explicit numbered policy also shows supported comments, format changes and
+paired paragraph moves. Its exclusions and source-history guarantees are in the
+[review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
+This is not a published 1.5.0 capability.
+
+Unreleased source also admits rectangular matrix equations with selected alignment
+and spacing through editable OMML and ordinary managed fixed output. Its documented
+deterministic layout is not a claim of identical Office pagination or general math
+fidelity; see the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
+
+Pending n-ary source adds editable sums, products and integrals with explicit
+limits and managed output. The [operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations)
+records font fallback and imported-OMML boundaries.
+
+## Unreleased source: bounded theme appearance
+
+The pending #141 work resolves major/minor Latin theme font slots and RGB theme
+colors from the local DOCX theme for ordinary text and direct cell shading/borders,
+including admitted settings color mappings and one tint or shade transform.
+Direct formatting still follows
+the existing style-processing order. Missing or unsupported schemes use explicit
+font/RGB values or the existing output fallback. This improves visible PDF/XPS
+appearance for the documented subset. When the local theme has all 12 supported
+RGB slots and both Latin fonts, a DOCX save reconstructs a bounded theme and retains
+resolved text font/color references and supported settings color mappings. It does
+not copy arbitrary source theme XML or theme relationships. Original effects,
+script fonts and dynamic system colors are not retained; direct cell theme
+references are flattened to their resolved colors. `Docx.ThemeFont`,
+`Docx.ThemeColor` and `Docx.ThemeData` remain loss diagnostics, so strict mode
+rejects the corresponding loss. Composition and comparison reject incompatible or
+missing document themes rather than silently changing references.
+Typed controls continue to reject theme references, including references inherited
+from document styles, because their admitted editable formatting is narrower.
+
+Mixed-script font selection, remaining table-style theme combinations and drawings, other DrawingML
+color transforms, simultaneous tint/shade, and the full style/reset precedence
+remain unqualified. See the [testing record](testing.md)
+and the [initial 1.5.0 controls](fidelity-138-initial.md#additional-independent-controls).
+The color formulas and theme-font priority follow the public OOXML descriptions
+for [run colors](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_color_topic_ID0EYTHO.html)
+and [run fonts](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_rFonts_topic_ID0E25RO.html).
+No fonts or other resources are fetched.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -7,6 +172,9 @@ and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6
 The bounded fields, controls, reports, review and drawing additions ship together;
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
+
+The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) retain all
+current comparison failures. Some requested controls and combinations remain outstanding.
 
 
 The [1.5.0 P4/P5 profile](roadmap-102-p4-p5.md) describes the bounded review,
@@ -20,6 +188,8 @@ master-detail level, with cloned identity and reference checks. Explicit cross-t
 reject non-fitting layouts, and fragments retain source formatting under the
 documented placement policy. It does not extend object, revision, nested-table or
 section support. See the [template profile](editing-and-templates.md#mixed-report-regions--merged-source).
+Unreleased source also admits bounded fragment insertion into a dedicated simple
+body-table cell and explicitly opted-in simple fields, as described in that profile.
 
 ## P2 control preservation — merged source
 
@@ -29,14 +199,16 @@ managed static PDF/XPS display with diagnosed glyph fallback and a bounded singl
 underline policy at fixed-output save time. Text exports and explicit display views
 keep Unicode glyphs without the fixed-layout restrictions. Common Word editor
 scaffolding is omitted informationally within the documented inactive-script
-subset; Word-generated glossary category/relationships remain rejected explicitly.
+subset. Published 1.5.0 rejects Word-generated glossary category/relationships;
+the [unreleased source subset](content-controls.md#unreleased-source-bounded-glossary-metadata)
+admits selected inert metadata while rejecting richer graphs.
 Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
-This merged source is separate from public 1.4.0 and dated qualification.
+This profile is included in 1.5.0; its earlier source qualification remains dated evidence.
 
 ## Merged roadmap #102 P1 source profile
 
-See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes merged in PR #133 and do not describe published 1.4.0. Explicit historical controls and all unchanged reference failures remain separate from the new source-policy measurements.
+See [the exact subset](roadmap-102-p1.md) for default DOCX 11 pt/zero after-spacing, paragraph-mark metrics, managed implicit autofit, conventional note separators, typed custom properties, field pictures/nesting and managed STYLEREF headers. These changes merged in PR #133 and are included in 1.5.0. Explicit historical controls and all unchanged reference failures remain separate from later source-policy measurements.
 
 
 ## 1.4.0 roadmap #99 profile
@@ -135,7 +307,10 @@ The business-document profiles added for roadmap #32 are described in
   overflowing content into the frame, with diagnostics. Other destinations flatten
   boxes while retaining nested text, images, links and run formatting where supported. Rotated boxes,
   vertical text, arbitrary geometry, autofit and nested table content are outside the
-  fixed-page text-box profile. Reflowable HTML reports inline-frame placement.
+  fixed-page text-box profile described here. The bounded quarter-turn and autofit
+  release profile is described in [P4/P5](roadmap-102-p4-p5.md); pending #160 adds
+  diagnosed [general-angle boxes](interoperability.md#unreleased-source-general-angle-text-boxes).
+  Reflowable HTML reports inline-frame placement.
 - Continuous, next/odd/even-page sections retain physical page geometry. Equal-width
   one-to-three-column bodies fill sequentially, with explicit column/page breaks.
   Final columns are not balanced. Incompatible continuous geometry reports a new-page
@@ -218,7 +393,10 @@ render-time TITLE/AUTHOR fields; safe DOC hyperlink fields retain styled cached 
 PDF options provide optional heading outlines, uncompressed text/font streams and
 PDF/A-2b. The default remains PDF 1.7. PNG images use Flate PNG prediction and an
 SMask for alpha; JPEG data remains DCT encoded. PDF/A metadata and link flags are
-independently validated with pinned veraPDF. Tagged PDF is optional and unimplemented.
+independently validated with pinned veraPDF. At that earlier checkpoint tagged PDF
+was not implemented; the later opt-in tagged and PDF/UA profiles and their limits
+are described in [interoperability](interoperability.md) and the
+[1.5.0 capability matrix](roadmap-102-capability-matrix.json).
 
 ## Evidence
 
@@ -278,9 +456,10 @@ Arabic typography, semantic PDF/UA, previews, digital reconstruction and OCR met
 plus bounded HTML/RTF exchanges. Existing exclusions describe the default/released
 profiles; the linked guide specifies supported additions and remaining limits.
 
-## Later design profiles (unimplemented)
+## Historical bucket 5 design proposals
 
-The [bucket 5 ADRs](later-design-decisions.md) define future ODT exchange, review
-history/comparison, DOCX encryption and chart/equation stages. Their supported-subset
-tables describe proposals, not capabilities of merged source or package 1.1.0.
-Current unsupported-feature behavior and Strict guarantees remain unchanged.
+The [bucket 5 ADRs](later-design-decisions.md) record proposals made before those
+features were implemented. Published 1.5.0 includes bounded ODT exchange,
+review/comparison and chart/equation profiles; use the [capability matrix](roadmap-102-capability-matrix.json)
+for current combinations and limits. Encryption/decryption and signatures remain
+cancelled. The original design tables are historical, not current support claims.

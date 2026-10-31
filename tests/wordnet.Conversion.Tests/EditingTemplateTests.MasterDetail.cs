@@ -12,6 +12,7 @@ public sealed partial class EditingTemplateTests
     private static readonly string[] MasterDetailExpected = { "Ada", "A", "Ada", "Root", "B", "Ada", "Root", "Total 30", "Bea", "Total 0" };
     private static readonly string[] StatementExpected = { "Customer statement", "Ada", "Consulting", "20", "Support", "10", "30", "Bea", "Delivery", "15", "15" };
     private static readonly string[] ShadowExpected = { "parent", "child", "root-global" };
+    private static readonly string[] DeepExpected = { "Ada", "Sales", "One", "Ada", "Root", "Two", "Ada", "Root", "End department", "Empty", "End department", "Other", "Extra", "End customer", "Bea", "End customer" };
 
     [Theory]
     [InlineData(false)]
@@ -86,12 +87,107 @@ public sealed partial class EditingTemplateTests
     }
 
     [Fact]
-    public void MixedMasterDetailRejectsDeeperBlockNesting()
+    public void MixedMasterDetailExpandsThreeLevelsAndSiblingRegions()
     {
-        string deep = Region(P("Deep") + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "Deep");
-        WordDocument doc = Load(Docx(Region(P("Parent") + Region(P("Child") + deep, "Children"), "Parents"))); byte[] before = Save(doc);
-        Assert.Empty(Part(before, "word/document.xml").Descendants(W + "tag"));
-        Assert.Throws<NotSupportedException>(() => doc.Merge(new { Parents = new[] { new { Children = new[] { new { Deep = MixedOneItem } } } } }, cancellationToken: TestContext.Current.CancellationToken));
+        string deep = Region("<w:p>" + ReportFieldXml("Item") + "</w:p>" + MixedTable(ReportFieldXml("Name")) + "<w:p>" + ReportFieldXml("Global") + "</w:p>", "Units");
+        string child = Region("<w:p>" + ReportFieldXml("Department") + "</w:p>" + deep + P("End department"), "Departments");
+        string sibling = Region(P("Other") + MixedTable(ReportFieldXml("Label")), "Other");
+        WordDocument doc = Load(Docx(Region("<w:p>" + ReportFieldXml("Name") + "</w:p>" + child + sibling + P("End customer"), "Customers") + Page));
+        byte[] original = Save(doc); Schema(original);
+        Assert.Equal(4, Part(original, "word/document.xml").Descendants(W + "tag").Count());
+        doc = Load(original);
+        var data = new
+        {
+            Global = "Root",
+            Customers = new object[] {
+            new { Name = "Ada", Departments = new object[] { new { Department = "Sales", Units = new[] { new { Item = "One" }, new { Item = "Two" } } }, new { Department = "Empty", Units = Array.Empty<object>() } }, Other = new[] { new { Label = "Extra" } } },
+            new { Name = "Bea", Departments = Array.Empty<object>(), Other = Array.Empty<object>() }
+        }
+        };
+        doc.Merge(data, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(DeepExpected, doc.Paragraphs.Select(p => p.Text));
+        byte[] output = Save(doc); Schema(output); Assert.Empty(Part(output, "word/document.xml").Descendants(W + "sdt"));
+        using PdfDocument pdf = PdfDocument.Open(Save(doc, DocumentFormat.Pdf));
+        string text = string.Concat(pdf.GetPages().Select(p => p.Text)); int offset = 0;
+        foreach (string value in DeepExpected) { int at = text.IndexOf(value, offset, StringComparison.Ordinal); Assert.True(at >= offset); offset = at + value.Length; }
+    }
+
+    [Fact]
+    public void MixedMasterDetailEnforcesDeepLimitsAndReferenceBoundariesAtomically()
+    {
+        string bookmark = "<w:bookmarkStart w:id='7' w:name='deep'/><w:r><w:t>Deep</w:t></w:r><w:bookmarkEnd w:id='7'/>";
+        string deep = Region("<w:p>" + bookmark + "</w:p>" + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "Units");
+        string child = Region(P("Department") + deep, "Departments");
+        string parent = Region(P("Customer") + child, "Customers");
+        var data = new { Customers = new[] { new { Departments = new[] { new { Units = MixedOneItem } } } } };
+        WordDocument doc = Load(Docx(parent)); byte[] before = Save(doc);
+        Assert.Throws<InvalidDataException>(() => doc.Merge(data, new TemplateOptions { MaximumRows = 1 }, TestContext.Current.CancellationToken));
+        Assert.Equal(before, Save(doc));
+        Assert.Throws<InvalidDataException>(() => doc.Merge(data, new TemplateOptions { MaximumDepth = 2 }, TestContext.Current.CancellationToken));
+        Assert.Equal(before, Save(doc));
+        doc.Merge(data, new TemplateOptions { MaximumDepth = 3 }, TestContext.Current.CancellationToken);
+        Schema(Save(doc));
+        string crossing = Region("<w:p>" + Field("REF deep", "Deep") + "</w:p>" + child, "Customers");
+        doc = Load(Docx(crossing)); before = Save(doc);
+        var error = Assert.Throws<NotSupportedException>(() => doc.Merge(data, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Template.RepeatReferences:", error.Message, StringComparison.Ordinal); Assert.Equal(before, Save(doc));
+    }
+
+    [Fact]
+    public void MixedMasterDetailSupportsFiveLevelsAndPreservesDeepIdsWhenCached()
+    {
+        string inner = Region("<w:p>" + ReportFieldXml("Value") + "</w:p>" + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "E");
+        string four = Region(P("D") + inner, "D");
+        string three = Region(P("C") + four, "C");
+        string two = Region(P("B") + three, "B");
+        string one = Region(P("A") + two, "A");
+        WordDocument doc = Load(Docx(one)); byte[] before = Save(doc);
+        Assert.Equal(5, Part(before, "word/document.xml").Descendants(W + "tag").Count());
+        var data = new { A = new[] { new { B = new[] { new { C = new[] { new { D = new[] { new { E = new[] { new { Value = "Fifth" } } } } } } } } } } };
+        Assert.Throws<InvalidDataException>(() => doc.Merge(data, new TemplateOptions { MaximumDepth = 4 }, TestContext.Current.CancellationToken));
+        Assert.Equal(before, Save(doc));
+        doc.Merge(data, new TemplateOptions { MaximumDepth = 5 }, TestContext.Current.CancellationToken);
+        Assert.Contains(doc.Paragraphs, p => p.Text == "Fifth"); Schema(Save(doc));
+
+        string cached = one.Replace("w:val='repeat:B'", "w:val='repeat:B'/><w:id w:val='22'")
+            .Replace("w:val='repeat:C'", "w:val='repeat:C'/><w:id w:val='33'")
+            .Replace("w:val='repeat:D'", "w:val='repeat:D'/><w:id w:val='44'")
+            .Replace("w:val='repeat:E'", "w:val='repeat:E'/><w:id w:val='55'");
+        doc = Load(Docx(cached));
+        doc.Merge(new { A = new[] { new { }, new { } } }, new TemplateOptions { MissingValues = MissingTemplateValue.KeepCached }, TestContext.Current.CancellationToken);
+        byte[] output = Save(doc); Schema(output);
+        var ids = Part(output, "word/document.xml").Descendants(W + "sdtPr").Select(p => (string?)p.Element(W + "id")?.Attribute(W + "val")).ToArray();
+        Assert.Equal(8, ids.Length); Assert.DoesNotContain(ids, id => id == null); Assert.Equal(ids.Length, ids.Distinct().Count());
+        Assert.Equal(2, Part(output, "word/document.xml").Descendants(W + "sdt").Count(e => e.Ancestors(W + "sdt").Count() == 3));
+    }
+
+    [Fact]
+    public void MixedMasterDetailRemapsDeepNotesAndLooksUpEnclosingValues()
+    {
+        string note = "<w:p><w:r><w:footnoteReference w:id='7'/></w:r></w:p>";
+        string notes = "<w:footnotes xmlns:w='" + W + "'><w:footnote w:id='7'><w:p>" + ReportFieldXml("Customer") + ReportFieldXml("Product") + "</w:p></w:footnote></w:footnotes>";
+        string leaf = Region(note + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "Units");
+        string middle = Region(P("Group") + leaf, "Groups");
+        string outer = Region(P("Customer") + middle, "Orders");
+        byte[] input = TestDocuments.Docx(TestDocuments.Body(outer), "<Relationship Id='notes' Type='" + TestDocuments.R + "/footnotes' Target='footnotes.xml'/>",
+            extra: new System.Collections.Generic.KeyValuePair<string, string>("word/footnotes.xml", notes));
+        WordDocument doc = Load(input);
+        doc.Merge(new { Orders = new[] { new { Customer = "Ada", Groups = new[] { new { Units = new[] { new { Product = "A" }, new { Product = "B" } } } } } } }, cancellationToken: TestContext.Current.CancellationToken);
+        byte[] output = Save(doc); Schema(output);
+        var references = Part(output, "word/document.xml").Descendants(W + "footnoteReference").Select(e => (string?)e.Attribute(W + "id")).ToArray();
+        Assert.Equal(2, references.Length); Assert.Equal(2, references.Distinct().Count());
+        string content = Part(output, "word/footnotes.xml").Root!.Value;
+        Assert.Contains("AdaA", content, StringComparison.Ordinal); Assert.Contains("AdaB", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void MixedMasterDetailRejectsRepeatedAncestorPathsAtomically()
+    {
+        string inner = Region(P("Inner") + MixedTable("<w:r><w:t>Cell</w:t></w:r>"), "Same");
+        string middle = Region(P("Middle") + inner, "Middle");
+        WordDocument doc = Load(Docx(Region(P("Outer") + middle, "Same"))); byte[] before = Save(doc);
+        Assert.Contains(doc.Diagnostics, diagnostic => diagnostic.Code == "Template.NestedBlockControls");
+        Assert.Throws<NotSupportedException>(() => doc.Merge(new { Same = MixedOneItem }, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(before, Save(doc));
     }
 

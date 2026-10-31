@@ -21,7 +21,7 @@ internal static class SvgPreview
         var root = new XElement(svg + "svg", new XAttribute("version", "1.1"), new XAttribute(XNamespace.Xmlns + "xlink", xlink), new XAttribute("width", N(page.Settings.Width) + "pt"), new XAttribute("height", N(page.Settings.Height) + "pt"),
             new XAttribute("viewBox", "0 0 " + N(page.Settings.Width) + " " + N(page.Settings.Height)), new XAttribute("role", "img"));
         root.Add(new XElement(svg + "rect", new XAttribute("width", "100%"), new XAttribute("height", "100%"), new XAttribute("fill", "#ffffff")));
-        long length = 0; int imageId = 0;
+        long length = 0; int imageId = 0, gradientId = 0;
         foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => !s.Foreground))) AddShape(shape);
         void AddShape(FixedShape shape)
         {
@@ -29,7 +29,19 @@ internal static class SvgPreview
             {
                 string data = string.Join(" ", VectorPath.Create(shape).Select(command => command.Kind + (command.Values.Length == 0 ? "" : " " + string.Join(" ", command.Values.Select(N)))));
                 length += data.Length + 200; Check();
-                root.Add(new XElement(svg + "path", new XAttribute("d", data), new XAttribute("fill", shape.Stroke == 0 ? "#" + shape.Color : "none"),
+                string paint = "#" + shape.Color;
+                if (shape.Gradient is LinearGradient gradient)
+                {
+                    string id = "gradient" + (gradientId++).ToString(CultureInfo.InvariantCulture);
+                    var ends = gradient.Endpoints(shape.X, shape.Y, shape.Width, shape.Height);
+                    root.Add(new XElement(svg + "defs", new XElement(svg + "linearGradient", new XAttribute("id", id), new XAttribute("gradientUnits", "userSpaceOnUse"),
+                        new XAttribute("spreadMethod", "pad"), new XAttribute("color-interpolation", "sRGB"),
+                        new XAttribute("x1", N(ends.X1)), new XAttribute("y1", N(ends.Y1)), new XAttribute("x2", N(ends.X2)), new XAttribute("y2", N(ends.Y2)),
+                        gradient.Stops.Select(stop => new XElement(svg + "stop", new XAttribute("offset", N(stop.Position / 100000.0)), new XAttribute("stop-color", "#" + stop.Color))))));
+                    paint = "url(#" + id + ")"; length += gradient.Stops.Length * 100 + 300; Check();
+                }
+                root.Add(new XElement(svg + "path", new XAttribute("d", data), new XAttribute("fill", shape.Stroke == 0 ? paint : "none"),
+                    shape.Rotation == 0 ? null : new XAttribute("transform", "rotate(" + N(shape.Rotation) + " " + N(shape.RotationX) + " " + N(shape.RotationY) + ")"),
                     shape.Stroke == 0 ? null : new XAttribute("stroke", "#" + shape.Color), shape.Stroke == 0 ? null : new XAttribute("stroke-width", N(shape.Stroke))));
             }
             else if (shape.Stroke == 0) root.Add(new XElement(svg + "rect", new XAttribute("x", N(shape.X)), new XAttribute("y", N(shape.Y)), new XAttribute("width", N(shape.Width)), new XAttribute("height", N(shape.Height)), new XAttribute("fill", "#" + shape.Color)));
@@ -53,12 +65,13 @@ internal static class SvgPreview
                 double width = image.FrameWidth / (1 - image.CropLeft - image.CropRight), height = image.FrameHeight / (1 - image.CropTop - image.CropBottom);
                 group.Add(new XElement(svg + "g", new XAttribute("clip-path", "url(#" + id + ")"), new XElement(svg + "image", new XAttribute("x", N(-image.FrameWidth / 2 - width * image.CropLeft)), new XAttribute("y", N(-image.FrameHeight / 2 - height * image.CropTop)), new XAttribute("width", N(width)), new XAttribute("height", N(height)),
                     new XAttribute("preserveAspectRatio", "none"), new XAttribute(xlink + "href", "data:" + image.MediaType + ";base64," + Convert.ToBase64String(image.Bytes)), new XElement(svg + "title", image.AlternativeText))));
-                root.Add(group); length += (long)image.Bytes.Length * 4 / 3; Check(); continue;
+                root.Add(item.Rotation == 0 ? group : new XElement(svg + "g", new XAttribute("transform", "rotate(" + N(item.Rotation) + " " + N(item.RotationX) + " " + N(item.RotationY) + ")"), group));
+                length += (long)image.Bytes.Length * 4 / 3; Check(); continue;
             }
             if (item.Text.Length == 0 && item.NativeShape == null) continue;
             RenderFontCache.Face face = context.RenderFonts.Get(item.Font); TrueTypeFont font = face.Font;
             var text = new XElement(svg + "g", new XAttribute("fill", "#" + (item.Color ?? "000000")),
-                item.Rotation == 0 ? null : new XAttribute("transform", "rotate(" + item.Rotation.ToString(CultureInfo.InvariantCulture) + " " + N(item.RotationX) + " " + N(item.RotationY) + ")"), new XElement(svg + "title", item.Text));
+                item.Rotation == 0 ? null : new XAttribute("transform", "rotate(" + N(item.Rotation) + " " + N(item.RotationX) + " " + N(item.RotationY) + ")"), new XElement(svg + "title", item.Text));
             double x = item.X, scale = item.Size / font.GetUnitsPerEm();
             int glyphCount = item.NativeShape?.Glyphs.Length ?? item.Text.Length;
             for (int c = 0; c < glyphCount; c++)

@@ -1,8 +1,9 @@
 # ADR B5-ODT: bounded ODT exchange
 
 Design proposal for [#28](https://github.com/kirakosyan/word.net/issues/28),
-2026-10-17. This records a future implementation contract. ODT is unsupported today;
-no enum, conversion direction, dependency or runtime behavior changes in this work.
+2026-10-17. At that design checkpoint ODT was unsupported; the design itself changed
+no enum, conversion direction, dependency or runtime behavior. Published 1.5.0 later
+added the bounded ODT profile described in the [capability matrix](../roadmap-102-capability-matrix.json).
 See the [bucket 5 decision index](../later-design-decisions.md).
 
 ## Decision and alternatives

@@ -11,7 +11,7 @@ namespace WordNet.Tests;
 
 public sealed partial class BusinessFidelityTests
 {
-    private static byte[] RotatedBox(int rotation, string? boxText = null, bool autofit = false, int y = 100, int layer = 0)
+    private static byte[] RotatedBox(int rotation, string? boxText = null, bool autofit = false, int y = 100, int layer = 0, string? boxContent = null, string? imageName = null)
     {
         string shape = "<w:p><w:r><w:drawing><wp:anchor xmlns:wp='http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing' behindDoc='0' relativeHeight='" + layer.ToString(CultureInfo.InvariantCulture) + "'>"
             + "<wp:positionH relativeFrom='page'><wp:posOffset>1270000</wp:posOffset></wp:positionH><wp:positionV relativeFrom='page'><wp:posOffset>" + (y * 12700).ToString(CultureInfo.InvariantCulture) + "</wp:posOffset></wp:positionV>"
@@ -19,9 +19,9 @@ public sealed partial class BusinessFidelityTests
             + "<a:graphic xmlns:a='http://schemas.openxmlformats.org/drawingml/2006/main'><a:graphicData uri='http://schemas.microsoft.com/office/word/2010/wordprocessingShape'>"
             + "<wps:wsp xmlns:wps='http://schemas.microsoft.com/office/word/2010/wordprocessingShape'><wps:cNvSpPr txBox='1'/><wps:spPr><a:xfrm rot='"
             + (rotation * 60000).ToString(CultureInfo.InvariantCulture) + "'><a:off x='0' y='0'/><a:ext cx='1778000' cy='1016000'/></a:xfrm><a:prstGeom prst='rect'><a:avLst/></a:prstGeom>"
-            + "<a:solidFill><a:srgbClr val='00FFFF'/></a:solidFill></wps:spPr><wps:txbx><w:txbxContent>" + P(boxText ?? "Rotate")
+            + "<a:solidFill><a:srgbClr val='00FFFF'/></a:solidFill></wps:spPr><wps:txbx><w:txbxContent>" + (boxContent ?? P(boxText ?? "Rotate"))
             + "</w:txbxContent></wps:txbx><wps:bodyPr><a:" + (autofit ? "normAutofit" : "noAutofit") + "/></wps:bodyPr></wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r></w:p>";
-        return Docx(shape + Page);
+        return imageName == null ? Docx(shape + Page) : FidelityDocuments.Docx(imageName, shape + Page);
     }
 
     [Theory]
@@ -98,7 +98,8 @@ public sealed partial class BusinessFidelityTests
     [Fact]
     public void UnsupportedRotationBoundsAndConformanceAreRejected()
     {
-        Assert.Throws<NotSupportedException>(() => Export(RotatedBox(45), DocumentFormat.Docx));
+        var generalError = Assert.Throws<NotSupportedException>(() => ExportRotated(RotatedBox(45, y: 0), DocumentFormat.Pdf));
+        Assert.StartsWith("Layout.AnchorBounds:", generalError.Message, StringComparison.Ordinal);
         Assert.Throws<NotSupportedException>(() => Export(RotatedBox(90, y: 0), DocumentFormat.Pdf));
         using var source = new MemoryStream(RotatedBox(90)); using var output = new MemoryStream();
         var options = new ConversionOptions(); options.Pdf.Conformance = PdfConformance.PdfA2b;

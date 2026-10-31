@@ -1,5 +1,127 @@
 # Bounded DOCX review workflows
 
+## Unreleased source: comparison selection
+
+Pending #150 work adds two opt-out policies to `ComparisonOptions`, both enabled
+by default. Setting `CompareStoryText = false` leaves admitted header/footer text
+at the original document's value. Setting `CompareRunFormatting = false` leaves
+the original bold, italic, size and color on matching text; newly inserted text
+keeps its revised formatting. Text changes in selected stories or the body can
+still be tracked. These policies retain the existing source admission, section and
+shared-story topology checks, budgets and atomicity. Unsupported formatting and
+structured owners still fail rather than being hidden by an ignore option.
+
+These switches do not implement every story and formatting category requested by
+#150. They are pending source work, not part of published 1.5.0; exact runtime and
+package qualification remain separate.
+
+## Unreleased source: paragraph-format revisions
+
+Pending #150 comparison tracks alignment, left/right/first-line indentation,
+before/after/line spacing and keep/page-break controls for ordinary body paragraphs
+and direct paragraphs in unmerged simple body-table cells when the surrounding
+document topology matches. It also tracks formatting on a matched, unchanged body
+paragraph while other body paragraphs are inserted or deleted. `CompareParagraphFormatting = false` keeps the original
+resolved values instead. Paragraph style and mark formatting must match, and lists,
+headings, custom tabs, direction changes, controls and structured runs are outside
+this profile. Matching style inheritance is resolved before comparison; output
+writes explicit values when necessary to retain resets such as left alignment or
+disabled keeps against a style default. It records effective supported values, not
+the original spelling or every inheritance declaration.
+
+Tracked changes use schema-valid `w:pPrChange` with caller attribution. A
+`DocumentReviewItem` reports structure `paragraph-format`; accepting keeps the
+revised values and rejecting restores the prior values. Text revisions can coexist
+and can be decided independently. Clone, save and source-preserving composition
+retain and remap their revision IDs. Import admits the same bounded property
+history only when the previous style matches; paragraph-mark and section properties
+remain outside the previous-property element, and unsupported owners or property
+changes are rejected. Ordinary loads keep their existing explicit
+accepted-state loss diagnostic. Review display and destination-style composition
+reject this history until it is decided. Paragraph-format differences in table cells
+combined with structural changes, and formatting changes on moved paragraphs, remain
+outside this profile. Structural alignment does not infer a match between edited
+paragraph text and a separate insertion or deletion.
+
+The source tests inspect independent OOXML and Open XML SDK validation, compare
+accepted/rejected PDF glyph positions, and cover inherited resets, cells, sections,
+composition, selective decisions, independent insertions and deletions, budgets and
+unsupported owners. This remains
+unreleased source; the broader #150 acceptance and exact-platform/package
+qualification remain open.
+
+## Unreleased source: detached text-revision display
+
+The pending roadmap #138 work adds an explicit display for retained text insertions
+and deletions in body paragraphs and simple body-table cells. It does not decide any
+revision or alter the source session:
+
+```csharp
+using var input = File.OpenRead("reviewed.docx");
+WordDocument document = WordDocument.Load(input, DocumentFormat.Docx,
+    new ReviewLoadOptions(), out _, new ConversionOptions(FidelityMode.BestEffort));
+DocumentReviewDisplay display = document.CreateReviewDisplay();
+using var pdf = File.Create("review-display.pdf");
+display.SavePdf(pdf);
+DocumentPreview svgPages = display.RenderSvg();
+```
+
+Each display-local `D` or `I` label surrounds the corresponding original deleted
+or inserted text, and its opening marker identifies the recorded author and
+optional date. The labels identify change kinds without color; deleted text is
+also red and inserted text blue, replacing the original colors of changed text.
+Bold, italic and the other admitted run properties continue to use the ordinary
+managed layout profile. An attribution legend is appended by default; set
+`ReviewDisplayOptions.IncludeLegend` to false to omit it. Marker authors escape
+backslashes, brackets, colons, `@` and control characters. `display.Revisions`
+exposes immutable display-local labels and the original author, optional date and
+revision text. PDF keeps the displayed deletion text selectable and searchable.
+SVG uses glyph outlines and text titles, as in the existing preview profile.
+Source text itself is not escaped and can resemble a marker; these labels are
+visual cues, not an authenticated interchange format. Both output and the snapshot
+may contain sensitive deleted text and attribution.
+
+Supported classic comments, run-format history and whole-paragraph moves require
+the explicit numbered annotation policy:
+
+```csharp
+var options = new ReviewDisplayOptions
+{
+    AnnotationPolicy = ReviewAnnotationPolicy.NumberedEndNotes
+};
+DocumentReviewDisplay annotated = document.CreateReviewDisplay(options);
+```
+
+Comment ranges use matching `[C1:start]` and `[C1:end]` anchors; overlapping
+ranges keep their own anchors in source order. A numbered end-annotation section
+contains each comment's author, initials when present, optional date and full
+body in paragraph order. Supported body paragraph formatting and lists use the
+ordinary managed layout profile, and list numbering is independent for each
+comment. Anchors can appear on different pages, and long annotations continue on
+subsequent pages without a margin-collision policy. Whole-paragraph moves use the
+same `[M1:from]` and `[M1:to]` label at both locations. Format changes use an
+`[F1]` anchor, retain the current run appearance, and describe previous and
+current bold, italic, size and color in the annotation section. A missing size is
+`default` and automatic color is `auto`. These labels are textual connections,
+not interactive PDF annotations. `annotated.Annotations` exposes immutable
+attribution and original text in first-anchor order. `IncludeLegend = false`
+omits the insertion/deletion legend but does not remove the annotation section.
+The ordinary managed review output is not a tagged accessibility profile.
+
+The display is detached, so subsequent source edits or decisions do not change it.
+Its ordinary managed PDF and SVG share the source conversion options, limits and
+diagnostics; configure those options before concurrent use. Native typography,
+tagged or archival PDF, PNG, revisions in headers/footers, structural changes
+other than supported paired moves, and structured content are rejected. Without
+the numbered policy, comments, moves and format history are rejected as well. Structured
+content includes fields, bookmarks, links, images, notes, drawings and controls;
+tables must have ordinary unmerged, unnested cells. Source load warnings also
+prevent display creation. Invalid profiles and cancellation are checked before
+the staged PDF is copied to the caller's stream. The normal final-copy I/O limits
+still apply. The original accepted/rejected view APIs and regular export behavior
+remain available. This is unreleased source work; issues #148 and #149 remain open
+pending their complete acceptance and exact-runtime qualification.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -71,8 +193,9 @@ using var pdf = File.Create("accepted.pdf");
 accepted.Save(pdf, DocumentFormat.Pdf);
 ```
 
-Retained history may be saved to DOCX. Other exports require an explicit view with
-comments removed. Removing history is not secure redaction of original bytes,
+Retained history may be saved to DOCX. Other ordinary exports require an explicit
+accepted/rejected view with comments removed; the unreleased display above is a
+separate opt-in view of supported text history. Removing history is not secure redaction of original bytes,
 backups or managed memory. Diagnostics do not include authors or review text.
 
 Recording is an explicit range operation; existing Replace/Merge methods do not

@@ -6,13 +6,32 @@ using WordNet.Internal;
 
 namespace WordNet;
 
-/// <summary>The two admitted, two-dimensional, linear chart types.</summary>
+/// <summary>The admitted, two-dimensional, linear chart types.</summary>
 public enum ChartKind
 {
     /// <summary>Side-by-side columns with a zero baseline.</summary>
     ClusteredColumn,
     /// <summary>Ordinary non-stacked lines; missing values break the line.</summary>
     Line,
+    /// <summary>Side-by-side horizontal bars with a zero baseline.</summary>
+    ClusteredBar,
+    /// <summary>Columns that stack positive and negative series independently.</summary>
+    StackedColumn,
+    /// <summary>Horizontal bars that stack positive and negative series independently.</summary>
+    StackedBar,
+}
+
+/// <summary>Plain, centred labels for admitted bar and column chart points.</summary>
+public enum ChartDataLabels
+{
+    /// <summary>No point labels.</summary>
+    None,
+    /// <summary>The finite numeric value.</summary>
+    Value,
+    /// <summary>The category text.</summary>
+    Category,
+    /// <summary>The category, a comma and space, and the numeric value.</summary>
+    CategoryAndValue,
 }
 
 /// <summary>One immutable, explicitly coloured series. Null values are gaps.</summary>
@@ -43,10 +62,20 @@ public sealed class ChartSeries
 /// <summary>Immutable chart data, independent of XML, spreadsheet and renderer types.</summary>
 public sealed class ChartDefinition
 {
+    private ChartDefinition(ChartDefinition source, ChartDataLabels labels)
+    {
+        if (labels is not ChartDataLabels.None and not ChartDataLabels.Value and not ChartDataLabels.Category and not ChartDataLabels.CategoryAndValue)
+            throw new ArgumentOutOfRangeException(nameof(labels));
+        if (labels != ChartDataLabels.None && source.Kind == ChartKind.Line)
+            throw new NotSupportedException("Chart.DataLabels: Point labels are supported on bars and columns only.");
+        Kind = source.Kind; Categories = source.Categories; Series = source.Series; Title = source.Title;
+        ShowLegend = source.ShowLegend; CategoryTitle = source.CategoryTitle; ValueTitle = source.ValueTitle; DataLabels = labels;
+    }
     /// <summary>Copies an admitted chart with 1–16 series, matching category counts and at most 10,000 total points.</summary>
     public ChartDefinition(ChartKind kind, IEnumerable<string> categories, IEnumerable<ChartSeries> series, string title = "", bool showLegend = true, string categoryTitle = "", string valueTitle = "")
     {
-        if (kind is not ChartKind.ClusteredColumn and not ChartKind.Line) throw new ArgumentOutOfRangeException(nameof(kind));
+        if (kind is not ChartKind.ClusteredColumn and not ChartKind.Line and not ChartKind.ClusteredBar and not ChartKind.StackedColumn and not ChartKind.StackedBar)
+            throw new ArgumentOutOfRangeException(nameof(kind));
         Guard.NotNull(categories, nameof(categories));
         Guard.NotNull(series, nameof(series));
         ObjectText.Check(title, nameof(title), 1024);
@@ -82,6 +111,10 @@ public sealed class ChartDefinition
     public string CategoryTitle { get; }
     /// <summary>Gets the plain value-axis title; the bounded renderer places it horizontally above the plot.</summary>
     public string ValueTitle { get; }
+    /// <summary>Gets the plain, centred data-label content.</summary>
+    public ChartDataLabels DataLabels { get; }
+    /// <summary>Creates an immutable snapshot with the requested bounded data labels.</summary>
+    public ChartDefinition WithDataLabels(ChartDataLabels labels) => new ChartDefinition(this, labels);
 }
 
 internal static class ObjectText

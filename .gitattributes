@@ -19,6 +19,9 @@
 *.odt binary
 *.png binary
 *.tif binary
+tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/*.xml text eol=lf
+# Preserve the byte-identical, independently licensed Word-authored theme part.
+tests/wordnet.Conversion.Tests/Fixtures/Theme/OfficeWordParts/theme1.xml -text whitespace=cr-at-eol
 
 # Keep the reproducible corpus generator hash stable on Windows and Unix.
 eng/generate-comparison-corpus.py text eol=lf
@@ -26,6 +29,18 @@ eng/generate-automation-templates.py text eol=lf
 eng/generate-odt-fixtures.py text eol=lf
 eng/generate-p1-templates.py text eol=lf
 eng/generate-unicode-tables.py text eol=lf
+eng/generate-unicode-linebreak.py text eol=lf
+eng/generate-roadmap-138-cjk*.py text eol=lf
+eng/check-roadmap-138-cjk.py text eol=lf
+eng/verify-roadmap-138-cjk.py text eol=lf
+eng/generate-roadmap-138-template-lint.py text eol=lf
+eng/verify-roadmap-138-template-lint.py text eol=lf
+eng/generate-roadmap-138-stacked-fixtures.py text eol=lf
+eng/check-roadmap-138-stacked.py text eol=lf
+eng/verify-roadmap-138-stacked.py text eol=lf
+eng/generate-roadmap-138-chart-label-fixtures.py text eol=lf
+eng/check-roadmap-138-chart-labels.py text eol=lf
+eng/verify-roadmap-138-chart-labels.py text eol=lf
 eng/generate-bidi-tables.py text eol=lf
 eng/generate-p2-fixtures.py text eol=lf
 eng/generate-fidelity-reductions.py text eol=lf

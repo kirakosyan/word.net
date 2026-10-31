@@ -12,6 +12,26 @@ public sealed partial class WordDocument
 {
     private static void MergeMetadata(DocumentModel destination, DocumentModel incoming, string prefix, ConversionContext context)
     {
+        if (!destination.AllBlocks.Any() && destination.Theme == null) destination.Theme = incoming.Theme;
+        else if (!(destination.Theme == null && incoming.Theme == null) && !(destination.Theme?.Same(incoming.Theme) ?? false))
+            throw new NotSupportedException("Composition.ThemeConflict: Documents with different or missing themes cannot be composed without resolving their document-wide theme.");
+        if (destination.DefaultTableStyle == null && incoming.DefaultTableStyle != null)
+        {
+            if (destination.Tables.Any(table => table.Style == null))
+                throw new NotSupportedException("Composition.TableStyleDefault: A source default would alter an unstyled destination table.");
+            destination.DefaultTableStyle = incoming.DefaultTableStyle;
+        }
+        else if (destination.DefaultTableStyle != null && incoming.DefaultTableStyle == null)
+        {
+            if (incoming.Tables.Any(table => table.Style == null))
+                throw new NotSupportedException("Composition.TableStyleDefault: The destination default would alter an unstyled source table.");
+        }
+        else if (destination.DefaultTableStyle != null && incoming.DefaultTableStyle != null)
+        {
+            if (!DocumentComparison.SameTableStyle(destination.DefaultTableStyle, incoming.DefaultTableStyle, context))
+                throw new NotSupportedException("Composition.TableStyleDefault: Different default table styles cannot be composed without resolving them first.");
+            foreach (TableBlock table in incoming.Tables.Where(table => table.UsesDefaultStyle)) table.Style = destination.DefaultTableStyle;
+        }
         foreach (DocumentProperty property in incoming.CustomProperties.Values)
         {
             context.CheckCancellation();

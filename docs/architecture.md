@@ -1,5 +1,79 @@
 # Architecture and implementation status
 
+Pending chart point labels are immutable chart metadata; explicit OOXML label
+flags and the existing local workbook survive editable DOCX and report binding.
+Managed vector placement measures each string, charges aggregate text and work,
+and rejects labels that do not fit inside the corresponding bar. Reference
+position differences are diagnosed; protected output combinations remain excluded.
+
+Pending stacked charts retain their chart/workbook graphs and apply bounded,
+separate positive and negative accumulators per category in managed vector layout.
+Axis and plot differences from an independent office reference are diagnosed;
+native and conformance-profile combinations remain outside this increment.
+
+Pending template inspection parses a bounded DOCX using the existing editable model
+and the same merge-field grammar, compares admitted body paths to an immutable
+declaration, and returns part-level opaque aliases. It does not read caller values,
+write output or claim a reusable environment identity. Uninspected controls, scopes,
+owners and later pipeline stages remain explicit unknowns.
+
+Unreleased #142 direct table borders and clear RGB shading stay on the table model
+through cloning and DOCX writing. Managed layout, HTML and ODT compute the
+applicable outside and inside edges and cell fills from the current rows.
+A bounded table-style chain retains whole-table border and clear-shading
+properties, resolves inheritance at layout time and is written back as editable
+DOCX styles with collision-safe identifiers. A qualified table-look mask selects
+row, column, corner and single-width band fills without flattening the style or
+the mask in DOCX. Non-DOCX output that relies on inherited conditional regions
+or an omitted band size is diagnosed. The resolver uses Office's documented
+region order and reports its difference from OOXML's order. Bounded
+explicit band sizes remain editable in DOCX; unqualified rendered sizes,
+unsupported style properties, conflicts and pagination are diagnosed.
+Used implicit table defaults retain document-level identity and per-table omission
+of explicit references; cloning and compatible composition preserve that state.
+Unqualified static default rendering and conflicting composition are explicit.
+Conditional style fills also retain bounded theme tokens, transforms and original
+fallbacks alongside resolved RGB values. The effective chain tracks explicit child
+overrides; static theme-color differences are diagnosed rather than hidden.
+Conditional region borders remain structured per side in the style chain, and
+qualified outer edges are resolved against the current grid. Interior, competing
+or overlapping edges and unqualified inherited rendering are diagnosed.
+
+Pending typed-control ownership indexes inline children within an admitted rich
+block parent. Parent IDs are exposed on detached snapshots; edits enforce both
+owners' locks, reject parent replacement while children exist and refresh the
+parent's value state after child or binding changes. Other nested owners stay
+outside this bounded subset.
+
+Unreleased review-display work creates a detached marked model from admitted body
+and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot
+through the shared layout without modifying the source review store; unsupported
+history, structured owners and output profiles fail explicitly. An explicit numbered
+end-annotation policy maps supported classic comments, formatting and paired moves
+to source anchors without margin callout placement. See the
+[review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
+
+Unreleased template-format work adds DOTX/OTT package identities and bounded
+byte-based inspection, with explicit unknown and unsupported outcomes. The
+[template-format profile](template-formats.md) describes the pending directions
+and stream contract.
+
+The pending matrix-equation work extends the immutable expression graph and closed
+OMML adapter. The managed layout positions bounded cells using column extents and
+the caller's MATH axis and leading; it retains the existing vector and logical-text
+paths. Other equation and output profiles remain separate.
+
+Pending n-ary expressions retain a closed operator and optional limit semantics in
+the immutable graph and OMML adapter. Managed layout uses the selected MATH font's
+display variants, assemblies and limit metrics, with an explicit size fallback.
+
+Unreleased DOCX reading also consults the bounded local theme and settings before
+resolving text styles. It computes selected Latin font families and RGB colors for
+rendering, and reconstructs a bounded scheme and selected editable text references
+for DOCX. It retains loss diagnostics for unsupported theme semantics and rejects
+conflicting document themes in composition. The [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
+records fallback and combination limits.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -7,6 +81,10 @@ and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6
 The bounded fields, controls, reports, review and drawing additions ship together;
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
+
+The proposed [template compatibility plan](template-compatibility-plan-design.md)
+describes a future bounded, immutable preflight contract. It does not add runtime
+behavior; existing inspection and conversion continue to use their current APIs.
 
 
 ## P4/P5 review and drawing profile
@@ -16,15 +94,68 @@ section and story comparison uses bounded shared work and shared-part identities
 Quarter-turn, fit and linked-box layout retain editable source structure and use
 managed fixed-page geometry. A small vector profile reuses anchored drawing ownership
 and paints managed paths. See the [profile and exclusions](roadmap-102-p4-p5.md).
+Pending #152 snapshots admitted scalar results on the detached native layout model
+before bidi resolution and shaping. Its field expansion is bounded; known vertical
+and directional reference differences are diagnosed rather than treated as parity.
+Pending #153 lets a dedicated body equation paragraph keep its separate MATH
+layout while adjacent paragraphs use extended native shaping. Reference geometry
+and directional extraction differences are diagnosed; notes and charts stay rejected.
+Pending #154 builds a Div and paragraph subtree at an explicitly selected text-box
+anchor, using actual page MCIDs and link ParentTree associations. The opt-in is
+restricted to unambiguous unrotated body boxes; notes and other owners remain open.
+Pending #155 attaches each explicitly described vector's fill and stroke to a
+single Figure at its admitted source anchor, with page MCIDs and ParentTree owners;
+explicitly decorative vectors instead paint as artifacts. Unsupported owners and
+semantic combinations reject before output is copied.
+Pending #156 combines the existing bounded tag tree with archive output intent,
+embedded fonts and one XMP packet carrying both identification schemas. It
+requires UA semantics and rejects unqualified mixed object/drawing ownership;
+archive and accessibility validation remain independent checks.
+Pending #164 snapshots a bounded caller-provided word/break lexicon. For admitted
+managed PDF words it draws visible split glyph outlines and one invisible original
+word carrier; diagnosed search-highlight and justified-reference differences
+prevent strict output.
+Pending #165 intersects Unicode 17 default line-break opportunities with extended
+grapheme boundaries for admitted managed PDF paragraphs. Source offsets and glyph
+coverage are checked before layout; mixed numeric and Japanese punctuation reference
+differences are explicit losses rather than implicit native shaping.
+Pending #161 maps three default preset polygons through the existing drawing anchor
+and vector path pipeline. Editable title/description metadata is retained; output
+loss is diagnosed where the selected profile cannot preserve it, while groups and
+transformed presets remain outside the profile.
+Pending #160 retains the raw signed OOXML rotation and applies one center-based
+transform to the frame, managed text, images and PDF link bounds. Rotated bounding
+boxes drive page admission and wrap exclusion. Independent reference discrepancies
+are explicit losses; the transform does not imply unrestricted Word layout parity.
+Pending #162 retains ordered opaque RGB and bounded local-theme gradient stops in
+the editable model. Cardinal gradients become clipped PDF axial shadings, XPS
+linear brushes and SVG gradient resources; aggregate stops and expanded paints
+are bounded before caller output. Native, tagged and archival combinations remain
+separate from this managed profile.
 
 ## P3 reports — merged source
 
 PR #135 keeps a bounded second block-control owner for one nested master-detail
 region. Cloning remaps identities and lookup walks an explicit item-scope stack.
-Cross-tabs build bounded simple tables with a conservative fit check; fragment
+Pending #157 generalizes those body repeat owners to an ordered, bounded chain;
+the reader, writer and cloner preserve that chain, and every repeat boundary is
+checked before expansion. This does not expand typed-control or row-repeat
+ownership, and the published 1.5.0 profile remains unchanged.
+Pending #163 adds a horizontal clustered-bar graph and ordinary managed vector
+layout. It preserves the existing workbook/cache contract and records the known
+plot-area difference; this does not qualify native, tagged or archival output.
+Cross-tabs build bounded simple tables with a conservative fit check; pending
+cell placement admits only fixed grids with four unambiguous physical margins and
+emits explicit nested-cell margins, so width admission does not guess defaults.
+Nested headers are retained once. Fragment
 insertion snapshots a separate admitted session, remaps metadata and commits a
 dedicated bookmark replacement atomically. See the
 [source profile](editing-and-templates.md#mixed-report-regions--merged-source).
+An unreleased cell-destination extension updates the selected cell's block and
+paragraph indexes together; host table geometry remains owned by the destination.
+Only simple top-level body cells are admitted, and the broader #146 field work
+and qualification remain open. Explicit field opt-in preserves admitted instructions,
+isolates local reference/counter identities and makes stale caches visible to callers.
 
 ## P2 control store — merged source
 
@@ -38,7 +169,11 @@ fallback and bounded underline strokes only for fixed output. Explicit display v
 keep Unicode text and bounded private render provenance until PDF/XPS save; text
 exports only flatten. Per-version immutable snapshot caching avoids repeated owner
 indexing, and final owner checks reject bookmarks attached after initial parsing.
-No dependency or target change is added.
+Unreleased source additionally admits bounded glossary categories and four strictly
+whitelisted local metadata parts. The store retains validated resource bytes and
+relationship identities through cloning, while aggregate control limits cover them.
+Validated `notTrueType` flags remain inert font-catalog metadata; richer glossary
+graphs and embedded font data remain rejected. No dependency or target change is added.
 
 ## Merged roadmap #102 P1 implementation
 
@@ -60,8 +195,9 @@ Release 1.3.0 adds immutable admitted chart-part graphs and OMML expression tree
 
 Merged PR #85 adds immutable explicit column geometry with active-width
 text/table/note layout, detached report-data preprocessing and contiguous body repeat
-regions. An independent ODF package layer and managed adapter enable only DOCX ↔ ODT;
-ODT remains outside document-session loading/saving. See [ODT](odt.md),
+regions. In the 1.5.0 release, an independent ODF package layer and managed adapter
+enable DOCX ↔ ODT and ODT remains outside document-session loading/saving. The
+unreleased template work adds bounded ODT/OTT session support. See [ODT](odt.md),
 [report preprocessing](report-preprocessing.md) and [review workflows](review-workflows.md).
 
 ReviewStore retains admitted plain-text revisions and classic comment intervals.

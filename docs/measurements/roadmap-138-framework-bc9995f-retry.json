@@ -1,0 +1,40 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "headCommit": "bc9995febfea04f0be9062b0090bd07426bfda86",
+  "pullRequestMergeCommit": "440655fc957683e1c967a5e551dcb7277959a970",
+  "frameworkRelease": 461814,
+  "casesPerGuest": 2065,
+  "originalFailure": "docs/measurements/roadmap-138-framework-bc9995f-failure.json",
+  "pullRequestRun": "https://github.com/kirakosyan/word.net/actions/runs/41176942237",
+  "pullRequestSourceRetry": {
+    "job": 124474253990,
+    "artifact": 13034721529,
+    "artifactSha256": "d577e1c69037fa8976da4d9c8a73945f778870c2736d95c4d1ae9c9d96f11ef3",
+    "librarySha256": "0f52a5f50f2646d247ff637fb4d575719c44d1f4d44cb7275287f7fe2b646",
+    "testSha256": "ac4ccafdeb9ed3057f6d93a240f7cf63c249f995a41132284b32231852fc1c88"
+  },
+  "pullRequestPackage": {
+    "job": 124470412221,
+    "artifact": 13034252037,
+    "artifactSha256": "dc88b4cd584ab23a3b564001d176aaf59986f3be7ec6d9023f9c43392cf75617",
+    "librarySha256": "20ce29ac0e4fd4c851037fff803a0d602bf46c536ae580ad45f5ade76d0d331e",
+    "testSha256": "3301ca378cb3e73b856e2b29f7d7baef1b23926a4cfe6490d0c5910e813d4ea1"
+  },
+  "pushRun": "https://github.com/kirakosyan/word.net/actions/runs/41176939099",
+  "pushSource": {
+    "job": 124470201308,
+    "artifact": 13034316648,
+    "artifactSha256": "1b80bad34c3c326e6c59546a0c8c46578435a88c4036fb6c9a0ede011a250d8d",
+    "librarySha256": "cf142e3a5c6781a5ad703b6c1037c954ae59efcf1b38f8b50d16f2a3adf5a15b",
+    "testSha256": "3f0a0ae25da301210048bd6d66d9ece5a0def33dd3e77d34c013c84f2a321cd9"
+  },
+  "pushPackage": {
+    "job": 124472269912,
+    "artifact": 13034660519,
+    "artifactSha256": "96ac3a7115c80decccc6e751413358385800d0b8ae81ed060f706fef152fbd59",
+    "librarySha256": "11b1dfd1e307d5af085efa57b16a61eae314440e0c3eee201c3badc5f69ee3fc",
+    "testSha256": "380e568091442d5ddc3afef79a074a26c3291caedfbd983bce12618526b3e39e"
+  },
+  "interpretation": "All four listed actual Framework 4.7.2 guests passed 2065 cases, with no failures or skips. The PR source success is a fresh retry on the PR merge commit and does not erase the original VM exit, whose cause and test count remain unknown. The push guests used the exact branch head. Neither qualifies later source."
+}

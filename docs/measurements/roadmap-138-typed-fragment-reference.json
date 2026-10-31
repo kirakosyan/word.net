@@ -1,0 +1,28 @@
+{
+  "roadmap": 138,
+  "issue": 147,
+  "recordedUtc": "2026-10-31",
+  "scope": "One independently authored local-XML-bound plain-text control is inserted twice, explicitly synchronized, and edited/write-backed in one copy. This checks separate local values, not live Word execution or every typed-control combination.",
+  "workingTreeParent": "23c5069b12bb8df271207158d9fcaba2e3318659",
+  "generator": "eng/generate-roadmap-138-bound-fragment.py",
+  "generatorSha256": "4bc8f324ba2bb4a8b9a77991233380bcc2f5a6e214f97cabdfc860698e3c413b",
+  "packageHelperSha256": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+  "probe": "eng/roadmap-138-typed-fragment-probe.cs",
+  "probeSha256": "ff2ff226b5e90922c7567d632f18e97af9b27e2dbe247bc8988960695896a354",
+  "checker": "eng/check-roadmap-138-typed-fragment.py",
+  "checkerSha256": "27b8e8e40731cee7ba90dbe72bc85342a62cb2e3d34d2c6a997aa195e2cf3899",
+  "executedWorkingTreeNet10AssemblySha256": "cbe8274e91826b701d7080faf8850dffcd7b6966a2139398684be6e1762623dc",
+  "inputDocxSha256": "c9af96c8faf95ad4a80e313a14443fc6aa503abb299e963d6beed29a36e396bb",
+  "outputDocxSha256": "e7199803e71d5fc1fcb22488a2f841b38116eb9af392746d0f9277bad372776e",
+  "schema": "Open XML SDK 3.5.1 reported zero errors for the input and output; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "reference": {
+    "producer": "LibreOffice 24.2.7.2 420(Build:2), Ubuntu 24.04, writer_pdf_Export; image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644",
+    "extractor": "Poppler pdftotext 24.02.0",
+    "font": "Noto Sans Regular, mounted from the repository, SHA-256 b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+    "pdfSha256": "5e0976e36ffcd8b05be4bce1cb1bf1800a93a2d00baa4d9253a7c826d6f200a4",
+    "textSha256": "c3145801efdfab75ef2adc65e4372c981510a666c5e9eeb2e8a996fb3dd3685e",
+    "text": ["Name: Bea", "Name: Ada"],
+    "checkerResult": "Control IDs 1 and 2, two distinct local store identities and XML values Bea and Ada; reference text appears in the same order."
+  },
+  "limitations": "This is a working-tree observation with the executing DLL hash above; exact final-commit runtime and package evidence require separate checks. Input/output DOCX and reference PDF are generated scratch artifacts, not committed. No live Word, glossary-backed source, mixed object/control, native, tagged or archival combination is qualified."
+}

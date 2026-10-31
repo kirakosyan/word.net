@@ -1,0 +1,30 @@
+{
+  "roadmap": 138,
+  "issue": 159,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "0a50a5c186ad16c2fbf531367c70171459a9306c",
+  "scope": "Unreleased rectangular numeric table formulas and literal percentage pictures; unsupported cells retain whole-table caches. This record does not accept the leaf or publish a package.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed",
+    "net8ConversionAndEnglishOcr": { "passed": 1698, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1698, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 18, "testMethods": 83, "net10CasesPassed": 166 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed API and archive validation against this commit",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "5bcb6adef69a19a85d76abae909430cd189219c1ae9b41f012ce60dace30be09",
+      "wordnet.Fonts.1.5.0.nupkg": "d6aae7601aaaf6e30aa62704ebd151c833f06afd150fa017baf4690495a2a71a",
+      "wordnet.Ocr.1.5.0.nupkg": "daff5fc5d255592bc567b61f3880921780bf2284fc0f0d9de45d6b15d539913d"
+    }
+  },
+  "independentProbe": {
+    "source": "tests/wordnet.Conversion.Tests/Fixtures/P2/table-formulas.docx",
+    "reference": "tests/wordnet.Conversion.Tests/Fixtures/P2/table-formulas-libreoffice.pdf",
+    "producer": "LibreOfficeDev 26.8.0.0.alpha0; Poppler pdftotext 25.03.0",
+    "observedNumericResults": ["4.75", "4.75", "9.5", "15"],
+    "limitations": "LibreOffice did not retain the percentage picture and left two non-table simple-field caches unrefreshed. This is not a Word-authored percentage oracle."
+  },
+  "qualification": "Hosted checks on this commit were running when this local record was created. Full leaf acceptance, final review, merge and package publication are not established."
+}

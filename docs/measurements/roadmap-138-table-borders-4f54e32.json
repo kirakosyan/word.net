@@ -1,0 +1,25 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "4f54e3205e192770b39efa3e9ce9c76f09a51f5f",
+  "scope": "Unreleased direct table borders on ordinary simple body tables, including explicit losses for unqualified combinations; table shading and conditional styles are outside this measured commit.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed",
+    "net8ConversionAndEnglishOcr": { "passed": 1749, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1749, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 24, "testMethods": 124, "net10CasesPassed": 218 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed API and archive validation against this commit",
+    "packageAttempt": "The initial concurrent core pack returned MSB4166 after child nodes exited; a serial pack retry succeeded and the resulting exact-commit package passed verification.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "9176e5ad9c941216b6bb8c4f12388eb43d929fbaf4f3d91d6b2c5bdfddcc930c",
+      "wordnet.Fonts.1.5.0.nupkg": "833d0b60efe9f31317c91840c98e09c0788f002ba8d233974bf83828efcbf2ff",
+      "wordnet.Ocr.1.5.0.nupkg": "481083504a57d3ac9094a44d89ccd5d1a11a34738ee14c0ad952a385e0e553d8"
+    }
+  },
+  "independentReference": "LibreOffice 24.2.7.2 agreed on border colors and grid relationships. Measured horizontal and vertical placement differences are retained in the fixture README, not counted as passing parity.",
+  "qualification": "Hosted qualification, remaining table-style scope, final review, merge and package publication are not established for this commit by this local record."
+}

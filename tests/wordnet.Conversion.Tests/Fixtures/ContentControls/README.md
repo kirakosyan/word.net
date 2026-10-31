@@ -25,7 +25,8 @@ direct XML/relationship inspection and independent PDF/XPS readers.
 Negative cases mutate these authored structures explicitly in test code. Placeholder
 and custom-XML properties/relationship parts are authored in the fixture helper,
 with exact expected graph and type/value assertions. No generated DOCX/PDF/XPS,
-font binary or external application output is committed here. Managed font metrics
+font binary is committed here. The separately licensed [Word-authored glossary
+parts](OfficeWordParts/README.md) provide a negative compatibility control. Managed font metrics
 use the existing embedded open-license Noto Sans; caller-font cases use existing
 licensed test fixtures. No interactive Word UI or pixel-parity qualification is
 inferred from these schema/semantic checks. The existing independent reference

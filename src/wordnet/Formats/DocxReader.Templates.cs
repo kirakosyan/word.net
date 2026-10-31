@@ -11,6 +11,8 @@ namespace WordNet.Formats;
 internal sealed partial class DocxReader
 {
     private readonly Dictionary<XElement, TemplateControl> rowControls = new Dictionary<XElement, TemplateControl>();
+    private readonly Dictionary<XElement, int> typedRowControls = new Dictionary<XElement, int>();
+    private readonly Dictionary<XElement, int> typedCellControls = new Dictionary<XElement, int>();
     private void RegisterRowControl(XElement element, TemplateControl control)
     {
 #if NET8_0_OR_GREATER
@@ -45,9 +47,13 @@ internal sealed partial class DocxReader
     {
         if (!context.Editing || element.Name != W + "sdt") return false;
         if (context.PreserveControls) return ReadTypedBlock(element, blocks);
+        if (element.Ancestors(W + "sdt").Count() + 1 > Math.Min(64, context.Options.MaximumNestingDepth))
+            throw new InvalidDataException("Limit.NestingDepth: Template controls exceed the nesting limit.");
         int start = blocks.Count;
         if (element.Element(W + "sdtContent") is XElement content) ReadBlocks(content, blocks);
         TemplateControl? control = ReadControl(element);
+        if (control == null && context.TemplateExchange)
+            context.Loss("Template.UnsupportedControl", "Unadmitted content-control metadata is not preserved by this template exchange.");
         if (control != null)
         {
             bool hasTable = false;
@@ -66,10 +72,10 @@ internal sealed partial class DocxReader
                 if (block.Control != null)
                 {
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) && block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal)
-                        && control.Tag != block.Control.Tag && block.NestedControl == null && hasTable)
-                    { block.NestedControl = block.Control; block.Control = control; continue; }
+                        && control.Tag != block.Control.Tag && block.NestedControls.All(n => n.Tag.StartsWith("repeat:", StringComparison.Ordinal) && n.Tag != control.Tag) && hasTable)
+                    { block.PrependNestedControl(block.Control); block.Control = control; continue; }
                     if (control.Tag.StartsWith("repeat:", StringComparison.Ordinal) || block.Control.Tag.StartsWith("repeat:", StringComparison.Ordinal))
-                    { block.Control.Executable = false; control.Executable = false; if (block.NestedControl != null) block.NestedControl.Executable = false; }
+                    { block.Control.Executable = false; control.Executable = false; foreach (TemplateControl nested in block.NestedControls) nested.Executable = false; }
                     context.Loss("Template.NestedBlockControls", "Nested controls sharing a block are outside the editable template profile.");
                 }
                 else block.Control = control;
@@ -94,12 +100,15 @@ internal sealed partial class DocxReader
         if (fields.Count > 0)
         {
             if (ReadControl(element) != null) context.Loss("Template.FieldStructure", "Controls inside field results retain cached content without template execution.");
+            else if (context.TemplateExchange) context.Loss("Template.UnsupportedControl", "Unadmitted content-control metadata is not preserved by this template exchange.");
             if (element.Element(W + "sdtContent") is XElement fieldContent) ReadInlines(fieldContent, runs, inherited, link);
             return true;
         }
         var cached = new List<TextRun>();
         if (element.Element(W + "sdtContent") is XElement content) ReadInlines(content, cached, inherited, link);
         TemplateControl? control = ReadControl(element);
+        if (control == null && context.TemplateExchange)
+            context.Loss("Template.UnsupportedControl", "Unadmitted content-control metadata is not preserved by this template exchange.");
         if (cached.Count == 0) cached.Add(new TextRun(""));
         foreach (TextRun run in cached)
         {

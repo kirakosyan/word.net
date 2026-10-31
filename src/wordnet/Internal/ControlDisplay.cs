@@ -21,9 +21,9 @@ internal static class ControlDisplay
             if (fixedOutput && model.HasControlDisplay) PrepareFixed(model, c);
             return;
         }
-        if (format == DocumentFormat.Docx)
+        if (format is DocumentFormat.Docx or DocumentFormat.Dotx)
         {
-            if (model.Controls.Items.Values.Any(d => d.BindingState == ContentControlBindingState.Dirty)) throw new InvalidOperationException("Control.BindingDirty: Explicitly apply, write back or detach edited bindings before DOCX save.");
+            if (model.Controls.Items.Values.Any(d => d.BindingState == ContentControlBindingState.Dirty)) throw new InvalidOperationException("Control.BindingDirty: Explicitly apply, write back or detach edited bindings before DOCX/DOTX save.");
             if (model.Controls.Items.Values.Any(d => d.BindingState == ContentControlBindingState.Unevaluated)) c.Report("Control.BindingNotApplied", "Preserved local bindings were not applied by this session; another consumer can refresh them on open.");
             return;
         }
@@ -40,7 +40,7 @@ internal static class ControlDisplay
     private static void MarkDisplay(DocumentModel model, ConversionContext c)
     {
         var owners = ControlOwners.Index(model, c);
-        foreach (ControlData data in model.Controls.Items.Values)
+        foreach (ControlData data in model.Controls.Items.Values.OrderBy(data => owners[data.Id].ParentId.HasValue ? 1 : 0))
         {
             ControlGlyph? hint = null;
             if (data.Kind == ContentControlKind.Checkbox && !data.Placeholder)
@@ -113,10 +113,15 @@ internal static class ControlDisplay
     internal static void Flatten(DocumentModel model, ConversionContext c)
     {
         MarkDisplay(model, c);
-        foreach (DocumentBlock block in DocumentModel.Expand(model.Blocks))
+        foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
         {
             block.TypedControlId = null;
             if (block is ParagraphBlock p) foreach (TextRun run in p.Runs) run.TypedControlId = null;
+            if (block is TableBlock table)
+            {
+                table.TypedRowControls.Clear();
+                foreach (TableCell cell in table.Rows.SelectMany(row => row)) { c.ReserveControlWork(1); cell.TypedControlId = null; }
+            }
         }
         model.Controls = new ContentControlStore();
     }

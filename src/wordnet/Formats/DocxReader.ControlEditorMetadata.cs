@@ -77,4 +77,53 @@ internal sealed partial class DocxReader
         }
         if (!supported) throw new NotSupportedException("Control.ScriptFormatting: Script-specific font/size/emphasis slots require independently qualified script rendering; only Latin/default-script control text is admitted with those slots.");
     }
+
+    // The bounded main-document character style is resolved by the ordinary
+    // reader and materialized on output. Its editable identity is not retained.
+    private void ValidateTypedCharacterStyle(XElement reference)
+    {
+        Leaf(reference, W + "val");
+        string? id = DocxPackage.RequiredAttribute(reference, W + "val");
+        var visiting = new HashSet<string>(StringComparer.Ordinal);
+        while (id != null)
+        {
+            context.ReserveControlWork(1);
+            if (id.Length is 0 or > 256 || !visiting.Add(id) || visiting.Count > context.Options.MaximumNestingDepth)
+                throw new InvalidDataException("Control.Style: Character style identity is invalid, cyclic or exceeds the nesting limit.");
+            if (!styles.TryGetValue(id, out XElement? style) || (string?)style.Attribute(W + "type") != "character")
+                throw new NotSupportedException("Control.Unsupported: A control run requires a resolved main-document character style.");
+            Attributes(style, W + "type", W + "styleId", W + "default", W + "customStyle");
+            foreach (XAttribute flag in style.Attributes().Where(a => a.Name == W + "default" || a.Name == W + "customStyle")) _ = ControlValues.Bool(flag.Value);
+            if (style.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)) throw new InvalidDataException("Control.Style: Duplicate character style properties.");
+            foreach (XElement property in style.Elements())
+            {
+                context.ReserveControlWork(1);
+                if (property.Name == W + "name" || property.Name == W + "basedOn" || property.Name == W + "uiPriority")
+                {
+                    Leaf(property, W + "val");
+                    string value = DocxPackage.RequiredAttribute(property, W + "val");
+                    if (value.Length is 0 or > 256) throw new InvalidDataException("Control.Style: Character style metadata must be bounded.");
+                    if (property.Name == W + "uiPriority" && (!int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out int priority) || priority is < 0 or > 99))
+                        throw new InvalidDataException("Control.Style: Invalid style UI priority.");
+                }
+                else if (property.Name == W + "semiHidden" || property.Name == W + "unhideWhenUsed" || property.Name == W + "qFormat")
+                { Leaf(property, W + "val"); _ = ControlValues.On(property, W); }
+                else if (property.Name == W + "rsid")
+                {
+                    Leaf(property, W + "val"); string value = DocxPackage.RequiredAttribute(property, W + "val");
+                    if (value.Length != 8 || value.Any(ch => !Uri.IsHexDigit(ch))) throw new InvalidDataException("Control.Style: Invalid style revision identifier.");
+                }
+                else if (property.Name == W + "rPr")
+                {
+                    if (property.Descendants().Any(e => e.Name == W + "rStyle" || e.Name == W + "szCs" || e.Name == W + "bCs" || e.Name == W + "iCs" || e.Name == W + "lang")
+                        || property.Descendants(W + "rFonts").Attributes().Any(a => a.Name == W + "cs" || a.Name == W + "eastAsia" || a.Name == W + "hint"))
+                        throw new NotSupportedException("Control.Style: Script-dependent or nested style properties are outside the admitted character-style profile.");
+                    ValidateTypedRunProperties(new XElement(property));
+                }
+                else throw new NotSupportedException("Control.Style: Character style behavior is outside the admitted profile.");
+            }
+            id = (string?)style.Element(W + "basedOn")?.Attribute(W + "val");
+        }
+        context.Loss("Control.CharacterStyle", "A typed-control run's bounded character style is resolved into direct formatting; editable character-style identity is not retained.");
+    }
 }

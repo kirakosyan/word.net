@@ -1,5 +1,11 @@
 # Bucket 5: later design decisions
 
+This is the historical 2026-10-17 design record, not the current support matrix.
+The published [1.5.0 capability matrix](roadmap-102-capability-matrix.json) covers
+the subsequently delivered bounded ODT, review and object profiles. Encryption,
+decryption and signatures remain cancelled. The proposals and checkpoints below
+retain their original context.
+
 Design deliverables for roadmap [#32](https://github.com/kirakosyan/word.net/issues/32),
 authored 2026-10-17. Status: **merged in PR #39** as `4eb9ed93aadbe48dee6ca482a39f81ff489f4171`.
 Issues #28–#31 are completed on these designs and acceptance plans; they do not authorize or deliver runtime
@@ -22,8 +28,8 @@ support. It distinguishes future plans from executed tests and existing seed pro
 
 Build on the existing private semantic model, independent format adapters and atomic
 `WordDocument` sessions. Preserve `net462;net472;netstandard2.0;net8.0;net10.0`, enum
-values/constructor metadata and provider-neutral public APIs. Proposed APIs in these
-documents are sketches, unavailable in source/packages and subject to normal API review.
+values/constructor metadata and provider-neutral public APIs. At the design checkpoint
+the proposed APIs were sketches, unavailable in source/packages and subject to review.
 Do not expose SDK/XML/native objects, implicitly fetch resources or introduce speculative
 runtime dependencies. Managed BCL/ZIP/XML and the existing dependency graph are the
 preferred starting point; future selections still require maintenance/license/TFM

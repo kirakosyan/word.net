@@ -1,0 +1,31 @@
+{
+  "roadmap": 138,
+  "issue": 158,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "96ca2fa83320cd59874ebf9f8286a825e36c8759",
+  "scope": "Prepared cross-tabs can replace a dedicated bookmark in an unprotected fixed-grid DOCX/DOTX body-table cell with complete, unambiguous physical margins. Nested headers appear once; broader cell and region placement remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2101, "failed": 0, "skipped": 0, "trxSha256": "03632337bfde46ce34c360e352c539c29d2672234a920f3137c4764f2767352a"},
+    "net10ConversionAndEnglishOcr": {"passed": 2101, "failed": 0, "skipped": 0, "trxSha256": "0477696b8e8b40c66d2a39045daa0eaf45ab76c49ac78de2db6b23b371777463"},
+    "capabilityMatrix": {"profiles": 67, "testMethods": 338, "net10CasesPassed": 574},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "f85f5fea53e4e34172b978f7f306d2b9505550d98f37332f840ff9cd3ebb500d",
+      "wordnet.Fonts.1.5.0.nupkg": "5e48ec7d758942984f15ea47ad37bee0593cefaa2b0debe015e8f26186faa06b",
+      "wordnet.Ocr.1.5.0.nupkg": "baf914a8a8476632de803d3be74d642f503acd41f59447f622ee3c0127ee413f"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-crosstab-cell-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "0433af035a35ed3d0e50fe37b4e1589063e896b4cb3a40608536a3f19dd7963e",
+    "reproducedDocxSha256": "17a0c9f364e065b6b2c658863ac55d56740678df1e6ca28859cf28b18367aa69",
+    "wordnetPdfSha256": "ba15e6d72d8b352b94be365ce893561bceadf426adda9636cf152db3abd086c7",
+    "result": "The exact source and packaged assemblies were byte-identical. The committed probe reproduced the independently checked DOCX byte for byte; schema validation reported no errors, and the text and selected column-origin checks passed again against LibreOffice. The original implicit-margin difference remains in the reference receipt."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. Other cell geometries, nested header repetition, report-region placement and remaining acceptance criteria keep #158 and roadmap #138 open."
+}

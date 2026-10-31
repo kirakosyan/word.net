@@ -1,0 +1,46 @@
+{
+  "assembly": "wordnet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+  "assemblySha256": "4c4c1d2c83c4466bce2e0b4da5502b3f513b9d78d4babd7774eade136a2e690c",
+  "inputs": {
+    "fragment-body-target.docx": "74cdff78dfafd1f06c31153854175ad320816f4ebfe9f9e0ded83fcfc13ea063",
+    "fragment-cell-target.docx": "18bb4ea0217b0eab7ef64d87da0f3cc87b464e0c79a86a83f321c7e4f37a5b16",
+    "fragment-field-source.docx": "43501aa226d8e9d948ed20daaa436515db90431f88970cb3ad48587e4b61ad07",
+    "fragment-plain-source.docx": "84d7acc45bbb7506eb3c80f241d50960c8e403a3b34bbd65aeb3f9a8e8384f12",
+    "review-source.docx": "c94c82a798f870350811510636405f39db2c739e60a76cc3760d580becf7aa46"
+  },
+  "fragments": [
+    {
+      "target": "fragment-body-target",
+      "source": "fragment-field-source",
+      "outcome": "NotSupportedException",
+      "message": "Fragment.Structure: Positioned objects and fields are unsupported in fragments.",
+      "sourceDiagnostics": [],
+      "targetUnchanged": true,
+      "sourceUnchanged": true
+    },
+    {
+      "target": "fragment-cell-target",
+      "source": "fragment-plain-source",
+      "outcome": "InvalidDataException",
+      "message": "Fragment.Placeholder: A unique unwrapped body bookmark paragraph is required.",
+      "sourceDiagnostics": [],
+      "targetUnchanged": true,
+      "sourceUnchanged": true
+    }
+  ],
+  "review": {
+    "revisions": 2,
+    "outcome": "NotSupportedException",
+    "message": "Review.ExplicitViewRequired: Create an explicit review view and remove comments before this export.",
+    "outputUntouched": true,
+    "sourceUnchanged": true,
+    "acceptedText": [
+      "Total 20"
+    ],
+    "rejectedText": [
+      "Total 10"
+    ],
+    "acceptedPdfSha256": "f0ebf5cbdd871725fe2f4ce9f94258aa1559003fd71241b978bcf6d9ded999bc",
+    "rejectedPdfSha256": "8adcfb8580b802d8bd1b80a31e55cc46a07b25164745e2f3fd93c3d713404bb9"
+  }
+}

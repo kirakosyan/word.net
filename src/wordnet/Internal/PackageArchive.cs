@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -20,22 +21,33 @@ internal sealed class PackageArchive : IDisposable
         archive = new ZipArchive(input, ZipArchiveMode.Read, true);
         try
         {
-            if (archive.Entries.Count > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.ArchiveEntries: Too many package entries.");
+            ReadOnlyCollection<ZipArchiveEntry> archiveEntries = ReadEntries(archive);
+            if (archiveEntries.Count > context.Options.MaximumArchiveEntries) throw new InvalidDataException("Limit.ArchiveEntries: Too many package entries.");
             long total = 0;
-            foreach (ZipArchiveEntry entry in archive.Entries)
+            foreach (ZipArchiveEntry entry in archiveEntries)
             {
                 context.CheckCancellation();
                 total = checked(total + entry.Length);
                 if (total > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Package expansion exceeds the limit.");
                 string name = entry.FullName;
-                if (name.Length > 0 && name[name.Length - 1] == '/') continue;
-                if (name.Length == 0 || name.Any(c => c is '\\' or ':' or '%' or '?' or '#') || name.Split('/').Any(p => p.Length == 0 || p == "." || p == ".."))
+                bool directory = name.Length > 0 && name[name.Length - 1] == '/';
+                string path = directory ? name.Substring(0, name.Length - 1) : name;
+                if (path.Length == 0 || path.Any(c => c is '\\' or ':' or '%' or '?' or '#' || char.IsControl(c)) || path.Split('/').Any(p => p.Length == 0 || p == "." || p == ".."))
                     throw new InvalidDataException("Package.Path: Unsafe package entry.");
+                if (directory) continue;
                 if (entries.ContainsKey(name)) throw new InvalidDataException("Package.Duplicate: Duplicate entry.");
                 entries.Add(name, entry);
             }
         }
         catch { archive.Dispose(); throw; }
+    }
+
+    internal static ReadOnlyCollection<ZipArchiveEntry> ReadEntries(ZipArchive archive)
+    {
+        // Framework validates entry names while loading the central directory and
+        // can throw before a format adapter can apply its own path checks.
+        try { return archive.Entries; }
+        catch (ArgumentException error) { throw new InvalidDataException("Package.Path: Invalid archive entry name.", error); }
     }
 
     internal bool Contains(string name) => entries.ContainsKey(name);

@@ -10,14 +10,201 @@ below retain their original source/package identities.
 
 
 PR [#134](https://github.com/kirakosyan/word.net/pull/134) implements #112–#117 as
-one owner-authorized batch. This is merged source, absent from public
-1.4.0; it does not publish packages. The [design record](content-controls-design.md)
+one owner-authorized batch; its bounded profile is included in 1.5.0. The [design record](content-controls-design.md)
 and [acceptance map](content-controls-acceptance.json) describe the contract and
-independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) records current local execution; the [initial receipt](measurements/roadmap-102-p2.json) remains historical. Hosted/runtime gates are recorded separately.
+independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) and [initial receipt](measurements/roadmap-102-p2.json) record historical local execution. Final release and runtime evidence is recorded separately in the [release record](releases/1.5.0.md).
+
+## Unreleased source: bounded glossary metadata
+
+The pending source work for #143 preserves a static glossary category with a
+bounded name and `default` or `placeholder` gallery on the existing admitted
+placeholder entries. It also admits up to four relationships from the glossary part
+to `word/glossary/styles.xml`, `word/glossary/settings.xml`,
+`word/glossary/fontTable.xml` and `word/glossary/webSettings.xml`. A closed inert
+subset of local styles, inherited character styles, settings and font metadata is
+admitted, including the [`notTrueType` font catalog flag](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.nottruetype?view=openxml-3.0.1) and the static default
+placeholders in independently sourced [Word-authored fixtures](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/README.md)
+and [additional control variants](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/README.md).
+The placeholder's supported resolved appearance is materialized when displayed;
+local glossary style identities are not imported into the main document. Valid
+resource bytes and relationship IDs survive typed edits, bindings and DOCX
+save/reload. No font or other resource is fetched. Missing and cyclic style bases,
+duplicate, dangling, external, nested, active or unknown relationships and
+unlisted metadata fail explicitly.
+The font flag is preserved as metadata; it does not embed, execute or fetch a font.
+An authored list control whose named glossary entry is absent remains unsupported.
+Unreleased source can resolve a bounded main-document character-style chain in a
+control run, including the Word-authored date-placeholder example. Its resolved
+appearance is materialized and `Control.CharacterStyle` reports that editable
+character-style identity is lost; Strict mode rejects the loss. Missing, cyclic,
+script-dependent and behavior-bearing styles remain unsupported. This is not a
+claim that arbitrary character-style references survive editing.
+
+The fixture's theme-dependent defaults retain the existing `Docx.ThemeFont` and
+other applicable fallback diagnostics; Strict mode rejects those losses. When
+local styles contain East Asian or complex-script slots, placeholder text outside
+the admitted Latin/default-script profile is rejected with `Control.ScriptFormatting`.
+This profile does not qualify arbitrary Word-generated glossaries or every control kind,
+resource graph and template combination required by #143, which remains open.
+Published 1.5.0 retains the earlier rejection below; ordinary loading remains
+separate from opt-in typed preservation.
+
+## Unreleased source: a bounded nested owner
+
+Pending #144 source admits inline typed children inside ordinary paragraphs of
+a block rich-text control in the body or an otherwise admitted simple table
+cell. The parent must not be showing a placeholder or have a local XML binding.
+All six existing child kinds retain their explicit values, local placeholders,
+bindings, source order and unique IDs. The immutable `ParentId` snapshot property
+identifies an immediate typed parent; it is null for top-level controls. Handles
+remain session/version scoped, so reacquire parent and child snapshots after edits.
+
+A parent's content lock blocks child value, placeholder and binding operations;
+the child's own lock also applies. Parent content replacement and binding changes
+are rejected while children exist, so a parent edit cannot erase a child or bypass
+its lock. Child edits and explicit binding application refresh the parent's value
+state. Shared XML targets retain the existing all-selected and agreement rules;
+failed edits and binding conflicts leave the document and local XML unchanged.
+The existing aggregate control/work limits and configured XML nesting limit apply.
+
+Editable DOCX preserves the wrapper hierarchy; ordinary managed PDF/XPS and an
+explicit display view show the child text. An independently assembled
+[Word-derived control](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners/README.md)
+and LibreOffice rendering check text order and the schema, without establishing a
+Word-authored nested template or Word execution. This is a limited source increment:
+deeper nesting, inline-in-inline and block children, nested or multi-row/cell wrappers,
+nested and table-wrapped header/footer or other story owners, repeated report rows and typed-control
+composition remain outside this subset. #144 remains open. Ordinary loading is
+unchanged and does not create typed owners.
+
+## Unreleased source: plain header and footer owners
+
+Pending #144 also admits an inline typed control in a top-level plain header/footer
+paragraph or a block typed control containing ordinary paragraphs directly in a
+header/footer. The six existing kinds, locks, placeholders and explicit local XML
+bindings use the same bounded rules as body owners. IDs are unique across the body
+and distinct referenced stories; missing IDs are assigned after reserving every
+explicit ID. An inherited or multiply referenced story has one owner and one set of
+bindings. Its edited display is reused on each page that selects that story.
+
+Snapshots identify these owners as `inline header/footer paragraph` or `block
+header/footer paragraphs`. Their `ParentId` is null. Editing and binding operations
+remain atomic, honor locks and require fresh handles; a shared XML target still
+requires all affected controls to agree. Editable DOCX and an explicit display view
+retain the selected stories. Ordinary managed PDF/XPS presents static text; it does
+not create interactive PDF controls. The
+[synthetic Word-derived reference](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StoryOwners/README.md)
+and LibreOffice PDF check selected header, body and footer text placement over two
+pages, not Word execution or universal geometry. Table-wrapped or nested story
+controls, notes, comments, text boxes and typed-control composition remain outside
+this increment; #144 remains open.
+
+## Unreleased source: single row and cell wrappers
+
+Pending #144 source preserves an unbound, non-placeholder rich-text control around
+one row or one cell of a top-level body table. A wrapped row contains ordinary
+cells with one paragraph each; a wrapped cell contains one ordinary paragraph.
+An explicit cell width must be a valid absolute or percentage width; automatic
+and other width forms are rejected for these wrappers.
+Merged, nested, specially formatted or multi-row/cell wrappers and typed children
+inside these structural controls remain unsupported. `Owner` identifies the row
+or cell, and its detached content snapshot contains the row's or cell's paragraphs
+in order. IDs, literal tags, locks and wrapper placement survive metadata edits,
+cloning and DOCX save/reload.
+
+The structural wrapper is read-only in this increment: paragraph replacement,
+wrapper removal, binding operations and inserting another typed control into that
+table reject instead of bypassing ownership. An explicit display view strips the
+wrapper, and ordinary managed PDF/XPS show the cached text. The independently
+authored [row and cell controls](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StructuralOwners/README.md)
+and LibreOffice observations check selected text and relative cell positions.
+They do not establish live Word execution, structural editing, nested controls or
+repeated report-row identity. #144 remains open.
+
+## Unreleased source: creating an inline control
+
+Pending #145 adds immutable `ContentControlDefinition` inputs and
+`InsertContentControl(paragraphIndex, offset, definition)` for an ordinary unstyled
+body or simple-table-cell paragraph. The index follows the current `Paragraphs`
+snapshot; the offset counts UTF-16 code units and must not split a Unicode scalar.
+The returned control is a fresh session handle. Each subsequent committed edit
+invalidates earlier mutation handles. Definitions and list items are copied and
+bounded before insertion, and IDs are assigned without colliding with existing
+typed or retained template controls.
+
+```csharp
+WordDocument form = WordDocument.Create();
+form.AddParagraph("Name: ");
+DocumentContentControl name = form.InsertContentControl(0, 6,
+    new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Ada"));
+form.SetControlText(name, "Grace");
+```
+
+All six existing kinds are admitted inline. Text defaults to empty, list controls
+default to no selection, dates default to empty with a `yyyy-MM-dd` picture, and a
+checkbox defaults to an unchecked `-` glyph in Noto Sans (`X` when checked).
+The default lock is unlocked and no placeholder is invented. Definitions can
+provide initial values, a lock, literal tag/alias and, for supported scalar kinds,
+a `ContentControlBinding` to an already retained local XML store. The initial
+value is set before the lock, and the binding is not applied automatically; callers
+must explicitly synchronize it. Namespace mappings and list inputs are copied.
+Tags remain inert and no network resource is fetched.
+
+Creation rejects paragraphs with other controls, fields, links, bookmarks, objects,
+lists or structural breaks, along with styled paragraphs, repeated rows, merged or
+nested tables, text boxes and story owners. This increment does not create block
+controls or introduce a new local XML store. Template composition and broader
+placement remain open in #145 and #147. A separate pending [fragment profile](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+admits independently identified copies of created or imported controls and local bindings.
+
+## Unreleased source: creating a block control
+
+Pending #145 source also adds `InsertBlockContentControl(paragraphIndex, definition)`.
+It replaces one empty, unstyled top-level body paragraph with an admitted typed
+block wrapper, sets the definition's initial value, and returns a fresh handle.
+All six kinds use the same value, lock and existing-local-binding policies as inline
+creation. The paragraph must have no protected content, direct run or paragraph-mark
+style, or multiple empty runs. Nonempty paragraphs and cell/story owners reject
+atomically. IDs avoid both typed and retained template-control IDs; the existing
+1,024-control limit includes both categories when creating a new wrapper.
+
+```csharp
+WordDocument form = WordDocument.Create();
+form.AddParagraph("");
+DocumentContentControl note = form.InsertBlockContentControl(0,
+    new ContentControlDefinition(ContentControlKind.RichText, initialText: "Draft"));
+form.ReplaceControlParagraphs(note, new[] { new ContentControlParagraph(new[] { new DocumentText("Final") }) });
+```
+
+Created blocks can be edited, removed and composed within the existing bounded
+fragment profile. The [independent form observation](measurements/roadmap-138-block-controls-reference.json)
+records schema, ownership, ID and static LibreOffice text checks. Cell/story block
+creation, broader owners and full #145 qualification remain open; this source
+increment is not part of the published 1.5.0 packages.
+
+## Unreleased source: removing an admitted control
+
+Pending #145 adds `RemoveControl(handle, preserveContent: true)` for admitted
+typed owners. By default it removes the wrapper and keeps its current text and
+run formatting. Passing `false` removes the control's text as well; a block owner
+retains an empty paragraph shell so that its cell, story or section stays valid.
+Successful removal invalidates earlier snapshots just like other committed edits.
+
+A wrapper lock prevents removal. A content lock permits explicit wrapper removal
+with the content preserved but blocks deleting that content. A parent's content
+lock protects its child, and a parent containing typed children cannot be removed.
+The read-only row and cell wrappers above cannot be removed by this operation.
+An edited binding must first be applied, written back or detached. Retained local
+XML and glossary resources are never implicitly deleted: removing the final
+control is rejected while those resources remain. Removal is atomic on failure
+and cancellation. Checkbox metadata no longer supplies its control-specific glyph
+fallback after removal; retained text and run formatting become ordinary content.
+Broader template composition and the remaining #145 scope stay open.
 
 ## Load, inspect and edit
 
-Typed preservation is opt-in and DOCX-only. Existing `Load` and ordinary conversion
+Typed preservation is opt-in for DOCX and, with the format-aware overload, DOTX.
+Existing `Load` and ordinary conversion
 retain their existing cached/template interpretation. Typed loading never executes
 merge-looking tags, fetches a resource or automatically applies XML bindings.
 Unknown kinds/properties, unsafe parts and unsupported owners fail in every mode.
@@ -58,18 +245,23 @@ handles fail. Saving and failed operations do not invalidate handles.
 Missing IDs are assigned deterministically after reserving all explicit IDs;
 duplicate IDs fail. Tags/aliases may repeat. Metadata title/author/custom-property
 edits preserve controls. Ordinary content edits, Replace, bookmarks, Append,
-Merge/MergeJson, document comparison and retained review/object combinations reject while typed controls
-are retained. Merge rejects before evaluating caller data getters/JSON. Use an
+Merge/MergeJson, document comparison and retained review combinations reject while typed controls
+are retained. Pending source permits admitted charts and equations in separate
+paragraph owners, with object and typed-control edits subject to their own locks.
+Merge rejects before evaluating caller data getters/JSON. Use an
 explicit display view for subsequent ordinary editing; no typed tag is promoted
 into executable template syntax.
 
 ## Kinds and owners
 
-All controls have inline owners in an ordinary body/table-cell paragraph, or block
-owners containing ordinary body/cell paragraphs. A containing table is outside the
-control. Scalar controls have one formatting set and at most one paragraph;
+The published profile has inline owners in an ordinary body/table-cell paragraph,
+or block owners containing ordinary body/cell paragraphs. The unreleased story
+increment above adds bounded plain header/footer owners. A containing table is outside
+ordinary paragraph controls; the separate structural profile above admits a row or
+cell wrapper. Scalar controls have one formatting set and at most one paragraph;
 checkbox content, including placeholders, is one character. No row/cell/table
-wrappers, headers/footers, notes, boxes, section changes, nested controls, embedded
+wrappers except the unreleased subset above; no notes, boxes, section changes, or nested controls except for the
+unreleased subset above; no embedded
 objects or retained history inside a control. Crossing or enclosing field/bookmark
 ranges fail; independent fields/bookmarks wholly outside owners are retained. A
 closed body/cell bookmark immediately preceding a block control can be attached
@@ -127,11 +319,11 @@ fail. A control without a glossary reference can retain its original placeholder
 cache. Scalar placeholder formatting/size must fit its kind. Showing a placeholder
 clears a typed date/selection; it cannot be written back as a value.
 
-**Word-generated glossaries are rejected by this initial subset** when they include
-`w:category` or their own styles/settings/fontTable/webSettings relationships.
-Those parts are not read or silently discarded. Only the relationship-free,
-explicitly admitted local entries above qualify; default Word placeholder/template
-files commonly require a separately qualified glossary extension.
+**Published 1.5.0 rejects Word-generated glossaries** when they include `w:category`
+or their own styles/settings/fontTable/webSettings relationships. The unreleased
+source subset above admits only the specified inert structures; richer parts are not
+silently discarded. Default Word placeholder/template files can require additional
+qualification beyond this subset.
 
 ## Dates
 
@@ -319,9 +511,10 @@ The [receipt](measurements/roadmap-102-p2.json) records source/test trees, TRX,
 fixture/font/archive hashes, per-class counts and tooling limits. The following
 receipt/docs commit does not change the qualified source/test trees.
 
-No Framework test host runs on this Linux machine. Hosted Windows/Linux x64/ARM64,
-exact-package/explicit-Standard and actual-minimum-runtime checks remain separate
-and pending for the new PR head. No consumer Word/UI appearance or refresh, pixel
+No Framework test host ran on that Linux machine. At that checkpoint, hosted
+Windows/Linux x64/ARM64, exact-package/explicit-Standard and actual-minimum-runtime
+checks remained separate and pending for the new PR head; later qualification is
+recorded above. No consumer Word/UI appearance or refresh, pixel
 parity, Android/macOS execution, new platform or publication is claimed. Resource
 regressions cover selected independent/aggregate ceilings, not every possible
 threshold or hard CPU/RSS isolation. Historical reference failure verdicts and

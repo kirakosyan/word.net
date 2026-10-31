@@ -69,7 +69,7 @@ public sealed class ChartDataBinding
             context.CheckCancellation();
             series.Add(new ChartSeries(Text(Get(report.Values, Series[i].NamePath)), original.Series[i].Color, values[i]));
         }
-        return new ChartDefinition(original.Kind, categories, series, original.Title, original.ShowLegend, original.CategoryTitle, original.ValueTitle);
+        return new ChartDefinition(original.Kind, categories, series, original.Title, original.ShowLegend, original.CategoryTitle, original.ValueTitle).WithDataLabels(original.DataLabels);
     }
     private static object? Get(object? value, string path)
     {
@@ -112,6 +112,7 @@ public sealed partial class WordDocument
             return ChangeObject(handle, (old, context) =>
             {
                 if (old.Chart == null) throw new ArgumentException("Object.Kind: A chart handle is required.", nameof(handle));
+                if (!old.Renderable) throw new NotSupportedException("Chart.BindingAppearance: The chart appearance cannot be preserved by binding.");
                 ChartDefinition definition = binding.Apply(old.Chart, data, context);
                 return new DocumentObjectData(definition, Formats.ChartObjectFormat.Create(definition, context), old.Width, old.Height, old.Description, old.Id);
             }, cancellationToken);

@@ -1,0 +1,1223 @@
+{
+  "schemaVersion": 1,
+  "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
+  "profiles": [
+    {
+      "id": "chart-point-labels-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Editable explicit centred value/category labels on bars and columns retain workbook data and binding; ordinary managed vector positions diagnose independent reference differences.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsAreEditableAndCenteredInsideBothSignedBars" },
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsSurviveBindingWithoutChangingSource" },
+        { "class": "ObjectFoundationTests", "method": "ImportedSeriesLabelsMustBeUniformAndExplicit" }
+      ]
+    },
+    {
+      "id": "chart-point-labels-boundaries",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Strict reference loss, unqualified flags and profiles, unfittable zero labels, exhausted aggregate text and cancellation fail explicitly.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsRejectUnknownAppearanceAndUnfittableOrUnqualifiedOutput" },
+        { "class": "ObjectFoundationTests", "method": "ChartLabelsChargeAggregateTextAndHonorCancellation" }
+      ]
+    },
+    {
+      "id": "east-asian-managed-line-breaks",
+      "issue": 165,
+      "outcome": "supported-bounded",
+      "boundary": "Opt-in Japanese or Chinese single-run managed PDF uses Unicode 17 line breaks and complete run-font coverage; measured Japanese punctuation and mixed Latin-number differences are diagnosed.",
+      "tests": [
+        { "class": "UnicodeLineBreakTests", "method": "Unicode17OfficialLineBreakConformance" },
+        { "class": "EastAsianLayoutTests", "method": "ManagedPdfKeepsLogicalTextAndDoesNotStartOrEndLinesWithProhibitedPunctuation" },
+        { "class": "EastAsianLayoutTests", "method": "PlainJapaneseCanUseStrictManagedLayout" },
+        { "class": "EastAsianLayoutTests", "method": "NonbreakingSpaceKeepsAdjacentCjkCharactersOnTheSameLine" },
+        { "class": "EastAsianLayoutTests", "method": "OrdinarySpacesRemainInLogicalTextAcrossWrapping" },
+        { "class": "EastAsianLayoutTests", "method": "ManagedBreaksCanUseTheBoundedEnglishHyphenationDictionary" }
+      ]
+    },
+    {
+      "id": "east-asian-line-break-boundaries",
+      "issue": 165,
+      "outcome": "rejected",
+      "boundary": "Strict rejects measured punctuation and mixed-number losses; unqualified graphemes, missing glyphs, owners, output profiles, exhausted segmentation and cancellation reject before output.",
+      "tests": [
+        { "class": "UnicodeLineBreakTests", "method": "LineBreakRejectsMalformedUtf16LimitsAndCancellation" },
+        { "class": "EastAsianLayoutTests", "method": "MissingGlyphAndUnqualifiedGraphemeOrOutputFailWithoutPublishing" },
+        { "class": "EastAsianLayoutTests", "method": "MixedReferenceDifferenceRejectsStrictOutputBeforePublishing" },
+        { "class": "EastAsianLayoutTests", "method": "JapanesePunctuationReferenceDifferenceRejectsStrictOutputBeforePublishing" },
+        { "class": "EastAsianLayoutTests", "method": "LanguageOptionsAndCancellationAreExplicit" },
+        { "class": "EastAsianLayoutTests", "method": "MultipleRunsAndAnUnbreakableWideSpanFailBeforeOutput" },
+        { "class": "EastAsianLayoutTests", "method": "HyphenationDoesNotMoveARequiredTrailingSpaceToTheNextLine" }
+      ]
+    },
+    {
+      "id": "general-rotation-diagnosed",
+      "issue": 160,
+      "outcome": "supported-bounded",
+      "boundary": "Editable general-angle rectangles and untransformed inline images/links render as managed vectors in BestEffort/Lenient, with independent office text-position differences and non-cardinal PDF hit bounds diagnosed.",
+      "tests": [
+        { "class": "BusinessFidelityTests", "method": "GeneralAngleBoxRetainsEditableRotationAndVectorFrame" },
+        { "class": "BusinessFidelityTests", "method": "FractionalDrawingAngleSurvivesEditableOutput" },
+        { "class": "BusinessFidelityTests", "method": "GeneralAngleBoxKeepsItsInlineImageAndVectorFrame" },
+        { "class": "BusinessFidelityTests", "method": "RotatedLinksUseTransformedHitBoundsAndDiagnoseNonCardinalBounds" },
+        { "class": "BusinessFidelityTests", "method": "RotatedLinkedImageKeepsItsPixelsAndTransformedAnnotation" },
+        { "class": "BusinessFidelityTests", "method": "GeneralRotationAdmitsTextAutofitButRejectsFittedInlineImages" }
+      ]
+    },
+    {
+      "id": "general-rotation-boundaries",
+      "issue": 160,
+      "outcome": "rejected",
+      "boundary": "Strict rejects independently differing new content; malformed transforms, unqualified flips/upright intent, fitted images, page-edge overflow, unsupported profiles and cancellation fail or diagnose before output.",
+      "tests": [
+        { "class": "BusinessFidelityTests", "method": "GeneralRotationDiagnosesReferenceDisagreementAndPreservesOutputOnStrictRejection" },
+        { "class": "BusinessFidelityTests", "method": "UprightTextInRotatedBoxIsDiagnosedAndInvalidRotationIsRejected" },
+        { "class": "BusinessFidelityTests", "method": "FlippedBoxIsDiagnosedInsteadOfSilentlyLosingTheFlip" },
+        { "class": "BusinessFidelityTests", "method": "UnsupportedRotationBoundsAndConformanceAreRejected" },
+        { "class": "BusinessFidelityTests", "method": "CancelledGeneralRotationDoesNotPublishOutput" }
+      ]
+    },
+    {
+      "id": "opaque-cardinal-linear-gradients",
+      "issue": 162,
+      "outcome": "supported-bounded",
+      "boundary": "Two to eight ordered opaque RGB or resolved local accent stops on five admitted anchored shapes retain editable cardinal gradients and native managed PDF, XPS and SVG paints.",
+      "tests": [
+        { "class": "LinearGradientTests", "method": "CardinalGradientsRetainStopsAndRenderVectorPaint" },
+        { "class": "LinearGradientTests", "method": "LocalThemeStopRemainsEditableAndRendersTheResolvedColor" },
+        { "class": "LinearGradientTests", "method": "GradientPaintIsClippedToTheAdmittedVectorGeometry" },
+        { "class": "LinearGradientTests", "method": "TwoEndpointStopsUseAValidSimpleShadingFunction" },
+        { "class": "LinearGradientTests", "method": "SeparatePagesAndPageSelectionKeepTheirGradientResources" }
+      ]
+    },
+    {
+      "id": "linear-gradient-theme-mapping-difference",
+      "issue": 162,
+      "outcome": "supported-bounded",
+      "boundary": "Editable local-theme stop mappings survive DOCX; Strict rejects a known reference color difference and BestEffort/Lenient diagnose the retained mapped output.",
+      "tests": [
+        { "class": "LinearGradientTests", "method": "RemappedThemeStopIsEditableButItsReferenceDifferenceIsDiagnosed" }
+      ]
+    },
+    {
+      "id": "linear-gradient-boundaries",
+      "issue": 162,
+      "outcome": "rejected",
+      "boundary": "Malformed or oversized stops, duplicate order, alpha, unsupported themes/angles/effects, native, tagged and archival profiles and exhausted output limits are rejected or diagnosed before output.",
+      "tests": [
+        { "class": "LinearGradientTests", "method": "UnsupportedOrMalformedGradientsFailBeforeOutput" },
+        { "class": "LinearGradientTests", "method": "UnqualifiedOutputProfilesRejectBeforeCopy" },
+        { "class": "LinearGradientTests", "method": "AggregateStopLimitAppliesEvenInLenientMode" },
+        { "class": "LinearGradientTests", "method": "OutputLimitAndCancellationLeaveCallerOutputUnchanged" }
+      ]
+    },
+    {
+      "id": "local-hyphenation-diagnosed",
+      "issue": 164,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit local English break entries hyphenate plain left or justified one-page managed PDF while diagnosing first-line-only search geometry and measured justified-reference differences.",
+      "tests": [
+        { "class": "DictionaryHyphenationTests", "method": "BrokenWordKeepsOneSearchableLogicalWordAndVisibleGlyphPaths" },
+        { "class": "DictionaryHyphenationTests", "method": "JustifiedParagraphRetainsSearchableTextAndMovesTheVisibleSplitWord" },
+        { "class": "DictionaryHyphenationTests", "method": "LocalDictionaryDoesNotChangeEditableSourceText" },
+        { "class": "DictionaryHyphenationTests", "method": "UnusedDictionaryLeavesDefaultPdfBytesUnchanged" },
+        { "class": "DictionaryHyphenationTests", "method": "TrailingSpaceDoesNotHyphenateAWordThatFitsOnTheLine" },
+        { "class": "DictionaryHyphenationTests", "method": "ImmutableLexiconCanBeUsedConcurrentlyWithoutSharedLayoutState" }
+      ]
+    },
+    {
+      "id": "local-hyphenation-boundaries",
+      "issue": 164,
+      "outcome": "rejected",
+      "boundary": "Strict geometry loss, invalid dictionaries, soft hyphens, overlong tokens, exhausted work, unsupported profiles, multipage layouts and cancellation fail before publishing output.",
+      "tests": [
+        { "class": "DictionaryHyphenationTests", "method": "StrictRejectsTheQualifiedSearchHighlightDifferenceWithoutChangingOutput" },
+        { "class": "DictionaryHyphenationTests", "method": "LocalDictionaryIsValidatedAndCopied" },
+        { "class": "DictionaryHyphenationTests", "method": "UnqualifiedProfilesAndCancellationLeaveOutputUntouched" },
+        { "class": "DictionaryHyphenationTests", "method": "UnsupportedTextAndExhaustedLimitsFailBeforeOutput" },
+        { "class": "DictionaryHyphenationTests", "method": "SpaceWiderThanTheColumnFailsExplicitly" },
+        { "class": "DictionaryHyphenationTests", "method": "MultipleRunsRequireSeparateOwnershipQualification" }
+      ]
+    },
+    {
+      "id": "basic-preset-polygons",
+      "issue": 161,
+      "outcome": "supported-bounded",
+      "boundary": "Unrotated default rectangle, triangle and diamond anchors retain editable geometry and render managed PDF/XPS/SVG polygons; source alternative metadata remains in DOCX.",
+      "tests": [
+        { "class": "PresetVectorShapeTests", "method": "PresetsRetainEditableGeometryAndRenderVectorPaths" },
+        { "class": "PresetVectorShapeTests", "method": "PresetAlternativeMetadataSurvivesDocxAndItsLossIsExplicit" }
+      ]
+    },
+    {
+      "id": "preset-polygon-boundaries",
+      "issue": 161,
+      "outcome": "rejected",
+      "boundary": "Hidden, adjusted, rotated, out-of-page or unknown presets and default tagged/archive output reject in Strict; permitted ordinary lenient omission is diagnosed and cancellation is atomic.",
+      "tests": [
+        { "class": "PresetVectorShapeTests", "method": "UnqualifiedPresetsFailBeforeOutput" },
+        { "class": "PresetVectorShapeTests", "method": "UnsupportedAdjustmentsAreDiagnosedAndCancellationPreservesOutput" }
+      ]
+    },
+    {
+      "id": "accessible-vector-semantics",
+      "issue": 155,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit described figures and decorative artifacts retain the source-anchor order of six admitted managed vectors in tagged/PDF-UA output, including selected pages and separately ordered boxes.",
+      "tests": [
+        { "class": "PdfAccessibleVectorTests", "method": "EachAdmittedVectorKindUsesTheExplicitSemanticPolicy" },
+        { "class": "PdfAccessibleVectorTests", "method": "MultipleFiguresAndSeparateStrokeRemainInSourceOrder" },
+        { "class": "PdfAccessibleVectorTests", "method": "SelectedPageRetainsTheShapeOwnerWithoutOmittedText" },
+        { "class": "PdfAccessibleVectorTests", "method": "VectorAndExplicitlyOrderedTextBoxRemainSeparate" }
+      ]
+    },
+    {
+      "id": "accessible-vector-boundaries",
+      "issue": 155,
+      "outcome": "rejected",
+      "boundary": "Unqualified owners, alternatives, hidden/unknown vectors, native and default archival combinations fail before output; editing sessions cannot omit unknown vectors and cancellation is atomic.",
+      "tests": [
+        { "class": "PdfAccessibleVectorTests", "method": "UnqualifiedOwnersAndSemanticsLeaveOutputUntouched" },
+        { "class": "PdfAccessibleVectorTests", "method": "AccessibleOutputNeverDropsUnsupportedVectorsInLenientMode" },
+        { "class": "PdfAccessibleVectorTests", "method": "EditableSessionCannotOmitAnUnknownVectorInLenientMode" },
+        { "class": "PdfAccessibleVectorTests", "method": "PolicySnapshotInvalidValueAndCancellationAreExplicit" }
+      ]
+    },
+    {
+      "id": "accessible-tagged-archive",
+      "issue": 156,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit PDF/A-2a plus UA-1 retains managed document semantics, links, alpha images, chart/equation alternatives and separately opted-in positioned drawings with archive metadata and output intent.",
+      "tests": [
+        { "class": "PdfAccessibleArchiveTests", "method": "CombinedArchiveHasOneCoherentMetadataPacketAndSemanticLinks" },
+        { "class": "PdfAccessibleArchiveTests", "method": "ExplicitVectorAndTextBoxSemanticsSurviveCombinedConformance" },
+        { "class": "PdfAccessibleArchiveTests", "method": "ChartAndEquationRetainTheirAlternativesInCombinedOutput" },
+        { "class": "PdfAccessibleArchiveTests", "method": "DescribedAndDecorativeAlphaImagesRetainTheirSemantics" }
+      ]
+    },
+    {
+      "id": "accessible-archive-boundaries",
+      "issue": 156,
+      "outcome": "rejected",
+      "boundary": "Missing UA policy, author semantics, mixed positioned drawings and chart/equation objects, native output, exhausted work and cancellation fail before publishing output.",
+      "tests": [
+        { "class": "PdfAccessibleArchiveTests", "method": "ArchivalLevelARequiresTheCompleteUaProfile" },
+        { "class": "PdfAccessibleArchiveTests", "method": "UnqualifiedCombinationsLeaveCallerOutputUntouched" },
+        { "class": "PdfAccessibleArchiveTests", "method": "MissingVectorDescriptionAndExhaustedTagBudgetRemainAtomic" },
+        { "class": "PdfAccessibleArchiveTests", "method": "MixingPositionedDrawingsAndChartObjectsRequiresQualification" },
+        { "class": "PdfAccessibleArchiveTests", "method": "CancelledCombinedExportDoesNotPublishOutput" }
+      ]
+    },
+    {
+      "id": "native-standalone-equations-diagnosed",
+      "issue": 153,
+      "outcome": "supported-bounded",
+      "boundary": "A dedicated body equation paragraph uses the MATH pipeline beside extended native paragraphs in BestEffort/Lenient, reporting measured reference and directional extraction differences.",
+      "tests": [
+        { "class": "NativeEquationTests", "method": "StandaloneEquationUsesMathGlyphsBetweenLogicalNativeParagraphs" },
+        { "class": "NativeEquationTests", "method": "SvgPreviewUsesLogicalLabelsAndVectorEquationGlyphs" },
+        { "class": "NativeEquationTests", "method": "RefreshedDirectionalFieldAlsoReportsEquationExtractionDifference" }
+      ]
+    },
+    {
+      "id": "native-object-combinations-unqualified",
+      "issue": 153,
+      "outcome": "rejected",
+      "boundary": "Notes, charts, mixed inline owners, cells, RTL equation owners, strict or tagged/archive output, missing fonts, malformed objects and exhausted work fail without publishing output.",
+      "tests": [
+        { "class": "NativeEquationTests", "method": "UnqualifiedCombinationsLeaveCallerOutputUnchanged" },
+        { "class": "NativeEquationTests", "method": "MalformedEquationAndExhaustedGlyphBudgetDoNotPublishOutput" },
+        { "class": "NativeEquationTests", "method": "ChartAndCancelledExportStayRejectedWithoutChangingOutput" }
+      ]
+    },
+    {
+      "id": "accessible-anchor-ordered-boxes",
+      "issue": 154,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit anchor order places admitted unrotated top-and-bottom body text boxes and their supported links in tagged/PDF-UA structure, including multiple boxes and page selection.",
+      "tests": [
+        { "class": "PdfAccessibleTextBoxTests", "method": "ExplicitAnchorOrderIncludesTextBoxParagraphsAndLinkInTheStructureTree" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "AnchorOrderKeepsTagsAcrossPagesAndAfterPageSelection" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "SeparateBoxesFollowTheirExplicitSourceAnchorOrder" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "TextBoxAlternativeDescriptionAndTitleRemainInEditableDocx" }
+      ]
+    },
+    {
+      "id": "accessible-boxes-unqualified",
+      "issue": 154,
+      "outcome": "rejected",
+      "boundary": "Default UA behavior and unsupported owners, placement, native output or authored alternatives reject; unknown order values and oversized metadata fail explicitly.",
+      "tests": [
+        { "class": "PdfAccessibleTextBoxTests", "method": "UnqualifiedBoxesAndMissingReadingOrderFailBeforeOutput" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "ReadingOrderOptionsAreSnapshottedAndUnknownValuesReject" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "OversizedTextBoxAlternativeMetadataRejectsBeforeUse" }
+      ]
+    },
+    {
+      "id": "native-scalar-fields-diagnosed",
+      "issue": 152,
+      "outcome": "supported-bounded",
+      "boundary": "Stable scalar results are refreshed before Hindi or Arabic shaping in BestEffort/Lenient, retaining editable DOCX fields and reporting known baseline or directional losses.",
+      "tests": [
+        { "class": "NativeScalarFieldTests", "method": "ScalarValuesAreRefreshedBeforeHindiShapingWithoutChangingTheEditableSource" },
+        { "class": "NativeScalarFieldTests", "method": "ArabicScalarValuesRemainLogicalAndShapedInsideMixedDirectionText" },
+        { "class": "NativeScalarFieldTests", "method": "HindiScalarInAMergedCellRetainsTheExistingSpacingDiagnostic" },
+        { "class": "NativeScalarFieldTests", "method": "StableScalarExpressionsAreEvaluatedBeforeNativeShaping" },
+        { "class": "NativeScalarFieldTests", "method": "AnUnsupportedMergeFieldKeepsItsCacheWithAnExplicitDiagnostic" }
+      ]
+    },
+    {
+      "id": "native-fields-unqualified",
+      "issue": 152,
+      "outcome": "rejected",
+      "boundary": "Strict loss, page/reference and tagged output, cross-field conjuncts, excessive field expansion and cancellation reject without publishing output.",
+      "tests": [
+        { "class": "NativeScalarFieldTests", "method": "PageAndReferenceFieldsRemainRejectedWithoutOutput" },
+        { "class": "NativeScalarFieldTests", "method": "AScalarFieldCannotSplitAConjunctOrBeCombinedWithTaggedOutput" },
+        { "class": "NativeScalarFieldTests", "method": "AggregateFieldExpansionIsBoundedBeforeTheModelIsChanged" }
+      ]
+    },
+    {
+      "id": "horizontal-bars-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Clustered horizontal bars retain editable workbook data and render signed managed vectors with an explicit plot-area approximation in BestEffort/Lenient.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "HorizontalBarsKeepEditableDataAndRenderSignedVectorGeometry" },
+        { "class": "ObjectFoundationTests", "method": "HorizontalBarBindingRetainsKindAndImmutableSource" },
+        { "class": "ObjectFoundationTests", "method": "PublicChartEditingRebuildsWorkbookAndCachesWithValidSchema" }
+      ]
+    },
+    {
+      "id": "horizontal-bars-unqualified",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Strict loss, unsupported gap/axis appearances and native, tagged or archival combinations remain explicit failures.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "HorizontalBarsRejectUnqualifiedProfilesAndUnsupportedChartForms" },
+        { "class": "ObjectFoundationTests", "method": "MathWithoutExplicitMathFontAndOversizedChartLabelsFailBeforeWriting" }
+      ]
+    },
+    {
+      "id": "stacked-bars-and-columns-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Stacked bars and columns retain editable local workbook data and render separate signed managed stacks with explicit reference-position diagnostics in BestEffort/Lenient.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "StackedChartsRetainEditableDataAndSignedVectorGeometry" },
+        { "class": "ObjectFoundationTests", "method": "StackedChartBindingKeepsImmutableSourceAndWorkbook" },
+        { "class": "ObjectFoundationTests", "method": "StackedLegendPositionFollowsTheAdmittedOfficeOrder" },
+        { "class": "ObjectFoundationTests", "method": "EmptyAndZeroStacksHaveExplicitBehavior" },
+        { "class": "ObjectFoundationTests", "method": "PublicChartEditingRebuildsWorkbookAndCachesWithValidSchema" }
+      ]
+    },
+    {
+      "id": "stacked-bars-and-columns-unqualified",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Percent stacks, unsupported overlap, nonfinite totals, Strict loss and native, tagged or archival combinations remain explicit failures.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "StackedChartRejectsUnqualifiedOverlapAndNonFiniteTotals" },
+        { "class": "ObjectFoundationTests", "method": "StackedAccumulatorsRespectResourceAndCancellationBounds" },
+        { "class": "ObjectFoundationTests", "method": "StackedChartsRejectStrictAndUnqualifiedProfilesBeforeOutput" }
+      ]
+    },
+    {
+      "id": "crosstab-fixed-cell-bookmark",
+      "issue": 158,
+      "outcome": "supported-bounded",
+      "boundary": "A dedicated bookmark in an unprotected fixed-grid body cell with complete physical margins can become an editable prepared cross-tab; its nested header does not repeat.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellBookmarkCrossTabRetainsCellGeometryAndSurroundingContent" },
+        { "class": "EditingTemplateTests", "method": "CellCrossTabKeepsAllRowsAcrossPagesAndDoesNotRepeatNestedHeader" },
+        { "class": "EditingTemplateTests", "method": "EmptyCellCrossTabKeepsTheRequiredTrailingParagraph" },
+        { "class": "EditingTemplateTests", "method": "CellCrossTabUsesCompleteInheritedMarginsAndCancelsDuringEnumeration" }
+      ]
+    },
+    {
+      "id": "crosstab-unqualified-cell",
+      "issue": 158,
+      "outcome": "rejected",
+      "boundary": "Implicit, partial or ambiguous margins, non-fixed or protected table geometry, unsafe references, overflow and cancellation fail without committing.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellCrossTabRejectsAmbiguousGeometryBeforeReadingRecords" },
+        { "class": "EditingTemplateTests", "method": "CellCrossTabRejectsOverflowReferencesAndCancellationAtomically" }
+      ]
+    },
+    {
+      "id": "deep-mixed-body-regions",
+      "issue": 157,
+      "outcome": "supported-bounded",
+      "boundary": "Distinct-path mixed body repeats retain nested ownership, scope order and cloned identities across a finite depth; cached descendants keep unique IDs.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailExpandsThreeLevelsAndSiblingRegions" },
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailSupportsFiveLevelsAndPreservesDeepIdsWhenCached" },
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailRemapsDeepNotesAndLooksUpEnclosingValues" }
+      ]
+    },
+    {
+      "id": "deep-mixed-boundaries",
+      "issue": 157,
+      "outcome": "rejected",
+      "boundary": "Cross-boundary references, configured depth or aggregate row exhaustion fail without committing; existing unsupported object and table owners stay excluded.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailEnforcesDeepLimitsAndReferenceBoundariesAtomically" },
+        { "class": "EditingTemplateTests", "method": "MixedMasterDetailRejectsRepeatedAncestorPathsAtomically" },
+        { "class": "EditingTemplateTests", "method": "MixedRegionBoundsRowsAndRejectsNestedTablesWithoutPartialEdits" },
+        { "class": "EditingTemplateTests", "method": "MixedRegionRejectsSectionBoundariesAndRetainedObjects" }
+      ]
+    },
+    {
+      "id": "created-block-control-body",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "An empty ordinary body paragraph can become one of six typed block controls with explicit values, locks, local bindings, subsequent edits and admitted fragment composition.",
+      "tests": [
+        { "class": "ContentControlBlockCreationTests", "method": "EmptyBodyParagraphsBecomeEditableTypedBlockControls" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedBlockUsesExplicitBindingAndUpdatesTheExistingLocalStore" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedBlockRemainsIndependentAfterFragmentComposition" },
+        { "class": "ContentControlBlockCreationTests", "method": "BlockCreationInstallsValueBeforeItsContentLock" },
+        { "class": "ContentControlBlockCreationTests", "method": "BlockWrapperRemovalPreservesOrExplicitlyDeletesContent" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedControlIdsAvoidSeparateTemplateOwners" }
+      ]
+    },
+    {
+      "id": "created-block-control-unsupported-owner",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "Nonempty, styled and cell placeholders reject without changing their owner; cancellation remains atomic.",
+      "tests": [
+        { "class": "ContentControlBlockCreationTests", "method": "BlockCreationRejectsNonemptyStyledAndCellOwnersAtomically" },
+        { "class": "ContentControlBlockCreationTests", "method": "RetainedTemplateWrappersCountTowardTheCreationLimit" }
+      ]
+    },
+    {
+      "id": "preview-layout-body-glyphs",
+      "issue": 167,
+      "outcome": "supported-bounded",
+      "boundary": "The same preview render can expose bounded, immutable managed body-paragraph glyph boxes and source locations; text remains opt-in.",
+      "tests": [
+        { "class": "LayoutSnapshotTests", "method": "PreviewCapturesPrivateSourceLocationsAndManagedGlyphBounds" },
+        { "class": "LayoutSnapshotTests", "method": "TextAndPageSelectionAreExplicitAndStableInTheSnapshot" },
+        { "class": "LayoutSnapshotTests", "method": "SourceLocatedLayoutDiagnosticCanBeMatchedWithoutAnotherRender" }
+      ]
+    },
+    {
+      "id": "preview-layout-unqualified",
+      "issue": 167,
+      "outcome": "rejected",
+      "boundary": "Unqualified owners retain null bounds and reasons; detached review snapshots and excessive fragment requests fail explicitly.",
+      "tests": [
+        { "class": "LayoutSnapshotTests", "method": "MissingSourceGeometryIsExplicitAndFragmentLimitsFail" },
+        { "class": "LayoutSnapshotTests", "method": "TableCellTextIsReportedWithoutInventingBounds" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplaySvgHasMarkedGlyphsAndSnapshotSurvivesSourceDecisions" }
+      ]
+    },
+    {
+      "id": "native-hindi-merged-diagnosed",
+      "issue": 151,
+      "outcome": "supported-bounded",
+      "boundary": "BestEffort and Lenient native output retain Hindi/Latin text in one-column merged tables with an explicit row-spacing loss; this does not qualify strict or tagged output.",
+      "tests": [
+        { "class": "NativeMergedTableTests", "method": "NativeMergedCellsKeepLogicalHindiTextWidthsAndRepeatedHeaders" }
+      ]
+    },
+    {
+      "id": "native-merged-unqualified",
+      "issue": 151,
+      "outcome": "rejected",
+      "boundary": "Strict row-spacing parity, right-to-left text, tagged/archive output and oversized vertical groups reject before copying output.",
+      "tests": [
+        { "class": "NativeMergedTableTests", "method": "RightToLeftMergedNativeTablesRemainExplicitlyRejected" },
+        { "class": "NativeMergedTableTests", "method": "MergedNativeConformanceProfilesRemainExplicitlyRejected" },
+        { "class": "NativeMergedTableTests", "method": "StrictMergedNativeOutputRejectsUnqualifiedRowSpacing" },
+        { "class": "NativeMergedTableTests", "method": "InvalidNativeMergeLeavesOutputUntouched" },
+        { "class": "NativeMergedTableTests", "method": "OversizedNativeVerticalMergeIsRejectedBeforeOutput" }
+      ]
+    },
+    {
+      "id": "crosstab-body-bookmark",
+      "issue": 158,
+      "outcome": "supported-bounded",
+      "boundary": "A dedicated plain body bookmark can be replaced with an editable prepared cross-tab, preserving the surrounding blocks and section while checking its column width and repeating header.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "BodyBookmarkCrossTabKeepsSurroundingsOrderAndEditableTotals" },
+        { "class": "EditingTemplateTests", "method": "BodyCrossTabRepeatsItsHeaderAcrossPagesWithoutLosingRows" },
+        { "class": "EditingTemplateTests", "method": "BodyCrossTabUsesThePlaceholderSectionWidth" }
+      ]
+    },
+    {
+      "id": "crosstab-protected-placement",
+      "issue": 158,
+      "outcome": "rejected",
+      "boundary": "Body-bookmark insertion rejects partial, enclosed or cell bookmarks, placeholder references, reentrant data and cancellation without committing a table.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "BodyCrossTabRejectsUnsafePlaceholdersReferencesAndReentrantData" }
+      ]
+    },
+    {
+      "id": "typed-control-fragment-body-cell",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Admitted typed controls retain nested ownership and isolated local XML bindings through repeated body or simple-cell insertion; created control kinds remain editable.",
+      "tests": [
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentsCopyNestedOwnersAndIsolateLocalBindingStores" },
+        { "class": "ContentControlFragmentTests", "method": "ProgrammaticallyCreatedKindsRemainEditableAfterFragmentInsertion" },
+        { "class": "ContentControlFragmentTests", "method": "WordDerivedNestedFragmentPreservesItsChildrenAndStaticText" },
+        { "class": "ContentControlFragmentTests", "method": "StructuralFragmentsKeepWrapperInBodyButRejectNestedCellInsertion" },
+        { "class": "ContentControlFragmentTests", "method": "ImportedChildCannotBypassItsParentContentLock" },
+        { "class": "ContentControlFragmentTests", "method": "ImportedCachedPlaceholderCanBeRestoredWithoutAffectingItsSource" }
+      ]
+    },
+    {
+      "id": "typed-control-fragment-protected",
+      "issue": 147,
+      "outcome": "rejected",
+      "boundary": "Conflicting glossary resources, date-policy conflicts, report owners, typed-control restyling, resource exhaustion and cancellation fail before committing.",
+      "tests": [
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentResourcesRestylingAndCancellationRejectAtomically" },
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentDatePoliciesMustMatch" },
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentsRejectReportOwnersAndRespectResourceLimits" },
+        { "class": "ContentControlFragmentTests", "method": "StructuralTableOwnersProtectOtherCellBookmarks" }
+      ]
+    },
+    {
+      "id": "typed-control-fragment-glossary",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Admitted local glossary entries and compatible resources are copied with new document-local entry identities and placeholder references; conflicting resource bytes reject atomically.",
+      "tests": [
+        { "class": "ContentControlGlossaryFragmentTests", "method": "GlossaryFragmentsRenameEntriesAndKeepIndependentPlaceholderValues" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "ANewGlossaryGetsAnIsolatedPackagePartAndRemainsEditable" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "EveryAdmittedControlKindKeepsItsCopiedGlossaryPlaceholder" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "IdenticalLocalGlossaryResourcesAreCopiedOnceAcrossRepeatedInsertions" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "CombinedGlossaryEntryLimitFailsWithoutMutatingEitherSession" },
+        { "class": "ContentControlFragmentTests", "method": "TypedFragmentResourcesRestylingAndCancellationRejectAtomically" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryWithUnresolvedLoadLossCannotBeInsertedSilently" }
+      ]
+    },
+    {
+      "id": "object-fragment-body-cell",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Admitted chart and equation fragments retain editable objects and isolated placement IDs at body or simple-cell bookmarks, using source appearance.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsRemainEditableAndIndependentAtBodyAndCellBookmarks" }
+      ]
+    },
+    {
+      "id": "object-fragment-protected",
+      "issue": 147,
+      "outcome": "rejected",
+      "boundary": "Object fragment restyling, resource exhaustion and cancellation reject atomically; report controls and retained history remain outside this profile.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentRestylingAndCancellationLeaveBothSessionsUntouched" },
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentsWithSeparateReportControlsRejectBeforeInsertion" },
+        { "class": "ObjectFoundationTests", "method": "ObjectFragmentRespectsTheDestinationResourceBudget" }
+      ]
+    },
+    {
+      "id": "mixed-control-object-fragments",
+      "issue": 147,
+      "outcome": "supported-bounded",
+      "boundary": "Separate typed-control and chart/equation paragraph owners can be composed and edited independently in body and simple-cell destinations.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MixedControlAndObjectFragmentsKeepSeparateEditableOwners" },
+        { "class": "ObjectFoundationTests", "method": "TypedFragmentCanJoinAnExistingObjectDocumentAndKeepLocks" }
+      ]
+    },
+    {
+      "id": "mixed-control-object-protected",
+      "issue": 147,
+      "outcome": "rejected",
+      "boundary": "Objects cannot share a typed-control paragraph or be placed inside a structural row or cell control owner; unqualified profiles and cancelled edits leave the session unchanged.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MixedObjectsCannotShareAnInlineControlParagraph" },
+        { "class": "ObjectFoundationTests", "method": "ObjectsInsideStructuralControlOwnersAreRejected" },
+        { "class": "ObjectFoundationTests", "method": "ControlCreationCannotSplitAnObjectParagraph" },
+        { "class": "ObjectFoundationTests", "method": "MixedOwnersRejectUnsupportedProfilesAndCancelledEditsAtomically" }
+      ]
+    },
+    {
+      "id": "typed-control-structural-owners",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "boundary": "One unbound rich-text wrapper around a plain body-table row or cell retains identity, literal metadata and static display. Structural mutation and nested children remain unsupported.",
+      "tests": [
+        { "class": "ContentControlStructuralOwnerTests", "method": "IndependentControlsMatchTextAndRelativeCellPositions" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "OrdinaryLoadingKeepsCachedTextWithoutCreatingTypedOwners" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "SimpleStructuralWrapperRetainsIdentityContentAndStaticDisplay" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralIdsShareTheGlobalNamespaceWithOrdinaryControls" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralCellPercentageWidthSurvivesSaving" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "AStructuralContentLockSurvivesMetadataEditsAndCannotBeBypassed" }
+      ]
+    },
+    {
+      "id": "typed-control-structural-protected",
+      "issue": 144,
+      "outcome": "rejected",
+      "boundary": "Structural wrappers with unsupported kinds, placeholders, nested controls, merged cells or unsupported widths, and mutation or binding operations on these owners, reject explicitly.",
+      "tests": [
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralWrappersRejectUnsupportedKindsAndProperties" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "NestedStructuralControlsAndMergedCellsRejectWithoutPublishingASession" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralCellsRejectUnpreservedOrInvalidWidths" },
+        { "class": "ContentControlStructuralOwnerTests", "method": "StructuralWrappersCannotBecomeInsertionOrBindingTargets" },
+        { "class": "ContentControlBoundaryTests", "method": "MultipleRowsAndHeaderTableOwnersAreExplicitlyRejected" }
+      ]
+    },
+    {
+      "id": "typed-control-inline-creation",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "Immutable definitions create each existing typed kind at an explicit Unicode-safe position in an ordinary unstyled body or simple-cell paragraph. Initial values, locks and explicit existing local bindings remain editable under their declared rules.",
+      "tests": [
+        { "class": "ContentControlCreationTests", "method": "ProgrammaticFormCreatesAllSixKindsAndKeepsThemEditable" },
+        { "class": "ContentControlCreationTests", "method": "InsertionSplitsOnlyAtUnicodeScalarBoundariesAndKeepsOtherText" },
+        { "class": "ContentControlCreationTests", "method": "IdsAvoidExistingControlsAndHandlesBecomeStaleAfterInsertion" },
+        { "class": "ContentControlCreationTests", "method": "CreatedControlCanUseAnExistingLocalBindingOnlyWhenExplicitlyApplied" },
+        { "class": "ContentControlCreationTests", "method": "BoundComboWithAnEmptyStoredValueCanStartWithoutASelection" },
+        { "class": "ContentControlCreationTests", "method": "InitialContentLockAppliesAfterTheInitialValueIsInstalled" },
+        { "class": "ContentControlCreationTests", "method": "DefinitionsCopyItemsAndKeepEmptySelectionDistinctFromNoSelection" },
+        { "class": "ContentControlCreationTests", "method": "MultilineAndDateOnlyDefinitionsUseTheSessionsExplicitPolicies" }
+      ]
+    },
+    {
+      "id": "typed-control-creation-protected",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "Creation rejects invalid definitions, unsafe locations or bindings, existing protected owners, repeat rows and merged or nested tables without mutating the session.",
+      "tests": [
+        { "class": "ContentControlCreationTests", "method": "InvalidDefinitionsLocationsBindingsAndCancellationAreAtomic" },
+        { "class": "ContentControlCreationTests", "method": "ExistingProtectedOwnersCannotBeSplitOrBypassed" },
+        { "class": "ContentControlCreationTests", "method": "SimpleCellCreationIsEditableButNestedAndMergedTablesRejectAtomically" },
+        { "class": "ContentControlCreationTests", "method": "ARepeatRowCannotReceiveANewTypedControl" },
+        { "class": "ContentControlCreationTests", "method": "BoundComboCannotUseFreeTextThatCollidesWithAStoredItemValue" },
+        { "class": "ContentControlCreationTests", "method": "GlobalControlLimitPreventsInsertionWithoutChangingExistingOwners" }
+      ]
+    },
+    {
+      "id": "typed-control-removal",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "An explicit edit removes an admitted typed wrapper, retaining text by default or deleting it with a valid block shell; admitted body, cell and shared plain story owners remain valid.",
+      "tests": [
+        { "class": "ContentControlRemovalTests", "method": "InlineRemovalSeparatesWrapperAndContentAndInvalidatesOldHandles" },
+        { "class": "ContentControlRemovalTests", "method": "EveryAdmittedKindCanLoseItsWrapperWhileKeepingItsText" },
+        { "class": "ContentControlRemovalTests", "method": "BlockRemovalInACellKeepsValidCellStructure" },
+        { "class": "ContentControlRemovalTests", "method": "PreservedRichTextKeepsTheFormattingOfItsRuns" },
+        { "class": "ContentControlRemovalTests", "method": "RemovingASharedStoryControlUpdatesBothPagesWithoutDuplicatingOwners" }
+      ]
+    },
+    {
+      "id": "typed-control-removal-protected",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "Removal honors wrapper and content locks, ancestor protection, dirty bindings and stale handles; the final wrapper cannot be removed while retained local resources remain.",
+      "tests": [
+        { "class": "ContentControlRemovalTests", "method": "WrapperAndContentLocksAreRespected" },
+        { "class": "ContentControlRemovalTests", "method": "RemovingANestedChildRefreshesItsParentAndCannotBypassLocks" },
+        { "class": "ContentControlRemovalTests", "method": "DirtyBindingsAndLastResourceOwnerRequireAnExplicitDecision" },
+        { "class": "ContentControlRemovalTests", "method": "RemovingOneBindingRetainsTheSharedLocalStoreAndOtherControls" },
+        { "class": "ContentControlRemovalTests", "method": "LastGlossaryOwnerCannotBeRemovedWhileItsLocalResourcesRemain" },
+        { "class": "ContentControlRemovalTests", "method": "CancellationAndForeignHandlesLeaveTheSourceAndHandlesUntouched" }
+      ]
+    },
+    {
+      "id": "plain-story-control-owners",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "boundary": "Top-level block or paragraph-inline controls in plain header/footer stories preserve global identity, shared-story ownership and explicit bindings. Default, first and even story selection stays editable and displays as static text.",
+      "tests": [
+        { "class": "ContentControlStoryOwnerTests", "method": "SyntheticWordDerivedStoriesMatchIndependentPageOrderAndPlacement" },
+        { "class": "ContentControlStoryOwnerTests", "method": "HeaderAndFooterValuesRemainEditableAndDisplayInBothFixedFormats" },
+        { "class": "ContentControlStoryOwnerTests", "method": "ASharedInheritedHeaderHasOneOwnerAndEditsAppearOnBothPages" },
+        { "class": "ContentControlStoryOwnerTests", "method": "TypedStoryVariantsDisplayOnTheirSelectedPages" },
+        { "class": "ContentControlStoryOwnerTests", "method": "EveryAdmittedKindEditsInPlainHeaderAndFooterOwners" },
+        { "class": "ContentControlStoryOwnerTests", "method": "BodyAndStoryIdsAreReservedTogetherBeforeAssigningMissingIds" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryBindingIsExplicitAndRetainsAtomicWriteBack" },
+        { "class": "ContentControlStoryOwnerTests", "method": "LocalNamespaceDeclarationsAreNotParagraphLayoutProperties" }
+      ]
+    },
+    {
+      "id": "story-control-protected-boundaries",
+      "issue": 144,
+      "outcome": "rejected",
+      "boundary": "Story table or nested owners, crossing bookmarks, duplicate or excessive global control IDs and inconsistent shared bindings reject; locks and cancellation preserve the original document.",
+      "tests": [
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryAndBodyControlsSharingOneBindingMustAgreeAtomically" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryLocksAndCancellationLeaveTheDocumentUntouched" },
+        { "class": "ContentControlStoryOwnerTests", "method": "GlobalControlLimitIncludesDistinctStoryParts" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryControlsCannotCrossBookmarksOrUseNestedOwners" },
+        { "class": "ContentControlBoundaryTests", "method": "MultipleRowsAndHeaderTableOwnersAreExplicitlyRejected" }
+      ]
+    },
+    {
+      "id": "nested-control-block-inline",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "boundary": "An unbound, non-placeholder block rich-text parent in the body or a simple cell retains its inline typed children, their IDs and parent identity, order, values, placeholders and explicit local bindings.",
+      "tests": [
+        { "class": "ContentControlNestedOwnerTests", "method": "WordDerivedNestedFixtureMatchesIndependentTextOrderAndKeepsBothChildren" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedInlineEditKeepsWrapperOrderIdentityAndDetachedDisplay" },
+        { "class": "ContentControlNestedOwnerTests", "method": "ParentValueStateFollowsTheCurrentNestedText" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedDateInSimpleCellRefreshesParentStateAndRemainsEditable" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedChildCanRestoreItsLocalPlaceholderWithoutReplacingTheParent" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedChildBindingIsExplicitAndKeepsItsParentAndLocalStore" },
+        { "class": "ContentControlNestedOwnerTests", "method": "OrdinaryLoadingStillUsesCachedTextWithoutCreatingTypedOwners" },
+        { "class": "ContentControlNestedOwnerTests", "method": "MultipleChildrenRetainTheirOrderAndSelectionIndependently" },
+        { "class": "ContentControlNestedOwnerTests", "method": "ChildrenInSeparateParentParagraphsRetainTheirOwnersAndOrder" }
+      ]
+    },
+    {
+      "id": "nested-control-protected-boundaries",
+      "issue": 144,
+      "outcome": "rejected",
+      "boundary": "Child edits honor parent and child locks; replacing a parent with children, conflicting bindings, deeper nesting and unqualified parent kinds or states reject atomically.",
+      "tests": [
+        { "class": "ContentControlNestedOwnerTests", "method": "ChildMutationHonorsTheParentsContentLock" },
+        { "class": "ContentControlNestedOwnerTests", "method": "ParentReplacementAndChildOwnLockCannotBypassProtectedOwners" },
+        { "class": "ContentControlNestedOwnerTests", "method": "DivergentNestedBindingsRejectAtomicallyAndCanBeReapplied" },
+        { "class": "ContentControlNestedOwnerTests", "method": "LockedParentAlsoBlocksNestedBindingOperations" },
+        { "class": "ContentControlNestedOwnerTests", "method": "SharedBindingCannotWriteThroughASecondLockedParent" },
+        { "class": "ContentControlNestedOwnerTests", "method": "NestedXmlRespectsTheConfiguredDepthLimit" },
+        { "class": "ContentControlNestedOwnerTests", "method": "UnqualifiedParentAndDeeperOwnershipAreRejected" }
+      ]
+    },
+    {
+      "id": "conditional-outer-border-styles",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Editable style chains retain qualified conditional borders; isolated outer edges, look flags and a fill-and-border combination match independent LibreOffice colors. Composition, comparison and report expansion retain their bounded semantics.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConditionalOuterEdgesMatchIndependentColorsAndStayEditable" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalBorderStyleChangesCannotBeIgnoredOrAliasedDuringComposition" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalOuterBorderRecomputesAfterReportRowExpansion" },
+        { "class": "DocxTableBorderTests", "method": "BorderOnlyConditionalDefaultRejectsNewTablesWithoutMutatingDocument" }
+      ]
+    },
+    {
+      "id": "conditional-border-conflicts",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Conditional interior edges, competing or overlapping borders, inherited rendering and missing look settings remain explicitly unqualified; editable metadata and untouched outputs are checked.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "InheritedConditionalBorderDifferenceIsExplicit" },
+        { "class": "DocxTableBorderTests", "method": "InteriorConditionalBordersStayEditableButStaticConflictsReject" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalAndWholeTableBordersKeepTheirConflictExplicit" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalAndDirectCellBordersKeepTheirConflictExplicit" },
+        { "class": "DocxTableBorderTests", "method": "OverlappingCornerAndRowBordersRequireQualifiedPrecedence" },
+        { "class": "DocxTableBorderTests", "method": "BorderOnlyConditionsRequireExplicitTableLook" },
+        { "class": "DocxTableBorderTests", "method": "BorderOnlyBandRetainsDataAndReportsItsUnqualifiedDefaults" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateConditionalBorderSetsFailBeforeOutput" }
+      ]
+    },
+    {
+      "id": "conditional-theme-fill-editing",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "A complete bounded local theme retains clear conditional fill tokens, one tint or shade, and the original fallback in editable DOCX; explicit child fills replace inherited theme references.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConditionalThemeFillKeepsItsReferenceAndReportsReferenceColorDifference" },
+        { "class": "DocxTableBorderTests", "method": "ChangingTheRetainedThemeChangesTheConditionalFillAfterReload" },
+        { "class": "DocxTableBorderTests", "method": "OmittedAndAutomaticFallbacksRemainDistinctInEditableStyles" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitChildFillReplacesInheritedThemeSemanticsWithoutFlatteningTheParent" },
+        { "class": "DocxTableBorderTests", "method": "InheritedConditionalThemeIsRetainedAndBothRenderingDifferencesAreReported" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalThemeReferenceSurvivesReportExpansion" },
+        { "class": "DocxTableBorderTests", "method": "CompositionKeepsConflictingConditionalThemeStyleFallbacksIndependent" }
+      ]
+    },
+    {
+      "id": "conditional-theme-fill-unqualified",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Static conditional theme colors differ from LibreOffice's stored fallback; missing themes, conflicting transforms, malformed metadata and changed editable references remain explicit.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ComparisonCannotIgnoreDifferentThemeFallbackMetadata" },
+        { "class": "DocxTableBorderTests", "method": "MalformedConditionalThemeFillFailsBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "UnresolvedConditionalThemeUsesDiagnosedFallback" }
+      ]
+    },
+    {
+      "id": "used-default-table-styles",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Used default table-style definitions and implicit versus explicit table references remain editable in DOCX. Compatible composition and whole-table defaults on newly authored simple tables preserve that identity; unused definitions are not reconstructed.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ImplicitDefaultStyleStaysEditableAndReferenceDifferenceIsReported" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitReferenceKeepsItsDefaultDeclarationWithoutClaimingAnImplicitReference" },
+        { "class": "DocxTableBorderTests", "method": "DefaultStyleCompositionIsAtomicAndOnlyCombinesCompatibleOwners" },
+        { "class": "DocxTableBorderTests", "method": "NewTablesUseWholeTableDefaultsWhileConditionalDefaultsRejectMissingLook" },
+        { "class": "DocxTableBorderTests", "method": "DefaultStyleSurvivesReportRowExpansion" },
+        { "class": "DocxTableBorderTests", "method": "ComparisonCannotIgnoreTheImplicitDefaultRelationship" },
+        { "class": "DocxTableBorderTests", "method": "LastDeclaredDefaultWinsAndInvalidFlagsFailBeforeWriting" }
+      ]
+    },
+    {
+      "id": "conditional-table-regions",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit table-look masks select first/last row and column, corner and unit-band cell fills; direct clear RGB cell shading wins. Bounded band sizes and style chains remain editable. LibreOffice matches the documented Office overlap order in the tested grids; the OOXML order and Word's documented band default differ and are reported.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConditionalRegionsMatchIndependentColorsAndRemainEditable" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalRegionsFollowInsertedReportRowsAndAcrossOutputFormats" },
+        { "class": "DocxTableBorderTests", "method": "DisabledInheritedRegionsDoNotPreventQualifiedOutput" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitUnitBandSizesMatchTheIndependentSingleWidthControl" }
+      ]
+    },
+    {
+      "id": "conditional-table-regions-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Non-DOCX rendering that relies on inherited conditional regions, omitted or non-unit band sizes, single-row/column overlapping first/last regions and nil cell shading remains unqualified. Reference controls retain the inheritance, band-size and degenerate-grid observations.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "OverlappingSingleRowOrColumnRegionsRemainUnqualified" },
+        { "class": "DocxTableBorderTests", "method": "OmittedBandSizeRetainsEditableSourceAndReportsConflictingDefaults" },
+        { "class": "DocxTableBorderTests", "method": "NondefaultBandSizesStayEditableWhileReferenceMismatchIsDiagnosed" },
+        { "class": "DocxTableBorderTests", "method": "ZeroBandSizeIsRetainedAndItsStaticOutputIsExplicitlyUnqualified" },
+        { "class": "DocxTableBorderTests", "method": "SizeThreeUsesBoundedBestEffortGroupingAndRetainsItsSource" },
+        { "class": "DocxTableBorderTests", "method": "NonunitBandGroupingRecomputesAfterReportExpansionWithLossReported" },
+        { "class": "DocxTableBorderTests", "method": "InvalidOrUnqualifiedBandSizesFailBeforeOutput" },
+        { "class": "DocxTableBorderTests", "method": "ChangedBandSizesCannotBeHiddenByComparisonOptions" },
+        { "class": "DocxTableBorderTests", "method": "NilCellShadingWithSeveralRegionsRemainsUnqualified" },
+        { "class": "DocxTableBorderTests", "method": "InheritedRegionReferenceDifferencesAreExplicit" },
+        { "class": "DocxTableBorderTests", "method": "InheritedConditionalRegionOverridesItsParentWithoutFlattening" },
+        { "class": "DocxTableBorderTests", "method": "ChildBandSizeOverridesTheInheritedSizeAndBothRemainEditable" }
+      ]
+    },
+    {
+      "id": "first-row-style-shading",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "A qualified explicit table-look mask selects clear first-row cell shading; direct clear RGB cell fills override it. Editable DOCX retains the style chain and look; independent LibreOffice controls verify colors and precedence, with geometry differences remaining.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "FirstRowMaskMatchesIndependentReferenceAndRemainsEditable" },
+        { "class": "DocxTableBorderTests", "method": "AgreeingExplicitLookFlagsAreRetained" },
+        { "class": "DocxTableBorderTests", "method": "DirectClearCellColorOverridesTheFirstRowStyleLikeTheIndependentReference" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalStyleIdentifiersRemainIndependentDuringComposition" },
+        { "class": "DocxTableBorderTests", "method": "FirstRowConditionReevaluatesAfterReportExpansion" }
+      ]
+    },
+    {
+      "id": "first-row-style-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Static output depending on inherited conditions, conflicting or omitted look semantics, unsupported conditional properties, nil/whole-table shading conflicts, changed style comparison and repeated fixed-page headers reject. Duplicate look or direct cell shading markup fails before output.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "UnsupportedConditionalCombinationsLeaveOutputUntouched" },
+        { "class": "DocxTableBorderTests", "method": "AmbiguousLookReferenceResultsRemainExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateTableLooksFailBeforeOutput" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateDirectCellShadingFailsBeforeOutput" },
+        { "class": "DocxTableBorderTests", "method": "UnqualifiedShadingPrecedenceRetainsReferenceAndFailsBeforeOutput" },
+        { "class": "DocxTableBorderTests", "method": "InheritedFirstRowStyleCanBeEditedAfterDocxSave" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalStyleAndLookChangesCannotBeIgnoredByComparison" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalFirstRowRepeatedAcrossPagesIsExplicitlyUnsupported" }
+      ]
+    },
+    {
+      "id": "whole-table-style-inheritance",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Bounded whole-table style chains retain explicit borders and clear RGB shading in editable DOCX; collision-safe composition and report expansion preserve their appearance. Independent LibreOffice fixtures confirm inherited colors and an edge reset, with measured placement differences.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "InheritedTableStyleRemainsEditableAndMatchesReferenceBorderColors" },
+        { "class": "DocxTableBorderTests", "method": "ChildStyleCanExplicitlyDisableAnInheritedBorder" },
+        { "class": "DocxTableBorderTests", "method": "ConflictingStyleIdentifiersAreRemappedDuringComposition" },
+        { "class": "DocxTableBorderTests", "method": "InheritedStyleAppearanceSurvivesReportRowExpansion" },
+        { "class": "DocxTableBorderTests", "method": "InheritedClearTableShadingIsRetainedAndEditableOutputLossIsExplicit" }
+      ]
+    },
+    {
+      "id": "whole-table-style-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Unqualified default-style rendering, unsupported conditional properties and metadata, direct table or cell conflicts, changed styles in comparison and destination restyling remain explicitly unsupported. Cyclic and overdeep chains fail before output.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "UnsupportedStyleCombinationsFailBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "CyclicAndOverdeepTableStylesFailWithoutWriting" },
+        { "class": "DocxTableBorderTests", "method": "DestinationRestylingRejectsStyledFragmentsWithoutChangingEitherSession" },
+        { "class": "DocxTableBorderTests", "method": "ChangedTableStylesCannotBeHiddenByComparisonOptions" }
+      ]
+    },
+    {
+      "id": "direct-table-shading",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Clear explicit RGB table fill is retained in DOCX and painted for simple body cells after row expansion. LibreOffice omitted the table-level fill in the independent probe, so reference parity remains unqualified.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "DirectTableShadingRemainsEditableAndFillsSimpleCells" },
+        { "class": "DocxTableBorderTests", "method": "IndependentReferenceRetainsTheMissingTableShadingResultAndChecksTheCellControl" },
+        { "class": "DocxTableBorderTests", "method": "RepeatedReportRowsRecomputeTableShading" }
+      ]
+    },
+    {
+      "id": "direct-table-shading-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Direct-cell conflicts, unsupported shading, stories, fixed-page repetition/splits and destinations that omit shading reject in strict mode; unexpected border content is diagnosed.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "TableAndDirectCellShadingConflictIsDiagnosedBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "MergedAndNestedTableShadingRemainExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "UnsupportedTableShadingUsesExplicitLossDiagnostics" },
+        { "class": "DocxTableBorderTests", "method": "UnsupportedDestinationReportsTableShadingLoss" },
+        { "class": "DocxTableBorderTests", "method": "MultipageTableShadingApproximationsRemainExplicit" },
+        { "class": "DocxTableBorderTests", "method": "TableShadingInHeaderStoriesRemainsExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateTableShadingFailsBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "UnexpectedTableBorderChildIsDiagnosedBeforeWriting" }
+      ]
+    },
+    {
+      "id": "direct-table-borders",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Simple rectangular tables retain explicit direct table borders and recompute outside/inside edges after row expansion. Independent LibreOffice evidence confirms colors and grid relationships while retaining measured placement differences.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "DirectTableBordersRemainEditableAndPaintAllSixEdges" },
+        { "class": "DocxTableBorderTests", "method": "LibreOfficeReferenceAgreesOnBorderColorsAndRelativeGridGeometry" },
+        { "class": "DocxTableBorderTests", "method": "DisabledTableEdgeStaysDisabledInEditableAndRenderedOutputs" },
+        { "class": "DocxTableBorderTests", "method": "RepeatedReportRowsRecomputeTheOutsideAndInsideBorders" },
+        { "class": "DocxTableBorderTests", "method": "SynthesizedEmptyGridCellsResolveTheirDefaultFontBeforeFixedLayout" }
+      ]
+    },
+    {
+      "id": "direct-table-borders-unsupported",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Conflicting or merged cells, unsupported stories, repeated/split fixed-page rows and destinations that omit table borders reject in strict mode; duplicate sides fail without writing.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConflictingCellsAreDiagnosedAndStrictOutputIsUntouched" },
+        { "class": "DocxTableBorderTests", "method": "ExistingDirectCellBorderPaintOrderSurvivesConditionalStyleSupport" },
+        { "class": "DocxTableBorderTests", "method": "UnsupportedDestinationReportsTableBorderLossBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "MultipageTableBorderApproximationsRemainExplicit" },
+        { "class": "DocxTableBorderTests", "method": "TableBordersInHeaderStoriesRemainExplicitlyUnsupported" },
+        { "class": "DocxTableBorderTests", "method": "AutomaticColorsAndBorderEffectsRemainDiagnosed" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateTableBorderSidesFailBeforeOutput" }
+      ]
+    },
+    {
+      "id": "comparison-paragraph-format",
+      "issue": 150,
+      "outcome": "supported-bounded",
+      "boundary": "Ordinary body and simple-cell paragraph properties use explicit resolved snapshots, review decisions and schema-valid OOXML when surrounding topology matches. Unchanged matching body paragraphs can also carry format history while other paragraphs are inserted or deleted.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryRoundTripsAndBothDecisionsMatchIndependentGeometry" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphAndTextChangesHaveIndependentAttributedDecisions" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphLineSpacingAndHangingIndentPreservePriorAndCurrentValues" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingPreservesInheritedExplicitResets" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingCanBeIgnoredWithoutDiscardingTextChanges" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphFormattingHistoryUsesPriorAndCurrentProperties" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingInsideSimpleCellsAndAtSectionBoundariesIsSchemaValid" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphMarkFormattingRemainsUnchangedAcrossPropertyHistory" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryComposesWithDistinctIdsAndRejectsRestyling" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingAndSeparateStructuralInsertionsKeepIndependentDecisions" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingCanBeDecidedSeparatelyFromADeletedParagraph" }
+      ]
+    },
+    {
+      "id": "comparison-paragraph-format-unsupported",
+      "issue": 150,
+      "outcome": "rejected",
+      "boundary": "Cell formatting combined with structural edits, formatting on moved paragraphs, unsupported history owners, style-embedded history and exhausted work budgets fail without changing the source sessions; display rejects paragraph-format history.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingRetainsDisplayBoundaries" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingChangesOnMovedParagraphsRemainExplicitlyUnsupported" },
+        { "class": "ReviewWorkflowTests", "method": "CellParagraphFormattingWithStructuralEditsRemainsExplicitlyUnsupported" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingUsesTheComparisonBudgetAndCancellationAtomically" },
+        { "class": "ReviewWorkflowTests", "method": "OrdinaryConversionDiagnosesDiscardedParagraphHistoryAndKeepsStrictOutputUntouched" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryRejectsUnsupportedOwners" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryCannotHideASectionChange" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryRejectsInvalidIndentAndStyleMetadata" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphHistoryCannotBeHiddenInsideAStyleDefinition" }
+      ]
+    },
+    {
+      "id": "comparison-ignored-stories-and-runs",
+      "issue": 150,
+      "outcome": "supported-bounded",
+      "boundary": "Optional story-text and supported run-format exclusions retain original matching values while selected text and admitted structural changes are tracked.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "IgnoredRunFormattingRetainsOriginalAppearanceAndDoesNotChangeInputs" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingKeepsExplicitResetAgainstInheritedBold" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingStillTracksChangedTextAndPreservesOriginalUnchangedText" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingCanCoexistWithStructuralInsertion" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredCellFormattingCanCoexistWithRowInsertion" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredSharedStoryTextKeepsTheOriginalThroughBodyEdits" },
+        { "class": "ReviewWorkflowTests", "method": "SelectedStoryTextCanIgnoreItsRunFormatting" }
+      ]
+    },
+    {
+      "id": "comparison-ignored-unsupported-owners",
+      "issue": 150,
+      "outcome": "rejected",
+      "boundary": "Excluded categories do not bypass the existing unsupported formatting or shared-story topology admission checks.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "IgnoredRunFormattingDoesNotAdmitUnsupportedProperties" },
+        { "class": "ReviewWorkflowTests", "method": "IgnoredFormattingNormalizationsUseTheCombinedWorkBudget" },
+        { "class": "ReviewWorkflowTests", "method": "ComparisonRejectsSharedStoryTopologyChangesEvenWhenTextMatches" }
+      ]
+    },
+    {
+      "id": "table-formula-numeric",
+      "issue": 159,
+      "outcome": "supported-bounded",
+      "boundary": "Rectangular unmerged numeric tables refresh admitted local sums and cell dependencies atomically, with explicit invariant percentage pictures.",
+      "tests": [
+        { "class": "TableFieldTests", "method": "BoundedDependenciesRefreshInOrderAndSurviveReferenceRefresh" },
+        { "class": "TableFieldTests", "method": "FormulaReferencesUseUnroundedValuesRatherThanDisplayCaches" },
+        { "class": "TableFieldTests", "method": "ExpandedRowsAndLaterEditsRecomputeTheTotal" },
+        { "class": "TableFieldTests", "method": "IndependentLibreOfficeFixtureAgreesOnNumericDependencies" },
+        { "class": "TableFieldTests", "method": "HeaderCellsUseTheSameNumericAdmissionRules" },
+        { "class": "TableFieldTests", "method": "EmptyPositionalRangesProduceZero" },
+        { "class": "P1FieldTests", "method": "NumericPicturesFollowTheSpecifiedRoundingAndLiteralRules" }
+      ]
+    },
+    {
+      "id": "table-formula-retained-caches",
+      "issue": 159,
+      "outcome": "rejected",
+      "boundary": "Unsupported, cyclic, over-limit, blank, text and merged table dependencies reject calculation and retain every source formula cache in the table.",
+      "tests": [
+        { "class": "TableFieldTests", "method": "InvalidDependenciesPreserveEveryCacheInTheTable" },
+        { "class": "TableFieldTests", "method": "UnknownFunctionWithoutAValidReferenceDoesNotPartiallyRefreshTheTable" },
+        { "class": "TableFieldTests", "method": "BlankTextAndCultureDependentCellsRetainTheTableCaches" },
+        { "class": "TableFieldTests", "method": "MergedCellsAndOverdeepGraphsRetainCaches" },
+        { "class": "TableFieldTests", "method": "ReferenceWorkLimitDoesNotCommitEarlierFormulaResults" },
+        { "class": "TableFieldTests", "method": "CancellationDoesNotChangeTheDestination" }
+      ]
+    },
+    {
+      "id": "theme-local-appearance",
+      "issue": 141,
+      "outcome": "supported-bounded",
+      "boundary": "Selected Latin fonts, text colors and direct cell colors resolve for rendering. A reconstructed scheme retains supported text references; unsupported theme semantics remain diagnosed.",
+      "tests": [
+        { "class": "DocxThemeTests", "method": "LatinThemeFontAndColorRenderLikeIndependentExplicitFormatting" },
+        { "class": "DocxThemeTests", "method": "WordAuthoredThemeUsesLocalSchemeAndCallerConfiguredOpenFonts" },
+        { "class": "DocxThemeTests", "method": "ThemeColorsApplyTintShadeAndSettingsMapping" },
+        { "class": "DocxThemeTests", "method": "DirectCellThemeShadingAndBorderRenderWithExplicitLossDiagnostics" },
+        { "class": "DocxThemeTests", "method": "HeaderAndFootnoteRunsUseTheDocumentTheme" },
+        { "class": "DocxThemeTests", "method": "CodeStyleThemeReferencesRemainExplicitlyDiagnosed" },
+        { "class": "DocxThemeTests", "method": "NamespaceDeclarationsAreNotFontThemeReferences" },
+        { "class": "DocxThemeTests", "method": "EqualResolvedThemeColorsKeepTextKerningAndSeparateEditableReferences" },
+        { "class": "DocxThemeTests", "method": "SourceThemeExtensionsAndRelationshipsAreNotCopiedIntoTheBoundedTheme" },
+        { "class": "DocxThemeTests", "method": "TypedControlsRejectInheritedThemeReferencesBeforeSaving" }
+      ]
+    },
+    {
+      "id": "theme-invalid-parts",
+      "issue": 141,
+      "outcome": "rejected",
+      "boundary": "Malformed, duplicate and external theme metadata reject; missing or unsupported references retain diagnosed fallbacks.",
+      "tests": [
+        { "class": "DocxThemeTests", "method": "MissingUnsupportedAndMalformedThemesUseExplicitLimits" },
+        { "class": "DocxThemeTests", "method": "UnavailableLocalThemeFontUsesDiagnosedFallback" },
+        { "class": "DocxThemeTests", "method": "CompositionAndComparisonRejectConflictingThemesAtomically" },
+        { "class": "DocxThemeTests", "method": "RepeatedThemedCompositionCountsRetainedMetadataAndFailsAtomically" }
+      ]
+    },
+    {
+      "id": "template-format-identities",
+      "issue": 166,
+      "outcome": "supported-bounded",
+      "boundary": "Macro-free DOTX/OTT package identities, selected exchanges, session editing and bounded byte-based inspection use the existing content profiles.",
+      "tests": [
+        { "class": "TemplateFormatTests", "method": "DotxUsesTemplateIdentityThroughConversionEditingAndFixedOutput" },
+        { "class": "TemplateFormatTests", "method": "OttUsesTemplateMimeAndManifestThroughConversionEditingAndPdf" },
+        { "class": "TemplateFormatTests", "method": "DotxRetainsAdmittedReviewAndTypedControlSemantics" },
+        { "class": "TemplateFormatTests", "method": "TemplateCrossFormatDirectionsRetainIndependentPackageIdentityAndText" },
+        { "class": "TemplateFormatTests", "method": "DetectionDistinguishesPackageFamilyAndTemplateIdentity" }
+      ]
+    },
+    {
+      "id": "template-format-negative",
+      "issue": 166,
+      "outcome": "rejected",
+      "boundary": "Mismatched, conflicting, unsafe, macro-bearing and protected identities remain explicit; bounded stream failures retain caller ownership.",
+      "tests": [
+        { "class": "TemplateFormatTests", "method": "DetectionRespectsPositionsOwnershipLimitsAndCancellation" },
+        { "class": "TemplateFormatTests", "method": "DetectionRejectsConflictingTruncatedAndUnsafePackageIdentities" },
+        { "class": "TemplateFormatTests", "method": "DetectionDistinguishesMacrosAndProtectedContainersWithoutExecutingThem" }
+      ]
+    },
+    {
+      "id": "control-character-style-materialization",
+      "issue": 143,
+      "outcome": "supported-bounded",
+      "boundary": "A bounded main-document character-style chain on an ordinary typed-control run resolves to direct appearance in non-strict modes; editable style identity is lost with an explicit diagnostic and Strict rejects it.",
+      "tests": [
+        { "class": "ContentControlCharacterStyleTests", "method": "BoundedCharacterStyleMatchesAnExplicitIndependentColorControl" },
+        { "class": "ContentControlWordVariantsTests", "method": "WordAuthoredDatePlaceholderWithLocalCharacterStyleRetainsItsResolvedAppearance" },
+        { "class": "ContentControlWordVariantsTests", "method": "CharacterStylesDoNotAdmitMissingCyclicOrUnqualifiedBehavior" },
+        { "class": "ContentControlWordVariantsTests", "method": "ResolvingTheCharacterStyleDoesNotInventAMissingWordPlaceholder" }
+      ]
+    },
+    {
+      "id": "glossary-inert-local",
+      "issue": 143,
+      "outcome": "supported-bounded",
+      "boundary": "Typed control glossary categories, selected inert resources including validated notTrueType metadata, and Word-authored rich, plain and date derivatives; unlisted graphs and Strict theme losses remain excluded.",
+      "tests": [
+        { "class": "ContentControlGlossaryResourceTests", "method": "InertLocalGlossaryResourcesPreserveBytesRelationshipsAndBindings" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryResourcesAndPlaceholderSurviveEdits" },
+        { "class": "ContentControlWordVariantsTests", "method": "WordAuthoredControlKindsPreserveTheirLocalGlossaryThroughEdits" },
+        { "class": "ContentControlWordVariantsTests", "method": "ExplicitNonTrueTypeFlagsStayInTheLocalFontCatalog" },
+        { "class": "ContentControlReviewTests", "method": "StaticGlossaryCategoriesSurviveTypedEditsAndPlaceholderViews" }
+      ]
+    },
+    {
+      "id": "glossary-unsupported-graph",
+      "issue": 143,
+      "outcome": "rejected",
+      "boundary": "External, unsafe and unadmitted glossary graphs are rejected rather than silently omitted.",
+      "tests": [
+        { "class": "ContentControlGlossaryResourceTests", "method": "UnsafeOrUnadmittedGlossaryResourcesFailBeforePublishingASession" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryThemeFallbackStillRejectsInStrictMode" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "WordAuthoredGlossaryRejectsUnsafeStyleGraphs" },
+        { "class": "ContentControlGlossaryResourceTests", "method": "GlossaryScriptFontSlotsRejectUnqualifiedPlaceholderText" },
+        { "class": "ContentControlWordVariantsTests", "method": "MissingWordAuthoredGlossaryEntriesRemainExplicitlyUnsupported" },
+        { "class": "ContentControlWordVariantsTests", "method": "AuthoredControlCharacterStyleReferencesAreStillExplicitlyUnsupported" },
+        { "class": "ContentControlWordVariantsTests", "method": "AuthoredNonTrueTypeFontMetadataDoesNotAdmitActiveOrMalformedContent" }
+      ]
+    },
+    {
+      "id": "fragment-simple-cell-fields",
+      "issue": 146,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit simple body-cell placement and opted-in cached simple fields use the documented identity and style rules.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellFragmentPreservesHostGridAndRendersNestedContent" },
+        { "class": "EditingTemplateTests", "method": "FieldFragmentsRequireExplicitCachePolicyAndRemapLocalReferences" }
+      ]
+    },
+    {
+      "id": "fragment-unsupported-owners",
+      "issue": 146,
+      "outcome": "rejected",
+      "boundary": "Unsupported owners, field switches and unresolved references fail atomically.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellFragmentRejectsUnsupportedOwnersWithoutMutatingEitherSession" },
+        { "class": "EditingTemplateTests", "method": "FieldFragmentsRejectUnsupportedSwitchesBeforeInsertion" }
+      ]
+    },
+    {
+      "id": "review-managed-text-display",
+      "issue": 148,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit detached ordinary managed PDF/SVG display of admitted body and simple-cell text revisions.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayExportsSearchableMarkedTextAndKeepsSourceHistory" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplaySvgHasMarkedGlyphsAndSnapshotSurvivesSourceDecisions" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayHandlesCellTextAndMultiplePages" }
+      ]
+    },
+    {
+      "id": "review-unsupported-combinations",
+      "issue": 148,
+      "outcome": "rejected",
+      "boundary": "The default policy rejects comments and format history; story revisions, controls, source loss, PNG, native and tagged/archive combinations remain excluded.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsUnsupportedProfilesAndLeavesOutputUntouched" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsCommentsAndStoryRevisionsWithoutChangingSource" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayRejectsTemplateOwnersAndPriorSourceLoss" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewDisplayProfileChangesFailBeforeWriting" }
+      ]
+    },
+    {
+      "id": "review-numbered-annotations",
+      "issue": 149,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit numbered end annotations cover classic comments, supported run-format changes and paired whole-paragraph moves in ordinary managed output.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "NumberedOverlappingCommentsRetainAnchorsAttributionAndHistory" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedFormatChangesKeepCurrentAppearanceAndDescribeBothStates" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedFormatSummaryRetainsTheExactFontSizes" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedWholeParagraphMovesPairBothEndpointsWithoutChangingTheSource" },
+        { "class": "ReviewWorkflowTests", "method": "ReviewAnnotationListsKeepIndependentCommentCounters" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedCommentsInSimpleTableCellsRetainTheirAnchorAndText" }
+      ]
+    },
+    {
+      "id": "review-numbered-unsupported",
+      "issue": 149,
+      "outcome": "rejected",
+      "boundary": "Other structural revisions, exceeded annotation bounds and the existing nonordinary output profiles remain excluded.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "NumberedAnnotationsStillRejectOtherStructuralHistory" },
+        { "class": "ReviewWorkflowTests", "method": "NumberedAnnotationsRejectExpansionBeforePublishingASnapshot" }
+      ]
+    },
+    {
+      "id": "matrix-equation-managed",
+      "issue": 168,
+      "outcome": "supported-bounded",
+      "boundary": "Rectangular matrices retain admitted OMML semantics and render with the caller's qualified MATH font in ordinary managed output.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MatrixEditingCopiesInputsPreservesSnapshotsAndComposesGenuineOmml" },
+        { "class": "ObjectFoundationTests", "method": "IndependentlyConstructedSchemaValidMatrixImportsWithAlignmentAndSpacing" },
+        { "class": "ObjectFoundationTests", "method": "MatrixImportUsesStandardPropertiesWhenTheyAreOmitted" },
+        { "class": "ObjectFoundationTests", "method": "MaximumMatrixCellGridFitsSerializedTreeAndReopensWithoutMutatingCallerArrays" },
+        { "class": "ObjectFoundationTests", "method": "MatrixGeometryUsesColumnEdgesAndFontMathAxisWithoutOverlappingRows" },
+        { "class": "ObjectFoundationTests", "method": "MatrixProducesLogicalPdfTextAndManagedXpsSvgVectors" },
+        { "class": "ObjectFoundationTests", "method": "MatrixTextCannotInjectOmmlElements" }
+      ]
+    },
+    {
+      "id": "matrix-equation-unsupported",
+      "issue": 168,
+      "outcome": "rejected",
+      "boundary": "Malformed, over-limit and unadmitted matrix variants fail explicitly; no unqualified math-font fallback is used.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "MatrixImportRejectsMalformedAndUnsupportedVariants" },
+        { "class": "ObjectFoundationTests", "method": "UnsupportedMatrixConversionReportsLossAndStrictModeLeavesOutputUntouched" },
+        { "class": "ObjectFoundationTests", "method": "MatrixRenderingRequiresCallerSelectedMathFontAndKeepsOutputUntouched" },
+        { "class": "ObjectFoundationTests", "method": "MatrixFactoriesEnforceRectangularDimensionsAndImmutableBounds" }
+      ]
+    },
+    {
+      "id": "template-inspection-body-fields",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Non-reusable inspection compares declared body merge paths and typed switches without binding data or disclosing names by default; later output and other owners remain unknown.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "DeclaredBodyFieldsMatchActualMergeWithoutDisclosingNames" },
+        { "class": "TemplateInspectionTests", "method": "MissingPathPredictionMatchesTheActualMergeFailure" },
+        { "class": "TemplateInspectionTests", "method": "FormattingSwitchChecksOnlyWhatTheSchemaEstablishes" },
+        { "class": "TemplateInspectionTests", "method": "NestedPathsNeedDeclaredRequiredMappingParents" },
+        { "class": "TemplateInspectionTests", "method": "InvalidAndNonMergeFieldsAreReportedWithoutEvaluatingTheClock" },
+        { "class": "TemplateInspectionTests", "method": "SourceDiagnosticRetainsSeverityCountAndKnownPhase" },
+        { "class": "TemplateInspectionTests", "method": "TruncatedSourceLocationsKeepTheirCountAndUncertainty" },
+        { "class": "TemplateInspectionTests", "method": "RequestedDestinationDoesNotChangeTemplatePathInspection" },
+        { "class": "TemplateInspectionTests", "method": "RepeatsAndUninspectedOwnersStayUnknown" },
+        { "class": "TemplateInspectionTests", "method": "CurrentPositionBoundsCancellationAndSchemaSnapshotsAreEnforced" }
+      ]
+    },
+    {
+      "id": "nary-equation-managed",
+      "issue": 169,
+      "outcome": "supported-bounded",
+      "boundary": "Summation, product and integral expressions retain explicit limits and render with qualified MATH font metrics; insufficient display variants are diagnosed.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "NaryEditingPreservesImmutableSnapshotsAndWritesGenuineOmml" },
+        { "class": "ObjectFoundationTests", "method": "NaryOptionalLimitsAreExplicitAndRoundTrip" },
+        { "class": "ObjectFoundationTests", "method": "IndependentlyConstructedNaryImportsAsEditableSemantics" },
+        { "class": "ObjectFoundationTests", "method": "NaryLimitsHaveSeparatedFontBasedBaselines" },
+        { "class": "ObjectFoundationTests", "method": "NaryDisplayUsesFontVariantsAndReportsAnInsufficientVariant" },
+        { "class": "ObjectFoundationTests", "method": "NaryDisplayUsesAQualifiedOperatorAssemblyWhenTheVariantIsTooSmall" },
+        { "class": "ObjectFoundationTests", "method": "NaryOperandsCanNestMatricesAndMissingGlyphsRemainExplicit" },
+        { "class": "ObjectFoundationTests", "method": "NaryManagedOutputHasLogicalPdfTextAndXpsSvgVectors" }
+      ]
+    },
+    {
+      "id": "nary-equation-unsupported",
+      "issue": 169,
+      "outcome": "rejected",
+      "boundary": "Unsupported operators, unqualified document defaults, growth, placeholders and malformed graphs do not silently flatten.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "NaryImportRejectsUnsupportedAndMalformedVariants" },
+        { "class": "ObjectFoundationTests", "method": "UnsupportedNaryConversionReportsLossAndStrictModeLeavesOutputUntouched" },
+        { "class": "ObjectFoundationTests", "method": "NaryFactoriesEnforceOperandsEnumsAndCancellation" }
+      ]
+    }
+  ]
+}

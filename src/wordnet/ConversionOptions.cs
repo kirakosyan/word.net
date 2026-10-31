@@ -24,6 +24,8 @@ public sealed class ConversionOptions
 
     /// <summary>Gets or sets optional Arabic/Latin shaping and base direction.</summary>
     public TypographyOptions Typography { get; set; } = new TypographyOptions();
+    /// <summary>Gets or sets opt-in local dictionary line breaking.</summary>
+    public HyphenationOptions Hyphenation { get; set; } = new HyphenationOptions();
     /// <summary>Gets or sets safe HTML input resources. Configure before concurrent use.</summary>
     public HtmlInputOptions HtmlInput { get; set; } = new HtmlInputOptions();
 

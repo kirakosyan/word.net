@@ -1,0 +1,25 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "5cb70e4f649413671020d77935930e5441dfa05a",
+  "scope": "Unreleased inherited first-row clear cell shading with explicit agreeing look flags, bounded direct clear-cell overrides and explicit unsupported-combination diagnostics. Other conditional regions and non-default band sizes remain open at this commit.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net8ConversionAndEnglishOcr": { "passed": 1807, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1807, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 30, "testMethods": 157, "net10CasesPassed": 276 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "c847ff05f76df0e42c454a3e6522ac7710569534371fe529e372b68657a83dc5",
+      "wordnet.Fonts.1.5.0.nupkg": "011af183d6f7438aea0d1e99531402a20f22cfe3f356c91a180892f0c854719a",
+      "wordnet.Ocr.1.5.0.nupkg": "8f421ae3715ca990728d81d639c23361939ff541be1388744fb3535bafa7e968"
+    }
+  },
+  "independentReference": "LibreOffice 24.2.7.2 confirmed first-row selection and a direct clear RGB cell override in independently generated documents. Ambiguous omitted/conflicting look flags, nil shading and the whole-table-fill combination remain rejected; reference results and the earlier whole-table shading failure are retained. Existing horizontal and vertical placement differences remain.",
+  "subsequentFinding": "Later independently generated LibreOffice controls omitted inherited conditional regions when a child table style referenced the parent, both when the child had no conditional region and when it supplied a different region. The inherited first-row rendering in this commit is therefore not independently qualified; the follow-up retains the editable chain and explicitly diagnoses the static-output limitation.",
+  "qualification": "Hosted qualification, remaining style and shading scope, final review, merge and package publication are not established for this commit by this local record."
+}

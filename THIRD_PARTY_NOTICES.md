@@ -100,6 +100,14 @@ Word pagination parity. No proprietary Microsoft font is redistributed.
 - Fixture generators use ReportLab (BSD) and Pillow (HPND). External fixture validation
   used NPOI/HWPF (Apache-2.0) and KindleUnpack (GPL-3.0). These tools are not copied,
   linked or included in the library/package; their role is recorded in fixture provenance.
+- The template-plan design examples use development-only jsonschema 4.26.0 (MIT)
+  and rfc8785 0.1.4 (Apache-2.0) for schema and canonicalization checks. They are not
+  runtime dependencies and are not included in the NuGet packages.
+- The test-only Word-authored glossary XML parts in
+  `tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/` derive
+  from the MIT-licensed Open XML SDK repository. The directory retains its license,
+  notice, source revision, hashes and extraction provenance; the parts do not ship
+  in the NuGet packages.
 
 ## Binary Word fixtures and Android validation
 
@@ -146,11 +154,13 @@ FriBidi and veraPDF are optional external qualification tools, not runtime depen
 No proprietary reference data or code was added. Existing native provider licenses apply.
 ## Unicode boundary data
 
-The generated Unicode 17.0.0 word/grapheme, Indic conjunct and extended-pictographic
+The generated Unicode 17.0.0 word/grapheme/line-break, Indic conjunct, width,
+general-category and extended-pictographic
 tables derive from the Unicode Character Database. Copyright © 2025 Unicode, Inc.
 They are used under Unicode License V3 (Unicode-3.0). The unmodified license is
 included in packages as `licenses/Unicode-3.0.txt`. Generator inputs and SHA-256 pins
-are recorded in `tests/wordnet.Conversion.Tests/Fixtures/Unicode17/manifest.json`;
+are recorded in `tests/wordnet.Conversion.Tests/Fixtures/Unicode17/manifest.json`
+and `linebreak-manifest.json`;
 the official conformance files retain their original notices. These tables do not
 add a shaping engine or language-specific dictionary segmentation.
 
@@ -165,7 +175,12 @@ SIL OFL 1.1, with `Fixtures/P2/STIX-OFL.txt` and exact SHA-256 in
 included in production packages. Unicode 17 bidi data and conformance files retain
 the existing Unicode-3.0 notice and separate `bidi-manifest.json` hashes.
 
-FontTools 4.61.1 (MIT), uharfbuzz 0.53.0 (Apache-2.0), PyMuPDF 1.27.2.2
+The renamed and subset East Asian test fonts derive from Noto Sans CJK Regular
+2.004, copyright 2014–2021 Adobe, under SIL OFL 1.1. Their provenance, outline
+conversion, exact hashes and license accompany `Fixtures/EastAsian`; these
+test-only faces are not included in production packages.
+
+FontTools 4.61.1 (MIT), XlsxWriter 3.2.9 (BSD-2-Clause), uharfbuzz 0.53.0 (Apache-2.0), PyMuPDF 1.27.2.2
 (AGPL-3.0-or-later) and Pillow 12.3.0 (HPND) are development-only independent
 qualification tools, pinned in `eng/p2-requirements.txt`. They are not converter
 runtime dependencies or NuGet contents. The optional office driver uses LibreOffice
@@ -173,3 +188,10 @@ Java 26.2.2 (MPL-2.0); a JRE-only development host may use Eclipse ECJ 3.40.0
 (EPL-2.0) to compile it. URLs/hashes are in `eng/p2-tool-pins.json`; downloaded jars
 remain ignored artifacts. The test-only System.Text.Json 10.0.12 reference-vector
 reader is MIT licensed and private to the test project, with reviewed lock files.
+
+The unreleased roadmap #138 independent fixture tools also use python-docx 1.2.0
+(MIT), pypdf 6.10.0 (BSD-3-Clause) and Pyphen 0.17.2 (GPL-2.0-or-later,
+LGPL-2.1-or-later or MPL-1.1). The sampled US English hyphenation data has its
+own BSD-style notice; its provenance and hash are recorded in the measurement.
+These external development tools and their dictionaries are not included in the
+converter's runtime dependencies or production packages.

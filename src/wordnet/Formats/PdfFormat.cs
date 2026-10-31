@@ -4,12 +4,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using UglyToad.PdfPig.Core;
+using UglyToad.PdfPig.Graphics.Operations;
 using UglyToad.PdfPig.Graphics.Operations.ClippingPaths;
 using UglyToad.PdfPig.Graphics.Operations.General;
 using UglyToad.PdfPig.Graphics.Operations.MarkedContent;
 using UglyToad.PdfPig.Graphics.Operations.PathConstruction;
 using UglyToad.PdfPig.Graphics.Operations.PathPainting;
 using UglyToad.PdfPig.Graphics.Operations.SpecialGraphicsState;
+using UglyToad.PdfPig.Graphics.Operations.TextState;
 using UglyToad.PdfPig.Outline.Destinations;
 using UglyToad.PdfPig.Tokens;
 using UglyToad.PdfPig.Writer;
@@ -32,10 +34,13 @@ internal static class PdfFormat
         var pageMap = indices.Select((p, i) => (p, i)).ToDictionary(pair => pair.p, pair => pair.i + 1);
         context.PageCount = pages.Count;
         using var buffer = new BoundedMemoryStream(context.Options.MaximumOutputBytes);
-        byte[]? metadata = options.Conformance == PdfConformance.PdfA2b
-            ? System.Text.Encoding.UTF8.GetBytes(PdfExportMetadata.Xmp(model, context.FieldTime).ToString(System.Xml.Linq.SaveOptions.DisableFormatting)) : null;
+        byte[]? metadata = options.Conformance is PdfConformance.PdfA2b or PdfConformance.PdfA2a
+            ? System.Text.Encoding.UTF8.GetBytes(PdfExportMetadata.Xmp(model, context.FieldTime, options.Conformance == PdfConformance.PdfA2a).ToString(System.Xml.Linq.SaveOptions.DisableFormatting)) : null;
         string[]? labels = indices.Where((p, i) => p != i + 1).Any() || pages.Count != allPages.Count ? pages.Select(p => ListCounter.Number(p.PageNumber, p.SourceSettings.PageNumberFormat)).ToArray() : null;
-        PdfExportTokenWriter writer = tags == null ? new PdfExportTokenWriter(options.Compress, metadata, labels) : new PdfTaggedTokenWriter(options.Compress, labels, tags, tags.Xmp(model.Title), context);
+        var gradient = PdfGradient.Create(pages, context);
+        if (gradient.Resources != null && (context.Typography.Enabled || options.Accessibility != PdfAccessibility.None || options.Conformance != PdfConformance.Pdf17))
+            throw new NotSupportedException("Shape.GradientProfile: Gradients currently require ordinary managed PDF.");
+        PdfExportTokenWriter writer = tags == null ? new PdfExportTokenWriter(options.Compress, metadata, labels, gradient.Resources) : new PdfTaggedTokenWriter(options.Compress, labels, tags, metadata ?? tags.Xmp(model.Title), context);
         var builder = new PdfDocumentBuilder(buffer, false, PdfWriterType.Default, 1.7, writer);
         bool complete = false;
         try
@@ -47,9 +52,9 @@ internal static class PdfFormat
             builder.DocumentInformation.CreationDate = context.FieldTime.UtcDateTime.ToString("'D:'yyyyMMddHHmmss'Z'", CultureInfo.InvariantCulture);
             builder.DocumentInformation.ModifiedDate = builder.DocumentInformation.CreationDate;
             if (options.OutlineHeadings) builder.Bookmarks = PdfExportMetadata.Outlines(pages);
-            if (options.Conformance == PdfConformance.PdfA2b)
+            if (options.Conformance is PdfConformance.PdfA2b or PdfConformance.PdfA2a)
             {
-                builder.ArchiveStandard = PdfAStandard.A2B;
+                builder.ArchiveStandard = options.Conformance == PdfConformance.PdfA2a ? PdfAStandard.A2A : PdfAStandard.A2B;
             }
             var fonts = context.FontData.Select(bytes => builder.AddTrueTypeFont(bytes)).ToArray();
             var native = new PdfNativeText(context);
@@ -59,10 +64,15 @@ internal static class PdfFormat
                 context.CheckCancellation();
                 PdfPageBuilder target = builder.AddPage(page.Settings.Width, page.Settings.Height);
                 tags?.NewPage();
-                if (tags != null) target.CurrentStream.Operations.Add(new BeginMarkedContent(NameToken.Create("Artifact")));
                 foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => !s.Foreground)))
                 {
-                    if (shape.Geometry != null) { PaintVector(target, shape, page.Settings.Height); continue; }
+                    tags?.BeginShape(target, shape);
+                    if (shape.Geometry != null)
+                    {
+                        PaintVector(target, shape, page.Settings.Height, gradient.Names);
+                        if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
+                        continue;
+                    }
                     byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
                     if (shape.Stroke == 0)
                     {
@@ -83,8 +93,8 @@ internal static class PdfFormat
                                 offset == 0 ? shape.Stroke : shape.Stroke / 3);
                         target.CurrentStream.Operations.Add(new SetLineDashPattern(Array.Empty<double>(), 0));
                     }
+                    if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 }
-                if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 foreach (PositionedText text in page.Text.OrderBy(t => t.Image?.Anchor == null ? 0 : t.Image.Anchor.Behind ? -1 : 1))
                 {
                     if (tags != null && text.NativeShape != null)
@@ -98,6 +108,7 @@ internal static class PdfFormat
                     {
                         var rectangle = new PdfRectangle(text.X, page.Settings.Height - text.Y, text.X + image.Width, page.Settings.Height - text.Y + image.Height);
                         var operations = target.CurrentStream.Operations;
+                        if (text.Rotation != 0) PushRotation(target, text.Rotation, text.RotationX, text.RotationY, page.Settings.Height);
                         operations.Add(Push.Value);
                         double angle = image.Rotation * Math.PI / 180, cosine = Math.Round(Math.Cos(angle)), sine = Math.Round(Math.Sin(angle));
                         operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine, text.X + image.Width / 2, page.Settings.Height - text.Y + image.Height / 2 }));
@@ -109,22 +120,30 @@ internal static class PdfFormat
                         var source = new PdfRectangle(left, bottom, left + fullWidth, bottom + fullHeight);
                         if (image.Extension == "png") target.AddPng(image.Bytes, source); else target.AddJpeg(image.Bytes, source);
                         operations.Add(Pop.Value);
-                        if (text.Link != null) AddLink(text.Link, rectangle, semantic);
+                        if (text.Rotation != 0) operations.Add(Pop.Value);
+                        if (text.Link != null) AddLink(text.Link, RotateRectangle(rectangle, text, page.Settings.Height), semantic);
                         if (image.AlternativeText.Length > 0 && !context.PreviewIntermediate && tags == null) context.Loss("Pdf.ImageAlternativeText", "This PDF profile does not create accessibility tags for images.");
                     }
                     else if (text.Text.Length > 0 || text.NativeShape != null)
                     {
                         if (text.Rotation != 0)
                         {
-                            double angle = text.Rotation * Math.PI / 180, cosine = Math.Round(Math.Cos(angle)), sine = Math.Round(Math.Sin(angle));
-                            double cx = text.RotationX, cy = page.Settings.Height - text.RotationY;
-                            target.CurrentStream.Operations.Add(Push.Value);
-                            target.CurrentStream.Operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
-                                cx - cosine * cx - sine * cy, cy + sine * cx - cosine * cy }));
+                            PushRotation(target, text.Rotation, text.RotationX, text.RotationY, page.Settings.Height);
                         }
                         string color = text.Color ?? "000000";
                         target.SetTextAndFillColor(Convert.ToByte(color.Substring(0, 2), 16), Convert.ToByte(color.Substring(2, 2), 16), Convert.ToByte(color.Substring(4, 2), 16));
-                        if (text.NativeShape != null)
+                        if (text.LogicalCarrier)
+                        {
+                            var measured = target.MeasureText(text.Text, text.Size, new PdfPoint(0, 0), fonts[text.Font]);
+                            double original = measured.Count == 0 ? 0 : measured[measured.Count - 1].EndBaseLine.X;
+                            if (original <= 0 || text.CarrierWidth <= 0) throw new InvalidDataException("Hyphenation.Carrier: Logical text has no measurable carrier.");
+                            target.CurrentStream.Operations.Add(Push.Value);
+                            target.CurrentStream.Operations.Add(new SetHorizontalScaling(text.CarrierWidth / original * 100));
+                            target.SetTextRenderingMode(TextRenderingMode.Neither);
+                            target.AddText(text.Text, text.Size, new PdfPoint(text.X, page.Settings.Height - text.Y), fonts[text.Font]);
+                            target.CurrentStream.Operations.Add(Pop.Value);
+                        }
+                        else if (text.NativeShape != null)
                         {
                             if (tags == null) native.Draw(target, text, page.Settings.Height, carrier!);
                             else PdfNativeText.DrawCarrier(target, text, page.Settings.Height, carrier!);
@@ -137,13 +156,17 @@ internal static class PdfFormat
                             if (measured.Count > 0)
                             {
                                 var area = new PdfRectangle(text.X, page.Settings.Height - text.Y - text.Size * 0.25, text.NativeShape != null ? text.X + text.NativeShape.Width * text.Size : measured[measured.Count - 1].EndBaseLine.X, page.Settings.Height - text.Y + text.Size);
-                                AddLink(text.Link, area, semantic);
+                                AddLink(text.Link, RotateRectangle(area, text, page.Settings.Height), semantic);
                             }
                         }
                     }
                     if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
                 }
-                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground))) PaintVector(target, shape, page.Settings.Height);
+                foreach (FixedShape shape in FixedShape.PaintOrder(page.Shapes.Where(s => s.Foreground)))
+                {
+                    tags?.BeginShape(target, shape); PaintVector(target, shape, page.Settings.Height, gradient.Names);
+                    if (tags != null) target.CurrentStream.Operations.Add(EndMarkedContent.Value);
+                }
                 void AddLink(string link, PdfRectangle area, PdfTags.Node? semantic)
                 {
                     if (context.PreviewIntermediate) return;
@@ -169,9 +192,35 @@ internal static class PdfFormat
         }
     }
 
-    private static void PaintVector(PdfPageBuilder target, FixedShape shape, double pageHeight)
+    private static void PushRotation(PdfPageBuilder target, double angle, double x, double y, double pageHeight)
+    {
+        var (cosine, sine) = RotationTransform.Components(angle); double cy = pageHeight - y;
+        target.CurrentStream.Operations.Add(Push.Value);
+        target.CurrentStream.Operations.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
+            x - cosine * x - sine * cy, cy + sine * x - cosine * cy }));
+    }
+
+    private static PdfRectangle RotateRectangle(PdfRectangle rectangle, PositionedText text, double pageHeight)
+    {
+        if (text.Rotation == 0) return rectangle;
+        var points = new[] {
+            RotationTransform.Point(rectangle.Left, pageHeight - rectangle.Bottom, text.RotationX, text.RotationY, text.Rotation),
+            RotationTransform.Point(rectangle.Left, pageHeight - rectangle.Top, text.RotationX, text.RotationY, text.Rotation),
+            RotationTransform.Point(rectangle.Right, pageHeight - rectangle.Bottom, text.RotationX, text.RotationY, text.Rotation),
+            RotationTransform.Point(rectangle.Right, pageHeight - rectangle.Top, text.RotationX, text.RotationY, text.Rotation) };
+        return new PdfRectangle(points.Min(p => p.X), pageHeight - points.Max(p => p.Y), points.Max(p => p.X), pageHeight - points.Min(p => p.Y));
+    }
+
+    private static void PaintVector(PdfPageBuilder target, FixedShape shape, double pageHeight, Dictionary<FixedShape, NameToken> gradients)
     {
         var ops = target.CurrentStream.Operations; ops.Add(Push.Value);
+        if (shape.Rotation != 0)
+        {
+            var (cosine, sine) = RotationTransform.Components(shape.Rotation);
+            double cx = shape.RotationX, cy = pageHeight - shape.RotationY;
+            ops.Add(new ModifyCurrentTransformationMatrix(new[] { cosine, -sine, sine, cosine,
+                cx - cosine * cx - sine * cy, cy + sine * cx - cosine * cy }));
+        }
         byte r = Convert.ToByte(shape.Color.Substring(0, 2), 16), g = Convert.ToByte(shape.Color.Substring(2, 2), 16), b = Convert.ToByte(shape.Color.Substring(4, 2), 16);
         if (shape.Stroke == 0) target.SetTextAndFillColor(r, g, b);
         else { target.SetStrokeColor(r, g, b); ops.Add(new SetLineWidth(shape.Stroke)); }
@@ -183,7 +232,12 @@ internal static class PdfFormat
             else if (command.Kind == 'C') ops.Add(new AppendDualControlPointBezierCurve(p[0], pageHeight - p[1], p[2], pageHeight - p[3], p[4], pageHeight - p[5]));
             else ops.Add(CloseSubpath.Value);
         }
-        if (shape.Stroke == 0) ops.Add(FillPathNonZeroWinding.Value); else ops.Add(StrokePath.Value);
+        if (shape.Gradient != null)
+        {
+            ops.Add(ModifyClippingByNonZeroWindingIntersect.Value); ops.Add(EndPath.Value);
+            ops.Add(new PaintShading(gradients[shape]));
+        }
+        else if (shape.Stroke == 0) ops.Add(FillPathNonZeroWinding.Value); else ops.Add(StrokePath.Value);
         ops.Add(Pop.Value);
     }
 

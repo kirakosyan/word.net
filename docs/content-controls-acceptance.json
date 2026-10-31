@@ -92,7 +92,7 @@
     {
       "id": "G05",
       "kind": "mixed",
-      "assertion": "Metadata edits/save retain typed state, formatting and neighboring nested fields/bookmarks; mutate caller formatting/collections after input and verify detachment. Ordinary Replace/bookmark/Append/retained-review/object combinations reject atomically.",
+      "assertion": "Metadata edits/save retain typed state, formatting and neighboring nested fields/bookmarks; mutate caller formatting/collections after input and verify detachment. Ordinary Replace/bookmark/Append and retained-review combinations reject atomically. In 1.5.0 retained objects also rejected; pending #147 source admits objects in separate protected paragraph owners.",
       "independentOracles": [
         "independent raw XML for field boundaries and controls",
         "schema validation",

@@ -28,6 +28,9 @@ public sealed partial class ObjectFoundationTests
     [Theory]
     [InlineData(ChartKind.ClusteredColumn)]
     [InlineData(ChartKind.Line)]
+    [InlineData(ChartKind.ClusteredBar)]
+    [InlineData(ChartKind.StackedColumn)]
+    [InlineData(ChartKind.StackedBar)]
     public void PublicChartEditingRebuildsWorkbookAndCachesWithValidSchema(ChartKind kind)
     {
         var document = WordDocument.Create(new ConversionOptions(FidelityMode.Lenient)); DocumentObject original = document.AddChart(Definition(kind), cancellationToken: TestContext.Current.CancellationToken);
@@ -69,6 +72,7 @@ public sealed partial class ObjectFoundationTests
         var font = new MathFont(bytes, Context()); using JsonDocument reference = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(folder, "math-reference.json")));
         JsonElement root = reference.RootElement; Assert.Equal(root.GetProperty("units").GetInt32(), font.Units);
         Assert.Equal(root.GetProperty("constants").GetProperty("ScriptPercentScaleDown").GetInt32(), font.ScriptPercent);
+        Assert.Equal(root.GetProperty("constants").GetProperty("DisplayOperatorMinHeight").GetInt32(), font.DisplayOperatorMinHeight);
         Assert.Equal(root.GetProperty("constants").EnumerateObject().Skip(4).Take(51).Select(p => p.Value.GetInt32()), font.Constants);
         foreach (JsonProperty property in root.GetProperty("glyphs").EnumerateObject())
         {

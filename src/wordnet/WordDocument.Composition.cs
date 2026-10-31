@@ -39,12 +39,14 @@ public sealed partial class WordDocument
                 PageSettings originalGeometry = m.FinalSection ?? new PageSettings();
                 foreach (DocumentBlock block in m.Blocks) block.Section ??= originalGeometry;
             }
-            string prefix = UniquePrefix(m);
+            string prefix = UniquePrefix(m, c);
             MergeMetadata(m, incoming, prefix, c);
             Remap(incoming, prefix, m.Notes.Count == 0 ? 0 : m.Notes.Max(n => n.PartId));
             if (style == CompositionStyle.UseDestination)
             {
-                if (incoming.Review.Revisions.Values.Any(r => r.Structure == "format" || r.MoveSide.Length != 0))
+                if (incoming.Tables.Any(table => table.Style != null))
+                    throw new NotSupportedException("Table.StyleRestyle: Resolve table styles before applying destination appearance.");
+                if (incoming.Review.Revisions.Values.Any(r => r.Structure is "format" or "paragraph-format" || r.MoveSide.Length != 0))
                     throw new NotSupportedException("Review.Composition: Resolve formatting and move history before applying destination styles.");
                 if (incoming.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object != null)) throw new NotSupportedException("Object.Restyle: Object composition retains source appearance only.");
                 var prototypes = m.BodyParagraphs.GroupBy(p => p.HeadingLevel).ToDictionary(g => g.Key, g => g.First());
@@ -79,27 +81,40 @@ public sealed partial class WordDocument
         }, cancellationToken, true, objectAware: true);
     }
 
-    private static string UniquePrefix(DocumentModel m)
+    private static string UniquePrefix(DocumentModel m, ConversionContext context, IEnumerable<string>? reserved = null)
     {
         var identifiers = new HashSet<string>(m.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Bookmark != null).Select(r => r.Bookmark!), StringComparer.Ordinal);
         identifiers.UnionWith(m.Paragraphs.Where(p => p.List != null).Select(p => p.List!.Id));
         identifiers.UnionWith(m.Styles.Keys);
         identifiers.UnionWith(m.Review.Revisions.Keys); identifiers.UnionWith(m.Review.Comments.Keys);
+        if (reserved != null) identifiers.UnionWith(reserved);
         foreach (TextRun run in m.Paragraphs.SelectMany(p => p.Runs).Where(r => r.FieldInstruction != null))
         {
+            context.CheckCancellation();
             Match sequence = Regex.Match(run.FieldInstruction!, "^\\s*SEQ\\s+(\\S+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
             if (sequence.Success) identifiers.Add(sequence.Groups[1].Value.Trim('"'));
         }
+        var used = new HashSet<int>();
+        foreach (string identifier in identifiers)
+        {
+            context.CheckCancellation();
+            if (!identifier.StartsWith("wn", StringComparison.OrdinalIgnoreCase)) continue;
+            int end = identifier.IndexOf('_', 2);
+            if (end <= 2 || end > 12) continue;
+            string digits = identifier.Substring(2, end - 2);
+            if (int.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out int value) && value > 0
+                && value.ToString(CultureInfo.InvariantCulture) == digits) used.Add(value);
+        }
         int i = 1;
-        while (identifiers.Any(n => n.StartsWith("wn" + i.ToString(CultureInfo.InvariantCulture) + "_", StringComparison.Ordinal))) i++;
+        while (used.Contains(i)) { context.CheckCancellation(); i = checked(i + 1); }
         return "wn" + i.ToString(CultureInfo.InvariantCulture) + "_";
     }
-    private static IEnumerable<TemplateControl> TemplateControls(DocumentModel model)
+    internal static IEnumerable<TemplateControl> TemplateControls(DocumentModel model)
     {
         foreach (DocumentBlock block in DocumentModel.Expand(model.AllBlocks).Distinct())
         {
             if (block.Control != null) yield return block.Control;
-            if (block.NestedControl != null) yield return block.NestedControl;
+            if (block.NestedControl != null) foreach (TemplateControl nested in block.NestedControls) yield return nested;
             if (block is TableBlock table) foreach (TemplateControl control in table.RowControls.Values) yield return control;
             if (block is ParagraphBlock paragraph) foreach (TextRun run in paragraph.Runs) if (run.Control != null) yield return run.Control;
         }
@@ -146,6 +161,7 @@ public sealed partial class WordDocument
         {
             paragraph.Identity = Guid.NewGuid();
             if (paragraph.StructuralRevision != null) paragraph.StructuralRevision = prefix + "r" + paragraph.StructuralRevision;
+            if (paragraph.ParagraphFormatRevision != null) paragraph.ParagraphFormatRevision = prefix + "r" + paragraph.ParagraphFormatRevision;
             if (paragraph.List != null && isolateCounters) paragraph.List.Id = prefix + paragraph.List.Id;
             for (int i = 0; i < paragraph.Runs.Count; i++)
             {
@@ -173,6 +189,8 @@ public sealed partial class WordDocument
                 {
                     ControlDisplay = r.ControlDisplay,
                     ControlGlyph = r.ControlGlyph,
+                    TypedControlId = r.TypedControlId,
+                    BidiLevel = r.BidiLevel,
                     FieldChildren = r.FieldChildren,
                     FieldCache = cache,
                     Revision = r.Revision == null ? null : prefix + "r" + r.Revision,
