@@ -101,6 +101,9 @@ subject to the source reader's security and resource diagnostics. Unreleased sou
 reports `Fragment.CachedFields` when a
 caller explicitly opts in to retained field results that can be stale; unresolved
 or unsupported source references still fail.
+Pending body cross-tab placement uses `Report.CrossTabPlaceholder` for an unsafe
+or enclosed bookmark and `Report.CrossTabReference` for a link or field targeting
+the placeholder. The operation rejects before committing the document.
 Pending typed-fragment boundaries use `Fragment.ControlOwner`,
 `Fragment.ControlResources`, `Fragment.ControlDateMode` and `Control.Restyle` for
 unqualified destinations, conflicting glossary resources, date policies and restyling.

@@ -3,6 +3,26 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "crosstab-body-bookmark",
+      "issue": 158,
+      "outcome": "supported-bounded",
+      "boundary": "A dedicated plain body bookmark can be replaced with an editable prepared cross-tab, preserving the surrounding blocks and section while checking its column width and repeating header.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "BodyBookmarkCrossTabKeepsSurroundingsOrderAndEditableTotals" },
+        { "class": "EditingTemplateTests", "method": "BodyCrossTabRepeatsItsHeaderAcrossPagesWithoutLosingRows" },
+        { "class": "EditingTemplateTests", "method": "BodyCrossTabUsesThePlaceholderSectionWidth" }
+      ]
+    },
+    {
+      "id": "crosstab-protected-placement",
+      "issue": 158,
+      "outcome": "rejected",
+      "boundary": "Partial, enclosed or cell bookmarks, references to the placeholder, reentrant data and cancellation do not commit a table.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "BodyCrossTabRejectsUnsafePlaceholdersReferencesAndReentrantData" }
+      ]
+    },
+    {
       "id": "typed-control-fragment-body-cell",
       "issue": 147,
       "outcome": "supported-bounded",

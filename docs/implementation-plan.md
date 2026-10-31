@@ -66,6 +66,8 @@ with independent identities and subsequent editing in body and simple-cell desti
 Mixed control/object fragments require separate paragraph owners. Admitted local
 glossary resources can be copied when their kinds do not conflict; broader resource
 merging and combination evidence remain open.
+Pending #158 adds bounded [body-bookmark cross-tab placement](editing-and-templates.md#unreleased-source-cross-tab-placement).
+Cell placement, deeper report regions and full acceptance remain open.
 Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
 cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
 and remaining acceptance/runtime qualification are separate from published 1.5.0.

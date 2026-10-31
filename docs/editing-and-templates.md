@@ -63,6 +63,23 @@ a table that does not fit fails with
 `Report.CrossTabLayout` instead of shrinking or dropping data. This conservative
 test can reject tables that a more sophisticated layout might fit.
 
+### Unreleased source: cross-tab placement
+
+Pending #158 adds `InsertCrossTabAtBookmark(name, records, aggregation,
+includeTotals, token)`. It replaces one dedicated plain body bookmark paragraph
+with an editable table while retaining surrounding blocks and the target section.
+It uses the same ordering, decimal, count, totals and resource rules as `AddCrossTab`,
+and checks the target section's actual column width before committing. The first
+row is an editable repeating table header where the ordinary body-table layout
+supports pagination.
+
+The bookmark must own its entire unwrapped paragraph and cannot be a list item,
+heading, code block or paragraph with keep/page-break behavior, or be enclosed by
+another bookmark. Crossing body ranges and links or REF/PAGEREF
+fields to the placeholder reject before data enumeration. Cell destinations,
+repeat-region insertion, horizontal tiling and deeper report nesting remain open
+in #158 and #157; no table is shrunk or silently truncated to fit.
+
 `InsertFragmentAtBookmark(name, fragment, token)` replaces a dedicated plain
 body bookmark paragraph with a private copy of a separately loaded DOCX or safe
 HTML session. Callers load sources explicitly; streams remain theirs. Source

@@ -26,6 +26,10 @@ profiles, including mixed fragments with separate owners and bounded local gloss
 copying, without adding signatures.
 Protected-owner and resource failures remain explicit.
 
+Pending #158 adds `WordDocument.InsertCrossTabAtBookmark` on all target
+frameworks. It uses the existing prepared-record and aggregation types; the
+released append API is unchanged.
+
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)

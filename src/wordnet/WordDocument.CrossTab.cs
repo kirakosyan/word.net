@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UglyToad.PdfPig.Core;
 using UglyToad.PdfPig.Fonts.TrueType;
@@ -46,11 +47,79 @@ public sealed partial class WordDocument
     /// Empty input produces a header-only table. Font-measured widths must fit the body column.</remarks>
     public void AddCrossTab(IEnumerable<CrossTabRecord> records, CrossTabAggregation aggregation = CrossTabAggregation.Sum,
         bool includeTotals = false, CancellationToken cancellationToken = default)
+        => _ = CrossTabAt(null, records, aggregation, includeTotals, cancellationToken);
+
+    /// <summary>Replaces a dedicated body bookmark paragraph with a bounded editable cross-tab.</summary>
+    /// <remarks>The bookmark must enclose the entire unprotected plain-text body paragraph; references to it must be resolved first.
+    /// Rows retain first-seen order, repeat the header where supported and use the target section's available column width.</remarks>
+    public DocumentEditResult InsertCrossTabAtBookmark(string name, IEnumerable<CrossTabRecord> records,
+        CrossTabAggregation aggregation = CrossTabAggregation.Sum, bool includeTotals = false, CancellationToken cancellationToken = default)
+    {
+        ValidateBookmarkName(name);
+        return CrossTabAt(name, records, aggregation, includeTotals, cancellationToken);
+    }
+
+    private DocumentEditResult CrossTabAt(string? bookmark, IEnumerable<CrossTabRecord> records, CrossTabAggregation aggregation,
+        bool includeTotals, CancellationToken cancellationToken)
     {
         Guard.NotNull(records, nameof(records));
         if (aggregation is not CrossTabAggregation.Sum and not CrossTabAggregation.Count) throw new ArgumentOutOfRangeException(nameof(aggregation));
-        _ = Edit((m, c) =>
+        return Edit((m, c) =>
         {
+            int destinationIndex = -1; ParagraphBlock? placeholder = null;
+            if (bookmark != null)
+            {
+                ValidateRanges(m);
+                for (int i = 0; i < m.Blocks.Count; i++)
+                {
+                    c.CheckCancellation();
+                    if (m.Blocks[i] is not ParagraphBlock candidate || !candidate.Runs.Any(run => run.Bookmark == bookmark)) continue;
+                    if (placeholder != null) throw new InvalidDataException("Report.CrossTabPlaceholder: A unique body bookmark is required.");
+                    placeholder = candidate; destinationIndex = i;
+                }
+                if (placeholder == null || placeholder.Control != null || placeholder.NestedControl != null || placeholder.TypedControlId.HasValue
+                    || placeholder.List != null || placeholder.HeadingLevel != 0 || placeholder.IsCodeBlock
+                    || placeholder.Layout.PageBreakBefore || placeholder.Layout.KeepTogether || placeholder.Layout.KeepWithNext)
+                    throw new InvalidDataException("Report.CrossTabPlaceholder: A unique unwrapped body bookmark paragraph is required.");
+                int start = placeholder.Runs.FindIndex(run => run.Bookmark == bookmark), end = placeholder.Runs.FindIndex(run => run.Bookmark == "/" + bookmark);
+                if (start != 0 || end != placeholder.Runs.Count - 1 || end <= start || placeholder.Runs.Any(run => run.TypedControlId.HasValue)
+                    || placeholder.Runs.Skip(1).Take(end - 1).Any(run => run.Bookmark != null || run.Control != null || run.Note != null || run.Image != null
+                        || run.FieldInstruction != null || run.Link != null || run.Box != null || run.Object != null))
+                    throw new NotSupportedException("Report.CrossTabPlaceholder: The bookmark must own the complete plain-text paragraph.");
+                var open = new Stack<string>(); long boundaryWork = 0;
+                foreach (TextRun run in m.BodyParagraphs.SelectMany(p => p.Runs))
+                {
+                    c.CheckCancellation(); if (++boundaryWork > Math.Max(4096L, c.Options.MaximumCharacters * 64L)) throw new InvalidDataException("Limit.FragmentWork: Bookmark traversal exceeds the work bound.");
+                    if (run.Bookmark is not string marker) continue;
+                    if (marker == bookmark && open.Count != 0) throw new NotSupportedException("Report.CrossTabPlaceholder: The placeholder cannot be enclosed by another bookmark range.");
+                    if (Starts(marker, '/'))
+                    {
+                        if (open.Count == 0 || open.Pop() != marker.Substring(1)) throw new NotSupportedException("Report.CrossTabPlaceholder: Crossing bookmark ranges are unsupported.");
+                    }
+                    else
+                    {
+                        if (open.Count >= c.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Bookmark nesting exceeds the configured bound.");
+                        open.Push(marker);
+                    }
+                }
+                if (open.Count != 0) throw new InvalidDataException("Report.CrossTabPlaceholder: An incomplete body bookmark range was found.");
+                var pending = new Stack<TextRun>(m.Paragraphs.SelectMany(p => p.Runs)); long work = 0;
+                while (pending.Count != 0)
+                {
+                    c.CheckCancellation(); if (++work > Math.Max(4096L, c.Options.MaximumCharacters * 64L)) throw new InvalidDataException("Limit.FragmentWork: Reference traversal exceeds the work bound.");
+                    TextRun run = pending.Pop();
+                    if (run.Link != null && Starts(run.Link, '#') && string.Equals(run.Link.Substring(1), bookmark, StringComparison.OrdinalIgnoreCase))
+                        throw new NotSupportedException("Report.CrossTabReference: Resolve links to the placeholder before replacement.");
+                    if (run.FieldInstruction != null)
+                    {
+                        Match reference = Regex.Match(run.FieldInstruction, "^\\s*(REF|PAGEREF)\\s+(?:\"([^\"]+)\"|(\\S+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
+                        if (reference.Success && string.Equals(reference.Groups[2].Success ? reference.Groups[2].Value : reference.Groups[3].Value, bookmark, StringComparison.OrdinalIgnoreCase))
+                            throw new NotSupportedException("Report.CrossTabReference: Resolve fields referring to the placeholder before replacement.");
+                    }
+                    if (run.FieldChildren != null) foreach (TextRun child in run.FieldChildren.Values) pending.Push(child);
+                    if (run.FieldCache != null) foreach (TextRun child in run.FieldCache) pending.Push(child);
+                }
+            }
             var rows = new List<string>(); var columns = new List<string>();
             var rowKeys = new HashSet<string>(StringComparer.Ordinal); var columnKeys = new HashSet<string>(StringComparer.Ordinal);
             var values = new Dictionary<(string Row, string Column), decimal>(); int inputs = 0, scale = 0; long inputCharacters = 0;
@@ -95,8 +164,10 @@ public sealed partial class WordDocument
             long characters = content.Sum(row => row.Sum(value => (long)value.Length));
             if (characters > c.Options.MaximumCharacters || characters * 2 + (long)content.Count * content[0].Count * 128 > c.Options.MaximumExpandedBytes)
                 throw new InvalidDataException("Limit.CrossTabCells: Cross-tab output exceeds aggregate resource limits.");
-            PageSettings section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section ?? new PageSettings();
-            TableBlock table = BuildSimpleTable(content, m.FinalSection ?? m.Blocks.LastOrDefault()?.Section, true, c);
+            PageSettings? tableSection = placeholder == null ? m.FinalSection ?? m.Blocks.LastOrDefault()?.Section : placeholder.Section;
+            PageSettings section = tableSection ?? new PageSettings();
+            TableBlock table = BuildSimpleTable(content, tableSection, true, c);
+            if (placeholder != null) table.Location = placeholder.Location;
             ApplyDefaultTableStyle(m, table);
             PageSettings? destinationSection = table.Section; table.Section = null;
             var preview = new DocumentModel(); preview.Blocks.Add(table); var resolver = new FontResolver(preview, c);
@@ -122,7 +193,9 @@ public sealed partial class WordDocument
             if (widths.Sum() > Enumerable.Range(0, section.Columns).Min(section.ColumnWidth)) throw new NotSupportedException("Report.CrossTabLayout: The cross-tab cannot fit without shrinking or truncation.");
             table.Section = destinationSection; table.Width = widths.Sum(); table.AutoFit = false; table.LayoutExplicit = true;
             table.ColumnWidths.AddRange(widths);
-            m.Blocks.Add(table); return 1;
+            if (placeholder == null) m.Blocks.Add(table);
+            else { m.Blocks[destinationIndex] = table; ValidateRanges(m); }
+            return 1;
         }, cancellationToken, objectAware: true);
     }
 }

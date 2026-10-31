@@ -177,6 +177,12 @@ inspection, cultures, graph failures, atomic caches and report/edit refresh. The
 independent probe's percentage-picture limitations are recorded with the fixture;
 it does not qualify a public package or untested runtime.
 
+Pending #158 body-bookmark cross-tab tests check editable grid and totals,
+surrounding text, multi-page header repetition, the destination section's width,
+unsafe references, nesting, reentrancy and cancellation. The [independent reference](measurements/roadmap-138-crosstab-placement-reference.json)
+checks hand-calculated cells and LibreOffice text and geometry. It does not qualify
+cell destinations, repeat-region insertion or unrestricted report nesting.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection
