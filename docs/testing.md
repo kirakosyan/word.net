@@ -195,6 +195,13 @@ cell destinations, repeat-region insertion or unrestricted report nesting.
 The [exact-source receipt](measurements/roadmap-138-crosstab-placement-c0c31aa.json)
 records the complete local suites, package checks and reproduced reference document.
 
+The separate pending #158 cell profile checks fixed and inherited explicit
+margins, surrounding content, multi-page values, missing or ambiguous margins,
+unsafe owners and atomic cancellation. Its [independent comparison](measurements/roadmap-138-crosstab-cell-reference.json)
+retains the implicit-margin mismatch and checks the qualified explicit-margin
+DOCX, PDF text and selected column origins against LibreOffice. Nested header
+repetition and broader cell ownership remain unqualified.
+
 Pending #151 native merged-table tests exercise Hindi clusters, horizontal and
 vertical cells, repeated headers, pagination and atomic rejection. The independent
 [reference observation](measurements/roadmap-138-native-merged-reference.json)

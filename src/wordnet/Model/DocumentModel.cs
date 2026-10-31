@@ -515,6 +515,10 @@ internal sealed class RunAppearance
 
 internal sealed class CellPadding
 {
+    // Tracks which sides were explicitly read or inherited from the source.
+    // A value is not evidence that an omitted source margin was zero.
+    internal int SourceSides { get; set; }
+    internal bool SourceAmbiguous { get; set; }
     internal double Top { get; set; }
     internal double Right { get; set; }
     internal double Bottom { get; set; }

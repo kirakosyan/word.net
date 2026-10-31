@@ -524,16 +524,20 @@ internal sealed partial class DocxReader
     {
         if (source == null) return inherited;
         CellPadding result = inherited?.Copy() ?? new CellPadding();
+        int seen = 0;
         foreach (XElement side in source.Elements())
         {
-            if ((string?)side.Attribute(W + "type") != "dxa") { context.Loss("Docx.CellPadding", "Only absolute cell margins are supported."); continue; }
+            if ((string?)side.Attribute(W + "type") != "dxa") { result.SourceAmbiguous = true; context.Loss("Docx.CellPadding", "Only absolute cell margins are supported."); continue; }
             double value = Integer(side, W + "w", 0, 31680) / 20.0;
+            int bit = side.Name.LocalName switch { "top" => 1, "right" or "end" => 2, "bottom" => 4, "left" or "start" => 8, _ => 0 };
+            if (bit == 0 || (seen & bit) != 0 || side.Name.Namespace != W || side.Name.LocalName is "start" or "end") result.SourceAmbiguous = true;
+            seen |= bit;
             switch (side.Name.LocalName)
             {
-                case "top": result.Top = value; break;
-                case "bottom": result.Bottom = value; break;
-                case "left": case "start": result.Left = value; break;
-                case "right": case "end": result.Right = value; break;
+                case "top": result.Top = value; result.SourceSides |= 1; break;
+                case "right": case "end": result.Right = value; result.SourceSides |= 2; break;
+                case "bottom": result.Bottom = value; result.SourceSides |= 4; break;
+                case "left": case "start": result.Left = value; result.SourceSides |= 8; break;
                 default: context.Loss("Docx.CellPadding", "Unknown cell margin side is omitted."); break;
             }
         }

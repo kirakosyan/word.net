@@ -47,7 +47,7 @@ public sealed partial class WordDocument
     /// Empty input produces a header-only table. Font-measured widths must fit the body column.</remarks>
     public void AddCrossTab(IEnumerable<CrossTabRecord> records, CrossTabAggregation aggregation = CrossTabAggregation.Sum,
         bool includeTotals = false, CancellationToken cancellationToken = default)
-        => _ = CrossTabAt(null, records, aggregation, includeTotals, cancellationToken);
+        => _ = CrossTabAt(null, records, aggregation, includeTotals, false, cancellationToken);
 
     /// <summary>Replaces a dedicated body bookmark paragraph with a bounded editable cross-tab.</summary>
     /// <remarks>The bookmark must enclose the entire unprotected plain-text body paragraph; references to it must be resolved first.
@@ -56,21 +56,55 @@ public sealed partial class WordDocument
         CrossTabAggregation aggregation = CrossTabAggregation.Sum, bool includeTotals = false, CancellationToken cancellationToken = default)
     {
         ValidateBookmarkName(name);
-        return CrossTabAt(name, records, aggregation, includeTotals, cancellationToken);
+        return CrossTabAt(name, records, aggregation, includeTotals, false, cancellationToken);
+    }
+
+    /// <summary>Replaces a dedicated bookmark paragraph in a fixed-grid body-table cell with a bounded editable cross-tab.</summary>
+    /// <remarks>The cell and its table must have unambiguous fixed geometry, all four physical margins explicitly present or inherited in the DOCX/DOTX source,
+    /// and no protected owners;
+    /// references to the bookmark must be resolved first.
+    /// Nested-table headers are retained once and do not repeat across pages.</remarks>
+    public DocumentEditResult InsertCrossTabAtCellBookmark(string name, IEnumerable<CrossTabRecord> records,
+        CrossTabAggregation aggregation = CrossTabAggregation.Sum, bool includeTotals = false, CancellationToken cancellationToken = default)
+    {
+        ValidateBookmarkName(name);
+        return CrossTabAt(name, records, aggregation, includeTotals, true, cancellationToken);
     }
 
     private DocumentEditResult CrossTabAt(string? bookmark, IEnumerable<CrossTabRecord> records, CrossTabAggregation aggregation,
-        bool includeTotals, CancellationToken cancellationToken)
+        bool includeTotals, bool cellDestination, CancellationToken cancellationToken)
     {
         Guard.NotNull(records, nameof(records));
         if (aggregation is not CrossTabAggregation.Sum and not CrossTabAggregation.Count) throw new ArgumentOutOfRangeException(nameof(aggregation));
         return Edit((m, c) =>
         {
-            int destinationIndex = -1; ParagraphBlock? placeholder = null;
+            int destinationIndex = -1; ParagraphBlock? placeholder = null; TableBlock? ownerTable = null; TableCell? ownerCell = null;
+            int ownerRow = -1, ownerColumn = -1;
             if (bookmark != null)
             {
                 ValidateRanges(m);
-                for (int i = 0; i < m.Blocks.Count; i++)
+                long ownerWork = 0;
+                if (cellDestination)
+                {
+                    foreach (TableBlock candidateTable in m.Blocks.OfType<TableBlock>())
+                        for (int row = 0; row < candidateTable.Rows.Count; row++)
+                            for (int column = 0; column < candidateTable.Rows[row].Count; column++)
+                            {
+                                ReserveOwnerWork();
+                                TableCell cell = candidateTable.Rows[row][column]; int index = 0;
+                                foreach (DocumentBlock block in cell.Blocks)
+                                {
+                                    ReserveOwnerWork();
+                                    if (block is ParagraphBlock candidate && candidate.Runs.Any(run => run.Bookmark == bookmark))
+                                    {
+                                        if (placeholder != null) throw new InvalidDataException("Report.CrossTabPlaceholder: A unique cell bookmark is required.");
+                                        placeholder = candidate; destinationIndex = index; ownerTable = candidateTable; ownerCell = cell; ownerRow = row; ownerColumn = column;
+                                    }
+                                    index++;
+                                }
+                            }
+                }
+                else for (int i = 0; i < m.Blocks.Count; i++)
                 {
                     c.CheckCancellation();
                     if (m.Blocks[i] is not ParagraphBlock candidate || !candidate.Runs.Any(run => run.Bookmark == bookmark)) continue;
@@ -80,7 +114,9 @@ public sealed partial class WordDocument
                 if (placeholder == null || placeholder.Control != null || placeholder.NestedControl != null || placeholder.TypedControlId.HasValue
                     || placeholder.List != null || placeholder.HeadingLevel != 0 || placeholder.IsCodeBlock
                     || placeholder.Layout.PageBreakBefore || placeholder.Layout.KeepTogether || placeholder.Layout.KeepWithNext)
-                    throw new InvalidDataException("Report.CrossTabPlaceholder: A unique unwrapped body bookmark paragraph is required.");
+                    throw new InvalidDataException("Report.CrossTabPlaceholder: A unique unwrapped bookmark paragraph in the selected owner is required.");
+                if (cellDestination && (ownerTable == null || ownerCell == null || !AdmittedCrossTabCell(ownerTable, ownerRow, ownerColumn, ReserveOwnerWork)))
+                    throw new NotSupportedException("Report.CrossTabCell: The destination requires an unprotected fixed-grid body-table cell.");
                 int start = placeholder.Runs.FindIndex(run => run.Bookmark == bookmark), end = placeholder.Runs.FindIndex(run => run.Bookmark == "/" + bookmark);
                 if (start != 0 || end != placeholder.Runs.Count - 1 || end <= start || placeholder.Runs.Any(run => run.TypedControlId.HasValue)
                     || placeholder.Runs.Skip(1).Take(end - 1).Any(run => run.Bookmark != null || run.Control != null || run.Note != null || run.Image != null
@@ -118,6 +154,13 @@ public sealed partial class WordDocument
                     }
                     if (run.FieldChildren != null) foreach (TextRun child in run.FieldChildren.Values) pending.Push(child);
                     if (run.FieldCache != null) foreach (TextRun child in run.FieldCache) pending.Push(child);
+                }
+
+                void ReserveOwnerWork()
+                {
+                    c.CheckCancellation();
+                    if (++ownerWork > Math.Max(4096L, c.Options.MaximumCharacters * 64L))
+                        throw new InvalidDataException("Limit.FragmentWork: Owner traversal exceeds the work bound.");
                 }
             }
             var rows = new List<string>(); var columns = new List<string>();
@@ -164,9 +207,21 @@ public sealed partial class WordDocument
             long characters = content.Sum(row => row.Sum(value => (long)value.Length));
             if (characters > c.Options.MaximumCharacters || characters * 2 + (long)content.Count * content[0].Count * 128 > c.Options.MaximumExpandedBytes)
                 throw new InvalidDataException("Limit.CrossTabCells: Cross-tab output exceeds aggregate resource limits.");
-            PageSettings? tableSection = placeholder == null ? m.FinalSection ?? m.Blocks.LastOrDefault()?.Section : placeholder.Section;
+            PageSettings? tableSection = placeholder == null ? m.FinalSection ?? m.Blocks.LastOrDefault()?.Section : cellDestination ? ownerTable!.Section : placeholder.Section;
             PageSettings section = tableSection ?? new PageSettings();
-            TableBlock table = BuildSimpleTable(content, tableSection, true, c);
+            double available = Enumerable.Range(0, section.Columns).Min(section.ColumnWidth);
+            if (cellDestination)
+            {
+                double gridWidth = ownerTable!.ColumnWidths.Sum();
+                if (ownerTable.LeftIndent < 0 || gridWidth + ownerTable.LeftIndent > available + 0.01)
+                    throw new NotSupportedException("Report.CrossTabCell: The fixed outer table must fit the containing section column.");
+                CellPadding padding = ownerCell!.Padding!;
+                available = ownerTable.ColumnWidths[ownerColumn] - padding.Left - padding.Right;
+                if (available <= 0) throw new NotSupportedException("Report.CrossTabCell: Cell margins leave no usable width.");
+            }
+            TableBlock table = BuildSimpleTable(content, cellDestination ? null : tableSection, !cellDestination, c);
+            if (cellDestination)
+                foreach (TableCell cell in table.Rows.SelectMany(row => row)) cell.Padding = new CellPadding { Right = 12, SourceSides = 15 };
             if (placeholder != null) table.Location = placeholder.Location;
             ApplyDefaultTableStyle(m, table);
             PageSettings? destinationSection = table.Section; table.Section = null;
@@ -190,12 +245,44 @@ public sealed partial class WordDocument
                 cache[value] = max; return max;
             }
             var widths = Enumerable.Range(0, content[0].Count).Select(index => 14d + content.Max(row => Width(row[index])) * 1.1d).ToArray();
-            if (widths.Sum() > Enumerable.Range(0, section.Columns).Min(section.ColumnWidth)) throw new NotSupportedException("Report.CrossTabLayout: The cross-tab cannot fit without shrinking or truncation.");
+            if (widths.Sum() > available) throw new NotSupportedException("Report.CrossTabLayout: The cross-tab cannot fit without shrinking or truncation.");
             table.Section = destinationSection; table.Width = widths.Sum(); table.AutoFit = false; table.LayoutExplicit = true;
             table.ColumnWidths.AddRange(widths);
             if (placeholder == null) m.Blocks.Add(table);
-            else { m.Blocks[destinationIndex] = table; ValidateRanges(m); }
+            else if (!cellDestination) { m.Blocks[destinationIndex] = table; ValidateRanges(m); }
+            else
+            {
+                if (ownerCell!.Content.Count == 0) ownerCell.Content.AddRange(ownerCell.Paragraphs);
+                ownerCell.Content[destinationIndex] = table;
+                if (ownerCell.Content[ownerCell.Content.Count - 1] is not ParagraphBlock) ownerCell.Content.Add(new ParagraphBlock());
+                ownerCell.Paragraphs.Clear(); ownerCell.Paragraphs.AddRange(DocumentModel.CellParagraphs(ownerCell.Content));
+                ValidateRanges(m);
+            }
             return 1;
         }, cancellationToken, objectAware: true);
+    }
+
+    private static bool AdmittedCrossTabCell(TableBlock table, int row, int column, Action reserveWork)
+    {
+        if (table.Control != null || table.NestedControl != null || table.TypedControlId.HasValue || table.RowControls.Count != 0
+            || table.TypedRowControls.Count != 0 || table.RowRevisions.Count != 0 || table.HeaderRowCount > row || table.NonSplittingRows.Contains(row)
+            || table.RowHeights.TryGetValue(row, out var height) && height.Exact || table.AutoFit || table.ManagedImplicitAutoFit || !table.LayoutExplicit
+            || table.WidthPercent.HasValue || table.ColumnWidths.Count == 0 || column < 0 || column >= table.ColumnWidths.Count
+            || table.Rows[row][column].Padding?.SourceSides != 15 || table.Rows[row][column].Padding!.SourceAmbiguous
+            || table.ColumnWidths.Any(width => double.IsNaN(width) || double.IsInfinity(width) || width <= 0)) return false;
+        foreach (List<TableCell> cells in table.Rows)
+        {
+            reserveWork();
+            if (cells.Count != table.ColumnWidths.Count) return false;
+            for (int index = 0; index < cells.Count; index++)
+            {
+                reserveWork();
+                TableCell cell = cells[index];
+                if (cell.TypedControlId.HasValue || cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None || cell.WidthPercent.HasValue
+                    || cell.CellWidth.HasValue && Math.Abs(cell.CellWidth.Value - table.ColumnWidths[index]) > 0.01
+                    || cell.Blocks.Any(block => block is TableBlock)) return false;
+            }
+        }
+        return true;
     }
 }

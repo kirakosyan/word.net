@@ -3,6 +3,28 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "crosstab-fixed-cell-bookmark",
+      "issue": 158,
+      "outcome": "supported-bounded",
+      "boundary": "A dedicated bookmark in an unprotected fixed-grid body cell with complete physical margins can become an editable prepared cross-tab; its nested header does not repeat.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellBookmarkCrossTabRetainsCellGeometryAndSurroundingContent" },
+        { "class": "EditingTemplateTests", "method": "CellCrossTabKeepsAllRowsAcrossPagesAndDoesNotRepeatNestedHeader" },
+        { "class": "EditingTemplateTests", "method": "EmptyCellCrossTabKeepsTheRequiredTrailingParagraph" },
+        { "class": "EditingTemplateTests", "method": "CellCrossTabUsesCompleteInheritedMarginsAndCancelsDuringEnumeration" }
+      ]
+    },
+    {
+      "id": "crosstab-unqualified-cell",
+      "issue": 158,
+      "outcome": "rejected",
+      "boundary": "Implicit, partial or ambiguous margins, non-fixed or protected table geometry, unsafe references, overflow and cancellation fail without committing.",
+      "tests": [
+        { "class": "EditingTemplateTests", "method": "CellCrossTabRejectsAmbiguousGeometryBeforeReadingRecords" },
+        { "class": "EditingTemplateTests", "method": "CellCrossTabRejectsOverflowReferencesAndCancellationAtomically" }
+      ]
+    },
+    {
       "id": "deep-mixed-body-regions",
       "issue": 157,
       "outcome": "supported-bounded",

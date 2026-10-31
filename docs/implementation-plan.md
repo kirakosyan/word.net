@@ -68,8 +68,9 @@ with independent identities and subsequent editing in body and simple-cell desti
 Mixed control/object fragments require separate paragraph owners. Admitted local
 glossary resources can be copied when their kinds do not conflict; broader resource
 merging and combination evidence remain open.
-Pending #158 adds bounded [body-bookmark cross-tab placement](editing-and-templates.md#unreleased-source-cross-tab-placement).
-Cell placement, repeat-region cross-tab placement and full acceptance remain open.
+Pending #158 adds bounded [body and fixed-grid cell bookmark placement](editing-and-templates.md#unreleased-source-cross-tab-placement).
+Other cell geometry, nested header repetition, repeat-region placement and full
+acceptance remain open.
 Pending #157 adds [bounded deeper mixed body regions](editing-and-templates.md#unreleased-source-deeper-mixed-report-regions)
 with aggregate work and per-boundary reference checks. Other owners, broader
 combinations and exact-runtime/integrated qualification remain open.

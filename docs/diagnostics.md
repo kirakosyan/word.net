@@ -103,7 +103,9 @@ caller explicitly opts in to retained field results that can be stale; unresolve
 or unsupported source references still fail.
 Pending body cross-tab placement uses `Report.CrossTabPlaceholder` for an unsafe
 or enclosed bookmark and `Report.CrossTabReference` for a link or field targeting
-the placeholder. The operation rejects before committing the document.
+the placeholder. Pending cell placement also rejects unsupported or ambiguous
+outer geometry with `Report.CrossTabCell` and non-fitting output with
+`Report.CrossTabLayout`. The operation rejects before committing the document.
 Pending typed-fragment boundaries use `Fragment.ControlOwner`,
 `Fragment.ControlResources`, `Fragment.ControlDateMode` and `Control.Restyle` for
 unqualified destinations, conflicting glossary resources, date policies and restyling.

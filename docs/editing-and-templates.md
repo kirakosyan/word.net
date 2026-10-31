@@ -97,9 +97,30 @@ supports pagination.
 The bookmark must own its entire unwrapped paragraph and cannot be a list item,
 heading, code block or paragraph with keep/page-break behavior, or be enclosed by
 another bookmark. Crossing body ranges and links or REF/PAGEREF
-fields to the placeholder reject before data enumeration. Cell destinations,
+fields to the placeholder reject before data enumeration. Other cell destinations,
 repeat-region insertion and horizontal tiling remain open in #158; no table is
 shrunk or silently truncated to fit.
+
+`InsertCrossTabAtCellBookmark(name, records, aggregation, includeTotals, token)`
+adds a separate, narrower cell destination. The target must be a dedicated plain
+bookmark paragraph in an ordinary top-level body table with an explicit fixed grid;
+any specified cell widths must match that grid. It requires no merges or nested
+tables, and no protected row,
+table or cell owners. The target row cannot be a repeating header, an exact-height
+row or a non-splitting row. All four physical cell margins (`top`, `right`,
+`bottom`, `left`) must be explicit on the cell or inherited from the table in
+the loaded DOCX/DOTX;
+implicit, partial, duplicate or direction-dependent margins reject. The containing
+table must fit its section column, and the cross-tab must fit the cell's usable
+width. Caller values, limits, reference checks and atomicity match body placement.
+
+The nested table's first row is ordinary content, not a repeating header; its
+values can flow across pages within the parent row. A trailing empty paragraph is
+added when required by DOCX cell structure. Other cell geometry, nested header
+repetition, named report-region placement and broader #158 acceptance remain open.
+An [independent comparison](measurements/roadmap-138-crosstab-cell-reference.json)
+records a retained implicit-margin difference and the qualified explicit-margin
+case; it is not a general Word layout guarantee.
 
 `InsertFragmentAtBookmark(name, fragment, token)` replaces a dedicated plain
 body bookmark paragraph with a private copy of a separately loaded DOCX or safe

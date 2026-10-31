@@ -26,9 +26,10 @@ profiles, including mixed fragments with separate owners and bounded local gloss
 copying, without adding signatures.
 Protected-owner and resource failures remain explicit.
 
-Pending #158 adds `WordDocument.InsertCrossTabAtBookmark` on all target
-frameworks. It uses the existing prepared-record and aggregation types; the
-released append API is unchanged.
+Pending #158 adds `WordDocument.InsertCrossTabAtBookmark` and
+`WordDocument.InsertCrossTabAtCellBookmark` on all target frameworks. They use
+the existing prepared-record and aggregation types; the released append API is
+unchanged. Cell placement requires fixed geometry and explicit physical margins.
 
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.

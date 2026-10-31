@@ -86,7 +86,10 @@ Pending #157 generalizes those body repeat owners to an ordered, bounded chain;
 the reader, writer and cloner preserve that chain, and every repeat boundary is
 checked before expansion. This does not expand typed-control or row-repeat
 ownership, and the published 1.5.0 profile remains unchanged.
-Cross-tabs build bounded simple tables with a conservative fit check; fragment
+Cross-tabs build bounded simple tables with a conservative fit check; pending
+cell placement admits only fixed grids with four unambiguous physical margins and
+emits explicit nested-cell margins, so width admission does not guess defaults.
+Nested headers are retained once. Fragment
 insertion snapshots a separate admitted session, remaps metadata and commits a
 dedicated bookmark replacement atomically. See the
 [source profile](editing-and-templates.md#mixed-report-regions--merged-source).
