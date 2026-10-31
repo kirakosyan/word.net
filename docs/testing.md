@@ -217,6 +217,8 @@ invariant scalar expressions, editable field retention, aggregate bounds and
 atomic rejection. The [independent reference](measurements/roadmap-138-native-fields-reference.json)
 records the Hindi vertical and Arabic text-extraction failures at unchanged
 tolerances; both are explicit losses and Strict rejects them.
+The [exact-source receipt](measurements/roadmap-138-native-fields-bc157ce.json)
+records the complete local suites, package checks and reproduced specimens.
 
 Pending #167 preview-layout tests check opt-in text privacy, selected pages,
 immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
