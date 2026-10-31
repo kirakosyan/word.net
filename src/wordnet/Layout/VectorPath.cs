@@ -20,6 +20,37 @@ internal static class VectorPath
         void Line(double a, double b) => result.Add(new Command('L', a, b));
         void Curve(double a, double b, double c, double d, double e, double f) => result.Add(new Command('C', a, b, c, d, e, f));
         if (shape.Geometry == "line") { Move(x, y); Line(x + w, y + h); return result; }
+        if (shape.Geometry == "sector")
+        {
+            double cx = x + w / 2, cy = y + h / 2, rx = w / 2, ry = h / 2;
+            double start = shape.SectorStart, sweep = shape.SectorSweep;
+            if (double.IsNaN(start) || double.IsInfinity(start) || double.IsNaN(sweep) || double.IsInfinity(sweep)
+                || sweep <= 0 || sweep > 2 * Math.PI + 1e-10 || double.IsNaN(shape.SectorHole) || double.IsInfinity(shape.SectorHole) || shape.SectorHole < 0 || shape.SectorHole >= 1)
+                throw new InvalidOperationException("Chart.Sector: Invalid bounded sector geometry.");
+            void Arc(double radius, double begin, double delta)
+            {
+                int count = Math.Max(1, (int)Math.Ceiling(Math.Abs(delta) / (Math.PI / 2)));
+                double step = delta / count;
+                for (int i = 0; i < count; i++)
+                {
+                    double a = begin + i * step, b = a + step, kappa = 4d / 3 * Math.Tan(step / 4);
+                    double ax = cx + radius * rx * Math.Cos(a), ay = cy + radius * ry * Math.Sin(a);
+                    double bx = cx + radius * rx * Math.Cos(b), by = cy + radius * ry * Math.Sin(b);
+                    Curve(ax - kappa * radius * rx * Math.Sin(a), ay + kappa * radius * ry * Math.Cos(a),
+                        bx + kappa * radius * rx * Math.Sin(b), by - kappa * radius * ry * Math.Cos(b), bx, by);
+                }
+            }
+            Move(cx + rx * Math.Cos(start), cy + ry * Math.Sin(start));
+            Arc(1, start, sweep);
+            if (shape.SectorHole == 0) Line(cx, cy);
+            else
+            {
+                double end = start + sweep;
+                Line(cx + shape.SectorHole * rx * Math.Cos(end), cy + shape.SectorHole * ry * Math.Sin(end));
+                Arc(shape.SectorHole, end, -sweep);
+            }
+            result.Add(new Command('Z')); return result;
+        }
         const double k = 0.5522847498307936;
         if (shape.Geometry == "ellipse")
         {

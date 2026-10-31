@@ -3,6 +3,27 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "circular-charts-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Single-series finite non-negative pie and 50-percent doughnut slices retain local workbook data, per-category colours and binding, with diagnosed office frame differences.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "CircularChartsKeepEditableDataAndAnalyticVectorSectors" },
+        { "class": "ObjectFoundationTests", "method": "CircularBindingPreservesColoursAndSourceSnapshot" },
+        { "class": "ObjectFoundationTests", "method": "CircularUpdateAndBindingKeepSnapshotsAndRejectLossyData" }
+      ]
+    },
+    {
+      "id": "circular-charts-boundaries",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Negative, oversized or invisible slices, unsupported appearances, strict reference loss, protected profiles, exhausted work and cancellation fail explicitly.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "CircularChartsRejectUnsupportedValuesAppearancesAndProfiles" },
+        { "class": "ObjectFoundationTests", "method": "CircularSectorsNormalizeExtremeValuesAndRejectInvisibleSlicesOrExhaustedWork" }
+      ]
+    },
+    {
       "id": "chart-point-labels-diagnosed",
       "issue": 163,
       "outcome": "supported-bounded",

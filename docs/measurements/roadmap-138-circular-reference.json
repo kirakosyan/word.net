@@ -1,0 +1,190 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "workingTreeParent": "9f038d0c7a0d69a0f72032ade84d38ebf18fe157",
+  "executedWorkingTreeNet10AssemblySha256": "2855b5ec398ea4ffa60f6f369febd68d110718fa215c17af776448378efad67f",
+  "scope": "Diagnosed ordinary managed pie and 50-percent doughnut charts. Circular labels, office frame differences and protected profiles remain open.",
+  "provenance": "Two synthetic XlsxWriter 3.2.9 BSD-2-Clause charts use an existing synthetic MIT OPC shell and workbook with three values adjusted; regeneration is byte-identical. Open XML SDK 3.5.1 validated both sources, saved DOCX and API-authored DOCX. Offline LibreOffice 24.2.7.2 image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 rendered sources, reopened saved documents and API-authored charts; their legend positions and raster bounds matched. PyMuPDF 1.27.2.2 and pypdf 6.10.0 inspected text and vector geometry, sector proportions and the doughnut hole. No Microsoft Word reference was available.",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "schemaLogSha256": "e6a495ffa11fbbbe1ac3ad8f5ab1c072f6df4c1440868ddcd530ac5d8155fd21",
+  "checkerLogSha256": "35bbcf428d879ed5b03801a63eff24868b73e368f61a1f95f15ee2038eb0608c",
+  "initialFocusedBuildLogSha256": "caf8ddbcd651fdfa1ad5c661c4900698d6e5968901d36c6e30255b059aea9a6b",
+  "priorObservations": [
+    "The first focused build failed CA1861 for a test constant array; a static immutable field corrected it.",
+    "The first independently authored pie fixture was retained but rejected as non-renderable because the parser rejected an empty default legend text property. A bounded left-to-right, unstyled legend property profile enabled the source and the reference comparison.",
+    "After the first observation, the parser was narrowed further to reject implicit outlines and extra series appearance; these focused and independent checks reran on the recorded DLL. Exact-source qualification remains separate."
+  ],
+  "tools": {
+    "eng/generate-roadmap-138-circular-fixtures.py": "7c9c1618b5e9e5606c606d3e6527ffe3711d038121fede46a984090ec02b7a1c",
+    "eng/roadmap-138-circular-probe.cs": "b05d2dc35019fbca3e2e17e36aff54e92763e97a6bfee8522a2e47743b17449b",
+    "eng/check-roadmap-138-circular.py": "e7bdf3208405c018cd14749e3311ddc9a27d3d265222468e4ddcb27e2b240f5a",
+    "eng/verify-roadmap-138-circular.py": "4add3a3387d8dfdfc8d4b311974f9d50915bbda9051f439480891f7d90f0d8da"
+  },
+  "documents": {
+    "pie": {
+      "inputDocxSha256": "93333053586d6d648fb553c9779bea40161305394567a60b754f9044ba318378",
+      "regeneratedInputDocxSha256": "93333053586d6d648fb553c9779bea40161305394567a60b754f9044ba318378",
+      "savedDocxSha256": "baef1a4ddffa096291412e7f94822aa1d568d84915bb8fa8f6b975e7c4868c37",
+      "authoredDocxSha256": "fcca7d64b6df4662d3b18d1de4c3562244a948c4918a45e914010eee0bdfe9aa",
+      "pdfSha256": "44b244ef5229296a1c2f202134464052138960b803b008c25a9d444b6c276dfb",
+      "xpsSha256": "ec56727c4648ce6a6b158b2de1784ec529dcbffb3848cbc2de33d64768cb059b",
+      "svgSha256": "b13eda95e536602eaf66467654820099ae189b561e6f97d8ad5e894d5dfead24",
+      "diagnosticsSha256": "93e6929154a0f69ce2ccae0b113c64c72d721ec07f9a99b1a6aa302087e47292",
+      "referencePdfSha256": "fea4bf146e305b97231996a6b25f5dd5aa34603dd2c6a205555dbdd516c36e6b",
+      "referenceReopenedSavedPdfSha256": "d7767a817e7e199b987e1de585960b50bb44c33932348ef0005f9bf6b700e5d0",
+      "referenceAuthoredPdfSha256": "f69d765dddd9acbbb2240c2f75e27ec1ba5774095a8ba3d10dab157678374e6e"
+    },
+    "doughnut": {
+      "inputDocxSha256": "a962849747944a3a0a84507e2edf8f288b4dc75f1d5da09da4d5e1493dc762e4",
+      "regeneratedInputDocxSha256": "a962849747944a3a0a84507e2edf8f288b4dc75f1d5da09da4d5e1493dc762e4",
+      "savedDocxSha256": "cc2efacff550d756200957e75eb82b0040f6540cacfaf0ea00e50927077f50ed",
+      "authoredDocxSha256": "621aadc4774de39eeb0b5494e70507932ab4ff4a22113562d1b3c10744bed772",
+      "pdfSha256": "c6e717ac83e9d25855d89ac2e0e53752e942884e95b4fb2452dfc32c6ff1f1ec",
+      "xpsSha256": "e6b497410d825b447521be692a43c52281463e70394ae03cf836ad15e6665059",
+      "svgSha256": "d2acf06466b7fbbfd7d035482686210c6a4d0139ee49ac0a8651494411498e96",
+      "diagnosticsSha256": "93e6929154a0f69ce2ccae0b113c64c72d721ec07f9a99b1a6aa302087e47292",
+      "referencePdfSha256": "1064a4fcd51b4156a04af706051c263d2cc8f7c0681a2d3f1557e83974ca6966",
+      "referenceReopenedSavedPdfSha256": "6506a7dd7dd5a63f87c31a3b44d6a2832a09da9127075ce295fb8d56fe6a7089",
+      "referenceAuthoredPdfSha256": "13ac029e93a52d89a8e748915781e6d11773446554a67f94dcd7015a96cae9e9"
+    }
+  },
+  "result": {
+    "specimens": [
+      {
+        "kind": "pie",
+        "graph": {
+          "chartSha256": "7e0d3e02a2289aea9b7f01777733dc4f9d5f77bdd0a075a1769acae088c7b38d",
+          "workbookSha256": "0293195d4b34956049f98abb77504a84791b39ea0b5b05b34bbe5044ba2ec5dd"
+        },
+        "legendOrder": [
+          "First",
+          "Second",
+          "Third"
+        ],
+        "pdfSvgMaxDeltaPt": 7.62939453125e-06,
+        "pdfXpsMaxDeltaPt": 3.814697265625e-05,
+        "actualRasterBoundsPt": [
+          80.5,
+          56.0,
+          226.0,
+          202.0
+        ],
+        "referenceRasterBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "referenceMaxDeltaPt": 23.5,
+        "rasterResolutionPt": 0.5,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "sectorProportions": [
+          6,
+          3,
+          1
+        ],
+        "doughnutHoleChecked": false
+      },
+      {
+        "kind": "doughnut",
+        "graph": {
+          "chartSha256": "6fdd599993d52f1106b9dfb94b94777b942dbbed042b304ce35ab8fee3e8e6a7",
+          "workbookSha256": "0293195d4b34956049f98abb77504a84791b39ea0b5b05b34bbe5044ba2ec5dd"
+        },
+        "legendOrder": [
+          "First",
+          "Second",
+          "Third"
+        ],
+        "pdfSvgMaxDeltaPt": 7.62939453125e-06,
+        "pdfXpsMaxDeltaPt": 4.57763671875e-05,
+        "actualRasterBoundsPt": [
+          80.5,
+          56.0,
+          226.0,
+          202.0
+        ],
+        "referenceRasterBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "referenceMaxDeltaPt": 23.5,
+        "rasterResolutionPt": 0.5,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "sectorProportions": [
+          6,
+          3,
+          1
+        ],
+        "doughnutHoleChecked": true
+      }
+    ],
+    "negativeControls": {
+      "missing pie diagnostic": "Missing independent circular-layout diagnostic",
+      "missing doughnut diagnostic": "Missing independent circular-layout diagnostic",
+      "wrong reference": "Circular centre or doughnut hole changed",
+      "changed editable slice value": "Slice values changed",
+      "changed SVG sector": "PDF, SVG and XPS sector geometry differs",
+      "changed XPS sector": "PDF, SVG and XPS sector geometry differs",
+      "changed legend order": "Category legend order changed",
+      "missing PDF content": "Missing or duplicated category legend"
+    },
+    "officeRoundtrips": {
+      "pie": {
+        "authoredGraph": {
+          "chartSha256": "4febf0f79f399c54b6fd2addd3ee7f736240ee0030e2e1f10205a2644cc7a0e4",
+          "workbookSha256": "3aa300e03ab53be0e476f2c406758c000f8b6313eaf1bdd5a7f7088221ec84f8"
+        },
+        "referenceBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "savedBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "authoredBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "legendTolerancePt": 0.001
+      },
+      "doughnut": {
+        "authoredGraph": {
+          "chartSha256": "2bab79499aa9099b0e656d759203a3f863c57d1a685399777585eb066117d4fb",
+          "workbookSha256": "3aa300e03ab53be0e476f2c406758c000f8b6313eaf1bdd5a7f7088221ec84f8"
+        },
+        "referenceBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "savedBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "authoredBoundsPt": [
+          91.5,
+          79.5,
+          211.5,
+          199.5
+        ],
+        "legendTolerancePt": 0.001
+      }
+    }
+  }
+}

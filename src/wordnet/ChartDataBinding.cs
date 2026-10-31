@@ -69,6 +69,18 @@ public sealed class ChartDataBinding
             context.CheckCancellation();
             series.Add(new ChartSeries(Text(Get(report.Values, Series[i].NamePath)), original.Series[i].Color, values[i]));
         }
+        if (original.Kind is ChartKind.Pie or ChartKind.Doughnut)
+        {
+            if (categories.Count != original.SliceColors.Count) throw new InvalidDataException("Chart.BindingSlices: Circular binding must retain the slice count and colours.");
+            var slices = new List<ChartSlice>();
+            for (int i = 0; i < categories.Count; i++)
+            {
+                context.CheckCancellation();
+                if (values[0][i] < 0) throw new InvalidDataException("Chart.BindingSlices: Circular values cannot be negative.");
+                slices.Add(new ChartSlice(categories[i], values[0][i], original.SliceColors[i]));
+            }
+            return ChartDefinition.CreateCircular(original.Kind, slices, series[0].Name, original.Title, original.ShowLegend);
+        }
         return new ChartDefinition(original.Kind, categories, series, original.Title, original.ShowLegend, original.CategoryTitle, original.ValueTitle).WithDataLabels(original.DataLabels);
     }
     private static object? Get(object? value, string path)

@@ -1,5 +1,11 @@
 # Architecture and implementation status
 
+Pending circular charts retain a single local-workbook series and explicit
+per-category colours. Managed output normalizes finite non-negative values before
+constructing bounded pie or annular vector sectors; tiny invisible slices reject.
+Independent office frame differences remain diagnosed, and protected profiles
+remain outside this increment.
+
 Pending chart point labels are immutable chart metadata; explicit OOXML label
 flags and the existing local workbook survive editable DOCX and report binding.
 Managed vector placement measures each string, charges aggregate text and work,

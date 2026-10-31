@@ -127,7 +127,9 @@ The later [stacked-bar and column profile](p2-objects-typography.md#unreleased-s
 retains separate signed totals but diagnoses independent reference-position differences.
 The later [point-label profile](p2-objects-typography.md#unreleased-source-chart-point-labels)
 adds bounded value/category labels with explicit fit and reference diagnostics.
-Reference plot and label failures, circular charts, other label forms and
+The [circular-chart profile](p2-objects-typography.md#unreleased-source-circular-charts)
+adds diagnosed single-series pie and doughnut vectors. Reference plot and label
+failures, other circular and label forms and
 native/tagged/archive qualification remain open.
 Pending #164 adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
 in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.

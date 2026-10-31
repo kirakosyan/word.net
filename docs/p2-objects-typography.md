@@ -105,8 +105,8 @@ confirms signed relative lengths, order and default-gap geometry, but its plot
 zero origin differs by 19.722 points and its category-label gap by 2.289 points.
 Both fail the existing 0.5-point absolute geometry tolerance; that threshold is
 unchanged and the failures remain open. This is not published 1.5.0 support or a
-claim of general Word/LibreOffice plot parity. Pie/doughnut charts and broader
-data-label forms remain open in #163.
+claim of general Word/LibreOffice plot parity. Broader chart and data-label forms
+remain open in #163.
 
 ### Unreleased source: stacked bars and columns
 
@@ -165,6 +165,36 @@ differ by up to 17.40 points for bars and 14.67 points for columns from the offi
 reference, above the unchanged 0.5-point tolerance. The reference column also
 places one label outside its bar. These remain open reference differences, not
 evidence about Microsoft Word, a public 1.5.0 feature or full #163 acceptance.
+
+### Unreleased source: circular charts
+
+Pending #163 adds `ChartDefinition.CreateCircular(ChartKind.Pie, slices)` and
+`ChartKind.Doughnut` using one to 64 immutable `ChartSlice` values. Each slice
+copies a category, finite non-negative nullable value and explicit RGB colour;
+the original constructor and enum values remain intact. Null and zero slices
+have no vector area. Rendering requires a positive slice; values normalize against
+the largest value before summation so finite large totals do not overflow.
+Positive sectors below `0.000001` radians reject with `Chart.SliceSpacing`.
+The first sector starts at twelve o'clock and proceeds clockwise; the doughnut's
+unfilled centre is 50 percent of its diameter. Legends list the categories in
+source order, including missing and zero entries. Add, Update and prepared-data
+binding preserve editable local workbook data and slice colours; binding requires
+the same slice count so colours cannot silently shift.
+
+Only explicit per-slice solid-RGB colours, no-outline flags and a zero start are renderable;
+doughnuts also require the 50-percent hole. Negative values, multiple series, axes, custom angles/holes, exploded
+slices, data labels, nonuniform effects or formatting, implicit slice colours and
+other unqualified appearances reject or remain editable without static output.
+Native typography and tagged or archival output remain unqualified. Ordinary
+managed PDF/XPS/SVG uses `Chart.CircularLayoutApproximation` in BestEffort or
+Lenient; Strict rejects this measured layout difference or editable-object loss.
+
+Independently authored XlsxWriter pie and doughnut documents preserve chart and
+workbook bytes, 6:3:1 proportions, legend order and the doughnut hole across the
+tested outputs. Their [reference observation](measurements/roadmap-138-circular-reference.json)
+records a 23.5-point maximum raster-bound difference from LibreOffice at the
+unchanged 0.5-point geometry tolerance. This remains open, is not a Microsoft Word
+result and does not qualify public 1.5.0 packages or all of #163.
 
 ### Equation authoring
 

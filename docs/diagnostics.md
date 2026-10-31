@@ -241,6 +241,12 @@ office-reference differences, which Strict rejects. `Chart.DataLabelFit` rejects
 labels too large for their bars, including zero-size points; labels are not
 silently dropped. `Chart.BindingAppearance` rejects report binding when the
 retained chart appearance is not preserved by the closed chart model.
+Pending pie and doughnut charts report `Chart.CircularLayoutApproximation` for
+their independently measured frame differences; Strict rejects this loss.
+`Chart.SliceValue` rejects negative or nonfinite values, `Chart.Slices` bounds
+slice count, `Chart.SliceSpacing` rejects positive sectors too small to render,
+and `Chart.BindingSlices` rejects data that would change the slice-colour mapping.
+An all-zero or all-missing circular series reports `Chart.EmptyData` on rendering.
 
 Unreleased #151 source reports `Typography.MergedTableSpacing` when conservative
 native line metrics may change merged-table row heights; Strict rejects this loss.

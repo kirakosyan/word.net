@@ -46,6 +46,10 @@ The pending `ChartDataLabels` enum and immutable `ChartDefinition.WithDataLabels
 snapshot select bounded centred bar/column labels without changing the existing
 constructor. Prepared-data binding preserves this selection and rejects retained
 appearances it cannot preserve.
+The pending `ChartKind.Pie` and `Doughnut` values are appended after the existing
+values; `ChartSlice` and `ChartDefinition.CreateCircular` add immutable explicit
+slice data without changing the original constructor. `SliceColors` exposes an
+immutable snapshot, and prepared-data binding requires a matching slice count.
 
 Pending #153 admits a bounded standalone-equation/native-paragraph combination
 through the existing options and math-font APIs. It adds diagnostics but no public

@@ -26,8 +26,9 @@ internal static class ChartLayout
         ChartDefinition chart = item.Chart!;
         bool horizontal = chart.Kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
         bool stacked = chart.Kind is ChartKind.StackedColumn or ChartKind.StackedBar;
+        bool circular = chart.Kind is ChartKind.Pie or ChartKind.Doughnut;
         bool labels = chart.DataLabels != ChartDataLabels.None;
-        if ((horizontal || stacked || labels) && (context.Typography.Enabled
+        if ((horizontal || stacked || labels || circular) && (context.Typography.Enabled
             || context.Destination == DocumentFormat.Pdf && !context.PreviewIntermediate
                 && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
             throw new NotSupportedException("Chart.BarProfile: Horizontal and stacked bars are qualified only for ordinary managed output.");
@@ -37,12 +38,15 @@ internal static class ChartLayout
             context.Loss("Chart.StackedLayoutApproximation", "Stacked-chart axis and plot positions differ from independent office reference geometry.");
         if (labels)
             context.Loss("Chart.DataLabelApproximation", "Centred point labels use the bounded managed chart layout and can differ from office output.");
+        if (circular)
+            context.Loss("Chart.CircularLayoutApproximation", "Circular-chart frame, legend and vector positions can differ from independent office output.");
         if (stacked && chart.Categories.Count * 32L > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.ChartStack: Stack accumulators exceed the resource allowance.");
         long pointCount = (long)chart.Categories.Count * chart.Series.Count;
         long repeatedLabels = labels ? chart.Categories.Sum(s => (long)s.Length) * chart.Series.Count + pointCount * 32 : 0;
         context.Objects.Render(chart.Title.Length + chart.CategoryTitle.Length + chart.ValueTitle.Length + chart.Categories.Sum(s => (long)s.Length)
-            + chart.Series.Sum(s => (long)s.Name.Length) + repeatedLabels + 128, pointCount * ((stacked ? 3 : 1) + (labels ? 1 : 0)) + chart.Categories.Count + chart.Series.Count + 32);
+            + chart.Series.Sum(s => (long)s.Name.Length) + repeatedLabels + 128, pointCount * ((stacked ? 3 : circular ? 6 : 1) + (labels ? 1 : 0)) + chart.Categories.Count + chart.Series.Count + 32);
+        if (circular) return Circular(item, chart, font, measure, context);
         double[] finite = chart.Series.SelectMany(s => s.Values).Where(v => v.HasValue).Select(v => v!.Value).ToArray();
         if (finite.Length == 0) throw new NotSupportedException("Chart.EmptyData: At least one real value is required for rendering.");
         double min = Math.Min(0, finite.Min()), max = Math.Max(0, finite.Max());
@@ -135,6 +139,54 @@ internal static class ChartLayout
                 double y = top + 10 + (stacked ? chart.Series.Count - 1 - s : s) * 14;
                 if (y + 4 > bottom) throw new NotSupportedException("Chart.LabelFit: The legend cannot fit the frame.");
                 result.Shapes.Add(new FixedShape(right + 8, y - 6, 8, 6, series.Color)); Text(series.Name, right + 20, y, legend - 22);
+            }
+        }
+        return result;
+    }
+    private static ObjectVisual Circular(DocumentObjectData item, ChartDefinition chart, int font, Func<string, int, double, double> measure, ConversionContext context)
+    {
+        const double size = 8, padding = 8;
+        double[] values = chart.Series[0].Values.Select(value => value ?? 0).ToArray();
+        double maximum = values.Max();
+        if (maximum <= 0) throw new NotSupportedException("Chart.EmptyData: At least one positive slice is required for rendering.");
+        double total = values.Sum(value => value / maximum);
+        if (!Finite(total) || total <= 0) throw new NotSupportedException("Chart.Range: Slice proportions cannot be resolved.");
+        var result = new ObjectVisual { Width = item.Width, Ascent = item.Height };
+        double legend = chart.ShowLegend ? chart.Categories.Max(label => measure(label, font, size)) + 26 : 0;
+        double top = -item.Height + padding + (chart.Title.Length > 0 ? 18 : 0), bottom = -padding;
+        double right = item.Width - padding - legend, diameter = Math.Min(right - padding, bottom - top);
+        if (!Finite(legend) || !Finite(diameter) || diameter < 24) throw new NotSupportedException("Chart.LabelFit: Labels leave insufficient circular-plot space.");
+        double x = padding + (right - padding - diameter) / 2, y = top + (bottom - top - diameter) / 2;
+        void Text(string value, double left, double baseline, double available)
+        {
+            context.CheckCancellation(); double width = measure(value, font, size);
+            if (!Finite(width) || width > available) throw new NotSupportedException("Chart.LabelFit: A circular-chart label does not fit.");
+            if (value.Length != 0) result.Text.Add(new PositionedText(value, left, baseline, size, font));
+        }
+        if (chart.Title.Length > 0)
+        {
+            double width = measure(chart.Title, font, size); Text(chart.Title, (item.Width - width) / 2, -item.Height + 16, item.Width - 16);
+        }
+        double cursor = -Math.PI / 2, end = cursor + 2 * Math.PI;
+        int last = Array.FindLastIndex(values, value => value > 0);
+        for (int i = 0; i < values.Length; i++)
+        {
+            context.CheckCancellation();
+            if (values[i] > 0)
+            {
+                double sweep = i == last ? end - cursor : 2 * Math.PI * (values[i] / maximum) / total;
+                if (!Finite(sweep) || sweep < 0.000001 || sweep > 2 * Math.PI + 1e-10)
+                    throw new NotSupportedException("Chart.SliceSpacing: A positive slice is too small to render reliably.");
+                result.Shapes.Add(new FixedShape(x, y, diameter, diameter, chart.SliceColors[i], geometry: "sector", sectorStart: cursor,
+                    sectorSweep: sweep, sectorHole: chart.Kind == ChartKind.Doughnut ? 0.5 : 0));
+                cursor += sweep;
+            }
+            if (chart.ShowLegend)
+            {
+                double baseline = top + 10 + i * 14;
+                if (baseline + 4 > bottom) throw new NotSupportedException("Chart.LabelFit: The category legend does not fit the frame.");
+                result.Shapes.Add(new FixedShape(right + 8, baseline - 6, 8, 6, chart.SliceColors[i]));
+                Text(chart.Categories[i], right + 20, baseline, legend - 22);
             }
         }
         return result;

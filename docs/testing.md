@@ -418,6 +418,15 @@ records both full suites, matrix, packages and reproduced specimens. Its
 [performance receipt](measurements/roadmap-138-chart-labels-performance-9f038d0.json)
 retains both rounds and the visible timing drift under the unchanged gate.
 
+Pending #163 circular-chart tests cover immutable slice data, editable graph and
+binding, signed-value and slice-count rejection, normalized extreme values,
+sector angles, the annular hole, limits and protected profiles. The independent
+[reference observation](measurements/roadmap-138-circular-reference.json)
+checks XlsxWriter-authored pie and doughnut fixtures, Open XML validation, vector
+paths across formats, 6:3:1 raster proportions, legend order, the hole and eight
+corrupted controls. The office frame difference remains above the existing
+0.5-point geometry tolerance.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection
