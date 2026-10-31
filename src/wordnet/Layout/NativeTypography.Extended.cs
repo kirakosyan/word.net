@@ -40,13 +40,50 @@ internal static partial class NativeTypography
         FontSource[] sources = context.Options.Fonts.Sources.ToArray();
         if (sources.Length > 128 || sources.Any(s => s == null) || sources.Sum(s => (long)s.Bytes.Length) > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TypographyFonts: Caller font count/bytes exceed the operation allowance.");
+        // Stable scalar values are evaluated once on this detached layout model.
+        // Page/reference fields need later pagination passes and stay excluded.
+        var fieldValues = new Dictionary<TextRun, string>(); long fieldCharacters = 0; int originalCharacters = -1;
+        foreach (ParagraphBlock paragraph in model.Paragraphs)
+            foreach (TextRun field in paragraph.Runs.Where(r => r.FieldInstruction != null))
+            {
+                context.CheckCancellation();
+                if (!ScalarFields.Candidate(field.FieldInstruction!) || field.FieldChildren != null || field.Image != null || field.Box != null
+                    || field.Object != null || field.Note != null || field.Bookmark != null || field.Control != null || field.TypedControlId.HasValue
+                    || field.ControlDisplay || field.Comment != null || field.Revision != null || field.FormatRevision != null
+                    || field.FieldCache?.Count > 1 || field.FieldCache?.Any(r => r.Image != null || r.Box != null || r.Object != null
+                        || r.Note != null || r.Bookmark != null || r.Control != null || r.FieldInstruction != null) == true)
+                    throw new NotSupportedException("Typography.FieldProfile: Native field display requires a stable scalar field with a plain single-run cache.");
+                using var location = context.At(paragraph.Location);
+                string value = DocumentFields.Render(field, model, 1, 1, 1, context);
+                if (originalCharacters < 0) originalCharacters = model.CharacterCount;
+                fieldCharacters = checked(fieldCharacters + value.Length);
+                if (fieldCharacters > int.MaxValue || 2L * (originalCharacters + fieldCharacters) > context.Options.MaximumExpandedBytes)
+                    throw new InvalidDataException("Limit.TypographyFields: Scalar field display exceeds the expanded resource bound.");
+                context.CheckCharacters(checked(originalCharacters + (int)fieldCharacters));
+                context.ReserveFieldWork(value.Length);
+                fieldValues.Add(field, value);
+            }
+        if (fieldValues.Count != 0 && (context.Options.Pdf.Accessibility != PdfAccessibility.None
+            || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+            throw new NotSupportedException("Typography.FieldProfile: Native scalar fields are not qualified for tagged or archival output.");
+        if (fieldValues.Count != 0) foreach (ParagraphBlock paragraph in model.Paragraphs.Where(p => p.Runs.Any(fieldValues.ContainsKey)))
+        {
+            using var location = context.At(paragraph.Location);
+            bool directional = context.Typography.Direction == TextDirection.RightToLeft || paragraph.RightToLeft == true
+                || paragraph.Runs.Any(run => (fieldValues.TryGetValue(run, out string? value) ? value : run.Text)
+                    .Any(ch => Arabic(ch) || UnicodeBidi.Format(ch)));
+            if (directional)
+                context.Loss("Typography.FieldDirectionalOrder", "Native directional field text can extract in a different order from the reference output.");
+            context.Loss("Typography.FieldLayoutApproximation", "Native scalar-field baseline geometry differs from independent reference output.");
+        }
         var coverage = new Dictionary<byte[], Func<string, bool>>(); var bundled = Enumerable.Range(0, 4).Select(FixedLayout.FontBytes).ToArray();
         foreach (ParagraphBlock p in model.Paragraphs)
         {
             context.CheckCancellation();
             if (p.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed)
                 throw new NotSupportedException("Typography.Alignment: Native paragraphs require ordinary horizontal left, center or right alignment.");
-            TextRun[] joined = RunCoalescer.Combine(p.Runs, forRendering: true).ToArray();
+            TextRun[] joined = RunCoalescer.Combine(p.Runs, forRendering: true).Select(run => fieldValues.TryGetValue(run, out string? value)
+                ? new TextRun(value, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, appearance: run.Appearance.Copy()) : run).ToArray();
             if (p.Control != null || p.List != null || joined.Any(r => r.Object != null || r.Control != null || r.Image != null || r.Box != null || r.Note != null || r.FieldInstruction != null || r.Bookmark != null || r.Text.Contains('\t')))
                 throw new NotSupportedException("Typography.Structure: Fields, controls, drawings, notes, bookmarks and tabs require separate qualification.");
             string logical = string.Concat(joined.Select(r => r.Text));

@@ -1,0 +1,44 @@
+{
+  "roadmap": 138,
+  "issue": 152,
+  "recordedUtc": "2026-10-31",
+  "scope": "Two independently authored body paragraphs with a stale DOCPROPERTY Title field and Hindi or Arabic values. The companion reference documents carry the same fields with already refreshed caches. These are static observations, not live Word execution, general reference-field support or tagged/archive qualification.",
+  "workingTreeParent": "61ae229e45b494fea3b4e02c24576d9ba0572d98",
+  "executedWorkingTreeNet10AssemblySha256": "80bd276def756d8c8ec1a2a00d3aab02cb42879d300f892503933646b8617c94",
+  "generator": "eng/generate-roadmap-138-native-fields.py",
+  "generatorSha256": "922941ac34f001b3ceadea87a9e2efd79a3e15e461871c9848d2df9d3f97850a",
+  "probe": "eng/roadmap-138-native-fields-probe.cs",
+  "probeSha256": "5c4b5cf016933f325c3e84b8da2e7a2e1eea21d69d6854854ccc56051606b6d7",
+  "checker": "eng/check-roadmap-138-native-fields.py",
+  "checkerSha256": "387a7100b619afb78bef978c30311690c512478f9262c3c6ef474a2eb80ef68e",
+  "provenance": "Synthetic python-docx 1.2.0 documents (MIT); simple-field XML and core title are independently authored and ZIP metadata is normalized. Regeneration reproduced all four inputs byte for byte.",
+  "hindi": {
+    "staleInputSha256": "2a7f63e93bbcd7b5b4681d7746905995bfcb91548320152989b3f2c97c30c624",
+    "referenceInputSha256": "311dabcf24caf76a3838a8ad2c343ba72999666b69a4e953448bc6d76689c403",
+    "savedDocxSha256": "52c65f03a51865b3f9979789c15642ce322a24ae54425ecfb6aa47134732ef57",
+    "nativePdfSha256": "32360e19b1ee1a9621340b8ed1c44e9aa6bf7f1ff697f1f720b6b85d450a40a1",
+    "nativeBoxesSha256": "3ed70168a623a358b365cb6e1bf143905dbcaf767a1b915fc2a00e3b17a5b8eb",
+    "referencePdfSha256": "263070457cf6e74f3bb5149777d6a5886667e412f4803354c2f9fd5e1732309f",
+    "referenceBoxesSha256": "772c2e8042e73a94acd7afe323a51b72322d3bfd5b6c959d887ca71877b8852c",
+    "result": "The field instruction and editable owner survive save and the stale cache becomes क्षि. Both PDFs expose the same text; the Hindi word's horizontal origin differs by 0.100 points and width by 0.044 points. Its top differs by 2.847 points, which fails the original 0.5-point geometry tolerance."
+  },
+  "arabic": {
+    "staleInputSha256": "7f2efbc7ba3834006e7e973812d6e795d03a3d38fc658b9c63ff8897fa2ec9de",
+    "referenceInputSha256": "f75d50603aea73fadd9f20f82ff85fd592ba34dd979b9e88653c9f55239d9910",
+    "savedDocxSha256": "6b4fca42115a924c866176a291fe714b5b85bb366b6f20568857ae1c55dbfc0b",
+    "nativePdfSha256": "0eac41d6127d10fcde1c8d4e4338f4f0061b7f765f2f6e5ee4d15875e5523b9f",
+    "nativeBoxesSha256": "15dafde738f2ddaa3e8d55cfe019912b039ae71800a1a4ac06346f8c17564d2b",
+    "referencePdfSha256": "05e684b596d4bd87df8a55c5c669e8fe60b67a4b2c5d9a0489a66828a61f3ab6",
+    "referenceBoxesSha256": "55352fb2af330733b766de2f3344d836066b66f59783479eb106fe0c192147c9",
+    "result": "The field and refreshed title survive DOCX save, and the internal PDF importer recovers مرحبا. Poppler -layout extracts ابحرم from native output but مرحبا from the LibreOffice reference; this remains an independent reading-order failure."
+  },
+  "retainedInitialPrototype": {
+    "net10AssemblySha256": "ee87df89dc46f45d40d7ce776f741c0a591bc73c69eaa1112aa60f5d4b35c3f1",
+    "hindiPdfSha256": "7d2133f5e093c4c5d6621d7d71cf4cb8e613c7aec60f6b441bc176a28cc38ca6",
+    "arabicPdfSha256": "e388f824130c3a55008b83dfbddc1aa051f7f6c0add0ed7e8a220c1f9cf1c3c1",
+    "observation": "The first prototype admitted these cases without the new loss diagnostics. The final working tree reports Typography.FieldLayoutApproximation and, for directional paragraphs, Typography.FieldDirectionalOrder; Strict rejects both rather than treating either reference failure as a pass."
+  },
+  "schemaAndTools": "Open XML SDK 3.5.1 reported zero errors on all four source/reference documents and both saved documents; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec. LibreOffice 24.2.7.2 ran in image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 with pinned Noto fonts. Poppler 25.03.0 supplied layout text and bounding boxes.",
+  "earlierAttempts": "An initial focused build failed CA1861 on an inline constant array; a static array fixed the analyzer error. A focused test incorrectly expected MERGEFIELD conversion to throw; the existing reader instead uses the complete cached text with Field.UnsupportedUsedCachedResult, now asserted explicitly. The independent vertical and Arabic extraction failures above remain open.",
+  "limitations": "Generated DOCX and PDF files remain scratch artifacts. Exact-commit, package and hosted runtime evidence are separate. Page/reference fields, structured or differently formatted cached results, nested field instructions, lists, controls, tabs and complete #152 acceptance remain open."
+}

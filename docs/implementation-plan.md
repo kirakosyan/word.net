@@ -87,6 +87,10 @@ Structural combinations and broader story/format categories remain open.
 Pending #151 source admits a diagnosed [Hindi/Latin merged-table subset](p2-objects-typography.md#unreleased-source-hindi-merged-tables)
 only in BestEffort and Lenient native output. Right-to-left merged tables, strict
 row-spacing parity and tagged/archive combinations remain open.
+Pending #152 [native scalar-field display](p2-objects-typography.md#unreleased-source-native-scalar-fields)
+refreshes bounded values before shaping in BestEffort/Lenient, with diagnosed
+vertical and directional differences. Lists, tabs, controls, reference fields,
+strict parity and conformance combinations remain open.
 Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;

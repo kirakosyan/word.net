@@ -77,6 +77,9 @@ section and story comparison uses bounded shared work and shared-part identities
 Quarter-turn, fit and linked-box layout retain editable source structure and use
 managed fixed-page geometry. A small vector profile reuses anchored drawing ownership
 and paints managed paths. See the [profile and exclusions](roadmap-102-p4-p5.md).
+Pending #152 snapshots admitted scalar results on the detached native layout model
+before bidi resolution and shaping. Its field expansion is bounded; known vertical
+and directional reference differences are diagnosed rather than treated as parity.
 
 ## P3 reports — merged source
 

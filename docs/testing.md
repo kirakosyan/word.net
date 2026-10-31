@@ -212,6 +212,12 @@ differences. It does not establish right-to-left, tagged, archival or strict par
 The [exact-source receipt](measurements/roadmap-138-native-merged-a91b49d.json)
 records complete local suites, package verification and the repeated specimen.
 
+Pending #152 native scalar-field tests exercise refreshed Hindi and Arabic values,
+invariant scalar expressions, editable field retention, aggregate bounds and
+atomic rejection. The [independent reference](measurements/roadmap-138-native-fields-reference.json)
+records the Hindi vertical and Arabic text-extraction failures at unchanged
+tolerances; both are explicit losses and Strict rejects them.
+
 Pending #167 preview-layout tests check opt-in text privacy, selected pages,
 immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
 and resource limits. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)

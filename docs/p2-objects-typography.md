@@ -224,6 +224,29 @@ at the final row of one four-row specimen. A separate Arabic specimen exposed
 alignment and text-extraction differences and is not admitted. These are bounded
 observations, not a claim of general rendering parity.
 
+### Unreleased source: native scalar fields
+
+Pending #152 snapshots stable scalar `DOCPROPERTY`, `IF` and arithmetic field
+results before extended native shaping. The existing bounded scalar grammar,
+invariant pictures and cached-result diagnostics still apply. An editable DOCX
+session keeps its field owner and can refresh it again after a property edit;
+the detached fixed-output layout uses the refreshed text. Cross-boundary joined
+Arabic words and grapheme/conjunct splits reject. Aggregate field text and work
+are bounded before the layout model is changed.
+
+This profile is **BestEffort/Lenient only**. It reports
+`Typography.FieldLayoutApproximation`; directional paragraphs additionally report
+`Typography.FieldDirectionalOrder`. Strict output rejects the respective loss.
+The independently authored [reference cases](measurements/roadmap-138-native-fields-reference.json)
+retain a 2.847-point Hindi vertical difference against the original 0.5-point
+tolerance, and a different Poppler Arabic extraction order. Page/reference fields,
+structured or differently formatted caches, nested field instructions, lists,
+controls, tabs, tagged/archive combinations and other #152 owners remain outside
+this increment. Unresolved scalar results retain their existing explicit
+cached-result diagnostic.
+
+### Extended native typography
+
 Set `Typography.Enabled` and `Typography.ExtendedBidi` explicitly. The old enabled
 Arabic profile and managed default remain separate and retain their earlier tests.
 The extended profile applies Unicode 17 UAX #9 levels, isolate run sequences, bracket

@@ -3,6 +3,30 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "native-scalar-fields-diagnosed",
+      "issue": 152,
+      "outcome": "supported-bounded",
+      "boundary": "Stable scalar results are refreshed before Hindi or Arabic shaping in BestEffort/Lenient, retaining editable DOCX fields and reporting known baseline or directional losses.",
+      "tests": [
+        { "class": "NativeScalarFieldTests", "method": "ScalarValuesAreRefreshedBeforeHindiShapingWithoutChangingTheEditableSource" },
+        { "class": "NativeScalarFieldTests", "method": "ArabicScalarValuesRemainLogicalAndShapedInsideMixedDirectionText" },
+        { "class": "NativeScalarFieldTests", "method": "HindiScalarInAMergedCellRetainsTheExistingSpacingDiagnostic" },
+        { "class": "NativeScalarFieldTests", "method": "StableScalarExpressionsAreEvaluatedBeforeNativeShaping" },
+        { "class": "NativeScalarFieldTests", "method": "AnUnsupportedMergeFieldKeepsItsCacheWithAnExplicitDiagnostic" }
+      ]
+    },
+    {
+      "id": "native-fields-unqualified",
+      "issue": 152,
+      "outcome": "rejected",
+      "boundary": "Strict loss, page/reference and tagged output, cross-field conjuncts, excessive field expansion and cancellation reject without publishing output.",
+      "tests": [
+        { "class": "NativeScalarFieldTests", "method": "PageAndReferenceFieldsRemainRejectedWithoutOutput" },
+        { "class": "NativeScalarFieldTests", "method": "AScalarFieldCannotSplitAConjunctOrBeCombinedWithTaggedOutput" },
+        { "class": "NativeScalarFieldTests", "method": "AggregateFieldExpansionIsBoundedBeforeTheModelIsChanged" }
+      ]
+    },
+    {
       "id": "horizontal-bars-diagnosed",
       "issue": 163,
       "outcome": "supported-bounded",

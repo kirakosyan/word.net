@@ -225,6 +225,14 @@ native line metrics may change merged-table row heights; Strict rejects this los
 and oversized vertical-merge combinations. The [reference observation](measurements/roadmap-138-native-merged-reference.json)
 retains the measured spacing and Arabic differences.
 
+Pending #152 reports `Typography.FieldLayoutApproximation` for native scalar
+fields whose baseline differs from the independent reference, and
+`Typography.FieldDirectionalOrder` for directional paragraphs where extraction
+order differs. Strict rejects those losses. `Typography.FieldProfile` rejects
+page/reference fields, nested instructions and unqualified output profiles;
+`Limit.TypographyFields` and the existing character/work limits bound expansion.
+The diagnostics do not include field values.
+
 ## Merged P1 diagnostics
 
 Report preprocessing rejects invalid paths/types/cycles, arithmetic failures and
