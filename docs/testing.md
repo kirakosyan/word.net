@@ -133,6 +133,15 @@ paragraph and structural owners. The [reference receipt](measurements/roadmap-13
 records editable XML/workbook values, reference chart geometry and text, as well
 as a different default text-extraction order. It does not qualify tagged, archival
 or native output or live Word editing.
+The [exact-source receipt](measurements/roadmap-138-mixed-fragment-fb29555.json)
+records the complete local suites, matrix and package checks and reproduces the
+independently rendered DOCX with the exact source/package assembly.
+
+The [performance observation](measurements/roadmap-138-performance-a34ef58.json)
+retains a hosted push failure at a 1.332 candidate/reference ratio against the
+unchanged 1.25 limit. A separate PR job passed against a different baseline and
+runner. The difference between the two push reference workers suggests variability
+but does not establish its cause or erase the failed gate.
 
 Pending #143 character-style tests cover inherited/overridden color, invalid style
 graphs and an additional Word-derived date placeholder. The independently generated

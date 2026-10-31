@@ -1,0 +1,36 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "head": "a34ef58806ef5f2e80d0a25bdd190dc6010bac12",
+  "push": {
+    "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41173685676",
+    "job": "https://github.com/kirakosyan/word.net/actions/runs/41173685676/job/124456729933",
+    "originalConclusion": "failure",
+    "reason": "The candidate/reference median ratio 1.3322431467358 exceeded the unchanged 1.25 performance gate.",
+    "referenceCommit": "d99122c1a5336d4fe07b102fc937d0f352e3541f",
+    "referenceMedianMilliseconds": 25.1486,
+    "candidateMedianMilliseconds": 33.50405,
+    "referenceSamples": 62,
+    "candidateSamples": 62,
+    "referenceWorkerMediansMilliseconds": [25.015, 32.8734],
+    "candidateWorkerMediansMilliseconds": [34.251, 33.1975],
+    "maximumCandidateAllocatedBytes": 35972232,
+    "maximumCandidateManagedUpperBoundBytes": 39421624,
+    "fixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+    "artifactId": 13031478154,
+    "artifactSha256": "a5ea0b99eff34726e52e78077c7155690c101034c873cbaaacc227f84890fd63"
+  },
+  "pullRequest": {
+    "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41173688890",
+    "job": "https://github.com/kirakosyan/word.net/actions/runs/41173688890/job/124456740076",
+    "conclusion": "success",
+    "referenceCommit": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+    "testedMergeCommit": "48646c6a4046007df23172ffada6a1e7447bdcb2",
+    "referenceMedianMilliseconds": 42.75785,
+    "candidateMedianMilliseconds": 42.2797,
+    "ratio": 0.9888172581175153,
+    "artifactId": 13031948163,
+    "artifactSha256": "73cdb440548cd0349a4787a063213e56c35e0673787b025302b64e602d2993de"
+  },
+  "interpretation": "The two push reference worker medians differ considerably and allocations are similar across reference and candidate. These observations suggest timing variability but do not prove it, and the PR gate used a different baseline and runner. The push failure remains a failure; no threshold has been changed. An isolated repeat is needed."
+}
