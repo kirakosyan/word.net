@@ -1,5 +1,10 @@
 # Architecture and implementation status
 
+Pending stacked charts retain their chart/workbook graphs and apply bounded,
+separate positive and negative accumulators per category in managed vector layout.
+Axis and plot differences from an independent office reference are diagnosed;
+native and conformance-profile combinations remain outside this increment.
+
 Pending template inspection parses a bounded DOCX using the existing editable model
 and the same merge-field grammar, compares admitted body paths to an immutable
 declaration, and returns part-level opaque aliases. It does not read caller values,

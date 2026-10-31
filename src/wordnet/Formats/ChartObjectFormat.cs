@@ -31,9 +31,11 @@ internal static class ChartObjectFormat
         }
         XElement Ref(string name, string range, IEnumerable<string> strings) => new XElement(C + name, new XElement(C + "strRef", new XElement(C + "f", "Data!" + range), Strings(strings)));
         int end = definition.Categories.Count + 1;
+        bool horizontal = definition.Kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
+        bool stacked = definition.Kind is ChartKind.StackedColumn or ChartKind.StackedBar;
         XElement data = new XElement(C + (definition.Kind == ChartKind.Line ? "lineChart" : "barChart"),
-            definition.Kind == ChartKind.Line ? null : V("barDir", definition.Kind == ChartKind.ClusteredBar ? "bar" : "col"),
-            V("grouping", definition.Kind == ChartKind.Line ? "standard" : "clustered"));
+            definition.Kind == ChartKind.Line ? null : V("barDir", horizontal ? "bar" : "col"),
+            V("grouping", definition.Kind == ChartKind.Line ? "standard" : stacked ? "stacked" : "clustered"));
         for (int i = 0; i < definition.Series.Count; i++)
         {
             context.CheckCancellation(); ChartSeries series = definition.Series[i]; string column = ObjectWorkbook.Column(i + 2);
@@ -45,6 +47,7 @@ internal static class ChartObjectFormat
                     new XElement(C + "numCache", new XElement(C + "formatCode", "General"), V("ptCount", series.Values.Count),
                         series.Values.Select((v, p) => v.HasValue ? new XElement(C + "pt", new XAttribute("idx", p), new XElement(C + "v", v.Value.ToString("R", CultureInfo.InvariantCulture))) : null))))));
         }
+        if (stacked) data.Add(V("overlap", 100));
         data.Add(V("axId", 1), V("axId", 2));
         XElement Axis(string kind, int id, int cross, string position) => new XElement(C + kind, V("axId", id),
             new XElement(C + "scaling", V("orientation", "minMax")), V("axPos", position),
@@ -56,7 +59,7 @@ internal static class ChartObjectFormat
         XElement chart = new XElement(C + "chart",
             definition.Title.Length == 0 ? null : Title(definition.Title),
             new XElement(C + "plotArea", new XElement(C + "layout"), data,
-                Axis("catAx", 1, 2, definition.Kind == ChartKind.ClusteredBar ? "l" : "b"), Axis("valAx", 2, 1, definition.Kind == ChartKind.ClusteredBar ? "b" : "l")),
+                Axis("catAx", 1, 2, horizontal ? "l" : "b"), Axis("valAx", 2, 1, horizontal ? "b" : "l")),
             definition.ShowLegend ? new XElement(C + "legend", V("legendPos", "r"), new XElement(C + "layout")) : null, V("plotVisOnly", 1), V("dispBlanksAs", "gap"));
         XElement root = new XElement(C + "chartSpace", new XAttribute(XNamespace.Xmlns + "c", C), new XAttribute(XNamespace.Xmlns + "a", A), new XAttribute(XNamespace.Xmlns + "r", R),
             chart, new XElement(C + "externalData", new XAttribute(R + "id", "data"), V("autoUpdate", 0)));
@@ -179,13 +182,25 @@ internal static class ChartObjectFormat
     {
         XElement chart = root.Element(C + "chart") ?? throw Invalid("Chart"); XElement plot = chart.Element(C + "plotArea") ?? throw Invalid("PlotArea");
         XElement[] kinds = plot.Elements().Where(e => e.Name.Namespace == C && e.Name.LocalName.EndsWith("Chart", StringComparison.Ordinal)).ToArray();
-        if (kinds.Length != 1 || kinds[0].Name != C + "barChart" && kinds[0].Name != C + "lineChart") throw new NotSupportedException("Chart.Type: Only clustered columns, clustered bars and ordinary non-stacked lines are admitted.");
+        if (kinds.Length != 1 || kinds[0].Name != C + "barChart" && kinds[0].Name != C + "lineChart") throw new NotSupportedException("Chart.Type: Only supported two-dimensional bar and line charts are admitted.");
         XElement data = kinds[0]; string? direction = (string?)data.Element(C + "barDir")?.Attribute("val");
         if (data.Name == C + "barChart" && data.Elements(C + "barDir").Count() != 1) throw Invalid("Direction");
-        ChartKind kind = data.Name == C + "lineChart" ? ChartKind.Line : direction switch
-        { "col" => ChartKind.ClusteredColumn, "bar" => ChartKind.ClusteredBar, _ => throw new NotSupportedException("Chart.Type: A clustered bar or column requires an explicit direction.") };
-        string grouping = (string?)data.Element(C + "grouping")?.Attribute("val") ?? (kind == ChartKind.Line ? "standard" : "clustered");
-        if (grouping != (kind == ChartKind.Line ? "standard" : "clustered")) throw new NotSupportedException("Chart.Type: Stacked charts are outside the profile.");
+        bool isLine = data.Name == C + "lineChart";
+        string grouping = (string?)data.Element(C + "grouping")?.Attribute("val") ?? (isLine ? "standard" : "clustered");
+        if (data.Elements(C + "grouping").Count() > 1 || isLine && grouping != "standard" || !isLine && grouping is not ("clustered" or "stacked"))
+            throw new NotSupportedException("Chart.Type: Only ordinary lines and clustered or stacked bars and columns are admitted.");
+        bool stacked = grouping == "stacked";
+        if (stacked && (data.Elements(C + "overlap").Count() != 1 || (string?)data.Element(C + "overlap")?.Attribute("val") != "100"))
+            throw new NotSupportedException("Chart.Overlap: Stacked bars require explicit full overlap.");
+        ChartKind kind = isLine ? ChartKind.Line : (direction, stacked) switch
+        {
+            ("col", false) => ChartKind.ClusteredColumn,
+            ("bar", false) => ChartKind.ClusteredBar,
+            ("col", true) => ChartKind.StackedColumn,
+            ("bar", true) => ChartKind.StackedBar,
+            _ => throw new NotSupportedException("Chart.Type: A bar or column requires an explicit direction."),
+        };
+        bool horizontal = kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
         XElement[] categories = plot.Elements(C + "catAx").ToArray(), values = plot.Elements(C + "valAx").ToArray();
         if (categories.Length != 1 || values.Length != 1 || plot.Elements().Count(e => e.Name.LocalName.EndsWith("Ax", StringComparison.Ordinal)) != 2
             || plot.Descendants(C + "logBase").Any() || data.Elements(C + "axId").Count() != 2) throw new NotSupportedException("Chart.Axes: One linear category/value axis pair is required.");
@@ -202,17 +217,17 @@ internal static class ChartObjectFormat
             && !plot.Descendants(C + "scaling").Elements().Any(e => e.Name == C + "min" || e.Name == C + "max")
             && ((string?)chart.Element(C + "dispBlanksAs")?.Attribute("val") is null or "gap")
             && ((string?)chart.Element(C + "legend")?.Element(C + "legendPos")?.Attribute("val") is null or "r");
-        if (kind == ChartKind.ClusteredBar)
+        if (horizontal || stacked)
             renderable &= ((string?)data.Element(C + "gapWidth")?.Attribute("val") is null or "150")
-                && ((string?)data.Element(C + "overlap")?.Attribute("val") is null or "0")
+                && (stacked ? (string?)data.Element(C + "overlap")?.Attribute("val") == "100" : (string?)data.Element(C + "overlap")?.Attribute("val") is null or "0")
                 && data.Elements(C + "gapWidth").Count() <= 1 && data.Elements(C + "overlap").Count() <= 1
                 && data.Elements(C + "grouping").Count() <= 1 && categories[0].Elements(C + "axPos").Count() <= 1
                 && values[0].Elements(C + "axPos").Count() <= 1;
         renderable &= !plot.Descendants(C + "orientation").Any(e => (string?)e.Attribute("val") is not null and not "minMax")
             && !plot.Descendants(C + "crossesAt").Any() && !plot.Descendants(C + "delete").Any(e => (string?)e.Attribute("val") is "1" or "true")
             && !plot.Descendants(C + "tickLblPos").Any(e => (string?)e.Attribute("val") is not null and not "nextTo")
-            && (kind == ChartKind.ClusteredBar ? (string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "l" : (string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "b")
-            && (kind == ChartKind.ClusteredBar ? (string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "b" : (string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "l")
+            && (horizontal ? (string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "l" : (string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "b")
+            && (horizontal ? (string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "b" : (string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "l")
             && !root.Descendants(C + "dTable").Any() && !root.Descendants(C + "dPt").Any() && !root.Descendants(C + "extLst").Any()
             && !root.Descendants(C + "symbol").Any(e => (string?)e.Attribute("val") is not null and not "none")
             && !root.Descendants(A + "gradFill").Any() && !root.Descendants(A + "blipFill").Any() && !root.Descendants(A + "effectLst").Any()

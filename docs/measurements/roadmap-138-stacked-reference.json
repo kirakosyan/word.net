@@ -1,0 +1,110 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "workingTreeParent": "0230fcbf53f64ecfa86cbcb55a9c04741dfd0e82",
+  "executedWorkingTreeNet10AssemblySha256": "94af1223a22b87191f6ab067f61e12ca53b7af19a62ed3790fba3bacc450fd35",
+  "scope": "Diagnosed ordinary managed stacked bars and columns. Two independent office references retain absolute geometry failures; pie/doughnut, labels, native/tagged/archive output and full issue acceptance remain open.",
+  "provenance": "Two synthetic charts independently authored with XlsxWriter 3.2.9 (BSD-2-Clause) using an existing synthetic MIT OPC shell and local workbook. ZIP entries and timestamps are normalized and regeneration is byte-identical. Open XML SDK 3.5.1 validated both sources and saved DOCX. Offline LibreOffice 24.2.7.2 image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 rendered sources and reopened saved documents; their colored vector rectangles were numerically equal after rounding to 0.001 pt. PyMuPDF 1.27.2.2 and pypdf 6.10.0 inspected PDF text and geometry. No Microsoft Word reference was available.",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceSchemaLogSha256": "5b981156427602d5b39c0a8b4ec71e3be0edce46c569ba917c13532c91b3713d",
+  "savedSchemaLogSha256": "2c65569442ee79a0cb2415ad57d2f3c918b5a27437f443a79e9d8b251167db27",
+  "checkerLogSha256": "09ad94a6dc3d86d0f8e291c781dc1ebf08a97e8466bdf9b7c8066ce23cae9aba",
+  "tools": {
+    "eng/generate-roadmap-138-stacked-fixtures.py": "f132c6179388033a2631ddf9c05bf335f64314780d1fedde8c2a162b827b0b0b",
+    "eng/roadmap-138-stacked-probe.cs": "c4e70010ca00592d7e5e7645c34346ff75baa7b99726ef3d1fb16ceaff2dcf02",
+    "eng/check-roadmap-138-stacked.py": "773a3bba62fd6ce1316e1faba74c13ae68ac3121d5223cf2bdeb70e0d2a93c4b",
+    "eng/verify-roadmap-138-stacked.py": "67738ab9dc37edd94d200deed2bca6276a9b4945a255631fc4073a014d07f41e"
+  },
+  "documents": {
+    "bar": {
+      "inputDocxSha256": "b43fe842d162519106d09ab026892565177d9155314d317d7556173467eed3ee",
+      "savedDocxSha256": "4fe89611ca95e09590c5b38e106128b9b076036d014fa0c4f76163a85006a458",
+      "pdfSha256": "62500582e04244ed38b17d554f246749198c2b1e59ba0111cad4cc0883213461",
+      "xpsSha256": "5b4a79adc9fe8c698c0763f26cc23cef4819a77883b355612fa571115dbbf18c",
+      "svgSha256": "07b91b766a29f8ffcf122eca424680685822c65ef84400eba4d8c09f1dc85b58",
+      "diagnosticsSha256": "faadbb288160579ce963e00d4601c3b7952f577840c48e4ced017a53b19c4f6d",
+      "referencePdfSha256": "0dee62eda74e5e34aa9ba281b3a328720ff67c0f4df58fa1bb6a610b5daef738",
+      "referenceReopenedSavedPdfSha256": "f203a394885035a0a0dfc14eab9b66e9ce3e822f51db519e2dcfc6c4fff2befe"
+    },
+    "column": {
+      "inputDocxSha256": "eb9ad99be0f11e9a7f760f3cb15c9caec8673c16c5b047fb6ed4cd99ce1829a5",
+      "savedDocxSha256": "f127c1a708cb8fbf70e3a7b7f14fc7e199095b4239c4cfc89736f198dea42581",
+      "pdfSha256": "df605f64900d8c876add0aade8d115fbe68124557738279e693af85014b8ab3e",
+      "xpsSha256": "5da72052aa3d3654cd0fe2998c49e9c8e9b76b389d28b87438388a4632127e4f",
+      "svgSha256": "02a2d5d93858d76f5bc885378b6bea34a96b005be0863ce96d2a0f117017a8aa",
+      "diagnosticsSha256": "faadbb288160579ce963e00d4601c3b7952f577840c48e4ced017a53b19c4f6d",
+      "referencePdfSha256": "a2b235af262b2ccc747e56ca5e9b0fc3f498c5120bed8a55cf032cb03415e63f",
+      "referenceReopenedSavedPdfSha256": "adfa25c8e9d3eabc5ef1f47968478f7e7ed23846723d7baa138937fea9bddf99"
+    }
+  },
+  "result": {
+    "specimens": [
+      {
+        "kind": "bar",
+        "graph": {
+          "chartSha256": "f081f0ba926b5581c17afda849f88b4f0e24aa84c5deaae1a2719146dfaca130",
+          "workbookSha256": "ce0ed7a56a3c523246c315f03e8196f972a3c002134a3d31bdc14e60e5dde172"
+        },
+        "pdfSvgMaxDeltaPt": 1.904296874499778e-05,
+        "pdfXpsMaxDeltaPt": 4.999999998744897e-05,
+        "referenceMaxDeltaPt": 26.118011474609375,
+        "referenceAxisDeltaPt": 20.67132568359375,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "actualAxisPt": 137.42132568359375,
+        "referenceAxisPt": 116.75,
+        "actualLegendOrder": [
+          "North",
+          "South"
+        ],
+        "referenceLegendOrder": [
+          "North",
+          "South"
+        ]
+      },
+      {
+        "kind": "column",
+        "graph": {
+          "chartSha256": "d75c042518725e0f39c33ce236e07bbbf53dc134f5b6574de9f7c53e4ca8183c",
+          "workbookSha256": "ce0ed7a56a3c523246c315f03e8196f972a3c002134a3d31bdc14e60e5dde172"
+        },
+        "pdfSvgMaxDeltaPt": 1.4990234376455192e-05,
+        "pdfXpsMaxDeltaPt": 6.303710938482254e-05,
+        "referenceMaxDeltaPt": 36.10054016113281,
+        "referenceAxisDeltaPt": 17.0838623046875,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "actualAxisPt": 142.6666717529297,
+        "referenceAxisPt": 159.7505340576172,
+        "actualLegendOrder": [
+          "South",
+          "North"
+        ],
+        "referenceLegendOrder": [
+          "South",
+          "North"
+        ]
+      }
+    ],
+    "negativeControls": {
+      "missing bar diagnostic": "Missing independent reference-difference diagnostic",
+      "missing column diagnostic": "Missing independent reference-difference diagnostic",
+      "wrong reference": "Signed stack lengths differ from input values",
+      "changed editable data": "Editable chart data changed",
+      "changed SVG geometry": "PDF, SVG and XPS stacked geometry differ",
+      "changed XPS geometry": "PDF, SVG and XPS stacked geometry differ",
+      "changed legend order": "Stacked legend order differs from the independent reference",
+      "missing PDF content": "Missing logical category or legend text"
+    }
+  },
+  "retainedFirstPrototype": {
+    "assemblySha256": "4dca6871b822f880be35a09854084706f37ba82ac0b74139acd020b7b63a53b8",
+    "barPdfSha256": "ebe0a635e6efe86cdbb66bcfac04024fccb63d0dcf0583da4af4a246e7789780",
+    "columnPdfSha256": "119e131b1f02d90cca2460303b6ca4f12627f1a862a4d59957fa692cd7f448b8",
+    "observation": "The first prototype reversed North/South legend positions relative to LibreOffice in both orientations. The corrected ordering is independently checked; this does not erase the remaining absolute plot-position failures."
+  },
+  "earlierAttempts": "The initial focused test build failed CA1861 for a constant test array. A static readonly field fixed it without disabling the analyzer.",
+  "toolWarnings": "LibreOffice reported that javaldx could not launch; both PDFs and reopened saved outputs were still independently checked.",
+  "qualification": "Working-tree reference only. Exact-source, full suites, package and hosted runtime qualification are separate."
+}

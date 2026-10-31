@@ -180,7 +180,7 @@ The renamed and subset East Asian test fonts derive from Noto Sans CJK Regular
 conversion, exact hashes and license accompany `Fixtures/EastAsian`; these
 test-only faces are not included in production packages.
 
-FontTools 4.61.1 (MIT), uharfbuzz 0.53.0 (Apache-2.0), PyMuPDF 1.27.2.2
+FontTools 4.61.1 (MIT), XlsxWriter 3.2.9 (BSD-2-Clause), uharfbuzz 0.53.0 (Apache-2.0), PyMuPDF 1.27.2.2
 (AGPL-3.0-or-later) and Pillow 12.3.0 (HPND) are development-only independent
 qualification tools, pinned in `eng/p2-requirements.txt`. They are not converter
 runtime dependencies or NuGet contents. The optional office driver uses LibreOffice

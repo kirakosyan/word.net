@@ -29,6 +29,8 @@ public sealed partial class ObjectFoundationTests
     [InlineData(ChartKind.ClusteredColumn)]
     [InlineData(ChartKind.Line)]
     [InlineData(ChartKind.ClusteredBar)]
+    [InlineData(ChartKind.StackedColumn)]
+    [InlineData(ChartKind.StackedBar)]
     public void PublicChartEditingRebuildsWorkbookAndCachesWithValidSchema(ChartKind kind)
     {
         var document = WordDocument.Create(new ConversionOptions(FidelityMode.Lenient)); DocumentObject original = document.AddChart(Definition(kind), cancellationToken: TestContext.Current.CancellationToken);

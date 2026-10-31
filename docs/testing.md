@@ -394,6 +394,14 @@ The [local performance receipt](measurements/roadmap-138-performance-4eaa2d7.jso
 compares the same-source successor against the previous GitHub head with the
 unchanged threshold; the earlier hosted performance failure remains recorded.
 
+Pending #163 stacked-bar and column tests cover signed accumulators, zero and
+missing values, editing and prepared-data binding, DOCX schema, vector output,
+overflow, unsupported overlap and protected output profiles. Two independently
+authored XlsxWriter chart/workbook fixtures passed Open XML SDK validation, and
+eight corrupted controls exercise graph, diagnostics, output content, legend and vector
+checks. The [reference observation](measurements/roadmap-138-stacked-reference.json)
+retains both LibreOffice placement failures at the unchanged 0.5-point tolerance.
+
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection

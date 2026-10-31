@@ -105,8 +105,37 @@ confirms signed relative lengths, order and default-gap geometry, but its plot
 zero origin differs by 19.722 points and its category-label gap by 2.289 points.
 Both fail the existing 0.5-point absolute geometry tolerance; that threshold is
 unchanged and the failures remain open. This is not published 1.5.0 support or a
-claim of general Word/LibreOffice plot parity. Stacked, pie/doughnut charts and
-data labels remain open in #163.
+claim of general Word/LibreOffice plot parity. Pie/doughnut charts and data labels
+remain open in #163.
+
+### Unreleased source: stacked bars and columns
+
+Pending #163 adds `ChartKind.StackedColumn` and `ChartKind.StackedBar` to the
+existing immutable chart, Add/Update and prepared-data binding APIs. Editable
+DOCX uses `c:barChart` with `grouping="stacked"`, explicit `overlap="100"`,
+a linear category/value axis pair and the existing local workbook/cache checks.
+At each category, positive and negative finite values accumulate independently
+from zero; null values are gaps and zero values remain zero-size points. The default
+150-percent gap is measured against one stack's thickness. The legend uses a
+deterministic orientation-specific order that matches the two-series office specimens.
+An all-null chart rejects with `Chart.EmptyData`; an all-zero chart uses the
+existing symmetric -1 to 1 value range.
+Percent-stacked charts,
+custom overlap, effects, data labels and unqualified appearances are excluded or
+remain editable without static rendering. Nonfinite sums and resource overflows
+reject explicitly.
+
+Ordinary managed PDF/XPS/SVG output uses `Chart.StackedLayoutApproximation` in
+BestEffort or Lenient; Strict rejects the editable-object loss or this measured
+layout difference. Native typography and tagged/UA or archival PDF combinations
+remain rejected by `Chart.BarProfile`. The independent XlsxWriter-authored
+[reference cases](measurements/roadmap-138-stacked-reference.json) preserve chart
+and workbook bytes, signed-stack proportions and cross-format vector geometry.
+At the unchanged 0.5-point tolerance their maximum rectangle deviations from
+LibreOffice are 26.12 points for bars and 36.10 points for columns; reference axis
+origins differ by 20.67 and 17.08 points respectively. These failures remain open
+and are not evidence of Microsoft Word behavior. This profile is unreleased source,
+not public 1.5.0 support or full #163 acceptance.
 
 ### Equation authoring
 

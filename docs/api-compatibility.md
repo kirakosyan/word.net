@@ -39,6 +39,9 @@ unchanged. Cell placement requires fixed geometry and explicit physical margins.
 Pending #163 adds `ChartKind.ClusteredBar` without changing existing enum values
 or chart constructors. It uses the existing immutable chart and report-binding
 APIs; its managed rendering approximation and profile restrictions are explicit.
+The later source appends `ChartKind.StackedColumn` and `ChartKind.StackedBar`,
+with independently accumulated positive and negative values and explicit
+reference-layout diagnostics; existing enum values and constructors remain intact.
 
 Pending #153 admits a bounded standalone-equation/native-paragraph combination
 through the existing options and math-font APIs. It adds diagnostics but no public

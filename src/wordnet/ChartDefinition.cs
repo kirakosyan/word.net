@@ -15,6 +15,10 @@ public enum ChartKind
     Line,
     /// <summary>Side-by-side horizontal bars with a zero baseline.</summary>
     ClusteredBar,
+    /// <summary>Columns that stack positive and negative series independently.</summary>
+    StackedColumn,
+    /// <summary>Horizontal bars that stack positive and negative series independently.</summary>
+    StackedBar,
 }
 
 /// <summary>One immutable, explicitly coloured series. Null values are gaps.</summary>
@@ -48,7 +52,8 @@ public sealed class ChartDefinition
     /// <summary>Copies an admitted chart with 1–16 series, matching category counts and at most 10,000 total points.</summary>
     public ChartDefinition(ChartKind kind, IEnumerable<string> categories, IEnumerable<ChartSeries> series, string title = "", bool showLegend = true, string categoryTitle = "", string valueTitle = "")
     {
-        if (kind is not ChartKind.ClusteredColumn and not ChartKind.Line and not ChartKind.ClusteredBar) throw new ArgumentOutOfRangeException(nameof(kind));
+        if (kind is not ChartKind.ClusteredColumn and not ChartKind.Line and not ChartKind.ClusteredBar and not ChartKind.StackedColumn and not ChartKind.StackedBar)
+            throw new ArgumentOutOfRangeException(nameof(kind));
         Guard.NotNull(categories, nameof(categories));
         Guard.NotNull(series, nameof(series));
         ObjectText.Check(title, nameof(title), 1024);

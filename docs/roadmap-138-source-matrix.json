@@ -280,6 +280,30 @@
       ]
     },
     {
+      "id": "stacked-bars-and-columns-diagnosed",
+      "issue": 163,
+      "outcome": "supported-bounded",
+      "boundary": "Stacked bars and columns retain editable local workbook data and render separate signed managed stacks with explicit reference-position diagnostics in BestEffort/Lenient.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "StackedChartsRetainEditableDataAndSignedVectorGeometry" },
+        { "class": "ObjectFoundationTests", "method": "StackedChartBindingKeepsImmutableSourceAndWorkbook" },
+        { "class": "ObjectFoundationTests", "method": "StackedLegendPositionFollowsTheAdmittedOfficeOrder" },
+        { "class": "ObjectFoundationTests", "method": "EmptyAndZeroStacksHaveExplicitBehavior" },
+        { "class": "ObjectFoundationTests", "method": "PublicChartEditingRebuildsWorkbookAndCachesWithValidSchema" }
+      ]
+    },
+    {
+      "id": "stacked-bars-and-columns-unqualified",
+      "issue": 163,
+      "outcome": "rejected",
+      "boundary": "Percent stacks, unsupported overlap, nonfinite totals, Strict loss and native, tagged or archival combinations remain explicit failures.",
+      "tests": [
+        { "class": "ObjectFoundationTests", "method": "StackedChartRejectsUnqualifiedOverlapAndNonFiniteTotals" },
+        { "class": "ObjectFoundationTests", "method": "StackedAccumulatorsRespectResourceAndCancellationBounds" },
+        { "class": "ObjectFoundationTests", "method": "StackedChartsRejectStrictAndUnqualifiedProfilesBeforeOutput" }
+      ]
+    },
+    {
       "id": "crosstab-fixed-cell-bookmark",
       "issue": 158,
       "outcome": "supported-bounded",

@@ -232,6 +232,10 @@ in BestEffort/Lenient for its measured plot-area difference; Strict export is
 already rejected by `Object.EditableOutputLoss`. `Chart.BarProfile` rejects
 unqualified native, tagged and archival combinations. Custom bar gaps, overlap
 and axis appearances remain non-renderable rather than silently ignored.
+Stacked bars and columns report `Chart.StackedLayoutApproximation` for the
+independently measured plot/axis differences; Strict rejects this loss.
+`Chart.Overlap` rejects unqualified stacked overlap and `Chart.Range` rejects
+nonfinite stacked totals. `Limit.ChartStack` bounds the temporary accumulators.
 
 Unreleased #151 source reports `Typography.MergedTableSpacing` when conservative
 native line metrics may change merged-table row heights; Strict rejects this loss.

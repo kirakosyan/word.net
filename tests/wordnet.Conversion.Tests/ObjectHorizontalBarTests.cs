@@ -75,8 +75,8 @@ public sealed partial class ObjectFoundationTests
     {
         var options = new ConversionOptions(FidelityMode.Lenient); var doc = WordDocument.Create(options);
         doc.AddChart(Bars(), description: "Signed values", cancellationToken: TestContext.Current.CancellationToken); byte[] saved = SaveObjects(doc);
-        byte[] stacked = Xml(saved, "word/charts/chart1.xml", xml => xml.Descendants(C + "grouping").Single().SetAttributeValue("val", "stacked"));
-        Assert.Throws<NotSupportedException>(() => Read(stacked));
+        byte[] incompleteStack = Xml(saved, "word/charts/chart1.xml", xml => xml.Descendants(C + "grouping").Single().SetAttributeValue("val", "stacked"));
+        Assert.Throws<NotSupportedException>(() => Read(incompleteStack)); // Explicit full overlap is required.
         byte[] rotatedAxis = Xml(saved, "word/charts/chart1.xml", xml => xml.Descendants(C + "catAx").Single().Element(C + "axPos")!.SetAttributeValue("val", "b"));
         Assert.False(Read(rotatedAxis).Renderable);
         byte[] customGap = Xml(saved, "word/charts/chart1.xml", xml => xml.Descendants(C + "barChart").Single().Elements(C + "axId").First().AddBeforeSelf(new XElement(C + "gapWidth", new XAttribute("val", "200"))));

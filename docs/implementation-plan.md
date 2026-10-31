@@ -123,7 +123,9 @@ on admitted managed vector shapes. Other angles, alpha, groups, effects and
 tagged/archive/native output remain open; the remapped-theme reference color
 difference is diagnosed and exact hosted qualification is separate.
 Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
-The reference plot-position failure, stacked/circular charts, data labels and
+The later [stacked-bar and column profile](p2-objects-typography.md#unreleased-source-stacked-bars-and-columns)
+retains separate signed totals but diagnoses independent reference-position differences.
+The reference plot-position failures, circular charts, data labels and
 native/tagged/archive qualification remain open.
 Pending #164 adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
 in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.
