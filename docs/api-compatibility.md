@@ -35,6 +35,10 @@ Pending #163 adds `ChartKind.ClusteredBar` without changing existing enum values
 or chart constructors. It uses the existing immutable chart and report-binding
 APIs; its managed rendering approximation and profile restrictions are explicit.
 
+Pending #154 adds `PdfTextBoxReadingOrder` and `PdfOptions.TextBoxReadingOrder`.
+The default rejects or diagnoses text boxes as before; `AnchorOrder` explicitly
+opts into the bounded source-order profile on all target frameworks.
+
 The pending #168 source API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)

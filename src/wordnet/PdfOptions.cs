@@ -23,6 +23,15 @@ public enum PdfAccessibility
     PdfUa1 = 2,
 }
 
+/// <summary>Explicit reading-order policy for positioned text boxes in tagged PDF.</summary>
+public enum PdfTextBoxReadingOrder
+{
+    /// <summary>Retain the existing rejection or loss for text boxes.</summary>
+    Reject = 0,
+    /// <summary>Place admitted text-box content at its source anchor in the structure tree.</summary>
+    AnchorOrder = 1,
+}
+
 /// <summary>Controls PDF output. Configure before starting concurrent conversions.</summary>
 public sealed class PdfOptions
 {
@@ -30,6 +39,8 @@ public sealed class PdfOptions
     public PdfAccessibility Accessibility { get; set; }
     /// <summary>Gets or sets the explicit BCP 47 document language for tagged output, for example en-US.</summary>
     public string? Language { get; set; }
+    /// <summary>Gets or sets the explicit reading order for admitted positioned text boxes. Defaults to rejection.</summary>
+    public PdfTextBoxReadingOrder TextBoxReadingOrder { get; set; }
     private List<PageRange> pages = new List<PageRange>();
     /// <summary>Gets ascending nonoverlapping physical source-page ranges; empty selects all. Full layout precedes selection, retaining original PAGE/NUMPAGES and labels.</summary>
     public IList<PageRange> Pages => pages;
@@ -46,6 +57,8 @@ public sealed class PdfOptions
     {
         if (Conformance is not PdfConformance.Pdf17 and not PdfConformance.PdfA2b)
             throw new ArgumentOutOfRangeException(nameof(Conformance));
+        if (TextBoxReadingOrder is not PdfTextBoxReadingOrder.Reject and not PdfTextBoxReadingOrder.AnchorOrder)
+            throw new ArgumentOutOfRangeException(nameof(TextBoxReadingOrder));
         var copy = (PdfOptions)MemberwiseClone();
         if (pages.Count > 100000) throw new ArgumentException("Too many PDF page ranges.");
         copy.pages = new List<PageRange>(pages); return copy;

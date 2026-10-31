@@ -39,7 +39,8 @@ internal sealed partial class DocxWriter
             new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", box.Border.Color)))));
         var container = new XElement(Wp + "inline", new XElement(Wp + "extent", new XAttribute("cx", Emu(box.Width)), new XAttribute("cy", Emu(box.Height))),
             new XElement(Wp + "docPr", new XAttribute("id", id), new XAttribute("name", (box.Geometry == null ? "Text box " : "Shape ") + id.ToString(CultureInfo.InvariantCulture)),
-                box.AlternativeText.Length == 0 ? null : new XAttribute("descr", box.AlternativeText)),
+                box.AlternativeText.Length == 0 ? null : new XAttribute("descr", box.AlternativeText),
+                box.AlternativeTitle.Length == 0 ? null : new XAttribute("title", box.AlternativeTitle)),
             new XElement(A + "graphic", new XElement(A + "graphicData", new XAttribute("uri", wps.NamespaceName),
                 new XElement(wps + "wsp", new XElement(wps + "cNvSpPr", box.Geometry == null ? new XAttribute("txBox", true) : null), properties,
                     box.Geometry != null ? null : box.StorySequence > 0 ? new XElement(wps + "linkedTxbx", new XAttribute("id", box.StoryId ?? throw new InvalidDataException("Shape.TextBoxChain: Missing story identifier.")), new XAttribute("seq", box.StorySequence))

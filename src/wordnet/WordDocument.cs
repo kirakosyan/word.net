@@ -229,6 +229,8 @@ public sealed partial class WordDocument
         long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
             + (model.Theme?.Xml.Length ?? 0) + (model.Theme?.Mapping?.Length ?? 0)
             + themeReferences
+            + model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Box != null)
+                .Sum(r => (long)r.Box!.AlternativeText.Length + r.Box.AlternativeTitle.Length)
             + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
             + model.Review.Comments.Values.Concat(model.Review.Revisions.Values).Sum(r => (long)r.Author.Length + r.Initials.Length + r.Id.Length)
             + model.Review.Comments.Values.Sum(r => r.Body.Sum(p => (long)p.Text.Length));

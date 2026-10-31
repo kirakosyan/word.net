@@ -80,6 +80,9 @@ and paints managed paths. See the [profile and exclusions](roadmap-102-p4-p5.md)
 Pending #152 snapshots admitted scalar results on the detached native layout model
 before bidi resolution and shaping. Its field expansion is bounded; known vertical
 and directional reference differences are diagnosed rather than treated as parity.
+Pending #154 builds a Div and paragraph subtree at an explicitly selected text-box
+anchor, using actual page MCIDs and link ParentTree associations. The opt-in is
+restricted to unambiguous unrotated body boxes; notes and other owners remain open.
 
 ## P3 reports — merged source
 

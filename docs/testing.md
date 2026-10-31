@@ -220,6 +220,14 @@ tolerances; both are explicit losses and Strict rejects them.
 The [exact-source receipt](measurements/roadmap-138-native-fields-bc157ce.json)
 records the complete local suites, package checks and reproduced specimens.
 
+Pending #154 text-box tests exercise explicit anchor ordering, links, multiple
+boxes, page selection and unsupported semantic owners. The independent
+[reference observation](measurements/roadmap-138-accessible-box-reference.json)
+records source/saved DOCX schema checks, pinned veraPDF, ParentTree and reading-order
+inspection and four corruption controls; it is not a screen-reader study.
+The pending Linux workflow runs these checks with test-only pypdf 6.10.0 and
+retains the generated evidence; its hosted result requires a separate run.
+
 Pending #167 preview-layout tests check opt-in text privacy, selected pages,
 immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
 and resource limits. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)

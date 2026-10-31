@@ -3,6 +3,29 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "accessible-anchor-ordered-boxes",
+      "issue": 154,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit anchor order places admitted unrotated top-and-bottom body text boxes and their supported links in tagged/PDF-UA structure, including multiple boxes and page selection.",
+      "tests": [
+        { "class": "PdfAccessibleTextBoxTests", "method": "ExplicitAnchorOrderIncludesTextBoxParagraphsAndLinkInTheStructureTree" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "AnchorOrderKeepsTagsAcrossPagesAndAfterPageSelection" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "SeparateBoxesFollowTheirExplicitSourceAnchorOrder" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "TextBoxAlternativeDescriptionAndTitleRemainInEditableDocx" }
+      ]
+    },
+    {
+      "id": "accessible-boxes-unqualified",
+      "issue": 154,
+      "outcome": "rejected",
+      "boundary": "Default UA behavior and unsupported owners, placement, native output or authored alternatives reject; unknown order values and oversized metadata fail explicitly.",
+      "tests": [
+        { "class": "PdfAccessibleTextBoxTests", "method": "UnqualifiedBoxesAndMissingReadingOrderFailBeforeOutput" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "ReadingOrderOptionsAreSnapshottedAndUnknownValuesReject" },
+        { "class": "PdfAccessibleTextBoxTests", "method": "OversizedTextBoxAlternativeMetadataRejectsBeforeUse" }
+      ]
+    },
+    {
       "id": "native-scalar-fields-diagnosed",
       "issue": 152,
       "outcome": "supported-bounded",

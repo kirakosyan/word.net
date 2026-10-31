@@ -91,6 +91,9 @@ Pending #152 [native scalar-field display](p2-objects-typography.md#unreleased-s
 refreshes bounded values before shaping in BestEffort/Lenient, with diagnosed
 vertical and directional differences. Lists, tabs, controls, reference fields,
 strict parity and conformance combinations remain open.
+Pending #154 adds explicitly [anchor-ordered accessible text boxes](interoperability.md#unreleased-source-anchor-ordered-text-boxes)
+for a narrow ordinary-body profile. Notes, alternate text semantics, other owners,
+placement, native typography and complete independent qualification remain open.
 Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;

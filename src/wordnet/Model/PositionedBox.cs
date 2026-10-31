@@ -29,6 +29,7 @@ internal sealed class PositionedBox
     internal int StorySequence { get; set; }
     internal string? Geometry { get; set; }
     internal string AlternativeText { get; set; } = "";
+    internal string AlternativeTitle { get; set; } = "";
     internal string? Fill { get; set; }
     internal CellBorder? Border { get; set; }
     internal CellPadding Padding { get; set; } = new CellPadding { Left = 7.2, Right = 7.2, Top = 3.6, Bottom = 3.6 };

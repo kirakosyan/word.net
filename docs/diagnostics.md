@@ -233,6 +233,12 @@ page/reference fields, nested instructions and unqualified output profiles;
 `Limit.TypographyFields` and the existing character/work limits bound expansion.
 The diagnostics do not include field values.
 
+Pending #154 uses `Pdf.TextBoxReadingOrder` to reject an unsupported opt-in
+box owner, placement, content or output combination before copying output.
+`Shape.TextBoxAlternative` reports a non-DOCX destination's loss of an authored
+text-box title or description; Strict rejects it. Oversized text-box alternatives
+fail with `Shape.TextBoxAlternative` before use.
+
 ## Merged P1 diagnostics
 
 Report preprocessing rejects invalid paths/types/cycles, arithmetic failures and

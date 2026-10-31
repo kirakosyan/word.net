@@ -184,6 +184,31 @@ annotation references, appends sequential structure objects and rewrites offsets
 It reimplements the public token-writer interface for final xref; there is no private
 reflection or guessed object-ID range. UTF-16BE hex preserves accessible descriptions.
 
+### Unreleased source: anchor-ordered text boxes
+
+Pending #154 adds `PdfTextBoxReadingOrder.AnchorOrder` as an explicit caller
+choice for tagged PDF and PDF/UA-1. The default `Reject` keeps the existing
+profile. An admitted unrotated, unlinked text box must be the only meaningful
+item in its own ordinary body paragraph, anchored at that paragraph with
+top-and-bottom wrapping on a one-column page. It may contain ordinary text
+paragraphs and supported links. The structure tree places its content at the
+source anchor without duplicating it; page selection rebuilds the relevant
+page and link associations. The caller is responsible for choosing this order.
+
+Authored text-box descriptions and titles are retained in editable DOCX but
+remain outside this semantic profile; other destinations report
+`Shape.TextBoxAlternative` when they cannot retain them. Notes, mixed or cell/story
+owners, linked/rotated/fitted boxes, native typography and arbitrary placement or
+wrapping remain outside this increment. The [independent observation](measurements/roadmap-138-accessible-box-reference.json)
+checks veraPDF, source order, page/annotation ParentTree mappings and corruption
+controls. It does not establish screen-reader or live Word behavior, published
+package availability or complete #154 acceptance.
+
+```csharp
+options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
+options.Pdf.TextBoxReadingOrder = PdfTextBoxReadingOrder.AnchorOrder;
+```
+
 ## Physical pages and previews
 
 `Pdf.Pages.Add(new PageRange(first, last))` selects one-based physical source pages,

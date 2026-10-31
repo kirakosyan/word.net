@@ -68,12 +68,17 @@ internal sealed partial class DocxReader
         XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
         XElement? anchor = drawing.Element(Wp + "anchor");
         XElement extent = (anchor ?? drawing.Element(Wp + "inline"))?.Element(Wp + "extent") ?? throw new InvalidDataException("Docx.TextBox: Missing extent.");
+        XElement? description = (anchor ?? drawing.Element(Wp + "inline"))?.Element(Wp + "docPr");
         var box = new PositionedBox
         {
             Width = Integer(extent, "cx", 1, 20116800) / 12700.0,
             Height = Integer(extent, "cy", 1, 20116800) / 12700.0,
-            Anchor = anchor == null ? new DrawingAnchor { Wrap = "topAndBottom" } : ReadAnchor(anchor)
+            Anchor = anchor == null ? new DrawingAnchor { Wrap = "topAndBottom" } : ReadAnchor(anchor),
+            AlternativeText = (string?)description?.Attribute("descr") ?? "",
+            AlternativeTitle = (string?)description?.Attribute("title") ?? ""
         };
+        if (box.AlternativeText.Length > 1024 || box.AlternativeTitle.Length > 1024)
+            throw new InvalidDataException("Shape.TextBoxAlternative: Alternative text or title exceeds its bound.");
         XElement? head = drawing.Descendants(wps + "txbx").FirstOrDefault();
         XElement? continuation = drawing.Descendants(wps + "linkedTxbx").FirstOrDefault();
         if (head != null && continuation != null || content == null && continuation == null && head == null)

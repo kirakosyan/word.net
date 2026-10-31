@@ -38,6 +38,7 @@ internal sealed class PdfTags
     private readonly HashSet<ParagraphBlock> headers = new HashSet<ParagraphBlock>();
     private readonly Dictionary<ParagraphBlock, int> firstHeaderPage = new Dictionary<ParagraphBlock, int>();
     private readonly ConversionContext context;
+    private bool anchorOrderedBoxes;
     internal PdfOptions Options { get; }
     private int nodes;
     private int previousHeading;
@@ -57,8 +58,46 @@ internal sealed class PdfTags
         }
         if (options.Language == null || options.Language.Length > 64 || !Regex.IsMatch(options.Language, @"\A[A-Za-z]{2,3}(-[A-Za-z]{4})?(-[A-Za-z]{2}|-[0-9]{3})?\z", RegexOptions.CultureInvariant)) Missing("Pdf.Language", "Set Pdf.Language to a supported BCP 47 language[-Script][-Region] tag.");
         if (string.IsNullOrWhiteSpace(model.Title)) Missing("Pdf.Title", "Supply the document title before requesting accessible PDF.");
-        if (model.Notes.Count > 0 || model.Paragraphs.Any(p => p.Runs.Any(r => r.Box != null || r.Note != null))) Missing("Pdf.SemanticFeature", "Footnote relationships and positioned text boxes are outside the initial accessibility profile; use ordinary PDF or simplify the source.");
+        if (model.Notes.Count > 0 || model.Paragraphs.Any(p => p.Runs.Any(r => r.Note != null)))
+            Missing("Pdf.SemanticFeature", "Footnote relationships are outside the initial accessibility profile; use ordinary PDF or simplify the source.");
+        if (model.Paragraphs.Any(p => p.Runs.Any(r => r.Box != null)))
+        {
+            if (options.TextBoxReadingOrder == PdfTextBoxReadingOrder.AnchorOrder)
+            {
+                ValidateTextBoxes(model); anchorOrderedBoxes = true;
+            }
+            else Missing("Pdf.SemanticFeature", "Choose an admitted text-box reading order or use ordinary PDF.");
+        }
         Blocks(model.Blocks, Root);
+    }
+    private void ValidateTextBoxes(DocumentModel model)
+    {
+        if (context.Typography.Enabled || model.HasLinkedTextBoxes || model.Review.HasHistory || model.Notes.Count != 0)
+            throw new NotSupportedException("Pdf.TextBoxReadingOrder: Native typography, linked boxes, notes and review histories require separate qualification.");
+        var body = new HashSet<ParagraphBlock>(model.Blocks.OfType<ParagraphBlock>());
+        foreach (ParagraphBlock host in model.Paragraphs.Where(p => p.Runs.Any(r => r.Box != null)))
+        {
+            context.CheckCancellation(); TextRun[] boxes = host.Runs.Where(r => r.Box != null).ToArray();
+            if (!body.Contains(host) || boxes.Length != 1 || host.List != null || host.Control != null || host.NestedControl != null
+                || host.TypedControlId.HasValue || host.HeadingLevel != 0 || (host.Section?.Columns ?? model.FinalSection?.Columns ?? 1) != 1
+                || host.Runs.Any(r => r.Box == null && (r.Text.Length != 0 || r.Link != null || r.FieldInstruction != null || r.Bookmark != null
+                    || r.Image != null || r.Note != null || r.Object != null || r.Control != null || r.TypedControlId.HasValue)))
+                throw new NotSupportedException("Pdf.TextBoxReadingOrder: A text box requires its own ordinary body paragraph on a one-column page.");
+            if (boxes[0].Link != null || boxes[0].FieldInstruction != null || boxes[0].Bookmark != null || boxes[0].Image != null
+                || boxes[0].Note != null || boxes[0].Object != null || boxes[0].Control != null || boxes[0].TypedControlId.HasValue
+                || boxes[0].Revision != null || boxes[0].FormatRevision != null || boxes[0].Comment != null)
+                throw new NotSupportedException("Pdf.TextBoxReadingOrder: The box anchor cannot carry other structured semantics.");
+            PositionedBox box = boxes[0].Box!;
+            if (box.Geometry != null || box.Rotation != 0 || box.ShrinkToFit || box.StorySequence != 0 || box.StoryId.HasValue && !box.ImplicitStoryId
+                || box.Anchor.Behind || box.Anchor.UnqualifiedLayer || box.Anchor.Wrap != "topAndBottom" || box.Anchor.VerticalOrigin != "paragraph"
+                || box.Anchor.VerticalAlignment != null || box.Anchor.Y != 0 || box.AlternativeText.Length != 0 || box.AlternativeTitle.Length != 0 || box.Blocks.Count == 0)
+                throw new NotSupportedException("Pdf.TextBoxReadingOrder: Only unrotated, unlinked top-and-bottom boxes at their source paragraph are admitted.");
+            if (box.Blocks.Any(b => b is not ParagraphBlock p || p.HeadingLevel != 0 || p.List != null || p.Control != null || p.NestedControl != null
+                || p.TypedControlId.HasValue || p.Runs.Any(r => r.Box != null || r.Image != null || r.Object != null || r.Note != null || r.Bookmark != null
+                    || r.FieldInstruction != null || r.Control != null || r.TypedControlId.HasValue || r.Revision != null || r.FormatRevision != null || r.Comment != null))
+                || !box.Blocks.Cast<ParagraphBlock>().Any(p => p.Text.Length != 0))
+                throw new NotSupportedException("Pdf.TextBoxReadingOrder: Box content requires ordinary text paragraphs and supported links.");
+        }
     }
     private Node Add(string role, Node parent)
     {
@@ -76,6 +115,10 @@ internal sealed class PdfTags
         {
             if (block is ParagraphBlock paragraph)
             {
+                if (anchorOrderedBoxes && paragraph.Runs.FirstOrDefault(r => r.Box != null)?.Box is PositionedBox box)
+                {
+                    lists.Clear(); Blocks(box.Blocks, Add("Div", parent)); continue;
+                }
                 Node container = parent;
                 if (paragraph.List is ListItem item)
                 {
