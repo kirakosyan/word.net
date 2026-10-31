@@ -118,6 +118,8 @@ hosted conclusions remain failures.
 The later [Framework receipt](measurements/roadmap-138-framework-a34ef58.json)
 records four successful 2,042-case source and package guests and distinguishes the
 push head from GitHub's PR merge commit.
+The following [PR guest failure](measurements/roadmap-138-framework-bc9995f-failure.json)
+preserves an early VM exit without completed test evidence; it is not a Framework pass.
 
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit
@@ -201,6 +203,8 @@ immutable snapshots, glyph boxes, source-located diagnostics, unsupported owners
 and resource limits. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
 compares SVG glyph geometry using fontTools and bounds it within Poppler PDF word
 boxes. It does not qualify cell, object, native or review-owner identities.
+The [exact-source receipt](measurements/roadmap-138-layout-snapshot-5b6eb7e.json)
+records the complete local suites, package checks and reproduced reference geometry.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
