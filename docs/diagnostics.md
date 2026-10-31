@@ -25,6 +25,9 @@ documented limit use `Docx.TableStyleData`.
 `Table.StyleThemeColor` reports an effective conditional theme-fill reference in
 non-DOCX output because the independent renderer uses its stored fallback instead.
 Unresolved references and unsupported transforms retain `Docx.ThemeColor`.
+`Table.StyleBorderConflict` reports unqualified non-DOCX rendering of conditional
+interior edges, competing whole-table or direct-cell borders, or overlapping
+conditional edges; admitted conditional style borders remain editable in DOCX.
 
 Pending direct table-border support reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and
@@ -520,6 +523,7 @@ conversion diagnostics.
 | `Table.RelativeWidthOutput` | Loss | Binary DOC retains the absolute table profile; percentage widths and autofit are not retained. |
 | `Table.RowForcedSplit` | Report | An oversized non-splitting row is split at line boundaries. |
 | `Table.ShadingApproximated` | Loss | Patterned cell shading uses its solid background color. |
+| `Table.StyleBorderConflict` | Loss | Conditional interior or competing borders are retained in DOCX but their rendered precedence is not independently qualified. |
 | `Table.WidthApproximated` | Report | Cell width and padding are constrained to printable space. |
 | `Template.ControlProperties` | Loss | Control-specific validation, locking, data bindings and appearance are outside the editable tagged-control profile. |
 | `Template.FieldStructure` | Loss | Controls inside field results retain cached content without template execution. |

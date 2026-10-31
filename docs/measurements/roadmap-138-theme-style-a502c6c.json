@@ -1,0 +1,26 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "a502c6c048b5f696f991ff16557b058bce80a55f",
+  "scope": "Unreleased editable conditional clear theme-fill references with their original fallback and an explicit loss for unqualified static rendering.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 1888, "failed": 0, "skipped": 0, "trxSha256": "6afea3e5c0f4b75fdc13c92a03f0b87c1d8382dfcb97c5e8a5a392abeba83d38" },
+    "net10ConversionAndEnglishOcr": { "passed": 1888, "failed": 0, "skipped": 0, "trxSha256": "cfc806adf310f68cae27225415d2068e053e12283edb60272c85b7de88a2a7bf" },
+    "capabilityMatrix": { "profiles": 35, "testMethods": 195, "net10CasesPassed": 357 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "b45f99bae1533d47058a8092d4246d15839d667153d6477aa4c10989da506bd3",
+      "wordnet.Fonts.1.5.0.nupkg": "463b7335b1546e0ff761c916ebc7175c82fbe222464c34ce209f5d77f1ccb91e",
+      "wordnet.Ocr.1.5.0.nupkg": "f64399616c0dbddf45e2f77103245ee7943b3c6104015e2d834a88cf34f4f8d5"
+    }
+  },
+  "earlierAttempts": "The first packaging invocation used the unavailable pwsh executable and did not start packaging; the installed powershell command completed all three packages and archive verification.",
+  "independentEvidence": "Five reproducible synthetic DOCX controls and their LibreOffice PDFs compare blue theme tokens, red stored fallbacks and tint/shade variants. LibreOffice rendered the red fallback in the theme variants, so strict non-DOCX output rejects the difference; DOCX reference metadata is retained. Fixtures, tool versions and hashes are in tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes. No Word execution or complete theme-table-style qualification is claimed.",
+  "qualification": "Hosted qualification, remaining table/theme scope, final review, merge and package publication are not established for this intermediate commit."
+}

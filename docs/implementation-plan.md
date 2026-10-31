@@ -29,10 +29,12 @@ with editable DOCX style chains and bounded row, column, corner and single-width
 band shading, plus editable bounded band sizes and explicit losses for
 unqualified rendering, conflicts and pagination. Used implicit defaults remain
 editable, with their unresolved static rendering difference reported. Non-unit rendered bands,
-conditional borders, full style precedence and independent qualification remain
+conditional interior and competing borders, full style precedence and independent qualification remain
 open; the table-level shading reference failure is retained.
 Conditional theme fills retain bounded editable references and fallback values,
-while independent static rendering differences remain explicit.
+while independent static rendering differences remain explicit. Selected
+conditional outer edges and their editable style metadata are retained, with
+unqualified inheritance and border conflicts reported.
 Pending source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships, including `notTrueType` font metadata and additional
 Word-authored rich-text, plain-text and date control derivatives.

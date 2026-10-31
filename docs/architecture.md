@@ -18,6 +18,9 @@ Unqualified static default rendering and conflicting composition are explicit.
 Conditional style fills also retain bounded theme tokens, transforms and original
 fallbacks alongside resolved RGB values. The effective chain tracks explicit child
 overrides; static theme-color differences are diagnosed rather than hidden.
+Conditional region borders remain structured per side in the style chain, and
+qualified outer edges are resolved against the current grid. Interior, competing
+or overlapping edges and unqualified inherited rendering are diagnosed.
 
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot

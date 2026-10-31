@@ -92,10 +92,24 @@ existing `Docx.ThemeColor` loss and fallback. DOCX theme reconstruction still
 reports `Docx.ThemeData`; whole-table, direct-cell and border theme references
 retain their earlier loss boundaries.
 
+The editable style chain also retains the bounded `single`, `none` and `nil`
+conditional cell borders for the same look regions. Fixed output, HTML and ODT
+resolve individually qualified outside edges from the current grid, including
+after report expansion. Independent [border controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders/README.md)
+confirm distinct outer-edge colors, look flags, selected corners and a combined
+fill and border in LibreOffice. Conditional interior edges, competing borders
+from a whole-table style, and overlapping conditional
+edges remain editable but reject strict non-DOCX output with
+`Table.StyleBorderConflict`; best-effort reports the unqualified precedence.
+Direct cell borders also trigger the existing `Table.BorderConflict` loss.
+The independent renderer also omitted inherited conditional edges, so the
+existing `Table.StyleInheritance` loss applies when rendering depends on them.
+These observations do not establish Word behavior or pixel-identical placement.
+
 Individually bordered, merged, nested or irregular cells, tables in stories or
 text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
 and strict rejection. Style-level paragraph and run properties, conditional
-cell properties other than clear shading, and full border-conflict
+cell properties other than clear shading and bounded borders, and full border-conflict
 precedence remain outside this increment. The independent
 [LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
 checks six edge colors, grid relationships, style inheritance and an inherited

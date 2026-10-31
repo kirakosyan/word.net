@@ -14,6 +14,8 @@ internal static class FidelityChecks
             context.Loss("Docx.TableStyleDefault", "Implicit default table styles are retained in DOCX, but their rendered behavior differs between reference applications.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.Style?.EffectiveRegionThemes.Count > 0))
             context.Loss("Table.StyleThemeColor", "Conditional theme fills are retained in DOCX, but their rendered color differs between reference applications.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalBorderConflict))
+            context.Loss("Table.StyleBorderConflict", "Conditional interior or competing borders are retained in DOCX but their rendered precedence is not independently qualified.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedRegionOverlap))
             context.Loss("Table.StyleRegionOverlap", "Overlapping first/last regions on a single row or column are not independently qualified.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalInheritance))

@@ -3,6 +3,34 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "conditional-outer-border-styles",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Editable style chains retain qualified conditional borders; isolated outer edges, look flags and a fill-and-border combination match independent LibreOffice colors. Composition, comparison and report expansion retain their bounded semantics.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ConditionalOuterEdgesMatchIndependentColorsAndStayEditable" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalBorderStyleChangesCannotBeIgnoredOrAliasedDuringComposition" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalOuterBorderRecomputesAfterReportRowExpansion" },
+        { "class": "DocxTableBorderTests", "method": "BorderOnlyConditionalDefaultRejectsNewTablesWithoutMutatingDocument" }
+      ]
+    },
+    {
+      "id": "conditional-border-conflicts",
+      "issue": 142,
+      "outcome": "rejected",
+      "boundary": "Conditional interior edges, competing or overlapping borders, inherited rendering and missing look settings remain explicitly unqualified; editable metadata and untouched outputs are checked.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "InheritedConditionalBorderDifferenceIsExplicit" },
+        { "class": "DocxTableBorderTests", "method": "InteriorConditionalBordersStayEditableButStaticConflictsReject" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalAndWholeTableBordersKeepTheirConflictExplicit" },
+        { "class": "DocxTableBorderTests", "method": "ConditionalAndDirectCellBordersKeepTheirConflictExplicit" },
+        { "class": "DocxTableBorderTests", "method": "OverlappingCornerAndRowBordersRequireQualifiedPrecedence" },
+        { "class": "DocxTableBorderTests", "method": "BorderOnlyConditionsRequireExplicitTableLook" },
+        { "class": "DocxTableBorderTests", "method": "BorderOnlyBandRetainsDataAndReportsItsUnqualifiedDefaults" },
+        { "class": "DocxTableBorderTests", "method": "DuplicateConditionalBorderSetsFailBeforeOutput" }
+      ]
+    },
+    {
       "id": "conditional-theme-fill-editing",
       "issue": 142,
       "outcome": "supported-bounded",
@@ -121,7 +149,7 @@
       "id": "whole-table-style-unsupported",
       "issue": 142,
       "outcome": "rejected",
-      "boundary": "Implicit default styles, unsupported conditional properties and metadata, direct table or cell conflicts, changed styles in comparison and destination restyling remain explicitly unsupported. Cyclic and overdeep chains fail before output.",
+      "boundary": "Unqualified default-style rendering, unsupported conditional properties and metadata, direct table or cell conflicts, changed styles in comparison and destination restyling remain explicitly unsupported. Cyclic and overdeep chains fail before output.",
       "tests": [
         { "class": "DocxTableBorderTests", "method": "UnsupportedStyleCombinationsFailBeforeWriting" },
         { "class": "DocxTableBorderTests", "method": "CyclicAndOverdeepTableStylesFailWithoutWriting" },

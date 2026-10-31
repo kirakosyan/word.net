@@ -244,12 +244,20 @@ public static partial class DocumentComparison
             context.CheckCancellation();
             if (left.Id != right.Id || left.Name != right.Name || left.Background != right.Background
                 || left.RowBandSize != right.RowBandSize || left.ColumnBandSize != right.ColumnBandSize
-                || left.Regions.Count != right.Regions.Count || left.RegionThemes.Count != right.RegionThemes.Count || left.Borders.Count != right.Borders.Count)
+                || left.Regions.Count != right.Regions.Count || left.RegionThemes.Count != right.RegionThemes.Count
+                || left.RegionBorders.Count != right.RegionBorders.Count || left.Borders.Count != right.Borders.Count)
                 return false;
             foreach (var region in left.Regions)
                 if (!right.Regions.TryGetValue(region.Key, out string? color) || region.Value != color) return false;
             foreach (var region in left.RegionThemes)
                 if (!right.RegionThemes.TryGetValue(region.Key, out TableThemeColor? theme) || !region.Value.Same(theme)) return false;
+            foreach (var region in left.RegionBorders)
+            {
+                if (!right.RegionBorders.TryGetValue(region.Key, out IReadOnlyDictionary<string, CellBorder>? borders) || region.Value.Count != borders.Count) return false;
+                foreach (var edge in region.Value)
+                    if (!borders.TryGetValue(edge.Key, out CellBorder? other) || edge.Value.Style != other.Style
+                        || edge.Value.Color != other.Color || edge.Value.Width != other.Width) return false;
+            }
             foreach (var border in left.Borders)
                 if (!right.Borders.TryGetValue(border.Key, out CellBorder? other) || border.Value.Style != other.Style
                     || border.Value.Color != other.Color || border.Value.Width != other.Width) return false;

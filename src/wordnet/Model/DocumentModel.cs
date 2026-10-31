@@ -121,7 +121,10 @@ internal sealed class TableBlock : DocumentBlock
     internal bool HasTableShading => EffectiveBackground != null || Look != null && Style?.EffectiveRegions.Count > 0;
     internal bool HasUnqualifiedConditionalInheritance => Look != null && Style is TableStyle style && style.BasedOn is TableStyle parent
         && Rows.Count > 0 && Rows[0].Count > 0
-        && parent.EffectiveRegions.Keys.Any(name => !style.Regions.ContainsKey(name) && RegionMayApply(name, style, Look));
+        && (parent.EffectiveRegions.Keys.Any(name => !style.Regions.ContainsKey(name) && RegionMayApply(name, style, Look))
+            || parent.EffectiveRegionBorders.Any(region => RegionMayApply(region.Key, style, Look)
+                && (!style.RegionBorders.TryGetValue(region.Key, out IReadOnlyDictionary<string, CellBorder>? child)
+                    || region.Value.Keys.Any(side => !child.ContainsKey(side)))));
     private bool RegionMayApply(string name, TableStyle style, TableStyleLook look)
     {
         bool firstRow = look.Has(0x20), lastRow = look.Has(0x40), firstColumn = look.Has(0x80), lastColumn = look.Has(0x100);
@@ -145,44 +148,83 @@ internal sealed class TableBlock : DocumentBlock
     internal bool HasUnqualifiedWholeConditionalShading => Style is TableStyle style && style.EffectiveBackground != null && style.EffectiveRegions.Count > 0;
     internal bool HasAmbiguousDefaultBandSize => Look != null && Style != null
         && (!Look.Has(0x200) && Style.EffectiveRowBandSize == null
-                && (Style.EffectiveRegions.ContainsKey("band1Horz") || Style.EffectiveRegions.ContainsKey("band2Horz"))
+                && (HasConditionalRegion(Style, "band1Horz") || HasConditionalRegion(Style, "band2Horz"))
             || !Look.Has(0x400) && Style.EffectiveColumnBandSize == null
-                && (Style.EffectiveRegions.ContainsKey("band1Vert") || Style.EffectiveRegions.ContainsKey("band2Vert")));
-    internal bool HasUnqualifiedRegionOverlap => Style?.EffectiveRegions.Count > 0 && Look != null
+                && (HasConditionalRegion(Style, "band1Vert") || HasConditionalRegion(Style, "band2Vert")));
+    internal bool HasUnqualifiedRegionOverlap => Style is TableStyle overlapStyle
+        && (overlapStyle.EffectiveRegions.Count > 0 || overlapStyle.EffectiveRegionBorders.Count > 0) && Look != null
         && (Rows.Count == 1 && Look.Has(0x20) && Look.Has(0x40)
             || Rows.Count > 0 && Rows[0].Count == 1 && Look.Has(0x80) && Look.Has(0x100));
     internal bool HasUnqualifiedBandSize => Look != null && Style != null
         && (!Look.Has(0x200) && Style.EffectiveRowBandSize is int rows && rows != 1
-                && (Style.EffectiveRegions.ContainsKey("band1Horz") || Style.EffectiveRegions.ContainsKey("band2Horz"))
+                && (HasConditionalRegion(Style, "band1Horz") || HasConditionalRegion(Style, "band2Horz"))
             || !Look.Has(0x400) && Style.EffectiveColumnBandSize is int columns && columns != 1
-                && (Style.EffectiveRegions.ContainsKey("band1Vert") || Style.EffectiveRegions.ContainsKey("band2Vert")));
+                && (HasConditionalRegion(Style, "band1Vert") || HasConditionalRegion(Style, "band2Vert")));
+    private static bool HasConditionalRegion(TableStyle style, string name) => style.EffectiveRegions.ContainsKey(name) || style.EffectiveRegionBorders.ContainsKey(name);
+    internal bool HasUnqualifiedConditionalBorderConflict => Look != null && Style is TableStyle style && style.EffectiveRegionBorders.Count > 0 && Rows.Count > 0 && Rows[0].Count > 0
+        && (style.EffectiveRegionBorders.Any(region => RegionMayApply(region.Key, style, Look)
+            && (style.EffectiveBorders.Count != 0 || Borders.Count != 0 || Rows.SelectMany(row => row).Any(cell => cell.Borders.Count != 0)
+                || region.Value.Keys.Any(side => !OutsideConditionalEdge(region.Key, side)))) || HasOverlappingConditionalBorders(style));
+    private bool HasOverlappingConditionalBorders(TableStyle style)
+    {
+        foreach (int row in new[] { 0, Rows.Count - 1 }.Distinct())
+        {
+            if (Rows[row].Count == 0) continue;
+            foreach (int column in new[] { 0, Rows[row].Count - 1 }.Distinct())
+            {
+                var sides = new HashSet<string>(System.StringComparer.Ordinal);
+                foreach (string region in ActiveRegions(row, column))
+                    if (style.EffectiveRegionBorders.TryGetValue(region, out IReadOnlyDictionary<string, CellBorder>? borders))
+                        foreach (string side in borders.Keys)
+                            if (!sides.Add(side)) return true;
+            }
+        }
+        return false;
+    }
+    private static bool OutsideConditionalEdge(string region, string side) => region switch
+    {
+        "firstRow" => side == "top",
+        "lastRow" => side == "bottom",
+        "firstCol" => side == "left",
+        "lastCol" => side == "right",
+        "nwCell" => side is "top" or "left",
+        "neCell" => side is "top" or "right",
+        "swCell" => side is "bottom" or "left",
+        "seCell" => side is "bottom" or "right",
+        _ => false
+    };
     internal string? CellBackground(int row, int column)
     {
         string? color = EffectiveBackground;
         if (Look == null || Style == null || Style.EffectiveRegions.Count == 0) return color;
         IReadOnlyDictionary<string, string> regions = Style.EffectiveRegions;
+        foreach (string region in ActiveRegions(row, column)) color = Region(regions, region, color);
+        return color;
+    }
+    private IEnumerable<string> ActiveRegions(int row, int column)
+    {
+        if (Look == null || Style == null) yield break;
         bool firstRow = Look.Has(0x20), lastRow = Look.Has(0x40), firstColumn = Look.Has(0x80), lastColumn = Look.Has(0x100);
         int rows = Rows.Count, columns = Rows[row].Count;
         // Office applies row bands before column bands, then columns, rows and corners.
         int rowStart = firstRow ? 1 : 0, columnStart = firstColumn ? 1 : 0;
         int rowSize = Style.EffectiveRowBandSize ?? 1, columnSize = Style.EffectiveColumnBandSize ?? 1;
         if (!Look.Has(0x200) && rowSize > 0 && row >= rowStart && row < rows - (lastRow ? 1 : 0))
-            color = Region(regions, (((row - rowStart) / rowSize) & 1) == 0 ? "band1Horz" : "band2Horz", color);
+            yield return (((row - rowStart) / rowSize) & 1) == 0 ? "band1Horz" : "band2Horz";
         if (!Look.Has(0x400) && columnSize > 0 && column >= columnStart && column < columns - (lastColumn ? 1 : 0))
-            color = Region(regions, (((column - columnStart) / columnSize) & 1) == 0 ? "band1Vert" : "band2Vert", color);
-        if (firstColumn && column == 0) color = Region(regions, "firstCol", color);
-        if (lastColumn && column == columns - 1) color = Region(regions, "lastCol", color);
-        if (firstRow && row == 0) color = Region(regions, "firstRow", color);
-        if (lastRow && row == rows - 1) color = Region(regions, "lastRow", color);
-        if (firstRow && firstColumn && row == 0 && column == 0) color = Region(regions, "nwCell", color);
-        if (firstRow && lastColumn && row == 0 && column == columns - 1) color = Region(regions, "neCell", color);
-        if (lastRow && firstColumn && row == rows - 1 && column == 0) color = Region(regions, "swCell", color);
-        if (lastRow && lastColumn && row == rows - 1 && column == columns - 1) color = Region(regions, "seCell", color);
-        return color;
+            yield return (((column - columnStart) / columnSize) & 1) == 0 ? "band1Vert" : "band2Vert";
+        if (firstColumn && column == 0) yield return "firstCol";
+        if (lastColumn && column == columns - 1) yield return "lastCol";
+        if (firstRow && row == 0) yield return "firstRow";
+        if (lastRow && row == rows - 1) yield return "lastRow";
+        if (firstRow && firstColumn && row == 0 && column == 0) yield return "nwCell";
+        if (firstRow && lastColumn && row == 0 && column == columns - 1) yield return "neCell";
+        if (lastRow && firstColumn && row == rows - 1 && column == 0) yield return "swCell";
+        if (lastRow && lastColumn && row == rows - 1 && column == columns - 1) yield return "seCell";
     }
     private static string? Region(IReadOnlyDictionary<string, string> regions, string name, string? fallback) =>
         regions.TryGetValue(name, out string? color) ? color : fallback;
-    internal bool HasTableBorders => Borders.Count != 0 || Style?.EffectiveBorders.Count > 0;
+    internal bool HasTableBorders => Borders.Count != 0 || Style?.EffectiveBorders.Count > 0 || Look != null && Style?.EffectiveRegionBorders.Count > 0;
     // Direct table borders remain separate from cell overrides so that row edits
     // and report expansion compute their outside and inside edges afresh.
     internal Dictionary<string, CellBorder> Borders { get; } = new Dictionary<string, CellBorder>();
@@ -202,11 +244,11 @@ internal sealed class TableBlock : DocumentBlock
     internal IEnumerable<KeyValuePair<string, CellBorder>> CellBorders(int row, int column) =>
         !HasTableBorders ? Rows[row][column].Borders : ResolveCellBorders(row, column);
 
-    private IEnumerable<KeyValuePair<string, CellBorder>> ResolveCellBorders(int row, int column)
+    private Dictionary<string, CellBorder> ResolveCellBorders(int row, int column)
     {
         TableCell cell = Rows[row][column];
         IReadOnlyDictionary<string, CellBorder> defaults = Borders.Count != 0 ? Borders : Style!.EffectiveBorders;
-        foreach (var border in cell.Borders) yield return border;
+        var selected = new Dictionary<string, CellBorder>();
         for (int i = 0; i < 4; i++)
         {
             string side = i switch { 0 => "top", 1 => "bottom", 2 => "left", _ => "right" };
@@ -217,18 +259,25 @@ internal sealed class TableBlock : DocumentBlock
                 2 => column == 0 ? "left" : "insideV",
                 _ => column == Rows[row].Count - 1 ? "right" : "insideV"
             };
-            if (!cell.Borders.ContainsKey(side) && defaults.TryGetValue(inherited, out CellBorder? border))
-                yield return new KeyValuePair<string, CellBorder>(side, border);
+            if (defaults.TryGetValue(inherited, out CellBorder? border)) selected[side] = border;
         }
+        if (Style != null)
+            foreach (string region in ActiveRegions(row, column))
+                if (Style.EffectiveRegionBorders.TryGetValue(region, out IReadOnlyDictionary<string, CellBorder>? borders))
+                    foreach (var border in borders)
+                        if (border.Key is "top" or "bottom" or "left" or "right") selected[border.Key] = border.Value;
+        foreach (var border in cell.Borders) selected[border.Key] = border.Value;
+        return selected;
     }
 }
 
-// This closed, immutable snapshot contains only the admitted whole-table style
+// This closed snapshot contains only admitted whole-table and conditional style
 // properties. Unsupported style elements are diagnosed before construction.
 internal sealed class TableStyle
 {
     internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background,
-        IDictionary<string, string> regions, IDictionary<string, TableThemeColor> regionThemes, int? rowBandSize, int? columnBandSize)
+        IDictionary<string, string> regions, IDictionary<string, TableThemeColor> regionThemes,
+        IDictionary<string, Dictionary<string, CellBorder>> regionBorders, int? rowBandSize, int? columnBandSize)
     {
         Id = id; Name = name; BasedOn = basedOn; Background = background;
         var specified = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
@@ -255,6 +304,25 @@ internal sealed class TableStyle
             else effectiveThemes.Remove(region);
         }
         RegionThemes = specifiedThemes; EffectiveRegionThemes = effectiveThemes;
+        var specifiedBorders = new Dictionary<string, IReadOnlyDictionary<string, CellBorder>>(System.StringComparer.Ordinal);
+        var effectiveRegionBorders = new Dictionary<string, Dictionary<string, CellBorder>>(System.StringComparer.Ordinal);
+        if (basedOn != null)
+            foreach (var region in basedOn.EffectiveRegionBorders)
+                effectiveRegionBorders.Add(region.Key, region.Value.ToDictionary(edge => edge.Key, edge => edge.Value, System.StringComparer.Ordinal));
+        foreach (var region in regionBorders)
+        {
+            var copied = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
+            if (!effectiveRegionBorders.TryGetValue(region.Key, out Dictionary<string, CellBorder>? effectiveEdges))
+            { effectiveEdges = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal); effectiveRegionBorders.Add(region.Key, effectiveEdges); }
+            foreach (var edge in region.Value)
+            {
+                var border = new CellBorder { Color = edge.Value.Color, Style = edge.Value.Style, Width = edge.Value.Width };
+                copied.Add(edge.Key, border); effectiveEdges[edge.Key] = border;
+            }
+            specifiedBorders.Add(region.Key, copied);
+        }
+        RegionBorders = specifiedBorders;
+        EffectiveRegionBorders = effectiveRegionBorders.ToDictionary(region => region.Key, region => (IReadOnlyDictionary<string, CellBorder>)region.Value, System.StringComparer.Ordinal);
         RowBandSize = rowBandSize; ColumnBandSize = columnBandSize;
         EffectiveRowBandSize = rowBandSize ?? basedOn?.EffectiveRowBandSize;
         EffectiveColumnBandSize = columnBandSize ?? basedOn?.EffectiveColumnBandSize;
@@ -270,6 +338,8 @@ internal sealed class TableStyle
     internal IReadOnlyDictionary<string, string> EffectiveRegions { get; }
     internal IReadOnlyDictionary<string, TableThemeColor> RegionThemes { get; }
     internal IReadOnlyDictionary<string, TableThemeColor> EffectiveRegionThemes { get; }
+    internal IReadOnlyDictionary<string, IReadOnlyDictionary<string, CellBorder>> RegionBorders { get; }
+    internal IReadOnlyDictionary<string, IReadOnlyDictionary<string, CellBorder>> EffectiveRegionBorders { get; }
     internal int? RowBandSize { get; }
     internal int? ColumnBandSize { get; }
     internal int? EffectiveRowBandSize { get; }

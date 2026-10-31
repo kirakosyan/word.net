@@ -225,8 +225,8 @@ internal sealed partial class DocxReader
         XElement[] looks = properties?.Elements(W + "tblLook").ToArray() ?? Array.Empty<XElement>();
         if (looks.Length > 1) throw new InvalidDataException("Docx.TableLook: Duplicate table-look properties.");
         if (looks.Length == 1) table.Look = ReadTableLook(looks[0]);
-        if (table.Style?.EffectiveRegions.Count > 0 && table.Look == null)
-            context.Loss("Docx.TableLook", "Conditional table shading requires an explicit qualified table-look mask.");
+        if (table.Style is TableStyle conditionalStyle && (conditionalStyle.EffectiveRegions.Count > 0 || conditionalStyle.EffectiveRegionBorders.Count > 0) && table.Look == null)
+            context.Loss("Docx.TableLook", "Conditional table formatting requires an explicit qualified table-look mask.");
         if (table.Style is TableStyle resolved && table.Look != null)
         {
             IReadOnlyDictionary<string, string> regions = resolved.EffectiveRegions;
@@ -329,6 +329,7 @@ internal sealed partial class DocxReader
         }
         var regionColors = new Dictionary<string, string>(StringComparer.Ordinal);
         var regionThemes = new Dictionary<string, TableThemeColor>(StringComparer.Ordinal);
+        var regionBorders = new Dictionary<string, Dictionary<string, CellBorder>>(StringComparer.Ordinal);
         var seenRegions = new HashSet<string>(StringComparer.Ordinal);
         foreach (XElement condition in source.Elements(W + "tblStylePr"))
         {
@@ -346,12 +347,17 @@ internal sealed partial class DocxReader
                 context.Loss("Docx.TableStyleData", "Unsupported conditional style properties or metadata are not retained.");
             if (cells.Length == 1)
             {
-                XElement cell = cells[0]; XElement[] shading = cell.Elements(W + "shd").ToArray();
-                if (shading.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate conditional shading.");
+                XElement cell = cells[0]; XElement[] shading = cell.Elements(W + "shd").ToArray(), borders = cell.Elements(W + "tcBorders").ToArray();
+                if (shading.Length > 1 || borders.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate conditional shading or borders.");
                 if (cell.Attributes().Any(a => !a.IsNamespaceDeclaration)
                     || cell.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
-                    || cell.Elements().Any(child => child.Name != W + "shd") || shading.Length == 0)
+                    || cell.Elements().Any(child => child.Name != W + "shd" && child.Name != W + "tcBorders") || shading.Length + borders.Length == 0)
                     context.Loss("Docx.TableStyleData", "Unsupported conditional cell properties are not retained.");
+                if (borders.Length == 1)
+                {
+                    var conditional = new TableBlock(); ReadTableBorders(borders[0], conditional);
+                    if (conditional.Borders.Count != 0) regionBorders.Add(type, conditional.Borders);
+                }
                 if (shading.Length == 1)
                 {
                     var conditional = new TableBlock(); ReadTableShading(shading[0], conditional, retainConditionalTheme: true);
@@ -362,10 +368,11 @@ internal sealed partial class DocxReader
         }
         visiting.Remove(id);
         tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256
-            + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0) + regionThemes.Count + (parent?.EffectiveRegionThemes.Count ?? 0)) * 128);
+            + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0) + regionThemes.Count + (parent?.EffectiveRegionThemes.Count ?? 0)
+                + regionBorders.Sum(region => (long)region.Value.Count + 1) + (parent?.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1) ?? 0)) * 128);
         if (tableStyles.Count >= 10000 || tableStyleBytes > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
-        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, regionThemes, rowBandSize, columnBandSize);
+        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, regionThemes, regionBorders, rowBandSize, columnBandSize);
         tableStyles.Add(id, result); return result;
     }
 

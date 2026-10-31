@@ -120,7 +120,7 @@ public sealed partial class WordDocument
     private static void ApplyDefaultTableStyle(DocumentModel model, TableBlock table)
     {
         if (model.DefaultTableStyle is not TableStyle style) return;
-        if (style.EffectiveRegions.Count != 0)
+        if (style.EffectiveRegions.Count != 0 || style.EffectiveRegionBorders.Count != 0)
             throw new NotSupportedException("Docx.TableLook: A newly created table cannot infer conditional default-style flags.");
         table.Style = style; table.UsesDefaultStyle = true;
     }

@@ -54,6 +54,14 @@ retain LibreOffice's red-fallback observations for plain, tinted and shaded
 conditional references. Tests check editable token/fallback retention, re-resolving
 an edited theme, child overrides, malformed or missing references, comparison and
 strict output rejection; they do not establish Word rendering parity.
+The [exact-source theme-style receipt](measurements/roadmap-138-theme-style-a502c6c.json)
+records the local suite, matrix and package results for that increment.
+Independent [conditional-border controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders/README.md)
+check outer-edge colors, enabled/disabled look flags, selected corners and a
+combined fill and border. Tests cover editable styles, inherited edges and resets,
+composition, comparison, report expansion and explicit conflict losses. The
+reference omitted the inherited edge; interior and competing-edge precedence,
+pixel-identical geometry and Word execution remain unqualified.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

@@ -510,6 +510,8 @@ internal sealed partial class DocxWriter
             context.CheckCancellation(); sourceIds.Add(style.Id);
             metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256
                 + ((long)style.Regions.Count + style.EffectiveRegions.Count + style.RegionThemes.Count + style.EffectiveRegionThemes.Count) * 128);
+            metadataBytes = checked(metadataBytes + (style.RegionBorders.Sum(region => (long)region.Value.Count + 1)
+                + style.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1)) * 128);
             if (metadataBytes > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
         }
         var assigned = new HashSet<string>(reserved, StringComparer.Ordinal); int sequence = 0;
@@ -564,11 +566,16 @@ internal sealed partial class DocxWriter
                 new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.Background)));
             if (properties.HasElements) style.Add(properties);
             foreach (string region in TableStyleRegions)
-                if (definition.Regions.TryGetValue(region, out string? color))
+                if (definition.Regions.ContainsKey(region) || definition.RegionBorders.ContainsKey(region))
                 {
+                    definition.Regions.TryGetValue(region, out string? color);
                     definition.RegionThemes.TryGetValue(region, out TableThemeColor? reference);
+                    definition.RegionBorders.TryGetValue(region, out IReadOnlyDictionary<string, CellBorder>? conditionalBorders);
                     style.Add(new XElement(W + "tblStylePr", new XAttribute(W + "type", region), new XElement(W + "tcPr",
-                        new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"),
+                        conditionalBorders == null ? null : new XElement(W + "tcBorders", TableBorderSides.Where(side => conditionalBorders.ContainsKey(side)).Select(side =>
+                            new XElement(W + side, new XAttribute(W + "val", conditionalBorders[side].Style), new XAttribute(W + "sz", Math.Round(conditionalBorders[side].Width * 8)),
+                                new XAttribute(W + "color", conditionalBorders[side].Color)))),
+                        color == null ? null : new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"),
                             reference == null ? new XAttribute(W + "fill", color) : reference.Fallback == null ? null : new XAttribute(W + "fill", reference.Fallback),
                             reference == null ? null : new XAttribute(W + "themeFill", reference.Token),
                             reference?.Tint == null ? null : new XAttribute(W + "themeFillTint", reference.Tint),
