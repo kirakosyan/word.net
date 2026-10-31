@@ -225,6 +225,9 @@ checks saved control hierarchy, cloned bookmarks and complete PDF text with
 LibreOffice and Poppler. The [exact-source receipt](measurements/roadmap-138-deep-regions-b9d16fd.json)
 records both full local suites, package checks and the repeated specimen. Cell
 repeats and broader ownership remain unqualified.
+The [local performance receipt](measurements/roadmap-138-performance-8f6b5ea.json)
+compares the same-source successor with its previous head under the unchanged
+single-core gate; it does not erase the earlier hosted performance failure.
 
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
