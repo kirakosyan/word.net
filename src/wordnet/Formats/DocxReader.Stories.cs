@@ -30,7 +30,7 @@ internal sealed partial class DocxReader
             mainPart = path,
             knownParts = knownParts,
             defaultStyle = defaultStyle,
-            hasDefaultTableStyle = hasDefaultTableStyle,
+            defaultTableStyle = defaultTableStyle,
             defaultAlignment = defaultAlignment,
             defaultLayout = defaultLayout.Copy(),
             defaultRun = defaultRun.Copy(),

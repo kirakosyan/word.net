@@ -2,8 +2,10 @@
 
 For pending whole-table style support, `Docx.TableStyleData` and
 `Docx.TableStyleMissing` report unsupported style metadata or an unresolved table
-style. `Docx.TableStyleDefault` reports an implicit default style that is not
-applied. `Docx.TableStyleCycle` and `Limit.TableStyles` reject cyclic, overdeep or
+style. `Docx.TableStyleDefault` reports an unqualified implicit default style in
+non-DOCX output; editable DOCX retains admitted used defaults. Incompatible
+default styles or a default that would alter an unstyled table reject composition
+with `Composition.TableStyleDefault`. `Docx.TableStyleCycle` and `Limit.TableStyles` reject cyclic, overdeep or
 excessive style data. `Table.StyleConflict` diagnoses combined style and direct
 table borders or shading, and `Table.StyleRestyle` rejects destination restyling
 of a styled incoming table. `Comparison.TableStyle` rejects changed style chains.

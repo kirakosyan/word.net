@@ -18,7 +18,7 @@ internal sealed partial class DocxReader
     private readonly Dictionary<string, TableStyle> tableStyles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
     private long tableStyleBytes;
     private string? defaultStyle;
-    private bool hasDefaultTableStyle;
+    private string? defaultTableStyle;
     private ParagraphAlignment defaultAlignment;
     private ParagraphLayout defaultLayout = new ParagraphLayout();
     private TextStyle defaultRun = new TextStyle();
@@ -113,6 +113,12 @@ internal sealed partial class DocxReader
         reader.PruneTocParagraphs(document.Blocks);
         document.FinalSection = reader.finalSection;
         document.Notes.AddRange(reader.notes.Values.Where(n => n.Number > 0));
+        TableBlock[] implicitTables = document.Tables.Where(table => table.UsesDefaultStyle).ToArray();
+        if (reader.defaultTableStyle != null && (implicitTables.Length != 0 || reader.tableStyles.ContainsKey(reader.defaultTableStyle)))
+        {
+            document.DefaultTableStyle = reader.ResolveTableStyle(reader.defaultTableStyle, new HashSet<string>(StringComparer.Ordinal));
+            foreach (TableBlock table in implicitTables) table.Style = document.DefaultTableStyle;
+        }
         var noteCounters = new Dictionary<(bool Endnote, PageSettings? Section), int>();
         var numberedNotes = new HashSet<DocumentNote>();
         foreach (DocumentBlock block in document.Blocks)
@@ -221,7 +227,16 @@ internal sealed partial class DocxReader
                 if (defaultStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last paragraph style marked default is used, following the document format default-style rule.");
                 defaultStyle = id;
             }
-            if ((string?)style.Attribute(W + "type") == "table" && IsTrue((string?)style.Attribute(W + "default"))) hasDefaultTableStyle = true;
+            if ((string?)style.Attribute(W + "type") == "table" && style.Attribute(W + "default") is XAttribute tableDefault)
+            {
+                if (tableDefault.Value is not ("true" or "1" or "on" or "false" or "0" or "off"))
+                    throw new InvalidDataException("Docx.TableStyle: Invalid default table-style flag.");
+                if (IsTrue(tableDefault.Value))
+                {
+                    if (defaultTableStyle != null) context.Report("Docx.MultipleDefaultStyles", "The last table style marked default is used, following the document format default-style rule.");
+                    defaultTableStyle = id;
+                }
+            }
         }
     }
 

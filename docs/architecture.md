@@ -12,6 +12,9 @@ or an omitted band size is diagnosed. The resolver uses Office's documented
 region order and reports its difference from OOXML's order. Bounded
 explicit band sizes remain editable in DOCX; unqualified rendered sizes,
 unsupported style properties, conflicts and pagination are diagnosed.
+Used implicit table defaults retain document-level identity and per-table omission
+of explicit references; cloning and compatible composition preserve that state.
+Unqualified static default rendering and conflicting composition are explicit.
 
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot

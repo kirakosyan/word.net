@@ -16,7 +16,7 @@ internal sealed class DocumentCloner
     internal DocumentCloner(ConversionContext context) { this.context = context; }
     internal DocumentModel Copy(DocumentModel source)
     {
-        var target = new DocumentModel { Title = source.Title, Author = source.Author, ObjectCount = source.ObjectCount, Controls = source.Controls.Copy(context), HasControlDisplay = source.HasControlDisplay, HasLinkedTextBoxes = source.HasLinkedTextBoxes, Theme = source.Theme };
+        var target = new DocumentModel { Title = source.Title, Author = source.Author, ObjectCount = source.ObjectCount, Controls = source.Controls.Copy(context), HasControlDisplay = source.HasControlDisplay, HasLinkedTextBoxes = source.HasLinkedTextBoxes, Theme = source.Theme, DefaultTableStyle = source.DefaultTableStyle };
         foreach (var property in source.CustomProperties) target.CustomProperties.Add(property.Key, property.Value);
         foreach (var style in source.Styles) target.Styles.Add(style.Key, style.Value);
         target.Blocks.AddRange(source.Blocks.Select(Block)); target.FinalSection = Section(source.FinalSection);
@@ -76,6 +76,7 @@ internal sealed class DocumentCloner
                 LeftIndent = table.LeftIndent,
                 Background = table.Background,
                 Style = table.Style,
+                UsesDefaultStyle = table.UsesDefaultStyle,
                 Look = table.Look
             };
             copy.ColumnWidths.AddRange(table.ColumnWidths); copy.NonSplittingRows.UnionWith(table.NonSplittingRows);

@@ -378,7 +378,7 @@ internal sealed partial class DocxWriter
     private XElement Table(TableBlock table)
     {
         var element = new XElement(W + "tbl", new XElement(W + "tblPr",
-            table.Style == null ? null : new XElement(W + "tblStyle", new XAttribute(W + "val", tableStyleIds[table.Style])),
+            table.Style == null || table.UsesDefaultStyle && ReferenceEquals(table.Style, model.DefaultTableStyle) ? null : new XElement(W + "tblStyle", new XAttribute(W + "val", tableStyleIds[table.Style])),
             new XElement(W + "tblW", new XAttribute(W + "w", table.WidthPercent.HasValue ? Math.Round(table.WidthPercent.Value * 50).ToString(CultureInfo.InvariantCulture) : table.Width.HasValue ? Twips(table.Width.Value) : "0"), new XAttribute(W + "type", table.WidthPercent.HasValue ? "pct" : table.Width.HasValue ? "dxa" : "auto"))));
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
         if (table.Borders.Count != 0)
@@ -485,7 +485,14 @@ internal sealed partial class DocxWriter
         foreach (TableBlock table in document.Tables)
         {
             context.CheckCancellation();
-            var pending = new Stack<TableStyle>(); TableStyle? current = table.Style;
+            if (table.UsesDefaultStyle && !ReferenceEquals(table.Style, document.DefaultTableStyle)
+                || document.DefaultTableStyle != null && table.Style == null)
+                throw new InvalidDataException("Docx.TableStyleDefault: A table's default-style identity is inconsistent with the document.");
+        }
+        foreach (TableStyle? style in document.Tables.Select(table => table.Style).Concat(new[] { document.DefaultTableStyle }))
+        {
+            context.CheckCancellation();
+            var pending = new Stack<TableStyle>(); TableStyle? current = style;
             while (current != null && seen.Add(current))
             { context.CheckCancellation(); pending.Push(current); current = current.BasedOn; }
             while (pending.Count != 0) styles.Add(pending.Pop());
@@ -546,6 +553,7 @@ internal sealed partial class DocxWriter
         {
             context.CheckCancellation();
             var style = new XElement(W + "style", new XAttribute(W + "type", "table"), new XAttribute(W + "styleId", tableStyleIds[definition]),
+                ReferenceEquals(definition, model.DefaultTableStyle) ? new XAttribute(W + "default", "1") : null,
                 new XElement(W + "name", new XAttribute(W + "val", definition.Name)),
                 definition.BasedOn == null ? null : new XElement(W + "basedOn", new XAttribute(W + "val", tableStyleIds[definition.BasedOn])));
             var properties = new XElement(W + "tblPr");

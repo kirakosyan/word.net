@@ -1,0 +1,24 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "541aef9da7d8c7fd1e3b15248951356059e75624",
+  "scope": "Unreleased clear RGB row, column, corner and unit-band conditional shading with editable style chains, explicit masks and bounded band sizes; nonunit/default-band, inherited-region, whole-fill and single-row/column overlap rendering remain explicitly unqualified.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net8ConversionAndEnglishOcr": { "passed": 1851, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1851, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 32, "testMethods": 173, "net10CasesPassed": 320 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "9256671996f9f7f1184f974ae746d2a2d71a32df86e68ecbf9b37486fa7a4c1c",
+      "wordnet.Fonts.1.5.0.nupkg": "09cbbb148c351575645901b9e4ec17792a74d3c33238386715d1ab2c98b42fc2",
+      "wordnet.Ocr.1.5.0.nupkg": "96e709cb697ebe2046988178c62bf0d867dab9b69633b71c07483b329a9dddbe"
+    }
+  },
+  "independentReference": "Thirty independently authored DOCX controls and LibreOffice 24.2.7.2 PDFs record region colors and precedence with pinned Noto Sans. Inherited conditional regions, nonunit/zero bands, overlapping single-grid corners, table-level shading and geometry differences retain their observed reference failures; Word execution was unavailable. Fixture provenance and hashes are in tests/wordnet.Conversion.Tests/Fixtures/TableStyleRegions.",
+  "qualification": "Hosted qualification, remaining style and shading scope, final review, merge and package publication are not established for this commit by this local record."
+}

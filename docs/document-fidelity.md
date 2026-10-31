@@ -22,7 +22,6 @@ The table-level extent and precedence follow the public
 For the same simple-table profile, a bounded `w:basedOn` chain of table styles
 may provide whole-table borders and clear explicit RGB shading through `w:tblPr`.
 Child edges override inherited edges, including explicit `nil` and `none` resets.
-Implicit default table styles are diagnosed rather than applied.
 DOCX saves retain an editable style reference and chain; composition remaps
 colliding style identifiers. Fixed output, HTML and ODT resolve the appearance
 from the chain and current rows. Non-DOCX editable outputs report that the style
@@ -31,6 +30,20 @@ Cycles, excessive chain depth and resource-limit violations fail, and unqualifie
 style metadata or properties are diagnosed. Combining styles with direct table
 border or shading overrides is not admitted in strict mode. Comparison rejects
 table-style changes, including when other formatting categories are ignored.
+
+When a table uses the declared default style implicitly, or a used style's chain
+includes that default, the bounded default definition is retained in DOCX. The
+implicit table continues to omit `tblStyle`, while explicit references remain
+explicit. The last default declared for tables is selected as specified by
+[OOXML](https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_style_topic_ID0E5ZQT.html).
+Unused, unreferenced default definitions are not reconstructed. Composition
+rejects conflicting defaults and combinations where adding a default would alter
+an otherwise unstyled table. New simple tables inherit an admitted whole-table
+default; new tables reject conditional defaults because their look flags cannot
+be inferred. Independent LibreOffice controls did not apply the implicit default
+that they rendered when explicitly referenced. Strict non-DOCX output therefore
+rejects `Docx.TableStyleDefault`; best-effort output applies the retained default
+and reports the difference. This is not evidence of Word behavior.
 
 The source profile retains conditional clear RGB cell fills for first and last
 rows and columns, their corners, and horizontal and vertical bands. A qualified

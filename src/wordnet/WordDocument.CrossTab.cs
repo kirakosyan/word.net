@@ -97,6 +97,7 @@ public sealed partial class WordDocument
                 throw new InvalidDataException("Limit.CrossTabCells: Cross-tab output exceeds aggregate resource limits.");
             PageSettings section = m.FinalSection ?? m.Blocks.LastOrDefault()?.Section ?? new PageSettings();
             TableBlock table = BuildSimpleTable(content, m.FinalSection ?? m.Blocks.LastOrDefault()?.Section, true, c);
+            ApplyDefaultTableStyle(m, table);
             PageSettings? destinationSection = table.Section; table.Section = null;
             var preview = new DocumentModel(); preview.Blocks.Add(table); var resolver = new FontResolver(preview, c);
             using var measure = new PdfDocumentBuilder(); var fonts = resolver.Data.Select(bytes => measure.AddTrueTypeFont(bytes)).ToArray(); var page = measure.AddPage(595, 842);

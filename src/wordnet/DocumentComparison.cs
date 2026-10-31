@@ -63,6 +63,10 @@ public static partial class DocumentComparison
         DocumentModel left = original.ComparisonSnapshot(context), right = revised.ComparisonSnapshot(context);
         if (!(left.Theme == null && right.Theme == null) && !(left.Theme?.Same(right.Theme) ?? false))
             throw new NotSupportedException("Comparison.ThemeConflict: Documents with different or missing themes cannot be compared without resolving their document-wide theme.");
+        if (!SameTableStyle(left.DefaultTableStyle, right.DefaultTableStyle, context)
+            || (left.DefaultTableStyle != null || right.DefaultTableStyle != null)
+                && !left.Tables.Select(table => table.UsesDefaultStyle).SequenceEqual(right.Tables.Select(table => table.UsesDefaultStyle)))
+            throw new NotSupportedException("Comparison.TableStyle: Default table-style changes are outside the comparison profile.");
         TableStyle?[] leftStyles = left.Tables.Select(table => table.Style).ToArray(), rightStyles = right.Tables.Select(table => table.Style).ToArray();
         if ((leftStyles.Any(style => style != null) || rightStyles.Any(style => style != null))
             && (leftStyles.Length != rightStyles.Length || leftStyles.Where((style, index) => !SameTableStyle(style, rightStyles[index], context)).Any()))
@@ -233,7 +237,7 @@ public static partial class DocumentComparison
             return false;
         }
     }
-    private static bool SameTableStyle(TableStyle? left, TableStyle? right, ConversionContext context)
+    internal static bool SameTableStyle(TableStyle? left, TableStyle? right, ConversionContext context)
     {
         while (left != null && right != null)
         {

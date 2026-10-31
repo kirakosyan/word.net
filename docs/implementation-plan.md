@@ -27,7 +27,8 @@ records its remaining script, drawing and style-precedence work.
 Pending #142 source retains bounded [direct and inherited whole-table borders and clear shading](document-fidelity.md#unreleased-source-direct-table-borders),
 with editable DOCX style chains and bounded row, column, corner and single-width
 band shading, plus editable bounded band sizes and explicit losses for
-unqualified rendering, conflicts and pagination. Non-unit rendered bands,
+unqualified rendering, conflicts and pagination. Used implicit defaults remain
+editable, with their unresolved static rendering difference reported. Non-unit rendered bands,
 conditional borders, full style precedence and independent qualification remain
 open; the table-level shading reference failure is retained.
 Pending source work on #143 preserves bounded glossary categories and selected inert

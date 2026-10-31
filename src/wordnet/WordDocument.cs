@@ -92,6 +92,7 @@ public sealed partial class WordDocument
         _ = Edit((m, c) =>
         {
             TableBlock table = BuildSimpleTable(rows, m.FinalSection ?? m.Blocks.LastOrDefault()?.Section, firstRowIsHeader, c);
+            ApplyDefaultTableStyle(m, table);
             m.Blocks.Add(table); return 1;
         }, cancellationToken, objectAware: true);
     }
@@ -115,6 +116,13 @@ public sealed partial class WordDocument
         }
         if (table.Rows.Count == 0) throw new ArgumentException("A table must contain rows.", nameof(rows));
         return table;
+    }
+    private static void ApplyDefaultTableStyle(DocumentModel model, TableBlock table)
+    {
+        if (model.DefaultTableStyle is not TableStyle style) return;
+        if (style.EffectiveRegions.Count != 0)
+            throw new NotSupportedException("Docx.TableLook: A newly created table cannot infer conditional default-style flags.");
+        table.Style = style; table.UsesDefaultStyle = true;
     }
     /// <summary>Appends a caller-supplied inline image as a paragraph.</summary>
     public void AddImage(TemplateImage image, CancellationToken cancellationToken = default) => AddParagraph(new[] { new DocumentText(image) }, cancellationToken: cancellationToken);

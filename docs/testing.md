@@ -37,6 +37,13 @@ inheritance mismatch and checks the resulting output loss. It checks editable
 band-size inheritance and explicit loss for non-unit rendering. It retains
 LibreOffice's non-default band-size mismatch and one-row/column observations;
 these do not qualify those rendering cases or provide a Word execution.
+The [exact-source region receipt](measurements/roadmap-138-table-regions-541aef9.json)
+records the local build, suite, matrix and package results for that increment.
+The independent [default-style controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleDefaults/README.md)
+record that LibreOffice rendered the explicit style but omitted its implicit
+default. Tests also validate editable default identity, composition conflicts,
+new-table behavior, comparison, invalid flags and untouched outputs. They do not
+qualify default-style rendering in Word or unused style definitions.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

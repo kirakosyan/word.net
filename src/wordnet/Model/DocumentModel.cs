@@ -10,6 +10,7 @@ internal sealed class DocumentModel
     internal bool HasControlDisplay { get; set; }
     internal bool HasLinkedTextBoxes { get; set; }
     internal DocumentTheme? Theme { get; set; }
+    internal TableStyle? DefaultTableStyle { get; set; }
     internal ReviewStore Review { get; } = new ReviewStore();
     internal string Title { get; set; } = "";
     internal string Author { get; set; } = "";
@@ -113,6 +114,7 @@ internal sealed class TableBlock : DocumentBlock
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal string? Background { get; set; }
     internal TableStyle? Style { get; set; }
+    internal bool UsesDefaultStyle { get; set; }
     internal TableStyleLook? Look { get; set; }
     internal string? EffectiveBackground => Background ?? Style?.EffectiveBackground;
     internal bool HasTableShading => EffectiveBackground != null || Look != null && Style?.EffectiveRegions.Count > 0;

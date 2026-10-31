@@ -10,6 +10,8 @@ internal static class FidelityChecks
     {
         if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && model.Theme != null)
             context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.UsesDefaultStyle))
+            context.Loss("Docx.TableStyleDefault", "Implicit default table styles are retained in DOCX, but their rendered behavior differs between reference applications.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedRegionOverlap))
             context.Loss("Table.StyleRegionOverlap", "Overlapping first/last regions on a single row or column are not independently qualified.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalInheritance))

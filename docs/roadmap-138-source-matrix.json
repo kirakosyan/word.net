@@ -3,6 +3,21 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "used-default-table-styles",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Used default table-style definitions and implicit versus explicit table references remain editable in DOCX. Compatible composition and whole-table defaults on newly authored simple tables preserve that identity; unused definitions are not reconstructed.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "ImplicitDefaultStyleStaysEditableAndReferenceDifferenceIsReported" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitReferenceKeepsItsDefaultDeclarationWithoutClaimingAnImplicitReference" },
+        { "class": "DocxTableBorderTests", "method": "DefaultStyleCompositionIsAtomicAndOnlyCombinesCompatibleOwners" },
+        { "class": "DocxTableBorderTests", "method": "NewTablesUseWholeTableDefaultsWhileConditionalDefaultsRejectMissingLook" },
+        { "class": "DocxTableBorderTests", "method": "DefaultStyleSurvivesReportRowExpansion" },
+        { "class": "DocxTableBorderTests", "method": "ComparisonCannotIgnoreTheImplicitDefaultRelationship" },
+        { "class": "DocxTableBorderTests", "method": "LastDeclaredDefaultWinsAndInvalidFlagsFailBeforeWriting" }
+      ]
+    },
+    {
       "id": "conditional-table-regions",
       "issue": 142,
       "outcome": "supported-bounded",

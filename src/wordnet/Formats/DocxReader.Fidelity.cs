@@ -217,8 +217,11 @@ internal sealed partial class DocxReader
                 context.Loss("Docx.TableStyleData", "Unsupported table-style reference metadata is not retained.");
             table.Style = ResolveTableStyle(id, new HashSet<string>(StringComparer.Ordinal));
         }
-        else if (hasDefaultTableStyle)
-            context.Loss("Docx.TableStyleDefault", "Implicit default table styles are not applied or retained.");
+        else if (defaultTableStyle != null)
+        {
+            table.Style = ResolveTableStyle(defaultTableStyle, new HashSet<string>(StringComparer.Ordinal));
+            table.UsesDefaultStyle = table.Style != null;
+        }
         XElement[] looks = properties?.Elements(W + "tblLook").ToArray() ?? Array.Empty<XElement>();
         if (looks.Length > 1) throw new InvalidDataException("Docx.TableLook: Duplicate table-look properties.");
         if (looks.Length == 1) table.Look = ReadTableLook(looks[0]);
@@ -301,7 +304,7 @@ internal sealed partial class DocxReader
         if (names.Length > 1 || parents.Length > 1 || properties.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate table style properties.");
         string name = names.Length == 0 ? id : DocxPackage.RequiredAttribute(names[0], W + "val");
         if (name.Length > 1024) throw new InvalidDataException("Limit.TableStyles: A table style name is too long.");
-        if (source.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "type" && attribute.Name != W + "styleId")
+        if (source.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "type" && attribute.Name != W + "styleId" && attribute.Name != W + "default")
             || source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
             || source.Elements().Any(child => child.Name != W + "name" && child.Name != W + "basedOn" && child.Name != W + "tblPr" && child.Name != W + "tblStylePr")
             || names.Concat(parents).Any(child => child.HasElements || child.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
