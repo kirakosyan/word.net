@@ -238,7 +238,8 @@ public static partial class DocumentComparison
         while (left != null && right != null)
         {
             context.CheckCancellation();
-            if (left.Id != right.Id || left.Name != right.Name || left.Background != right.Background || left.Borders.Count != right.Borders.Count)
+            if (left.Id != right.Id || left.Name != right.Name || left.Background != right.Background
+                || left.FirstRowBackground != right.FirstRowBackground || left.Borders.Count != right.Borders.Count)
                 return false;
             foreach (var border in left.Borders)
                 if (!right.Borders.TryGetValue(border.Key, out CellBorder? other) || border.Value.Style != other.Style

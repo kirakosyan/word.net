@@ -198,7 +198,7 @@ public sealed partial class DocxTableBorderTests
 
     [Theory]
     [InlineData("conditional", "Docx.TableStyleData")]
-    [InlineData("look", "Docx.TableFormatting")]
+    [InlineData("look", "Docx.TableLook")]
     [InlineData("direct", "Table.StyleConflict")]
     [InlineData("cell", "Table.BorderConflict")]
     [InlineData("cell-shading", "Table.ShadingConflict")]
@@ -207,7 +207,7 @@ public sealed partial class DocxTableBorderTests
     public void UnsupportedStyleCombinationsFailBeforeWriting(string kind, string diagnostic)
     {
         string styles = kind == "missing" ? "<w:styles xmlns:w='" + W + "'/>" : TableStyles(kind == "cell-shading" ? Shading : Borders, derivedProperties:
-            kind == "conditional" ? "<w:tblStylePr w:type='firstRow'><w:tcPr><w:shd w:val='clear' w:fill='FFFF00'/></w:tcPr></w:tblStylePr>" : "");
+            kind == "conditional" ? "<w:tblStylePr w:type='lastRow'><w:tcPr><w:shd w:val='clear' w:fill='FFFF00'/></w:tcPr></w:tblStylePr>" : "");
         if (kind == "default") styles = styles.Replace("w:styleId='Derived'", "w:styleId='Derived' w:default='1'");
         byte[] source = StyledInput(styles, table =>
         {

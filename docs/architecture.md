@@ -5,8 +5,10 @@ through cloning and DOCX writing. Managed layout, HTML and ODT compute the
 applicable outside and inside edges and cell fills from the current rows.
 A bounded table-style chain retains whole-table border and clear-shading
 properties, resolves inheritance at layout time and is written back as editable
-DOCX styles with collision-safe identifiers. Unsupported style properties,
-conflicts, conditional regions and pagination combinations are diagnosed.
+DOCX styles with collision-safe identifiers. A qualified table-look mask selects
+an inherited first-row cell fill without flattening the style or the mask in
+DOCX. Unsupported style properties, conflicts, other conditional regions and
+pagination combinations are diagnosed.
 
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot

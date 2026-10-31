@@ -113,7 +113,11 @@ internal sealed class TableBlock : DocumentBlock
     internal List<double> ColumnWidths { get; } = new List<double>();
     internal string? Background { get; set; }
     internal TableStyle? Style { get; set; }
+    internal TableStyleLook? Look { get; set; }
     internal string? EffectiveBackground => Background ?? Style?.EffectiveBackground;
+    internal string? FirstRowBackground => Look?.FirstRow == true ? Style?.EffectiveFirstRowBackground : null;
+    internal bool HasTableShading => EffectiveBackground != null || FirstRowBackground != null;
+    internal string? CellBackground(int row) => row == 0 ? FirstRowBackground ?? EffectiveBackground : EffectiveBackground;
     internal bool HasTableBorders => Borders.Count != 0 || Style?.EffectiveBorders.Count > 0;
     // Direct table borders remain separate from cell overrides so that row edits
     // and report expansion compute their outside and inside edges afresh.
@@ -159,9 +163,9 @@ internal sealed class TableBlock : DocumentBlock
 // properties. Unsupported style elements are diagnosed before construction.
 internal sealed class TableStyle
 {
-    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background)
+    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background, string? firstRowBackground)
     {
-        Id = id; Name = name; BasedOn = basedOn; Background = background;
+        Id = id; Name = name; BasedOn = basedOn; Background = background; FirstRowBackground = firstRowBackground;
         var specified = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
         var effective = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
         if (basedOn != null) foreach (var border in basedOn.EffectiveBorders) effective.Add(border.Key, border.Value);
@@ -172,6 +176,7 @@ internal sealed class TableStyle
         }
         Borders = specified; EffectiveBorders = effective;
         EffectiveBackground = background ?? basedOn?.EffectiveBackground;
+        EffectiveFirstRowBackground = firstRowBackground ?? basedOn?.EffectiveFirstRowBackground;
     }
     internal string Id { get; }
     internal string Name { get; }
@@ -180,6 +185,19 @@ internal sealed class TableStyle
     internal IReadOnlyDictionary<string, CellBorder> EffectiveBorders { get; }
     internal string? Background { get; }
     internal string? EffectiveBackground { get; }
+    internal string? FirstRowBackground { get; }
+    internal string? EffectiveFirstRowBackground { get; }
+}
+
+// A validated mask and its explicitly specified, agreeing flags. Omitted flags
+// remain omitted so editable output does not manufacture explicit settings.
+internal sealed class TableStyleLook
+{
+    internal TableStyleLook(int mask, IDictionary<string, bool> flags)
+    { Mask = mask; Flags = new Dictionary<string, bool>(flags, System.StringComparer.Ordinal); }
+    internal int Mask { get; }
+    internal bool FirstRow => (Mask & 0x20) != 0;
+    internal IReadOnlyDictionary<string, bool> Flags { get; }
 }
 
 internal enum VerticalMerge { None, Start, Continue }

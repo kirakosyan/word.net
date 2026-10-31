@@ -385,6 +385,13 @@ internal sealed partial class DocxWriter
         if (table.Background != null) element.Element(W + "tblPr")!.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
             new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", table.Background)));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
+        if (table.Look != null)
+        {
+            var look = new XElement(W + "tblLook", new XAttribute(W + "val", table.Look.Mask.ToString("X4", CultureInfo.InvariantCulture)));
+            foreach (string flag in new[] { "firstRow", "lastRow", "firstColumn", "lastColumn", "noHBand", "noVBand" })
+                if (table.Look.Flags.TryGetValue(flag, out bool enabled)) look.Add(new XAttribute(W + flag, enabled ? "1" : "0"));
+            element.Element(W + "tblPr")!.Add(look);
+        }
         int columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(row => row.Sum(c => c.ColumnSpan));
         element.Add(new XElement(W + "tblGrid", Enumerable.Range(0, columns).Select(c => new XElement(W + "gridCol",
             c < table.ColumnWidths.Count ? new XAttribute(W + "w", Twips(table.ColumnWidths[c])) : null))));
@@ -544,6 +551,9 @@ internal sealed partial class DocxWriter
             if (definition.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
                 new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.Background)));
             if (properties.HasElements) style.Add(properties);
+            if (definition.FirstRowBackground != null)
+                style.Add(new XElement(W + "tblStylePr", new XAttribute(W + "type", "firstRow"), new XElement(W + "tcPr",
+                    new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.FirstRowBackground)))));
             styles.Add(style);
         }
 

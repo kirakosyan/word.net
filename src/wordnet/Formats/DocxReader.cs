@@ -513,8 +513,13 @@ internal sealed partial class DocxReader
                 using var cellLocation = context.At(XmlSourceLocation.Create(rowChild, mainPart));
                 var cell = new TableCell();
                 var pendingBookmarks = new List<TextRun>();
+                if (rowChild.Element(W + "tcPr")?.Elements(W + "shd").Skip(1).Any() == true)
+                    throw new InvalidDataException("Docx.TableShading: Duplicate direct cell shading properties.");
                 ReadCellGeometry(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), rowChild.Element(W + "tcPr"), cell);
-                if (table.EffectiveBackground != null && !reportedShadingConflict && rowChild.Element(W + "tcPr")?.Element(W + "shd") != null)
+                XElement? directShading = rowChild.Element(W + "tcPr")?.Element(W + "shd");
+                bool admittedOverride = table.Style?.EffectiveFirstRowBackground != null && table.EffectiveBackground == null
+                    && directShading != null && QualifiedConditionalCellShading(directShading);
+                if ((table.HasTableShading || table.Style?.EffectiveFirstRowBackground != null) && !reportedShadingConflict && directShading != null && !admittedOverride)
                 {
                     context.Loss("Table.ShadingConflict", "Table shading combined with direct cell shading is not independently qualified.");
                     reportedShadingConflict = true;
@@ -570,14 +575,14 @@ internal sealed partial class DocxReader
 
         if (table.HasTableBorders && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
             context.Loss("Table.BorderStory", "Table borders outside the ordinary document body are not independently qualified.");
-        if (table.EffectiveBackground != null && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
+        if (table.HasTableShading && (!element.Ancestors(W + "body").Any() || element.Ancestors(W + "txbxContent").Any()))
             context.Loss("Table.ShadingStory", "Table shading outside the ordinary document body is not independently qualified.");
         if (table.HasTableBorders && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
             || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
                 || cell.Borders.Count != 0 || cell.Content.OfType<TableBlock>().Any())
                 || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
             context.Loss("Table.BorderConflict", "Table borders on merged, nested, irregular or individually bordered cells use an approximation.");
-        if (table.EffectiveBackground != null && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
+        if (table.HasTableShading && (element.Ancestors(W + "tbl").Any() || table.Rows.Count == 0
             || table.Rows.Any(row => row.Count != table.Rows[0].Count || row.Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None
                 || cell.Content.OfType<TableBlock>().Any())
                 || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))

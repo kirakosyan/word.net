@@ -22,6 +22,13 @@ report expansion, comparison and explicit unsupported combinations. Independent
 LibreOffice fixtures confirm inherited border colors and a disabled inherited
 edge, while the measured placement differences and shading-reference limitation
 remain.
+The [exact-source table-style receipt](measurements/roadmap-138-table-styles-771760a.json)
+records the inheritance increment. Additional independently rendered first-row
+[enabled/disabled look fixtures](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleConditions/README.md)
+check color, region and direct clear-cell precedence, editable inheritance and masks, explicit flag retention,
+report expansion, comparison, and diagnosed conflicts and pagination. The
+explicit-flag controls use the Office 2010 Open XML schema; tests do not infer
+portable behavior for conflicting flags or absent look masks.
 
 Pending #159 source work has a [table formula test profile](table-formulas.md):
 independently authored DOCX and LibreOffice numeric checks, schema and fixed-output

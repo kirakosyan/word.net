@@ -10,6 +10,8 @@ of a styled incoming table. `Comparison.TableStyle` rejects changed style chains
 Non-DOCX editable output reports `Table.StyleOutput` as a loss of style identity;
 static output reports `Table.StyleStaticOutput` as information when it resolves
 the style appearance. Existing border and shading diagnostics still apply.
+`Docx.TableLook` reports absent, unsupported or conflicting look settings for
+the bounded first-row condition; duplicate looks fail before output.
 
 Pending direct table-border support reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and

@@ -32,11 +32,28 @@ style metadata or properties are diagnosed. Combining styles with direct table
 border or shading overrides is not admitted in strict mode. Comparison rejects
 table-style changes, including when other formatting categories are ignored.
 
+The source profile also retains a bounded `firstRow` conditional style containing
+clear explicit RGB cell shading, including inheritance. A qualified explicit
+four-digit `tblLook` bitmask enables or disables the first row; any accompanying
+explicit flags must agree with that mask. DOCX saves preserve the conditional
+style, inheritance chain, mask and explicitly supplied agreeing flags. Fixed
+output, HTML and ODT compute the fill from the current first row after report
+expansion. A direct clear explicit RGB cell fill overrides the conditional fill;
+other direct cell shading, including `nil`, remains diagnosed. Implicit look
+defaults, conflicting flags and mask bits, conditional cell properties other
+than clear shading, and combinations with whole-table shading remain diagnosed.
+A repeated first row or split row remains
+outside the fixed-page profile. The independent
+[LibreOffice controls](../tests/wordnet.Conversion.Tests/Fixtures/TableStyleConditions/README.md)
+confirm the enabled and disabled colors and regions, with existing geometry
+differences retained. They do not establish portable behavior for conflicting
+flags or omitted masks.
+
 Individually bordered, merged, nested or irregular cells, tables in stories or
 text boxes, nonzero cell spacing, border effects, repeated headers and split rows have explicit loss diagnostics
-and strict rejection. Conditional regions and `tblLook`, style-level paragraph,
-run and cell properties, and full border-conflict precedence remain outside this
-increment. The independent
+and strict rejection. Other conditional regions, style-level paragraph and run
+properties, other conditional cell properties, and full border-conflict
+precedence remain outside this increment. The independent
 [LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
 checks six edge colors, grid relationships, style inheritance and an inherited
 edge reset. It also retains measured

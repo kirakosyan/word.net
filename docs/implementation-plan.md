@@ -25,9 +25,10 @@ diagnostics for the remaining theme semantics. The
 [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
 records its remaining script, drawing and style-precedence work.
 Pending #142 source retains bounded [direct and inherited whole-table borders and clear shading](document-fidelity.md#unreleased-source-direct-table-borders),
-with editable DOCX style chains and explicit losses for unqualified conflicts
-and pagination. Conditional regions, full style precedence and independent
-qualification remain open; the table-level shading reference failure is retained.
+with editable DOCX style chains and bounded first-row conditional shading, plus
+explicit losses for unqualified conflicts and pagination. Other conditional
+regions, full style precedence and independent qualification remain open; the
+table-level shading reference failure is retained.
 Pending source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships, including one Word-authored placeholder derivative.
 The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
