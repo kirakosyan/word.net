@@ -124,8 +124,10 @@ The [fresh retry and other guests](measurements/roadmap-138-framework-bc9995f-re
 passed 2,065 cases each, while the original failure remains recorded.
 The later [exact-head push receipt](measurements/roadmap-138-framework-fbe9a3d-push.json)
 records both actual Framework guests passing 2,105 cases. Its separate PR Linux
-[failure](measurements/roadmap-138-ci-fbe9a3d-linux-failure.json) remains recorded;
-neither result qualifies later source.
+[failure](measurements/roadmap-138-ci-fbe9a3d-linux-failure.json) remains recorded.
+The [PR retry](measurements/roadmap-138-framework-fbe9a3d-pr-retry.json) passed
+all jobs, including both actual Framework guests at 2,105 cases each. These
+results do not qualify later source.
 
 Pending typed-fragment tests check all six created kinds, nested parent/child locks,
 global IDs, deterministic independent binding stores, repeated insertion, explicit
@@ -248,6 +250,8 @@ admitted geometries, page selection, repeated figures, fill and stroke, and
 separately opted-in text boxes. The [independent observation](measurements/roadmap-138-accessible-vectors-reference.json)
 records independently authored DOCX, schema and LibreOffice geometry checks,
 PDF/UA validation, ParentTree and source-order checks, and negative controls.
+The [exact-source receipt](measurements/roadmap-138-accessible-vectors-7e3876e.json)
+records both complete local suites, the capability matrix and package checks.
 The pending Linux workflow validates the generated corpus; hosted execution,
 screen-reader behavior, archival output and other drawing combinations remain open.
 

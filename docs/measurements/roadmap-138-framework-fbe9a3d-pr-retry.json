@@ -1,0 +1,36 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41183241637",
+  "attempt": 2,
+  "result": "success",
+  "sourceHead": "fbe9a3d1c6914d6a79a3420e00476dbdfc6aa084",
+  "testedPullRequestMerge": "c799d2b1a76f6dcc3c4d474335221bec7af0f711",
+  "tree": "c664b6c883baf768345c428c6090734455fb19d5",
+  "treeIdentity": "The PR merge commit and source head have the same Git tree. The merge parents were bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7 and fbe9a3d1c6914d6a79a3420e00476dbdfc6aa084.",
+  "jobs": "All 11 jobs passed: four source/modern-runtime platforms, performance, four package platforms and actual Framework 4.7.2 source/package guests.",
+  "frameworkSource": {
+    "job": 124497684488,
+    "frameworkRelease": 461814,
+    "cases": 2105,
+    "librarySha256": "69accac806c0824447bc86374ffedfa82e0f0d6f98223932c5b5511afbebe9d9",
+    "testSha256": "a109c14b4523bf428015cbd07ef1b4722d95950cd215b7a7d9f1a8edb121912a",
+    "inputArtifactId": 13035774857,
+    "inputArtifactSha256": "1606b0f1f831f21da9f8cfb026221945b0e396e60f0bf0d27d30b9b70493c15b",
+    "resultArtifactId": 13038191058,
+    "resultArtifactSha256": "9bb4be9d973b8245de905a925795c700ec438fbd7631deb34e234ca4d650d6c1"
+  },
+  "frameworkPackage": {
+    "job": 124499939082,
+    "frameworkRelease": 461814,
+    "cases": 2105,
+    "librarySha256": "87518ffeb81d4df3ea99bd272a93ac113fe3f41ff80d6eade3caf3a09cc8c495",
+    "testSha256": "7a7e0385c566f1dc5fb9079de380301c31f5702aca5f7afcf8a14b2568d3eae0",
+    "inputArtifactId": 13037044633,
+    "inputArtifactSha256": "6620133ae70b2371bd32fbdbaf17b5233ce373cf3cb59c2030af362be191005a",
+    "resultArtifactId": 13037892693,
+    "resultArtifactSha256": "80835ec5a8509a6e6bd05c4cec0d7fe5ac34c375fa3c0e13e2dace303810750e"
+  },
+  "retainedOriginalAttempt": "docs/measurements/roadmap-138-ci-fbe9a3d-linux-failure.json",
+  "scope": "The successful retry does not identify the cause of the earlier POI download HTTP 404 and does not qualify subsequent commits. No package was published."
+}

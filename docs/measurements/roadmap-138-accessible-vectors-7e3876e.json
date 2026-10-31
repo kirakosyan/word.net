@@ -1,0 +1,88 @@
+{
+  "roadmap": 138,
+  "issue": 155,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "7e3876e248865926db075d6f5e25b47a4ea87201",
+  "scope": "Explicit described or decorative semantics for six bounded managed vector kinds in tagged/PDF-UA output, including separately ordered text boxes. Native, archival and broader owners are not established by this source qualification.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2196,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "ffa291659543b6c51cde9e29fbfc048a0f2660e19b91a7dcd07c0a96dbaabda0"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2196,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "cd92440afffe0290891370c382468434e0bcca7c6b253786fc27a772f906e5fc"
+    },
+    "capabilityMatrix": {
+      "profiles": 79,
+      "testMethods": 376,
+      "net10CasesPassed": 667
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification against this source commit; no package was published.",
+    "packageVerificationLogSha256": "3747c249d6f14ecfdeaf685224617da57cded1e36ebd4035fbc6b25148a4a1dd",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "e43037fd00f9009666e15b9bf8a63adcaf62692d2fe3ebd74ced7d48b674a9f4",
+      "wordnet.Fonts.1.5.0.nupkg": "d3078a51361df395850a9b4378a2fc04c2a0abd650442fcf24db1ea936cd943b",
+      "wordnet.Ocr.1.5.0.nupkg": "e46a357bf0c27af7d133ba8b45772806c122de654ea12ebc0445238819b4fe9b"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-accessible-vectors-reference.json",
+    "exactSourceProbeAndPackageNet10AssemblySha256": "b3ae68392e1cc1b47301aa385cd7432a6b6740f55dc795a4dafe10a9c5973aff",
+    "verapdfXmlSha256": "943938f217d8c814a26c891bcbe993075155e7af97984008405854e475eb840c",
+    "savedDocxSha256": {
+      "box-decorative.docx": "2941fc0b271c6313a18134fa5e299fd205aeb239e96f5b32a25585a7ed18562e",
+      "box.docx": "0fa9b843f997ff0e96466285df5b4223fc4d245e4b04e3d56fd1c7bb6ab10e0f",
+      "decorative.docx": "2dd4d34ec7c216c64fc4285ed30cfd0b8cd8da48cb4be192002f1c2318fba344",
+      "described.docx": "cf93a7730403ff4db01df0e45b98683e7edbc17134ab7339bbc2a0c3dde0c14a",
+      "diamond-decorative.docx": "ba36a4efc719a993bc253be92cd82a1e7ec564159158917767cf7120966ea5d0",
+      "diamond-described.docx": "95c064d2d39f7f35e2bdd495f67493d8d203e3f0161f485c7e35a8ca81648af6",
+      "ellipse-decorative.docx": "441c6591af89ae4bae96848366a1343dac6b47cc89fbdd2212188d9824bdef25",
+      "ellipse-described.docx": "d889c94761613a6e001f6796107b8880f0e478995fa7203575e01c8aae3ca1a4",
+      "line-decorative.docx": "372de2b96ab38ba1212b5c322d389413bbd38a421dcb94f5b967a7b02eb4c934",
+      "line-described.docx": "d9f2fc9738720f488ee45acdabb56abfd37f841e9f45d81219fbb62d7101d3e9",
+      "rect-decorative.docx": "cda5f5c664b895526208dadd391372b5688c20e0b73eadffda98f0f705343f8c",
+      "rect-described.docx": "eabc3e4e3a39cca30a63a87b7384017e0aee0124b422075e6a2383b96e477680",
+      "roundRect-decorative.docx": "fd0dba678c182ccc011d49a90d7d78b2edc29edc9dd85939d01f309335f1f4b6",
+      "roundRect-described.docx": "77ae33f6230f4f3fff776234e52259cfd58dd22066567e9a29ed797c527294eb",
+      "selection.docx": "5f88812119140fc90f830c392c70b15e3440eb157798b552fb07ca18527a6f2b",
+      "stroke.docx": "98b60135a3a71ce36457c4b261a1b974bccae21b840b103609f67943946025a4",
+      "triangle-decorative.docx": "2dd4d34ec7c216c64fc4285ed30cfd0b8cd8da48cb4be192002f1c2318fba344",
+      "triangle-described.docx": "cf93a7730403ff4db01df0e45b98683e7edbc17134ab7339bbc2a0c3dde0c14a",
+      "two.docx": "cc52a6abc75cf414b28423e14a94a05b3db85aab6237e8b97a943af61710fe05"
+    },
+    "pdfSha256": {
+      "accessible-vector-box-decorative.pdf": "3d0bce5917f125199e92daf09f06b6eb83a347928e54efc7fbbdab251bd53f5c",
+      "accessible-vector-box.pdf": "d0652ae8193baee456484f2896c7e4755cdb56a55c79dc96088414ef0342c8c5",
+      "accessible-vector-decorative.pdf": "84f18bc66ad676a951843d4f95d1e5ae0ef85e9917a2d6c597c1ec6b01176934",
+      "accessible-vector-described.pdf": "95b97cb0dde0009978ec3b1556d159be0797c54b3286faa4c3c1cd1d09b7e894",
+      "accessible-vector-diamond-decorative.pdf": "bc00812ad3f3cdee9d423183f40543be729e6b13ee3375880c03669deb1208b8",
+      "accessible-vector-diamond-described.pdf": "35e8a7808baa157acab7153f3804fe3e7350bb75b34e46c67f59b87d032ea082",
+      "accessible-vector-ellipse-decorative.pdf": "92d55013242e4a573ce9be52b626f513ac48315e8f03737e54899069e97d5927",
+      "accessible-vector-ellipse-described.pdf": "9eb6989187ee02cbcc5424fa3b688b33c4cb94470ee284cb60843f647bf3192d",
+      "accessible-vector-line-decorative.pdf": "4d401ee6d2c55ba6fb65f57ad05ccdb07345de3e5f33008de0f2cf6f76d843e6",
+      "accessible-vector-line-described.pdf": "6d94d62167e697dd8b59f389276d60924a0c3aa143f21763460029aff4436cde",
+      "accessible-vector-negative.pdf": "c84be9491c73efd881f99b33d9a529d679a8a9d2f0eb1bb17028278bbad8fd8e",
+      "accessible-vector-rect-decorative.pdf": "ae088d7537bcb5f1330f3e0d6ce9988fe3f417934728e350177818dd6eca5196",
+      "accessible-vector-rect-described.pdf": "c92d86b12312549365192c42ca2a80b755538abd146265beacd0a3ceee227cd9",
+      "accessible-vector-roundRect-decorative.pdf": "5ddca45557ee5186f5c56f6feee420ef4a4a3d387e05b4d2cb3f31374c7de220",
+      "accessible-vector-roundRect-described.pdf": "20a292c89990a38895d211b8654661371b32bc22415a0033e8e482d7e3240de4",
+      "accessible-vector-selection.pdf": "64a0235a41f49376ab8174d41e64a27255041859ed49ce77da0e30b92ce9bf74",
+      "accessible-vector-stroke.pdf": "225ca827989d087219d25d5c9294d5a6286d1208fa6d23a06beab964961ce0e8",
+      "accessible-vector-triangle-decorative.pdf": "27379d90861221812c536b3fbe70fea745c9f6941cbfe935f03b7d252dca65f3",
+      "accessible-vector-triangle-described.pdf": "33d83be50d3dfabcee026d46cb9443ddf5bc8f6e4664996d488407fee3066b0c",
+      "accessible-vector-two.pdf": "186da29c4220637e7180cbb30af71e2d6f3b5f93727e9a3b73957d710ca433d8"
+    },
+    "result": "All 19 independently generated DOCX inputs reproduced byte-for-byte; their saved counterparts reproduced and had zero Open XML SDK errors. Exact-source PDFs passed 19 independent structure/ParentTree checks and pinned PDF/UA-1 validation; the untagged negative failed. The independently rendered triangle remained within 0.208597 pt of LibreOffice at the unchanged 0.5-pt tolerance. The working-tree reference separately records altered-alternative, reordered, misowned, untagged and substituted-geometry controls."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. Broader #155 scope and roadmap #138 remain open."
+}
