@@ -11,9 +11,40 @@ still be tracked. These policies retain the existing source admission, section a
 shared-story topology checks, budgets and atomicity. Unsupported formatting and
 structured owners still fail rather than being hidden by an ignore option.
 
-These switches do not yet implement paragraph-property revisions or every story
-and formatting category requested by #150. They are pending source work, not part
-of published 1.5.0; exact runtime and package qualification remain separate.
+These switches do not implement every story and formatting category requested by
+#150. They are pending source work, not part of published 1.5.0; exact runtime and
+package qualification remain separate.
+
+## Unreleased source: paragraph-format revisions
+
+Pending #150 comparison tracks alignment, left/right/first-line indentation,
+before/after/line spacing and keep/page-break controls for ordinary body paragraphs
+and direct paragraphs in unmerged simple body-table cells when the surrounding
+document topology matches. `CompareParagraphFormatting = false` keeps the original
+resolved values instead. Paragraph style and mark formatting must match, and lists,
+headings, custom tabs, direction changes, controls and structured runs are outside
+this profile. Matching style inheritance is resolved before comparison; output
+writes explicit values when necessary to retain resets such as left alignment or
+disabled keeps against a style default. It records effective supported values, not
+the original spelling or every inheritance declaration.
+
+Tracked changes use schema-valid `w:pPrChange` with caller attribution. A
+`DocumentReviewItem` reports structure `paragraph-format`; accepting keeps the
+revised values and rejecting restores the prior values. Text revisions can coexist
+and can be decided independently. Clone, save and source-preserving composition
+retain and remap their revision IDs. Import admits the same bounded property
+history only when the previous style matches; paragraph-mark and section properties
+remain outside the previous-property element, and unsupported owners or property
+changes are rejected. Ordinary loads keep their existing explicit
+accepted-state loss diagnostic. Review display and destination-style composition
+reject this history until it is decided. Structural insertion/deletion combined with
+paragraph-format differences remains outside this initial profile.
+
+The source tests inspect independent OOXML and Open XML SDK validation, compare
+accepted/rejected PDF glyph positions, and cover inherited resets, cells, sections,
+composition, selective decisions, budgets and unsupported owners. This remains
+unreleased source; the broader #150 acceptance and exact-platform/package
+qualification remain open.
 
 ## Unreleased source: detached text-revision display
 

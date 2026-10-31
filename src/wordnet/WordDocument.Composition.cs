@@ -44,7 +44,7 @@ public sealed partial class WordDocument
             Remap(incoming, prefix, m.Notes.Count == 0 ? 0 : m.Notes.Max(n => n.PartId));
             if (style == CompositionStyle.UseDestination)
             {
-                if (incoming.Review.Revisions.Values.Any(r => r.Structure == "format" || r.MoveSide.Length != 0))
+                if (incoming.Review.Revisions.Values.Any(r => r.Structure is "format" or "paragraph-format" || r.MoveSide.Length != 0))
                     throw new NotSupportedException("Review.Composition: Resolve formatting and move history before applying destination styles.");
                 if (incoming.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Object != null)) throw new NotSupportedException("Object.Restyle: Object composition retains source appearance only.");
                 var prototypes = m.BodyParagraphs.GroupBy(p => p.HeadingLevel).ToDictionary(g => g.Key, g => g.First());
@@ -159,6 +159,7 @@ public sealed partial class WordDocument
         {
             paragraph.Identity = Guid.NewGuid();
             if (paragraph.StructuralRevision != null) paragraph.StructuralRevision = prefix + "r" + paragraph.StructuralRevision;
+            if (paragraph.ParagraphFormatRevision != null) paragraph.ParagraphFormatRevision = prefix + "r" + paragraph.ParagraphFormatRevision;
             if (paragraph.List != null && isolateCounters) paragraph.List.Id = prefix + paragraph.List.Id;
             for (int i = 0; i < paragraph.Runs.Count; i++)
             {

@@ -29,7 +29,8 @@ available in the published 1.5.0 packages.
 
 Pending #150 adds default-enabled `ComparisonOptions.CompareStoryText` and
 `CompareRunFormatting` switches. See the [selection profile](review-workflows.md#unreleased-source-comparison-selection)
-for original-value retention and remaining unsupported paragraph-property history.
+for original-value retention. The same pending source adds
+`CompareParagraphFormatting` and bounded [paragraph-format revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
 
 ## 1.5.0 roadmap #102 delivery
 

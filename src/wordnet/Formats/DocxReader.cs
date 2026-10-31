@@ -185,6 +185,17 @@ internal sealed partial class DocxReader
         {
             throw new InvalidDataException("Docx.Styles: Invalid style namespace.");
         }
+        bool styleHistory = false; int styleScan = 0;
+        foreach (XElement element in root.Descendants())
+        {
+            if ((++styleScan & 255) == 0) context.CheckCancellation();
+            if (element.Name == W + "pPrChange") { styleHistory = true; break; }
+        }
+        if (styleHistory)
+        {
+            if (context.PreserveReview) throw new NotSupportedException("Review.ParagraphFormat: Paragraph-property history cannot occur in style definitions.");
+            context.Loss("Revisions.Accepted", "Paragraph style history is omitted in the accepted-state conversion profile.");
+        }
 
         var defaults = new TextStyle { Layout = defaultLayout.Copy() };
         ReadParagraphProperties(root.Element(W + "docDefaults")?.Element(W + "pPrDefault")?.Element(W + "pPr"), defaults);
@@ -274,6 +285,7 @@ internal sealed partial class DocxReader
             style = ResolveStyle(styleId, new HashSet<string>(StringComparer.Ordinal));
         }
 
+        TextStyle inheritedParagraph = style.Copy();
         ReadParagraphProperties(properties, style);
         ListItem? list = ResolveList(style);
         if (list?.Definition?[list.Level] is ListLevel listLevel && listLevel.LayoutProperties.Count > 0)
@@ -291,6 +303,7 @@ internal sealed partial class DocxReader
         var paragraph = new ParagraphBlock { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
+        ReadParagraphFormatRevision(element, properties, paragraph, inheritedParagraph);
         return paragraph;
     }
 
@@ -658,6 +671,12 @@ internal sealed partial class DocxReader
                 if (property.Elements().Any(e => e.Name != W + "numId" && e.Name != W + "ilvl")) context.Loss("Docx.ListRevision", "Numbering revisions are not retained.");
             }
             else if (ReadLayoutProperty(property, style.Layout)) { }
+            else if (property.Name == W + "pPrChange")
+            {
+                if (context.PreserveReview && properties.Parent?.Name != W + "p")
+                    throw new NotSupportedException("Review.ParagraphFormat: Paragraph-property history requires a paragraph owner.");
+                if (!context.PreserveReview) context.Loss("Revisions.Accepted", "Paragraph formatting history is omitted in the accepted-state conversion profile.");
+            }
             else if (property.Name == W + "rPr") { /* Paragraph mark is resolved separately from text runs. */ }
             else if (property.Name != W + "pStyle" && property.Name != W + "sectPr")
             {

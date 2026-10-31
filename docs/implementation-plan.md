@@ -39,8 +39,9 @@ Unreleased #149 work adds an explicit numbered annotation policy for supported
 classic comments, format changes and paired paragraph moves. The issue remains
 open pending complete independent and exact-runtime qualification.
 Pending #150 adds [comparison selection](review-workflows.md#unreleased-source-comparison-selection)
-for admitted story text and run-format changes. Paragraph-property revisions and
-broader story/format categories remain open.
+for admitted story text and run-format changes, plus [bounded paragraph-property
+revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
+Structural combinations and broader story/format categories remain open.
 Pending #159 adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;

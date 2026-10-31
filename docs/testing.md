@@ -9,8 +9,10 @@ it does not qualify a public package or untested runtime.
 Pending #150 [comparison-selection tests](review-workflows.md#unreleased-source-comparison-selection)
 check the retained original appearance/story, inherited-format resets, text and
 structural changes, combined work budgets, unchanged input sessions and rejection
-of unsupported properties and story topology.
-They do not establish paragraph-property history or runtime/package qualification.
+of unsupported properties and story topology. Additional [paragraph-history tests](review-workflows.md#unreleased-source-paragraph-format-revisions)
+validate OOXML, decisions, PDF geometry, inherited resets, cells, composition,
+section ordering and unsupported-owner controls. They do not establish untested
+structural combinations or runtime/package qualification.
 
 ## 1.5.0 roadmap #102 delivery
 

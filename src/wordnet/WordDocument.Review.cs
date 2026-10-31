@@ -9,7 +9,7 @@ using WordNet.Model;
 
 namespace WordNet;
 
-/// <summary>Explicit opt-in to bounded DOCX text-history preservation.</summary>
+/// <summary>Explicit opt-in to bounded DOCX review-history preservation.</summary>
 public sealed class ReviewLoadOptions
 {
     /// <summary>Gets or sets whether supported revisions and classic comments must be preserved. Defaults to true.</summary>
@@ -34,7 +34,7 @@ public sealed class DocumentReviewItem
     internal Guid Session { get; }
     internal long Version { get; }
     internal string Id { get; }
-    /// <summary>Gets "paragraph", "row", "format", or an empty string for a text revision/comment.</summary>
+    /// <summary>Gets "paragraph", "row", "format", "paragraph-format", or an empty string for a text revision/comment.</summary>
     public string Structure { get; }
     /// <summary>Gets the imported/caller author without attribution inference.</summary>
     public string Author { get; }
@@ -92,6 +92,7 @@ public sealed partial class WordDocument
                 var texts = model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Revision != null).GroupBy(r => r.Revision!, StringComparer.Ordinal)
                     .ToDictionary(g => g.Key, g => string.Concat(g.Select(r => r.Text)), StringComparer.Ordinal);
                 foreach (TextRun run in model.BodyParagraphs.SelectMany(p => p.Runs)) if (run.FormatRevision != null) texts[run.FormatRevision] = run.Text;
+                foreach (ParagraphBlock paragraph in model.BodyParagraphs) if (paragraph.ParagraphFormatRevision != null) texts[paragraph.ParagraphFormatRevision] = paragraph.Text;
                 foreach (ParagraphBlock p in model.Blocks.OfType<ParagraphBlock>()) if (p.StructuralRevision != null) texts[p.StructuralRevision] = p.Text;
                 foreach (TableBlock table in model.Blocks.OfType<TableBlock>()) foreach (var pair in table.RowRevisions)
                     texts[pair.Value] = string.Join("\t", table.Rows[pair.Key].Select(c => string.Join("\n", c.Paragraphs.Select(p => p.Text))));
@@ -119,7 +120,7 @@ public sealed partial class WordDocument
     }
     private static void ValidateReviewParagraph(ParagraphBlock paragraph)
     {
-        if (paragraph.StructuralRevision != null || paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.FormatRevision != null || r.Comment != null || r.Bookmark != null || r.Control != null
+        if (paragraph.StructuralRevision != null || paragraph.ParagraphFormatRevision != null || paragraph.Control != null || paragraph.Runs.Any(r => r.Revision != null || r.FormatRevision != null || r.Comment != null || r.Bookmark != null || r.Control != null
             || r.FieldInstruction != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null))
             throw new NotSupportedException("Review.Range: Recording requires a history-free paragraph without structured ranges.");
     }
@@ -257,11 +258,14 @@ public sealed partial class WordDocument
         void Consume(IEnumerable<ParagraphBlock> paragraphs)
         {
             foreach (ParagraphBlock p in paragraphs)
+            {
+                if (p.ParagraphFormatRevision != null) selected.Add(p.ParagraphFormatRevision);
                 foreach (TextRun run in p.Runs)
                 {
                     if (run.Comment != null) throw new NotSupportedException("Review.CommentIntersection: Remove comments explicitly before consuming a structural owner.");
                     if (run.Revision != null) selected.Add(run.Revision);
                 }
+            }
         }
         static void Shift<T>(Dictionary<int, T> values, int removed)
         {
@@ -271,6 +275,12 @@ public sealed partial class WordDocument
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
             context.CheckCancellation(); var open = new HashSet<string>(StringComparer.Ordinal);
+            if (paragraph.ParagraphFormatRevision != null && selected.Contains(paragraph.ParagraphFormatRevision))
+            {
+                if (decision == ReviewDecision.Reject) paragraph.PreviousParagraphFormat!.Apply(paragraph);
+                else paragraph.ExplicitParagraphFormat = true;
+                paragraph.ParagraphFormatRevision = null; paragraph.PreviousParagraphFormat = null;
+            }
             foreach (TextRun run in paragraph.Runs)
             {
                 if (run.Comment != null)

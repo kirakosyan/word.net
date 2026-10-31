@@ -3,6 +3,38 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "comparison-paragraph-format",
+      "issue": 150,
+      "outcome": "supported-bounded",
+      "boundary": "Ordinary body and simple-cell paragraph properties use explicit resolved snapshots, review decisions and schema-valid OOXML when surrounding topology matches.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryRoundTripsAndBothDecisionsMatchIndependentGeometry" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphAndTextChangesHaveIndependentAttributedDecisions" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphLineSpacingAndHangingIndentPreservePriorAndCurrentValues" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingPreservesInheritedExplicitResets" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingCanBeIgnoredWithoutDiscardingTextChanges" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphFormattingHistoryUsesPriorAndCurrentProperties" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingInsideSimpleCellsAndAtSectionBoundariesIsSchemaValid" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphMarkFormattingRemainsUnchangedAcrossPropertyHistory" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingHistoryComposesWithDistinctIdsAndRejectsRestyling" }
+      ]
+    },
+    {
+      "id": "comparison-paragraph-format-unsupported",
+      "issue": 150,
+      "outcome": "rejected",
+      "boundary": "Structural combinations, unsupported history owners, style-embedded history and exhausted work budgets fail without changing the source sessions.",
+      "tests": [
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingRetainsExistingStructuralAndDisplayBoundaries" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphFormattingUsesTheComparisonBudgetAndCancellationAtomically" },
+        { "class": "ReviewWorkflowTests", "method": "OrdinaryConversionDiagnosesDiscardedParagraphHistoryAndKeepsStrictOutputUntouched" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryRejectsUnsupportedOwners" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryCannotHideASectionChange" },
+        { "class": "ReviewWorkflowTests", "method": "ImportedParagraphHistoryRejectsInvalidIndentAndStyleMetadata" },
+        { "class": "ReviewWorkflowTests", "method": "ParagraphHistoryCannotBeHiddenInsideAStyleDefinition" }
+      ]
+    },
+    {
       "id": "comparison-ignored-stories-and-runs",
       "issue": 150,
       "outcome": "supported-bounded",

@@ -123,7 +123,9 @@ internal sealed partial class DocxWriter
         if (last == null || last.Name != W + "p") { last = new XElement(W + "p"); body.Add(last); }
         XElement? properties = last.Element(W + "pPr");
         if (properties == null) { properties = new XElement(W + "pPr"); last.AddFirst(properties); }
-        properties.Add(Section(settings));
+        XElement? change = properties.Element(W + "pPrChange");
+        XElement section = Section(settings);
+        if (change == null) properties.Add(section); else change.AddBeforeSelf(section);
     }
 
     private XElement Paragraph(ParagraphBlock paragraph)
@@ -140,14 +142,15 @@ internal sealed partial class DocxWriter
 
         ParagraphLayout resolvedLayout = paragraph.Layout.Copy();
         resolvedLayout.After ??= paragraph.FallbackAfter;
-        ParagraphLayoutProperties(properties, resolvedLayout);
+        bool explicitParagraph = paragraph.ParagraphFormatRevision != null || paragraph.ExplicitParagraphFormat;
+        ParagraphLayoutProperties(properties, resolvedLayout, explicitParagraph);
         if (paragraph.List != null)
         {
             XElement? spacing = properties.Elements().FirstOrDefault(e => e.Name == W + "tabs" || e.Name == W + "spacing" || e.Name == W + "ind");
             if (spacing == null) properties.Add(NumberingReference(paragraph.List));
             else spacing.AddBeforeSelf(NumberingReference(paragraph.List));
         }
-        if (paragraph.Alignment != ParagraphAlignment.Left)
+        if (paragraph.Alignment != ParagraphAlignment.Left || explicitParagraph)
             properties.Add(new XElement(W + "jc", new XAttribute(W + "val", paragraph.Alignment switch
             { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
         if (paragraph.RightToLeft.HasValue)
@@ -161,6 +164,20 @@ internal sealed partial class DocxWriter
         XElement? markProperties = paragraph.Mark == null ? null : Run(paragraph.Mark).Element(W + "rPr");
         if (paragraph.StructuralRevision != null) { markProperties ??= new XElement(W + "rPr"); markProperties.AddFirst(Revision(paragraph.StructuralRevision)); }
         if (markProperties != null) properties.Add(markProperties);
+        if (paragraph.ParagraphFormatRevision != null)
+        {
+            ReviewRecord record = model.Review.Revisions[paragraph.ParagraphFormatRevision];
+            ParagraphFormatSnapshot previous = paragraph.PreviousParagraphFormat!;
+            ParagraphLayout oldLayout = previous.Layout.Copy(); oldLayout.After ??= previous.FallbackAfter;
+            var old = new XElement(W + "pPr");
+            if (style != null) old.Add(new XElement(W + "pStyle", new XAttribute(W + "val", style)));
+            ParagraphLayoutProperties(old, oldLayout, true);
+            old.Add(new XElement(W + "jc", new XAttribute(W + "val", previous.Alignment switch
+            { ParagraphAlignment.Center => "center", ParagraphAlignment.Right => "right", ParagraphAlignment.Justified => "both", ParagraphAlignment.Distributed => "distribute", _ => "left" })));
+            var change = new XElement(W + "pPrChange", new XAttribute(W + "id", ReviewId(reviewIds, record.Id)), new XAttribute(W + "author", record.Author));
+            if (record.Date.HasValue) change.Add(new XAttribute(W + "date", record.Date.Value.ToString("o", CultureInfo.InvariantCulture)));
+            change.Add(old); properties.Add(change);
+        }
         if (properties.HasElements) element.Add(properties);
 
         TemplateControl? currentControl = null; int? currentTypedControl = null;

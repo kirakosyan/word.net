@@ -43,11 +43,13 @@ public sealed class ComparisonOptions
     public bool CompareStoryText { get; set; } = true;
     /// <summary>Gets or sets whether supported bold, italic, size and color changes are tracked. When false matching text keeps the original formatting.</summary>
     public bool CompareRunFormatting { get; set; } = true;
+    /// <summary>Gets or sets whether admitted paragraph alignment, spacing, indentation and pagination changes are tracked. When false the original values remain.</summary>
+    public bool CompareParagraphFormatting { get; set; } = true;
 }
 /// <summary>Deterministic bounded text and plain paragraph/row comparison of history-free documents.</summary>
 public static partial class DocumentComparison
 {
-    /// <summary>Creates a reviewed copy without changing either input. Plain paragraph/row insertion and deletion are supported; other structural/property differences and existing history fail.</summary>
+    /// <summary>Creates a reviewed copy without changing either input. Plain paragraph/row changes and bounded paragraph-property history are supported; unsupported combinations and existing history fail.</summary>
     public static WordDocument Compare(WordDocument original, WordDocument revised, ComparisonOptions comparisonOptions,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
     {
@@ -55,6 +57,7 @@ public static partial class DocumentComparison
         int tokens = comparisonOptions.MaximumTokens, steps = comparisonOptions.MaximumSteps;
         ComparisonGranularity granularity = comparisonOptions.Granularity;
         bool compareStoryText = comparisonOptions.CompareStoryText, compareRunFormatting = comparisonOptions.CompareRunFormatting;
+        bool compareParagraphFormatting = comparisonOptions.CompareParagraphFormatting;
         if (tokens is < 1 or > 100000 || steps is < 1 or > 4000000 || granularity is not ComparisonGranularity.Word and not ComparisonGranularity.Grapheme) throw new ArgumentOutOfRangeException(nameof(comparisonOptions));
         options ??= new ConversionOptions(); var context = new ConversionContext(options, cancellationToken) { Editing = true };
         DocumentModel left = original.ComparisonSnapshot(context), right = revised.ComparisonSnapshot(context);
@@ -73,11 +76,26 @@ public static partial class DocumentComparison
         if (structural) CompareStructure(left, right, comparisonOptions, options, context, !compareRunFormatting, work, out work, out tokenCount);
         ParagraphBlock[] bodyA = structural ? Array.Empty<ParagraphBlock>() : left.BodyParagraphs.ToArray();
         ParagraphBlock[] bodyB = structural ? Array.Empty<ParagraphBlock>() : right.BodyParagraphs.ToArray();
+        HashSet<ParagraphBlock> formatOwnersA = ReviewStore.ParagraphFormatOwners(left), formatOwnersB = ReviewStore.ParagraphFormatOwners(right);
         bodyCount = bodyA.Length;
         ParagraphBlock[] a = bodyA.Concat(stories.Select(p => p.Old)).ToArray(), b = bodyB.Concat(stories.Select(p => p.New)).ToArray();
         for (int paragraph = 0; paragraph < a.Length; paragraph++)
         {
             context.CheckCancellation(); bool storyMode = paragraph >= bodyCount; string oldText = a[paragraph].Text, newText = b[paragraph].Text;
+            if (!storyMode && !ParagraphFormatSnapshot.Same(a[paragraph], b[paragraph]))
+            {
+                if (!formatOwnersA.Contains(a[paragraph]) || !formatOwnersB.Contains(b[paragraph])
+                    || !ReviewStore.OrdinaryParagraphFormat(a[paragraph]) || !ReviewStore.OrdinaryParagraphFormat(b[paragraph]))
+                    throw new NotSupportedException("Comparison.ParagraphFormat: Paragraph-property changes require ordinary body or simple-cell paragraphs.");
+                if (compareParagraphFormatting)
+                {
+                    string id = Guid.NewGuid().ToString("N"); var previous = new ParagraphFormatSnapshot(a[paragraph]);
+                    new ParagraphFormatSnapshot(b[paragraph]).Apply(a[paragraph]);
+                    a[paragraph].ParagraphFormatRevision = id; a[paragraph].PreviousParagraphFormat = previous;
+                    left.Review.Revisions.Add(id, new ReviewRecord { Id = id, Author = comparisonOptions.Author, Date = comparisonOptions.Timestamp, Structure = "paragraph-format" });
+                }
+                else a[paragraph].ExplicitParagraphFormat = true;
+            }
             if (oldText == newText)
             {
                 if (a[paragraph].Runs.Any(Structured) || b[paragraph].Runs.Any(Structured))
@@ -137,8 +155,11 @@ public static partial class DocumentComparison
             DocumentModel copy = new DocumentCloner(context).Copy(model);
             NormalizePlainStories(copy, context, !compareRunFormatting, ReserveAdditionalWork);
             var body = new HashSet<ParagraphBlock>(ReviewStore.SupportedParagraphs(copy.Blocks));
+            HashSet<ParagraphBlock> formatOwners = ReviewStore.ParagraphFormatOwners(copy);
             foreach (ParagraphBlock paragraph in copy.Paragraphs)
             {
+                if (formatOwners.Contains(paragraph) && ReviewStore.OrdinaryParagraphFormat(paragraph))
+                { ReserveAdditionalWork(1); NeutralParagraphFormat(paragraph); }
                 if (!body.Contains(paragraph) || paragraph.Control != null || paragraph.Runs.Any(r => r.FieldInstruction != null || r.Control != null
                     || r.Bookmark != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null)) continue;
                 var normalized = RunCoalescer.Combine(paragraph.Runs.Select(Neutral).ToList());
@@ -220,6 +241,14 @@ public static partial class DocumentComparison
         TextRun result = new TextRun(r.Text, code: r.Code, link: r.Link, image: r.Image, appearance: appearance,
             fieldInstruction: r.FieldInstruction, note: r.Note, box: r.Box, bookmark: r.Bookmark, control: r.Control, retainedObject: r.Object).RetainMetadata(r);
         result.ExplicitFormat = false; return result;
+    }
+    private static void NeutralParagraphFormat(ParagraphBlock paragraph)
+    {
+        paragraph.Alignment = ParagraphAlignment.Left; paragraph.FallbackAfter = null; paragraph.ExplicitParagraphFormat = false;
+        ParagraphLayout layout = paragraph.Layout;
+        layout.Before = null; layout.After = null; layout.Left = 0; layout.Right = 0; layout.FirstLine = 0;
+        layout.LineSpacing = null; layout.MultipleLineSpacing = true; layout.ExactLineSpacing = false;
+        layout.PageBreakBefore = false; layout.KeepTogether = false; layout.KeepWithNext = false;
     }
     private static List<TextRun> Slice(ParagraphBlock paragraph, int start, int length, ConversionContext context, ref int work, int maximum)
     {

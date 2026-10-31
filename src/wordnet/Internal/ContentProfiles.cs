@@ -14,6 +14,7 @@ internal static class ContentProfiles
         bool comments = false, bool emptyRuns = true, bool decorations = true, bool structuralHistory = false) =>
         paragraph.Control == null && paragraph.NestedControl == null && paragraph.TypedControlId == null && paragraph.List == null
         && (structuralHistory || paragraph.StructuralRevision == null)
+        && (formatHistory || paragraph.ParagraphFormatRevision == null)
         && paragraph.Runs.All(r => (emptyRuns || r.Text.Length != 0) && r.Image == null && r.Box == null && r.Note == null && r.Object == null
             && r.Control == null && r.TypedControlId == null && r.Link == null && r.FieldInstruction == null && r.Bookmark == null
             && (textHistory || r.Revision == null) && (formatHistory || r.FormatRevision == null) && (comments || r.Comment == null)

@@ -32,7 +32,7 @@ internal sealed class DocumentCloner
         DocumentBlock result;
         if (source is ParagraphBlock p)
         {
-            var paragraph = new ParagraphBlock { FallbackFontSize = p.FallbackFontSize, FallbackAfter = p.FallbackAfter, StyleId = p.StyleId, Mark = p.Mark == null ? null : Run(p.Mark), StructuralRevision = p.StructuralRevision, RemoveWhenObjectEmpty = p.RemoveWhenObjectEmpty, Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
+            var paragraph = new ParagraphBlock { FallbackFontSize = p.FallbackFontSize, FallbackAfter = p.FallbackAfter, StyleId = p.StyleId, Mark = p.Mark == null ? null : Run(p.Mark), StructuralRevision = p.StructuralRevision, ParagraphFormatRevision = p.ParagraphFormatRevision, PreviousParagraphFormat = p.PreviousParagraphFormat?.Copy(), ExplicitParagraphFormat = p.ExplicitParagraphFormat, RemoveWhenObjectEmpty = p.RemoveWhenObjectEmpty, Identity = p.Identity, RightToLeft = p.RightToLeft, HeadingLevel = p.HeadingLevel, Alignment = p.Alignment, IsCodeBlock = p.IsCodeBlock, Layout = p.Layout.Copy() };
             if (p.List != null)
             {
                 paragraph.List = p.List.Copy();

@@ -79,6 +79,9 @@ internal sealed class ParagraphBlock : DocumentBlock
     internal string? StyleId { get; set; }
     internal TextRun? Mark { get; set; }
     internal string? StructuralRevision { get; set; }
+    internal string? ParagraphFormatRevision { get; set; }
+    internal ParagraphFormatSnapshot? PreviousParagraphFormat { get; set; }
+    internal bool ExplicitParagraphFormat { get; set; }
     internal bool RemoveWhenObjectEmpty { get; set; }
     internal System.Guid Identity { get; set; } = System.Guid.NewGuid();
     internal bool? RightToLeft { get; set; }

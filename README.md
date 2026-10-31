@@ -17,6 +17,7 @@ Pending source work also adds [bounded matrix equations](https://github.com/kira
 Pending source work adds [bounded sum, product and integral expressions](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-n-ary-equations) with explicit limits and operator-size fallback diagnostics.
 Pending source work also adds [bounded table formulas](https://github.com/kirakosyan/word.net/blob/main/docs/table-formulas.md) with dependency-aware cache refresh and explicit numeric-cell limits.
 Pending source work adds [comparison selection](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-comparison-selection) for ordinary story text and run formatting.
+Pending source work adds [bounded paragraph-format revisions](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-paragraph-format-revisions) for ordinary body and simple-cell comparison.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.

@@ -115,6 +115,14 @@ bounded graph cannot be calculated. All `=` fields in that table retain their
 source caches together, even in Strict mode. Cancellation and the existing
 conversion-wide resource limits remain hard failures.
 
+## Unreleased paragraph-format diagnostics
+
+Pending [paragraph-format history](review-workflows.md#unreleased-source-paragraph-format-revisions)
+uses `Review.ParagraphFormat` and `Comparison.ParagraphFormat` for unsupported
+owners or properties. Ordinary loads report `Revisions.Accepted` when they discard
+that history; malformed metadata and existing comparison resource limits remain
+hard failures.
+
 ## Unreleased matrix diagnostics
 
 Pending #168 uses `Equation.Matrix*` failures for unsupported baseline, spacing,

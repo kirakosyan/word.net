@@ -116,6 +116,8 @@ public sealed partial class WordDocument
             if (annotationPolicy == ReviewAnnotationPolicy.Reject
                 && (model.Review.Comments.Count != 0 || model.Review.Revisions.Values.Any(r => r.Structure.Length != 0 || r.MoveSide.Length != 0)))
                 throw new NotSupportedException("Review.DisplayProfile: Comments, moves and structural/format revisions require a separate display profile.");
+            if (model.Review.Revisions.Values.Any(r => r.Structure == "paragraph-format"))
+                throw new NotSupportedException("Review.DisplayProfile: Paragraph-format history requires a separate display profile.");
             if (model.Controls.HasControls || model.HasControlDisplay || model.ObjectCount != 0 || model.Notes.Count != 0
                 || model.Paragraphs.Any(p => p.Control != null || p.NestedControl != null)
                 || model.Paragraphs.SelectMany(p => p.Runs).Any(r => r.Image != null || r.Box != null || r.Note != null || r.FieldInstruction != null

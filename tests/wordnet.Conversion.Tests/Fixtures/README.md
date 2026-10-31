@@ -31,6 +31,13 @@ example requiring an explicit multiplication by 100 is separately documented in
 [Microsoft Q&A](https://learn.microsoft.com/en-us/answers/a/9719502); it is a
 community example, not a Word-authored test fixture.
 
+The PDF embeds a subset of LibreOffice's Carlito Regular 1.103, copyright
+2010–2013 tyPoland Lukasz Dziedzic, under SIL OFL 1.1 with reserved font name
+Carlito; its notice and license are in `P2/Carlito-LibreOffice-OFL.txt`. The
+LibreOffice font file used for this export had SHA-256
+`b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131`.
+This font is part of the reference PDF, not a new runtime dependency.
+
 | File | SHA-256 |
 | --- | --- |
 | `P2/table-formulas.docx` | `c38d816cc3bb8fa0eb6cf55a7b0cfe8796b6fd357772b76b65fa6696747c6ca1` |
