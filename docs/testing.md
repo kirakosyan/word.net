@@ -230,6 +230,8 @@ owners. The [independent reference](measurements/roadmap-138-native-equation-ref
 retains the fraction geometry and Arabic extraction failures, the reference math
 font difference, and the initial missing-Math-component failure. Notes and charts
 remain outside this increment.
+The [exact-source receipt](measurements/roadmap-138-native-equation-4787103.json)
+records complete local suites, package checks and repeated independent specimens.
 
 Pending #154 text-box tests exercise explicit anchor ordering, links, multiple
 boxes, page selection and unsupported semantic owners. The independent
