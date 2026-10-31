@@ -172,4 +172,31 @@ public sealed partial class ObjectFoundationTests
         Assert.Equal("000000", page.Text.Single(item => item.Text == "Light").Color);
         Assert.Equal("FFFFFF", page.Text.Single(item => item.Text == "Dark").Color);
     }
+
+    [Fact]
+    public void CircularPointLabelFitsTheEmittedUnkernedPdfText()
+    {
+        const string label = "AVAVAVAVAVAV";
+        var chart = ChartDefinition.CreateCircular(ChartKind.Pie, new[] { new ChartSlice(label, 1, "2468AC") }, showLegend: false)
+            .WithDataLabels(ChartDataLabels.Category);
+        var options = new ConversionOptions(FidelityMode.Lenient); var document = WordDocument.Create(options);
+        document.AddChart(chart, width: 360, height: 260, cancellationToken: TestContext.Current.CancellationToken);
+        using var source = new MemoryStream(SaveObjects(document)); var context = Context(options);
+        FixedPage layout = Assert.Single(FixedLayout.Create(DocxReader.Read(source, context), context));
+        FixedShape sector = Assert.Single(layout.Shapes, shape => shape.Geometry == "sector");
+        using var pdf = new MemoryStream(); document.Save(pdf, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
+        using var reader = UglyToad.PdfPig.PdfDocument.Open(pdf.ToArray());
+        var letters = reader.GetPage(1).Letters;
+        Assert.Equal(label.Length, letters.Count);
+        double emittedCenter = (letters[0].StartBaseLine.X + letters[letters.Count - 1].EndBaseLine.X) / 2;
+        Assert.InRange(Math.Abs(emittedCenter - (sector.X + sector.Width / 2)), 0, 0.01);
+
+        string boundary = string.Concat(Enumerable.Repeat("AV", 16));
+        var tooWide = ChartDefinition.CreateCircular(ChartKind.Pie, new[] { new ChartSlice(boundary, 1, "2468AC") }, showLegend: false)
+            .WithDataLabels(ChartDataLabels.Category);
+        var narrow = WordDocument.Create(options); narrow.AddChart(tooWide, width: 360, height: 260, cancellationToken: TestContext.Current.CancellationToken);
+        using var output = new MemoryStream(); output.WriteByte(42);
+        var error = Assert.Throws<NotSupportedException>(() => narrow.Save(output, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Chart.DataLabelFit:", error.Message, StringComparison.Ordinal); Assert.Equal(new byte[] { 42 }, output.ToArray());
+    }
 }

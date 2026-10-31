@@ -242,9 +242,9 @@ labels too large for their bars or circular sectors, including zero-size points
 and labels intersecting a hole or sector boundary; labels are not silently
 dropped. `Chart.BindingAppearance` rejects report binding when the
 retained chart appearance is not preserved by the closed chart model.
-`Chart.DataLabelText` rejects non-ASCII circular point labels and
+`Chart.DataLabelText` rejects non-ASCII point labels and
 `Chart.DataLabelFont` rejects a replacement for the embedded Noto Sans regular
-face in that profile, whose ink bounds are independently checked.
+face in this profile, whose ink bounds are independently checked.
 Pending pie and doughnut charts report `Chart.CircularLayoutApproximation` for
 their independently measured frame differences; Strict rejects this loss.
 `Chart.SliceValue` rejects negative or nonfinite values, `Chart.Slices` bounds

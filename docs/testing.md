@@ -425,6 +425,11 @@ checks XlsxWriter-authored pie and doughnut labels, saved and API-authored DOCX,
 cross-format vector/text geometry, embedded ASCII font ink bounds, sampled arc
 clearance, LibreOffice output and 15 corrupted controls.
 The measured office origin and reading-order differences remain open.
+An earlier source revision failed the unchanged local performance gate and a
+kerning-heavy PDF positioning control; its [failure receipt](measurements/roadmap-138-circular-labels-ed8a72e-failures.json)
+retains the four performance rounds, the measured text offset and test-development
+failures. The following correction measures the unkerned text actually emitted by
+the chart writers; its own qualification is recorded separately.
 
 Pending #163 circular-chart tests cover immutable slice data, editable graph and
 binding, signed-value and slice-count rejection, normalized extreme values,

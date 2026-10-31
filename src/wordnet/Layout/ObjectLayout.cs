@@ -29,8 +29,8 @@ internal static class ChartLayout
         bool stacked = chart.Kind is ChartKind.StackedColumn or ChartKind.StackedBar;
         bool circular = chart.Kind is ChartKind.Pie or ChartKind.Doughnut;
         bool labels = chart.DataLabels != ChartDataLabels.None;
-        if (circular && labels && !embeddedRegular)
-            throw new NotSupportedException("Chart.DataLabelFont: Circular point labels require the embedded Noto Sans regular face.");
+        if (labels && !embeddedRegular)
+            throw new NotSupportedException("Chart.DataLabelFont: Point labels require the embedded Noto Sans regular face.");
         if ((horizontal || stacked || labels || circular) && (context.Typography.Enabled
             || context.Destination == DocumentFormat.Pdf && !context.PreviewIntermediate
                 && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17)))
@@ -50,6 +50,14 @@ internal static class ChartLayout
         context.Objects.Render(chart.Title.Length + chart.CategoryTitle.Length + chart.ValueTitle.Length + chart.Categories.Sum(s => (long)s.Length)
             + chart.Series.Sum(s => (long)s.Name.Length) + repeatedLabels + 128, pointCount * ((stacked ? 3 : circular ? 6 : 1) + (labels ? 1 : 0))
             + (circular && labels ? pointCount * pointCount : 0) + chart.Categories.Count + chart.Series.Count + 32);
+        if (labels && chart.DataLabels is ChartDataLabels.Category or ChartDataLabels.CategoryAndValue)
+            for (int category = 0; category < chart.Categories.Count; category++)
+            {
+                context.CheckCancellation();
+                if (chart.Categories[category].Any(character => character is < ' ' or > '~')
+                    && chart.Series.Any(series => series.Values[category].HasValue))
+                    throw new NotSupportedException("Chart.DataLabelText: Point labels require printable ASCII text.");
+            }
         if (circular) return Circular(item, chart, font, measure, context);
         double[] finite = chart.Series.SelectMany(s => s.Values).Where(v => v.HasValue).Select(v => v!.Value).ToArray();
         if (finite.Length == 0) throw new NotSupportedException("Chart.EmptyData: At least one real value is required for rendering.");
@@ -281,6 +289,8 @@ internal static class ChartLayout
     {
         context.CheckCancellation();
         string label = LabelText(chart, category, value);
+        if (label.Any(character => character is < ' ' or > '~'))
+            throw new NotSupportedException("Chart.DataLabelText: Point labels require printable ASCII text.");
         const double size = 8;
         double textWidth = measure(label, font, size);
         if (!Finite(textWidth) || textWidth + 4 > width || size + 4 > height)
@@ -318,7 +328,7 @@ internal static class ChartLayout
         context.CheckCancellation();
         string label = LabelText(chart, category, value);
         if (label.Any(character => character is < ' ' or > '~'))
-            throw new NotSupportedException("Chart.DataLabelText: Circular point labels require printable ASCII text.");
+            throw new NotSupportedException("Chart.DataLabelText: Point labels require printable ASCII text.");
         // Keep an additional half point clear for cubic-arc approximation and rounding.
         const double size = 8, margin = 2, curveAllowance = 0.5;
         double width = measure(label, font, size), radius = diameter / 2, cx = x + radius, cy = y + radius;

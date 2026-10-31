@@ -17,6 +17,7 @@ public sealed partial class ObjectFoundationTests
 {
     private static readonly string[] LabelCategories = { "First", "Second" };
     private static readonly string[] CombinedPointLabels = { "First, 30", "Second, -20" };
+    private static readonly string[] NonAsciiPointLabels = { "漢" };
     private static readonly double?[] LabelValues = { 30, -20 };
     private static ChartDefinition LabelChart(ChartKind kind, ChartDataLabels labels) => new ChartDefinition(kind, LabelCategories,
         new[] { new ChartSeries("North", "2468AC", LabelValues) }, showLegend: false).WithDataLabels(labels);
@@ -97,6 +98,22 @@ public sealed partial class ObjectFoundationTests
         using var output = new MemoryStream(); output.WriteByte(42);
         var fit = Assert.Throws<NotSupportedException>(() => zeroDocument.Save(output, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken));
         Assert.StartsWith("Chart.DataLabelFit:", fit.Message, StringComparison.Ordinal); Assert.Equal(new byte[] { 42 }, output.ToArray());
+        var nonAscii = new ChartDefinition(ChartKind.ClusteredColumn, NonAsciiPointLabels, new[] { new ChartSeries("North", "2468AC", new double?[] { 1 }) }, showLegend: false).WithDataLabels(ChartDataLabels.Category);
+        var nonAsciiDocument = WordDocument.Create(options); nonAsciiDocument.AddChart(nonAscii, cancellationToken: TestContext.Current.CancellationToken);
+        using (var protectedText = new MemoryStream())
+        {
+            protectedText.WriteByte(42);
+            var error = Assert.Throws<NotSupportedException>(() => nonAsciiDocument.Save(protectedText, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken));
+            Assert.StartsWith("Chart.DataLabelText:", error.Message, StringComparison.Ordinal); Assert.Equal(new byte[] { 42 }, protectedText.ToArray());
+        }
+        var replacement = new ConversionOptions(FidelityMode.Lenient); using var fontSource = new MemoryStream(FixedLayout.FontBytes(0));
+        replacement.Fonts.Sources.Add(new FontSource("Noto Sans", fontSource));
+        using (var protectedFont = new MemoryStream())
+        {
+            protectedFont.WriteByte(42);
+            var error = Assert.Throws<NotSupportedException>(() => doc.Save(protectedFont, DocumentFormat.Pdf, replacement, TestContext.Current.CancellationToken));
+            Assert.StartsWith("Chart.DataLabelFont:", error.Message, StringComparison.Ordinal); Assert.Equal(new byte[] { 42 }, protectedFont.ToArray());
+        }
         Assert.Throws<NotSupportedException>(() => new ChartDefinition(ChartKind.Line, LabelCategories, new[] { new ChartSeries("Line", "2468AC", LabelValues) }).WithDataLabels(ChartDataLabels.Value));
         Assert.Throws<ArgumentOutOfRangeException>(() => LabelChart(ChartKind.ClusteredColumn, (ChartDataLabels)42));
         for (int mode = 0; mode < 3; mode++)
@@ -143,5 +160,28 @@ public sealed partial class ObjectFoundationTests
         Assert.False(Read(nonuniform).Renderable);
         byte[] missing = Xml(uniform, "word/charts/chart1.xml", chart => chart.Descendants(C + "dLbls").Last().Remove());
         Assert.False(Read(missing).Renderable);
+    }
+
+    [Theory]
+    [InlineData(ChartKind.ClusteredColumn)]
+    [InlineData(ChartKind.ClusteredBar)]
+    public void ChartPointLabelsCenterTheEmittedUnkernedPdfText(ChartKind kind)
+    {
+        const string label = "AVAVAVAVAVAV";
+        var chart = new ChartDefinition(kind, new[] { label }, new[] { new ChartSeries("Series", "2468AC", new double?[] { 1 }) }, showLegend: false)
+            .WithDataLabels(ChartDataLabels.Category);
+        var options = new ConversionOptions(FidelityMode.Lenient); var document = WordDocument.Create(options);
+        document.AddChart(chart, width: 360, height: 260, cancellationToken: TestContext.Current.CancellationToken);
+        using var source = new MemoryStream(SaveObjects(document)); var context = Context(options);
+        FixedPage layout = Assert.Single(FixedLayout.Create(DocxReader.Read(source, context), context));
+        FixedShape bar = Assert.Single(layout.Shapes, shape => shape.Color == "2468AC");
+        PositionedText point = Assert.Single(layout.Text, item => item.Text == label && item.Color == "FFFFFF");
+        using var pdf = new MemoryStream(); document.Save(pdf, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
+        using var reader = UglyToad.PdfPig.PdfDocument.Open(pdf.ToArray());
+        var letters = reader.GetPage(1).Letters.Where(letter => Math.Abs(letter.StartBaseLine.Y - (layout.Settings.Height - point.Y)) < 0.01
+            && letter.StartBaseLine.X >= bar.X && letter.EndBaseLine.X <= bar.X + bar.Width).ToArray();
+        Assert.Equal(label.Length, letters.Length);
+        double emittedCenter = (letters[0].StartBaseLine.X + letters[letters.Length - 1].EndBaseLine.X) / 2;
+        Assert.InRange(Math.Abs(emittedCenter - (bar.X + bar.Width / 2)), 0, 0.01);
     }
 }

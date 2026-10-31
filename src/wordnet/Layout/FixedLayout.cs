@@ -1416,7 +1416,7 @@ internal static partial class FixedLayout
                     if (retained.Chart != null)
                     {
                         int chartFont = resolver.Resolve(new TextRun(""), false);
-                        visual = ChartLayout.Create(retained, chartFont, Measure, context, resolver.IsEmbeddedRegular(chartFont));
+                        visual = ChartLayout.Create(retained, chartFont, MeasureChartText, context, resolver.IsEmbeddedRegular(chartFont));
                     }
                     else visual = new MathLayout(resolver.Math!, resolver.MathIndex, data[resolver.MathIndex], context).Create(retained);
                     if (visual.Width > width || visual.Ascent + visual.Descent > settings.Height - settings.Top - settings.Bottom)
@@ -1724,6 +1724,20 @@ internal static partial class FixedLayout
         }
 
         double Measure(string value, int font, double size) => Shape(value, font, size).Width;
+
+        // Chart visuals contain whole text items. PDF, XPS and SVG emit those items
+        // with the font's ordinary advances, without the paragraph kerning splits.
+        // Fit and centre them using the same advances that will actually be drawn.
+        double MeasureChartText(string value, int font, double size)
+        {
+            context.CheckCancellation();
+            try
+            {
+                var letters = metrics.MeasureText(value, size, new PdfPoint(0, 0), fonts[font]);
+                return letters.Count == 0 ? 0 : letters[letters.Count - 1].EndBaseLine.X;
+            }
+            catch (InvalidOperationException error) { throw new NotSupportedException("Layout.Glyph: The embedded font cannot represent a character.", error); }
+        }
 
         MeasuredText Shape(string value, int font, double size)
         {

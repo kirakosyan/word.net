@@ -150,6 +150,11 @@ width and height must fit. Zero-size points in an otherwise renderable chart rej
 a requested label with `Chart.DataLabelFit` rather than omitting it; an all-empty
 circular chart retains `Chart.EmptyData`. Total repeated text and layout work
 share the existing operation bounds and cancellation.
+Point labels require printable ASCII and the embedded Noto Sans regular face;
+other text or replacement fonts reject with `Chart.DataLabelText` or
+`Chart.DataLabelFont`. This bounded profile lets the independently checked ink
+fit within the label padding. Chart text is measured using the unkerned advances
+actually emitted by the managed PDF, XPS and SVG writers.
 
 Editable DOCX uses explicit centre positioning and show/hide flags. Imported
 chart-wide labels or uniform series labels are admitted only for this exact
@@ -210,10 +215,8 @@ otherwise render. Aggregate text and pairwise fit work are bounded. Reading orde
 is chart title, labels in source order, then the category legend in source order.
 An additional 0.5-point clearance covers the bounded cubic arc; a numerical
 control samples the admitted range through the maximum 720-point radius.
-The circular-label profile requires printable ASCII and the embedded Noto Sans
-regular face; a non-ASCII label or caller replacement of that face rejects with
-`Chart.DataLabelText` or `Chart.DataLabelFont`. FontTools independently checks that
-the admitted glyph ink stays within the fit padding. Line charts, custom label
+FontTools independently checks that the admitted glyph ink stays within the fit
+padding. Line charts, custom label
 positions, per-point styles and protected output profiles remain unqualified.
 
 Two independently authored, schema-validated XlsxWriter fixtures and their
