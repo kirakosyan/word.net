@@ -607,6 +607,17 @@ failures. Those historical prototype observations are not exact-source or hosted
 qualification; that earlier prototype did not demonstrate allowed losses or a real
 unexpected write-stage finding.
 
+Exact policy source `bb56a5f` passed the five-target Release rebuild,
+formatting, local package/API checks and both complete .NET 8/.NET 10 conversion and
+English OCR suites (2,465 cases each, no skips). The executable matrix passed 935
+cases; independent corpora rejected 325 altered observations, including 24 for the
+allowed-loss and unexpected-write profile. The unchanged local single-core PDF gate passed at
+0.901 versus `38427dc`; its reference round medians were
+40.612 and 50.435 ms. The [source receipt](measurements/roadmap-138-allowed-loss-bb56a5f.json)
+and [performance samples](measurements/roadmap-138-allowed-loss-performance-bb56a5f.json)
+retain exact identities. Hosted checks and actual Framework execution are separate;
+general template data, loss permissions and complete write-stage reporting remain open.
+
 The subsequent BestEffort prototype admits one precisely located theme-font
 fallback only when it is explicitly permitted and compares the observed warning
 before output is copied. It also checks a missing internal link that produces a
@@ -618,8 +629,10 @@ profile, not general policy enforcement or independent validation during executi
 
 The later head `7f476dd` passed both unchanged [hosted performance jobs](measurements/roadmap-138-performance-7f-hosted-success.json):
 the PR merge was 1.032 against `bf5ab00` and the push was 1.012 against `b57f10e`.
-The two jobs used different references; other hosted checks and actual Framework
-guests require separate evidence, and the earlier failed timing verdict is retained.
+The two jobs used different references. Its actual Framework 4.7.2 legacy-JIT
+[PR source guest](measurements/wordnet-138-framework-7f-pr-source-success.json)
+passed 2,433 cases and cleanup. Other guests and newer source require separate
+evidence, and the earlier failed timing verdict is retained.
 
 For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
