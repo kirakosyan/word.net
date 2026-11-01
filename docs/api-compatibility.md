@@ -230,7 +230,8 @@ remote service, publishing credential or repository checkout is required there.
 ## Bucket 4 additive API
 
 Unreleased #145 source adds the provider-neutral `WordDocument.InsertBlockContentControl`
-for an empty ordinary body paragraph and keeps the existing inline creation API.
+for an empty ordinary body paragraph and `InsertBlockContentControlInTableCell` for
+an empty simple-cell paragraph; it keeps the existing inline creation API.
 See the [bounded block profile](content-controls.md#unreleased-source-creating-a-block-control);
 it is not in published 1.5.0 packages.
 

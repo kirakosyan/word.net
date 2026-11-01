@@ -155,7 +155,9 @@ retained local XML or glossary resources. `Control.BindingDirty`, `Control.Locke
 `Control.ProtectedOwner` and `Control.StaleHandle` reject the corresponding removal
 before the session is changed.
 Block creation also uses `Control.ProtectedOwner` for nonempty, styled or
-unsupported owners; `Limit.Controls` bounds ID and owner traversal before commit.
+unsupported owners. The simple-cell operation rejects merged or nested tables
+and structural row/cell wrappers before commit; `Limit.Controls` bounds ID and
+owner traversal.
 
 Unreleased #141 source rejects incompatible document-wide themes before
 composition or comparison with `Composition.ThemeConflict` or

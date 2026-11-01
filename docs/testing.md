@@ -728,8 +728,11 @@ Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner
 failures. Its [independent reference](measurements/roadmap-138-block-controls-reference.json)
 checks DOCX schema and LibreOffice-extracted values; the [exact-source receipt](measurements/roadmap-138-block-controls-e44ef15.json)
-records complete local suites, package checks and the reproduced specimen. Cell
-and story block creation remain open.
+records complete local suites, package checks and the reproduced body specimen.
+The later [simple-cell observation](measurements/roadmap-138-cell-block-controls-reference.json)
+checks independently authored input and output schemas, static office text,
+owner rejection and 19 altered observations. Exact committed-source, runtime and
+package qualification are separate; story block creation remains open.
 
 Pending #157 mixed-region tests cover three and five nested body levels, sibling
 order, empty collections, scope lookup, retained control IDs, notes and atomic

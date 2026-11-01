@@ -1,0 +1,130 @@
+{
+  "roadmap": 138,
+  "issue": 145,
+  "recordedUtc": "2026-11-01",
+  "scope": "Prototype observation of six typed block controls created in empty simple table-cell paragraphs; protected owners stay rejected.",
+  "prototypeBuildHead": "4becf04a38c7e89c63463115a1e18e8d7d2bd00b",
+  "identityNote": "The executed assembly included uncommitted source changes. Exact committed-source, package and runtime checks are separate.",
+  "generatorSha256": "eaa10596116903e4fd811be2cc88e9eef5d7a0f462643ee913d53a206e9b254e",
+  "probeSha256": "2a1374cdc939c1e46e34a519233b6942582dd24f81280bd93097be97cdd3621e",
+  "checkerSha256": "08caeb1f97249b082a3478e8d2d24bae60387e1cf9bb3b500c8c08e6b704b1c6",
+  "prototypeAssemblySha256": "97be76cd954dbbec3014b22897cb10fd38f6da4ffe9b72911b14c05d7ea24ef6",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+    "generatorSha256": "eaa10596116903e4fd811be2cc88e9eef5d7a0f462643ee913d53a206e9b254e",
+    "documents": {
+      "plain.docx": "04b438d9be8ee091854b485a8f245b89e0a62a33a11827693d8e57dd58ca6f86",
+      "styled.docx": "1e494541064d426d2b1db01c0ccb284505aa86bb4e4fb8018adc1dd6cc539339",
+      "merged.docx": "b3f4076f6cdec7fdada5b05b6dd4c6d144afe4f39be39ab2762f36a916b59d7b",
+      "nested.docx": "bb0a967a6fb792e373e91820147149446d6b44aa2d0e287e2cfc025adf89f15d"
+    }
+  },
+  "probe": {
+    "inputHashes": {
+      "merged.docx": "b3f4076f6cdec7fdada5b05b6dd4c6d144afe4f39be39ab2762f36a916b59d7b",
+      "nested.docx": "bb0a967a6fb792e373e91820147149446d6b44aa2d0e287e2cfc025adf89f15d",
+      "plain.docx": "04b438d9be8ee091854b485a8f245b89e0a62a33a11827693d8e57dd58ca6f86",
+      "styled.docx": "1e494541064d426d2b1db01c0ccb284505aa86bb4e4fb8018adc1dd6cc539339"
+    },
+    "assemblySha256": "97be76cd954dbbec3014b22897cb10fd38f6da4ffe9b72911b14c05d7ea24ef6",
+    "outputs": {
+      "createdDocx": "cbbc78ff05785ee2dca0fe1f95c8239aac6cfcc64ba2601adfc9a1914de7220f",
+      "createdPdf": "2ef9b909a1a62fd494dca5ffce33556f405d6ebe26e0c4fb42fdce8c8ca751e1",
+      "editedDocx": "017c12b9af26df516827d6005406ef7157915b28ca0ba78bd2e887680b1d1f09",
+      "editedPdf": "0269701e1dca22beab672a3e4d38a78746e8b5085b3c024ffb7692618fc1e3fd"
+    },
+    "diagnostics": {
+      "created": [],
+      "createdPdf": [
+        "Control.StaticDisplay:Info"
+      ],
+      "edited": [],
+      "editedPdf": [
+        "Control.StaticDisplay:Info"
+      ]
+    },
+    "retainedControlCount": 5,
+    "rejected": {
+      "styled": {
+        "exception": "NotSupportedException",
+        "code": "Control.ProtectedOwner",
+        "unchanged": true
+      },
+      "merged": {
+        "exception": "NotSupportedException",
+        "code": "Control.ProtectedOwner",
+        "unchanged": true
+      },
+      "nested": {
+        "exception": "NotSupportedException",
+        "code": "Control.ProtectedOwner",
+        "unchanged": true
+      }
+    }
+  },
+  "independentReference": {
+    "result": {
+      "inputs": 4,
+      "schemaValidInputs": 4,
+      "schemaValidOutputs": 2,
+      "createdControls": 6,
+      "editedControlsRetained": 5,
+      "protectedOwnersRejectedAtomically": 3,
+      "independentAndGeneratedPdfTextMatch": true,
+      "limitations": "Static office text does not qualify interactive Word behavior, arbitrary table owners or full #145 acceptance."
+    },
+    "negativeControls": {
+      "fixture changed": "Fixture identity changed",
+      "assembly changed": "Loaded core assembly identity changed",
+      "cell omitted": "Body or cell ownership changed: created",
+      "body changed": "Body or cell ownership changed: created",
+      "duplicate id": "Control IDs, kinds or wrapper removal changed: created",
+      "kind changed": "Control IDs, kinds or wrapper removal changed: created",
+      "value changed": "Cell values or paragraph ownership changed: created",
+      "paragraph omitted": "Cell values or paragraph ownership changed: created",
+      "wrapper removal changed": "Control IDs, kinds or wrapper removal changed: edited",
+      "retained count changed": "Wrapper removal count changed",
+      "styled owner accepted": "Rejected owner or atomicity changed: styled",
+      "merged owner accepted": "Rejected owner or atomicity changed: merged",
+      "nested owner accepted": "Rejected owner or atomicity changed: nested",
+      "rejected input mutated": "Rejected owner or atomicity changed: merged",
+      "output hash changed": "Output identities changed: created",
+      "schema omitted": "Output schema evidence missing: created",
+      "office order changed": "Independent or generated PDF text/order changed: created",
+      "generated pdf changed": "Independent or generated PDF text/order changed: edited",
+      "diagnostic omitted": "DOCX or static-display diagnostic changed: created"
+    },
+    "controlMethod": "Independently parsed observations were altered in memory."
+  },
+  "validator": {
+    "assemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+    "inputTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nmerged.docx b3f4076f6cdec7fdada5b05b6dd4c6d144afe4f39be39ab2762f36a916b59d7b errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nnested.docx bb0a967a6fb792e373e91820147149446d6b44aa2d0e287e2cfc025adf89f15d errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nplain.docx 04b438d9be8ee091854b485a8f245b89e0a62a33a11827693d8e57dd58ca6f86 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nstyled.docx 1e494541064d426d2b1db01c0ccb284505aa86bb4e4fb8018adc1dd6cc539339 errors=0\n",
+    "outputTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ncreated.docx cbbc78ff05785ee2dca0fe1f95c8239aac6cfcc64ba2601adfc9a1914de7220f errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nedited.docx 017c12b9af26df516827d6005406ef7157915b28ca0ba78bd2e887680b1d1f09 errors=0\n"
+  },
+  "office": {
+    "producer": "LibreOffice 24.2.7.2, Poppler 24.02.0, image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; Noto Sans mounted read-only.",
+    "log": "NotoSans-Regular.ttf: \"Noto Sans\" \"Regular\"\nWarning: failed to launch javaldx - java may not function correctly\nconvert /input/created.docx as a Writer document -> /output/created.pdf using filter : writer_pdf_Export\nconvert /input/edited.docx as a Writer document -> /output/edited.pdf using filter : writer_pdf_Export\n",
+    "officePdfSha256": {
+      "created": "8bfa157b1fe87666285abeb5805410b53be22f295077832a588d4b7eff9742c7",
+      "edited": "a552d9b3371f82bc71ca16eee62238f7e667932fe6dede258e827a8ae0dd934d"
+    },
+    "extractedTextSha256": {
+      "created-office.txt": "2a63b70461a4ed7be0c045080748dd417229d680a44e1c0d9b9be6b4a392cb21",
+      "created-wordnet.txt": "2a63b70461a4ed7be0c045080748dd417229d680a44e1c0d9b9be6b4a392cb21",
+      "edited-office.txt": "f4e8bad87ca0d9c6424fd6d74bc91e6a7263aaf796e1a355204be22a2d381b16",
+      "edited-wordnet.txt": "b2339f846425c5c794daccc3a655c449c1721bf1c20a5df7236698c7b4547f23"
+    }
+  },
+  "focusedTests": {
+    "passed": 13,
+    "noSkips": true,
+    "retryLogSha256": "7927d955527a8cbbc843e43607c82623d84ba9ab92561a7b6b16b82dcd315b65",
+    "finalLogSha256": "7927d955527a8cbbc843e43607c82623d84ba9ab92561a7b6b16b82dcd315b65",
+    "initialCompileFailure": "The first focused compile reported CA1861 for constant test arrays; static readonly arrays corrected the warnings.",
+    "initialLog": "docs/measurements/roadmap-138-cell-block-prototype-initial.txt",
+    "initialLogSha256": "a6154b72b3ac2329c747114dea5fe17f3750f61c63ec31a9935fe8984edc7b04",
+    "ownerControlsLogSha256": "7927d955527a8cbbc843e43607c82623d84ba9ab92561a7b6b16b82dcd315b65",
+    "finalObservation": "All six initial values were also checked in XPS output; merged, nested, styled, structural row/cell and body owners reject atomically."
+  },
+  "limitations": "Only top-level simple unmerged body-table cells are admitted. Nested, merged, styled and structurally wrapped owners remain rejected; static office text does not establish interactive editing or full #145 acceptance."
+}

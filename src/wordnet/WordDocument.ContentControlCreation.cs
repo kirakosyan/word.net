@@ -63,6 +63,16 @@ public sealed partial class WordDocument
     /// <remarks>The paragraph must be an unstyled top-level body paragraph with no existing content or protected owner.
     /// The definition supplies the initial value and lock. Local bindings must resolve against an existing store.</remarks>
     public DocumentContentControl InsertBlockContentControl(int paragraphIndex, ContentControlDefinition definition, CancellationToken cancellationToken = default)
+        => InsertBlockContentControlCore(paragraphIndex, definition, cellOnly: false, cancellationToken);
+
+    /// <summary>Replaces an empty ordinary paragraph in a simple body-table cell with a typed block content control.</summary>
+    /// <remarks>The index addresses <see cref="Paragraphs"/>, including body and cell paragraphs. The selected owner must
+    /// be an unstyled paragraph in an unmerged top-level table without nested tables or structural control wrappers.
+    /// Initial values, locks and local bindings follow the same rules as body block creation.</remarks>
+    public DocumentContentControl InsertBlockContentControlInTableCell(int paragraphIndex, ContentControlDefinition definition, CancellationToken cancellationToken = default)
+        => InsertBlockContentControlCore(paragraphIndex, definition, cellOnly: true, cancellationToken);
+
+    private DocumentContentControl InsertBlockContentControlCore(int paragraphIndex, ContentControlDefinition definition, bool cellOnly, CancellationToken cancellationToken)
     {
         Guard.NotNull(definition, nameof(definition));
         lock (gate)
@@ -81,11 +91,14 @@ public sealed partial class WordDocument
                 foreach (TextRun existing in paragraph.Runs) c.ReserveControlWork(1);
                 bool body = false;
                 foreach (DocumentBlock block in m.Blocks) { c.ReserveControlWork(1); if (ReferenceEquals(block, paragraph)) { body = true; break; } }
-                if (!body || !ContentProfiles.OrdinaryParagraph(paragraph)
+                bool admittedOwner = cellOnly ? !body && AdmittedControlInsertionOwner(m, paragraph, c) : body;
+                if (!admittedOwner || !ContentProfiles.OrdinaryParagraph(paragraph)
                     || paragraph.StyleId != null || paragraph.HeadingLevel != 0 || paragraph.IsCodeBlock || paragraph.Text.Length != 0
                     || paragraph.Layout.Left != 0 || paragraph.Layout.Right != 0 || paragraph.Layout.FirstLine != 0 || paragraph.Layout.Tabs.Count != 0
                     || paragraph.Runs.Count > 1 || paragraph.Runs.Any(HasBlockInsertionStyle) || paragraph.Mark is TextRun mark && HasBlockInsertionStyle(mark))
-                    throw new NotSupportedException("Control.ProtectedOwner: Block creation requires an empty ordinary unstyled body paragraph.");
+                    throw new NotSupportedException(cellOnly
+                        ? "Control.ProtectedOwner: Block creation requires an empty ordinary unstyled simple-cell paragraph."
+                        : "Control.ProtectedOwner: Block creation requires an empty ordinary unstyled body paragraph.");
                 if (m.Controls.Items.Count == 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
                 assigned = NewControlId(m, c);
                 ControlData data = CreateControlData(definition, assigned, c); data.Inline = false;
@@ -218,7 +231,8 @@ public sealed partial class WordDocument
             c.ReserveControlWork(1);
             if (ReferenceEquals(block, paragraph)) return true;
             if (block is not TableBlock table) continue;
-            bool valid = table.Control == null && table.NestedControl == null && table.RowControls.Count == 0 && table.TypedRowControls.Count == 0, found = false;
+            bool valid = table.Control == null && table.NestedControl == null && !table.TypedControlId.HasValue
+                && table.RowControls.Count == 0 && table.TypedRowControls.Count == 0, found = false;
             foreach (List<TableCell> row in table.Rows)
             {
                 c.ReserveControlWork(1);

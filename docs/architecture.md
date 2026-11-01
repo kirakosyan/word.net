@@ -55,6 +55,10 @@ block parent. Parent IDs are exposed on detached snapshots; edits enforce both
 owners' locks, reject parent replacement while children exist and refresh the
 parent's value state after child or binding changes. Other nested owners stay
 outside this bounded subset.
+Block creation in a simple body-table cell selects an existing empty paragraph,
+validates the whole table's owner restrictions and installs the same typed
+metadata and initial value as body block creation inside the staged edit. Owner
+indexes and cell paragraph lists are refreshed before the edit commits.
 
 Unreleased review-display work creates a detached marked model from admitted body
 and simple-cell text revisions. Ordinary managed PDF and SVG render that snapshot

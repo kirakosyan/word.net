@@ -14,7 +14,93 @@ public sealed class ContentControlBlockCreationTests
     private static readonly ContentControlListItem[] Choices = { new ContentControlListItem("Alpha", "a"), new ContentControlListItem("Beta", "b") };
     private static readonly string[] EmptyPair = { "", "" };
     private static readonly string[] Kept = { "Keep", "" };
+    private static readonly string[][] SixEmptyCells = { new[] { "", "", "", "", "", "" } };
+    private static readonly string[][] OneEmptyCell = { new[] { "" } };
+    private static readonly string[][] OneNonemptyCell = { new[] { "Existing" } };
     private static DocumentContentControl ById(WordDocument document, int id) => document.ContentControls.Single(control => control.Id == id);
+
+    [Fact]
+    public void EmptySimpleCellParagraphsBecomeEditableTypedBlockControls()
+    {
+        WordDocument document = WordDocument.Create();
+        document.AddParagraph("Header", cancellationToken: TestContext.Current.CancellationToken);
+        document.AddTable(SixEmptyCells, cancellationToken: TestContext.Current.CancellationToken);
+        var definitions = new[]
+        {
+            new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Ada"),
+            new ContentControlDefinition(ContentControlKind.Checkbox, isChecked: true),
+            new ContentControlDefinition(ContentControlKind.DropDownList, items: Choices, selectedValue: "b"),
+            new ContentControlDefinition(ContentControlKind.ComboBox, items: Choices, initialText: "Manual"),
+            new ContentControlDefinition(ContentControlKind.Date, dateValue: ContentControlDateValue.FromInstant(new DateTimeOffset(2026, 10, 31, 0, 0, 0, TimeSpan.Zero))),
+            new ContentControlDefinition(ContentControlKind.RichText, initialText: "Approved")
+        };
+        for (int index = 0; index < definitions.Length; index++)
+        {
+            DocumentContentControl created = document.InsertBlockContentControlInTableCell(index + 1, definitions[index], TestContext.Current.CancellationToken);
+            Assert.Equal(index + 1, created.Id); Assert.Equal(definitions[index].Kind, created.Kind);
+            Assert.Equal("block body/cell paragraphs", created.Owner);
+        }
+        byte[] saved = Save(document); Validate(saved);
+        XElement[] cells = Xml(saved, "word/document.xml").Descendants(W + "tc").ToArray();
+        Assert.Equal(6, cells.Length); Assert.All(cells, cell => Assert.Single(cell.Elements(W + "sdt")));
+        Assert.Contains("AdaXBetaManual2026-10-31Approved", Compact(Pdf(document)), StringComparison.Ordinal);
+        Assert.Contains("AdaXBetaManual2026-10-31Approved", Compact(Xps(document)), StringComparison.Ordinal);
+        WordDocument loaded = Load(saved); Assert.Equal(6, loaded.ContentControls.Count);
+        loaded.SetControlText(ById(loaded, 1), "Grace", TestContext.Current.CancellationToken);
+        loaded.SetControlChecked(ById(loaded, 2), false, TestContext.Current.CancellationToken);
+        loaded.SetControlSelection(ById(loaded, 3), "a", TestContext.Current.CancellationToken);
+        loaded.SetControlComboText(ById(loaded, 4), "New", TestContext.Current.CancellationToken);
+        loaded.SetControlDate(ById(loaded, 5), ContentControlDateValue.FromInstant(new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero)), TestContext.Current.CancellationToken);
+        loaded.ReplaceControlParagraphs(ById(loaded, 6), new[] { new ContentControlParagraph(new[] { new DocumentText("Done") }) }, TestContext.Current.CancellationToken);
+        byte[] edited = Save(loaded); Validate(edited);
+        Assert.Equal("Grace", ById(Load(edited), 1).DisplayText);
+        WordDocument view = loaded.CreateControlDisplayView(out _, TestContext.Current.CancellationToken);
+        Assert.Empty(view.ContentControls); Assert.Contains("Grace", Pdf(view), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CellBlockCreationRejectsProtectedOwnersAndCancellationAtomically()
+    {
+        var definition = new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Value");
+        WordDocument body = WordDocument.Create(); body.AddParagraph("", cancellationToken: TestContext.Current.CancellationToken);
+        WordDocument nonempty = WordDocument.Create(); nonempty.AddTable(OneNonemptyCell, cancellationToken: TestContext.Current.CancellationToken);
+        WordDocument styled = LoadBody("<w:tbl><w:tr><w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t/></w:r></w:p></w:tc></w:tr></w:tbl>");
+        WordDocument merged = LoadBody("<w:tbl><w:tblGrid><w:gridCol w:w='1000'/><w:gridCol w:w='1000'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:gridSpan w:val='2'/></w:tcPr><w:p/></w:tc></w:tr></w:tbl>");
+        WordDocument nested = LoadBody("<w:tbl><w:tr><w:tc><w:p/><w:tbl><w:tr><w:tc><w:p/></w:tc></w:tr></w:tbl><w:p/></w:tc></w:tr></w:tbl>");
+        const string wrapper = "<w:sdt><w:sdtPr><w:id w:val='7'/><w:richText/></w:sdtPr><w:sdtContent>CONTENT</w:sdtContent></w:sdt>";
+        WordDocument rowControl = LoadBody("<w:tbl>" + wrapper.Replace("CONTENT", "<w:tr><w:tc><w:p/></w:tc></w:tr>") + "</w:tbl>");
+        WordDocument cellControl = LoadBody("<w:tbl><w:tr>" + wrapper.Replace("CONTENT", "<w:tc><w:p/></w:tc>") + "</w:tr></w:tbl>");
+        foreach (WordDocument document in new[] { body, nonempty, styled, merged, nested, rowControl, cellControl })
+        {
+            byte[] before = Save(document);
+            Assert.Throws<NotSupportedException>(() => document.InsertBlockContentControlInTableCell(0, definition, TestContext.Current.CancellationToken));
+            Assert.Equal(before, Save(document));
+        }
+        WordDocument cell = WordDocument.Create(); cell.AddTable(OneEmptyCell, cancellationToken: TestContext.Current.CancellationToken);
+        byte[] cellBefore = Save(cell);
+        Assert.Throws<ArgumentOutOfRangeException>(() => cell.InsertBlockContentControlInTableCell(-1, definition, TestContext.Current.CancellationToken));
+        using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
+        Assert.Throws<OperationCanceledException>(() => cell.InsertBlockContentControlInTableCell(0, definition, cancelled.Token));
+        Assert.Equal(cellBefore, Save(cell));
+    }
+
+    [Fact]
+    public void CreatedCellBlockCanUseExistingBindingAndRetainAnEmptyCellOnRemoval()
+    {
+        string body = "<w:p>" + Control(1, "<w:text/>", "cached", Binding("/p:invoice/p:customer/@name"))
+            + "</w:p><w:tbl><w:tr><w:tc><w:p/></w:tc></w:tr></w:tbl>";
+        WordDocument document = Load(WithStore(body));
+        var binding = new ContentControlBinding(StoreId, "/p:invoice/p:customer/@name", new Dictionary<string, string> { ["p"] = "urn:wordnet:controls" });
+        DocumentContentControl created = document.InsertBlockContentControlInTableCell(1,
+            new ContentControlDefinition(ContentControlKind.PlainText, initialText: "waiting", binding: binding), TestContext.Current.CancellationToken);
+        document.ApplyControlBindings(new[] { created }, TestContext.Current.CancellationToken);
+        Assert.Equal("Ada & Co", ById(document, 2).DisplayText);
+        document.RemoveControl(ById(document, 2), preserveContent: false, cancellationToken: TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        XElement cell = Assert.Single(Xml(saved, "word/document.xml").Descendants(W + "tc"));
+        Assert.Single(cell.Elements(W + "p")); Assert.Empty(cell.Descendants(W + "sdt"));
+        Assert.Equal("", Load(saved).Paragraphs[1].Text);
+    }
 
     [Fact]
     public void EmptyBodyParagraphsBecomeEditableTypedBlockControls()

@@ -451,10 +451,29 @@
       "id": "created-block-control-unsupported-owner",
       "issue": 145,
       "outcome": "rejected",
-      "boundary": "Nonempty, styled and cell placeholders reject without changing their owner; cancellation remains atomic.",
+      "boundary": "The body-creation API rejects nonempty, styled and cell placeholders without changing their owner; cancellation remains atomic.",
       "tests": [
         { "class": "ContentControlBlockCreationTests", "method": "BlockCreationRejectsNonemptyStyledAndCellOwnersAtomically" },
         { "class": "ContentControlBlockCreationTests", "method": "RetainedTemplateWrappersCountTowardTheCreationLimit" }
+      ]
+    },
+    {
+      "id": "created-block-control-simple-cell",
+      "issue": 145,
+      "outcome": "supported-bounded",
+      "boundary": "An empty ordinary paragraph in a simple top-level unmerged body-table cell can become one of six typed block controls, with existing local bindings, editing and wrapper removal.",
+      "tests": [
+        { "class": "ContentControlBlockCreationTests", "method": "EmptySimpleCellParagraphsBecomeEditableTypedBlockControls" },
+        { "class": "ContentControlBlockCreationTests", "method": "CreatedCellBlockCanUseExistingBindingAndRetainAnEmptyCellOnRemoval" }
+      ]
+    },
+    {
+      "id": "created-block-control-unsupported-cell-owner",
+      "issue": 145,
+      "outcome": "rejected",
+      "boundary": "The cell-creation API rejects body, nonempty, styled, merged, nested and structurally wrapped table owners atomically, including cancellation.",
+      "tests": [
+        { "class": "ContentControlBlockCreationTests", "method": "CellBlockCreationRejectsProtectedOwnersAndCancellationAtomically" }
       ]
     },
     {
