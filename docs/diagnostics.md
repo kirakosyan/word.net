@@ -419,6 +419,8 @@ Each data finding has a machine-readable remediation: `Remediation.ProvidePath`,
 `Remediation.ProvideItemPath`, `Remediation.ProvideCollection` or
 `Remediation.FixDataType`. These identify possible caller actions without changing
 the data, exposing names, or claiming that conversion will succeed.
+The optional schema identity is a fingerprint, not a secret: guessed declaration
+names can be tested against it, and it does not validate a plan's environment.
 
 For a PDF destination, `Plan.PdfOptionsMissing`, `Plan.PdfOptionsInvalid`,
 `Plan.PdfTaggedArchiveConflict` and `Plan.PdfNativeArchiveConflict` are static

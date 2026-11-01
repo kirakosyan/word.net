@@ -33,13 +33,15 @@ public sealed class TemplateDataFinding
 public sealed class TemplateDataInspection
 {
     private readonly IReadOnlyDictionary<string, string> paths;
-    internal TemplateDataInspection(List<TemplateDataFinding> findings, IDictionary<string, string> paths)
+    internal TemplateDataInspection(string schemaHash, List<TemplateDataFinding> findings, IDictionary<string, string> paths)
     {
-        Findings = findings.AsReadOnly();
+        DataSchemaSha256 = schemaHash; Findings = findings.AsReadOnly();
         this.paths = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(paths, StringComparer.Ordinal));
     }
     /// <summary>Gets mismatches and explicit unknowns without data names or values.</summary>
     public IReadOnlyList<TemplateDataFinding> Findings { get; }
+    /// <summary>Gets the declaration fingerprint. Hashes can reveal or fingerprint sensitive schema names.</summary>
+    public string DataSchemaSha256 { get; }
     /// <summary>Gets whether a declared path or item has a definite mismatch.</summary>
     public bool HasErrors => Findings.Any(finding => !finding.Unknown);
     /// <summary>Gets whether a missing repeat collection prevented item assessment.</summary>
@@ -135,6 +137,6 @@ public sealed partial class TemplateDataSchema
             }
         }
         context.CheckCancellation();
-        return new TemplateDataInspection(findings, aliases.ToDictionary(pair => pair.Value, pair => pair.Key, StringComparer.Ordinal));
+        return new TemplateDataInspection(IdentitySha256, findings, aliases.ToDictionary(pair => pair.Value, pair => pair.Key, StringComparer.Ordinal));
     }
 }

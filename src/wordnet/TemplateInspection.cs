@@ -69,6 +69,7 @@ public sealed partial class TemplateDataSchema
         if (copy.Any(p => p == null) || copy.Select(p => (p.RepeatCollectionPath, p.Path)).Distinct().Count() != copy.Length)
             throw new ArgumentException("Template schema paths must be non-null and unique within their declared scope.", nameof(paths));
         this.paths = Array.AsReadOnly(copy);
+        IdentitySha256 = ComputeIdentity(copy);
     }
     /// <summary>Gets the declared paths. The names are caller data and may be sensitive.</summary>
     public IReadOnlyList<TemplateSchemaPath> Paths => paths;
@@ -133,15 +134,17 @@ public sealed class TemplateInspection
 {
     private readonly IReadOnlyDictionary<string, string> paths;
     private readonly IReadOnlyDictionary<string, string> parts;
-    internal TemplateInspection(string inputHash, DocumentFormat destination, List<TemplateInspectionFinding> findings, List<TemplateInspectionRequirement> requirements,
+    internal TemplateInspection(string inputHash, string schemaHash, DocumentFormat destination, List<TemplateInspectionFinding> findings, List<TemplateInspectionRequirement> requirements,
         IDictionary<string, string> paths, IDictionary<string, string> parts)
     {
-        InputSha256 = inputHash; Destination = destination; Findings = findings.AsReadOnly(); Requirements = requirements.AsReadOnly();
+        InputSha256 = inputHash; DataSchemaSha256 = schemaHash; Destination = destination; Findings = findings.AsReadOnly(); Requirements = requirements.AsReadOnly();
         this.paths = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(paths, StringComparer.Ordinal));
         this.parts = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(parts, StringComparer.Ordinal));
     }
     /// <summary>Gets the source-byte SHA-256. This fingerprint may identify a sensitive document.</summary>
     public string InputSha256 { get; }
+    /// <summary>Gets the declaration fingerprint. Hashes can reveal or fingerprint sensitive schema names.</summary>
+    public string DataSchemaSha256 { get; }
     /// <summary>Gets the intended destination, which has not been fully validated by this inspection.</summary>
     public DocumentFormat Destination { get; }
     /// <summary>Gets privacy-safe findings. An empty set would not prove conversion or fidelity.</summary>

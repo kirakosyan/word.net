@@ -390,6 +390,65 @@ public sealed class TemplateInspectionTests
     }
 
     [Fact]
+    public void SchemaIdentityIsCanonicalOrderIndependentAndSensitiveToDeclarations()
+    {
+        TemplateSchemaPath[] paths = { new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer.Name", TemplatePathType.Scalar),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer", TemplatePathType.Mapping) };
+        var schema = new TemplateDataSchema(paths);
+        var reversed = new TemplateDataSchema(paths.Reverse().ToArray());
+        Assert.Equal("169954be2c0f068102f7208c58e091e5d89f196cab1aa11dbb62b1ab82bab3aa", schema.IdentitySha256);
+        Assert.Equal(schema.IdentitySha256, reversed.IdentitySha256);
+        paths[0] = new TemplateSchemaPath("Changed", TemplatePathType.Collection);
+        Assert.Equal(schema.IdentitySha256, reversed.IdentitySha256);
+        var changedType = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer.Name", TemplatePathType.Number),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer", TemplatePathType.Mapping));
+        var changedRequired = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer.Name", TemplatePathType.Scalar, false),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer", TemplatePathType.Mapping));
+        var changedScope = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+            TemplateSchemaPath.ForRepeatItem("Orders", "Customer.Name", TemplatePathType.Scalar),
+            TemplateSchemaPath.ForRepeatItem("Items", "Customer", TemplatePathType.Mapping));
+        Assert.NotEqual(schema.IdentitySha256, changedType.IdentitySha256);
+        Assert.NotEqual(schema.IdentitySha256, changedRequired.IdentitySha256);
+        Assert.NotEqual(schema.IdentitySha256, changedScope.IdentitySha256);
+        Assert.NotEqual(schema.IdentitySha256, new TemplateDataSchema().IdentitySha256);
+    }
+
+    [Fact]
+    public void TemplateAndJsonReportsCarryTheSameSchemaIdentityWithoutAuthorizingReuse()
+    {
+        byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Name")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateDataInspection data = schema.InspectJson("{\"Items\":[{\"Name\":\"private-value\"}]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(schema.IdentitySha256, report.DataSchemaSha256); Assert.Equal(schema.IdentitySha256, data.DataSchemaSha256);
+        Assert.False(report.IsReusable); Assert.Contains(report.Findings, finding => finding.Code == "Plan.ReuseUnavailable" && finding.Unknown);
+        string output = JsonSerializer.Serialize(new { report, data });
+        Assert.DoesNotContain("Items", output, StringComparison.Ordinal); Assert.DoesNotContain("private-value", output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SchemaIdentityRespectsTheDeclarationCountAndPathBounds()
+    {
+        string tail = "." + new string('A', 63) + "." + new string('B', 63) + "." + new string('C', 63);
+        TemplateSchemaPath[] paths = Enumerable.Range(0, 4096).Select(index => new TemplateSchemaPath(
+            "P" + index.ToString("D4", System.Globalization.CultureInfo.InvariantCulture) + new string('x', 58) + tail,
+            TemplatePathType.Scalar)).ToArray();
+        var schema = new TemplateDataSchema(paths);
+        Assert.Equal(64, schema.IdentitySha256.Length);
+        Assert.Equal(schema.IdentitySha256, new TemplateDataSchema(paths.Reverse().ToArray()).IdentitySha256);
+        Assert.Throws<ArgumentOutOfRangeException>(() => new TemplateDataSchema(paths.Concat(new[] { new TemplateSchemaPath("Extra", TemplatePathType.Scalar) }).ToArray()));
+    }
+
+    [Fact]
     public void JsonSchemaInspectionFindsAnItemPromiseViolationDespiteRootFallback()
     {
         var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),

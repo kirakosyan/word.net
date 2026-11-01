@@ -120,6 +120,18 @@ local to each report and must not be assumed to match another inspection. JSON,
 array size, depth, expansion, alias, finding and work bounds apply; malformed or
 oversized input and cancellation fail without a partial report.
 
+`TemplateDataSchema.IdentitySha256` identifies the declaration set; both reports
+expose the same value as `DataSchemaSha256`. The version-1 identity hashes UTF-8
+canonical JSON with outer properties `paths` and `schemaVersion`. Each path entry
+has ordinally ordered `path`, `required`, `scope` and numeric `type` properties;
+root paths precede repeat-item paths, then entries sort by scope and path. The
+scope is null for a root declaration. The hash is insensitive to declaration
+order and reflects each name, scope, type and requiredness. Hashes can
+fingerprint a schema or reveal names through guessing; protect them like other
+document metadata. Serializing the schema object itself exposes its `Paths`.
+This identifies declarations only: it does not bind template bytes, effective
+options, fonts, providers or engine identity and cannot authorize plan reuse.
+
 The [local example](../examples/WordNet.TemplateLint/Program.cs) prints JSON:
 `dotnet run --project examples/WordNet.TemplateLint -- invoice.docx invoice-data.json`.
 The optional JSON file is read with a character bound and checked against all

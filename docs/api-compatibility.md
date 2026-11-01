@@ -21,6 +21,9 @@ local to that report, and item indices disclose structure. It checks declaration
 independently of any template and cannot guarantee a merge or output.
 `TemplateDataFinding.Remediation` supplies a stable action identifier without
 disclosing path names or values.
+`TemplateDataSchema.IdentitySha256` and the reports' `DataSchemaSha256` expose
+the same deterministic declaration fingerprint. It can reveal guessed names and
+does not bind a template or execution environment.
 It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`

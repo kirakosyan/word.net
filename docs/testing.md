@@ -477,6 +477,15 @@ independent altered-observation controls. Its unchanged local
 passed at 1.043 against the preceding app-created tree; reference round medians
 varied from 39.966 to 47.874 ms. Hosted and actual Framework checks for this
 source remain separate.
+The later `21dc6a0` [hosted performance evidence](measurements/roadmap-138-performance-21dc-hosted-success.json)
+passed at 0.982 against `90a77f1` on the push and 0.987 against `bf5ab00` on the
+PR merge whose tree matches the head. Other runtime and package checks are separate.
+The [schema-identity observation](measurements/roadmap-138-schema-identity-reference.json)
+independently canonicalizes ten synthetic declaration sets, checks both report
+identities and detects 22 altered observations; a 4,096-path boundary is also
+exercised. It retains an initial CA1850
+analyzer failure, a probe JSON-name collision and their corrected runs. Schema hashes identify declarations
+only; they do not authorize reuse or validate output.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and

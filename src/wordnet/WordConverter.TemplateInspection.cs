@@ -389,7 +389,7 @@ public sealed partial class WordConverter
             return new TemplateInspectionRequirement(pathIds[pair.Key.Path], pair.Key.Scope == null ? null : pathIds[pair.Key.Scope],
                 declared?.Type, declared?.Required, pair.Key.ScopeUnknown, pair.Value);
         }).ToList();
-        return new TemplateInspection(inputHash, destination, result, requirements,
+        return new TemplateInspection(inputHash, schema.IdentitySha256, destination, result, requirements,
             pathIds.ToDictionary(p => p.Value, p => p.Key, StringComparer.Ordinal),
             partIds.ToDictionary(p => p.Value, p => p.Key, StringComparer.Ordinal));
     }
