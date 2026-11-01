@@ -398,6 +398,11 @@ failed hosted result; both records retain their individual timing samples.
 On later head `9580293`, the [hosted gates](measurements/roadmap-138-performance-958-hosted-success.json)
 passed at 0.996 against the release baseline in the PR and 1.247 against the previous
 head in the push. Both retain their raw samples; the earlier failure remains recorded.
+The [push source guest](measurements/roadmap-138-framework-958-push-source-success.json)
+and [PR source guest](measurements/roadmap-138-framework-958-pr-source-success.json)
+for that head each passed 2,373 cases on actual Framework 4.7.2 with the legacy JIT
+and completed cleanup. The PR merge tree matches the head. These do not qualify
+later source or the separate package guests.
 The next [root-scope observation](measurements/roadmap-138-preflight-root-scopes-reference.json)
 compares independently authored, schema-validated repeat and wrapper samples with
 actual merges and source positions. Twelve altered observations are rejected;
@@ -510,7 +515,14 @@ checks 34 independent source cases, including 24 matching single-cell outputs an
 saved DOCX packages, eight retained unqualified controls and two diagnosed multiline
 cases. Fifteen altered observations are rejected. The initial thin-border, stroke
 width and mixed-margin discrepancies remain recorded under the same tolerances.
-The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
+The one-point specimen is byte-for-byte identical to the earlier failing bordered
+control and now matches the reference within the existing tolerance.
+The [exact-source border receipt](measurements/roadmap-138-border-geometry-b3a8ec4.json)
+records both 2,377-case suites, the 849-case matrix, local package checks and the
+independent recheck with the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-border-geometry-performance-b3a8ec4.json)
+passed at 1.008 against the preceding head. Hosted and actual Framework checks for
+this source remain separate.
+The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
 passed; hosted exact-head and Windows Framework execution remain separate checks.

@@ -1,0 +1,519 @@
+{
+  "roadmap": 138,
+  "issues": [
+    142,
+    167
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "b3a8ec4e28da3f0d3d87896093b02155eb24fb12",
+  "sourceTree": "7511d2d22ca56864f987f6ae3dcbb7e1369a96d5",
+  "scope": "Managed single-cell uniform black or disabled border geometry, with retained table/cell margin ownership and explicit multiline/owner boundaries.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "89955db6e315832fee10eb1a02b0d47e6dc9f38e6976e0706fd08cd94d7db5a5",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "abc42484feb9088f45a8e13a402233a2e3b5b8cd7e1d952f9d19460b5eddd174",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2377,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "74aeed7070d23252528cb1d95b614afe5e88706328e217bac0d13e16c4d12bc0"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2377,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "d09238661e2d2ca3b93dc8c5d5a6e28f49527127a84f3b916b7958933654712c"
+    },
+    "capabilityMatrix": {
+      "profiles": 116,
+      "testMethods": 501,
+      "net10CasesPassed": 849,
+      "logSha256": "16710ddd758a5d2e46805f9ff60c7bb4aa0666a7f9b6a7c1b877a9d2b823bc7c"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "e7c78d14de2de70bc164a048e4def6c20e9bb4cbc7466f5b574b95e7de02ea88",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "3308313e8e15f6807d8de8008d1fda76b05282f3063f3e4a4fbe47a58e9c8a9f",
+      "wordnet.Fonts.1.5.0.nupkg": "61f4213b64d58b93ea8886a9ac3520a67a29489de86ffecb51801984dabba714",
+      "wordnet.Ocr.1.5.0.nupkg": "2c18620710746bdaaec8dd0d355b5df89c4af8648910bd8c34b9dc2c93dcf756"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 40.71925,
+      "CandidateMedianMilliseconds": 41.038250000000005,
+      "Ratio": 1.0078341325048965,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40141528.0,
+      "PeakSampledManagedBytes": 27540896.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-border-geometry-performance-b3a8ec4.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-border-geometry-reference.json",
+    "sourceProbesAndPackageNet10AssemblySha256": "bfd6300e47ac86328db8cf9d5999afac6c147d726df865b9413cb747d90946cf",
+    "sourceSchemaLogSha256": "2608536f86f5192d738c26aef70bf0d5e5c409b4098742510b0f06816399dd55",
+    "savedSchemaLogSha256": "8088a226d62b5716cd35100d71ab8733fa27f480e09eefe4f2b83f52f58173f9",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "c391429a7d49e920e2d051a653f15de824b98b37b85e3a8309a919c4866317ec",
+    "strictLogsSha256": {
+      "long-wrap": "0eb46e7983fd5c1f65608cfb400bb37e53f473a6b70c717fa1c4744efc7fc480",
+      "multiple-paragraphs": "0eb46e7983fd5c1f65608cfb400bb37e53f473a6b70c717fa1c4744efc7fc480"
+    },
+    "outputs": {
+      "nil": {
+        "candidatePdfSha256": "b617e1b9555085228c12400b9e06742d038f3a45d9763e5738cb39dcdc9667a5",
+        "candidateSnapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "9bf07ec454a6178a7194c01be6dc1e6207147013aa69f74c7e8bfa96a118850c",
+        "savedPdfSha256": "6094ee80aee41c8420264665b24863559c93a433bbc94decc2534949d54d6179"
+      },
+      "implicit-4": {
+        "candidatePdfSha256": "ada01a32c04fc983e6e795301deb70e49c19ad9be28eadba9454641d342bc553",
+        "candidateSnapshotSha256": "eac39a36541ace3408997483771d1cd7f36fd1793c11e1832e0d4a28b693ee24",
+        "savedDocxSha256": "bd9e7e85613e3cb075e32fe78c20f64d558a95c67b79dda8d024f90adbd897b6",
+        "savedPdfSha256": "a83ef1c2426f8e4ddc4c4637d6bfdb9d80993d4a898afc18ad1c5efb1f887bf3"
+      },
+      "implicit-8": {
+        "candidatePdfSha256": "50f661309e4cb0cf8f7e3a896895c43bf0f0c1fe3794e6ab6754dd6ada2f7c5d",
+        "candidateSnapshotSha256": "19ddb8b2df18d5f396bc7a08e0232f768e14143453d6ca13967cf66a00b5901d",
+        "savedDocxSha256": "aee673ddf0f6c8d144ec4d4597d83b691648b6544477e0824615264540509214",
+        "savedPdfSha256": "50f661309e4cb0cf8f7e3a896895c43bf0f0c1fe3794e6ab6754dd6ada2f7c5d"
+      },
+      "implicit-12": {
+        "candidatePdfSha256": "bf913ae69befd08e97451c9524a826f713e5c9e66dc1f4410ae446392260b85d",
+        "candidateSnapshotSha256": "0e48769b8a881d0cb92fe7d1943797fb1e0c2040c21cd510cfdd29008ebcc470",
+        "savedDocxSha256": "b5740ceed94db744e4992fd125355a98ee0b972c402f6a22d06966701502f802",
+        "savedPdfSha256": "151cd7cb484f5a43a3a90467394992a87084001139a65014495e513023fc86bf"
+      },
+      "implicit-16": {
+        "candidatePdfSha256": "293daa52df974e4cd35e4f06b0de8c758e0383d1e0efd7c3285fac73d8c863ec",
+        "candidateSnapshotSha256": "1970da4b94e707ca2bd160712744a47a3dc246063ddcff2caf7e0acddf5aef13",
+        "savedDocxSha256": "cfc3008b913010ce048613e7e1db4d7237804b35306e1a57fbca47a4e5831562",
+        "savedPdfSha256": "c69fae6556721079e40ea3260a519b373c67998dd40dc386c4e450e89a1ebffd"
+      },
+      "implicit-20": {
+        "candidatePdfSha256": "7cfee6a255950cb349bd9fe8c66abea269df952c348e7dbbcc9f13fc34e199eb",
+        "candidateSnapshotSha256": "01a4a8958af2830876d7a7cd4cdaa1f25104da9981b360a15617449d1b452639",
+        "savedDocxSha256": "d65e2829ddc7dd161579349f376e6091327dcf899ff781bc3099d07392aff9b2",
+        "savedPdfSha256": "2c51a6b3a387d89b1629b8dcd600a01bd5be2c1b4ffdf8e41648704731a2fbb2"
+      },
+      "implicit-24": {
+        "candidatePdfSha256": "a08b879538db98611bd41320c3167ec0a3f216fc0678ea3ba5c1f8ce53aaa501",
+        "candidateSnapshotSha256": "707c54082acc8b585407486787dae919fb9201b06859f2ac108a0588e186a147",
+        "savedDocxSha256": "acca706db6945ccb1da83767675624b87df7bd333cbb1cc01b20f1e247292047",
+        "savedPdfSha256": "9cab6ead02fa752a495f14c3117807f47e30a63b9885605af8e425615da77df8"
+      },
+      "zero-2": {
+        "candidatePdfSha256": "e75501f1e3e882a3a4fd37ba5edf178d82c3d565be5b277ccd6cbc7a3a0b2e03",
+        "candidateSnapshotSha256": "1a1ccf5de7f5c78e29ad6dc4adfa61d65e535271259c29baf41a2888c43cc8e9",
+        "savedDocxSha256": "2137ef49fef5eea15c3fa2174c5ca4eac26101af377b4318d9c947aa62747f85",
+        "savedPdfSha256": "416aecfbff8061ae90c4575a0a74c757ff848053f9a8ed93fe8e5f0b730404b6"
+      },
+      "zero-4": {
+        "candidatePdfSha256": "2bee0c70553111640b2700bc8083b9980f42c9e2f4d8e6befdfe5d1df03d31fa",
+        "candidateSnapshotSha256": "178106e3390a774379cc7d16312ef68c98a19eb46f040474ff8f904a8d6ab3bb",
+        "savedDocxSha256": "08c56c6a6db651504768402612c7dd64c16f128491b1d49a55613c9dca254652",
+        "savedPdfSha256": "3fa98a84bd6d088270add8f97ced33373c835be1de94c719b3b9004e83f9ac26"
+      },
+      "zero-6": {
+        "candidatePdfSha256": "dcc57f45f7f6cd2e76da50c38deaf4763ef9e0054f339acf7c6956cd81f08239",
+        "candidateSnapshotSha256": "4718f6b0a4281c816320c07e8006e52e5792bfb0657bdb2e4311608ac65b17e8",
+        "savedDocxSha256": "369bf9cc8b9cc060fb4a18b871565c02997e0ef460eaa78d83a73cd89443d121",
+        "savedPdfSha256": "1de160c52e3bc5129cdadccc88595b891445940c22e7d1d16025178de5e6ead5"
+      },
+      "zero-8": {
+        "candidatePdfSha256": "a8918e672d83f114209cfc327bd3eaf51ecf26b233fc1d1d40e9d471222bc7ac",
+        "candidateSnapshotSha256": "9c3019f2ad40f83b89ad01f6759a48b0ffd384a50d5261310f6a55bed4c8eaae",
+        "savedDocxSha256": "05a0f25ec2b2f37307b2812938261e73194185b7199f951d9f069b2e035eb190",
+        "savedPdfSha256": "c0a34d63606b26c82bba635251588062f4ec7884fbb2b11fb37a8e2b478aabe2"
+      },
+      "zero-12": {
+        "candidatePdfSha256": "e7aba0d3ddacc97430589aaa8fdc53764287998ac08bc012dbf0374c1d6f5d00",
+        "candidateSnapshotSha256": "f2299021f2297e25a64462325efda6f1d3c14c1ad15a76f243e67a031cd53c1b",
+        "savedDocxSha256": "86fd5f9e95a4668969e5893c270137c124505b77f8ff7bdcaae9ff454e89a395",
+        "savedPdfSha256": "524127db6cc70faa0571c47f64c0405402b5a4c24afb2e3ba7bce55297b26d6a"
+      },
+      "zero-16": {
+        "candidatePdfSha256": "f8d627ae0024d87413b8f8e12d5b37fc15c921a74000bc6bc69097bba8a046ac",
+        "candidateSnapshotSha256": "b6707b591b43bc76e9a27583fb0a88f93c9edce4c13ed365cac4dca926ad913c",
+        "savedDocxSha256": "5e0b10eb6b0fa034f4c4f429f071ffc7cd26c410a5ca6eb5b862a68ba91b8b18",
+        "savedPdfSha256": "8f3c70541932fa6aed30a29487929b723453cf0ad56053cfb17ccf3d708cffdb"
+      },
+      "zero-20": {
+        "candidatePdfSha256": "15a22c9b2ed27c9847b830fb1fc96dcdb67ecebe78cf96fa8e1444997e16b4be",
+        "candidateSnapshotSha256": "1182a6b2ab4c26db0cefa7c0d5208c59fe13e39edf08cc71350bb7fb0e34cff1",
+        "savedDocxSha256": "9da7400b40245b21e9baf59f65fd16797ff6287efda5b8123282c3c64bc8c37f",
+        "savedPdfSha256": "7c1011b99f282f989619acf86108a67dab923569e127f081f4928ec28ddb8c5c"
+      },
+      "zero-24": {
+        "candidatePdfSha256": "470a56fd84811d70b67665782469741e1f0ba484b6b5af6ffd6aacb08fe0e48c",
+        "candidateSnapshotSha256": "160607ca406c6dd1a6a28030da4fab084e97b282e904f0fee8ecd283775d8881",
+        "savedDocxSha256": "e02764f60cf791b66f53f62203ce9dbff6672ed044e805e9c00877556871bcd1",
+        "savedPdfSha256": "eb5b762ef2630188e5794fda4abbb8208fe6aaabcc0f1d7d095c7d78a681a429"
+      },
+      "only-top": {
+        "candidatePdfSha256": "5b2b978f875ce035aad7f6ecdc9eba8ac37a4ca7f2a3a9279f697b827d203059",
+        "candidateSnapshotSha256": "68ccebd3cbb45689e1c6eb1883d30bd7cacdc27f6f71c4338fd3ed6cbf35f304",
+        "savedDocxSha256": "4f17d5d327a1b259e5b024fcea618daea46a1c5cce5b81034f4f745aade5b551",
+        "savedPdfSha256": "9f343a825f23acc834cf37b35036c00b2297e34e8e1dc7b4a8f5196a016f1e18"
+      },
+      "mixed-margins": {
+        "candidatePdfSha256": "477f0b525fb5bcdbdb5b54a217a1a5823c7970a6707fb1252c78b5d0a3bf2b9e",
+        "candidateSnapshotSha256": "86b7554887d9896e5f0b692393f1bd59d08169d445d637a55ae9bef2293ef8b7",
+        "savedDocxSha256": "1ede2f7594cc9e3c280956f7c6d161d3ce52716db5548b7a6e13bd937662eb13",
+        "savedPdfSha256": "38ac1a0790ba175d2bdc8c0cf9e05a6d43b0172145056190c984b05f4a00dd7f"
+      },
+      "empty-margin": {
+        "candidatePdfSha256": "fffe6ad0b11609d07db9f099dd1fc359a5de51503d932a8355f73f48ec7abeb3",
+        "candidateSnapshotSha256": "19ddb8b2df18d5f396bc7a08e0232f768e14143453d6ca13967cf66a00b5901d",
+        "savedDocxSha256": "bebc30233a9c27678190eadaf0e27e5eacb9a6bdf1651134d4cf442ed2a28678",
+        "savedPdfSha256": "aedf90c37f8713e8c7a6d3f39ae96a6753f72b2e9b1dc1dc549ed260fda67ebd"
+      },
+      "explicit-108": {
+        "candidatePdfSha256": "86c5693a10f7f93229026650cc97c24abcfc09ed957095431f1afac1349a852a",
+        "candidateSnapshotSha256": "1ca1ae6acd5efe5215446237a088975e08d405a386639c615ad42d80820dec69",
+        "savedDocxSha256": "ef1d7873e0948b36c35d759c03459dc63ed72a09468abe11c336a14527b20460",
+        "savedPdfSha256": "4b995942ee7e1a80097c89cc789560d1f4198a0094622dfa2a2474df8f6886ca"
+      },
+      "explicit-115": {
+        "candidatePdfSha256": "3ad8abf8297f09b4c0c41bec65c610d065e1ece74f9ca4cc2c1230fd792797fd",
+        "candidateSnapshotSha256": "19ddb8b2df18d5f396bc7a08e0232f768e14143453d6ca13967cf66a00b5901d",
+        "savedDocxSha256": "46b27bdfb75245f3a113500f91a0f9541fe6ef0a4a6eb6cdc169dc516e22fe32",
+        "savedPdfSha256": "ddd7e72a73274788990f588d0bf3942a5f65473dace252122530261fc2d7a6eb"
+      },
+      "cell-zero": {
+        "candidatePdfSha256": "0395a6580e4d03aa34f2a5a3a343234cad59833ac92fea2a7442e6bcd661e0b0",
+        "candidateSnapshotSha256": "1b3b13803270102703fe3fcba7d867b3cdf95c6b691adcd720abd0be76ca19c8",
+        "savedDocxSha256": "959c6de0c8a94f6864f3c631d7f7b96b8df136deb035dc08eb533eb66535a001",
+        "savedPdfSha256": "8ae92bd844461e7a44716af6a58e22b0505071bc6a84caef4cc56e5966fe29df"
+      },
+      "cell-108": {
+        "candidatePdfSha256": "95019f505bea1ae3ef4b07d5773ea820324867cd672995ad9c2222f2299ca5f0",
+        "candidateSnapshotSha256": "1ca1ae6acd5efe5215446237a088975e08d405a386639c615ad42d80820dec69",
+        "savedDocxSha256": "8ce4f723e66bcca671364a9f6a00596ad0df936b2fee7de91edae07ba0b210e5",
+        "savedPdfSha256": "95019f505bea1ae3ef4b07d5773ea820324867cd672995ad9c2222f2299ca5f0"
+      },
+      "cell-left": {
+        "candidatePdfSha256": "17ec67459d73a6fbc76a860ea41b02df586bbf7ed1070617df15b298cad10d4d",
+        "candidateSnapshotSha256": "1b3b13803270102703fe3fcba7d867b3cdf95c6b691adcd720abd0be76ca19c8",
+        "savedDocxSha256": "8af652ce49cbe2910095e5bc3d32420df0b06da0faa8bb0fcee905a11c402627",
+        "savedPdfSha256": "17ec67459d73a6fbc76a860ea41b02df586bbf7ed1070617df15b298cad10d4d"
+      },
+      "cell-right": {
+        "candidatePdfSha256": "d6e87d8c455c0f698ee1f93541ec133f1355dc404452325f9329baa96833019b",
+        "candidateSnapshotSha256": "19ddb8b2df18d5f396bc7a08e0232f768e14143453d6ca13967cf66a00b5901d",
+        "savedDocxSha256": "57a6dbec2c4ddd1f71e966043ff44544de11cbeab359ced8ff66d4687938fef5",
+        "savedPdfSha256": "3e3a6f419391aae5679618ab0cc4bbab9ca5476cd2708e926656077cb00aee6d"
+      },
+      "implicit-2": {
+        "candidatePdfSha256": "01262082a1027bead54d37693504221772b8afc6680a12f4e25871bfb28a759c",
+        "candidateSnapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "implicit-3": {
+        "candidatePdfSha256": "bcc0854652afdaa85c441e021f33f30434c99094def3aac50fee69855f91b703",
+        "candidateSnapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "implicit-6": {
+        "candidatePdfSha256": "1797694343bade97315f8be3ed84956c4495a38cfc9d06790f6f2af661459764",
+        "candidateSnapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "zero-3": {
+        "candidatePdfSha256": "b0ce00013509c9d74083655e7296b51dd66293bc5c03e93caab8c9b580f471c7",
+        "candidateSnapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "two-rows": {
+        "candidatePdfSha256": "e0de77595cafd784b5a1481b9ae7fb95250911ca9ada32bdba809f503fd66a6c",
+        "candidateSnapshotSha256": "3eb605a93c3e4a04e7a0e4e58440ed588f77be7276aa3dc0e751d6c3f719b83c"
+      },
+      "two-columns": {
+        "candidatePdfSha256": "b7039310298ebea2e35e8882ffb5076d7b369c7288374340cb3e699b2ad42cee",
+        "candidateSnapshotSha256": "771ed1622a2b70096e93c0dcb4dee8e7efcafc831140fa3c04829b99dc326e99"
+      },
+      "horizontal-only": {
+        "candidatePdfSha256": "ca9a8460771b30813c30847af1a26b2f7f58b58d3ec38a2ba8b2e94eca740045",
+        "candidateSnapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "mixed-borders": {
+        "candidatePdfSha256": "969d6c88d83018806565e6e34e9eca3f9aff8fb6a01a9d1e51a3f593249dba3d",
+        "candidateSnapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "long-wrap": {
+        "candidatePdfSha256": "206e84afa8a175bdb0b146f0953c3c0fe80e19ab9cdcdce273e60ac1dd3714f3",
+        "candidateSnapshotSha256": "4a3538aa4304a41ebccd2342e84c94594794541fbff4a79de2616300c9304640"
+      },
+      "multiple-paragraphs": {
+        "candidatePdfSha256": "d8d3891361860aab84264e7676c19fdf4a38453a7eed554b188fe1965099707a",
+        "candidateSnapshotSha256": "a9cb3266bb4dacdaeeb97f8d470acfe5c2e4b48496fed42ceddbb164aa69c26e"
+      }
+    },
+    "contrasts": {
+      "glyphAndStrokeTolerancePt": 0.25,
+      "cases": {
+        "nil": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 0,
+          "savedGeometryMatches": true
+        },
+        "implicit-4": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "implicit-8": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "implicit-12": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "implicit-16": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "implicit-20": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "implicit-24": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-2": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-4": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-6": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-8": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-12": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-16": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-20": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "zero-24": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "only-top": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "mixed-margins": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "empty-margin": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "explicit-108": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "explicit-115": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "cell-zero": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "cell-108": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "cell-left": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "cell-right": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": true
+        },
+        "implicit-2": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 5.599998474121094,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        },
+        "implicit-3": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 5.650001525878906,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        },
+        "implicit-6": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 5.849998474121094,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        },
+        "zero-3": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 5.27227783203125,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        },
+        "two-rows": {
+          "characters": 16,
+          "officeMaximumGlyphOriginDeltaPt": 6.0,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 7,
+          "savedGeometryMatches": false
+        },
+        "two-columns": {
+          "characters": 16,
+          "officeMaximumGlyphOriginDeltaPt": 6.0,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 7,
+          "savedGeometryMatches": false
+        },
+        "horizontal-only": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 5.5,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 2,
+          "savedGeometryMatches": false
+        },
+        "mixed-borders": {
+          "characters": 12,
+          "officeMaximumGlyphOriginDeltaPt": 6.0,
+          "officeGlyphComparisonPassed": false,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        },
+        "long-wrap": {
+          "characters": 40,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        },
+        "multiple-paragraphs": {
+          "characters": 16,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "strokes": 4,
+          "savedGeometryMatches": false
+        }
+      },
+      "negativeControls": {
+        "wrong character": "Source text, reading order or pinned font differs: implicit-8",
+        "wrong font": "Source text, reading order or pinned font differs: implicit-8",
+        "shifted cell": "Office comparison implicit-8: glyph or origin",
+        "shifted following text": "Office comparison implicit-8: glyph or origin",
+        "shifted office": "Office comparison implicit-8: glyph or origin",
+        "changed stroke position": "Office comparison implicit-8: stroke geometry or color",
+        "changed stroke width": "Office comparison implicit-8: stroke geometry or color",
+        "changed stroke color": "Office comparison implicit-8: stroke geometry or color",
+        "missing stroke": "Office comparison implicit-8: stroke count",
+        "changed saved glyph": "Saved output implicit-8: glyph or origin",
+        "changed saved stroke": "Saved output implicit-8: stroke geometry or color",
+        "changed border": "Saved border or margin ownership changed: implicit-8",
+        "changed margin owner": "Saved border or margin ownership changed: mixed-margins",
+        "changed unqualified case": "Unqualified case changed two-rows: glyph or origin",
+        "missing diagnostic": "Unqualified multiline geometry was not diagnosed: long-wrap"
+      },
+      "controlMethod": "Parsed glyph, stroke and OOXML observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, general border geometry and roadmap #138 remain open."
+}
