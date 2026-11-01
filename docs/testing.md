@@ -374,6 +374,19 @@ The next inspection increment compares static PDF-option findings with rejected
 staged exports and a successful independently read PDF. Its [independent observation](measurements/roadmap-138-preflight-pdf-options-reference.json)
 retains a schema-valid synthetic input and ten altered controls; it does not qualify
 unperformed destination checks or reusable plans.
+The [exact-source receipt](measurements/roadmap-138-preflight-pdf-options-4fd1843.json)
+records both 2,369-case suites, the 841-case matrix, local packages and independent
+checks; its unchanged [performance gate](measurements/roadmap-138-preflight-pdf-options-performance-4fd1843.json)
+is a local comparison. Hosted exact-head checks and actual Framework execution remain separate.
+On previous head `45c43ab`, the actual Framework 4.7.2 package guests also passed
+2,352 cases with cleanup: [PR](measurements/roadmap-138-framework-45c-pr-package-success.json)
+and [push](measurements/roadmap-138-framework-45c-push-package-success.json).
+On head `a34a468`, the [hosted PR performance gate](measurements/roadmap-138-performance-a34-hosted-failure.json)
+failed at 1.333 against release baseline `bf5ab00`; a separate push comparison passed
+against prior head `45c43ab`. Their different baselines do not resolve the failure.
+The same release-to-PR comparison [passed locally](measurements/roadmap-138-performance-a34-local-release-comparison.json)
+at 1.070 under the unchanged 1.25 limit. This different host does not replace the
+failed hosted result; both records retain their individual timing samples.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
