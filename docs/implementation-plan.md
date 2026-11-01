@@ -42,7 +42,7 @@ conditional interior and competing borders, full style precedence and independen
 open; the table-level shading reference failure is retained.
 The separate [plain fixed-table geometry correction](document-fidelity.md#unreleased-source-plain-fixed-table-geometry)
 addresses omitted and partially specified margins and trailing spacing in a narrow
-unstyled body profile. A uniform-border subset on grids up to two rows and two
+unstyled body profile. A uniform-border subset on grids up to four rows and four
 columns is independently compared; other bordered geometry retains reference differences.
 Conditional theme fills retain bounded editable references and fallback values,
 while independent static rendering differences remain explicit. Selected

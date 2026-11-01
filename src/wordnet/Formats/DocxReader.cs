@@ -706,7 +706,7 @@ internal sealed partial class DocxReader
     private bool PlainUniformBorders(XElement source, TableBlock table, out double width)
     {
         width = 0;
-        if (table.Rows.Count is < 1 or > 2 || table.Rows[0].Count is < 1 or > 2
+        if (table.Rows.Count is < 1 or > 4 || table.Rows[0].Count is < 1 or > 4
             || table.Rows.Any(row => row.Count != table.Rows[0].Count) || source.Attributes().Any(a => !a.IsNamespaceDeclaration)
             || source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) return false;
         XElement[] entries = source.Elements().ToArray();

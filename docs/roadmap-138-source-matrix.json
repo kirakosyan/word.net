@@ -6,7 +6,7 @@
       "id": "plain-fixed-docx-table-geometry",
       "issue": 142,
       "outcome": "supported-bounded",
-      "boundary": "Direct unstyled fixed-grid DOCX body tables use standard omitted horizontal margins and no artificial trailing gap for ordinary text; partial table and cell margins retain their separate owners on save. Uniform borders on grids up to two rows and two columns are independently checked; multiline, multipage, multicolumn and other border geometry remain outside the qualified profile.",
+      "boundary": "Direct unstyled fixed-grid DOCX body tables use standard omitted horizontal margins and no artificial trailing gap for ordinary text; partial table and cell margins retain their separate owners on save. Uniform borders on grids up to four rows and four columns are independently checked; multiline, multipage, multicolumn and other border geometry remain outside the qualified profile.",
       "tests": [
         { "class": "LayoutSnapshotTests", "method": "PlainFixedDocxTablesUseDefaultCellMarginsWithoutAnExtraFollowingGap" },
         { "class": "LayoutSnapshotTests", "method": "ExplicitTableMarginsAreNotReplacedByImplicitDefaults" },
@@ -15,6 +15,7 @@
         { "class": "LayoutSnapshotTests", "method": "UniformSingleCellBordersAccountForTheirWidthsAndMarginOwners" },
         { "class": "LayoutSnapshotTests", "method": "UnqualifiedBorderWidthsAndMultilineGeometryStayVisible" },
         { "class": "LayoutSnapshotTests", "method": "SmallUniformBorderGridsReserveSharedEdgesAndSurviveSave" },
+        { "class": "LayoutSnapshotTests", "method": "FourByFourUniformBordersReserveEverySharedEdge" },
         { "class": "LayoutSnapshotTests", "method": "LargerAndMultiPageBorderGridsRemainOutsideQualifiedGeometry" }
       ]
     },

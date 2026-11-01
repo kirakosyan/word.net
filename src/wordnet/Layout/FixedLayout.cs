@@ -907,7 +907,7 @@ internal static partial class FixedLayout
                 || table.Control != null || table.TypedControlId != null || table.NestedControls.Count != 0
                 || table.RowControls.Count != 0 || table.TypedRowControls.Count != 0 || table.HasTableShading || table.HeaderRowCount != 0
                 || table.NonSplittingRows.Count != 0 || table.RowHeights.Count != 0 || table.LeftIndent != 0
-                || table.Rows.Count is < 1 or > 2 || table.Rows[0].Count is < 1 or > 2 || table.Rows.Any(row => row.Count != table.Rows[0].Count)
+                || table.Rows.Count is < 1 or > 4 || table.Rows[0].Count is < 1 or > 4 || table.Rows.Any(row => row.Count != table.Rows[0].Count)
                 || table.ColumnWidths.Count != table.Rows[0].Count || table.ColumnWidths.Any(column => column <= width)
                 || Math.Abs(table.Width.Value - table.ColumnWidths.Sum()) > .01
                 || table.Rows.Any(row => row.Where((cell, column) => !cell.CellWidth.HasValue || cell.WidthPercent.HasValue

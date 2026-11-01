@@ -13,7 +13,7 @@ namespace WordNet.Tests;
 public sealed class LayoutSnapshotTests
 {
     private static readonly string[] BorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
-    private static readonly string[] BorderCells = { "M", "N", "P", "Q", "R", "S", "U", "V", "W" };
+    private static readonly string[] BorderCells = { "M", "N", "P", "Q", "R", "S", "U", "V", "W", "X", "Y", "Z", "B", "C", "D", "E" };
     private static byte[] Source(string body) => TestDocuments.Docx(TestDocuments.Body(body));
     private static string P(string text) => TestDocuments.TextParagraph(text);
 
@@ -69,10 +69,33 @@ public sealed class LayoutSnapshotTests
     }
 
     [Fact]
+    public void FourByFourUniformBordersReserveEverySharedEdge()
+    {
+        Dictionary<string, LayoutBounds> Bounds(string border)
+        {
+            using var input = new MemoryStream(BorderGridSource(border, 4, 4));
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        var disabled = Bounds("w:val='nil'");
+        var bordered = Bounds("w:val='single' w:sz='8' w:color='000000'");
+        for (int row = 0; row < 4; row++)
+            for (int column = 0; column < 4; column++)
+            {
+                string text = BorderCells[row * 4 + column];
+                Assert.Equal(disabled[text].X + .5, bordered[text].X, 3);
+                Assert.Equal(disabled[text].Y + row + 1, bordered[text].Y, 3);
+            }
+        Assert.Equal(disabled["T"].Y + 5, bordered["T"].Y, 3);
+    }
+
+    [Fact]
     public void LargerAndMultiPageBorderGridsRemainOutsideQualifiedGeometry()
     {
         const string single = "w:val='single' w:sz='8' w:color='000000'";
-        using var larger = new MemoryStream(BorderGridSource(single, 3, 2));
+        using var larger = new MemoryStream(BorderGridSource(single, 5, 2));
         var preview = new WordConverter().RenderPages(larger, DocumentFormat.Docx,
             new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);

@@ -554,6 +554,13 @@ this newer source remain separate. The preceding `d85247c` source passed both th
 [push package guest](measurements/roadmap-138-framework-d852-push-package-success.json)
 and [PR package guest](measurements/roadmap-138-framework-d852-pr-package-success.json)
 also each passed all 2,377 cases and cleaned up. These do not qualify the newer source.
+The subsequent [larger-grid record](measurements/roadmap-138-larger-grid-reference.json)
+checks 83 independent source cases and 80 saved DOCX packages. Eighty cases match
+pinned-font glyphs and shared strokes at the unchanged tolerance; three five-row or
+five-column controls retain their prior differences. Sixteen altered observations are
+rejected. The previous 50 supported cases remain unchanged, and two former three-row
+and three-column differences now match the independent reference. The remaining
+prior controls and strict rejections are retained.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
