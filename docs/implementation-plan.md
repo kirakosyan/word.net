@@ -24,8 +24,8 @@ options, fonts, providers or engine identity. Inspected direct simple fields and
 bounded same-paragraph complex-field begin markers also report an explicit dirty
 flag as an unknown refresh requirement; other fields and absent flags cannot
 establish freshness.
-A separate fixed-profile in-process snapshot binds the source, declaration, defaults,
-font resources, provider profile and module/runtime descriptor for reusing only the
+A separate fixed-profile in-process snapshot binds the source, declaration, DOCX/PDF/XPS
+destination, defaults, font resources, provider profile and module/runtime descriptor for reusing only the
 inspection. It retains every unknown, does not attest binaries, and does not execute
 conversion or enforce policies. Uninspected scopes, portable plan compilation,
 output validation and #172 remain open.

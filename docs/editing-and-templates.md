@@ -96,9 +96,10 @@ and this report cannot authorize an output policy.
 
 ### Fixed-profile in-process inspection reuse
 
-`CompileReusableTemplateInspection` captures the existing inspection for DOCX output
-under default bounds, built-in fonts, no optional provider and a caller-supplied fixed
-field time. It binds the source bytes, declaration, fixed options and clock, loaded
+`CompileReusableTemplateInspection` captures the existing inspection for a fixed DOCX,
+PDF or XPS destination under default bounds, built-in fonts, no optional provider and
+a caller-supplied fixed field time. The convenience overload selects DOCX. It binds
+the source bytes, declaration, destination, fixed options and clock, loaded
 font resource bytes, provider profile and module/runtime descriptor. `Reuse` checks
 the current schema before reading, then hashes the current source from its current
 position with the same 16 MiB input bound. It rechecks the in-process environment
@@ -113,12 +114,14 @@ same module identity.
 using var template = File.OpenRead("invoice.docx");
 var clock = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
 ReusableTemplateInspection snapshot = new WordConverter()
-    .CompileReusableTemplateInspection(template, schema, clock);
+    .CompileReusableTemplateInspection(template, schema, DocumentFormat.Pdf, clock);
 template.Position = 0;
 TemplateInspection checkedReport = snapshot.Reuse(template, schema);
 ```
 
-Only an inspection snapshot is reused. Findings and unknowns are unchanged, and
+The chosen destination is recorded and contributes to the profile fingerprint; it
+is not rendered or validated. Only an inspection snapshot is reused. Findings and
+unknowns are unchanged, and
 `TemplateInspection.IsReusable` remains false: `Plan.ReuseUnavailable` continues to
 mean that a reusable conversion-policy plan is unavailable. The snapshot does not
 bind data, authorize conversion, enforce a loss policy, validate output or permit

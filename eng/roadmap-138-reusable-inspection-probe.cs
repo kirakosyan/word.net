@@ -30,6 +30,12 @@ using var cancelled = new CancellationTokenSource(); cancelled.Cancel(); using v
 try { _ = plan.Reuse(cancelSource, schema, cancelled.Token); } catch (OperationCanceledException) { cancellation = true; }
 ReusableTemplateInspection shifted;
 using (var source = new MemoryStream(input)) shifted = converter.CompileReusableTemplateInspection(source, schema, clock.AddMinutes(1), FidelityMode.Lenient);
+ReusableTemplateInspection pdf, xps;
+using (var source = new MemoryStream(input)) pdf = converter.CompileReusableTemplateInspection(source, schema, DocumentFormat.Pdf, clock, FidelityMode.Lenient);
+using (var source = new MemoryStream(input)) xps = converter.CompileReusableTemplateInspection(source, schema, DocumentFormat.Xps, clock, FidelityMode.Lenient);
+using var pdfSource = new MemoryStream(input); using var xpsSource = new MemoryStream(input);
+bool pdfReused = ReferenceEquals(pdf.Inspection, pdf.Reuse(pdfSource, schema));
+bool xpsReused = ReferenceEquals(xps.Inspection, xps.Reuse(xpsSource, schema));
 Assembly core = typeof(WordConverter).Assembly;
 Assembly fonts = AppDomain.CurrentDomain.GetAssemblies().Single(item => item.GetName().Name == "wordnet.Fonts");
 var resources = new[] { core, fonts }.Select(assembly => new
@@ -46,6 +52,10 @@ var outputData = new
     inputSha256 = Convert.ToHexStringLower(SHA256.HashData(input)),
     coreSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(core.Location))),
     plan, shiftedOptionsSha256 = shifted.OptionsSha256, sameInspection = ReferenceEquals(plan.Inspection, reused),
+    pdfProfile = new { optionsSha256 = pdf.OptionsSha256, destination = pdf.Inspection.Destination,
+        uninspected = pdf.Inspection.Findings.Any(item => item.Code == "Plan.UninspectedCoverage" && item.Unknown), reused = pdfReused },
+    xpsProfile = new { optionsSha256 = xps.OptionsSha256, destination = xps.Inspection.Destination,
+        uninspected = xps.Inspection.Findings.Any(item => item.Code == "Plan.UninspectedCoverage" && item.Unknown), reused = xpsReused },
     staleInput, staleSchema, schemaPosition = schemaSource.Position, limit, cancellation, cancelPosition = cancelSource.Position,
     streamsRemainOpen = unchanged.CanRead && changedSource.CanRead && schemaSource.CanRead && tooLarge.CanRead && cancelSource.CanRead,
     environment = new { core = core.FullName, module = core.ManifestModule.ModuleVersionId.ToString("D"), runtime = Environment.Version.ToString(),

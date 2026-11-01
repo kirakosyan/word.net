@@ -1517,10 +1517,11 @@
       "id": "template-inspection-snapshot-reuse",
       "issue": 171,
       "outcome": "supported-bounded",
-      "boundary": "The fixed DOCX profile reuses an immutable inspection only in-process after checking input, declaration and fixed environment identities; it does not authorize output.",
+      "boundary": "Fixed DOCX input and DOCX/PDF/XPS destination profiles reuse an immutable inspection only in-process after checking input, declaration and fixed environment identities; they do not authorize output.",
       "tests": [
         { "class": "ReusableTemplateInspectionTests", "method": "ReuseVerifiesCurrentBytesAndReturnsTheOriginalBoundedInspection" },
-        { "class": "ReusableTemplateInspectionTests", "method": "FixedClockAndFidelityChangeOptionsWithoutChangingTheSchemaOrFontIdentity" }
+        { "class": "ReusableTemplateInspectionTests", "method": "FixedClockAndFidelityChangeOptionsWithoutChangingTheSchemaOrFontIdentity" },
+        { "class": "ReusableTemplateInspectionTests", "method": "DestinationProfilesHaveDistinctIdentitiesAndKeepOutputChecksUnknown" }
       ]
     },
     {

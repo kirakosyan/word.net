@@ -36,7 +36,7 @@ public sealed class ReusableTemplateInspection
     public TemplateInspection Inspection => inspection;
     /// <summary>Gets the immutable data-declaration fingerprint.</summary>
     public string DataSchemaSha256 => inspection.DataSchemaSha256;
-    /// <summary>Gets the fixed DOCX inspection profile and field-clock fingerprint.</summary>
+    /// <summary>Gets the fixed inspection profile, destination and field-clock fingerprint.</summary>
     public string OptionsSha256 { get; }
     /// <summary>Gets the fingerprint of built-in font resources in the loaded assemblies.</summary>
     public string FontsSha256 { get; }
@@ -69,7 +69,7 @@ public sealed class ReusableTemplateInspection
     private void CheckEnvironment(CancellationToken cancellationToken)
     {
         if (!ReferenceEquals(process, TemplateInspectionIdentity.Process)
-            || !string.Equals(OptionsSha256, TemplateInspectionIdentity.Options(new ConversionOptions(fidelityMode, maximumInputBytes: TemplateInspectionIdentity.MaximumInputBytes), fieldTime), StringComparison.Ordinal)
+            || !string.Equals(OptionsSha256, TemplateInspectionIdentity.Options(new ConversionOptions(fidelityMode, maximumInputBytes: TemplateInspectionIdentity.MaximumInputBytes), inspection.Destination, fieldTime), StringComparison.Ordinal)
             || !string.Equals(EngineSha256, TemplateInspectionIdentity.Engine(), StringComparison.Ordinal)
             || !string.Equals(ProvidersSha256, TemplateInspectionIdentity.Providers(), StringComparison.Ordinal)
             || !string.Equals(FontsSha256, TemplateInspectionIdentity.Fonts(cancellationToken), StringComparison.Ordinal))
@@ -85,15 +85,24 @@ public sealed partial class WordConverter
     /// and returns the inspection only. It does not compile a portable policy plan or authorize output.</remarks>
     public ReusableTemplateInspection CompileReusableTemplateInspection(Stream source, TemplateDataSchema schema,
         DateTimeOffset fieldTime, FidelityMode fidelityMode = FidelityMode.Strict, CancellationToken cancellationToken = default)
+        => CompileReusableTemplateInspection(source, schema, DocumentFormat.Docx, fieldTime, fidelityMode, cancellationToken);
+
+    /// <summary>Compiles an in-process DOCX inspection for a fixed DOCX, PDF or XPS destination profile.</summary>
+    /// <remarks>The destination is bound to the snapshot but is not rendered or validated. The returned report retains all
+    /// uninspected-stage unknowns; reuse cannot authorize conversion or enforce a loss policy.</remarks>
+    public ReusableTemplateInspection CompileReusableTemplateInspection(Stream source, TemplateDataSchema schema,
+        DocumentFormat destination, DateTimeOffset fieldTime, FidelityMode fidelityMode = FidelityMode.Strict,
+        CancellationToken cancellationToken = default)
     {
         Guard.NotNull(source, nameof(source)); Guard.NotNull(schema, nameof(schema));
+        if (destination is not (DocumentFormat.Docx or DocumentFormat.Pdf or DocumentFormat.Xps)) throw new ArgumentOutOfRangeException(nameof(destination));
         cancellationToken.ThrowIfCancellationRequested();
         DateTimeOffset fixedTime = fieldTime.ToUniversalTime();
         var options = new ConversionOptions(fidelityMode, maximumInputBytes: TemplateInspectionIdentity.MaximumInputBytes) { Clock = () => fixedTime };
-        string optionsHash = TemplateInspectionIdentity.Options(options, fixedTime);
+        string optionsHash = TemplateInspectionIdentity.Options(options, destination, fixedTime);
         string engine = TemplateInspectionIdentity.Engine(), providers = TemplateInspectionIdentity.Providers();
         string fonts = TemplateInspectionIdentity.Fonts(cancellationToken);
-        TemplateInspection result = InspectTemplate(source, schema, DocumentFormat.Docx, options, cancellationToken);
+        TemplateInspection result = InspectTemplate(source, schema, destination, options, cancellationToken);
         if (!string.Equals(engine, TemplateInspectionIdentity.Engine(), StringComparison.Ordinal)
             || !string.Equals(providers, TemplateInspectionIdentity.Providers(), StringComparison.Ordinal)
             || !string.Equals(fonts, TemplateInspectionIdentity.Fonts(cancellationToken), StringComparison.Ordinal))
@@ -109,12 +118,12 @@ internal static class TemplateInspectionIdentity
     internal const int MaximumInputBytes = 16 * 1024 * 1024;
     private const long MaximumFontBytes = 64L * 1024 * 1024;
 
-    internal static string Options(ConversionOptions options, DateTimeOffset fixedTime) => Digest(writer =>
+    internal static string Options(ConversionOptions options, DocumentFormat destination, DateTimeOffset fixedTime) => Digest(writer =>
     {
         if (options.EnglishOcr != null || options.Hyphenation.Dictionary != null || options.HtmlInput.Images.Count != 0
             || options.Fonts.Sources.Count != 0 || options.Fonts.Substitutions.Count != 0 || options.Pdf.Pages.Count != 0)
             throw new NotSupportedException("Plan.Profile: The reusable inspection profile does not admit caller resources or providers.");
-        writer.Write("wordnet-reusable-docx-inspection-options-v1"); writer.Write((int)options.FidelityMode);
+        writer.Write("wordnet-reusable-docx-inspection-options-v2"); writer.Write((int)destination); writer.Write((int)options.FidelityMode);
         writer.Write(options.MaximumInputBytes); writer.Write(options.MaximumOutputBytes); writer.Write(options.MaximumExpandedBytes);
         writer.Write(options.MaximumArchiveEntries); writer.Write(options.MaximumCharacters); writer.Write(options.MaximumNestingDepth);
         writer.Write(options.MaximumPages); writer.Write(fixedTime.UtcDateTime.Ticks); writer.Write(options.BalanceFinalColumns);

@@ -29,7 +29,8 @@ the same deterministic declaration fingerprint. It can reveal guessed names and
 does not bind a template or execution environment.
 The additive `CompileReusableTemplateInspection` and `ReusableTemplateInspection`
 permit only fixed-profile in-process reuse of the immutable inspection after checking
-input, schema and environment fingerprints. The underlying report still cannot
+input, schema, destination and environment fingerprints. An additive overload selects
+DOCX, PDF or XPS as the inspected destination; the original overload selects DOCX. The underlying report still cannot
 independently authorize reuse of a conversion policy, and no output or loss policy is
 enforced. The module fingerprint is not binary attestation. These APIs are unreleased
 and are not in published 1.5.0.

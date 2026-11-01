@@ -39,10 +39,10 @@ class Binary:
         return digest(self.data)
 
 
-def options(minutes=0):
+def options(destination=2, minutes=0):
     output = Binary()
-    output.string('wordnet-reusable-docx-inspection-options-v1')
-    for value in (2, 16777216, 33554432, 67108864, 1024, 4194304, 64, 1000):
+    output.string('wordnet-reusable-docx-inspection-options-v2')
+    for value in (destination, 2, 16777216, 33554432, 67108864, 1024, 4194304, 64, 1000):
         output.int32(value)
     time = datetime.datetime(2026, 11, 1, 12, 0) + datetime.timedelta(minutes=minutes)
     delta = time - datetime.datetime(1, 1, 1)
@@ -98,8 +98,13 @@ def check(data):
     schema = digest(json.dumps(declaration, separators=(',', ':')).encode())
     if plan['DataSchemaSha256'] != schema or plan['Inspection']['DataSchemaSha256'] != schema:
         raise ValueError('Declaration fingerprint changed')
-    if plan['OptionsSha256'] != options() or report['shiftedOptionsSha256'] != options(1):
+    if plan['OptionsSha256'] != options() or report['shiftedOptionsSha256'] != options(minutes=1):
         raise ValueError('Fixed profile or clock fingerprint changed')
+    for key, destination in (('pdfProfile', 3), ('xpsProfile', 9)):
+        profile = report[key]
+        if (profile['optionsSha256'], profile['destination'], profile['uninspected'], profile['reused']) != (
+                options(destination), destination, True, True):
+            raise ValueError('Destination fingerprint, coverage or reuse changed')
     provider = Binary()
     provider.string('wordnet-reusable-docx-inspection-no-optional-provider-v1')
     if plan['ProvidersSha256'] != provider.sha():
@@ -172,6 +177,10 @@ def main():
         'declaration fingerprint': lambda d: d['observation']['plan'].update(DataSchemaSha256='0' * 64),
         'options fingerprint': lambda d: d['observation']['plan'].update(OptionsSha256='0' * 64),
         'clock': lambda d: d['observation'].update(shiftedOptionsSha256=d['observation']['plan']['OptionsSha256']),
+        'PDF destination fingerprint': lambda d: d['observation']['pdfProfile'].update(optionsSha256=d['observation']['plan']['OptionsSha256']),
+        'XPS destination': lambda d: d['observation']['xpsProfile'].update(destination=2),
+        'PDF unknown coverage': lambda d: d['observation']['pdfProfile'].update(uninspected=False),
+        'XPS snapshot': lambda d: d['observation']['xpsProfile'].update(reused=False),
         'provider fingerprint': lambda d: d['observation']['plan'].update(ProvidersSha256='0' * 64),
         'module fingerprint': lambda d: d['observation']['plan'].update(EngineSha256='0' * 64),
         'runtime descriptor': lambda d: d['observation']['environment'].update(runtime='altered'),

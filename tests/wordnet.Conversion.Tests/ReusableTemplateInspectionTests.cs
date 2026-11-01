@@ -117,6 +117,36 @@ public sealed class ReusableTemplateInspectionTests
     }
 
     [Fact]
+    public void DestinationProfilesHaveDistinctIdentitiesAndKeepOutputChecksUnknown()
+    {
+        byte[] document = Template(); var schema = Schema(); var converter = new WordConverter();
+        var destinations = new[] { DocumentFormat.Docx, DocumentFormat.Pdf, DocumentFormat.Xps };
+        var plans = destinations.Select(destination =>
+        {
+            using var source = new MemoryStream(document);
+            return converter.CompileReusableTemplateInspection(source, schema, destination, FixedTime,
+                cancellationToken: TestContext.Current.CancellationToken);
+        }).ToArray();
+        Assert.Equal(3, plans.Select(plan => plan.OptionsSha256).Distinct(StringComparer.Ordinal).Count());
+        using var defaultSource = new MemoryStream(document);
+        ReusableTemplateInspection defaultPlan = converter.CompileReusableTemplateInspection(defaultSource, schema, FixedTime,
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(plans[0].OptionsSha256, defaultPlan.OptionsSha256);
+        for (int index = 0; index < destinations.Length; index++)
+        {
+            Assert.Equal(destinations[index], plans[index].Inspection.Destination);
+            Assert.Contains(plans[index].Inspection.Findings, item => item.Code == "Plan.UninspectedCoverage" && item.Unknown);
+            Assert.Contains(plans[index].Inspection.Findings, item => item.Code == "Plan.ReuseUnavailable" && item.Unknown);
+            using var unchanged = new MemoryStream(document);
+            Assert.Same(plans[index].Inspection, plans[index].Reuse(unchanged, schema, TestContext.Current.CancellationToken));
+        }
+        using var invalid = new MemoryStream(document);
+        Assert.Throws<ArgumentOutOfRangeException>(() => converter.CompileReusableTemplateInspection(invalid, schema, DocumentFormat.Html,
+            FixedTime, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(0, invalid.Position); Assert.True(invalid.CanRead);
+    }
+
+    [Fact]
     public async Task ConcurrentReuseIsIsolatedAndKeepsTheSameSnapshot()
     {
         byte[] document = Template(); var schema = Schema();
