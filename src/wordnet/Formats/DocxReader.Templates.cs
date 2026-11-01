@@ -33,21 +33,36 @@ internal sealed partial class DocxReader
             context.Loss("Template.ControlProperties", "Control-specific validation, locking, data bindings and appearance are outside the editable tagged-control profile.");
         if (tag.Length > 256) throw new InvalidDataException("Template.TagLength: A control tag exceeds the supported length.");
         var control = new TemplateControl(tag);
-        // Only retain a source node for the small, directly owned inline-control
-        // profile that template inspection can examine without binding data.
-        if (context.CaptureTemplateSources && element.Parent?.Name == W + "p"
-            && element.Parent.Parent?.Name == W + "body" && element.Parent.Parent.Parent?.Name == W + "document")
+        // Retain source nodes only for directly owned, plain controls that
+        // template inspection can examine without binding data.
+        if (context.CaptureTemplateSources)
         {
-            XElement[] pieces = element.Elements().Take(3).ToArray();
-            if (pieces.Length == 2 && pieces[0].Name == W + "sdtPr" && pieces[1].Name == W + "sdtContent")
+            bool inline = element.Parent?.Name == W + "p" && element.Parent.Parent?.Name == W + "body"
+                && element.Parent.Parent.Parent?.Name == W + "document";
+            bool repeat = tag.StartsWith("repeat:", StringComparison.Ordinal) && element.Parent?.Name == W + "body"
+                && element.Parent.Parent?.Name == W + "document";
+            if (inline || repeat)
             {
-                XElement[] properties = pieces[0].Elements().Take(4).ToArray();
-                XElement[] contents = pieces[1].Elements().Take(2).ToArray();
-                if (properties.All(p => p.Name == W + "tag" || p.Name == W + "id" || p.Name == W + "alias")
-                    && contents.Length == 1 && contents[0].Name == W + "r")
+                XElement[] pieces = element.Elements().Take(3).ToArray();
+                if (pieces.Length == 2 && pieces[0].Name == W + "sdtPr" && pieces[1].Name == W + "sdtContent")
                 {
-                    XElement[] run = contents[0].Elements().Take(2).ToArray();
-                    if (run.Length == 1 && run[0].Name == W + "t" && !run[0].HasElements) control.InspectionElement = element;
+                    XElement[] properties = pieces[0].Elements().Take(4).ToArray();
+                    XElement[] contents = pieces[1].Elements().Take(2).ToArray();
+                    if (properties.All(p => p.Name == W + "tag" || p.Name == W + "id" || p.Name == W + "alias") && contents.Length == 1)
+                    {
+                        XElement? owner = contents[0];
+                        if (repeat)
+                        {
+                            XElement[] blocks = owner.Name == W + "p" ? owner.Elements().Take(2).ToArray() : Array.Empty<XElement>();
+                            owner = blocks.Length == 1 ? blocks[0] : null;
+                        }
+                        if (owner?.Name == W + "r")
+                        {
+                            XElement[] run = owner.Elements().Take(2).ToArray();
+                            if (run.Length == 1 && run[0].Name == W + "t" && !run[0].HasElements)
+                            { control.InspectionElement = element; control.InspectionRootRepeat = repeat; }
+                        }
+                    }
                 }
             }
         }

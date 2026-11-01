@@ -32,13 +32,20 @@ control accepts any declared value type and `!` negates the condition. Formatted
 nested, table-cell, story and other controls remain uninspected. Even when a simple
 control is checked, `Plan.ControlCoverage` remains unknown for the whole document.
 
+A directly owned body `repeat:` control containing one paragraph with one plain
+text run has an unambiguous root collection path. Inspection checks that path and
+its declared `Collection` type without evaluating items or expanding the repeat.
+The requirement has known root scope unless another occurrence of the same path
+has uncertain scope; multi-paragraph, nested, table and other repeats stay
+uninspected. `Plan.RepeatScope` remains unknown for all repeated contents.
+
 The table subset is a direct `word/document.xml` body table with a rectangular
 grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped
 tables and rows, merged cells, controls, revision-bearing owners, links, notes,
 images and other structured cell content are outside this subset. If any table is
 present, `Plan.OwnerCoverage` remains unknown even when some simple-cell fields
 are inspected; the report does not assert a complete table inventory. Repeating
-scopes continue to make path resolution unknown.
+contents continue to make path resolution unknown.
 
 ```csharp
 var schema = new TemplateDataSchema(
@@ -56,7 +63,7 @@ schema declarations to match the template. Exit 2 denotes a definite inspected
 path/control problem; exit 1 includes unknown coverage and must not be treated as
 approval. Findings contain opaque `path-0001` and `part-0001` aliases, stable codes
 and remediation identifiers. Part aliases identify whole parts. For a direct
-simple field or admitted inline control, a finding may also expose `SourceElementIndices`: one-based element
+simple field or admitted control, a finding may also expose `SourceElementIndices`: one-based element
 child positions starting with the root element. They identify a node only within
 the inspected input bytes; complex fields and other unlocated findings return null.
 Positions contain neither element names nor values, but can still reveal document
@@ -81,6 +88,9 @@ complex field remains unlocated; nine altered controls exercise the checker.
 The [independent control observation](measurements/roadmap-138-preflight-controls-reference.json)
 compares source positions and path/type findings with actual failed and successful
 merges, including unknown formatted and repeated controls.
+The [independent repeat observation](measurements/roadmap-138-preflight-repeats-reference.json)
+checks the root collection prediction, unchanged failed merges and repeated output
+while retaining mixed and unsupported scopes as unknown.
 
 Pending #144 source supports an inline typed child inside an admitted rich-text
 block control. Inspect the child's `ParentId` snapshot and reacquire handles after

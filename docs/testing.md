@@ -350,6 +350,10 @@ The [exact-source receipt](measurements/roadmap-138-preflight-controls-d289fea.j
 records both 2,361-case suites, the 833-case matrix, local packages and independent
 checks; the unchanged [performance gate](measurements/roadmap-138-preflight-controls-performance-d289fea.json)
 is local evidence. Hosted exact-head checks and actual Framework execution remain separate.
+The next repeat-preflight increment checks a plain root collection path against
+missing, wrong-type and successful merges, retaining unknown repeated and mixed
+scopes. Its [independent observation](measurements/roadmap-138-preflight-repeats-reference.json)
+uses three schema-valid synthetic templates, a schema-valid output and ten altered controls.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

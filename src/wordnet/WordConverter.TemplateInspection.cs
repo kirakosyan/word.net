@@ -13,7 +13,7 @@ namespace WordNet;
 public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
-    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline body controls. Other controls, repeated scopes, other owners,
+    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields, simple inline body controls and simple root-repeat paths. Other controls, repeated contents, other owners,
     /// output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
@@ -49,7 +49,7 @@ public sealed partial class WordConverter
         var findings = new List<(string Code, string Remediation, string? Path, string? Part, int Count, bool Unknown,
             DiagnosticSeverity Severity, DiagnosticPhase? Phase, bool Truncated, IReadOnlyList<int>? Indices)>();
         var declarations = schema.Paths.ToDictionary(p => p.Path, StringComparer.Ordinal);
-        var observedPaths = new Dictionary<string, int>(StringComparer.Ordinal);
+        var observedPaths = new Dictionary<string, (int Count, bool ScopeUnknown)>(StringComparer.Ordinal);
         int work = 0; long locationBytes = 0;
         void Add(string code, string remediation, string? path = null, string? part = null, int count = 1, bool unknown = false,
             DiagnosticSeverity? severity = null, DiagnosticPhase? phase = null, bool truncated = false, IReadOnlyList<int>? indices = null)
@@ -90,12 +90,12 @@ public sealed partial class WordConverter
             catch (NotSupportedException) { Add("Plan.InvalidControl", "Remediation.FixControl"); }
             if (!control.Executable) Add("Plan.InvalidControlStructure", "Remediation.FixControl");
         }
-        void InspectPath(string path, string? part, string kind, string? formatSwitch, Func<IReadOnlyList<int>?> location)
+        void InspectPath(string path, string? part, string kind, string? formatSwitch, Func<IReadOnlyList<int>?> location, bool rootScope = false)
         {
-            bool present = observedPaths.TryGetValue(path, out int count);
+            bool present = observedPaths.TryGetValue(path, out var prior);
             if (!present && observedPaths.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Requirement limit exceeded.");
-            observedPaths[path] = checked(count + 1);
-            if (scoped) return;
+            observedPaths[path] = (checked(prior.Count + 1), prior.ScopeUnknown || scoped && !rootScope);
+            if (scoped && !rootScope) return;
             if (!declarations.TryGetValue(path, out TemplateSchemaPath? declared))
             { Add("Plan.MissingPath", "Remediation.DeclarePath", path, part, indices: location()); return; }
             if (!declared.Required) Add("Plan.OptionalPath", "Remediation.RequirePath", path, part, unknown: true, indices: location());
@@ -104,6 +104,7 @@ public sealed partial class WordConverter
             {
                 "if" => true,
                 "image" => declared.Type == TemplatePathType.Image,
+                "repeat" => declared.Type == TemplatePathType.Collection,
                 _ => formatSwitch switch
                 {
                     "\\@" => declared.Type == TemplatePathType.Date,
@@ -192,7 +193,31 @@ public sealed partial class WordConverter
         foreach (ParagraphBlock paragraph in paragraphs)
         {
             Work();
-            if (paragraph.Control != null || paragraph.NestedControls.Count != 0) { otherOwners = true; continue; }
+            if (paragraph.Control != null || paragraph.NestedControls.Count != 0)
+            {
+                otherOwners = true;
+                TemplateControl? control = paragraph.Control;
+                var controlElement = control?.InspectionElement;
+                if (control == null || controlElement == null || !control.InspectionRootRepeat || !control.Executable
+                    || paragraph.NestedControls.Count != 0 || !inspectedControls.Add(control)) continue;
+                (string Kind, string Path) tag;
+                try { tag = WordDocument.Tag(control.Tag); }
+                catch (InvalidDataException) { continue; }
+                catch (NotSupportedException) { continue; }
+                if (tag.Kind != "repeat") continue;
+                IReadOnlyList<int>? repeatIndices = null; bool repeatLocated = false;
+                IReadOnlyList<int>? RepeatLocation()
+                {
+                    if (!repeatLocated)
+                    {
+                        repeatLocated = true;
+                        if (paragraph.Location?.Part != null) repeatIndices = XmlSourceLocation.ChildIndices(controlElement, Work);
+                    }
+                    return repeatIndices;
+                }
+                InspectPath(tag.Path, paragraph.Location?.Part, "repeat", null, RepeatLocation, rootScope: true);
+                continue;
+            }
             foreach (TextRun run in paragraph.Runs)
             {
                 Work();
@@ -255,8 +280,8 @@ public sealed partial class WordConverter
         var requirements = observedPaths.OrderBy(pair => pathIds[pair.Key], StringComparer.Ordinal).Select(pair =>
         {
             TemplateSchemaPath? declared = null;
-            if (!scoped) declarations.TryGetValue(pair.Key, out declared);
-            return new TemplateInspectionRequirement(pathIds[pair.Key], declared?.Type, declared?.Required, scoped, pair.Value);
+            if (!pair.Value.ScopeUnknown) declarations.TryGetValue(pair.Key, out declared);
+            return new TemplateInspectionRequirement(pathIds[pair.Key], declared?.Type, declared?.Required, pair.Value.ScopeUnknown, pair.Value.Count);
         }).ToList();
         return new TemplateInspection(inputHash, destination, result, requirements,
             pathIds.ToDictionary(p => p.Value, p => p.Key, StringComparer.Ordinal),

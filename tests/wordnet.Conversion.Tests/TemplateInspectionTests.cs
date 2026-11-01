@@ -11,6 +11,54 @@ namespace WordNet.Tests;
 public sealed class TemplateInspectionTests
 {
     [Fact]
+    public void SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents()
+    {
+        byte[] bytes = Document(RootRepeat("Items", "<w:p><w:r><w:t>cached</w:t></w:r></w:p>"));
+        using var source = new MemoryStream(bytes);
+        var converter = new WordConverter();
+        TemplateInspection missing = converter.InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding finding = Assert.Single(missing.Findings, f => f.Code == "Plan.MissingPath");
+        Assert.Equal("Items", missing.GetSensitivePathAliases()[finding.PathId!]); Assert.Equal("1,1,1", string.Join(",", finding.SourceElementIndices!));
+        Assert.Contains(missing.Findings, f => f.Code == "Plan.RepeatScope" && f.Unknown);
+        source.Position = 0;
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection));
+        TemplateInspection valid = converter.InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionRequirement requirement = Assert.Single(valid.Requirements);
+        Assert.False(requirement.ScopeUnknown); Assert.Equal(TemplatePathType.Collection, requirement.DeclaredType);
+        Assert.DoesNotContain(valid.Findings, f => f.Code is "Plan.MissingPath" or "Plan.PathType");
+        Assert.DoesNotContain("Items", JsonSerializer.Serialize(valid), StringComparison.Ordinal);
+        source.Position = 0;
+        var document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Throws<InvalidDataException>(() => document.MergeJson("{}", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal("cached", Assert.Single(document.Paragraphs).Text);
+        Assert.Equal(1, document.MergeJson("{\"Items\":[{},{}]}", cancellationToken: TestContext.Current.CancellationToken).Changes);
+        Assert.Collection(document.Paragraphs, paragraph => Assert.Equal("cached", paragraph.Text), paragraph => Assert.Equal("cached", paragraph.Text));
+    }
+
+    [Fact]
+    public void RootRepeatTypeMismatchMatchesMergeAndMixedScopesStayUnknown()
+    {
+        string repeat = RootRepeat("Items", "<w:p><w:r><w:t>cached</w:t></w:r></w:p>");
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Scalar));
+        using var source = new MemoryStream(Document(repeat));
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(report.Findings, f => f.Code == "Plan.PathType" && report.GetSensitivePathAliases()[f.PathId!] == "Items");
+        source.Position = 0;
+        var document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        InvalidDataException error = Assert.Throws<InvalidDataException>(() => document.MergeJson("{\"Items\":1}", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Template.Collection:", error.Message, StringComparison.Ordinal); Assert.Equal("cached", Assert.Single(document.Paragraphs).Text);
+        using var mixed = new MemoryStream(Document(repeat + Field("MERGEFIELD Items")));
+        TemplateInspection mixedReport = new WordConverter().InspectTemplate(mixed, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionRequirement mixedRequirement = Assert.Single(mixedReport.Requirements);
+        Assert.Equal(2, mixedRequirement.Count); Assert.True(mixedRequirement.ScopeUnknown); Assert.Null(mixedRequirement.DeclaredType);
+        string multiple = RootRepeat("Other", "<w:p><w:r><w:t>a</w:t></w:r></w:p><w:p><w:r><w:t>b</w:t></w:r></w:p>");
+        using var unsupported = new MemoryStream(Document(multiple));
+        TemplateInspection unknown = new WordConverter().InspectTemplate(unsupported, new TemplateDataSchema(), DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Empty(unknown.Requirements); Assert.DoesNotContain(unknown.Findings, f => f.Code == "Plan.MissingPath");
+        Assert.Contains(unknown.Findings, f => f.Code == "Plan.RepeatScope" && f.Unknown);
+    }
+
+    [Fact]
     public void SimpleInlineControlAndFieldRequirementsMatchMergeWithoutExposingNames()
     {
         byte[] bytes = Document(InlineControl("merge:Customer.Name") + Field("MERGEFIELD Customer.Name"));
@@ -351,6 +399,7 @@ public sealed class TemplateInspectionTests
     }
 
     private static byte[] Document(string body) => TestDocuments.Docx(TestDocuments.Body(body));
+    private static string RootRepeat(string path, string content) => "<w:sdt><w:sdtPr><w:tag w:val='repeat:" + path + "'/></w:sdtPr><w:sdtContent>" + content + "</w:sdtContent></w:sdt>";
     private static string InlineControl(string tag) => "<w:p><w:sdt><w:sdtPr><w:tag w:val='" + tag + "'/></w:sdtPr><w:sdtContent><w:r><w:t>cached</w:t></w:r></w:sdtContent></w:sdt></w:p>";
     private static string Field(string instruction) => "<w:p><w:fldSimple w:instr='" + instruction + "'><w:r><w:t>cached</w:t></w:r></w:fldSimple></w:p>";
     private static string Table(string content) => "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/></w:tblPr>"

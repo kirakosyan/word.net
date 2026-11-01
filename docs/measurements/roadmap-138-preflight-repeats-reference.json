@@ -1,0 +1,67 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "f676597fb6ac2538d716a370af8a80b6038faa6e",
+  "scope": "Working-tree evidence for the root collection path of a plain direct body repeat; repeated contents and mixed or more complex scopes remain unknown.",
+  "provenance": "Three synthetic DOCX inputs were independently authored with MIT fixture helpers, without wordnet serialization; two generations were byte-identical. Open XML SDK 3.5.1 validated all inputs and the successful merged output. Python independently parsed XML positions and merged text, compared predictions with actual merge outcomes and rejected ten in-memory altered controls.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-preflight-repeats.py": "055f2a1d51eec8a099364a4d076f16ec66ea73275cdd4fb9bb75a5339642c490",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-preflight-repeats-probe.cs": "5918b99416453cc6f9add7d4e1b764f9635c05e0cdc2196ddc3be1fd13fd7c46",
+    "eng/verify-roadmap-138-preflight-repeats.py": "ba7504a88efd5b1692eb1c6cd8c8673e4764183e7fd258a0642934ebe3d39412",
+    "src/wordnet/TemplateInspection.cs": "63448a46266bb92e0441c40a1d4cb783cfbefa35e8d41fbfc7ebbc70b5f7c557",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "e1cf5912dabd8294c6e2dd88cc798040157cd016107363a2f384829d04de387f",
+    "src/wordnet/Formats/DocxReader.Templates.cs": "e4b1f676d8cda54a3cfdece620c64dada3cdc0f3b09ad122c886629f20f8ef03",
+    "src/wordnet/Internal/XmlSourceLocation.cs": "03cc23fbee7718ab41f6342a78b0082637e5595020242c2e5121687813decd35",
+    "src/wordnet/Model/DocumentModel.cs": "7d3ee915b70f8ead61e19b1311dfed20d9f44ea6d0edfe3c684911aaff30e67f",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "4b5d05e8139e1284f0196d7a14d4bb7844a848496eecc6da6568233b857d32c3"
+  },
+  "probeWordnetAssemblySha256": "f8046744e7db559f384d88571c5c4298b884358300c2e2d827c398b17fe7dff6",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "inputSchemaLogSha256": "73d44b0acd06c56d37e68d28ef6594ea4a9ba91a15eb85190e0ed0f471141712",
+  "outputSchemaLogSha256": "97ffc852b8220a6a067ae460dbd32d3fa67761021c10d93e2ae03e3435972257",
+  "verifierLogSha256": "8c50363bb003760e0a08dde22c10f7d5bc59204aa710882e15e2a7a61f2ffaad",
+  "focusedTestsLogSha256": "f0070cfb91a9d13c01c5bed127176d5a3dd66c61850887a71719999eb6167ae4",
+  "specimenHashes": {
+    "simple": {
+      "inputDocxSha256": "13af8e53de071d3fd9bad1473926328c3377da136e01b1e9375e6cac338759af",
+      "defaultReportSha256": "52745cfd3374c743682a89f56195ebee54ac2b1f76d5c41b88468c8bcb59decd",
+      "observationSha256": "d989498edff13c01e8c6a42b0a96e6be1d446be087627ce0a48057fdb97d9c16",
+      "mergedDocxSha256": "4a24c36d865eb4ba9f6d51e21b4c0fbf0cdf789f291153734c41478c7264bcbe"
+    },
+    "mixed": {
+      "inputDocxSha256": "295ae95668b13ba7f67a383b2cdc4225396f595719ec2d464daf6f12024b0753",
+      "defaultReportSha256": "25f2a7a60cbf7dd4d3f572914606b14a166ccdffcacf0b8bba31e8cda3eacff9",
+      "observationSha256": "c0612d80b0fe3c542fab6ddc5deef35b229f0dc1bf97e81911f5b2a4e048b5a6"
+    },
+    "complex": {
+      "inputDocxSha256": "64f935a68641c59c7786c6b3f40096205bafae2d11d6912309cab7cc2162460b",
+      "defaultReportSha256": "73c9b917e1a697cdfa800b9e5f7aeaa0e26ab766e9a0d80e323f7ae96960fe49",
+      "observationSha256": "7b3824b650d0846c77df81d94f88643fe59c3a403b2c713d0dad80c94f1c76a1"
+    }
+  },
+  "result": {
+    "result": {
+      "rootPathLocated": true,
+      "missingAndTypeFailuresMatch": true,
+      "failedMergesUnchanged": true,
+      "successfulRepeatedParagraphs": 2,
+      "mixedAndComplexScopesUnknown": true,
+      "defaultNamesDisclosed": false
+    },
+    "negativeControls": {
+      "wrong source position": "Missing repeat path or location differs from source XML",
+      "wrong root path": "Missing repeat path or location differs from source XML",
+      "wrong collection type": "Repeat collection type or scope differs",
+      "changed failed merge": "Failed merges changed the document",
+      "changed output": "Repeated output differs from the independent package read",
+      "leaked path": "Default report disclosed a source or path name",
+      "leaked part": "Default report disclosed a source or path name",
+      "lost repeat uncertainty": "Repeat coverage or reuse boundary changed",
+      "mixed scope claimed": "Mixed-scope requirement is not explicitly uncertain",
+      "invented complex requirement": "Complex repeat was incorrectly treated as inspected"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  }
+}

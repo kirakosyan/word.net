@@ -1334,6 +1334,24 @@
       ]
     },
     {
+      "id": "template-inspection-simple-root-repeat",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Non-reusable inspection checks the collection path of a directly owned plain root repeat without claiming repeated content or overall scope coverage.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents" }
+      ]
+    },
+    {
+      "id": "template-inspection-unqualified-repeat-scopes",
+      "issue": 171,
+      "outcome": "rejected",
+      "boundary": "Mixed-scope observations and multi-paragraph repeat owners remain unknown; a wrong root collection type is reported and fails merge.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "RootRepeatTypeMismatchMatchesMergeAndMixedScopesStayUnknown" }
+      ]
+    },
+    {
       "id": "nary-equation-managed",
       "issue": 169,
       "outcome": "supported-bounded",
