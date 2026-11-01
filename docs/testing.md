@@ -12,6 +12,16 @@ and [performance samples](measurements/roadmap-138-reusable-inspection-performan
 record exact identities. Hosted checks and actual Framework execution for this
 source remain separate. This does not implement a portable plan or loss policy.
 
+Exact destination source `9ece031` passed the five-target Release rebuild,
+formatting, local package/API checks and both complete .NET 8/.NET 10 conversion and
+English OCR suites (2,433 cases each, no skips). The executable matrix passed 904
+cases; independent corpora rejected 240 altered observations, including 28 for the
+three destination identities. The unchanged local single-core PDF gate passed at
+1.052 versus `734b5d4`. The [source receipt](measurements/roadmap-138-reusable-inspection-9ece031.json)
+and [performance samples](measurements/roadmap-138-reusable-inspection-performance-9ece031.json)
+retain exact identities. Hosted checks and actual Framework execution are separate;
+these snapshots do not validate output or enforce loss policies.
+
 The preceding `b57f10e` [hosted performance gates](measurements/wordnet-138-performance-b57-hosted-success.json)
 passed at 1.034 for the PR merge against release source and 1.145 for the push
 against `e9de85c`. Other hosted jobs and actual Framework guests have separate results.

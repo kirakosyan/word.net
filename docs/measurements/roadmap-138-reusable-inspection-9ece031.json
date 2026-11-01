@@ -1,0 +1,159 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "9ece0316a9bc367bc5306d0da35e570411f044db",
+  "sourceTree": "b932baee3911fdaa14fbf42baf11eb05a4237193",
+  "scope": "In-process DOCX inspection snapshots bind distinct DOCX/PDF/XPS destinations, source, declaration and bounded environment; they do not authorize output.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+    "releaseBuild": "All five library targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "d5e54efe863a149230d0fa4b2fc55d6c31f852d357629442daa720164f1886fe",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution for this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2433,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "7eb932fc220fadb21a90cdef18a63bdf2e358b8660ebc8080ad9b2b76aa598fd"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2433,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "ad29cd7f39a5e10b87adefde5ffc686d180b9451725d075b0337a5b44d9197be"
+    },
+    "sourceMatrix": {
+      "profiles": 123,
+      "mappedMethods": 542,
+      "net10CasesPassed": 904,
+      "logSha256": "6b284ed157d1e999d94d2a62f9982065b225e9dfabfd097974dae23720edc545"
+    },
+    "packages": {
+      "wordnet.1.5.0.nupkg": "8506b753cc5ddcfdee0758d6137cd18810bfacda1b87bcad382944cb744a13c8",
+      "wordnet.1.5.0.snupkg": "a5eff86071ebf36107e10d3bb8f4e5e2aa56afbe1bfd9513fafab0678c185024",
+      "wordnet.Fonts.1.5.0.nupkg": "c18bdce6e449d109adde78e2c75bc71b03dc2306a214bc186900ee984bc73dfa",
+      "wordnet.Fonts.1.5.0.snupkg": "59351052a63df9f52ab52611e8c7a6ad3e51ec7bc93e96fab0e7ebfc47008573",
+      "wordnet.Ocr.1.5.0.nupkg": "e6e382830f53fab4da9ced9c25ffe63f6f7a146e7c17a3c0cdd45257c0e49f09",
+      "wordnet.Ocr.1.5.0.snupkg": "fde19d2548214ba4ab77dda9f9c3591d78202cf1dc02c5e77d492b4e0c3ee77c"
+    },
+    "packageVerification": "Serial local core, fonts and OCR packages passed release package and API verification; none were published.",
+    "packageLogSha256": "0300d1427cfbf8b29eae88b209b358e1f34b8efd675d573eaf00d4ebf81e52ec",
+    "comparisonAndLedgerControls": {
+      "comparison": 13,
+      "ledger": 6,
+      "comparisonLogSha256": "d74d15eec1839ec28f4ac9e6e1aa659053d8fbf90afe0082d507c0d8897dd214",
+      "ledgerLogSha256": "ef007a87449f75fb93da01bdbc5323ffa6ead467bda57d7b568ee8678b18175b"
+    }
+  },
+  "independent": {
+    "alteredObservationControls": 240,
+    "reports": {
+      "baseline-verification": {
+        "negativeControls": 18,
+        "reportSha256": "c59dba4ee9bd9f42978114afc90a1ad656a9533364e1cb8e294b12e4b8c21ada"
+      },
+      "cell-reference": {
+        "negativeControls": 19,
+        "reportSha256": "800f8f393e67cce7750988929de11cdc6888e5f7411968ac3310746020214012"
+      },
+      "complex-reference": {
+        "negativeControls": 23,
+        "reportSha256": "a18c6332713afcc87e21a69955c80bfb410c0034fe62e4e3fa3888bcf8049a9c"
+      },
+      "compose-reference": {
+        "negativeControls": 17,
+        "reportSha256": "3875728a452a3cca1ce39128423799f4a33b7374c8d36ace467b507eb7d6f33d"
+      },
+      "identity-reference": {
+        "negativeControls": 22,
+        "reportSha256": "c6b50367f8f9f7f392d74c3a0374c6739efa2baa48f442de116b31b6f51f36ed"
+      },
+      "inspection-reference": {
+        "negativeControls": 28,
+        "reportSha256": "a185322d9438ddaa15735d1f04ea0ef9cdb293130412eca956f04c7bf0a9a497"
+      },
+      "reference": {
+        "negativeControls": 18,
+        "reportSha256": "db3c417722156d57cb2f7271c2347b0b4d847505b5e726fc943a624c15652f5b"
+      },
+      "regression-data": {
+        "negativeControls": 27,
+        "reportSha256": "011a1bd084cd7a8f0b48fac6d497dc153d5c56534bcab1a57bc30b81aa0e8406"
+      },
+      "regression-lint": {
+        "negativeControls": 24,
+        "reportSha256": "8bf93332c541dc352bac58bfca141d631ca39b3fa424e02341aced1348cde5e7"
+      },
+      "regression-nested": {
+        "negativeControls": 28,
+        "reportSha256": "541268cb9463bb95c454288bc6eb765af0329d544526f0f8bb1782fdf503c9b3"
+      },
+      "workflow-reference": {
+        "negativeControls": 16,
+        "reportSha256": "f2307a98614f64457c142dc6def408ccd378ea157c201b7a07a434fcaa2e2b90"
+      }
+    },
+    "sourceFixtureSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+    "loadedCoreSha256": "3e01c810b693aa023cad5d18eabf650977cb97db68e4a96bea2be45b9df0b2f6",
+    "schemaLogSha256": "d90c279aa1a793d17ccc7d7e7139fc57d64d6e7c29ff19900b3d24ada2d16d12",
+    "validator": "DocumentFormat.OpenXml.Framework 3.5.1.0",
+    "pdfProfile": {
+      "optionsSha256": "ac2f60941450e3f83a0d094f0587058aa32201f930dbd2ae2bc4ea11024ddb5e",
+      "destination": 3,
+      "uninspected": true,
+      "reused": true
+    },
+    "xpsProfile": {
+      "optionsSha256": "72290991eb6feee844be8af13d54a8cf9db8388095664c1c6da40086855b80aa",
+      "destination": 9,
+      "uninspected": true,
+      "reused": true
+    },
+    "inspectionVerification": {
+      "result": {
+        "independentSchemaValidInputs": 1,
+        "fingerprintsIndependentlyRecomputed": 6,
+        "repositoryFontResourcesMatched": 24,
+        "staleAndBoundedNegativesPassed": true,
+        "limitations": "In-process inspection snapshot only; no portable plan, conversion authorization, loss policy or binary attestation."
+      },
+      "negativeControls": {
+        "fixture": "Independent input identity changed",
+        "schema validation": "Independent source schema validation missing",
+        "input fingerprint": "Input fingerprint changed",
+        "core binary": "Loaded core assembly changed",
+        "declaration fingerprint": "Declaration fingerprint changed",
+        "options fingerprint": "Fixed profile or clock fingerprint changed",
+        "clock": "Fixed profile or clock fingerprint changed",
+        "PDF destination fingerprint": "Destination fingerprint, coverage or reuse changed",
+        "XPS destination": "Destination fingerprint, coverage or reuse changed",
+        "PDF unknown coverage": "Destination fingerprint, coverage or reuse changed",
+        "XPS snapshot": "Destination fingerprint, coverage or reuse changed",
+        "provider fingerprint": "Provider profile fingerprint changed",
+        "module fingerprint": "Module/runtime descriptor fingerprint changed",
+        "runtime descriptor": "Module/runtime descriptor fingerprint changed",
+        "font fingerprint": "Font identity changed",
+        "font resource bytes": "Loaded font bytes differ from independently hashed repository resources",
+        "font inventory": "Bundled font inventory changed",
+        "coverage": "Inspection coverage or reusable-policy limitation changed",
+        "reusable policy": "Inspection coverage or reusable-policy limitation changed",
+        "requirement": "Declared requirements changed",
+        "privacy": "Serialized snapshot leaked a sensitive alias",
+        "input stale": "Reuse, stale, bounded or cancellation behavior changed",
+        "schema stale": "Reuse, stale, bounded or cancellation behavior changed",
+        "schema consumed": "Reuse, stale, bounded or cancellation behavior changed",
+        "limit": "Reuse, stale, bounded or cancellation behavior changed",
+        "cancellation": "Reuse, stale, bounded or cancellation behavior changed",
+        "stream ownership": "Reuse, stale, bounded or cancellation behavior changed",
+        "snapshot": "Reuse, stale, bounded or cancellation behavior changed"
+      },
+      "controlMethod": "Independent observations were altered in memory."
+    }
+  },
+  "performanceRecord": "docs/measurements/roadmap-138-reusable-inspection-performance-9ece031.json",
+  "qualification": "Exact source is locally qualified only. Hosted checks and actual Framework execution for this source are separate; portable plans, enforced loss policies and roadmap #138 remain open."
+}
