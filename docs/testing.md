@@ -391,6 +391,10 @@ The next [root-scope observation](measurements/roadmap-138-preflight-root-scopes
 compares independently authored, schema-validated repeat and wrapper samples with
 actual merges and source positions. Twelve altered observations are rejected;
 repeated contents and flattened wrapper scopes remain unknown.
+The [exact-source record](measurements/roadmap-138-preflight-root-scope-eb1ab9f.json)
+records both 2,371-case suites, the 843-case matrix, local packages and an independent
+recheck using the exact packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-preflight-root-scope-performance-eb1ab9f.json)
+passed against the preceding head; hosted and actual Framework checks remain separate.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

@@ -1,0 +1,116 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "eb1ab9f7d8eb384a9ec5a16264a4e89848e44e12",
+  "sourceTree": "486077db389b40959e1e68c90b3ea5b93b707fb6",
+  "scope": "Non-reusable inspection checks verified root-owned fields and controls beside a repeat while retaining uncertainty for repeated contents and flattened wrappers.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "595cc725d5775fe49971a77d8732c4d4a779d1ca2a3faee305da2ccd51ae5ac6",
+    "releaseBuild": "Five targets and the net472 test executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "947233de016a07046259c89d5160a80cf5f06d6681e5e12059b4f77ef189f13c",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution for this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2371,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "eef1b5313d9a47b0d062c0b4bc9efce9e6457ab8b00a5a5a8e3fc175fbaa3b5a"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2371,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "cd5d19579390c593148f326e058b733ba678ddf2bf2cbedcbe117184ccd3b668"
+    },
+    "capabilityMatrix": {
+      "profiles": 115,
+      "testMethods": 495,
+      "net10CasesPassed": 843,
+      "logSha256": "fe9c31ea19bc4418b9dd13a1e4e155661f6b036438110e041ddaf5882c5660c4"
+    },
+    "packageVerification": "Local serial core, fonts and OCR 1.5.0 packages passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "43ea80d40158a02be74284bde00a94839ea923c2742ee981eeee87d97d4c166e",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "411b895882c4eb5ed68150cd9f6ad45b16696264e12afa5f95d4c1d6d617de11",
+      "wordnet.Fonts.1.5.0.nupkg": "9d5daf0c3648d5d8f43ea32f88a1325dd845104a5aa82f55401e93c05af54c7a",
+      "wordnet.Ocr.1.5.0.nupkg": "5da5c5947a158ec4532284987505e6965f4072574e3285a5d58441acd8782b95"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 41.5512,
+      "CandidateMedianMilliseconds": 39.499700000000004,
+      "Ratio": 0.9506271780357728,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40094496.0,
+      "PeakSampledManagedBytes": 26129944.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-preflight-root-scope-performance-eb1ab9f.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preflight-root-scopes-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "710ccd0caacb033b5b4b4ac2530170a8bd0b596ef4e8643e69bd4ac9994dfa7a",
+    "sourceSchemaLogSha256": "576dcb18a0a5374fa0770f9b2852314f2bdd1f3709bc029bbad23d0fdc264ca1",
+    "outputSchemaLogSha256": "8e8c6d67e9412474e185e567f32bc24ceaf843626c572097dc5405bdf4f1b956",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "a2f12af4e8eb530599b1e2d43ef447357bd844e5c173461cc7012932aed8844b",
+    "documents": {
+      "root": {
+        "defaultReportSha256": "33fdbe1c6b027acb4256512b3b54ba3fdbe7e741edc2c4bafd745e3c32f7c77a",
+        "observationSha256": "db61657da01e4bb3749423379675ed17f757c3168c81936c8fb96f691dd677dd"
+      },
+      "wrapped": {
+        "defaultReportSha256": "e1ab9ac2470ed4a6af2695323fcc68e5043e228eb41053a2882e4fb597acd5d1",
+        "observationSha256": "f0a60e80d1bd7c54076104f44aa0768782d5c486eec829a72c97f6a86ff76038"
+      },
+      "repeat_table": {
+        "defaultReportSha256": "9b316c39e804fd89724e7708f30c3b61a704ddb2979a10a6ca8e1b3bd15a95b2",
+        "observationSha256": "e905690f087fe4c2a96b561f0ff6f6ebdb8fac950d731e8255beabb7d5e31042"
+      }
+    },
+    "mergedDocxSha256": "454ad159ed225399d67087dcf059c2562aa1778294911925ddea4f7091913777",
+    "result": {
+      "result": {
+        "rootPaths": [
+          "Body",
+          "Cell",
+          "Outside"
+        ],
+        "rootPositionsMatchXml": true,
+        "failedMergeUnchanged": true,
+        "independentOutputMatches": true,
+        "wrappedAndRepeatedContentsRemainUnknown": true,
+        "defaultNamesDisclosed": false
+      },
+      "negativeControls": {
+        "wrong path": "Root-owned missing paths differ",
+        "wrong position": "Root finding position or part alias differs",
+        "wrong root scope": "Root requirements or scope differ",
+        "changed failed merge": "Failed merge changed the source or used a different error",
+        "changed output": "Successful merge or independently read DOCX differs",
+        "wrapper marked known": "Flattened wrapper scope was treated as known",
+        "wrapper false missing": "Flattened wrapper received a definite missing-path finding",
+        "repeat table leaked": "A repeated table field was confused with the independent root field",
+        "lost repeat uncertainty": "Repeat uncertainty or reuse boundary changed",
+        "lost owner uncertainty": "Whole-document owner coverage was treated as complete",
+        "reusable report": "Repeat uncertainty or reuse boundary changed",
+        "leaked name": "Default report disclosed a source or path name"
+      },
+      "controlMethod": "Parsed source/output observations changed in memory."
+    }
+  },
+  "retainedFailures": [
+    {
+      "stage": "initial focused test build",
+      "logSha256": "491e561d88aef07ea11a3824c7e5c5d62a40b14568726c71a48bb4e5e4c9f881",
+      "result": "Failed with two CA1861 analyzer errors in new constant-array assertions; the assertions were revised and the focused suite passed."
+    }
+  ],
+  "qualification": "Hosted checks and actual Windows Framework execution for this exact source, repeated children, identity-bound plans, loss policy and full roadmap #138 remain open."
+}
