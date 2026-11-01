@@ -1,0 +1,34 @@
+{
+  "base": "90a77f113f4f10e481bbfa34f87be32bb5b23712",
+  "commits": [
+    {
+      "localCommit": "8baeeaefc9e44b07c6ce9e7fa7f66ab010fa3b09",
+      "tree": "b68e68a4f4048f1126373c03e0dbdd85d5457f44",
+      "remoteCommit": "3994f804c391c0b5b8ba4cc2cb05de903d8748fc"
+    },
+    {
+      "localCommit": "81e1bef83095bfd4c154b872bf8d0531b0a5e2e7",
+      "tree": "1e3acdc9388cdfe2594a4ae679d25f3055ef22d1",
+      "remoteCommit": "4e287baf749257077fa4ce6baeab01a31a9a9f9d"
+    },
+    {
+      "localCommit": "00abb80c57b54f649ff5246f21637f1d164393b3",
+      "tree": "bde0c86d8889f71659a77e1771b11125983a83d3",
+      "remoteCommit": "437789bf46e7e3d9b806ec9ee01d7e469f5ef478"
+    },
+    {
+      "localCommit": "b1a58820e47af08809e8d5f377da2c4c4bb66aa1",
+      "tree": "5bbb775f16f01c9b75d369dc964417586fc5a0cc",
+      "remoteCommit": "f7c8180ca68319def7dde103a10b24fa098aa4ea"
+    },
+    {
+      "localCommit": "ecaa4bb9532b6e173bb3d6889d438cbb6672e291",
+      "tree": "b992cfd539eb9dc58dd6e56bb4b60b5a061040d7",
+      "remoteCommit": "570122d1ec76d9901d46f9470020a7028d3bbd34"
+    }
+  ],
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "explanation": "The shell GitHub credential expired. GitHub app Git-data operations created distinct commit IDs with identical Git trees and corresponding parent order; the original local commit chain remains preserved. Original local receipts are not claims that those original IDs were pushed. The app-created source commit was qualified separately.",
+  "appCreatedCommitsChangeBranchOnlyAfterWorkflowGuard": true
+}

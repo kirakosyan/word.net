@@ -467,6 +467,16 @@ runs eleven independent CLI scenarios and the earlier ten JSON data cases,
 including 51 altered-observation controls. It retains an initial malformed-JSON
 stack-trace failure and the corrected retry. Malformed inputs now produce a generic
 error and no partial report in these cases; the example does not approve output.
+The app-created source `570122d` has an identical tree to the previously tested
+local lint revision but a different commit ID. The [commit mapping](measurements/roadmap-138-github-mirrored-history.json)
+records the exact tree identity of each locally tested and app-created commit.
+The [exact app-source receipt](measurements/roadmap-138-mirror-source-570122d.json)
+records both 2,398-case suites, the 870-case matrix, local packages and 79
+independent altered-observation controls. Its unchanged local
+[performance gate](measurements/roadmap-138-mirror-performance-570122d.json)
+passed at 1.043 against the preceding app-created tree; reference round medians
+varied from 39.966 to 47.874 ms. Hosted and actual Framework checks for this
+source remain separate.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
@@ -476,6 +486,11 @@ qualify the newer source.
 The later `90a77f1` [hosted performance evidence](measurements/roadmap-138-performance-90a-hosted-success.json)
 passed at 1.099 against `5cbf06e` on the push and 1.186 against `bf5ab00` on the PR
 merge whose tree matches the head. Other runtime and package checks are separate.
+Its actual Framework 4.7.2 [push source](measurements/roadmap-138-framework-90a-push-source-success.json),
+[PR source](measurements/roadmap-138-framework-90a-pr-source-success.json),
+[push package](measurements/roadmap-138-framework-90a-push-package-success.json) and
+[PR package](measurements/roadmap-138-framework-90a-pr-package-success.json) guests
+each passed 2,386 cases with cleanup; newer source requires separate qualification.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
