@@ -542,6 +542,16 @@ checks 59 schema-valid independent sources and 50 saved DOCX packages. Fifty cas
 match pinned-font glyph and normalized stroke geometry at the unchanged tolerance;
 six controls retain their prior differences and three unqualified cases are
 diagnosed and strict-rejected. Twenty altered observations are rejected.
+The [exact-source small-grid receipt](measurements/roadmap-138-multicell-borders-d872ce0.json)
+records both 2,381-case conversion and English OCR suites, the 853-case matrix,
+local package checks and the independently rechecked packaged assembly. Its unchanged
+local [performance gate](measurements/roadmap-138-multicell-borders-performance-d872ce0.json)
+passed at 0.894 against the preceding head. Hosted and actual Framework checks for
+this newer source remain separate. The preceding `d85247c` source passed both the
+[push](measurements/roadmap-138-framework-d852-push-source-success.json) and
+[PR](measurements/roadmap-138-framework-d852-pr-source-success.json) actual Framework
+4.7.2 source guests with 2,377 cases and complete cleanup; these do not qualify the
+newer source or either package guest.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
