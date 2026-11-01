@@ -456,6 +456,12 @@ LibreOffice output. It distinguishes required item scope, absent or incompatible
 parent declarations, optional fallback, an empty collection and a null parent;
 28 deliberately altered observations are rejected. Full source and runtime
 qualification are recorded separately.
+The [exact-source nested-path receipt](measurements/roadmap-138-nested-repeat-item-00abb80.json)
+records both 2,398-case suites, the 870-case matrix, local packages and the repeated
+independent checks with the packaged assembly. The unchanged local
+[performance gate](measurements/roadmap-138-nested-repeat-item-performance-00abb80.json)
+passed at 0.931 against the preceding head; reference round medians varied from
+44.015 to 49.974 ms. Hosted and actual Framework checks for this source are separate.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
