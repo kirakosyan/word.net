@@ -107,7 +107,7 @@ The design's initial example registry is deliberately small:
 | Code | Meaning and policy effect |
 | --- | --- |
 | `content.text` | Required logical text in the admitted source/data profile; a planned `supported` assessment requires complete coverage of the relevant owners and paths. It does not assess presentation or certify written output. |
-| `content.links` | Required preservation of interactive link destinations. The unreleased missing-internal-link profile marks it unsupported; other sources remain unassessed. |
+| `content.links` | Required preservation of interactive link destinations. The 1.6.0 missing-internal-link profile marks it unsupported; other sources remain unassessed. |
 | `Docx.ThemeFont` | Existing observed loss: some theme-font semantics are not retained. Explicitly allowing it at one known location does not accept other occurrences. |
 | `Plan.UninspectedCoverage` | Proposed unknown coverage; an unknown cannot be accepted as a known loss or used to satisfy a required semantic. |
 | `Remediation.SetExplicitFont` | Proposed informational action identifier for the example loss; it never performs a change. |
@@ -170,7 +170,7 @@ Inspect can reject malformed inputs and limits; serialization-only findings and
 independent validation are unavailable. #171 must map occurrences without inventing
 precision, add bounded typed requirements and explicit unknowns, and keep current
 Inspect behavior/API intact. #172 must compare the later conversion's diagnostics
-without discarding original phases or counts. The unreleased [strict plain-DOCX profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy) implements only a small subset of that contract.
+without discarding original phases or counts. The 1.6.0 [strict plain-DOCX profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy) implements only a small subset of that contract.
 
 Validate the illustrative schemas and examples with a JSON Schema 2020-12 validator,
 including malformed properties, invalid identities, conflicting stages, changed plan

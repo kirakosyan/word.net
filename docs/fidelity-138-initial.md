@@ -158,7 +158,7 @@ The [generator](../eng/generate-roadmap-138-ledger.py) and
 [tests](../eng/test-roadmap-138-ledger.py) reproduce this index from 65 hashed
 evidence files and reject missing failures or changed paired observations. The
 ledger does not add the remaining requested combination controls or establish
-that current unreleased source behaves like the 1.5.0 baseline.
+that later source behaves like the 1.5.0 baseline.
 The ledger tests passed six cases, the existing baseline-tool tests passed 20,
 and the comparison-tool controls passed 13 after a locked restore and local
 benchmark build. The first comparison-tool attempt failed its prerequisite check

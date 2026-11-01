@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
+  "availability": "1.6.0 source profiles; test mappings alone do not qualify packages or runtimes.",
   "profiles": [
     {
       "id": "best-effort-location-bound-policy",

@@ -1,8 +1,9 @@
 # Bounded DOCX review workflows
 
-## Unreleased source: comparison selection
+<a id="unreleased-source-comparison-selection"></a>
+## 1.6.0 profile: comparison selection
 
-Pending #150 work adds two opt-out policies to `ComparisonOptions`, both enabled
+The 1.6.0 work for #150 adds two opt-out policies to `ComparisonOptions`, both enabled
 by default. Setting `CompareStoryText = false` leaves admitted header/footer text
 at the original document's value. Setting `CompareRunFormatting = false` leaves
 the original bold, italic, size and color on matching text; newly inserted text
@@ -12,12 +13,13 @@ shared-story topology checks, budgets and atomicity. Unsupported formatting and
 structured owners still fail rather than being hidden by an ignore option.
 
 These switches do not implement every story and formatting category requested by
-#150. They are pending source work, not part of published 1.5.0; exact runtime and
+#150. They are 1.6.0 source work, not part of published 1.5.0; exact runtime and
 package qualification remain separate.
 
-## Unreleased source: paragraph-format revisions
+<a id="unreleased-source-paragraph-format-revisions"></a>
+## 1.6.0 profile: paragraph-format revisions
 
-Pending #150 comparison tracks alignment, left/right/first-line indentation,
+The 1.6.0 #150 comparison tracks alignment, left/right/first-line indentation,
 before/after/line spacing and keep/page-break controls for ordinary body paragraphs
 and direct paragraphs in unmerged simple body-table cells when the surrounding
 document topology matches. It also tracks formatting on a matched, unchanged body
@@ -47,12 +49,13 @@ The source tests inspect independent OOXML and Open XML SDK validation, compare
 accepted/rejected PDF glyph positions, and cover inherited resets, cells, sections,
 composition, selective decisions, independent insertions and deletions, budgets and
 unsupported owners. This remains
-unreleased source; the broader #150 acceptance and exact-platform/package
+1.6.0 source; the broader #150 acceptance and exact-platform/package
 qualification remain open.
 
-## Unreleased source: detached text-revision display
+<a id="unreleased-source-detached-text-revision-display"></a>
+## 1.6.0 profile: detached text-revision display
 
-The pending roadmap #138 work adds an explicit display for retained text insertions
+The 1.6.0 roadmap #138 profile adds an explicit display for retained text insertions
 and deletions in body paragraphs and simple body-table cells. It does not decide any
 revision or alter the source session:
 
@@ -119,7 +122,7 @@ tables must have ordinary unmerged, unnested cells. Source load warnings also
 prevent display creation. Invalid profiles and cancellation are checked before
 the staged PDF is copied to the caller's stream. The normal final-copy I/O limits
 still apply. The original accepted/rejected view APIs and regular export behavior
-remain available. This is unreleased source work; issues #148 and #149 remain open
+remain available. This is 1.6.0 source work; issues #148 and #149 remain open
 pending their complete acceptance and exact-runtime qualification.
 
 ## 1.5.0 roadmap #102 delivery
@@ -194,7 +197,7 @@ accepted.Save(pdf, DocumentFormat.Pdf);
 ```
 
 Retained history may be saved to DOCX. Other ordinary exports require an explicit
-accepted/rejected view with comments removed; the unreleased display above is a
+accepted/rejected view with comments removed; the 1.6.0 display above is a
 separate opt-in view of supported text history. Removing history is not secure redaction of original bytes,
 backups or managed memory. Diagnostics do not include authors or review text.
 

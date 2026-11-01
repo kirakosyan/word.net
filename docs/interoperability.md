@@ -141,9 +141,10 @@ case. Indic shaping, CJK line breaking and hyphenation remain separate follow-up
 Native typography with tagged/PDF-UA, PDF/A output or XPS is explicitly unsupported in this
 increment. English-only OCR is unchanged.
 
-### Unreleased source: East Asian line breaking
+<a id="unreleased-source-east-asian-line-breaking"></a>
+### 1.6.0 profile: East Asian line breaking
 
-Pending #165 adds `Typography.EastAsianLineBreak` with `Japanese`,
+The 1.6.0 #165 profile adds `Typography.EastAsianLineBreak` with `Japanese`,
 `SimplifiedChinese` and `TraditionalChinese` selections. `None` is the default
 and preserves the existing layout. The initial managed profile uses the same
 Unicode 17 default UAX #14 rules for all three selections, including conservative
@@ -173,7 +174,7 @@ the affected cases in Strict and warn in BestEffort/Lenient. An initial test usi
 CID-keyed CFF Noto faces also failed in the existing CFF converter; the qualified
 fixtures are independently converted TrueType subsets and that CFF limitation stays open.
 The [testing record](testing.md) describes the conformance data and independent
-controls. These additions are unreleased source, not published 1.5.0 behavior.
+controls. These additions are 1.6.0 source, not published 1.5.0 behavior.
 
 ```csharp
 var options = new ConversionOptions(FidelityMode.BestEffort);
@@ -181,9 +182,10 @@ options.Typography.EastAsianLineBreak = EastAsianLineBreakLanguage.Japanese;
 options.Fonts.Sources.Add(FontSource.FromFile("Noto Sans CJK JP", callerFontPath));
 ```
 
-### Unreleased source: local dictionary hyphenation
+<a id="unreleased-source-local-dictionary-hyphenation"></a>
+### 1.6.0 profile: local dictionary hyphenation
 
-Pending #164 accepts a caller-supplied `HyphenationLexicon` for explicitly
+The 1.6.0 #164 profile accepts a caller-supplied `HyphenationLexicon` for explicitly
 selected `en` or `en-US`. Entries contain ASCII letters and internal break
 markers, for example `ex-tra-or-di-nary`; the immutable lexicon copies entries
 and never discovers or downloads a dictionary. It admits at most 25,000 words
@@ -256,9 +258,10 @@ annotation references, appends sequential structure objects and rewrites offsets
 It reimplements the public token-writer interface for final xref; there is no private
 reflection or guessed object-ID range. UTF-16BE hex preserves accessible descriptions.
 
-### Unreleased source: anchor-ordered text boxes
+<a id="unreleased-source-anchor-ordered-text-boxes"></a>
+### 1.6.0 profile: anchor-ordered text boxes
 
-Pending #154 adds `PdfTextBoxReadingOrder.AnchorOrder` as an explicit caller
+The 1.6.0 #154 profile adds `PdfTextBoxReadingOrder.AnchorOrder` as an explicit caller
 choice for tagged PDF and PDF/UA-1. The default `Reject` keeps the existing
 profile. An admitted unrotated, unlinked text box must be the only meaningful
 item in its own ordinary body paragraph, anchored at that paragraph with
@@ -281,9 +284,10 @@ options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
 options.Pdf.TextBoxReadingOrder = PdfTextBoxReadingOrder.AnchorOrder;
 ```
 
-### Unreleased source: accessible vector figures
+<a id="unreleased-source-accessible-vector-figures"></a>
+### 1.6.0 profile: accessible vector figures
 
-Pending #155 adds `PdfOptions.VectorSemantics` for tagged PDF and PDF/UA-1.
+The 1.6.0 #155 profile adds `PdfOptions.VectorSemantics` for tagged PDF and PDF/UA-1.
 The default `Reject` preserves the previous behavior. `DescribedAtAnchor`
 requires a nonempty authored description on every admitted vector and places a
 Figure with that alternative at its source anchor in the logical structure.
@@ -311,9 +315,10 @@ options.Pdf.Accessibility = PdfAccessibility.PdfUa1;
 options.Pdf.VectorSemantics = PdfVectorSemantics.DescribedAtAnchor;
 ```
 
-### Unreleased source: general-angle text boxes
+<a id="unreleased-source-general-angle-text-boxes"></a>
+### 1.6.0 profile: general-angle text boxes
 
-Pending #160 preserves the signed DrawingML rotation value, in units of 1/60000
+The 1.6.0 #160 profile preserves the signed DrawingML rotation value, in units of 1/60000
 degree, on editable rectangular DOCX text boxes. In ordinary managed PDF, XPS
 and SVG previews, the frame and supported content rotate around the frame center;
 the axis-aligned bounds of the four transformed corners determine page admission
@@ -340,12 +345,13 @@ upright text intent, transformed linked chains, nested structured content,
 native shaping, tagged and archival output are unsupported or diagnosed under
 their existing fidelity rules. Rotated boxes whose frame or stroke extends beyond
 the physical page are rejected. The [testing record](testing.md) describes the
-reference measurements and controls; this pending source is separate from the
+reference measurements and controls; this 1.6.0 source is separate from the
 published 1.5.0 packages.
 
-### Unreleased source: linear gradients
+<a id="unreleased-source-linear-gradients"></a>
+### 1.6.0 profile: linear gradients
 
-Pending #162 preserves anchored, unrotated `ellipse`, `roundRect`, `rect`,
+The 1.6.0 #162 profile preserves anchored, unrotated `ellipse`, `roundRect`, `rect`,
 `triangle` and `diamond` shapes with an explicit linear fill. A gradient has two
 to eight strictly increasing stops from 0 to 100000, an explicit cardinal angle
 of 0, 90, 180 or 270 degrees, and opaque RGB colors or untransformed `accent1`
@@ -373,9 +379,10 @@ records format structure, sampled colors, clipping and the corrected XPS-renderi
 failure. This source increment is not in the published 1.5.0 packages and does not
 claim live Word or complete #162 acceptance.
 
-### Unreleased source: tagged archival PDF
+<a id="unreleased-source-tagged-archival-pdf"></a>
+### 1.6.0 profile: tagged archival PDF
 
-Pending #156 adds `PdfConformance.PdfA2a`, which requires the explicit
+The 1.6.0 #156 profile adds `PdfConformance.PdfA2a`, which requires the explicit
 `PdfAccessibility.PdfUa1` profile, document language and title. It embeds the
 document fonts, an archive output intent, PDF/A-2a and PDF/UA-1 identification
 in one XMP packet, and the existing logical structure and annotation ownership.
@@ -428,9 +435,10 @@ foreach (PagePreview page in preview.Pages)
     File.WriteAllBytes($"page-{page.SourcePage}.png", page.GetBytes());
 ```
 
-### Unreleased source: preview layout snapshots
+<a id="unreleased-source-preview-layout-snapshots"></a>
+### 1.6.0 profile: preview layout snapshots
 
-The pending #167 source can attach an immutable snapshot to the same `RenderPages`
+The 1.6.0 source for #167 can attach an immutable snapshot to the same `RenderPages`
 layout used for the selected preview pages. Configure `PreviewOptions.Layout` to
 enable it. `MaximumFragments` bounds the number of positioned items (1–100,000),
 and the conversion expanded-byte and cancellation limits also apply. Text is absent

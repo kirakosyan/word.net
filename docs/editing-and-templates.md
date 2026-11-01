@@ -12,9 +12,10 @@ The [compatibility-plan design](template-compatibility-plan-design.md) describes
 typed requirements and loss policies. The bounded plain-DOCX profile below implements
 only a small subset; general template-plan compilation and enforcement remain open.
 
-## Unreleased source: bounded template inspection
+<a id="unreleased-source-bounded-template-inspection"></a>
+## 1.6.0 profile: bounded template inspection
 
-Pending #171 adds `WordConverter.InspectTemplate` for a DOCX and an explicitly
+The 1.6.0 #171 profile adds `WordConverter.InspectTemplate` for a DOCX and an explicitly
 declared `TemplateDataSchema`. It parses using the same editable DOCX context as
 `WordDocument.Load`; the requested destination is recorded, with only the selected
 static PDF option checks described below.
@@ -127,7 +128,8 @@ mean that a reusable conversion-policy plan is unavailable. The snapshot does no
 bind data, authorize conversion, enforce a loss policy, validate output or permit
 arbitrary caller options, fonts or providers.
 
-### Unreleased source: strict plain DOCX policy
+<a id="unreleased-source-strict-plain-docx-policy"></a>
+### 1.6.0 profile: strict plain DOCX policy
 
 `CompileTemplateCompatibilityPlan` supports only a minimal DOCX package with one
 body paragraph, one text run and 1–40 ASCII letters or digits. Other content,
@@ -280,7 +282,7 @@ a partial report. Streams are consumed from their current positions and left ope
 inspection performs no merge. Item declarations and their collection names in the
 schema are caller data and may themselves be sensitive. Up to 4,096 declared paths, requirements, findings and
 aliases and 100,000 work items are admitted, in addition to conversion input bounds.
-The API is unreleased source, and full #171 acceptance remains open.
+The API is 1.6.0 source, and full #171 acceptance remains open.
 The [independent location observation](measurements/roadmap-138-preflight-locations-reference.json)
 checks simple body/cell field positions against source XML and confirms that a
 complex field remains unlocated; nine altered controls exercise the checker.
@@ -297,7 +299,7 @@ The [independent PDF-option observation](measurements/roadmap-138-preflight-pdf-
 compares static findings with rejected staged exports and an independently read
 successful ordinary PDF.
 
-Pending #144 source supports an inline typed child inside an admitted rich-text
+The 1.6.0 source for #144 supports an inline typed child inside an admitted rich-text
 block control. Inspect the child's `ParentId` snapshot and reacquire handles after
 each edit; parent content locks protect children, and replacing a parent containing
 children is rejected. The [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
@@ -333,9 +335,10 @@ because their targets cannot be checked reliably. Generated blocks, rows, cells,
 images and metadata consume the existing limits before commit; cancellation and
 failures leave the original session unchanged. This profile is included in 1.5.0.
 
-### Unreleased source: deeper mixed report regions
+<a id="unreleased-source-deeper-mixed-report-regions"></a>
+### 1.6.0 profile: deeper mixed report regions
 
-Pending #157 extends the same body profile to multiple nested `repeat:Path`
+The 1.6.0 #157 profile extends the same body profile to multiple nested `repeat:Path`
 regions, bounded by `TemplateOptions.MaximumDepth`, the conversion nesting limit
 and an absolute maximum of 64 control levels. Each ancestor path must differ from
 its descendant paths, and each enclosing repeat containing another block repeat
@@ -369,9 +372,10 @@ a table that does not fit fails with
 `Report.CrossTabLayout` instead of shrinking or dropping data. This conservative
 test can reject tables that a more sophisticated layout might fit.
 
-### Unreleased source: cross-tab placement
+<a id="unreleased-source-cross-tab-placement"></a>
+### 1.6.0 profile: cross-tab placement
 
-Pending #158 adds `InsertCrossTabAtBookmark(name, records, aggregation,
+The 1.6.0 #158 profile adds `InsertCrossTabAtBookmark(name, records, aggregation,
 includeTotals, token)`. It replaces one dedicated plain body bookmark paragraph
 with an editable table while retaining surrounding blocks and the target section.
 It uses the same ordering, decimal, count, totals and resource rules as `AddCrossTab`,
@@ -414,7 +418,7 @@ formatting is kept, colliding styles and list/bookmark/note/template-control IDs
 are remapped, and the destination section is used. Sections/stories, nested tables,
 history, positioned text boxes, source load warnings and
 informational diagnostics for omitted/flattened field instructions are rejected.
-Published 1.5.0 also rejects typed controls, retained chart and equation fragments; the pending
+Published 1.5.0 also rejects typed controls, retained chart and equation fragments; the 1.6.0
 source subset is described below.
 This original overload also rejects fields. Internal links must resolve
 in the fragment. Target REF/PAGEREF fields or links to the placeholder must be
@@ -423,7 +427,7 @@ unchanged on failure; repeated insertions create independent identities.
 Crossing source bookmark ranges fail, and nested ranges are limited by the
 destination's `MaximumNestingDepth`.
 
-Unreleased source also provides `InsertFragmentAtBookmarkWithOptions` and
+The 1.6.0 source also provides `InsertFragmentAtBookmarkWithOptions` and
 `InsertFragmentAtTableCellBookmarkWithOptions` with a `FragmentInsertionOptions`
 argument. `Style` defaults to `CompositionStyle.KeepSource`. The explicit
 `UseDestination` policy applies the placeholder paragraph's alignment, layout,
@@ -433,7 +437,7 @@ Source note appearance is unchanged. Detached typed-control display and code-sty
 content/placeholders cannot use this restyling policy, and both sessions remain
 unchanged on failure.
 
-Unreleased source adds `InsertFragmentAtTableCellBookmark(name, fragment, token)`
+The 1.6.0 source adds `InsertFragmentAtTableCellBookmark(name, fragment, token)`
 for a dedicated whole-paragraph bookmark inside an unmerged, single-column-span
 cell of a top-level body table. It keeps the host grid, widths and neighboring
 blocks, and admits multiple paragraphs and simple source tables. A paragraph is
@@ -464,9 +468,10 @@ destination.InsertFragmentAtTableCellBookmarkWithOptions("Terms", clause,
     new FragmentInsertionOptions { Fields = FragmentFieldHandling.AcceptCachedResults });
 ```
 
-### Unreleased source: retained objects in fragments
+<a id="unreleased-source-retained-objects-in-fragments"></a>
+### 1.6.0 profile: retained objects in fragments
 
-Pending #147 source admits the existing bounded chart and equation placements in
+The 1.6.0 source for #147 admits the existing bounded chart and equation placements in
 body and simple-cell fragment destinations. Repeated insertion gives each placement
 a new identity, preserves its admitted chart graph or equation tree and description,
 and leaves the source session unchanged. Callers can update each inserted chart or
@@ -477,9 +482,10 @@ Object-bearing fragments retain source appearance; `UseDestination` rejects them
 This increment does not qualify additional tagged, archival or native combinations;
 #147 remains open for its remaining acceptance and runtime qualification work.
 
-### Unreleased source: typed controls in fragments
+<a id="unreleased-source-typed-controls-in-fragments"></a>
+### 1.6.0 profile: typed controls in fragments
 
-Pending #147 source also accepts admitted typed-control fragments at whole-paragraph
+The 1.6.0 source for #147 also accepts admitted typed-control fragments at whole-paragraph
 body and simple-cell bookmarks, including bounded nested owners. Each insertion
 remaps control IDs and copies local XML stores to new deterministic document-local
 identities. Binding caches and their apply/write-back state are preserved; insertion
@@ -509,7 +515,7 @@ host control; attempting to insert that table-bearing fragment into a cell rejec
 without changing either document. This is a bounded source observation, not a claim
 about interactive Word editing or every composition owner.
 
-The pending source permits admitted typed controls and retained chart/equation
+The 1.6.0 source permits admitted typed controls and retained chart/equation
 objects in the same document or fragment when their paragraph owners are
 separate. Objects cannot share a paragraph with an inline, block or structural
 typed control; this protects control locks and whole-owner edits. After insertion,
@@ -525,7 +531,7 @@ local XML operations. Typed tags never execute; ordinary content/template edits
 require a detached display view. That view keeps original Unicode checkbox text;
 glyph fallback and managed underline restrictions run only at later PDF/XPS save.
 The source profile explicitly lists Word editor metadata, inactive-script bounds
-and the bounded unreleased glossary metadata subset. Richer Word-generated graphs
+and the bounded 1.6.0 glossary metadata subset. Richer Word-generated graphs
 remain rejected. Existing
 template-only loading below is unchanged.
 The implementation merged in PR #134 and is included in 1.5.0.
@@ -672,7 +678,7 @@ documented role-based style rule rather than an arbitrary Word style-catalog mer
 DOCX retains supported field tokens and refreshes plain REF/SEQ results; PDF/XPS
 refresh their supported page-dependent references after composition. Unsupported
 source features retain diagnostics. Aggregate destination resource limits apply.
-In unreleased #141 source, a destination with body, note or story content and a source must have identical
+In 1.6.0 #141 source, a destination with body, note or story content and a source must have identical
 retained bounded themes, or both have no retained theme. A conflict fails before
 the edit commits, including with `UseDestination`; an empty destination may adopt
 the source theme. Document comparison likewise rejects differing retained themes.
@@ -762,7 +768,7 @@ codes and source locations without including field names or data values. Invalid
 images, syntax or expansion fail atomically. Supported executed markers are removed;
 ordinary non-merge fields remain editable and follow the existing field profile.
 
-Pending #159 source work adds [bounded table formulas](table-formulas.md), including
+The 1.6.0 source work for #159 adds [bounded table formulas](table-formulas.md), including
 dependency-aware refresh after admitted report expansion and edits. It requires
 simple invariant numeric cells and retains all table formula caches together when
 the table or a dependency falls outside that profile. This work is not in the

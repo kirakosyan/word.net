@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and optionally run the tests mapped by the unreleased source matrix."""
+"""Validate and optionally run the tests mapped by the 1.6.0 source matrix."""
 
 import argparse
 import json
@@ -31,7 +31,7 @@ def main():
             if not any(re.search(r"\bclass\s+" + cls + r"\b", source) and re.search(r"\bvoid\s+" + method + r"\s*\(", source) for source in sources):
                 raise ValueError("Mapped test is missing: " + cls + "." + method)
             methods.add("FullyQualifiedName~WordNet.Tests." + cls + "." + method)
-    print(f"Validated {len(ids)} unreleased profiles and {len(methods)} mapped tests.", flush=True)
+    print(f"Validated {len(ids)} source profiles and {len(methods)} mapped tests.", flush=True)
     if args.run:
         subprocess.run(["dotnet", "test", str(root / "tests/wordnet.Conversion.Tests"), "-c", "Release",
                         "-f", args.framework, "--no-restore", "--filter", "|".join(sorted(methods))], cwd=root, check=True)

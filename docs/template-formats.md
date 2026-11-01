@@ -1,7 +1,8 @@
-# Unreleased source: template formats and format inspection
+<a id="unreleased-source-template-formats-and-format-inspection"></a>
+# 1.6.0 profile: template formats and format inspection
 
 Roadmap [#166](https://github.com/kirakosyan/word.net/issues/166) adds explicit
-macro-free DOTX and ODF 1.3 OTT identities in pending source. These changes are
+macro-free DOTX and ODF 1.3 OTT identities in 1.6.0 source. These changes are
 not part of the published 1.5.0 packages. They reuse the existing bounded DOCX
 and ODT content profiles; a template identity does not expand support for every
 Word or ODF feature.

@@ -96,9 +96,10 @@ These additions belong to 1.5.0; earlier 1.4.0 packages exclude them.
 See the [qualification record](roadmap-102-p6-qualification.md) and
 [release notes](releases/1.5.0.md) for exact-source and package evidence.
 
-### Unreleased source: basic preset shapes
+<a id="unreleased-source-basic-preset-shapes"></a>
+### 1.6.0 profile: basic preset shapes
 
-Pending #161 adds anchored, unrotated default `rect`, `triangle` and `diamond`
+The 1.6.0 #161 profile adds anchored, unrotated default `rect`, `triangle` and `diamond`
 presets to the existing opaque RGB fill/stroke profile. Editable DOCX retains the
 preset, original anchor and bounded alternative title and description. Ordinary
 managed PDF/XPS and SVG preview use polygon paths, with no screenshot substitution.
@@ -120,6 +121,6 @@ admits the described bounded accessible vectors. In ordinary
 Lenient/BestEffort conversion an unsupported shape may be omitted only with the
 existing `Shape.VectorUnsupported` diagnostic; strict, editable, accessible,
 native and archival output reject unsupported vectors.
-The later pending [linear-gradient profile](interoperability.md#unreleased-source-linear-gradients)
+The later 1.6.0 [linear-gradient profile](interoperability.md#unreleased-source-linear-gradients)
 admits only opaque cardinal gradients on the supported managed shapes.
 This increment is not in the published 1.5.0 package.

@@ -1,5 +1,16 @@
 # Conversion tests and qualification
 
+The [1.6.0 release notes](releases/1.6.0.md) define the current bounded milestone
+and its publication gates. The dated records below retain the source, package and
+runtime identities observed when they were written; labels such as "pending" or
+"unreleased" describe that historical state, not current package availability.
+
+The first 1.6.0 design-schema check [stopped before running tests](measurements/wordnet-1.6.0-design-initial-failure.txt)
+because `rfc8785` was absent from the local Python environment. After installing
+the pinned design-only requirements in an isolated environment, all seven
+[design checks passed](measurements/wordnet-1.6.0-design-retry.txt). This does
+not qualify runtime behavior or a package.
+
 ## Roadmap #138 fixed-profile inspection reuse
 
 Exact source `52ad9ca` passed the five-target Release rebuild, formatting, local

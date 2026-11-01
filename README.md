@@ -8,43 +8,7 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
-The current published release is [1.5.0](https://github.com/kirakosyan/word.net/releases/tag/v1.5.0). Its supported combinations are in the [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json), and bounded review and drawing support is described in the [P4/P5 profile](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p4-p5.md). Further template compatibility and feature combinations are planned in [roadmap #138](https://github.com/kirakosyan/word.net/issues/138).
-
-Pending source work includes an explicit [review display](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-detached-text-revision-display) for bounded text changes and numbered annotations; it is not part of the published 1.5.0 package.
-Unreleased source also [resolves some local DOCX theme appearance and retains selected editable text references](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md#unreleased-source-bounded-theme-appearance) while retaining explicit loss diagnostics.
-Unreleased source adds [bounded DOTX/OTT identities and format inspection](https://github.com/kirakosyan/word.net/blob/main/docs/template-formats.md); these are not part of the published 1.5.0 package.
-Pending source work also adds [bounded matrix equations](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-bounded-matrix-equations) with explicit limits and a caller-selected MATH font.
-Pending source work adds [bounded sum, product and integral expressions](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-n-ary-equations) with explicit limits and operator-size fallback diagnostics.
-Pending source work also adds [bounded table formulas](https://github.com/kirakosyan/word.net/blob/main/docs/table-formulas.md) with dependency-aware cache refresh and explicit numeric-cell limits.
-Pending source adds [non-reusable template inspection and bounded JSON schema checks](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#unreleased-source-bounded-template-inspection), with declaration fingerprints, machine-readable remediation and a local lint example, for ordinary body and bounded simple-cell merge fields and inline controls, root-repeat paths, selected repeated fields with declared single or dotted item paths, numeric positions and selected PDF option conflicts; other scopes and output checks remain unknown.
-A separate fixed-profile, in-process snapshot can recheck the same input, schema and DOCX/PDF/XPS destination before reusing an inspection; it does not authorize conversion or enforce a loss policy.
-An unreleased [bounded policy profile](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#unreleased-source-strict-plain-docx-policy) stages PDF output for a minimal single-run DOCX; a separate explicit BestEffort mode admits one location-bound theme-font loss. Template data and general policy enforcement remain open.
-Explicit refresh flags on inspected simple fields and bounded complex-field begin markers are reported as unknown, without claiming that a missing flag proves freshness.
-Pending source work permits a [diagnosed Hindi/Latin merged-table native output subset](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-hindi-merged-tables) in BestEffort and Lenient modes; strict output and right-to-left merged tables remain rejected.
-Pending source refreshes [bounded native scalar fields](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-native-scalar-fields) with explicit layout and directional-order diagnostics; strict parity remains open.
-Pending source admits [standalone equations beside native paragraphs](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-native-paragraphs-and-equations) with explicit geometry and directional-order diagnostics; notes and charts remain open.
-Pending source supports explicitly [anchor-ordered accessible text boxes](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-anchor-ordered-text-boxes) in a narrow managed body profile; notes and other owners remain open.
-Pending source also supports explicitly [described or decorative accessible vectors](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-accessible-vector-figures) at bounded body anchors.
-Pending source adds an opt-in [PDF/A-2a plus PDF/UA-1 profile](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-tagged-archival-pdf) for bounded managed documents.
-Pending source adds [local dictionary line breaking](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-local-dictionary-hyphenation) for a diagnosed, narrow managed PDF profile.
-Pending source adds [horizontal Japanese and Chinese line breaking](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-east-asian-line-breaking) for bounded managed PDF paragraphs; measured punctuation and mixed-number differences remain explicit.
-Pending source work adds an opt-in [preview layout snapshot](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-preview-layout-snapshots) for bounded managed body text, direct DOCX table-cell text and simple inline images, including unambiguous direct run identities; other owners retain explicit unavailable geometry.
-Pending source work also permits [typed block-control creation](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls.md#unreleased-source-creating-a-block-control) in empty ordinary body and simple-table-cell paragraphs.
-Pending source work retains [direct and inherited whole-table borders, used implicit defaults, bounded conditional cell shading and selected conditional borders](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md#unreleased-source-direct-table-borders), including selected editable theme references. Implicit default-style rendering, theme-color differences, non-unit bands and broader shading and border parity remain open.
-Pending source corrects [plain fixed DOCX table margins and trailing geometry](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md#unreleased-source-plain-fixed-table-geometry), including partial margins and bounded uniform borders on small grids; broader border geometry retains measured differences.
-Pending source also admits [bounded nested, plain-story and single-row/cell typed-control owners](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls.md#unreleased-source-a-bounded-nested-owner); broader nesting, stories and repeated-row ownership remain open.
-Pending source permits [bounded typed-control and chart/equation fragments](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#unreleased-source-typed-controls-in-fragments), including combinations in separate protected owners, with independent identities and explicit limits.
-Pending source also places [prepared cross-tabs at dedicated body or fixed-grid cell bookmarks](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#unreleased-source-cross-tab-placement), with explicit width, margin and reference checks.
-Pending source extends [mixed body report regions](https://github.com/kirakosyan/word.net/blob/main/docs/editing-and-templates.md#unreleased-source-deeper-mixed-report-regions) to bounded nesting, with per-region reference checks and aggregate work limits.
-Pending source adds [diagnosed clustered horizontal bars](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-clustered-horizontal-bars); the measured plot-position difference remains open.
-Pending source also adds [diagnosed stacked bars and columns](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-stacked-bars-and-columns) with separate positive and negative stacks; reference-position differences remain open.
-Pending source adds [bounded chart point labels](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-chart-point-labels) for bars, columns and circular slices, with explicit fit and reference-position diagnostics.
-Pending source adds [diagnosed pie and doughnut charts](https://github.com/kirakosyan/word.net/blob/main/docs/p2-objects-typography.md#unreleased-source-circular-charts) with explicit slice colours and bounded vector sectors.
-Pending source retains [basic rectangle, triangle and diamond presets](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes) as editable drawings and managed vectors; groups and adjustments remain open.
-Pending source adds [diagnosed general-angle text boxes](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-general-angle-text-boxes), including bounded links and inline images; independent text-position differences remain open.
-Pending source preserves [bounded cardinal linear gradients](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md#unreleased-source-linear-gradients) on admitted managed vector shapes; other angles and transparency remain open.
-Pending source work adds [comparison selection](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-comparison-selection) for ordinary story text and run formatting.
-Pending source work adds [bounded paragraph-format revisions](https://github.com/kirakosyan/word.net/blob/main/docs/review-workflows.md#unreleased-source-paragraph-format-revisions) for ordinary body and simple-cell comparison.
+This source and package target 1.6.0. The [release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.0.md) and [tested source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) describe the admitted feature profiles and their limits. The NuGet badge and [releases](https://github.com/kirakosyan/word.net/releases) show published availability. [Roadmap #138](https://github.com/kirakosyan/word.net/issues/138) remains open for broader combinations and qualification.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.
@@ -81,7 +45,17 @@ dotnet add package wordnet.Ocr
 This provider also supplies PNG previews and optional native typography. English OCR additionally requires a local Tesseract 5 library and `eng.traineddata`.
 See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md) and [deployment requirements](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md).
 
-## New in 1.5.0
+## New in 1.6.0
+
+- Bounded DOCX theme/table handling, typed-control ownership and creation, and selected fragment composition.
+- Explicit review displays and comparison options, deeper bounded reports, cross-tab placement and conservative table formulas.
+- Selected chart, vector, text-box and equation extensions with diagnostics for known reference differences.
+- Bounded typography, accessible and tagged archival output profiles, DOTX/OTT identities and preview-layout inspection.
+- Template inspection and a narrow in-process DOCX-to-PDF policy plan; general policy enforcement remains open.
+
+These are bounded profiles, not blanket support for arbitrary combinations. See the [1.6.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.0.md), [source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) and linked feature profiles before adopting them. Use matching versions of all three packages.
+
+## Previous: 1.5.0
 
 - Improved DOCX defaults, paragraph marks, managed table sizing and footnote layout.
 - Typed custom-property fields, deterministic numeric/date pictures, bounded nested IF fields and STYLEREF running headers.
@@ -90,12 +64,7 @@ See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/
 - Bounded formatting revisions, whole-paragraph moves, matching-section comparison and header/footer text revisions.
 - Quarter-turn and shrink-to-fit text boxes, linked box chains and editable line, ellipse and rounded-rectangle shapes.
 
-See the [1.5.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json) for migration guidance and supported combinations. Drawing extensions require ordinary managed fixed output; tagged/archive PDF and native typography combinations remain outside that profile. Use matching versions of all three packages.
-
-Unreleased roadmap #138 source work adds bounded glossary metadata preservation and
-an explicit simple table-cell fragment destination. See the
-[implementation status](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md)
-for their remaining limits; these changes are not in the published 1.5.0 packages.
+See the [1.5.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json) for migration guidance and supported combinations. The 1.5.0 drawing extensions require ordinary managed fixed output; tagged/archive PDF and native typography combinations remain outside that earlier profile. Use matching versions of all three packages.
 
 ## Quick start
 
@@ -293,9 +262,9 @@ Linux requires Tesseract, fontconfig and the documented fonts. Run Framework tes
 | [Diagnostics](https://github.com/kirakosyan/word.net/blob/main/docs/diagnostics.md) | Fidelity reports and preflight remediation |
 | [Testing](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) | Build/test setup, independent validation and platform evidence |
 | [Comparison harness](https://github.com/kirakosyan/word.net/blob/main/docs/comparison.md) | Reproducible corpus and optional licensed reference comparisons |
-| [Initial 1.5.0 fidelity measurements](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-138-initial.md) | Current-source/public-package measurements, retained failures and outstanding controls |
+| [Initial 1.5.0 fidelity measurements](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-138-initial.md) | Released-source/public-package measurements, retained failures and outstanding controls |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Delivered work and remaining scope |
-| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) | Published packages and exact-artifact evidence |
+| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.0.md) | Version scope, qualification and publication gates |
 | [Release procedure](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) | Package qualification and manual publishing |
 | [Contributing](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md) | Engineering and validation requirements |
 

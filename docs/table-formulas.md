@@ -1,6 +1,7 @@
-# Unreleased source: bounded table formulas
+<a id="unreleased-source-bounded-table-formulas"></a>
+# 1.6.0 profile: bounded table formulas
 
-This profile is pending source work for [#159](https://github.com/kirakosyan/word.net/issues/159).
+This profile is 1.6.0 source work for [#159](https://github.com/kirakosyan/word.net/issues/159).
 It is not part of the published 1.5.0 packages. Exact source, runtime and package
 qualification remain separate; the issue remains open until its remaining criteria
 and merged evidence are reconciled.

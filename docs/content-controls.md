@@ -14,9 +14,10 @@ one owner-authorized batch; its bounded profile is included in 1.5.0. The [desig
 and [acceptance map](content-controls-acceptance.json) describe the contract and
 independent gates. The [review qualification receipt](measurements/roadmap-102-p2-review.json) and [initial receipt](measurements/roadmap-102-p2.json) record historical local execution. Final release and runtime evidence is recorded separately in the [release record](releases/1.5.0.md).
 
-## Unreleased source: bounded glossary metadata
+<a id="unreleased-source-bounded-glossary-metadata"></a>
+## 1.6.0 profile: bounded glossary metadata
 
-The pending source work for #143 preserves a static glossary category with a
+The 1.6.0 source work for #143 preserves a static glossary category with a
 bounded name and `default` or `placeholder` gallery on the existing admitted
 placeholder entries. It also admits up to four relationships from the glossary part
 to `word/glossary/styles.xml`, `word/glossary/settings.xml`,
@@ -33,7 +34,7 @@ duplicate, dangling, external, nested, active or unknown relationships and
 unlisted metadata fail explicitly.
 The font flag is preserved as metadata; it does not embed, execute or fetch a font.
 An authored list control whose named glossary entry is absent remains unsupported.
-Unreleased source can resolve a bounded main-document character-style chain in a
+The 1.6.0 source can resolve a bounded main-document character-style chain in a
 control run, including the Word-authored date-placeholder example. Its resolved
 appearance is materialized and `Control.CharacterStyle` reports that editable
 character-style identity is lost; Strict mode rejects the loss. Missing, cyclic,
@@ -49,9 +50,10 @@ resource graph and template combination required by #143, which remains open.
 Published 1.5.0 retains the earlier rejection below; ordinary loading remains
 separate from opt-in typed preservation.
 
-## Unreleased source: a bounded nested owner
+<a id="unreleased-source-a-bounded-nested-owner"></a>
+## 1.6.0 profile: a bounded nested owner
 
-Pending #144 source admits inline typed children inside ordinary paragraphs of
+The 1.6.0 source for #144 admits inline typed children inside ordinary paragraphs of
 a block rich-text control in the body or an otherwise admitted simple table
 cell. The parent must not be showing a placeholder or have a local XML binding.
 All six existing child kinds retain their explicit values, local placeholders,
@@ -77,9 +79,10 @@ nested and table-wrapped header/footer or other story owners, repeated report ro
 composition remain outside this subset. #144 remains open. Ordinary loading is
 unchanged and does not create typed owners.
 
-## Unreleased source: plain header and footer owners
+<a id="unreleased-source-plain-header-and-footer-owners"></a>
+## 1.6.0 profile: plain header and footer owners
 
-Pending #144 also admits an inline typed control in a top-level plain header/footer
+The 1.6.0 #144 profile also admits an inline typed control in a top-level plain header/footer
 paragraph or a block typed control containing ordinary paragraphs directly in a
 header/footer. The six existing kinds, locks, placeholders and explicit local XML
 bindings use the same bounded rules as body owners. IDs are unique across the body
@@ -99,9 +102,10 @@ pages, not Word execution or universal geometry. Table-wrapped or nested story
 controls, notes, comments, text boxes and typed-control composition remain outside
 this increment; #144 remains open.
 
-## Unreleased source: single row and cell wrappers
+<a id="unreleased-source-single-row-and-cell-wrappers"></a>
+## 1.6.0 profile: single row and cell wrappers
 
-Pending #144 source preserves an unbound, non-placeholder rich-text control around
+The 1.6.0 source for #144 preserves an unbound, non-placeholder rich-text control around
 one row or one cell of a top-level body table. A wrapped row contains ordinary
 cells with one paragraph each; a wrapped cell contains one ordinary paragraph.
 An explicit cell width must be a valid absolute or percentage width; automatic
@@ -121,9 +125,10 @@ and LibreOffice observations check selected text and relative cell positions.
 They do not establish live Word execution, structural editing, nested controls or
 repeated report-row identity. #144 remains open.
 
-## Unreleased source: creating an inline control
+<a id="unreleased-source-creating-an-inline-control"></a>
+## 1.6.0 profile: creating an inline control
 
-Pending #145 adds immutable `ContentControlDefinition` inputs and
+The 1.6.0 #145 profile adds immutable `ContentControlDefinition` inputs and
 `InsertContentControl(paragraphIndex, offset, definition)` for an ordinary unstyled
 body or simple-table-cell paragraph. The index follows the current `Paragraphs`
 snapshot; the offset counts UTF-16 code units and must not split a Unicode scalar.
@@ -154,12 +159,13 @@ Creation rejects paragraphs with other controls, fields, links, bookmarks, objec
 lists or structural breaks, along with styled paragraphs, repeated rows, merged or
 nested tables, text boxes and story owners. The inline operation does not create
 block controls or introduce a new local XML store. Template composition and broader
-placement remain open in #145 and #147. A separate pending [fragment profile](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+placement remain open in #145 and #147. A separate 1.6.0 [fragment profile](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 admits independently identified copies of created or imported controls and local bindings.
 
-## Unreleased source: creating a block control
+<a id="unreleased-source-creating-a-block-control"></a>
+## 1.6.0 profile: creating a block control
 
-Pending #145 source also adds `InsertBlockContentControl(paragraphIndex, definition)`.
+The 1.6.0 source for #145 also adds `InsertBlockContentControl(paragraphIndex, definition)`.
 It replaces one empty, unstyled top-level body paragraph with an admitted typed
 block wrapper, sets the definition's initial value, and returns a fresh handle.
 All six kinds use the same value, lock and existing-local-binding policies as inline
@@ -193,9 +199,10 @@ checks independently authored inputs, output schemas, reference text and protect
 owners. Story block creation, broader owners and full #145 qualification remain open; this source
 increment is not part of the published 1.5.0 packages.
 
-## Unreleased source: removing an admitted control
+<a id="unreleased-source-removing-an-admitted-control"></a>
+## 1.6.0 profile: removing an admitted control
 
-Pending #145 adds `RemoveControl(handle, preserveContent: true)` for admitted
+The 1.6.0 #145 profile adds `RemoveControl(handle, preserveContent: true)` for admitted
 typed owners. By default it removes the wrapper and keeps its current text and
 run formatting. Passing `false` removes the control's text as well; a block owner
 retains an empty paragraph shell so that its cell, story or section stays valid.
@@ -257,7 +264,7 @@ Missing IDs are assigned deterministically after reserving all explicit IDs;
 duplicate IDs fail. Tags/aliases may repeat. Metadata title/author/custom-property
 edits preserve controls. Ordinary content edits, Replace, bookmarks, Append,
 Merge/MergeJson, document comparison and retained review combinations reject while typed controls
-are retained. Pending source permits admitted charts and equations in separate
+are retained. The 1.6.0 source permits admitted charts and equations in separate
 paragraph owners, with object and typed-control edits subject to their own locks.
 Merge rejects before evaluating caller data getters/JSON. Use an
 explicit display view for subsequent ordinary editing; no typed tag is promoted
@@ -266,13 +273,13 @@ into executable template syntax.
 ## Kinds and owners
 
 The published profile has inline owners in an ordinary body/table-cell paragraph,
-or block owners containing ordinary body/cell paragraphs. The unreleased story
+or block owners containing ordinary body/cell paragraphs. The 1.6.0 story
 increment above adds bounded plain header/footer owners. A containing table is outside
 ordinary paragraph controls; the separate structural profile above admits a row or
 cell wrapper. Scalar controls have one formatting set and at most one paragraph;
 checkbox content, including placeholders, is one character. No row/cell/table
-wrappers except the unreleased subset above; no notes, boxes, section changes, or nested controls except for the
-unreleased subset above; no embedded
+wrappers except the 1.6.0 subset above; no notes, boxes, section changes, or nested controls except for the
+1.6.0 subset above; no embedded
 objects or retained history inside a control. Crossing or enclosing field/bookmark
 ranges fail; independent fields/bookmarks wholly outside owners are retained. A
 closed body/cell bookmark immediately preceding a block control can be attached
@@ -331,7 +338,7 @@ cache. Scalar placeholder formatting/size must fit its kind. Showing a placehold
 clears a typed date/selection; it cannot be written back as a value.
 
 **Published 1.5.0 rejects Word-generated glossaries** when they include `w:category`
-or their own styles/settings/fontTable/webSettings relationships. The unreleased
+or their own styles/settings/fontTable/webSettings relationships. The 1.6.0
 source subset above admits only the specified inert structures; richer parts are not
 silently discarded. Default Word placeholder/template files can require additional
 qualification beyond this subset.

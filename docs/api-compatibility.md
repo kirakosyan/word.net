@@ -1,8 +1,9 @@
 # API and support policy
 
-## Unreleased roadmap #138 API work
+<a id="unreleased-roadmap-138-api-work"></a>
+## 1.6.0 roadmap #138 API work
 
-Pending #171 adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
+The 1.6.0 #171 profile adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
 and privacy-safe `TemplateInspection` snapshots. Its ordinary-body and bounded
 simple-cell field and inline-control, including beside repeats, and plain root-repeat path scope and
 explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
@@ -32,7 +33,7 @@ permit only fixed-profile in-process reuse of the immutable inspection after che
 input, schema, destination and environment fingerprints. An additive overload selects
 DOCX, PDF or XPS as the inspected destination; the original overload selects DOCX. The underlying report still cannot
 independently authorize reuse of a conversion policy, and no output or loss policy is
-enforced. The module fingerprint is not binary attestation. These APIs are unreleased
+enforced. The module fingerprint is not binary attestation. These APIs are part of the 1.6.0 source
 and are not in published 1.5.0.
 
 The additive `CompileTemplateCompatibilityPlan`, `TemplateCompatibilityPlan`,
@@ -45,7 +46,7 @@ selects Strict or BestEffort PDF output; BestEffort admits the documented exact
 theme-font loss only with its location-bound permission. General loss permissions,
 template data and portable execution are not implemented.
 
-The pending #144 source adds the nullable `DocumentContentControl.ParentId`
+The 1.6.0 source for #144 adds the nullable `DocumentContentControl.ParentId`
 snapshot property for admitted nested typed owners. This additive property does
 not change existing constructor or method signatures; handles retain their
 session/version rules. See the [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
@@ -58,90 +59,90 @@ detached `DocumentReviewDisplay` with immutable revision metadata and explicit
 managed PDF/SVG output. `ReviewAnnotationPolicy.NumberedEndNotes` opts into
 numbered comments, format changes and paired move indicators. See the [fragment](editing-and-templates.md) and
 [review](review-workflows.md#unreleased-source-detached-text-revision-display)
-profiles for bounds and exclusions. These signatures are pending source work,
+profiles for bounds and exclusions. These signatures are 1.6.0 source work,
 not part of the published 1.5.0 API; exact-framework and package qualification
 are reported separately.
 
-Pending #147 broadens existing fragment methods to admit the separately documented
+The 1.6.0 #147 profile broadens existing fragment methods to admit the separately documented
 [typed-control](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 and [chart/equation](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
 profiles, including mixed fragments with separate owners and bounded local glossary
 copying, without adding signatures.
 Protected-owner and resource failures remain explicit.
 
-Pending #158 adds `WordDocument.InsertCrossTabAtBookmark` and
+The 1.6.0 #158 profile adds `WordDocument.InsertCrossTabAtBookmark` and
 `WordDocument.InsertCrossTabAtCellBookmark` on all target frameworks. They use
 the existing prepared-record and aggregation types; the released append API is
 unchanged. Cell placement requires fixed geometry and explicit physical margins.
 
-Pending #163 adds `ChartKind.ClusteredBar` without changing existing enum values
+The 1.6.0 #163 profile adds `ChartKind.ClusteredBar` without changing existing enum values
 or chart constructors. It uses the existing immutable chart and report-binding
 APIs; its managed rendering approximation and profile restrictions are explicit.
 The later source appends `ChartKind.StackedColumn` and `ChartKind.StackedBar`,
 with independently accumulated positive and negative values and explicit
 reference-layout diagnostics; existing enum values and constructors remain intact.
-The pending `ChartDataLabels` enum and immutable `ChartDefinition.WithDataLabels`
+The 1.6.0 `ChartDataLabels` enum and immutable `ChartDefinition.WithDataLabels`
 snapshot select bounded centred bar, column and circular-slice labels without changing the existing
 constructor. Prepared-data binding preserves this selection and rejects retained
 appearances it cannot preserve.
-The pending `ChartKind.Pie` and `Doughnut` values are appended after the existing
+The 1.6.0 `ChartKind.Pie` and `Doughnut` values are appended after the existing
 values; `ChartSlice` and `ChartDefinition.CreateCircular` add immutable explicit
 slice data without changing the original constructor. `SliceColors` exposes an
 immutable snapshot, and prepared-data binding requires a matching slice count.
 
-Pending #153 admits a bounded standalone-equation/native-paragraph combination
+The 1.6.0 #153 profile admits a bounded standalone-equation/native-paragraph combination
 through the existing options and math-font APIs. It adds diagnostics but no public
 signatures; notes, charts, mixed inline owners and conformance combinations remain open.
 
-Pending #154 adds `PdfTextBoxReadingOrder` and `PdfOptions.TextBoxReadingOrder`.
+The 1.6.0 #154 profile adds `PdfTextBoxReadingOrder` and `PdfOptions.TextBoxReadingOrder`.
 The default rejects or diagnoses text boxes as before; `AnchorOrder` explicitly
 opts into the bounded source-order profile on all target frameworks.
 
-Pending #155 adds `PdfVectorSemantics` and `PdfOptions.VectorSemantics`. Its
+The 1.6.0 #155 profile adds `PdfVectorSemantics` and `PdfOptions.VectorSemantics`. Its
 default is `Reject`; callers can explicitly select described figures or
 decorative vector artifacts in the bounded managed accessible-PDF profile.
 
-Pending #156 appends `PdfConformance.PdfA2a` without changing existing values or
+The 1.6.0 #156 profile appends `PdfConformance.PdfA2a` without changing existing values or
 defaults. It requires the explicit `PdfAccessibility.PdfUa1` semantic profile.
 
-Pending #164 adds `HyphenationLexicon`, `HyphenationOptions` and the additive
+The 1.6.0 #164 profile adds `HyphenationLexicon`, `HyphenationOptions` and the additive
 `ConversionOptions.Hyphenation` property. A null dictionary preserves default
 layout; the initial one-page managed PDF profile reports its search-geometry loss.
 
-Pending #165 appends `EastAsianLineBreakLanguage` and
+The 1.6.0 #165 profile appends `EastAsianLineBreakLanguage` and
 `TypographyOptions.EastAsianLineBreak`. The default `None` retains the existing
 layout; invalid selections and unqualified native combinations reject explicitly.
 
-Pending #161 adds three default vector preset geometries using existing conversion
+The 1.6.0 #161 profile adds three default vector preset geometries using existing conversion
 and session methods, without new public signatures. It also diagnoses loss of
 their authored alternatives and vector titles; existing API shapes remain intact.
 
-Pending #160 expands the existing text-box conversion paths without adding public
+The 1.6.0 #160 profile expands the existing text-box conversion paths without adding public
 signatures or runtime dependencies. New independently observed layout differences
 are surfaced through existing fidelity modes and diagnostics.
 
-Pending #162 extends the existing DOCX and managed conversion paths with bounded
+The 1.6.0 #162 profile extends the existing DOCX and managed conversion paths with bounded
 linear gradient paints. It adds no public signatures or new runtime dependencies;
 other gradient geometries, transparency and conformance combinations stay outside
 the admitted profile.
 
-The pending #168 source API appends `EquationKind.Matrix` and adds immutable
+The 1.6.0 source for #168 API appends `EquationKind.Matrix` and adds immutable
 `EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
 Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
 records the bounds, geometry, unsupported variants and separate qualification status.
 
-The pending #169 API appends `EquationKind.Nary` and adds `EquationExpression.Nary`,
+The 1.6.0 API for #169 appends `EquationKind.Nary` and adds `EquationExpression.Nary`,
 `EquationNaryOperator` and `EquationLimitPlacement`; existing expression factories
 and enum values remain unchanged. See the [n-ary profile](p2-objects-typography.md#unreleased-source-n-ary-equations).
 
-The pending [#159 table-field profile](table-formulas.md) changes bounded field
+The 1.6.0 [#159 table-field profile](table-formulas.md) changes bounded field
 evaluation without adding a public API. Its deterministic culture, cached-result
 fallback and per-table limits are part of the documented behavior; it is not yet
 available in the published 1.5.0 packages.
 
-Pending #150 adds default-enabled `ComparisonOptions.CompareStoryText` and
+The 1.6.0 #150 profile adds default-enabled `ComparisonOptions.CompareStoryText` and
 `CompareRunFormatting` switches. See the [selection profile](review-workflows.md#unreleased-source-comparison-selection)
-for original-value retention. The same pending source adds
+for original-value retention. The same 1.6.0 source adds
 `CompareParagraphFormatting` and bounded [paragraph-format revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
 
 ## 1.5.0 roadmap #102 delivery
@@ -245,13 +246,13 @@ remote service, publishing credential or repository checkout is required there.
 
 ## Bucket 4 additive API
 
-Unreleased #145 source adds the provider-neutral `WordDocument.InsertBlockContentControl`
+The 1.6.0 source for #145 adds the provider-neutral `WordDocument.InsertBlockContentControl`
 for an empty ordinary body paragraph and `InsertBlockContentControlInTableCell` for
 an empty simple-cell paragraph; it keeps the existing inline creation API.
 See the [bounded block profile](content-controls.md#unreleased-source-creating-a-block-control);
 it is not in published 1.5.0 packages.
 
-Unreleased #167 source adds `PreviewOptions.Layout` and immutable preview-layout
+The 1.6.0 source for #167 adds `PreviewOptions.Layout` and immutable preview-layout
 snapshot types. The additive `LayoutFragment.CellSource`, `ObjectSource` and
 `RunSource` identify bounded DOCX cell, inline-drawing and unambiguous text-run
 owners when available. They expose no provider or model types; text is

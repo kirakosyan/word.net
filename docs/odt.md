@@ -1,6 +1,6 @@
 # DOCX and ODT exchange
 
-Unreleased #166 source adds bounded ODT/OTT document sessions and selected
+The 1.6.0 source for #166 adds bounded ODT/OTT document sessions and selected
 template-format directions; see the [template-format profile](template-formats.md).
 The release profile below describes published 1.5.0 behavior.
 

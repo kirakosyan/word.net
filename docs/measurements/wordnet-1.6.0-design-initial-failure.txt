@@ -1,0 +1,1 @@
+Initial design-schema check: python3 eng/test-template-plan-design.py exited 1 before running tests because Python could not import rfc8785. The repository pins rfc8785==0.1.4 and jsonschema==4.26.0 in eng/template-plan-requirements.txt.

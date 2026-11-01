@@ -1,18 +1,19 @@
 # wordnet implementation and delivery status
 
-## Roadmap #138 — planned compatibility and combinations
+## Roadmap #138 — 1.6.0 milestone and remaining combinations
 
 The [roadmap](https://github.com/kirakosyan/word.net/issues/138) tracks the next
 35 scoped issues, beginning with a fresh 1.5.0 fidelity baseline and release wording.
 They remain open until their individual acceptance and reconciliation gates are met.
-Their planned support does not change the published [1.5.0 capability matrix](roadmap-102-capability-matrix.json).
-Source implementation, exact-runtime qualification and public package availability
-are separate facts; publication is outside this roadmap's implementation request.
+Their broader acceptance does not change the historical [1.5.0 capability matrix](roadmap-102-capability-matrix.json).
+The [1.6.0 milestone](releases/1.6.0.md) packages selected bounded profiles while
+leaving the remaining roadmap work open. Source implementation, exact-runtime
+qualification and public package availability remain separate facts.
 
 The proposed [compatibility-plan and loss-policy contract](template-compatibility-plan-design.md)
 is a design and executable schema example for #170. General #171 compilation and
 #172 enforcement and independent outcome evidence remain open.
-Pending #171 adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
+The 1.6.0 #171 profile adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
 for declared ordinary body and bounded simple-cell merge fields and inline controls,
 including beside repeats, plain root-repeat paths and selected repeated fields with
 declared single or dotted item paths or unknown fallback scope, with optional numeric positions and selected static PDF option conflicts.
@@ -45,16 +46,16 @@ their unchanged failures and the limits of attributing the original difference.
 check output schemas and source/package text, geometry and raster equality.
 #139 remains incomplete until its additional feature controls and requested
 combination evidence are delivered.
-The pending #140 documentation reconciliation distinguishes current 1.5.0 support
+The #140 documentation reconciliation distinguishes the historical 1.5.0 support
 from historical design and test claims. Its [audit receipt](measurements/roadmap-138-documentation-audit.json)
 records the checked public versions, release provenance and local link review; the
 issue remains open until the merged result is reconciled.
-Unreleased #141 work resolves a bounded subset of local theme text appearance and
+The 1.6.0 work for #141 resolves a bounded subset of local theme text appearance and
 retains selected editable text references in a reconstructed theme, with loss
 diagnostics for the remaining theme semantics. The
 [fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
 records its remaining script, drawing and style-precedence work.
-Pending #142 source retains bounded [direct and inherited whole-table borders and clear shading](document-fidelity.md#unreleased-source-direct-table-borders),
+The 1.6.0 source for #142 retains bounded [direct and inherited whole-table borders and clear shading](document-fidelity.md#unreleased-source-direct-table-borders),
 with editable DOCX style chains and bounded row, column, corner and single-width
 band shading, plus editable bounded band sizes and explicit losses for
 unqualified rendering, conflicts and pagination. Used implicit defaults remain
@@ -70,7 +71,7 @@ Conditional theme fills retain bounded editable references and fallback values,
 while independent static rendering differences remain explicit. Selected
 conditional outer edges and their editable style metadata are retained, with
 unqualified inheritance and border conflicts reported.
-Pending source work on #143 preserves bounded glossary categories and selected inert
+The 1.6.0 source work on #143 preserves bounded glossary categories and selected inert
 local resource relationships, including `notTrueType` font metadata and additional
 Word-authored rich-text, plain-text and date control derivatives. A bounded main
 character-style chain can be materialized in non-strict mode with an explicit loss;
@@ -78,23 +79,23 @@ its editable style identity remains unqualified.
 The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
 records its subset, diagnostics and the broader control and resource evidence still
 required before the leaf can be accepted.
-Pending #144 source admits a bounded inline child within an ordinary block
+The 1.6.0 source for #144 admits a bounded inline child within an ordinary block
 rich-text control, including simple body-table cells, with parent/child lock,
 identity and binding checks. The [owner profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
 and [plain story profile](content-controls.md#unreleased-source-plain-header-and-footer-owners)
 record bounded header/footer owners. A [structural profile](content-controls.md#unreleased-source-single-row-and-cell-wrappers)
 also preserves a read-only single row or cell wrapper. Remaining nesting,
 structural editing and repeated-row work keep #144 open.
-Unreleased #145 source adds bounded inline control creation and explicit wrapper
+The 1.6.0 source for #145 adds bounded inline control creation and explicit wrapper
 removal, with initial values, existing local bindings and lock/resource rules.
 It also creates typed blocks in [empty ordinary body and simple-cell paragraphs](content-controls.md#unreleased-source-creating-a-block-control),
 with collision-safe IDs across typed and retained template controls. Story block
 creation, broader composition and qualification remain open; see the [inline profile](content-controls.md#unreleased-source-creating-an-inline-control)
 and [removal profile](content-controls.md#unreleased-source-removing-an-admitted-control).
-Unreleased #146 work adds an explicit simple body-table-cell destination and an
+The 1.6.0 work for #146 adds an explicit simple body-table-cell destination and an
 opt-in subset of field-bearing fragments. The remaining field scope, acceptance
 and independent qualification criteria stay open.
-Pending #147 adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+The 1.6.0 #147 profile adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
 and [typed-control fragments](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 with independent identities and subsequent editing in body and simple-cell destinations.
 Created cell blocks inside a table also have a checked body-fragment composition;
@@ -102,58 +103,58 @@ the corresponding table-bearing cell destination remains rejected.
 Mixed control/object fragments require separate paragraph owners. Admitted local
 glossary resources can be copied when their kinds do not conflict; broader resource
 merging and combination evidence remain open.
-Pending #158 adds bounded [body and fixed-grid cell bookmark placement](editing-and-templates.md#unreleased-source-cross-tab-placement).
+The 1.6.0 #158 profile adds bounded [body and fixed-grid cell bookmark placement](editing-and-templates.md#unreleased-source-cross-tab-placement).
 Other cell geometry, nested header repetition, repeat-region placement and full
 acceptance remain open.
-Pending #157 adds [bounded deeper mixed body regions](editing-and-templates.md#unreleased-source-deeper-mixed-report-regions)
+The 1.6.0 #157 profile adds [bounded deeper mixed body regions](editing-and-templates.md#unreleased-source-deeper-mixed-report-regions)
 with aggregate work and per-boundary reference checks. Other owners, broader
 combinations and exact-runtime/integrated qualification remain open.
-Unreleased #148 work adds a detached managed PDF/SVG display of bounded body and
+The 1.6.0 work for #148 adds a detached managed PDF/SVG display of bounded body and
 cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
 and remaining acceptance/runtime qualification are separate from published 1.5.0.
-Unreleased #149 work adds an explicit numbered annotation policy for supported
+The 1.6.0 work for #149 adds an explicit numbered annotation policy for supported
 classic comments, format changes and paired paragraph moves. The issue remains
 open pending complete independent and exact-runtime qualification.
-Pending #150 adds [comparison selection](review-workflows.md#unreleased-source-comparison-selection)
+The 1.6.0 #150 profile adds [comparison selection](review-workflows.md#unreleased-source-comparison-selection)
 for admitted story text and run-format changes, plus [bounded paragraph-property
 revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
 Structural combinations and broader story/format categories remain open.
-Pending #151 source admits a diagnosed [Hindi/Latin merged-table subset](p2-objects-typography.md#unreleased-source-hindi-merged-tables)
+The 1.6.0 source for #151 admits a diagnosed [Hindi/Latin merged-table subset](p2-objects-typography.md#unreleased-source-hindi-merged-tables)
 only in BestEffort and Lenient native output. Right-to-left merged tables, strict
 row-spacing parity and tagged/archive combinations remain open.
-Pending #152 [native scalar-field display](p2-objects-typography.md#unreleased-source-native-scalar-fields)
+The 1.6.0 [native scalar-field display](p2-objects-typography.md#unreleased-source-native-scalar-fields)
 refreshes bounded values before shaping in BestEffort/Lenient, with diagnosed
 vertical and directional differences. Lists, tabs, controls, reference fields,
 strict parity and conformance combinations remain open.
-Pending #153 admits [standalone equations beside native paragraphs](p2-objects-typography.md#unreleased-source-native-paragraphs-and-equations)
+The 1.6.0 #153 profile admits [standalone equations beside native paragraphs](p2-objects-typography.md#unreleased-source-native-paragraphs-and-equations)
 with diagnosed reference differences. Notes, charts, mixed owners and full
 independent geometry and directional parity remain open.
-Pending #154 adds explicitly [anchor-ordered accessible text boxes](interoperability.md#unreleased-source-anchor-ordered-text-boxes)
+The 1.6.0 #154 profile adds explicitly [anchor-ordered accessible text boxes](interoperability.md#unreleased-source-anchor-ordered-text-boxes)
 for a narrow ordinary-body profile. Notes, alternate text semantics, other owners,
 placement, native typography and complete independent qualification remain open.
-Pending #155 adds explicitly [described or decorative vector semantics](interoperability.md#unreleased-source-accessible-vector-figures)
+The 1.6.0 #155 profile adds explicitly [described or decorative vector semantics](interoperability.md#unreleased-source-accessible-vector-figures)
 for a bounded managed body-anchor profile. Arbitrary drawings, native and broader archival
 combinations, screen-reader behavior and full acceptance remain open.
-Pending #156 combines [tagged PDF/A-2a and PDF/UA-1](interoperability.md#unreleased-source-tagged-archival-pdf)
+The 1.6.0 #156 profile combines [tagged PDF/A-2a and PDF/UA-1](interoperability.md#unreleased-source-tagged-archival-pdf)
 for independently checked managed body, box, vector and object cases. Notes,
 mixed positioned drawings and chart/equation objects, native output and full
 cross-feature/runtime acceptance remain open.
-Pending #159 adds a conservative [table formula profile](table-formulas.md) with
+The 1.6.0 #159 profile adds a conservative [table formula profile](table-formulas.md) with
 dependency-ordered, table-atomic cache refresh and literal percentage pictures.
 Blank, text, merged and other unsupported cell combinations retain their caches;
 broader compatibility and exact-runtime/package qualification remain open.
-Pending #160 retains [general-angle editable text boxes](interoperability.md#unreleased-source-general-angle-text-boxes)
+The 1.6.0 #160 profile retains [general-angle editable text boxes](interoperability.md#unreleased-source-general-angle-text-boxes)
 with managed vector output, bounded inline images and links. Independent office text
 and link placement differ, so Strict rejects the newly admitted cases and non-strict
 output reports the loss. Flips, upright text and other combinations remain open.
-Pending #161 adds [default rectangle, triangle and diamond presets](roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes)
+The 1.6.0 #161 profile adds [default rectangle, triangle and diamond presets](roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes)
 with independently checked managed vectors. Arrows, group membership, transforms,
 and broader non-DOCX alternative semantics remain open.
-Pending #162 preserves [cardinal opaque linear gradients](interoperability.md#unreleased-source-linear-gradients)
+The 1.6.0 #162 profile preserves [cardinal opaque linear gradients](interoperability.md#unreleased-source-linear-gradients)
 on admitted managed vector shapes. Other angles, alpha, groups, effects and
 tagged/archive/native output remain open; the remapped-theme reference color
 difference is diagnosed and exact hosted qualification is separate.
-Pending #163 adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
+The 1.6.0 #163 profile adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
 The later [stacked-bar and column profile](p2-objects-typography.md#unreleased-source-stacked-bars-and-columns)
 retains separate signed totals but diagnoses independent reference-position differences.
 The later [point-label profile](p2-objects-typography.md#unreleased-source-chart-point-labels)
@@ -163,31 +164,31 @@ The [circular-chart profile](p2-objects-typography.md#unreleased-source-circular
 adds diagnosed single-series pie and doughnut vectors. Reference plot and label
 failures, other circular and label forms and
 native/tagged/archive qualification remain open.
-Pending #164 adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
+The 1.6.0 #164 profile adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
 in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.
 The measured search-highlight and justified-reference differences, soft hyphens,
 native/accessible text, other owners and full acceptance remain open.
-Pending #165 adds [bounded East Asian line breaking](interoperability.md#unreleased-source-east-asian-line-breaking)
+The 1.6.0 #165 profile adds [bounded East Asian line breaking](interoperability.md#unreleased-source-east-asian-line-breaking)
 with Unicode 17 conformance data, explicit language selection and caller font coverage.
 Japanese punctuation and mixed Latin-number reference differences are diagnosed;
 additional scripts, owners, fallback behavior and output combinations remain open.
-Unreleased #166 work adds bounded DOTX/OTT identities and byte-based format
+The 1.6.0 work for #166 adds bounded DOTX/OTT identities and byte-based format
 inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification
 limits; it does not change published 1.5.0 support.
-Pending #167 source attaches a bounded [layout snapshot](interoperability.md#unreleased-source-preview-layout-snapshots)
+The 1.6.0 source for #167 attaches a bounded [layout snapshot](interoperability.md#unreleased-source-preview-layout-snapshots)
 to the same preview render for simple managed body paragraphs, bounded direct
 DOCX table-cell text and simple inline images, with bounded direct run identities.
 Some table reference differences, other run/cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
 identities remain open.
-Pending #168 work adds bounded matrix expressions, OMML and ordinary managed
+The 1.6.0 work for #168 adds bounded matrix expressions, OMML and ordinary managed
 layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
 records its geometry and unsupported variants; full exact-platform and integrated
 qualification remain separate from implementation and publication.
-Pending #169 adds bounded n-ary operator authoring and managed layout; the
+The 1.6.0 #169 profile adds bounded n-ary operator authoring and managed layout; the
 [operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations)
 records supported OMML, font diagnostics and remaining qualification.
-The [pending source matrix](roadmap-138-source-matrix.json) maps supported and
+The [1.6.0 source matrix](roadmap-138-source-matrix.json) maps supported and
 rejected combinations to executable tests; it does not alter the dated baseline.
 
 ## Roadmap #102 P6 — historical preliminary qualification

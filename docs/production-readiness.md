@@ -1,8 +1,9 @@
 # Production qualification — 1.0 history
 
-The current published release is [1.5.0](releases/1.5.0.md); its bounded profiles
-and qualification are recorded in the [capability matrix](roadmap-102-capability-matrix.json)
-and [release record](https://github.com/kirakosyan/word.net/releases/tag/v1.5.0).
+The [1.6.0 release notes](releases/1.6.0.md) describe the current source profile
+and its publication gates. The earlier 1.5.0 profiles and qualification are recorded
+in the [capability matrix](roadmap-102-capability-matrix.json) and
+[release record](https://github.com/kirakosyan/word.net/releases/tag/v1.5.0).
 The older requirements and counts below retain their original release identities.
 
 ## 1.4.0 release qualification

@@ -43,11 +43,11 @@ Mutations stage complete graphs/expressions and resource admission before commit
 stale/foreign handles and cancellation leave the session unchanged. Chart editing
 rebuilds both caches and real XLSX cells. Equation editing emits genuine OMML.
 Ordinary operations that cannot safely retain/remap object owners reject explicitly.
-The unreleased [object-fragment profile](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+The 1.6.0 [object-fragment profile](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
 adds bounded body and simple-cell insertion while preserving editable placement identity.
 Object PDF/XPS/SVG export reports editable-object loss; PDF/A and tagged/UA object output and
 native-typography/object combinations remain outside this profile.
-The pending [standalone-equation increment](#unreleased-source-native-paragraphs-and-equations)
+The 1.6.0 [standalone-equation increment](#unreleased-source-native-paragraphs-and-equations)
 is a separately diagnosed ordinary-output subset and does not change that released profile.
 
 Native typography remains opt-in and provider-based. Its qualified ordinary
@@ -67,7 +67,7 @@ and its workbook graph. Removing a newly added object also removes its dedicated
 empty paragraph; imported paragraph/cell structure is retained. Ordinary paragraph/table appends and metadata edits retain
 objects; replacing an object owner, executing templates around it, restyling
 composition, review ranges and matching-structure comparison reject until aware.
-The pending object-fragment insertion above is a separate bounded composition path.
+The 1.6.0 object-fragment insertion above is a separate bounded composition path.
 
 A `ChartDefinition` copies category and series lists, finite nullable values,
 explicit RGB colours, title, legend choice and category/value axis titles.
@@ -85,9 +85,10 @@ objects before omission, preserving their separate combination boundaries. Malfo
 errors in every mode; admitted objects with unsupported visible appearance still
 reject static rendering. Word inline anchor/edit identifiers are harmless metadata.
 
-### Unreleased source: clustered horizontal bars
+<a id="unreleased-source-clustered-horizontal-bars"></a>
+### 1.6.0 profile: clustered horizontal bars
 
-Pending #163 adds `ChartKind.ClusteredBar` to the existing immutable chart,
+The 1.6.0 #163 profile adds `ChartKind.ClusteredBar` to the existing immutable chart,
 Add/Update and prepared-data binding APIs. Editable DOCX uses a clustered
 `c:barChart` with `barDir="bar"`, one linear category/value axis pair and the
 existing local workbook/cache agreement checks. Null values are gaps; zero values
@@ -108,9 +109,10 @@ unchanged and the failures remain open. This is not published 1.5.0 support or a
 claim of general Word/LibreOffice plot parity. Broader chart and data-label forms
 remain open in #163.
 
-### Unreleased source: stacked bars and columns
+<a id="unreleased-source-stacked-bars-and-columns"></a>
+### 1.6.0 profile: stacked bars and columns
 
-Pending #163 adds `ChartKind.StackedColumn` and `ChartKind.StackedBar` to the
+The 1.6.0 #163 profile adds `ChartKind.StackedColumn` and `ChartKind.StackedBar` to the
 existing immutable chart, Add/Update and prepared-data binding APIs. Editable
 DOCX uses `c:barChart` with `grouping="stacked"`, explicit `overlap="100"`,
 a linear category/value axis pair and the existing local workbook/cache checks.
@@ -134,12 +136,13 @@ and workbook bytes, signed-stack proportions and cross-format vector geometry.
 At the unchanged 0.5-point tolerance their maximum rectangle deviations from
 LibreOffice are 26.12 points for bars and 36.10 points for columns; reference axis
 origins differ by 20.67 and 17.08 points respectively. These failures remain open
-and are not evidence of Microsoft Word behavior. This profile is unreleased source,
+and are not evidence of Microsoft Word behavior. This profile is 1.6.0 source,
 not public 1.5.0 support or full #163 acceptance.
 
-### Unreleased source: chart point labels
+<a id="unreleased-source-chart-point-labels"></a>
+### 1.6.0 profile: chart point labels
 
-Pending #163 adds `ChartDefinition.WithDataLabels(ChartDataLabels.Value)`,
+The 1.6.0 #163 profile adds `ChartDefinition.WithDataLabels(ChartDataLabels.Value)`,
 `Category`, or `CategoryAndValue` to create a new immutable chart snapshot;
 `None` is the existing default. Add/Update and prepared-data binding retain this
 selection, category/series data and local workbook. Labels apply to clustered and
@@ -172,9 +175,10 @@ reference, above the unchanged 0.5-point tolerance. The reference column also
 places one label outside its bar. These remain open reference differences, not
 evidence about Microsoft Word, a public 1.5.0 feature or full #163 acceptance.
 
-### Unreleased source: circular charts
+<a id="unreleased-source-circular-charts"></a>
+### 1.6.0 profile: circular charts
 
-Pending #163 adds `ChartDefinition.CreateCircular(ChartKind.Pie, slices)` and
+The 1.6.0 #163 profile adds `ChartDefinition.CreateCircular(ChartKind.Pie, slices)` and
 `ChartKind.Doughnut` using one to 64 immutable `ChartSlice` values. Each slice
 copies a category, finite non-negative nullable value and explicit RGB colour;
 the original constructor and enum values remain intact. Null and zero slices
@@ -202,9 +206,10 @@ records a 23.5-point maximum raster-bound difference from LibreOffice at the
 unchanged 0.5-point geometry tolerance. This remains open, is not a Microsoft Word
 result and does not qualify public 1.5.0 packages or all of #163.
 
-### Unreleased source: labels on circular slices
+<a id="unreleased-source-labels-on-circular-slices"></a>
+### 1.6.0 profile: labels on circular slices
 
-The pending point-label profile also admits `Value`, `Category` and
+The 1.6.0 point-label profile also admits `Value`, `Category` and
 `CategoryAndValue` on the circular charts above. Each label is placed horizontally
 at 72 percent of the radius along its sector's angular midpoint. Its padded text
 bounds must fit inside the outer circle and the sector, outside the doughnut hole,
@@ -255,9 +260,10 @@ doc.AddEquation(EquationExpression.Fraction(
 // Save DOCX for editable semantics; PDF/XPS export diagnoses their loss.
 ```
 
-## Unreleased source: bounded matrix equations
+<a id="unreleased-source-bounded-matrix-equations"></a>
+## 1.6.0 profile: bounded matrix equations
 
-Pending #168 source work adds rectangular `EquationExpression.Matrix` trees with
+The 1.6.0 source work for #168 adds rectangular `EquationExpression.Matrix` trees with
 at most 64 rows, 64 columns and 1,024 cells. Rows and alignment arrays are copied;
 `Children` is row-major and a null cell becomes an empty text node. At least one
 cell must be nonempty. Matrices have no implicit brackets; use `Delimiter` for
@@ -294,9 +300,10 @@ var grid = EquationExpression.Matrix(new[] {
 doc.AddEquation(EquationExpression.Delimiter(grid, "[", "]"));
 ```
 
-## Unreleased source: n-ary equations
+<a id="unreleased-source-n-ary-equations"></a>
+## 1.6.0 profile: n-ary equations
 
-Pending #169 source work adds `EquationExpression.Nary` with a closed summation,
+The 1.6.0 source work for #169 adds `EquationExpression.Nary` with a closed summation,
 product or integral operator, one required nonempty operand and optional nonempty
 lower and upper limits. A null limit is absent and hidden in emitted OMML; visible
 empty placeholders are not invented. `Children` contains operand, lower and upper
@@ -320,7 +327,7 @@ can depend on document math settings. Operand-height growth, other operator glyp
 hidden nonempty limits and visible empty placeholders are unsupported; valid
 out-of-profile objects retain the existing explicit loss or strict rejection policy.
 Common run-size/appearance and managed-output boundaries remain those of the
-existing equation profile. This is pending source work, not published 1.5.0 or a
+existing equation profile. This is 1.6.0 source work, not published 1.5.0 or a
 claim about native, tagged or archival combinations.
 
 ```csharp
@@ -332,9 +339,10 @@ doc.AddEquation(sum);
 
 ## Native text and accessible output
 
-### Unreleased source: Hindi merged tables
+<a id="unreleased-source-hindi-merged-tables"></a>
+### 1.6.0 profile: Hindi merged tables
 
-The pending #151 source admits horizontal and vertical merges in one-column,
+The 1.6.0 source for #151 admits horizontal and vertical merges in one-column,
 non-nested native tables with Hindi and Latin text, subject to the existing font,
 cluster, owner and resource checks. This is separate from the published 1.5.0
 profile and is not yet complete #151 qualification. BestEffort and Lenient output
@@ -350,9 +358,10 @@ at the final row of one four-row specimen. A separate Arabic specimen exposed
 alignment and text-extraction differences and is not admitted. These are bounded
 observations, not a claim of general rendering parity.
 
-### Unreleased source: native scalar fields
+<a id="unreleased-source-native-scalar-fields"></a>
+### 1.6.0 profile: native scalar fields
 
-Pending #152 snapshots stable scalar `DOCPROPERTY`, `IF` and arithmetic field
+The 1.6.0 #152 profile snapshots stable scalar `DOCPROPERTY`, `IF` and arithmetic field
 results before extended native shaping. The existing bounded scalar grammar,
 invariant pictures and cached-result diagnostics still apply. An editable DOCX
 session keeps its field owner and can refresh it again after a property edit;
@@ -371,9 +380,10 @@ controls, tabs, tagged/archive combinations and other #152 owners remain outside
 this increment. Unresolved scalar results retain their existing explicit
 cached-result diagnostic.
 
-### Unreleased source: native paragraphs and equations
+<a id="unreleased-source-native-paragraphs-and-equations"></a>
+### 1.6.0 profile: native paragraphs and equations
 
-Pending #153 admits a standalone equation as the only run in its own top-level
+The 1.6.0 #153 profile admits a standalone equation as the only run in its own top-level
 body paragraph, with extended native bidi enabled and a caller-selected MATH font.
 Native Hindi/Latin or Arabic paragraphs use their existing shaping pipeline; the
 equation uses the separately bounded equation pipeline and is not shaped as

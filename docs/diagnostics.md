@@ -1,6 +1,6 @@
 # Conversion diagnostics
 
-For pending whole-table style support, `Docx.TableStyleData` and
+For the 1.6.0 whole-table style profile, `Docx.TableStyleData` and
 `Docx.TableStyleMissing` report unsupported style metadata or an unresolved table
 style. `Docx.TableStyleDefault` reports an unqualified implicit default style in
 non-DOCX output; editable DOCX retains admitted used defaults. Incompatible
@@ -29,13 +29,13 @@ Unresolved references and unsupported transforms retain `Docx.ThemeColor`.
 interior edges, competing whole-table or direct-cell borders, or overlapping
 conditional edges; admitted conditional style borders remain editable in DOCX.
 
-For the pending nested-control subset, `Control.Locked` also rejects a child
+For the 1.6.0 nested-control subset, `Control.Locked` also rejects a child
 mutation or binding operation when its parent's content is locked.
 `Control.ProtectedOwner` rejects parent replacement while typed children exist,
 unqualified parent states and deeper or unsupported owners. Binding conflicts
 retain the existing `Binding.Conflict` failure and atomicity contract.
 
-Pending direct table-border support reports `Table.BorderConflict` for unqualified
+The 1.6.0 direct table-border profile reports `Table.BorderConflict` for unqualified
 merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` and
 `Table.BorderSplit` identify fixed-page approximations. `Table.BorderApproximated`
 and `Table.BorderColor` report unsupported border effects or automatic colors.
@@ -47,13 +47,13 @@ Malformed duplicate sides fail with `Docx.TableBorders`. Other destinations use
 `Table.Decoration` when they cannot retain the border. Strict mode rejects these
 losses before staged output is copied.
 
-For pending direct table shading, `Table.ShadingConflict`, `Table.ShadingStory`,
+For 1.6.0 direct table shading, `Table.ShadingConflict`, `Table.ShadingStory`,
 `Table.ShadingRepeat` and `Table.ShadingSplit` identify unqualified owners or
 pagination. `Table.ShadingApproximated` and `Table.ShadingColor` report patterns,
 unsupported attributes or automatic fills; duplicate shading properties fail
 with `Docx.TableShading`. Unsupported destinations use `Table.Decoration`.
 
-Unreleased review displays reject unsupported history, owners or output profiles
+1.6.0 review displays reject unsupported history, owners or output profiles
 with `Review.DisplayProfile`, and reject source sessions carrying load-loss warnings
 with `Review.DisplaySourceLoss`. `Limit.ReviewDisplay` bounds added marks,
 attribution and annotations. These exceptions do not include author names or
@@ -83,14 +83,14 @@ layout failures. `Shape.VectorOutput` reports a destination that cannot retain t
 vector; `Shape.TextBoxLayout` reports unsupported HTML box layout. See the
 [profile](roadmap-102-p4-p5.md) for supported combinations.
 
-Pending #160 uses `Shape.RotationReference` when independently measured rotated
+The 1.6.0 #160 profile uses `Shape.RotationReference` when independently measured rotated
 box content differs from an office reference. Strict rejects these newly admitted
 cases; BestEffort and Lenient render them with this warning. Non-cardinal PDF links
 also report `Shape.RotatedLinkBounds`: the clickable area is the enclosing rectangle,
 not a rotated polygon. `Shape.TextBoxLayout` reports unsupported upright text intent,
 and `Shape.GeometryApproximated` reports unsupported text-box flips.
 
-Pending #165 uses `Layout.EastAsianPunctuationReference` for the measured Japanese
+The 1.6.0 #165 profile uses `Layout.EastAsianPunctuationReference` for the measured Japanese
 punctuation-position difference and `Layout.EastAsianMixedReference` for mixed
 East Asian/Latin-number line-wrap differences. Strict rejects these measured
 profiles; BestEffort/Lenient retain the warnings. `Layout.EastAsianProfile`,
@@ -115,16 +115,16 @@ with `Limit.CrossTabInput`/`Limit.CrossTabCells`, and a non-fitting table with
 uses `Fragment.SourceLoss`, `Fragment.SourceStructure`, `Fragment.Section`,
 `Fragment.Table`, `Fragment.Structure`, `Fragment.Reference` and
 `Fragment.Placeholder` to identify rejected sources or placement. Loading remains
-subject to the source reader's security and resource diagnostics. Unreleased source
+subject to the source reader's security and resource diagnostics. The 1.6.0 source
 reports `Fragment.CachedFields` when a
 caller explicitly opts in to retained field results that can be stale; unresolved
 or unsupported source references still fail.
-Pending body cross-tab placement uses `Report.CrossTabPlaceholder` for an unsafe
+The 1.6.0 body cross-tab placement uses `Report.CrossTabPlaceholder` for an unsafe
 or enclosed bookmark and `Report.CrossTabReference` for a link or field targeting
-the placeholder. Pending cell placement also rejects unsupported or ambiguous
+the placeholder. The 1.6.0 cell placement also rejects unsupported or ambiguous
 outer geometry with `Report.CrossTabCell` and non-fitting output with
 `Report.CrossTabLayout`. The operation rejects before committing the document.
-Pending typed-fragment boundaries use `Fragment.ControlOwner`,
+The 1.6.0 typed-fragment boundaries use `Fragment.ControlOwner`,
 `Fragment.ControlResources`, `Fragment.ControlDateMode` and `Control.Restyle` for
 unqualified destinations, conflicting glossary resources, date policies and restyling.
 `Object.Owner` also rejects an object sharing any paragraph owned by a typed
@@ -145,12 +145,12 @@ an explicit decision. Namespace declarations are no longer misreported as theme
 color attributes. Diagnostics carry locations/codes without control/XML values.
 This profile is included in 1.5.0.
 
-Unreleased #143 source uses `Control.CharacterStyle` when an admitted typed-control
+The 1.6.0 source for #143 uses `Control.CharacterStyle` when an admitted typed-control
 run's bounded character style is resolved into direct formatting. The editable
 style identity is not retained; Strict mode rejects this loss. Unsafe, missing,
 cyclic and unqualified style definitions remain hard failures.
 
-Unreleased #145 removal uses `Control.Resources` when the final wrapper still owns
+The 1.6.0 #145 removal profile uses `Control.Resources` when the final wrapper still owns
 retained local XML or glossary resources. `Control.BindingDirty`, `Control.Locked`,
 `Control.ProtectedOwner` and `Control.StaleHandle` reject the corresponding removal
 before the session is changed.
@@ -159,12 +159,12 @@ unsupported owners. The simple-cell operation rejects merged or nested tables
 and structural row/cell wrappers before commit; `Limit.Controls` bounds ID and
 owner traversal.
 
-Unreleased #141 source rejects incompatible document-wide themes before
+The 1.6.0 source for #141 rejects incompatible document-wide themes before
 composition or comparison with `Composition.ThemeConflict` or
 `Comparison.ThemeConflict`. These are hard failures, not loss diagnostics.
 `Docx.ThemeData` reports the bounded theme reconstruction or an incomplete theme.
 
-Unreleased #166 source rejects macro-bearing template exchange with
+The 1.6.0 source for #166 rejects macro-bearing template exchange with
 `Docx.ActiveContent`, and mismatched or conflicting Word package content types
 with `Docx.ContentType`. Template exchange rejects encrypted ZIP entries with
 `Docx.Encryption`, and malformed or unsupported ZIP directory features with
@@ -174,7 +174,7 @@ returns an explicit status for invalid, unknown, macro-bearing or protected
 identities; resource and cancellation failures still throw. See the
 [format inspection contract](template-formats.md).
 
-Unreleased #143 source admits the glossary metadata described in the
+The 1.6.0 source for #143 admits the glossary metadata described in the
 [control profile](content-controls.md#unreleased-source-bounded-glossary-metadata).
 Unadmitted resource content and relationship types use `Control.Unsupported`;
 `Control.GlossaryTheme` reports materialized theme references on a local
@@ -200,30 +200,33 @@ review history without preservation; preserved story/nested structural marks fai
 Balancing never shrinks text to make a candidate frame fit. See the
 [complete profile](roadmap-99-implementation.md) and [release notes](releases/1.4.0.md).
 
-## Unreleased table formula diagnostics
+<a id="unreleased-table-formula-diagnostics"></a>
+## 1.6.0 table formula diagnostics
 
-The pending [table formula profile](table-formulas.md) uses
+The 1.6.0 [table formula profile](table-formulas.md) uses
 `Field.UnsupportedUsedCachedResult` when a table dependency, cell, formula or
 bounded graph cannot be calculated. All `=` fields in that table retain their
 source caches together, even in Strict mode. Cancellation and the existing
 conversion-wide resource limits remain hard failures.
 
-## Unreleased paragraph-format diagnostics
+<a id="unreleased-paragraph-format-diagnostics"></a>
+## 1.6.0 paragraph-format diagnostics
 
-Pending [paragraph-format history](review-workflows.md#unreleased-source-paragraph-format-revisions)
+The 1.6.0 [paragraph-format history](review-workflows.md#unreleased-source-paragraph-format-revisions)
 uses `Review.ParagraphFormat` and `Comparison.ParagraphFormat` for unsupported
 owners or properties. Ordinary loads report `Revisions.Accepted` when they discard
 that history; malformed metadata and existing comparison resource limits remain
 hard failures.
 
-## Unreleased matrix diagnostics
+<a id="unreleased-matrix-diagnostics"></a>
+## 1.6.0 matrix diagnostics
 
-Pending #168 uses `Equation.Matrix*` failures for unsupported baseline, spacing,
+The 1.6.0 #168 profile uses `Equation.Matrix*` failures for unsupported baseline, spacing,
 alignment, placeholder and property variants. Malformed grids and bounded-resource
 failures remain hard errors; valid unsupported objects retain the existing
 `Object.UnsupportedLoss` policy. See the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
 
-Pending n-ary rendering reports `Equation.NarySizeFallback` when the selected font
+The 1.6.0 n-ary rendering reports `Equation.NarySizeFallback` when the selected font
 lacks a display operator meeting its MATH minimum; Strict rejects it. Unsupported
 operator, placement, growth, placeholder and hidden-limit variants use
 `Equation.Nary*`; missing glyphs use `Equation.Glyph`. See the [operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations).
@@ -232,7 +235,7 @@ operator, placement, growth, placeholder and hidden-limit variants use
 
 The 1.3.0 diagnostics include `Object.*` graph/owner/combination/editable-output losses, `Chart.*` cache/range/appearance/label-fit failures, `Equation.*` OMML/MATH/font/geometry limits, `Typography.Bidi*` balanced-control and resource checks, and `Pdf.NativeLanguage` for unsupported native language metadata. `Object.UnsupportedLoss` records omission of a valid out-of-profile chart/equation during ordinary Lenient/BestEffort conversion. Strict conversion, session loading, native typography and tagged/UA/PDF-A destinations reject that loss. Malformed graphs, unsafe relationships, unsupported admitted-object render constructions and UA combination failures remain hard errors in Lenient mode. See [P2 contracts](p2-objects-typography.md).
 
-Pending #163 horizontal-bar rendering reports `Chart.BarLayoutApproximation`
+The 1.6.0 #163 profile horizontal-bar rendering reports `Chart.BarLayoutApproximation`
 in BestEffort/Lenient for its measured plot-area difference; Strict export is
 already rejected by `Object.EditableOutputLoss`. `Chart.BarProfile` rejects
 unqualified native, tagged and archival combinations. Custom bar gaps, overlap
@@ -241,7 +244,7 @@ Stacked bars and columns report `Chart.StackedLayoutApproximation` for the
 independently measured plot/axis differences; Strict rejects this loss.
 `Chart.Overlap` rejects unqualified stacked overlap and `Chart.Range` rejects
 nonfinite stacked totals. `Limit.ChartStack` bounds the temporary accumulators.
-Pending centred point labels report `Chart.DataLabelApproximation` for measured
+The 1.6.0 centred point labels report `Chart.DataLabelApproximation` for measured
 office-reference differences, which Strict rejects. `Chart.DataLabelFit` rejects
 labels too large for their bars or circular sectors, including zero-size points
 and labels intersecting a hole or sector boundary; labels are not silently
@@ -250,21 +253,21 @@ retained chart appearance is not preserved by the closed chart model.
 `Chart.DataLabelText` rejects non-ASCII point labels and
 `Chart.DataLabelFont` rejects a replacement for the embedded Noto Sans regular
 face in this profile, whose ink bounds are independently checked.
-Pending pie and doughnut charts report `Chart.CircularLayoutApproximation` for
+The 1.6.0 pie and doughnut charts report `Chart.CircularLayoutApproximation` for
 their independently measured frame differences; Strict rejects this loss.
 `Chart.SliceValue` rejects negative or nonfinite values, `Chart.Slices` bounds
 slice count, `Chart.SliceSpacing` rejects positive sectors too small to render,
 and `Chart.BindingSlices` rejects data that would change the slice-colour mapping.
 An all-zero or all-missing circular series reports `Chart.EmptyData` on rendering.
 
-Unreleased #151 source reports `Typography.MergedTableSpacing` when conservative
+The 1.6.0 source for #151 reports `Typography.MergedTableSpacing` when conservative
 native line metrics may change merged-table row heights; Strict rejects this loss.
 `Typography.MergedTableDirection`, `Typography.MergedTableConformance` and
 `Typography.MergedGroupHeight` explicitly reject unqualified direction, conformance
 and oversized vertical-merge combinations. The [reference observation](measurements/roadmap-138-native-merged-reference.json)
 retains the measured spacing and Arabic differences.
 
-Pending #152 reports `Typography.FieldLayoutApproximation` for native scalar
+The 1.6.0 #152 profile reports `Typography.FieldLayoutApproximation` for native scalar
 fields whose baseline differs from the independent reference, and
 `Typography.FieldDirectionalOrder` for directional paragraphs where extraction
 order differs. Strict rejects those losses. `Typography.FieldProfile` rejects
@@ -272,7 +275,7 @@ page/reference fields, nested instructions and unqualified output profiles;
 `Limit.TypographyFields` and the existing character/work limits bound expansion.
 The diagnostics do not include field values.
 
-Pending #153 reports `Typography.EquationReferenceApproximation` for native
+The 1.6.0 #153 profile reports `Typography.EquationReferenceApproximation` for native
 documents with standalone equations because the independent fraction geometry
 and paragraph spacing differ. It also reports `Typography.EquationDirectionalOrder`
 when directional paragraphs are present, reflecting the observed external Arabic
@@ -280,25 +283,25 @@ extraction-order difference. Strict output already rejects editable-object loss.
 `Typography.ObjectProfile` rejects other native object owners; notes, charts,
 mixed inline equations and tagged/archive combinations remain unqualified.
 
-Pending #154 uses `Pdf.TextBoxReadingOrder` to reject an unsupported opt-in
+The 1.6.0 #154 profile uses `Pdf.TextBoxReadingOrder` to reject an unsupported opt-in
 box owner, placement, content or output combination before copying output.
 `Shape.TextBoxAlternative` reports a non-DOCX destination's loss of an authored
 text-box title or description; Strict rejects it. Oversized text-box alternatives
 fail with `Shape.TextBoxAlternative` before use.
 
-Pending #155 uses `Pdf.VectorSemantics` to reject unqualified vector owners or
+The 1.6.0 #155 profile uses `Pdf.VectorSemantics` to reject unqualified vector owners or
 placement, and `Pdf.VectorAlternative` to reject missing, conflicting or titled
 alternatives for the explicitly selected figure/decorative policy. Unsupported
 vectors cannot be omitted from accessible, archival, native or editable-session
 output in Lenient mode. A preview does not inherit the tagged-PDF exemption
 from an alternative-loss diagnostic.
 
-Pending #156 rejects `Pdf.TaggedArchive` when PDF/A-2a lacks the complete UA-1
+The 1.6.0 #156 profile rejects `Pdf.TaggedArchive` when PDF/A-2a lacks the complete UA-1
 profile or mixes positioned drawings with chart/equation objects. Existing
 `Pdf.TagsConformance`, language, title, semantic-owner and resource checks remain
 in force; they run before caller output is copied.
 
-Pending #164 reports `Hyphenation.SearchGeometry` when a dictionary break uses
+The 1.6.0 #164 profile reports `Hyphenation.SearchGeometry` when a dictionary break uses
 an original-word text carrier whose search highlight covers only the first line;
 Strict rejects the loss. `Hyphenation.JustificationApproximation` reports the
 measured word-origin and following-line differences for justified breaks.
@@ -308,14 +311,14 @@ reject unqualified combinations. `Limit.HyphenationDictionary` and
 `Limit.HyphenationWork` bound local resources and lookup/candidate work. Messages
 do not contain source words or dictionary entries.
 
-Pending #161 reports `Shape.PresetAlternative` when non-DOCX output would lose
+The 1.6.0 #161 profile reports `Shape.PresetAlternative` when non-DOCX output would lose
 the title or description of a newly supported rectangle, triangle or diamond,
 or a title on an earlier admitted vector. Strict rejects that loss; the bounded
 accessible figure policy preserves its admitted description instead. Hidden shapes,
 unqualified transforms and adjustments remain explicit vector-profile failures or,
 for permitted ordinary conversions only, diagnosed omission.
 
-Pending #162 uses `Shape.Gradient` for unqualified angles, stop order, colors,
+The 1.6.0 #162 profile uses `Shape.Gradient` for unqualified angles, stop order, colors,
 transparency or effects; `Shape.GradientProfile` rejects native, tagged and archive
 combinations. `Shape.GradientThemeMapping` reports the independently observed
 remapped-accent rendering difference; Strict rejects it before copying output.
@@ -383,7 +386,8 @@ catalog below includes that merged profile; see [editing limits](editing-and-tem
 and [revision-specific evidence](testing.md). No bucket-4 diagnostic contract is
 advertised yet.
 
-## Unreleased template-inspection findings
+<a id="unreleased-template-inspection-findings"></a>
+## 1.6.0 template-inspection findings
 
 `Plan.MissingPath`, `Plan.PathType`, `Plan.ParentType`, `Plan.InvalidField`,
 `Plan.InvalidControl`, `Plan.InvalidControlPath` and `Plan.InvalidControlStructure`
@@ -607,9 +611,9 @@ conversion diagnostics.
 | `Docx.TableHeaders` | Loss | Noncontiguous repeating header rows are not retained. |
 | `Docx.TableIndent` | Loss | Nonabsolute table indentation is not retained. |
 | `Docx.TableStructure` | Loss | Table content-control and custom XML wrappers are flattened while retaining their cells and paragraphs. |
-| `Docx.ThemeColor` | Loss | Unreleased source resolves a bounded local theme color or uses the stored RGB fallback; only selected text references are retained and other theme semantics may be lost. |
+| `Docx.ThemeColor` | Loss | The 1.6.0 source resolves a bounded local theme color or uses the stored RGB fallback; only selected text references are retained and other theme semantics may be lost. |
 | `Docx.ThemeData` | Loss | An incomplete theme cannot be retained, or DOCX output reconstructs a bounded scheme without original effects, script fonts and dynamic system colors. |
-| `Docx.ThemeFont` | Loss | Unreleased source resolves a bounded local Latin theme font or uses a fallback; unsupported references and other theme semantics are not retained. |
+| `Docx.ThemeFont` | Loss | The 1.6.0 source resolves a bounded local Latin theme font or uses a fallback; unsupported references and other theme semantics are not retained. |
 | `Docx.Underline` | Loss | Unsupported underline decoration uses a single line. |
 | `Ebook.ActiveContent` | Loss | Event handlers are omitted. |
 | `Ebook.Alignment` | Loss | Unsupported or direction-dependent ebook alignment becomes left alignment. |
@@ -750,7 +754,7 @@ conversion diagnostics.
 | `Template.NestedRowControls` | Loss | Nested controls sharing one table row are outside the editable template profile. |
 | `Template.TableControl` | Loss | Tagged non-row table wrappers retain cached cells and paragraphs but cannot execute safely. |
 | `Template.UnmergedOutput` | Loss | Unexecuted template constructs use cached content without editable template semantics in this destination. |
-| `Template.UnsupportedControl` | Loss | Unreleased DOCX/DOTX template exchange flattens a control outside the admitted tagged-control profile; strict mode rejects the loss. |
+| `Template.UnsupportedControl` | Loss | 1.6.0 DOCX/DOTX template exchange flattens a control outside the admitted tagged-control profile; strict mode rejects the loss. |
 | `Text.Formatting` | Loss | Plain text cannot represent rich formatting. |
 | `Text.TableStructure` | Loss | Table structure becomes tab-separated rows in plain text. |
 
@@ -771,7 +775,7 @@ A repeated RTF row definition with inconsistent edges fails `Rtf.Structure`.
 `Pdf.TagsConformance`/`Pdf.TagsTypography` reject unqualified combinations.
 `Pdf.OmittedDestination` retains visible content without an excluded link target.
 `Pdf.OmittedDestination` does not apply to annotation-free raster intermediates.
-Unreleased `Limit.LayoutFragments` and `Limit.LayoutSnapshot` bound optional preview
+1.6.0 `Limit.LayoutFragments` and `Limit.LayoutSnapshot` bound optional preview
 mapping. `Layout.ReviewDisplay` rejects unqualified detached-review mapping;
 `Layout.SnapshotFont` and `Layout.SnapshotGeometry` reject invalid measurement
 state; null fragment bounds carry a reason instead of a fabricated rectangle.

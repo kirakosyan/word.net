@@ -1,8 +1,9 @@
 # Formatting and image profile
 
-## Unreleased source: plain fixed-table geometry
+<a id="unreleased-source-plain-fixed-table-geometry"></a>
+## 1.6.0 profile: plain fixed-table geometry
 
-Pending #142 source corrects the managed fixed-page placement of a direct DOCX
+The 1.6.0 source for #142 corrects the managed fixed-page placement of a direct DOCX
 body table with a fixed matching grid, ordinary text cells and no table style,
 border, shading, row properties or nested owners. With no margins declared, it
 uses the OOXML default of 115 twentieths of a point on each omitted horizontal side.
@@ -48,9 +49,10 @@ The [oversized-grid diagnostic record](measurements/roadmap-138-grid-diagnostic-
 checks the warning, source position and strict output staging without changing those
 rendering differences.
 
-## Unreleased source: direct table borders
+<a id="unreleased-source-direct-table-borders"></a>
+## 1.6.0 profile: direct table borders
 
-Pending #142 work reads direct `w:tblBorders` on a simple rectangular DOCX
+The 1.6.0 work for #142 reads direct `w:tblBorders` on a simple rectangular DOCX
 table. The supported `single`, `none` and `nil` edges are retained as table
 properties in editable DOCX and resolved for ordinary managed PDF/XPS/SVG, HTML
 and ODT output. Outside and inside edges are recalculated after supported row
@@ -59,7 +61,7 @@ and line widths are used; theme references use the bounded local resolution and
 retain the existing theme-loss diagnostic. Automatic colors use black and are
 diagnosed. Destinations that omit borders report `Table.Decoration`.
 
-The same pending work admits direct, clear table shading with an explicit RGB
+The same 1.6.0 profile admits direct, clear table shading with an explicit RGB
 fill on ordinary simple body tables. The table-level shading remains editable in
 DOCX and is applied across the cell extents in managed fixed output, HTML and ODT.
 Direct cell shading together with a table fill, patterns, automatic fills and
@@ -166,27 +168,28 @@ horizontal and vertical placement differences; pixel-identical placement is not
 established. LibreOffice omitted the table-level fill in the separate shading
 probe while a direct-cell control painted its fill. That failed reference result
 is retained; the control checks color but does not establish table-shading parity.
-This is unreleased source and does not qualify published packages or every runtime.
+This is 1.6.0 source and does not qualify published packages or every runtime.
 
-Unreleased source adds an explicit managed PDF/SVG display for bounded retained
+The 1.6.0 source adds an explicit managed PDF/SVG display for bounded retained
 text revisions, with textual labels as well as colors and searchable deleted PDF
 text. An explicit numbered policy also shows supported comments, format changes and
 paired paragraph moves. Its exclusions and source-history guarantees are in the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
 This is not a published 1.5.0 capability.
 
-Unreleased source also admits rectangular matrix equations with selected alignment
+The 1.6.0 source also admits rectangular matrix equations with selected alignment
 and spacing through editable OMML and ordinary managed fixed output. Its documented
 deterministic layout is not a claim of identical Office pagination or general math
 fidelity; see the [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations).
 
-Pending n-ary source adds editable sums, products and integrals with explicit
+The 1.6.0 n-ary profile adds editable sums, products and integrals with explicit
 limits and managed output. The [operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations)
 records font fallback and imported-OMML boundaries.
 
-## Unreleased source: bounded theme appearance
+<a id="unreleased-source-bounded-theme-appearance"></a>
+## 1.6.0 profile: bounded theme appearance
 
-The pending #141 work resolves major/minor Latin theme font slots and RGB theme
+The 1.6.0 work for #141 resolves major/minor Latin theme font slots and RGB theme
 colors from the local DOCX theme for ordinary text and direct cell shading/borders,
 including admitted settings color mappings and one tint or shade transform.
 Direct formatting still follows
@@ -236,7 +239,7 @@ master-detail level, with cloned identity and reference checks. Explicit cross-t
 reject non-fitting layouts, and fragments retain source formatting under the
 documented placement policy. It does not extend object, revision, nested-table or
 section support. See the [template profile](editing-and-templates.md#mixed-report-regions--merged-source).
-Unreleased source also admits bounded fragment insertion into a dedicated simple
+The 1.6.0 source also admits bounded fragment insertion into a dedicated simple
 body-table cell and explicitly opted-in simple fields, as described in that profile.
 
 ## P2 control preservation — merged source
@@ -248,7 +251,7 @@ underline policy at fixed-output save time. Text exports and explicit display vi
 keep Unicode glyphs without the fixed-layout restrictions. Common Word editor
 scaffolding is omitted informationally within the documented inactive-script
 subset. Published 1.5.0 rejects Word-generated glossary category/relationships;
-the [unreleased source subset](content-controls.md#unreleased-source-bounded-glossary-metadata)
+the [1.6.0 source subset](content-controls.md#unreleased-source-bounded-glossary-metadata)
 admits selected inert metadata while rejecting richer graphs.
 Unknown/nested/story/table wrappers, richer inherited formatting,
 retained review/objects and native/tagged/archive combinations remain rejected.
@@ -356,7 +359,7 @@ The business-document profiles added for roadmap #32 are described in
   boxes while retaining nested text, images, links and run formatting where supported. Rotated boxes,
   vertical text, arbitrary geometry, autofit and nested table content are outside the
   fixed-page text-box profile described here. The bounded quarter-turn and autofit
-  release profile is described in [P4/P5](roadmap-102-p4-p5.md); pending #160 adds
+  release profile is described in [P4/P5](roadmap-102-p4-p5.md); the 1.6.0 #160 profile adds
   diagnosed [general-angle boxes](interoperability.md#unreleased-source-general-angle-text-boxes).
   Reflowable HTML reports inline-frame placement.
 - Continuous, next/odd/even-page sections retain physical page geometry. Equal-width
