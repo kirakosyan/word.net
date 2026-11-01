@@ -431,6 +431,17 @@ checks eight independent templates and merged DOCX packages with Open XML and
 LibreOffice, including required item paths, optional fallback, separate repeat
 owners and an unexecuted type mismatch. Twenty altered observations are rejected;
 the previous seven-case unknown-scope corpus and its 16 controls also pass.
+The [exact-source item-schema receipt](measurements/roadmap-138-repeat-item-schema-697f46d.json)
+records both 2,386-case suites, the 858-case matrix, local package checks and the
+independent recheck with the packaged assembly. Its unchanged local
+[performance gate](measurements/roadmap-138-repeat-item-schema-performance-697f46d.json)
+passed at 1.029 against the preceding head; its candidate round medians varied from
+40.015 to 50.358 ms. Hosted and actual Framework checks for this source are separate.
+The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
+[push package](measurements/roadmap-138-framework-5cb-push-package-success.json) and
+[PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) actual
+Framework 4.7.2 guests each passed 2,381 cases and cleaned up; their results do not
+qualify the newer source or the separate PR package guest.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
