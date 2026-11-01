@@ -10,6 +10,45 @@ namespace WordNet.Tests;
 
 public sealed class TemplateInspectionTests
 {
+    [Theory]
+    [InlineData(PdfConformance.PdfA2a, PdfAccessibility.None, false, "Plan.PdfTaggedArchiveConflict", "Pdf.TaggedArchive")]
+    [InlineData(PdfConformance.PdfA2b, PdfAccessibility.Tagged, false, "Plan.PdfTaggedArchiveConflict", "Pdf.TagsConformance")]
+    [InlineData(PdfConformance.PdfA2b, PdfAccessibility.None, true, "Plan.PdfNativeArchiveConflict", "Typography.Conformance")]
+    public void PdfProfileConflictsPredictStagedOutputRejection(PdfConformance conformance, PdfAccessibility accessibility, bool native, string findingCode, string errorCode)
+    {
+        byte[] bytes = Document("<w:p><w:r><w:t>text</w:t></w:r></w:p>");
+        var options = new ConversionOptions(FidelityMode.Lenient);
+        options.Pdf.Conformance = conformance; options.Pdf.Accessibility = accessibility; options.Typography.Enabled = native;
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
+        TemplateInspectionFinding finding = Assert.Single(report.Findings, f => f.Code == findingCode);
+        Assert.False(finding.Unknown); Assert.Null(finding.PartId); Assert.Null(finding.SourcePhase);
+        Assert.Contains(report.Findings, f => f.Code == "Plan.UninspectedCoverage" && f.Unknown); Assert.False(report.IsReusable);
+        source.Position = 0;
+        var document = WordDocument.Load(source, DocumentFormat.Docx, out _, options, TestContext.Current.CancellationToken);
+        using var output = new MemoryStream(); output.WriteByte(42);
+        NotSupportedException error = Assert.Throws<NotSupportedException>(() => document.Save(output, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken));
+        Assert.StartsWith(errorCode, error.Message, StringComparison.Ordinal); Assert.Equal(new byte[] { 42 }, output.ToArray()); Assert.True(output.CanWrite);
+    }
+
+    [Fact]
+    public void PdfOptionChecksAreBoundedToTheRequestedDestinationAndNeverEvaluateTheClock()
+    {
+        byte[] bytes = Document("<w:p><w:r><w:t>text</w:t></w:r></w:p>");
+        var options = new ConversionOptions(FidelityMode.Lenient) { Clock = () => throw new InvalidOperationException("Inspection must not run the clock.") };
+        options.Pdf.Conformance = (PdfConformance)99;
+        using var pdf = new MemoryStream(bytes);
+        TemplateInspection invalid = new WordConverter().InspectTemplate(pdf, new TemplateDataSchema(), DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
+        Assert.Contains(invalid.Findings, f => f.Code == "Plan.PdfOptionsInvalid" && !f.Unknown);
+        using var docx = new MemoryStream(bytes);
+        TemplateInspection other = new WordConverter().InspectTemplate(docx, new TemplateDataSchema(), DocumentFormat.Docx, options, TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(other.Findings, f => f.Code.StartsWith("Plan.Pdf", StringComparison.Ordinal));
+        options.Pdf = null!;
+        using var missing = new MemoryStream(bytes);
+        TemplateInspection absent = new WordConverter().InspectTemplate(missing, new TemplateDataSchema(), DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
+        Assert.Contains(absent.Findings, f => f.Code == "Plan.PdfOptionsMissing" && !f.Unknown);
+    }
+
     [Fact]
     public void SimpleCellControlRequirementsMatchActualMerge()
     {

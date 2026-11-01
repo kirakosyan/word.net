@@ -394,6 +394,11 @@ values. A common retained phase is exposed when known; omitted locations set
 `LocationsTruncated` and produce `Plan.LocationCoverage`. See the
 [profile and example](editing-and-templates.md#unreleased-source-bounded-template-inspection).
 
+For a PDF destination, `Plan.PdfOptionsMissing`, `Plan.PdfOptionsInvalid`,
+`Plan.PdfTaggedArchiveConflict` and `Plan.PdfNativeArchiveConflict` are static
+predictions from supplied options. Their source phase is null: no writer ran, and
+unperformed destination, layout and validation checks remain unknown.
+
 ## Inspect before conversion
 
 `WordConverter.Inspect` and `InspectAsync` consume input from the current position,

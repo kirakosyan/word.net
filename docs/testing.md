@@ -370,6 +370,10 @@ Earlier head `45c43ab` passed 2,352 cases in both actual Framework 4.7.2 source
 guests, with cleanup: [PR](measurements/roadmap-138-framework-45c-pr-source-success.json)
 and [push](measurements/roadmap-138-framework-45c-push-source-success.json). Those
 receipts do not qualify this newer source or its package guest.
+The next inspection increment compares static PDF-option findings with rejected
+staged exports and a successful independently read PDF. Its [independent observation](measurements/roadmap-138-preflight-pdf-options-reference.json)
+retains a schema-valid synthetic input and ten altered controls; it does not qualify
+unperformed destination checks or reusable plans.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

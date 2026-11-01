@@ -124,7 +124,7 @@ public sealed class TemplateInspection
     }
     /// <summary>Gets the source-byte SHA-256. This fingerprint may identify a sensitive document.</summary>
     public string InputSha256 { get; }
-    /// <summary>Gets the intended destination, which has not been validated by this inspection.</summary>
+    /// <summary>Gets the intended destination, which has not been fully validated by this inspection.</summary>
     public DocumentFormat Destination { get; }
     /// <summary>Gets privacy-safe findings. An empty set would not prove conversion or fidelity.</summary>
     public IReadOnlyList<TemplateInspectionFinding> Findings { get; }

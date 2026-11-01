@@ -16,7 +16,8 @@ enforcement are not implemented by that design.
 
 Pending #171 adds `WordConverter.InspectTemplate` for a DOCX and an explicitly
 declared `TemplateDataSchema`. It parses using the same editable DOCX context as
-`WordDocument.Load`; the requested later destination is recorded but not assessed.
+`WordDocument.Load`; the requested destination is recorded, with only the selected
+static PDF option checks described below.
 It checks ordinary body and direct simple-table-cell `MERGEFIELD` paths and
 date/number switches without binding values, calling data getters or writing output.
 Declare each dotted parent as a `Mapping`; missing, optional, incorrectly typed or
@@ -38,6 +39,15 @@ its declared `Collection` type without evaluating items or expanding the repeat.
 The requirement has known root scope unless another observed occurrence of the
 same path has uncertain scope; multi-paragraph, nested, table and other repeats stay
 uninspected. `Plan.RepeatScope` remains unknown for all repeated contents.
+
+For a PDF destination, inspection flags missing PDF options, invalid conformance,
+accessibility, reading-order or vector-semantics enum values, plus PDF/A-2a
+without PDF/UA-1, tagged PDF/A-2b, and native typography with archival PDF.
+These are static predictions from the supplied
+options, with no observed write phase. They do not run a conversion or check
+page selections, document-dependent semantics, font resources, layout, writing or validation;
+`Plan.UninspectedCoverage` remains unknown. Options can change after inspection,
+and this report cannot authorize reuse or an output policy.
 
 The table subset is a direct `word/document.xml` body table with a rectangular
 grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped
@@ -78,7 +88,7 @@ a document and must be protected.
 This report always sets `IsReusable` to false: it does not bind effective options,
 fonts, providers or engine identities and cannot authorize #172 policy execution.
 Other controls and repeat scopes, other table structures, stories, notes, text boxes, other fields,
-destination compatibility, layout, writing and independent validation remain
+other destination compatibility, layout, writing and independent validation remain
 uninspected or unknown. Invalid input and resource limits throw instead of returning
 a partial report. Streams are consumed from their current positions and left open;
 inspection performs no merge. Up to 4,096 declared paths, requirements, findings and
@@ -96,6 +106,9 @@ while retaining mixed and unsupported scopes as unknown.
 The [independent cell-control observation](measurements/roadmap-138-preflight-cell-controls-reference.json)
 checks simple cell requirements, invalid-control positions and actual merge outcomes
 while a merged-table owner remains uninspected.
+The [independent PDF-option observation](measurements/roadmap-138-preflight-pdf-options-reference.json)
+compares static findings with rejected staged exports and an independently read
+successful ordinary PDF.
 
 Pending #144 source supports an inline typed child inside an admitted rich-text
 block control. Inspect the child's `ParentId` snapshot and reacquire handles after

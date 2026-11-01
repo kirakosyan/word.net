@@ -1370,6 +1370,24 @@
       ]
     },
     {
+      "id": "template-inspection-pdf-option-conflicts",
+      "issue": 171,
+      "outcome": "rejected",
+      "boundary": "Static PDF option conflicts predict staged-output rejection without claiming an observed writer phase or complete output validation.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "PdfProfileConflictsPredictStagedOutputRejection" }
+      ]
+    },
+    {
+      "id": "template-inspection-pdf-option-scope",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "PDF option checks apply only to the requested PDF destination, retain unknown later stages and do not evaluate the field clock.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "PdfOptionChecksAreBoundedToTheRequestedDestinationAndNeverEvaluateTheClock" }
+      ]
+    },
+    {
       "id": "nary-equation-managed",
       "issue": 169,
       "outcome": "supported-bounded",

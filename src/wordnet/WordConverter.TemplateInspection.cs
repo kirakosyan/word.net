@@ -14,7 +14,7 @@ public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
     /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths. Other controls, repeated contents, other owners,
-    /// output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
+    /// Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
@@ -25,7 +25,7 @@ public sealed partial class WordConverter
             || destination != DocumentFormat.Docx && !CanConvert(DocumentFormat.Docx, destination)) throw new ArgumentOutOfRangeException(nameof(destination));
         options ??= new ConversionOptions();
         // Template binding begins from WordDocument.Load, whose reader destination is DOCX.
-        // The caller's requested eventual destination is not assessed in this snapshot.
+        // Only a few PDF option conflicts are assessed for the caller's eventual destination.
         var context = new ConversionContext(options, cancellationToken) { Editing = true, Inspecting = true, CaptureTemplateSources = true, Destination = DocumentFormat.Docx };
         context.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
@@ -66,6 +66,24 @@ public sealed partial class WordConverter
         }
         Add("Plan.UninspectedCoverage", "Remediation.ReviewConversion", unknown: true);
         Add("Plan.ReuseUnavailable", "Remediation.Reinspect", unknown: true);
+        if (destination == DocumentFormat.Pdf)
+        {
+            PdfOptions? pdf = options.Pdf;
+            if (pdf == null) Add("Plan.PdfOptionsMissing", "Remediation.ConfigurePdf");
+            else
+            {
+                if (pdf.Conformance is not (PdfConformance.Pdf17 or PdfConformance.PdfA2b or PdfConformance.PdfA2a)
+                    || pdf.Accessibility is < PdfAccessibility.None or > PdfAccessibility.PdfUa1
+                    || pdf.TextBoxReadingOrder is not (PdfTextBoxReadingOrder.Reject or PdfTextBoxReadingOrder.AnchorOrder)
+                    || pdf.VectorSemantics is not (PdfVectorSemantics.Reject or PdfVectorSemantics.DescribedAtAnchor or PdfVectorSemantics.Decorative))
+                    Add("Plan.PdfOptionsInvalid", "Remediation.FixOutputProfile");
+                if (pdf.Conformance == PdfConformance.PdfA2a && pdf.Accessibility != PdfAccessibility.PdfUa1
+                    || pdf.Conformance == PdfConformance.PdfA2b && pdf.Accessibility != PdfAccessibility.None)
+                    Add("Plan.PdfTaggedArchiveConflict", "Remediation.FixOutputProfile");
+                if (context.Typography.Enabled && pdf.Conformance is PdfConformance.PdfA2a or PdfConformance.PdfA2b)
+                    Add("Plan.PdfNativeArchiveConflict", "Remediation.FixOutputProfile");
+            }
+        }
         foreach (ConversionDiagnostic diagnostic in context.Result(0).Diagnostics)
         {
             Work();
