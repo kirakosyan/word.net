@@ -1,0 +1,310 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "headCommit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+  "pullRequestMergeCommit": "445121105c46a50fd8a49a77d03b108dad29f707",
+  "identicalHeadAndMergeTree": "8d4ffe9b63e349c6d9b87a913f1d0cf4e414f6ca",
+  "scope": "Both prior push and pull-request workflows passed source and local-package tests in exact Framework 4.7.2 x64 legacy-JIT guests; all four guests report complete cleanup. This does not qualify later source.",
+  "runs": [
+    {
+      "event": "pull_request",
+      "workflowRun": 41203409243,
+      "job": 124548616888,
+      "artifact": 13043563854,
+      "asset": "source",
+      "artifactSha256": "1b75e76d971c207f54b1770cd1d58ce7bb00150e827afba3c008ddac8c1464e6",
+      "sourceCommit": "445121105c46a50fd8a49a77d03b108dad29f707",
+      "testsPassed": 2320,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "cleanup": {
+        "project": "wordnet-472-1644d445312f",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "bundle": {
+        "testsSha256": "c889f8f2c4b4f3483677108ea90c12957a7a5c9319d1e34757c46d3c43cfc676",
+        "sourceCommit": "445121105c46a50fd8a49a77d03b108dad29f707",
+        "workflowRun": "41203409243",
+        "testAsset": "source",
+        "requiredCases": 2320,
+        "jitMode": "legacy",
+        "binaries": {
+          "wordnet.dll": "abe897381ca62c3bb8a558f9d30bcbee811246a9c290fbc6b19855839029d96b",
+          "wordnet.Fonts.dll": "8cafddf32ea46f54e83fd5001fe3dca23120ff03f48c3d3d81ed640413438369",
+          "wordnet.Ocr.dll": "3d97ea113eaeb16846caefe97fa4cdfb24a8dac9e62a1075d613d711bad36de6",
+          "wordnet.Conversion.Tests.exe": "d5998826ccce6a5748ec5cfd1e126d2ca3fae794b2a886c7842897d895d79806"
+        },
+        "packageVersion": "",
+        "packages": {}
+      },
+      "environment": {
+        "utc": "2026-10-31T13:32:03.5135404Z",
+        "os": "Microsoft Windows NT 10.0.17763.0",
+        "reportedArchitecture": "AMD64 / ",
+        "processorIdentifier": "AMD64 Family 25 Model 17 Stepping 1, AuthenticAMD",
+        "testProcessArchitecture": "x64",
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "clrFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "jitFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "runtimeOverrides": {},
+        "requestedJitMode": "legacy",
+        "loadedJitModules": [
+          {
+            "name": "clrjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          },
+          {
+            "name": "compatjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          }
+        ],
+        "childRuntimeOverrides": {
+          "COMPlus_UseLegacyJit": "1"
+        },
+        "testConfigurationSha256": "e23400f6651addee1c9b5947621babd2fbe38b44347376f98fdb2c51823b2067",
+        "librarySha256": "abe897381ca62c3bb8a558f9d30bcbee811246a9c290fbc6b19855839029d96b",
+        "testSha256": "d5998826ccce6a5748ec5cfd1e126d2ca3fae794b2a886c7842897d895d79806"
+      },
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2320,
+        "commit": "445121105c46a50fd8a49a77d03b108dad29f707",
+        "asset": "source",
+        "librarySha256": "abe897381ca62c3bb8a558f9d30bcbee811246a9c290fbc6b19855839029d96b",
+        "testSha256": "d5998826ccce6a5748ec5cfd1e126d2ca3fae794b2a886c7842897d895d79806"
+      }
+    },
+    {
+      "event": "pull_request",
+      "workflowRun": 41203409243,
+      "job": 124550355643,
+      "artifact": 13044765956,
+      "asset": "package",
+      "artifactSha256": "951338887b3c6bcd26aa790342615c219cfac1f309f7b477751df971f74052ee",
+      "sourceCommit": "445121105c46a50fd8a49a77d03b108dad29f707",
+      "testsPassed": 2320,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "cleanup": {
+        "project": "wordnet-472-ea07ec545b5a",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "bundle": {
+        "testsSha256": "c72c2faca3fd85f965968b34c16b6acf61fa94253f95afcb60a3bf16768ecbdb",
+        "sourceCommit": "445121105c46a50fd8a49a77d03b108dad29f707",
+        "workflowRun": "41203409243",
+        "testAsset": "package",
+        "requiredCases": 2320,
+        "jitMode": "legacy",
+        "binaries": {
+          "wordnet.dll": "b83eae3b416cf01256d57c681122fc019374262673063feea6c22c36170fbe25",
+          "wordnet.Fonts.dll": "a7571749220e4e320e86e3ed2f7dc181afdb1c12ea5c8ebb80410b68d42d152d",
+          "wordnet.Ocr.dll": "9bec6fe8f2b957821608f0b6dbfd5dcda8f71f5b4ba834a562c5f65f529f5404",
+          "wordnet.Conversion.Tests.exe": "1acbcb8b461452b4de6550e9d35fcc9ddcf10ca83a7294e824a5330525f9c30f"
+        },
+        "packageVersion": "1.5.0",
+        "packages": {
+          "wordnet": "045b35d70adcb1b40609485dd3699e79b508801462bcab3d5fc367095dda4634",
+          "wordnet.Fonts": "59d69892a7a19939810484360a63c235e4dc384dd7fb9a39126133e09b225480",
+          "wordnet.Ocr": "0ed0c89476e962a1d876493a538bfffc5f6947cca692a12185a1138eb2550ba3"
+        }
+      },
+      "environment": {
+        "utc": "2026-10-31T13:38:33.7380586Z",
+        "os": "Microsoft Windows NT 10.0.17763.0",
+        "reportedArchitecture": "AMD64 / ",
+        "processorIdentifier": "AMD64 Family 25 Model 1 Stepping 1, AuthenticAMD",
+        "testProcessArchitecture": "x64",
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "clrFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "jitFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "runtimeOverrides": {},
+        "requestedJitMode": "legacy",
+        "loadedJitModules": [
+          {
+            "name": "clrjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          },
+          {
+            "name": "compatjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          }
+        ],
+        "childRuntimeOverrides": {
+          "COMPlus_UseLegacyJit": "1"
+        },
+        "testConfigurationSha256": "e23400f6651addee1c9b5947621babd2fbe38b44347376f98fdb2c51823b2067",
+        "librarySha256": "b83eae3b416cf01256d57c681122fc019374262673063feea6c22c36170fbe25",
+        "testSha256": "1acbcb8b461452b4de6550e9d35fcc9ddcf10ca83a7294e824a5330525f9c30f"
+      },
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2320,
+        "commit": "445121105c46a50fd8a49a77d03b108dad29f707",
+        "asset": "package",
+        "librarySha256": "b83eae3b416cf01256d57c681122fc019374262673063feea6c22c36170fbe25",
+        "testSha256": "1acbcb8b461452b4de6550e9d35fcc9ddcf10ca83a7294e824a5330525f9c30f"
+      }
+    },
+    {
+      "event": "push",
+      "workflowRun": 41203405000,
+      "job": 124548682338,
+      "artifact": 13044019824,
+      "asset": "source",
+      "artifactSha256": "2a3cdaba794f63bfda25b31d4f5be5c4dacfa225417b845f05edf9bd58370448",
+      "sourceCommit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+      "testsPassed": 2320,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "cleanup": {
+        "project": "wordnet-472-d80cd1b25b52",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "bundle": {
+        "testsSha256": "0771726086197ec8b6c20e4e6a173779c932031ecd86024ceb6d89c047589f16",
+        "sourceCommit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+        "workflowRun": "41203405000",
+        "testAsset": "source",
+        "requiredCases": 2320,
+        "jitMode": "legacy",
+        "binaries": {
+          "wordnet.dll": "7c4c1b37ddadfae54cc6848a0907941cbe1087395e35ccc7767e3b73c0c4a952",
+          "wordnet.Fonts.dll": "6c7ae06fd947bccfc505dda11d41d7f0f80165f1cb48c60d2c218e5f66e69ee7",
+          "wordnet.Ocr.dll": "7d23eb1b908d49f7cc95cf3088fb39809c427caa335b341d58bed8061c1a9e3f",
+          "wordnet.Conversion.Tests.exe": "cf44ea748c2c7eb00609b2ef07fb6dbde1e0b7fca82275e502d0becb2cd83738"
+        },
+        "packageVersion": "",
+        "packages": {}
+      },
+      "environment": {
+        "utc": "2026-10-31T13:31:35.6018655Z",
+        "os": "Microsoft Windows NT 10.0.17763.0",
+        "reportedArchitecture": "AMD64 / ",
+        "processorIdentifier": "Intel64 Family 6 Model 207 Stepping 2, GenuineIntel",
+        "testProcessArchitecture": "x64",
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "clrFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "jitFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "runtimeOverrides": {},
+        "requestedJitMode": "legacy",
+        "loadedJitModules": [
+          {
+            "name": "clrjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          },
+          {
+            "name": "compatjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          }
+        ],
+        "childRuntimeOverrides": {
+          "COMPlus_UseLegacyJit": "1"
+        },
+        "testConfigurationSha256": "e23400f6651addee1c9b5947621babd2fbe38b44347376f98fdb2c51823b2067",
+        "librarySha256": "7c4c1b37ddadfae54cc6848a0907941cbe1087395e35ccc7767e3b73c0c4a952",
+        "testSha256": "cf44ea748c2c7eb00609b2ef07fb6dbde1e0b7fca82275e502d0becb2cd83738"
+      },
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2320,
+        "commit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+        "asset": "source",
+        "librarySha256": "7c4c1b37ddadfae54cc6848a0907941cbe1087395e35ccc7767e3b73c0c4a952",
+        "testSha256": "cf44ea748c2c7eb00609b2ef07fb6dbde1e0b7fca82275e502d0becb2cd83738"
+      }
+    },
+    {
+      "event": "push",
+      "workflowRun": 41203405000,
+      "job": 124551308964,
+      "artifact": 13044965825,
+      "asset": "package",
+      "artifactSha256": "edad4d2215502b40bd13ca0d65a9391d5795f2f265ecf8062de5bab1a6e0b973",
+      "sourceCommit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+      "testsPassed": 2320,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "cleanup": {
+        "project": "wordnet-472-3fd470d2c649",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "bundle": {
+        "testsSha256": "8193623dca7b2aea0739cdd95007c99c663b4742828a1093fa3ac8b3ff4a6d5f",
+        "sourceCommit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+        "workflowRun": "41203405000",
+        "testAsset": "package",
+        "requiredCases": 2320,
+        "jitMode": "legacy",
+        "binaries": {
+          "wordnet.dll": "a6756ac103368ea920d46de778097a9e037f48f5b2e70b1c2063320e54b69f4a",
+          "wordnet.Fonts.dll": "0bebf73a07ef6a704daf9b596d0dba07ad4dffe4b633c9aaa9ecf39e46e68fcd",
+          "wordnet.Ocr.dll": "245284fb9d9a6fdf5d3e9d65214ab4824b6cf40bdfed491cab8fafbee961e153",
+          "wordnet.Conversion.Tests.exe": "d8822cbac9188cb8230d9ef7aca7d6be0cd29c0328d3cd7617e6fc0525e40c24"
+        },
+        "packageVersion": "1.5.0",
+        "packages": {
+          "wordnet": "8dfba3b7094d77683ab84dde0fa7ba59cdfa3457fb46731b3382f0dfee379a9b",
+          "wordnet.Fonts": "ba0ce72a9b323293ecd2be02fcee41e73d1986d71d0fac1c1c6f30da83389117",
+          "wordnet.Ocr": "52333c0f1d726c6812b1fec9780989d9a602b5790bb796b0f2b1758ad59f9241"
+        }
+      },
+      "environment": {
+        "utc": "2026-10-31T13:42:10.2397584Z",
+        "os": "Microsoft Windows NT 10.0.17763.0",
+        "reportedArchitecture": "AMD64 / ",
+        "processorIdentifier": "AMD64 Family 25 Model 17 Stepping 1, AuthenticAMD",
+        "testProcessArchitecture": "x64",
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "clrFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "jitFileVersion": "4.7.3946.0 built by: NET472REL1LAST_B",
+        "runtimeOverrides": {},
+        "requestedJitMode": "legacy",
+        "loadedJitModules": [
+          {
+            "name": "clrjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          },
+          {
+            "name": "compatjit.dll",
+            "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+          }
+        ],
+        "childRuntimeOverrides": {
+          "COMPlus_UseLegacyJit": "1"
+        },
+        "testConfigurationSha256": "e23400f6651addee1c9b5947621babd2fbe38b44347376f98fdb2c51823b2067",
+        "librarySha256": "a6756ac103368ea920d46de778097a9e037f48f5b2e70b1c2063320e54b69f4a",
+        "testSha256": "d8822cbac9188cb8230d9ef7aca7d6be0cd29c0328d3cd7617e6fc0525e40c24"
+      },
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2320,
+        "commit": "96a59412f7f4f38aee411fed8b411695fb54ac18",
+        "asset": "package",
+        "librarySha256": "a6756ac103368ea920d46de778097a9e037f48f5b2e70b1c2063320e54b69f4a",
+        "testSha256": "d8822cbac9188cb8230d9ef7aca7d6be0cd29c0328d3cd7617e6fc0525e40c24"
+      }
+    }
+  ]
+}

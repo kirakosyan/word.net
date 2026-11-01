@@ -226,7 +226,9 @@ records title/label reading-order differences and label-origin differences of
 48.76 points for pie and 13.05 points for doughnut, with 27.5-point frame
 differences, all against the unchanged 0.5-point geometry tolerance. Managed
 PDF/SVG/XPS origins agree within 0.1 point and both labels fit in the tested
-sectors. BestEffort/Lenient reports both `Chart.DataLabelApproximation` and
+sectors. The [exact-source receipt](measurements/roadmap-138-circular-labels-a8e9b96.json)
+also records the kerning-heavy advance check and its XPS limitations.
+BestEffort/Lenient reports both `Chart.DataLabelApproximation` and
 `Chart.CircularLayoutApproximation`; Strict rejects the measured loss. These are
 not Microsoft Word results, public 1.5.0 support or full #163 acceptance.
 

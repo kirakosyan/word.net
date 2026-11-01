@@ -429,7 +429,24 @@ An earlier source revision failed the unchanged local performance gate and a
 kerning-heavy PDF positioning control; its [failure receipt](measurements/roadmap-138-circular-labels-ed8a72e-failures.json)
 retains the four performance rounds, the measured text offset and test-development
 failures. The following correction measures the unkerned text actually emitted by
-the chart writers; its own qualification is recorded separately.
+the chart writers. Its [exact-source receipt](measurements/roadmap-138-circular-labels-a8e9b96.json)
+records both 2,340-case suites, 812 mapped cases, local packages and the reproduced
+fixtures. The first [corrected-source performance comparison](measurements/roadmap-138-circular-labels-performance-a8e9b96-failure.json)
+also failed; the [same-source control](measurements/roadmap-138-circular-labels-performance-a8-control.json)
+shows substantial timing variation. The unchanged gate passed on [retry](measurements/roadmap-138-circular-labels-performance-a8e9b96.json),
+with both failures and all control samples retained. This does not establish a
+performance improvement.
+
+The kerning-heavy chart-advance probe can be reproduced with the .NET 10 SDK and
+Python packages PyMuPDF and FontTools:
+
+```sh
+python3 eng/verify-roadmap-138-chart-advances.py /absolute/path/to/new-scratch-directory
+```
+
+It checks PDF and SVG glyph origins against the font advances and verifies XPS
+origin, font bytes and absent glyph overrides; it does not render XPS in a separate
+viewer. Four negative controls alter the parsed measurements in memory.
 
 Pending #163 circular-chart tests cover immutable slice data, editable graph and
 binding, signed-value and slice-count rejection, normalized extreme values,
