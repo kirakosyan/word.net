@@ -530,6 +530,27 @@ The separate [released fragment and review corpus](measurements/roadmap-138-work
 retains four authored inputs, six schema-checked outputs, pinned PDF-reader text,
 geometry and raster observations, and 16 altered-observation controls. It records
 release-source and public-package behavior rather than qualifying this newer source.
+The corrected complex-field source `e074eb4` passed locked restore, five-target
+Release rebuild, formatting and local package/API verification. Both full .NET 8
+and .NET 10 conversion and English OCR suites passed 2,422 cases with no skips;
+119 source-matrix profiles passed 894 mapped cases. Independent checks included
+160 altered-observation controls, ten schema-valid complex-field inputs and one
+intentional schema-invalid value. The original oracle failure remains in the
+source log; the corrected oracle and [exact-source receipt](measurements/roadmap-138-complex-fields-e074eb4.json)
+are separate from the earlier prototype. The unchanged single-core PDF performance
+gate passed at 0.969 against `e237a6f`; its two reference rounds ranged from
+37.275 to 43.704 ms. Hosted and actual Framework checks for this exact source
+remain separate.
+
+For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
+[PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
+[PR package](measurements/wordnet-138-framework-526-pr-package-success.json),
+[push source](measurements/wordnet-138-framework-526-push-source-success.json) and
+[push package](measurements/wordnet-138-framework-526-push-package-success.json)
+guests each passed 2,411 cases and cleanup. The later head `e9de85c` passed the
+[hosted performance gates](measurements/wordnet-138-performance-e9-hosted-success.json)
+at 0.973 for the PR merge against release source and 1.150 for the push against
+`52695c9`. Other hosted checks for `e9de85c` are distinct and still running.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
