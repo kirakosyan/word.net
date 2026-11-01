@@ -333,6 +333,14 @@ and cell fields, null positions for complex fields and bounded location work. It
 [independent observation](measurements/roadmap-138-preflight-locations-reference.json)
 compares two schema-valid synthetic templates with parsed source XML and nine
 altered controls; it makes no reusable-plan or output-qualification claim.
+The [exact-source receipt](measurements/roadmap-138-preflight-locations-ac28850.json)
+records both 2,355-case suites, the 827-case matrix, local packages and independent
+checks. The unchanged [performance gate](measurements/roadmap-138-preflight-locations-performance-ac28850.json)
+is a local comparison; hosted checks and actual Framework execution for this source
+remain separate. The earlier 4f push and PR package guests both passed on actual
+Framework 4.7.2 with cleanup; their [push](measurements/roadmap-138-framework-4f-push-package-success.json)
+and [PR](measurements/roadmap-138-framework-4f-pr-package-success.json) receipts do
+not qualify newer source.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
