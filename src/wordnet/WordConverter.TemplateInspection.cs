@@ -14,7 +14,7 @@ public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
     /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths.
-    /// A single simple field inside an admitted root repeat is observed with unknown scope; other repeated contents, controls and owners remain uninspected. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
+    /// A single simple field inside an admitted root repeat has known item scope only when the caller declares that item path required; other repeated contents, controls and owners remain uninspected. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
@@ -47,17 +47,18 @@ public sealed partial class WordConverter
         DocumentModel model = ReadDocument(input, DocumentFormat.Docx, context);
         WordDocument.Admit(model, context);
         var findings = new List<(string Code, string Remediation, string? Path, string? Part, int Count, bool Unknown,
-            DiagnosticSeverity Severity, DiagnosticPhase? Phase, bool Truncated, IReadOnlyList<int>? Indices)>();
-        var declarations = schema.Paths.ToDictionary(p => p.Path, StringComparer.Ordinal);
-        var observedPaths = new Dictionary<(string Path, bool ScopeUnknown), int>();
+            DiagnosticSeverity Severity, DiagnosticPhase? Phase, bool Truncated, IReadOnlyList<int>? Indices, string? Scope)>();
+        var declarations = schema.Paths.Where(p => p.RepeatCollectionPath == null).ToDictionary(p => p.Path, StringComparer.Ordinal);
+        var itemDeclarations = schema.Paths.Where(p => p.RepeatCollectionPath != null).ToDictionary(p => (p.RepeatCollectionPath!, p.Path));
+        var observedPaths = new Dictionary<(string Path, bool ScopeUnknown, string? Scope), int>();
         int work = 0; long locationBytes = 0;
         void Add(string code, string remediation, string? path = null, string? part = null, int count = 1, bool unknown = false,
-            DiagnosticSeverity? severity = null, DiagnosticPhase? phase = null, bool truncated = false, IReadOnlyList<int>? indices = null)
+            DiagnosticSeverity? severity = null, DiagnosticPhase? phase = null, bool truncated = false, IReadOnlyList<int>? indices = null, string? scope = null)
         {
             if (findings.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Finding limit exceeded.");
             locationBytes = checked(locationBytes + 4L * (indices?.Count ?? 0));
             if (locationBytes > options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TemplateInspection: Source positions exceed the expanded-byte limit.");
-            findings.Add((code, remediation, path, part, count, unknown, severity ?? (unknown ? DiagnosticSeverity.Info : DiagnosticSeverity.Warning), phase, truncated, indices));
+            findings.Add((code, remediation, path, part, count, unknown, severity ?? (unknown ? DiagnosticSeverity.Info : DiagnosticSeverity.Warning), phase, truncated, indices, scope));
         }
         void Work()
         {
@@ -119,16 +120,20 @@ public sealed partial class WordConverter
             catch (NotSupportedException) { ControlProblem("Plan.InvalidControl"); }
             if (!control.Executable) ControlProblem("Plan.InvalidControlStructure");
         }
-        void InspectPath(string path, string? part, string kind, string? formatSwitch, Func<IReadOnlyList<int>?> location, bool rootScope = false)
+        bool InspectPath(string path, string? part, string kind, string? formatSwitch, Func<IReadOnlyList<int>?> location, bool rootScope = false, string? repeatScope = null)
         {
-            bool scopeUnknown = scoped && !rootScope;
-            var key = (Path: path, ScopeUnknown: scopeUnknown);
+            TemplateSchemaPath? item = null;
+            bool requiredItem = repeatScope != null && itemDeclarations.TryGetValue((repeatScope, path), out item) && item?.Required == true;
+            bool scopeUnknown = scoped && !rootScope && !requiredItem;
+            var key = (Path: path, ScopeUnknown: scopeUnknown, Scope: repeatScope);
             bool present = observedPaths.TryGetValue(key, out int prior);
             if (!present && observedPaths.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Requirement limit exceeded.");
             observedPaths[key] = checked(prior + 1);
-            if (scopeUnknown) return;
-            if (!declarations.TryGetValue(path, out TemplateSchemaPath? declared))
-            { Add("Plan.MissingPath", "Remediation.DeclarePath", path, part, indices: location()); return; }
+            if (scopeUnknown) return true;
+            TemplateSchemaPath? declared = requiredItem ? item : null;
+            if (!requiredItem && !declarations.TryGetValue(path, out declared))
+            { Add("Plan.MissingPath", "Remediation.DeclarePath", path, part, indices: location()); return false; }
+            if (declared == null) throw new InvalidOperationException("Missing admitted template declaration.");
             if (!declared.Required) Add("Plan.OptionalPath", "Remediation.RequirePath", path, part, unknown: true, indices: location());
             bool unknownType = kind == "field" && formatSwitch != null && declared.Type == TemplatePathType.Scalar;
             bool compatible = kind switch
@@ -143,8 +148,11 @@ public sealed partial class WordConverter
                     _ => declared.Type is TemplatePathType.Scalar or TemplatePathType.Number or TemplatePathType.Date,
                 },
             };
-            if (unknownType) Add("Plan.PathTypeUnknown", "Remediation.DeclarePathType", path, part, unknown: true, indices: location());
-            else if (!compatible) Add("Plan.PathType", "Remediation.FixPathType", path, part, indices: location());
+            if (unknownType) Add("Plan.PathTypeUnknown", "Remediation.DeclarePathType", path, part, unknown: true, indices: location(), scope: repeatScope);
+            else if (!compatible)
+                Add(requiredItem ? "Plan.RepeatFieldTypeMismatch" : "Plan.PathType", "Remediation.FixPathType", path, part,
+                    unknown: requiredItem, indices: location(), scope: repeatScope);
+            if (requiredItem) return false;
             string[] segments = path.Split('.');
             for (int i = 1; i < segments.Length; i++)
             {
@@ -155,6 +163,7 @@ public sealed partial class WordConverter
                     Add("Plan.ParentType", "Remediation.FixPathType", parent, part, indices: location());
                 else if (!ancestor.Required) Add("Plan.OptionalParent", "Remediation.RequirePath", parent, part, unknown: true, indices: location());
             }
+            return false;
         }
         bool otherOwners = model.Blocks.Any(b => b is not ParagraphBlock)
             || model.Notes.Count != 0 || model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection })
@@ -284,12 +293,12 @@ public sealed partial class WordConverter
                         return indices;
                     }
                     if (DocumentFields.Kind(run.FieldInstruction) != "MERGEFIELD" || run.FieldChildren?.Count > 0)
-                    { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true, indices: FieldLocation()); continue; }
+                    { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true, indices: FieldLocation(), scope: tag.Path); continue; }
                     (string Path, string? Format, string? Switch) field;
                     try { field = WordDocument.MergeField(run.FieldInstruction); }
-                    catch (InvalidDataException) { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true, indices: FieldLocation()); continue; }
-                    InspectPath(field.Path, part, "field", field.Switch, FieldLocation);
-                    Add("Plan.RepeatFieldScopeUnknown", "Remediation.ReviewScopes", field.Path, part, unknown: true, indices: FieldLocation());
+                    catch (InvalidDataException) { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true, indices: FieldLocation(), scope: tag.Path); continue; }
+                    if (InspectPath(field.Path, part, "field", field.Switch, FieldLocation, repeatScope: tag.Path))
+                        Add("Plan.RepeatFieldScopeUnknown", "Remediation.ReviewScopes", field.Path, part, unknown: true, indices: FieldLocation(), scope: tag.Path);
                 }
                 continue;
             }
@@ -347,17 +356,24 @@ public sealed partial class WordConverter
         }
         if (otherOwners) Add("Plan.OwnerCoverage", "Remediation.ReviewOwners", unknown: true);
         context.CheckCancellation();
-        Dictionary<string, string> pathIds = Aliases(findings.Select(f => f.Path).Concat(observedPaths.Keys.Select(key => key.Path)), "path");
+        Dictionary<string, string> pathIds = Aliases(findings.Select(f => f.Path).Concat(findings.Select(f => f.Scope))
+            .Concat(observedPaths.Keys.Select(key => key.Path)).Concat(observedPaths.Keys.Select(key => key.Scope)), "path");
         Dictionary<string, string> partIds = Aliases(findings.Select(f => f.Part), "part");
         var result = findings.Select(f => new TemplateInspectionFinding(f.Code, f.Remediation,
-            f.Path == null ? null : pathIds[f.Path], f.Part == null ? null : partIds[f.Part], f.Count, f.Unknown,
+            f.Path == null ? null : pathIds[f.Path], f.Scope == null ? null : pathIds[f.Scope], f.Part == null ? null : partIds[f.Part], f.Count, f.Unknown,
             f.Severity, f.Phase, f.Truncated, f.Indices)).ToList();
         context.CheckCancellation();
-        var requirements = observedPaths.OrderBy(pair => pathIds[pair.Key.Path], StringComparer.Ordinal).ThenBy(pair => pair.Key.ScopeUnknown).Select(pair =>
+        var requirements = observedPaths.OrderBy(pair => pathIds[pair.Key.Path], StringComparer.Ordinal).ThenBy(pair => pair.Key.ScopeUnknown)
+            .ThenBy(pair => pair.Key.Scope, StringComparer.Ordinal).Select(pair =>
         {
             TemplateSchemaPath? declared = null;
-            if (!pair.Key.ScopeUnknown) declarations.TryGetValue(pair.Key.Path, out declared);
-            return new TemplateInspectionRequirement(pathIds[pair.Key.Path], declared?.Type, declared?.Required, pair.Key.ScopeUnknown, pair.Value);
+            if (!pair.Key.ScopeUnknown)
+            {
+                if (pair.Key.Scope == null) declarations.TryGetValue(pair.Key.Path, out declared);
+                else itemDeclarations.TryGetValue((pair.Key.Scope, pair.Key.Path), out declared);
+            }
+            return new TemplateInspectionRequirement(pathIds[pair.Key.Path], pair.Key.Scope == null ? null : pathIds[pair.Key.Scope],
+                declared?.Type, declared?.Required, pair.Key.ScopeUnknown, pair.Value);
         }).ToList();
         return new TemplateInspection(inputHash, destination, result, requirements,
             pathIds.ToDictionary(p => p.Value, p => p.Key, StringComparer.Ordinal),

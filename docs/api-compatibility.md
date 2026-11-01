@@ -10,6 +10,9 @@ Selected incompatible PDF option combinations are flagged statically, without
 running conversion or claiming that the remaining destination checks passed.
 The additive `TemplateInspectionFinding.SourceElementIndices` exposes a bounded
 numeric source position where available, without exposing names by default.
+`TemplateSchemaPath.ForRepeatItem` adds an explicit per-item declaration, and the
+additive `ScopePathId` on findings and requirements identifies an opaque repeat
+collection alias when known; existing root declarations and constructors remain.
 It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`

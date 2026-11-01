@@ -1354,10 +1354,14 @@
       "id": "template-inspection-simple-root-repeat",
       "issue": 171,
       "outcome": "supported-bounded",
-      "boundary": "Non-reusable inspection checks the collection path of a directly owned simple root repeat. A single simple repeated merge field is observed with unknown scope and a separate requirement from an identically named root field; broader repeat coverage remains unknown.",
+      "boundary": "Non-reusable inspection checks a directly owned simple root repeat and a single repeated merge field. A required single-segment item declaration identifies its scope if executed; optional or absent declarations retain unknown fallback scope. Root and different repeat requirements remain separate; broader repeat coverage remains unknown.",
       "tests": [
         { "class": "TemplateInspectionTests", "method": "SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents" },
         { "class": "TemplateInspectionTests", "method": "RepeatedFieldAndRootFieldKeepSeparateScopeEvidence" },
+        { "class": "TemplateInspectionTests", "method": "RequiredRepeatItemDeclarationResolvesItsOwnScopeWithoutConflatingRoot" },
+        { "class": "TemplateInspectionTests", "method": "OptionalRepeatItemStillHasUnknownFallbackScope" },
+        { "class": "TemplateInspectionTests", "method": "RepeatsWithTheSameFieldKeepIndependentCollectionScopes" },
+        { "class": "TemplateInspectionTests", "method": "RepeatItemTypeMismatchIsUncertainWhenTheCollectionMayBeEmpty" },
         { "class": "TemplateInspectionTests", "method": "UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty" }
       ]
     },

@@ -190,6 +190,96 @@ public sealed class TemplateInspectionTests
     }
 
     [Fact]
+    public void RequiredRepeatItemDeclarationResolvesItsOwnScopeWithoutConflatingRoot()
+    {
+        byte[] bytes = Document(Field("MERGEFIELD Name") + RootRepeat("Items", Field("MERGEFIELD Name")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Name", TemplatePathType.Scalar), TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionRequirement[] names = report.Requirements.Where(requirement => report.GetSensitivePathAliases()[requirement.PathId] == "Name").ToArray();
+        Assert.Equal(2, names.Length); Assert.Equal(names[0].PathId, names[1].PathId);
+        TemplateInspectionRequirement root = Assert.Single(names, requirement => requirement.ScopePathId == null);
+        TemplateInspectionRequirement item = Assert.Single(names, requirement => requirement.ScopePathId != null);
+        Assert.False(root.ScopeUnknown); Assert.False(item.ScopeUnknown); Assert.True(item.Required);
+        Assert.Equal(TemplatePathType.Scalar, item.DeclaredType); Assert.Equal(1, item.Count);
+        Assert.Equal("Items", report.GetSensitivePathAliases()[item.ScopePathId!]);
+        Assert.DoesNotContain(report.Findings, finding => finding.Code == "Plan.RepeatFieldScopeUnknown");
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.RepeatScope" && finding.Unknown);
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Name", json, StringComparison.Ordinal); Assert.DoesNotContain("Items", json, StringComparison.Ordinal);
+        source.Position = 0;
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson("{\"Name\":\"root\",\"Items\":[{\"Name\":\"first\"},{\"Name\":\"second\"}]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("root,first,second", string.Join(",", document.Paragraphs.Select(paragraph => paragraph.Text)));
+    }
+
+    [Fact]
+    public void OptionalRepeatItemStillHasUnknownFallbackScope()
+    {
+        byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Name")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Name", TemplatePathType.Scalar), TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar, required: false));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionRequirement item = Assert.Single(report.Requirements, requirement => report.GetSensitivePathAliases()[requirement.PathId] == "Name");
+        Assert.True(item.ScopeUnknown); Assert.Null(item.DeclaredType); Assert.Null(item.Required);
+        Assert.Equal("Items", report.GetSensitivePathAliases()[item.ScopePathId!]);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.RepeatFieldScopeUnknown" && finding.Unknown && finding.ScopePathId == item.ScopePathId);
+        source.Position = 0;
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson("{\"Name\":\"root\",\"Items\":[{\"Name\":\"child\"},{\"Other\":1}]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("child,root", string.Join(",", document.Paragraphs.Select(paragraph => paragraph.Text)));
+    }
+
+    [Fact]
+    public void RepeatsWithTheSameFieldKeepIndependentCollectionScopes()
+    {
+        byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Name")) + RootRepeat("Orders", Field("MERGEFIELD Name")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection), new TemplateSchemaPath("Orders", TemplatePathType.Collection),
+            new TemplateSchemaPath("Name", TemplatePathType.Scalar), TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar),
+            TemplateSchemaPath.ForRepeatItem("Orders", "Name", TemplatePathType.Scalar, required: false));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionRequirement[] names = report.Requirements.Where(requirement => report.GetSensitivePathAliases()[requirement.PathId] == "Name").ToArray();
+        Assert.Equal(2, names.Length); Assert.Equal(names[0].PathId, names[1].PathId);
+        TemplateInspectionRequirement items = Assert.Single(names, requirement => report.GetSensitivePathAliases()[requirement.ScopePathId!] == "Items");
+        TemplateInspectionRequirement orders = Assert.Single(names, requirement => report.GetSensitivePathAliases()[requirement.ScopePathId!] == "Orders");
+        Assert.False(items.ScopeUnknown); Assert.True(orders.ScopeUnknown); Assert.Equal(1, items.Count); Assert.Equal(1, orders.Count);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.RepeatFieldScopeUnknown" && finding.ScopePathId == orders.ScopePathId);
+        source.Position = 0;
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson("{\"Name\":\"root\",\"Items\":[{\"Name\":\"first\"}],\"Orders\":[{\"Name\":\"second\"},{\"Other\":1}]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("first,second,root", string.Join(",", document.Paragraphs.Select(paragraph => paragraph.Text)));
+    }
+
+    [Fact]
+    public void RepeatItemTypeMismatchIsUncertainWhenTheCollectionMayBeEmpty()
+    {
+        byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Amount")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            TemplateSchemaPath.ForRepeatItem("Items", "Amount", TemplatePathType.Mapping));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding finding = Assert.Single(report.Findings, item => item.Code == "Plan.RepeatFieldTypeMismatch");
+        Assert.True(finding.Unknown); Assert.Equal("Items", report.GetSensitivePathAliases()[finding.ScopePathId!]);
+        Assert.DoesNotContain(report.Findings, item => item.Code == "Plan.RepeatFieldScopeUnknown");
+        source.Position = 0;
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson("{\"Items\":[]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Empty(document.Paragraphs);
+        source.Position = 0;
+        WordDocument populated = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        InvalidDataException error = Assert.Throws<InvalidDataException>(() => populated.MergeJson("{\"Items\":[{\"Amount\":{}}]}",
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Template.Scalar:", error.Message, StringComparison.Ordinal);
+        Assert.Equal("cached", Assert.Single(populated.Paragraphs).Text);
+        Assert.Throws<ArgumentException>(() => TemplateSchemaPath.ForRepeatItem("Items", "Nested.Value", TemplatePathType.Scalar));
+        var duplicate = TemplateSchemaPath.ForRepeatItem("Items", "Amount", TemplatePathType.Mapping);
+        Assert.Throws<ArgumentException>(() => new TemplateDataSchema(duplicate, duplicate));
+    }
+
+    [Fact]
     public void UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty()
     {
         byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Bad-Name")));

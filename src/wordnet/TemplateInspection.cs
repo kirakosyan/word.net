@@ -28,11 +28,24 @@ public sealed class TemplateSchemaPath
 {
     /// <summary>Declares a dotted path, its type, and whether it is guaranteed to be present.</summary>
     public TemplateSchemaPath(string path, TemplatePathType type, bool required = true)
+        : this(path, type, required, null) { }
+
+    private TemplateSchemaPath(string path, TemplatePathType type, bool required, string? repeatCollectionPath)
     {
         Guard.NotNull(path, nameof(path));
         if (path.Length > 256 || !path.Split('.').All(TemplateData.Identifier)) throw new ArgumentException("Template.Path: Unsupported property path.", nameof(path));
         if (type is < TemplatePathType.Scalar or > TemplatePathType.Collection) throw new ArgumentOutOfRangeException(nameof(type));
-        Path = path; Type = type; Required = required;
+        Path = path; Type = type; Required = required; RepeatCollectionPath = repeatCollectionPath;
+    }
+    /// <summary>Declares a single-segment path relative to every item of a named root repeat collection.</summary>
+    /// <remarks>A required declaration promises the path exists on every item; inspection does not examine data or guarantee a nonempty collection.</remarks>
+    public static TemplateSchemaPath ForRepeatItem(string collectionPath, string path, TemplatePathType type, bool required = true)
+    {
+        Guard.NotNull(collectionPath, nameof(collectionPath)); Guard.NotNull(path, nameof(path));
+        if (collectionPath.Length > 256 || !collectionPath.Split('.').All(TemplateData.Identifier))
+            throw new ArgumentException("Template.Path: Unsupported repeat collection path.", nameof(collectionPath));
+        if (!TemplateData.Identifier(path)) throw new ArgumentException("Template.Path: A repeat item path must be a single identifier.", nameof(path));
+        return new TemplateSchemaPath(path, type, required, collectionPath);
     }
     /// <summary>Gets the caller-supplied path. Do not publish it if names are sensitive.</summary>
     public string Path { get; }
@@ -40,6 +53,8 @@ public sealed class TemplateSchemaPath
     public TemplatePathType Type { get; }
     /// <summary>Gets whether the schema promises that the path is present.</summary>
     public bool Required { get; }
+    /// <summary>Gets the caller-supplied root repeat collection path for an item declaration, or null for a root path. Names may be sensitive.</summary>
+    public string? RepeatCollectionPath { get; }
 }
 
 /// <summary>An immutable, bounded declaration of template paths, with no values or caller property access.</summary>
@@ -52,8 +67,8 @@ public sealed class TemplateDataSchema
         Guard.NotNull(paths, nameof(paths));
         if (paths.Length > 4096) throw new ArgumentOutOfRangeException(nameof(paths));
         var copy = (TemplateSchemaPath[])paths.Clone();
-        if (copy.Any(p => p == null) || copy.Select(p => p.Path).Distinct(StringComparer.Ordinal).Count() != copy.Length)
-            throw new ArgumentException("Template schema paths must be non-null and unique.", nameof(paths));
+        if (copy.Any(p => p == null) || copy.Select(p => (p.RepeatCollectionPath, p.Path)).Distinct().Count() != copy.Length)
+            throw new ArgumentException("Template schema paths must be non-null and unique within their declared scope.", nameof(paths));
         this.paths = Array.AsReadOnly(copy);
     }
     /// <summary>Gets the declared paths. The names are caller data and may be sensitive.</summary>
@@ -63,10 +78,10 @@ public sealed class TemplateDataSchema
 /// <summary>A privacy-safe finding with an opaque part alias and optional numeric source position.</summary>
 public sealed class TemplateInspectionFinding
 {
-    internal TemplateInspectionFinding(string code, string remediation, string? path, string? part, int count, bool unknown,
+    internal TemplateInspectionFinding(string code, string remediation, string? path, string? scopePath, string? part, int count, bool unknown,
         DiagnosticSeverity severity, DiagnosticPhase? sourcePhase, bool locationsTruncated, IReadOnlyList<int>? sourceElementIndices)
     {
-        Code = code; Remediation = remediation; PathId = path; PartId = part; Count = count; Unknown = unknown;
+        Code = code; Remediation = remediation; PathId = path; ScopePathId = scopePath; PartId = part; Count = count; Unknown = unknown;
         Severity = severity; SourcePhase = sourcePhase; LocationsTruncated = locationsTruncated;
         SourceElementIndices = sourceElementIndices == null ? null : Array.AsReadOnly(sourceElementIndices.ToArray());
     }
@@ -76,6 +91,8 @@ public sealed class TemplateInspectionFinding
     public string Remediation { get; }
     /// <summary>Gets an opaque path alias when one is known.</summary>
     public string? PathId { get; }
+    /// <summary>Gets the opaque root repeat collection alias for a scoped field, or null when unavailable.</summary>
+    public string? ScopePathId { get; }
     /// <summary>Gets an opaque part-level alias when one is known.</summary>
     public string? PartId { get; }
     /// <summary>Gets the number of grouped observations.</summary>
@@ -96,10 +113,12 @@ public sealed class TemplateInspectionFinding
 /// <summary>A bounded field or control path observed without evaluating its value.</summary>
 public sealed class TemplateInspectionRequirement
 {
-    internal TemplateInspectionRequirement(string path, TemplatePathType? type, bool? required, bool scopeUnknown, int count)
-    { PathId = path; DeclaredType = type; Required = required; ScopeUnknown = scopeUnknown; Count = count; }
+    internal TemplateInspectionRequirement(string path, string? scopePath, TemplatePathType? type, bool? required, bool scopeUnknown, int count)
+    { PathId = path; ScopePathId = scopePath; DeclaredType = type; Required = required; ScopeUnknown = scopeUnknown; Count = count; }
     /// <summary>Gets the opaque path alias.</summary>
     public string PathId { get; }
+    /// <summary>Gets the opaque root repeat collection alias when the field belongs to an admitted repeat; otherwise null.</summary>
+    public string? ScopePathId { get; }
     /// <summary>Gets the declared type, or null if the declaration or scope is unknown.</summary>
     public TemplatePathType? DeclaredType { get; }
     /// <summary>Gets whether the declaration guarantees presence, or null if unavailable.</summary>
@@ -129,7 +148,7 @@ public sealed class TemplateInspection
     /// <summary>Gets privacy-safe findings. An empty set would not prove conversion or fidelity.</summary>
     public IReadOnlyList<TemplateInspectionFinding> Findings { get; }
     /// <summary>Gets observed bounded field and control requirements, not a complete template inventory.</summary>
-    /// <remarks>The same path alias can have separate known-root and unknown-repeat entries, with independent counts.</remarks>
+    /// <remarks>The same path alias can have separate root and repeat entries, with independent counts and scoped aliases.</remarks>
     public IReadOnlyList<TemplateInspectionRequirement> Requirements { get; }
     /// <summary>Always false: options, fonts and provider identities are not bound by this inspection.</summary>
     public bool IsReusable { get; }

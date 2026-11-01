@@ -37,12 +37,22 @@ control is checked, `Plan.ControlCoverage` remains unknown for the whole documen
 A directly owned body `repeat:` control containing one paragraph with one plain
 text run or one simple field has an unambiguous root collection path. Inspection
 checks that path and its declared `Collection` type without evaluating items or
-expanding the repeat. A simple `MERGEFIELD` inside that admitted repeat also
-produces an opaque requirement and `Plan.RepeatFieldScopeUnknown` finding with a
-numeric source position. Its type, presence and scope remain unknown: the actual
-merge can select a value from the item or fall back to a parent/root value. A root
-field with the same path has a separate known-scope requirement using the same
-alias; their counts do not combine. An unparseable or non-merge field instead
+expanding the repeat. A simple `MERGEFIELD` inside that admitted repeat produces
+an opaque requirement and a numeric source position for any finding. The actual
+merge can select a value from the item or fall back to a parent/root value. By
+default its type, presence and lookup scope remain unknown. To declare that every
+item in a root collection has a single-segment path, use
+`TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar)`.
+A required item declaration lets inspection identify that item's scope and type
+if the field executes. It is a caller promise, not a data check or a guarantee
+that the collection is nonempty. An optional or missing declaration, a dotted
+item path and other repeat contents retain `Plan.RepeatFieldScopeUnknown`.
+An incompatible declared item type produces unknown `Plan.RepeatFieldTypeMismatch`,
+because an empty collection may never evaluate the field. A root field with the
+same path has a separate requirement using the same path alias; `ScopePathId`
+identifies the opaque collection alias and their counts do not combine. The
+collection owner can be known while `ScopeUnknown` remains true for lookup.
+An unparseable or non-merge field instead
 produces unknown `Plan.FieldCoverage`, since an empty collection may never execute it.
 Multi-paragraph, nested, table and other repeats stay uninspected, and
 `Plan.RepeatScope` remains unknown for all repeated contents.
@@ -98,7 +108,8 @@ Other controls and repeat scopes, other table structures, stories, notes, text b
 other destination compatibility, layout, writing and independent validation remain
 uninspected or unknown. Invalid input and resource limits throw instead of returning
 a partial report. Streams are consumed from their current positions and left open;
-inspection performs no merge. Up to 4,096 declared paths, requirements, findings and
+inspection performs no merge. Item declarations and their collection names in the
+schema are caller data and may themselves be sensitive. Up to 4,096 declared paths, requirements, findings and
 aliases and 100,000 work items are admitted, in addition to conversion input bounds.
 The API is unreleased source, and full #171 acceptance remains open.
 The [independent location observation](measurements/roadmap-138-preflight-locations-reference.json)

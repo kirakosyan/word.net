@@ -426,6 +426,11 @@ records both 2,379-case suites, the 851-case matrix, local package checks and th
 independent recheck using the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-preflight-repeat-fields-performance-c49f86b.json)
 passed at 0.979 against the preceding head. Hosted and actual Framework checks for
 this source remain separate.
+The later [repeat-item schema observation](measurements/roadmap-138-repeat-item-schema-reference.json)
+checks eight independent templates and merged DOCX packages with Open XML and
+LibreOffice, including required item paths, optional fallback, separate repeat
+owners and an unexecuted type mismatch. Twenty altered observations are rejected;
+the previous seven-case unknown-scope corpus and its 16 controls also pass.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
