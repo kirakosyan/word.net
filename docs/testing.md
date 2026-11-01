@@ -493,6 +493,12 @@ independent altered-observation controls. Its unchanged local
 passed at 0.963 against `21dc6a0`; reference round medians ranged from
 42.294 to 42.953 ms. Hosted and actual Framework
 checks for this exact source remain separate.
+The [dirty-field observation](measurements/roadmap-138-dirty-fields-reference.json)
+checks eight independently authored DOCX contrasts, including six schema-valid
+inputs, two deliberately invalid values and 18 altered-report controls. It retains
+the initial failed repeat-coverage assertion and the corrected focused retry. This
+prototype does not establish freshness, reusable plans or output validation; exact
+committed-source and runtime evidence are separate.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and

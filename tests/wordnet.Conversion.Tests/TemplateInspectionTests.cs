@@ -11,6 +11,91 @@ namespace WordNet.Tests;
 public sealed class TemplateInspectionTests
 {
     [Theory]
+    [InlineData("true")]
+    [InlineData("1")]
+    [InlineData("on")]
+    public void DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(string value)
+    {
+        string field = Field("MERGEFIELD Name").Replace("<w:fldSimple ", "<w:fldSimple w:dirty='" + value + "' ");
+        byte[] bytes = Document(field + Table(field) + RootRepeat("Items", field));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar),
+            new TemplateSchemaPath("Items", TemplatePathType.Collection), TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding[] findings = report.Findings.Where(finding => finding.Code == "Plan.FieldMarkedDirty").ToArray();
+        Assert.Equal(3, findings.Length);
+        Assert.All(findings, finding =>
+        {
+            Assert.True(finding.Unknown); Assert.Equal("Remediation.RefreshField", finding.Remediation);
+            Assert.NotNull(finding.SourceElementIndices); Assert.Equal("word/document.xml", report.GetSensitivePartAliases()[finding.PartId!]);
+        });
+        Assert.Equal(3, findings.Select(finding => string.Join(",", finding.SourceElementIndices!)).Distinct().Count());
+        TemplateInspectionFinding repeated = Assert.Single(findings, finding => finding.ScopePathId != null);
+        Assert.Equal("Items", report.GetSensitivePathAliases()[repeated.ScopePathId!]);
+        Assert.False(report.IsReusable); Assert.Contains(report.Findings, finding => finding.Code == "Plan.UninspectedCoverage" && finding.Unknown);
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Name", json, StringComparison.Ordinal); Assert.DoesNotContain("Items", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("false")]
+    [InlineData("0")]
+    [InlineData("off")]
+    public void MissingOrFalseDirtyFlagsDoNotEstablishFreshness(string? value)
+    {
+        string field = Field("MERGEFIELD Name");
+        if (value != null) field = field.Replace("<w:fldSimple ", "<w:fldSimple w:dirty='" + value + "' ");
+        using var source = new MemoryStream(Document(field));
+        TemplateInspection report = new WordConverter().InspectTemplate(source,
+            new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(report.Findings, finding => finding.Code is "Plan.FieldMarkedDirty" or "Plan.FieldDirtyUnknown");
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.UninspectedCoverage" && finding.Unknown);
+        Assert.False(report.IsReusable);
+    }
+
+    [Fact]
+    public void InvalidDirtyFlagIsUnknownWithoutPublishingItsValue()
+    {
+        const string privateValue = "private-dirty-value";
+        string field = Field("MERGEFIELD Name").Replace("<w:fldSimple ", "<w:fldSimple w:dirty='" + privateValue + "' ");
+        using var source = new MemoryStream(Document(field));
+        TemplateInspection report = new WordConverter().InspectTemplate(source,
+            new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding finding = Assert.Single(report.Findings, item => item.Code == "Plan.FieldDirtyUnknown");
+        Assert.True(finding.Unknown); Assert.Equal("Remediation.ReviewFields", finding.Remediation); Assert.NotNull(finding.SourceElementIndices);
+        Assert.DoesNotContain(privateValue, JsonSerializer.Serialize(report), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DirtyNonMergeFieldKeepsItsSeparateFieldCoverageUnknown()
+    {
+        string field = Field("DATE").Replace("<w:fldSimple ", "<w:fldSimple w:dirty='true' ");
+        using var source = new MemoryStream(Document(field));
+        TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.FieldMarkedDirty" && finding.Unknown && finding.SourceElementIndices != null);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.FieldCoverage" && finding.Unknown);
+        Assert.False(report.IsReusable);
+    }
+
+    [Fact]
+    public void OtherFieldAttributesKeepRepeatedContentsOutsideDirtyFlagCoverage()
+    {
+        string field = Field("MERGEFIELD Name").Replace("<w:fldSimple ", "<w:fldSimple w:dirty='true' w:fldLock='true' ");
+        using var source = new MemoryStream(Document(RootRepeat("Items", field)));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar));
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(report.Findings, finding => finding.Code == "Plan.FieldMarkedDirty");
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.RepeatScope" && finding.Unknown);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.UninspectedCoverage" && finding.Unknown);
+    }
+
+    [Theory]
     [InlineData(PdfConformance.PdfA2a, PdfAccessibility.None, false, "Plan.PdfTaggedArchiveConflict", "Pdf.TaggedArchive")]
     [InlineData(PdfConformance.PdfA2b, PdfAccessibility.Tagged, false, "Plan.PdfTaggedArchiveConflict", "Pdf.TagsConformance")]
     [InlineData(PdfConformance.PdfA2b, PdfAccessibility.None, true, "Plan.PdfNativeArchiveConflict", "Typography.Conformance")]

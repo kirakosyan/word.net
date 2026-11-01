@@ -389,7 +389,7 @@ identify definite problems in the narrow inspected profile. `Plan.OptionalPath`,
 `Plan.OptionalParent`, `Plan.PathTypeUnknown`, `Plan.ParentTypeUnknown`,
 `Plan.ControlCoverage`, `Plan.RepeatScope`, `Plan.RepeatFieldScopeUnknown`, `Plan.RepeatFieldTypeMismatch`,
 `Plan.RepeatFieldParentUnknown`, `Plan.RepeatFieldParentOptional`, `Plan.RepeatFieldParentTypeMismatch`, `Plan.OwnerCoverage`,
-`Plan.FieldCoverage`, `Plan.LocationCoverage`, `Plan.UninspectedCoverage`,
+`Plan.FieldCoverage`, `Plan.FieldMarkedDirty`, `Plan.FieldDirtyUnknown`, `Plan.LocationCoverage`, `Plan.UninspectedCoverage`,
 `Plan.ProtectedOwner` and `Plan.ReuseUnavailable` describe uncertainty or a
 protected owner; they never mean that output is safe. Each includes a stable
 `Remediation.*` identifier and may carry opaque path and part aliases.
@@ -406,6 +406,13 @@ counts are preserved without messages or source
 values. A common retained phase is exposed when known; omitted locations set
 `LocationsTruncated` and produce `Plan.LocationCoverage`. See the
 [profile and example](editing-and-templates.md#unreleased-source-bounded-template-inspection).
+
+For the inspected direct simple fields, an explicit true `w:dirty` flag produces
+unknown `Plan.FieldMarkedDirty` with `Remediation.RefreshField`; an unrecognized
+value produces unknown `Plan.FieldDirtyUnknown` with `Remediation.ReviewFields`.
+These findings describe source metadata, not the result of a refresh or evidence
+that a cached value is wrong. A missing or false flag cannot establish freshness;
+complex fields and other owners remain outside this check.
 
 The separate `TemplateDataSchema.InspectJson` report uses `Data.MissingPath` and
 `Data.PathType` for root declarations, `Data.MissingItemPath` and

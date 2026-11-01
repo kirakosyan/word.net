@@ -62,6 +62,14 @@ produces unknown `Plan.FieldCoverage`, since an empty collection may never execu
 Multi-paragraph, nested, table and other repeats stay uninspected, and
 `Plan.RepeatScope` remains unknown for all repeated contents.
 
+An explicitly true `w:dirty` attribute on an inspected direct simple field also
+produces unknown `Plan.FieldMarkedDirty`, with the field's numeric source position
+and `Remediation.RefreshField`. An unrecognized value produces unknown
+`Plan.FieldDirtyUnknown`. This records a request to refresh; inspection does not
+evaluate the field or establish that its cached value is stale. A missing or false
+flag is not proof of freshness. Complex fields and other uninspected owners retain
+their existing unknown coverage.
+
 `TemplateDataSchema.InspectJson` separately checks a JSON object against every
 declared root and item path, including declarations unused by a particular
 template. A required item path must exist on each item even when an eventual

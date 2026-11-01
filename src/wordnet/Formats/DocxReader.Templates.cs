@@ -66,7 +66,7 @@ internal sealed partial class DocxReader
                             { control.InspectionElement = element; control.InspectionPart = mainPart; control.InspectionRootRepeat = repeat; }
                         }
                         else if (repeat && content?.Name == W + "fldSimple" && content.Attribute(W + "instr") != null
-                            && !content.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "instr"))
+                            && !content.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "instr" && a.Name != W + "dirty"))
                         {
                             XElement[] field = content.Elements().Take(2).ToArray();
                             XElement[] run = field.Length == 1 && field[0].Name == W + "r" ? field[0].Elements().Take(2).ToArray() : Array.Empty<XElement>();

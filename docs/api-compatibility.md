@@ -10,6 +10,8 @@ Selected incompatible PDF option combinations are flagged statically, without
 running conversion or claiming that the remaining destination checks passed.
 The additive `TemplateInspectionFinding.SourceElementIndices` exposes a bounded
 numeric source position where available, without exposing names by default.
+Inspected direct simple fields may additionally report an explicit dirty flag as
+an unknown refresh requirement; no public method or constructor changes for it.
 `TemplateSchemaPath.ForRepeatItem` adds an explicit single or dotted per-item
 declaration; dotted parents must be separately declared as required mappings for
 template scope to be known. The

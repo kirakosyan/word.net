@@ -1309,6 +1309,19 @@
       ]
     },
     {
+      "id": "template-inspection-simple-field-dirty",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit dirty flags on admitted simple fields are located as uncertain refresh requirements; false or absent flags do not establish freshness, and other owners remain unknown.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale" },
+        { "class": "TemplateInspectionTests", "method": "MissingOrFalseDirtyFlagsDoNotEstablishFreshness" },
+        { "class": "TemplateInspectionTests", "method": "InvalidDirtyFlagIsUnknownWithoutPublishingItsValue" },
+        { "class": "TemplateInspectionTests", "method": "DirtyNonMergeFieldKeepsItsSeparateFieldCoverageUnknown" },
+        { "class": "TemplateInspectionTests", "method": "OtherFieldAttributesKeepRepeatedContentsOutsideDirtyFlagCoverage" }
+      ]
+    },
+    {
       "id": "template-inspection-unqualified-field-positions",
       "issue": 171,
       "outcome": "rejected",
