@@ -1,0 +1,116 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "d289fea906b68c1d83bae82220e5ee61e931f1c8",
+  "sourceTree": "378b7b133c4131d051ce0d1ca097bd5eb1eee91f",
+  "scope": "Non-reusable inspection checks simple direct inline body merge, image and conditional controls and retains unknown coverage for other owners and repeat scopes.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked solution restore passed.",
+    "restoreLogSha256": "5521e15dc4cf16fa84023d95f876a6a67b74f02feb0412cae3bad3d7c2e2bc96",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "0b09027a14f9e15aea6b47dc830efcae5578e5efaff42c6a9f81f97fa64b2a4f",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2361,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "eaa827efb33bf27aa0f207dc39e3b3fb6f07626068a6d8d1a83de70d483f48bc"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2361,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "673b212b4b95a66e5932b7e2ae6363d40498bfc4cfe49a6df2c378607c016149"
+    },
+    "capabilityMatrix": {
+      "profiles": 108,
+      "testMethods": 487,
+      "net10CasesPassed": 833,
+      "logSha256": "d71f956b4bb70ff9752a534f0c6afcce5e0027d5814465de16d03b2040be35a7"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "037df8dab35645b024a42ad0d9872a55cceacb1562e278e962850a1dc49144f0",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "556693dac1a96809545391b138c139cb6fd9282ad80344a6c4daf7feb582307a",
+      "wordnet.Fonts.1.5.0.nupkg": "688501a47bf0cb059a7f3037a29e30e6dfc04a0581a15549f2691329735ae74e",
+      "wordnet.Ocr.1.5.0.nupkg": "ecf725b3400dbec2d733c7ef1bc0128cf8d82bff576bc43d515561735225dbee"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 39.004450000000006,
+      "CandidateMedianMilliseconds": 38.8628,
+      "Ratio": 0.9963683630970311,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40118512.0,
+      "PeakSampledManagedBytes": 26825792.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-preflight-controls-performance-d289fea.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preflight-controls-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "7dce38b4d1c06261d16f07dff0082ed1eacb99b74e244499de3b210738f3682c",
+    "sourceSchemaLogSha256": "de7d7e58dc69c7804b97d05484f593ddb74a36ce2e7773a224bcbecbcd19b492",
+    "outputSchemaLogSha256": "d9f0c923416c96dc74d0a6c2f892977eed7c0e3bd6fa9891b8eac881c7b3e0d9",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "af8526e1df7f27daaa3c7b7506a386219232b731a587d49f3b5bdf733a509727",
+    "documents": {
+      "simple": {
+        "inputDocxSha256": "3963142e5bb1172babf6c76f3cfa85c35795cc0208a1d898a438138621ce474b",
+        "defaultReportSha256": "7eb38d83d819d28adfb63d94625a4bebdc3fbe4b818d4dcf0a78e708ab2ca364",
+        "observationSha256": "248283b2f90f9470cb6a385df360b8201fa1f023ff3d877d7cabcea8a0bd0a6d",
+        "mergedDocxSha256": "c98bc7e28fe0994cd2c2fb96125e60527155f828dbc05cbc4e7afd8cc2dd04a7"
+      },
+      "image": {
+        "inputDocxSha256": "a34ef66d82a8a44a6fd1e03db8ef335282c86b3e400f32a3f673746c04913aa7",
+        "defaultReportSha256": "fcd795eb4d17b65bfa108eb9d238466b94f13777a06d164431cf0c60485721f4",
+        "observationSha256": "aad35ec57f7ac253c65fe1a7b3a6ac0ecb52263f8405fefed0153e52851b8f8a"
+      },
+      "formatted": {
+        "inputDocxSha256": "f29ea3c4053598b5a170c6d2734b0141258c3261b760ec45552a54b5bf55f14c",
+        "defaultReportSha256": "790baff31de98352faff4ad6128ac0f4be261fd19fbd38862095b341cc981f25",
+        "observationSha256": "df3ddf1f6dcb0baabf04f94f9edf7f576f60c3ce031fa1be4c8c606ca094dbb5"
+      },
+      "invalid": {
+        "inputDocxSha256": "01da71475897ae136fd76aa2d29a3dd98a9a950b9dc1376df1226e426f794729",
+        "defaultReportSha256": "022563f36ab9858cd7b61fb35f80e05bff8189eed6a2920c30eedcfc05d2e4be",
+        "observationSha256": "2fa96ea1bb86b1fb705715ed43b8cbbd93e35eef86bc18be621bd9a683b3b556"
+      },
+      "repeat": {
+        "inputDocxSha256": "b6aeb105f5a54f3876b56e6713e26f669f1d365af08197b4aadb7dfce8ad31c8",
+        "defaultReportSha256": "fad31ab2ee0f782da545c237479ef8d4b058143c4507586403e3db9c272677cc",
+        "observationSha256": "7f17462daa81df2b5a0c04a835c670dafe183071dabf477b22a18989392edc75"
+      }
+    },
+    "result": {
+      "result": {
+        "simpleControls": 2,
+        "imageTypeRejected": true,
+        "formattedControlUnknown": true,
+        "invalidPathRejected": true,
+        "repeatScopeUnknown": true,
+        "defaultNamesDisclosed": false
+      },
+      "negativeControls": {
+        "wrong source position": "Missing control path or source position differs from XML",
+        "missing path": "Missing control path or source position differs from XML",
+        "image type": "Image type finding differs from source",
+        "changed failed merge": "Missing-path prediction does not match the unchanged failed merge",
+        "changed output": "Successful merged content differs from the independent package read",
+        "leaked path": "Default report disclosed a source or path name",
+        "leaked part": "Default report disclosed a source or path name",
+        "lost control coverage": "Control coverage or reuse boundary changed",
+        "invented repeat requirement": "Repeated scope is not explicitly unknown",
+        "missing invalid diagnostic": "Invalid control path differs from merge admission"
+      },
+      "controlMethod": "Parsed source/output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, broader control/owner coverage, identity-bound reusable plans, loss policy and roadmap #138 remain open."
+}

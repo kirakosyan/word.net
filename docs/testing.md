@@ -346,6 +346,10 @@ with actual missing, type-mismatched and successful merges. Five independently
 authored schema-valid inputs, a schema-valid merged output and ten altered controls
 are recorded in the [reference observation](measurements/roadmap-138-preflight-controls-reference.json).
 Formatted, nested, table-cell and repeated controls retain unknown coverage.
+The [exact-source receipt](measurements/roadmap-138-preflight-controls-d289fea.json)
+records both 2,361-case suites, the 833-case matrix, local packages and independent
+checks; the unchanged [performance gate](measurements/roadmap-138-preflight-controls-performance-d289fea.json)
+is local evidence. Hosted exact-head checks and actual Framework execution remain separate.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
