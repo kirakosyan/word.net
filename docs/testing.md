@@ -444,11 +444,21 @@ observations are rejected. The check distinguishes an item declaration violation
 from an otherwise successful root-fallback merge and preserves the initial test
 analyzer failure as well as its corrected focused run. Full execution and package
 qualification are recorded separately for the exact source revision.
+The [exact-source JSON schema receipt](measurements/roadmap-138-schema-data-8baeeae.json)
+records both 2,390-case suites, the 862-case matrix, local packages and independent
+checks with the packaged assembly. The unchanged local
+[performance gate](measurements/roadmap-138-schema-data-performance-8baeeae.json)
+passed at 0.909 against the preceding head; reference round medians varied from
+37.862 to 46.235 ms. Hosted and actual Framework execution for this source are separate.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
-[push package](measurements/roadmap-138-framework-5cb-push-package-success.json) and
-[PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) actual
+[push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
+[PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
+[PR package](measurements/roadmap-138-framework-5cb-pr-package-success.json) actual
 Framework 4.7.2 guests each passed 2,381 cases and cleaned up; their results do not
-qualify the newer source or the separate PR package guest.
+qualify the newer source.
+The later `90a77f1` [hosted performance evidence](measurements/roadmap-138-performance-90a-hosted-success.json)
+passed at 1.099 against `5cbf06e` on the push and 1.186 against `bf5ab00` on the PR
+merge whose tree matches the head. Other runtime and package checks are separate.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
