@@ -363,6 +363,14 @@ compares SVG glyph geometry using fontTools and bounds it within Poppler PDF wor
 boxes. It does not qualify cell, object, native or review-owner identities.
 The [exact-source receipt](measurements/roadmap-138-layout-snapshot-5b6eb7e.json)
 records the complete local suites, package checks and reproduced reference geometry.
+The later direct-DOCX-cell increment checks paragraph/cell source paths, glyph
+bounds, repeated headers, page selection and a same-render diagnostic. Merged,
+nested, explicit-height and other unsupported cells remain unqualified. The
+[independent observation](measurements/roadmap-138-layout-cells-reference.json)
+checks two schema-valid synthetic documents, font outlines, SVG glyph bounds and
+PDF word boxes; six in-memory altered controls exercise the checker. The pinned-font
+office comparison retains repeated-header glyph-origin failures at the unchanged
+0.25-point tolerance, and the initial substituted-font run is separately identified.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner

@@ -145,8 +145,10 @@ inspection. The [template-format profile](template-formats.md) records its
 directions, stream contract, unsupported active/protected input and qualification
 limits; it does not change published 1.5.0 support.
 Pending #167 source attaches a bounded [layout snapshot](interoperability.md#unreleased-source-preview-layout-snapshots)
-to the same preview render for simple managed body paragraphs. Cell/object/story
-mapping, reading-order semantics, native glyphs and cross-edit identities remain open.
+to the same preview render for simple managed body paragraphs and bounded direct
+DOCX table-cell text. Repeated-table reference glyph differences and other
+cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
+identities remain open.
 Pending #168 work adds bounded matrix expressions, OMML and ordinary managed
 layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
 records its geometry and unsupported variants; full exact-platform and integrated

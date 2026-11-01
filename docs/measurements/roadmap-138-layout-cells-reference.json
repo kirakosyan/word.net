@@ -1,0 +1,380 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "e47b9229134fe2d62d3bc5c628140abae43f9778",
+  "scope": "Working-tree evidence for direct rectangular DOCX body-table cell text; other cell structures and object/story mapping remain open.",
+  "provenance": "Synthetic OOXML was authored independently without wordnet serialization using the existing MIT fixture helper. Two regenerations produced byte-identical files. Open XML SDK 3.5.1 validated both inputs. FontTools 4.61.1 and PyMuPDF 1.27.2.2 independently checked the source XML, pinned font outlines, SVG transforms and PDF word boxes.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-layout-cells.py": "5e355cbe4ac469c9a956d1a0b7f9feca9a6899586abfe1bb87ff60724beeabd8",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-layout-cells-probe.cs": "1d03a378c8e40a351f3b8610cd0d709710a725761f9cb1ad980117f0e10def65",
+    "eng/verify-roadmap-138-layout-cells.py": "08ba843a3312169d03a279a1aa787c1ebefab259aa227f9ac26a41d29cd1112f",
+    "src/wordnet/WordConverter.LayoutSnapshot.cs": "f9afc9b8bee86fe15cc3be0985410d3593705b79abdff453bb26ec6000a395ba",
+    "src/wordnet/DocumentLayoutSnapshot.cs": "121798884e4812499b1b8ca662fd4115654f2b0433d02bdff690ff3d8811380d",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "f0904aea85cbf047c21e8b821fdaccd102cc38c83049d0cebd3aa568b0f45ff8"
+  },
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "validatorLogSha256": "0ec28de45092818f305f7b836765cb1c4726dad54564507656b31f49ecaef491",
+  "independentVerifierLogSha256": "eec349643d89de1d13d18d1f99bcaeec2cf18ef717747835420df32c7b610e11",
+  "specimenHashes": {
+    "cells": {
+      "inputDocxSha256": "b3dbcbaaaeaa3b1702c044288c3b641f729f563412906f7bdb7b08eba2b5d565",
+      "pdfSha256": "059b1be47367df941b1e6f49ddd86a818397384bdc08b58f509039f74674f3be",
+      "snapshotSha256": "07466821c367723ee5ea9250ffb3f2d6153be0fba5e4f397d805bb3bdbc9dfdb",
+      "svgSha256": {
+        "page-1.svg": "84ae93744059641dacc23a4fb4624c63cce47336db82375abcc204f36d758b77"
+      }
+    },
+    "headers": {
+      "inputDocxSha256": "53e179fc0ef9183642f5bd5697388e129134496ae1f5251f3cfd0b7e67eaa848",
+      "pdfSha256": "c6b8b6ab911e94484b23dd806c752efb5feb15f6c9f15715066d2f8bc28acc8f",
+      "snapshotSha256": "542b9f216d69e13e311a194d3a4f42c9cee745fb144369a787975128ce161d86",
+      "svgSha256": {
+        "page-1.svg": "484ed4f9d638f46038c2b112e3d5b47ab480ef58df54f9b5c72f17f9e659f80a",
+        "page-2.svg": "ab1cb07d86bdf192cd89a5406f1e2247a6e9412a88cc6597641a66d2c44d3e7e"
+      }
+    }
+  },
+  "result": {
+    "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+    "specimens": {
+      "cells": {
+        "pages": 1,
+        "sourceCells": 4,
+        "fragments": 4,
+        "repeatedHeaderOccurrences": 1,
+        "maximumFontSvgBoundsDeltaPt": 5.684341886080802e-14
+      },
+      "headers": {
+        "pages": 2,
+        "sourceCells": 142,
+        "fragments": 144,
+        "repeatedHeaderOccurrences": 2,
+        "maximumFontSvgBoundsDeltaPt": 9.094947017729282e-13
+      }
+    },
+    "negativeControls": {
+      "wrong cell path": "Cell source or text no longer matches independent XML",
+      "changed source text": "Cell source or text no longer matches independent XML",
+      "shifted bounds": "Snapshot and independent SVG/font bounds differ",
+      "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
+      "missing PDF word": "Page text or fragment count changed",
+      "missing repeated header": "Page text or fragment count changed"
+    },
+    "controlMethod": "Parsed source/output measurements changed in memory.",
+    "officeComparison": {
+      "cells": {
+        "actualPages": 1,
+        "referencePages": 1,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": true,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 16,
+            "referenceCharacters": 16,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 0.100006103515625,
+            "glyphComparisonPassed": true
+          }
+        ]
+      },
+      "headers": {
+        "actualPages": 2,
+        "referencePages": 2,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": false,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 368,
+            "referenceCharacters": 368,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 0.8017578125,
+            "glyphComparisonPassed": false
+          },
+          {
+            "page": 2,
+            "actualCharacters": 208,
+            "referenceCharacters": 208,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 0.441741943359375,
+            "glyphComparisonPassed": false
+          }
+        ]
+      }
+    }
+  },
+  "developmentFailures": [
+    {
+      "outcome": "failed",
+      "reason": "Initial net10 compile failed CA1865, CA1853 and CA1846; portable source changes corrected the analyzer findings.",
+      "logSha256": "17edb715a2c31e40f8c25ec88c4544282e439593a83f3d11364674ff9af2f114"
+    },
+    {
+      "outcome": "failed",
+      "reason": "The first unqualified-cell negative test matched whole words although kerning split some emitted fragments; it was corrected to check all nonblank emitted fragments.",
+      "logSha256": "ce35930a0259c19765a9ead2aee875b4f83bc926363fba2f6cd6412fbdbaa42e"
+    }
+  ],
+  "focusedTests": {
+    "framework": "net10.0",
+    "passed": 9,
+    "failed": 0,
+    "logSha256": "f70bfa2ddc437b4879e95964551fb56ff5917243c704d9810990420c6a311722"
+  },
+  "limitations": "The admitted mapping reports emitted glyph boxes and source-cell identities, not cell rectangles or general clipping. The pinned-office repeated-header case exceeds the existing 0.25-point glyph-origin tolerance on both pages; full #167 and its other owners remain open.",
+  "preliminaryObservation": {
+    "probeAssemblySha256": "e25c5a66985584fc57053f5e90bde97fb1795f9265dc7217e4b9deb7ec0a8b4a",
+    "note": "The first successful fixture check preceded an additional source-part admission check; the fixtures were rerun on the current working source.",
+    "specimenHashes": {
+      "cells": {
+        "inputDocxSha256": "b3dbcbaaaeaa3b1702c044288c3b641f729f563412906f7bdb7b08eba2b5d565",
+        "pdfSha256": "922f167db74e2e74a32cdb76594ba307eb9a4b43780bd500398f39521979f508",
+        "snapshotSha256": "07466821c367723ee5ea9250ffb3f2d6153be0fba5e4f397d805bb3bdbc9dfdb",
+        "svgSha256": {
+          "page-1.svg": "84ae93744059641dacc23a4fb4624c63cce47336db82375abcc204f36d758b77"
+        }
+      },
+      "headers": {
+        "inputDocxSha256": "53e179fc0ef9183642f5bd5697388e129134496ae1f5251f3cfd0b7e67eaa848",
+        "pdfSha256": "a019880f5031cfaeaa662176a8fc09237f3a74997b1d9e6a5f98ededca519dc4",
+        "snapshotSha256": "542b9f216d69e13e311a194d3a4f42c9cee745fb144369a787975128ce161d86",
+        "svgSha256": {
+          "page-1.svg": "484ed4f9d638f46038c2b112e3d5b47ab480ef58df54f9b5c72f17f9e659f80a",
+          "page-2.svg": "ab1cb07d86bdf192cd89a5406f1e2247a6e9412a88cc6597641a66d2c44d3e7e"
+        }
+      }
+    },
+    "verifierLogSha256": "cbd4f7abf732ffca07c79bd3ec5966da4c35cbae19938d25ca07876b0035e0a4"
+  },
+  "workingSourceAndProbeNet10AssemblySha256": "7b651d4b9fb0d9eff7827adfc0b604477e53a92c3446cbc3c1ce84f912bdf1c6",
+  "initialOfficeReference": {
+    "note": "This first offline LibreOffice run substituted DejaVu Sans for the requested Noto Sans; its geometry is not font-comparable and is retained as a confounded observation.",
+    "pdfSha256": {
+      "cells": "8ae0bc07418e0730ddafee56122ddcf4bea3327c45cf2e6cd0b834cdbde10aaf",
+      "headers": "08853e8304f53fdcb575789012eb1a559025ec65c27ca96697ba8553aa46d3ee"
+    },
+    "comparison": {
+      "cells": {
+        "actualPages": 1,
+        "referencePages": 1,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": false,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 16,
+            "referenceCharacters": 16,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "DejaVuSans"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": false,
+            "maximumGlyphOriginDeltaPt": 3.740234375,
+            "glyphComparisonPassed": false
+          }
+        ]
+      },
+      "headers": {
+        "actualPages": 2,
+        "referencePages": 2,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": false,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 368,
+            "referenceCharacters": 432,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "DejaVuSans"
+            ],
+            "textOrderAgrees": false,
+            "fontNamesAgree": false,
+            "maximumGlyphOriginDeltaPt": null,
+            "glyphComparisonPassed": false
+          },
+          {
+            "page": 2,
+            "actualCharacters": 208,
+            "referenceCharacters": 144,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "DejaVuSans"
+            ],
+            "textOrderAgrees": false,
+            "fontNamesAgree": false,
+            "maximumGlyphOriginDeltaPt": null,
+            "glyphComparisonPassed": false
+          }
+        ]
+      }
+    },
+    "logSha256": "a561e26a1fc0ebe26b1eee4577913cab2cbcde7d0ebe89bb3ceae43de6ddc7ce"
+  },
+  "exploratoryPinnedThreshold": {
+    "note": "The first pinned-font comparison used 0.5 pt while developing this new checker; it is not an acceptance result. The final comparison uses the existing 0.25 pt glyph-origin tolerance.",
+    "logSha256": "8b4407c4aa50a7a1937d8eb8ceb62fba6725e7c11e0f4c7259bc2c646a7a3096",
+    "comparison": {
+      "cells": {
+        "actualPages": 1,
+        "referencePages": 1,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": true,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 16,
+            "referenceCharacters": 16,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "maximumGlyphOriginDeltaPt": 0.100006103515625,
+            "referenceFidelityPassed": true
+          }
+        ]
+      },
+      "headers": {
+        "actualPages": 2,
+        "referencePages": 2,
+        "geometryTolerancePt": 0.5,
+        "referenceFidelityPassed": false,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 368,
+            "referenceCharacters": 368,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "maximumGlyphOriginDeltaPt": 0.8017578125,
+            "referenceFidelityPassed": false
+          },
+          {
+            "page": 2,
+            "actualCharacters": 208,
+            "referenceCharacters": 208,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "maximumGlyphOriginDeltaPt": 0.441741943359375,
+            "referenceFidelityPassed": true
+          }
+        ]
+      }
+    }
+  },
+  "pinnedOfficeReference": {
+    "producer": "LibreOffice 24.2.7.2, offline container wordnet-138-reference:temporary (sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644); fontconfig selected the embedded Noto Sans regular face mounted read-only.",
+    "pdfSha256": {
+      "cells": "e72b4f579909d12082b8628a955cf9c2849806aba1d0b78abbeb99483c6c1386",
+      "headers": "759486bc3947ad3e4231a60e4d8edd6554a09bd63b766da01eee0340a64abdc7"
+    },
+    "comparison": {
+      "cells": {
+        "actualPages": 1,
+        "referencePages": 1,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": true,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 16,
+            "referenceCharacters": 16,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 0.100006103515625,
+            "glyphComparisonPassed": true
+          }
+        ]
+      },
+      "headers": {
+        "actualPages": 2,
+        "referencePages": 2,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": false,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 368,
+            "referenceCharacters": 368,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 0.8017578125,
+            "glyphComparisonPassed": false
+          },
+          {
+            "page": 2,
+            "actualCharacters": 208,
+            "referenceCharacters": 208,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 0.441741943359375,
+            "glyphComparisonPassed": false
+          }
+        ]
+      }
+    },
+    "logSha256": "2fa4caa27279abbd022489e639a71fdffdfd8f2f418f30ae1ce3cd2081a251ae"
+  }
+}

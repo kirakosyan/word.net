@@ -453,10 +453,27 @@ emitted order, not a semantic reading-order promise. `ExtendsOutsidePage` report
 page-boundary overflow; it is not a general clipping analysis. Source identities
 are valid for the captured source revision and are not permanent across edits.
 
+The snapshot also maps ordinary paragraphs in direct, rectangular body-table
+cells from `word/document.xml`. For these items, `CellSource` identifies the
+containing source `w:tc`, while `Source` still identifies the paragraph. Bounds
+describe the emitted glyphs, not the cell rectangle. Repeated header fragments on
+different pages retain the same source-cell location. Source identities are tied
+to the inspected document bytes; neither a changed document nor a different
+conversion configuration can reuse them as a promise of identical geometry.
+Merged, nested or structurally wrapped cells, explicitly sized row heights,
+controls and other unqualified owners remain outside this cell profile. Cell-owner
+inspection is bounded by the expansion budget and 100,000 work items.
+In the [independent comparison](measurements/roadmap-138-layout-cells-reference.json),
+the short table's glyph origins differ from a pinned-font LibreOffice rendering
+by at most 0.11 point. A longer repeated-header table preserves page count and text
+order but differs by 0.81 and 0.45 point on its two pages, above the unchanged
+0.25-point glyph-origin tolerance. This reference difference remains open; the
+snapshot describes the emitted preview and is not a cross-editor fidelity guarantee.
+
 Only positioned items are listed. Unqualified owners, transformed/native text,
 fields and generated items return null bounds with an `UnavailableReason`, and
 `HasUnmappedGraphics` reports non-text shapes without pretending to locate them.
-Cell, object, note and story identities, arbitrary clipping, review displays and
+Other cell, object, note and story identities, arbitrary clipping, review displays and
 cross-edit identity remain open; requesting a detached review-display snapshot
 fails explicitly. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
 checks two simple paragraphs against font outlines, SVG and PDF. This source work

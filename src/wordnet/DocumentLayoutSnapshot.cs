@@ -37,14 +37,16 @@ public sealed class LayoutBounds
 /// <summary>One positioned item and its source paragraph, where known.</summary>
 public sealed class LayoutFragment
 {
-    internal LayoutFragment(int page, int order, SourceLocation? source, LayoutBounds? bounds, string? text, string? unavailable, bool? outsidePage)
-    { Page = page; Order = order; Source = source; Bounds = bounds; Text = text; UnavailableReason = unavailable; ExtendsOutsidePage = outsidePage; }
+    internal LayoutFragment(int page, int order, SourceLocation? source, SourceLocation? cellSource, LayoutBounds? bounds, string? text, string? unavailable, bool? outsidePage)
+    { Page = page; Order = order; Source = source; CellSource = cellSource; Bounds = bounds; Text = text; UnavailableReason = unavailable; ExtendsOutsidePage = outsidePage; }
     /// <summary>Gets the one-based physical source page.</summary>
     public int Page { get; }
     /// <summary>Gets the zero-based item order emitted by layout on this page, not a reading-order guarantee.</summary>
     public int Order { get; }
     /// <summary>Gets the source paragraph location, or null when unavailable.</summary>
     public SourceLocation? Source { get; }
+    /// <summary>Gets the containing DOCX cell location when available; otherwise null.</summary>
+    public SourceLocation? CellSource { get; }
     /// <summary>Gets the union of managed text glyph boxes, or null when geometry is unavailable.</summary>
     public LayoutBounds? Bounds { get; }
     /// <summary>Gets retained item text only when the caller opted in; otherwise null.</summary>
