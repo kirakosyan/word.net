@@ -823,6 +823,15 @@ comparison-tool controls initially failed because the benchmark executable was
 not built in that worktree; after a locked restore/build, all 13 controls and six
 existing ledger controls passed. The failure and retry are retained. Its measured
 release identities do not qualify newer source.
+The [exact-source receipt](measurements/roadmap-138-baseline-combo-5b6cd5c.json)
+records both 2,411-case suites, the 883-case matrix, local packages and 137
+independent altered-observation controls. Its unchanged local
+[performance gate](measurements/roadmap-138-baseline-combo-performance-5b6cd5c.json)
+passed at 1.032 against `52695c9`; reference round medians ranged from
+40.052 to 41.919 ms. An initial build ran out of
+disk space; its [partial log](measurements/roadmap-138-baseline-combo-5b6-build-initial.txt)
+is retained, and the exact-source rebuild passed after removing owned build
+outputs. Hosted and actual Framework checks remain separate.
 Run `python eng/test-roadmap-138-ledger.py` to check the derived failure index
 against its retained raw reports; the generated ledger remains dated baseline
 evidence, not a fresh execution or current-source qualification.
