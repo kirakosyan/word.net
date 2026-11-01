@@ -390,10 +390,14 @@ test execution and case count were not established.
 The separate [PR source guest](measurements/roadmap-138-framework-a34-pr-source-success.json)
 passed 2,365 cases on actual Framework 4.7.2 with cleanup and a matching merge tree;
 the [PR package guest](measurements/roadmap-138-framework-a34-pr-package-success.json)
-also passed 2,365 cases with cleanup. Neither qualifies later source or erases the failed guest.
+and [push package guest](measurements/roadmap-138-framework-a34-push-package-success.json)
+also passed 2,365 cases with cleanup. These do not qualify later source or erase the failed guest.
 The same release-to-PR comparison [passed locally](measurements/roadmap-138-performance-a34-local-release-comparison.json)
 at 1.070 under the unchanged 1.25 limit. This different host does not replace the
 failed hosted result; both records retain their individual timing samples.
+On later head `9580293`, the [hosted gates](measurements/roadmap-138-performance-958-hosted-success.json)
+passed at 0.996 against the release baseline in the PR and 1.247 against the previous
+head in the push. Both retain their raw samples; the earlier failure remains recorded.
 The next [root-scope observation](measurements/roadmap-138-preflight-root-scopes-reference.json)
 compares independently authored, schema-validated repeat and wrapper samples with
 actual merges and source positions. Twelve altered observations are rejected;
@@ -496,6 +500,11 @@ checks 13 schema-valid contrasts and an invalid-metadata control. Twelve match t
 pinned office within the same tolerance and retain editable DOCX margins; the bordered
 control still fails. Sixteen altered observations are rejected, and the prior
 partial-margin failure remains archived.
+The [exact-source partial-margin receipt](measurements/roadmap-138-partial-table-1942fda.json)
+records both 2,375-case suites, the 847-case matrix, local package checks and the
+independent recheck with the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-partial-table-performance-1942fda.json)
+passed at 0.991 against the preceding head. Hosted and actual Framework checks for
+this source remain separate.
 The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)

@@ -1,0 +1,289 @@
+{
+  "roadmap": 138,
+  "issues": [
+    142,
+    167
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "1942fda610a210557c873d206a3d0fa2526d9155",
+  "sourceTree": "25649b2bcc00247954648764730a5c5dcd491162",
+  "scope": "Preserve partial, empty and mixed table/cell margins and their source owners on bounded unstyled direct fixed-grid DOCX body tables; managed fixed output.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "7f8a6f7cdb964c6da155bf0b1c5cbb1bc4324a26f39d0414e475aaf1a2afe042",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "1e71376ca9838647686fd70003f038911ae1a6aeaf76d96d5f7f79b3bd89d018",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "initialFocusedBuild": "Initial focused run had no-space copy warnings; preserved before clean retry.",
+    "initialFocusedLogSha256": "b138fcbbe8c5bd6b1a51dba42c36613d6d8464b29560f1459d53b3ec51e07c46",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2375,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "854aefd6035c2435ae761a8740db463d62c72ecf92578fefbab0089f2d84d7bf"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2375,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "2eb048c23e1fb4a48f22b1c29bf5774fe2cf69947785a15f389f2682a0ea7e8c"
+    },
+    "capabilityMatrix": {
+      "profiles": 116,
+      "testMethods": 499,
+      "net10CasesPassed": 847,
+      "logSha256": "e69efa97bacb7eaa2e9c6c9da32d69d7d89832c25d76674e8016a940d626185c"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "7950e86f9dd3296bb4cb747026a26e25cf3b3653617a99fa0bdc9e4977fdd690",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "8ab11b10c7944d468a55de5f22664f700b76b742d007a3bc91c9fb169243a317",
+      "wordnet.Fonts.1.5.0.nupkg": "63f3fd94e53f88f6a820bbb9808fe3902f6c0553722a84e43642fdf0650396dc",
+      "wordnet.Ocr.1.5.0.nupkg": "ebc2a164125f27fb45a50949dbeffb755c31457b98f9c8c57fb83a485d5a60e1"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 39.9562,
+      "CandidateMedianMilliseconds": 39.5877,
+      "Ratio": 0.9907774012543734,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40115552.0,
+      "PeakSampledManagedBytes": 27204904.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-partial-table-performance-1942fda.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-partial-table-reference.json",
+    "sourceProbesAndPackageNet10AssemblySha256": "25ef0c0f0025d31789e0ec6b02217a213bca21a62abaea606b3a4ace2d6804f2",
+    "sourceSchemaLogSha256": "70131117680f0e6d5f4903691af2675d976f620062945e8e3c35070794aac8c3",
+    "invalidSchemaLogSha256": "57c93adbfa99cab6da4175026c83675825dd8a84891510071cadedcd1f18245b",
+    "savedSchemaLogSha256": "738002b8457cb3e2f0ffc874f8e9de26d3a099ef46a56411739990e88b71077b",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "10ddd26c75ae4808dbd95b95867a16ee593a7f07656297ebe18a5502e44d2b98",
+    "outputs": {
+      "implicit": {
+        "sourceDocxSha256": "c0865fb66e8e2aa0fbe086f74de2c1572d0d919dcab113c886d2248d9405ef5c",
+        "candidatePdfSha256": "1d4bb4c444fa1607e3edf1223a68b4c3965031baf592b21d0dabb46700c72319",
+        "snapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "7b906dbfd1184d63961819538a62c5058b5c607533c48b1de140c4f8df22be9f",
+        "savedPdfSha256": "1d4bb4c444fa1607e3edf1223a68b4c3965031baf592b21d0dabb46700c72319"
+      },
+      "two-columns": {
+        "sourceDocxSha256": "b0ea55cdb61720ead65c998a0577775df5f3a90e0844e5adb6f29950580093d4",
+        "candidatePdfSha256": "2029a837cf428dee8607cd25cf2ce524de345c31722c2402a2c2267275c51034",
+        "snapshotSha256": "cbcd97473e5459af676c0c18328faa329d5827ff0aa0ef095abc90066c23b6b9",
+        "savedDocxSha256": "3a3769cab8f8c1507f2ddc4263ba9292a2a643eb8e7ccc5736146235aa54cb3d",
+        "savedPdfSha256": "a0fa2fb9389ef7abdf783e04043d3e3d42dfbb9f32196241c829c7834a261d0b"
+      },
+      "two-rows": {
+        "sourceDocxSha256": "0870eaf5be266a23a01ae1a9ff763105741a28a1b3b5601351b0d2011fc2850b",
+        "candidatePdfSha256": "47080b2bf297e65ce73e07d9e342eb731e252a382f3cfdb80dcffdf4ab27d2e7",
+        "snapshotSha256": "9018c36e46e067773a21b2d5dc78aeea1af7e7e76216bf77cd04e06ae0c84781",
+        "savedDocxSha256": "0cb940b37bae426c59db56010d9757b08d45d9cebdce189860530c3027056d9d",
+        "savedPdfSha256": "47080b2bf297e65ce73e07d9e342eb731e252a382f3cfdb80dcffdf4ab27d2e7"
+      },
+      "explicit-115": {
+        "sourceDocxSha256": "10aa29a1f4045c18f5b94f6db690f2331cba39b4fb3b84c835c3af93f62dd030",
+        "candidatePdfSha256": "dece58c8653642db458bd21ad9fee425c7066c3fc39c2744c1f790d6a1ad90d2",
+        "snapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "b4c489032a780af44edc1fca863171d9c177a975a4dd5cedeb1bec9307ba20e3",
+        "savedPdfSha256": "dece58c8653642db458bd21ad9fee425c7066c3fc39c2744c1f790d6a1ad90d2"
+      },
+      "explicit-108": {
+        "sourceDocxSha256": "34003382f05782ca9189b9a7afde9a0458e745ff915860c4ff8f0cfd16b14bf2",
+        "candidatePdfSha256": "627daf25ebd48aed9b6641a2b2b53b68c7d55a749d1ff7d642a7788ce970bc8d",
+        "snapshotSha256": "13b25df03b5383aaa821841882321583899bbfb85263b47180da6683dfd45eeb",
+        "savedDocxSha256": "999f40caf6718f4b377ab186e93fda3ebdc16772d4e0f7e26f41c705b48a2021",
+        "savedPdfSha256": "8388039187748da5c71c3e4f3f893d76cab708f80cb202d2596be347b401b119"
+      },
+      "explicit-zero": {
+        "sourceDocxSha256": "c4124dcbf284a63447e94e0cb8a2f77f7594be09a21bc61e7faeea9b86479e85",
+        "candidatePdfSha256": "7a591c17617ecdaf47d113d1819a30c73dce293fc52048c77e9dc600992aa42c",
+        "snapshotSha256": "f12fa5298a83aad7b883913989f41624c3195f0fc37fccf6fc6809f66adc3fa7",
+        "savedDocxSha256": "a9f4c29f9058cc2de52451d87a1686e4e271ce57aea90e888486c68a0bd119f0",
+        "savedPdfSha256": "0634b47439ea01bfd2e30379b945d48cbc881ae6827374fc1749e0661ba5c83b"
+      },
+      "cell-zero": {
+        "sourceDocxSha256": "61ab0495d1afe9a2f3ae2dabe741bf5f6f3f50b13dd86f70a89061aadcc9fb48",
+        "candidatePdfSha256": "4ef455fe6749be81ca096c32a7bedb19e1a7c8459c3a7133e6bf2dd824a480d3",
+        "snapshotSha256": "f12fa5298a83aad7b883913989f41624c3195f0fc37fccf6fc6809f66adc3fa7",
+        "savedDocxSha256": "2af8a30ab7aeb5dc0d16d3efb97331eb09589ad6a7d325d0276e122c6ae12cc8",
+        "savedPdfSha256": "01e26315baf51e23f1f76dd2b9bf613e0bfb7f9523139531e3262a78c18fe3fa"
+      },
+      "only-top": {
+        "sourceDocxSha256": "0958355ea85821158759a0d77f9b85001f228f712d01bd73d32841776914e4ca",
+        "candidatePdfSha256": "eeb91dc53dde8dac3498c44e5ddbc8ab5aa58a087da365eea9f623f6044545d7",
+        "snapshotSha256": "399d0a14da198a4bae0e4e7c04fa1713ac4c96c2fe003ff1dfcb3b9ed647781c",
+        "savedDocxSha256": "3523f71b7fc98640666939be5bd96215b411237f7503df3396246a1dc129c560",
+        "savedPdfSha256": "823fceecc498605dddde1d028db47fc65e49080249910a32e033cfdc5514cf04"
+      },
+      "partial-mixed": {
+        "sourceDocxSha256": "9d74956127aa806e76809ce505d9d2d71edc0de6dfc6d16e18a4a79d070b29b7",
+        "candidatePdfSha256": "0b1474124dd4859041232eefb40405aa157ffe69704c9e9e113dd975d07cdba7",
+        "snapshotSha256": "52982fe534204a6cdb77b3e491dc50139821266e82ecb2890aa64f7509832516",
+        "savedDocxSha256": "ddeccafafc6583e86f34c6423ead90ad444f229f7de3c74ba90b7caea2ed2474",
+        "savedPdfSha256": "0b1474124dd4859041232eefb40405aa157ffe69704c9e9e113dd975d07cdba7"
+      },
+      "empty-table": {
+        "sourceDocxSha256": "bbb76d9da0beac68e8cb727848350f07d933fa6268b849be53ef9292f5461d65",
+        "candidatePdfSha256": "9ace7bcf0d67ee06d00da6a0a74cf1218719f8585c7f1d9d33108adb376849a9",
+        "snapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "17d125a362f98ff3953d383f5774af4db798a10c8bd9dde0400b06d055b5bc96",
+        "savedPdfSha256": "9ace7bcf0d67ee06d00da6a0a74cf1218719f8585c7f1d9d33108adb376849a9"
+      },
+      "empty-cell": {
+        "sourceDocxSha256": "85ec8a605bb5fd6042dc1ac8d1bfc02d39621d643c9070acfa6bd80cfce4a6a5",
+        "candidatePdfSha256": "fd70128ab8bf2bc890d5c165ff6e97d8d2baff3c7ba4237a1f82e60debd2a0db",
+        "snapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "c703d15208149a33447cafc342ca20e2e263b9907e95977e8ae6a1f1a55a29b1",
+        "savedPdfSha256": "fd70128ab8bf2bc890d5c165ff6e97d8d2baff3c7ba4237a1f82e60debd2a0db"
+      },
+      "left-only": {
+        "sourceDocxSha256": "40704af7cb59b03418c983c68c1a2bbb0a9d4f847ab682e0be8e845ef36dfb6b",
+        "candidatePdfSha256": "50596aea205da64a2ec6ae6247cf94f36f1ffb184c08a25ffccd3b0ec0a2c7b7",
+        "snapshotSha256": "f12fa5298a83aad7b883913989f41624c3195f0fc37fccf6fc6809f66adc3fa7",
+        "savedDocxSha256": "10280a82bf999d268c2e5a028588dca2b264eba263edf5116509d2912ded2e54",
+        "savedPdfSha256": "50596aea205da64a2ec6ae6247cf94f36f1ffb184c08a25ffccd3b0ec0a2c7b7"
+      },
+      "border": {
+        "sourceDocxSha256": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7",
+        "candidatePdfSha256": "7f21a1b0a5c34e28a2763da60ca582a17586bb06db90a7abc0400ee8f87e3ace",
+        "snapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      },
+      "invalid-metadata": {
+        "sourceDocxSha256": "45671e86066a48569d752f2d0fe5c6146d6ddd44f1d52fddc12877bb68383161",
+        "candidatePdfSha256": "cf22c11e5e0e7ac4c67fd78b7c77e8a4be268348c02844787ec8d6b823d33e0c",
+        "snapshotSha256": "5a93319be0fc20fac6e58878b0b2e70044309dc2a69435797614d7771fc19dce"
+      }
+    },
+    "contrasts": {
+      "glyphOriginTolerancePt": 0.25,
+      "cases": {
+        "implicit": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "two-columns": {
+          "characters": 16,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "two-rows": {
+          "characters": 16,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "explicit-115": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "explicit-108": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "explicit-zero": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "cell-zero": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "only-top": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "partial-mixed": {
+          "characters": 16,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "empty-table": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "empty-cell": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "left-only": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "border": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 6.0,
+          "officeGlyphComparisonPassed": false,
+          "savedGeometryMatches": null
+        },
+        "invalid-metadata": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false,
+          "savedGeometryMatches": null
+        }
+      },
+      "negativeControls": {
+        "wrong text": "Saved output changes glyphs or geometry: only-top",
+        "wrong font": "Saved output changes glyphs or geometry: only-top",
+        "shifted cell": "Saved output changes glyphs or geometry: only-top",
+        "shifted following text": "Saved output changes glyphs or geometry: only-top",
+        "changed plain body": "Saved output changes glyphs or geometry: only-top",
+        "changed explicit margin": "Saved output changes glyphs or geometry: explicit-zero",
+        "changed border": "Unexpected source-bounded geometry change: border",
+        "changed partial margin": "Saved output changes glyphs or geometry: partial-mixed",
+        "shifted office reference": "Office glyph-origin tolerance exceeded: only-top",
+        "wrong source role": "Unexpected source-bounded geometry change: only-top",
+        "missing character": "Source and output character counts differ: only-top",
+        "changed saved glyph": "Saved output changes glyphs or geometry: only-top",
+        "introduced default margin": "Saved margin omission or explicit values differ: only-top",
+        "changed saved margin": "Saved margin omission or explicit values differ: explicit-zero",
+        "changed override owner": "Saved margin omission or explicit values differ: partial-mixed",
+        "changed invalid metadata case": "Unexpected source-bounded geometry change: invalid-metadata"
+      },
+      "controlMethod": "Parsed glyph observations changed in memory."
+    }
+  },
+  "qualification": "The two controls remain outside the admitted profile. Actual Windows Framework and hosted checks for this exact source, bordered geometry, native typography, complex and styled tables, and roadmap #138 remain open."
+}
