@@ -3,6 +3,16 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "plain-fixed-docx-table-geometry",
+      "issue": 142,
+      "outcome": "supported-bounded",
+      "boundary": "Direct unstyled fixed-grid DOCX body tables use standard omitted horizontal margins and no artificial trailing gap for ordinary text; explicit margins survive and other table owners remain outside the correction.",
+      "tests": [
+        { "class": "LayoutSnapshotTests", "method": "PlainFixedDocxTablesUseDefaultCellMarginsWithoutAnExtraFollowingGap" },
+        { "class": "LayoutSnapshotTests", "method": "ExplicitTableMarginsAreNotReplacedByImplicitDefaults" }
+      ]
+    },
+    {
       "id": "circular-point-labels-diagnosed",
       "issue": 163,
       "outcome": "supported-bounded",

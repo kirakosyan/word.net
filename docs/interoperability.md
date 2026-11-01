@@ -482,7 +482,10 @@ The [independent run comparison](measurements/roadmap-138-layout-runs-reference.
 checks source paths and PDF/SVG glyph ink. Its two direct body runs agree with the
 pinned-font office reference within 0.1 point. The table-cell and following
 hyperlink positions differ by 5.5 and 5.95 points, respectively, exceeding the
-unchanged 0.25-point tolerance. These placement differences remain open.
+unchanged 0.25-point tolerance in that historical observation. A later
+[plain fixed-table correction](document-fidelity.md#unreleased-source-plain-fixed-table-geometry)
+passes the same comparison at the unchanged tolerance; partially specified margins,
+bordered tables and other placements retain separate unresolved differences.
 
 An untransformed inline raster image in a direct `word/document.xml` body
 paragraph containing only that image can also expose `ObjectSource` for its source

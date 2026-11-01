@@ -384,6 +384,9 @@ and [push](measurements/roadmap-138-framework-45c-push-package-success.json).
 On head `a34a468`, the [hosted PR performance gate](measurements/roadmap-138-performance-a34-hosted-failure.json)
 failed at 1.333 against release baseline `bf5ab00`; a separate push comparison passed
 against prior head `45c43ab`. Their different baselines do not resolve the failure.
+The same head's [push Framework source guest](measurements/roadmap-138-framework-a34-push-source-failure.json)
+exited before exporting qualification evidence; its cleanup completed. The guest's
+test execution and case count were not established.
 The same release-to-PR comparison [passed locally](measurements/roadmap-138-performance-a34-local-release-comparison.json)
 at 1.070 under the unchanged 1.25 limit. This different host does not replace the
 failed hosted result; both records retain their individual timing samples.
@@ -476,6 +479,10 @@ namespace-collision negatives. The original malformed fixture, unresolved hyperl
 and preliminary namespace-attribution test failures remain recorded. The pinned-font
 office comparison retains table-cell and following-link differences at the unchanged
 0.25-point threshold.
+The later [plain-table reference record](measurements/roadmap-138-plain-table-reference.json)
+reruns that sample and nine schema-valid contrasts under the same threshold. Seven
+match, including after DOCX save; the partial-margin and bordered controls retain
+their failed geometry comparisons. Fourteen altered observations are rejected.
 The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)

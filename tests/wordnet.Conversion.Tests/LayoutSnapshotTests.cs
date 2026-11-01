@@ -16,6 +16,62 @@ public sealed class LayoutSnapshotTests
     private static string P(string text) => TestDocuments.TextParagraph(text);
 
     [Fact]
+    public void PlainFixedDocxTablesUseDefaultCellMarginsWithoutAnExtraFollowingGap()
+    {
+        string Paragraph(string text) => "<w:p><w:pPr><w:spacing w:before='0' w:after='0' w:line='240' w:lineRule='auto'/></w:pPr>"
+            + "<w:r><w:rPr><w:sz w:val='22'/></w:rPr><w:t>" + text + "</w:t></w:r></w:p>";
+        string first = Paragraph("A"), cell = Paragraph("N"), last = Paragraph("T");
+        string table = "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/></w:tblPr>"
+            + "<w:tblGrid><w:gridCol w:w='3000'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/></w:tcPr>" + cell + "</w:tc></w:tr></w:tbl>";
+        Dictionary<string, LayoutBounds> Bounds(byte[] bytes)
+        {
+            using var input = new MemoryStream(bytes);
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        byte[] source = Source(first + table + last);
+        var ordinary = Bounds(Source(first + cell + last)); var original = Bounds(source);
+        Assert.Equal(ordinary["N"].X + 5.75, original["N"].X, 3);
+        Assert.Equal(ordinary["N"].Y, original["N"].Y, 3);
+        Assert.Equal(ordinary["T"].Y, original["T"].Y, 3);
+        using var input = new MemoryStream(source);
+        WordDocument document = WordDocument.Load(input, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
+        using var saved = new MemoryStream(); document.Save(saved, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        using (var archive = new ZipArchive(new MemoryStream(saved.ToArray()), ZipArchiveMode.Read))
+        using (var part = archive.GetEntry("word/document.xml")!.Open())
+        {
+            XNamespace w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+            XDocument xml = XDocument.Load(part);
+            Assert.Empty(xml.Descendants(w + "tblCellMar")); Assert.Empty(xml.Descendants(w + "tcMar"));
+        }
+        var restored = Bounds(saved.ToArray());
+        Assert.Equal(original["N"].X, restored["N"].X, 3);
+        Assert.Equal(original["T"].Y, restored["T"].Y, 3);
+    }
+
+    [Fact]
+    public void ExplicitTableMarginsAreNotReplacedByImplicitDefaults()
+    {
+        const string body = "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/>"
+            + "<w:tblCellMar><w:left w:w='0' w:type='dxa'/><w:right w:w='0' w:type='dxa'/></w:tblCellMar></w:tblPr>"
+            + "<w:tblGrid><w:gridCol w:w='3000'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/></w:tcPr>"
+            + "<w:p><w:r><w:t>Same</w:t></w:r></w:p></w:tc></w:tr></w:tbl>";
+        byte[] source = Source(P("Same") + body + P("After")); using var input = new MemoryStream(source);
+        var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+            new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+        LayoutFragment[] fragments = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text == "Same").ToArray();
+        Assert.Equal(2, fragments.Length); Assert.Equal(fragments[0].Bounds!.X, fragments[1].Bounds!.X, 3);
+        LayoutFragment after = Assert.Single(preview.Layout!.Fragments, f => f.Text == "After");
+        using var plainInput = new MemoryStream(Source(P("Same") + P("Same") + P("After")));
+        var plain = new WordConverter().RenderPages(plainInput, DocumentFormat.Docx,
+            new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+        LayoutFragment ordinary = Assert.Single(plain.Layout!.Fragments, f => f.Text == "After");
+        Assert.Equal(ordinary.Bounds!.Y, after.Bounds!.Y, 3);
+    }
+
+    [Fact]
     public void DirectDocxRunsMapToTheSamePreviewGeometryWithoutChangingItsBytes()
     {
         string body = "<w:p><w:r><w:t>Alpha</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>Bold</w:t></w:r></w:p>";

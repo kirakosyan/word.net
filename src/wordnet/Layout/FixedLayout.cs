@@ -416,7 +416,7 @@ internal static partial class FixedLayout
             else if (block is TableBlock table)
             {
                 RenderTable(table);
-                y += 6;
+                if (!table.PlainDocxGeometry || context.Typography.Enabled) y += 6;
             }
         }
         foreach (DocumentNote note in model.Notes.Where(n => n.Endnote))
@@ -784,7 +784,7 @@ internal static partial class FixedLayout
                 {
                     double width = fixedGrid && cell.CellWidth.HasValue
                         ? cell.CellWidth.Value : edges[column + cell.ColumnSpan] - edges[column];
-                    CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
+                    CellPadding padding = CellMargins(cell);
                     if (left < -0.1 || left + width > settings.Width + 0.1 || width <= padding.Left + padding.Right
                         || sourceSettings.ExplicitColumns.Count != 0 && (left < origin - 0.1 || left + width > origin + availableWidth + 0.1))
                     {
@@ -878,9 +878,13 @@ internal static partial class FixedLayout
                 }
                 preferred = Math.Max(preferred, line + paragraph.Layout.Left + paragraph.Layout.Right);
             }
-            CellPadding padding = cell.Padding ?? new CellPadding { Right = 12 };
+            CellPadding padding = CellMargins(cell);
             return (minimum + padding.Left + padding.Right, preferred + padding.Left + padding.Right);
         }
+
+        // ISO/IEC 29500 specifies 115 twentieths of a point for omitted horizontal margins without a table style.
+        CellPadding CellMargins(TableCell cell) => cell.Padding ?? (cell.PlainDocxDefaultMargins && !context.Typography.Enabled
+            ? new CellPadding { Left = 5.75, Right = 5.75 } : new CellPadding { Right = 12 });
 
         double CellOffset(CellLayout cell)
         {

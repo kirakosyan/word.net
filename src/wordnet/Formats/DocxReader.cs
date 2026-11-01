@@ -623,8 +623,65 @@ internal sealed partial class DocxReader
                 || cell.Content.OfType<TableBlock>().Any())
                 || !row.Select(cell => (cell.CellWidth, cell.WidthPercent)).SequenceEqual(table.Rows[0].Select(cell => (cell.CellWidth, cell.WidthPercent))))))
             context.Loss("Table.ShadingConflict", "Table shading on merged, nested or irregular cells uses an approximation.");
+        if (PlainFixedGeometryTable(element, table))
+        {
+            table.PlainDocxGeometry = true;
+            foreach (TableCell cell in table.Rows.SelectMany(row => row)) cell.PlainDocxDefaultMargins = cell.Padding == null;
+        }
         AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
+    }
+
+    // Only direct, fixed-grid, unstyled plain-text tables are qualified here.
+    // Other tables retain their existing behavior until their geometry is assessed.
+    private bool PlainFixedGeometryTable(XElement element, TableBlock table)
+    {
+        if (element.Parent?.Name != W + "body" || element.Parent.Parent?.Name != W + "document"
+            || defaultTableStyle != null || table.Style != null || !table.LayoutExplicit || table.AutoFit
+            || table.Width == null || table.WidthPercent != null || table.LeftIndent != 0 || table.Rows.Count == 0
+            || table.Rows[0].Count == 0 || table.ColumnWidths.Count != table.Rows[0].Count || table.ColumnWidths.Any(width => width <= 0)
+            || Math.Abs(table.Width.Value - table.ColumnWidths.Sum()) > 0.01) return false;
+        XElement? properties = element.Element(W + "tblPr");
+        if (properties == null || element.Elements(W + "tblPr").Skip(1).Any() || element.Elements(W + "tblGrid").Count() != 1
+            || properties.Elements().Any(property => property.Name != W + "tblW" && property.Name != W + "tblLayout" && property.Name != W + "tblCellMar")
+            || properties.Elements(W + "tblW").Count() != 1 || properties.Elements(W + "tblLayout").Count() != 1
+            || properties.Elements(W + "tblCellMar").Skip(1).Any()
+            || element.Elements().Any(child => child.Name != W + "tblPr" && child.Name != W + "tblGrid" && child.Name != W + "tr")) return false;
+        int rowIndex = 0;
+        foreach (XElement row in element.Elements(W + "tr"))
+        {
+            context.CheckCancellation();
+            if (rowIndex >= table.Rows.Count || table.Rows[rowIndex].Count != table.Rows[0].Count
+                || row.Elements().Any(child => child.Name != W + "tc") || row.Elements(W + "tc").Count() != table.Rows[rowIndex].Count) return false;
+            int column = 0;
+            foreach (XElement cell in row.Elements(W + "tc"))
+            {
+                context.CheckCancellation(); TableCell modelCell = table.Rows[rowIndex][column];
+                XElement? cellProperties = cell.Element(W + "tcPr");
+                if (cellProperties == null || (modelCell.Padding != null && (modelCell.Padding.SourceAmbiguous || (modelCell.Padding.SourceSides & 10) != 10))
+                    || modelCell.ColumnSpan != 1 || modelCell.Merge != VerticalMerge.None
+                    || modelCell.CellWidth == null || modelCell.WidthPercent != null || Math.Abs(modelCell.CellWidth.Value - table.ColumnWidths[column]) > 0.01
+                    || cell.Elements(W + "tcPr").Skip(1).Any() || cell.Elements().Any(child => child.Name != W + "tcPr" && child.Name != W + "p")
+                    || cellProperties.Elements().Any(property => property.Name != W + "tcW" && property.Name != W + "tcMar")
+                    || cellProperties.Elements(W + "tcW").Count() != 1 || cellProperties.Elements(W + "tcMar").Skip(1).Any()
+                    || !cell.Elements(W + "p").Any()) return false;
+                foreach (XElement paragraph in cell.Elements(W + "p"))
+                {
+                    context.CheckCancellation();
+                    if (paragraph.Elements().Any(child => child.Name != W + "pPr" && child.Name != W + "r")
+                        || paragraph.Elements(W + "pPr").Skip(1).Any()
+                        || paragraph.Element(W + "pPr")?.Elements().Any(property => property.Name != W + "spacing") == true) return false;
+                    foreach (XElement run in paragraph.Elements(W + "r"))
+                    {
+                        context.CheckCancellation();
+                        if (run.Elements().Any(child => child.Name != W + "rPr" && child.Name != W + "t")) return false;
+                    }
+                }
+                column++;
+            }
+            rowIndex++;
+        }
+        return rowIndex == table.Rows.Count;
     }
 
     private IEnumerable<XElement> TableContents(XElement container)

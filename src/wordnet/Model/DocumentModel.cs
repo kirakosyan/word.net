@@ -116,6 +116,8 @@ internal sealed class TableBlock : DocumentBlock
     internal bool AutoFit { get; set; }
     internal bool ManagedImplicitAutoFit { get; set; }
     internal bool LayoutExplicit { get; set; }
+    // Plain direct DOCX tables have no synthetic six-point trailing gap.
+    internal bool PlainDocxGeometry { get; set; }
     internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal Dictionary<int, int> TypedRowControls { get; } = new Dictionary<int, int>();
@@ -415,6 +417,8 @@ internal sealed class TableCell
     internal double? CellWidth { get; set; }
     internal double? WidthPercent { get; set; }
     internal CellPadding? Padding { get; set; }
+    // Resolved for layout only; an omitted DOCX margin must stay omitted on save.
+    internal bool PlainDocxDefaultMargins { get; set; }
     internal int ColumnSpan { get; set; } = 1;
     internal VerticalMerge Merge { get; set; }
     internal string VerticalAlignment { get; set; } = "top";

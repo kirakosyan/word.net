@@ -39,6 +39,9 @@ unqualified rendering, conflicts and pagination. Used implicit defaults remain
 editable, with their unresolved static rendering difference reported. Non-unit rendered bands,
 conditional interior and competing borders, full style precedence and independent qualification remain
 open; the table-level shading reference failure is retained.
+The separate [plain fixed-table geometry correction](document-fidelity.md#unreleased-source-plain-fixed-table-geometry)
+addresses omitted horizontal margins and trailing spacing in a narrow unstyled body
+profile; partially specified margins and bordered geometry retain reference differences.
 Conditional theme fills retain bounded editable references and fallback values,
 while independent static rendering differences remain explicit. Selected
 conditional outer edges and their editable style metadata are retained, with
@@ -149,7 +152,7 @@ limits; it does not change published 1.5.0 support.
 Pending #167 source attaches a bounded [layout snapshot](interoperability.md#unreleased-source-preview-layout-snapshots)
 to the same preview render for simple managed body paragraphs, bounded direct
 DOCX table-cell text and simple inline images, with bounded direct run identities.
-Reference placement differences and other run/cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
+Some table reference differences, other run/cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
 identities remain open.
 Pending #168 work adds bounded matrix expressions, OMML and ordinary managed
 layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
