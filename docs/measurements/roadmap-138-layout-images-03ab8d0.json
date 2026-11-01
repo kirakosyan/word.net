@@ -1,0 +1,174 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "03ab8d06ddc5882c2e7c015cdaa39a039a240199",
+  "sourceTree": "3fe52ae013619625d0a016065e25c9c3e171fa23",
+  "scope": "Direct, single, untransformed inline DOCX raster images can expose their source drawing and emitted preview frame. Broader objects, placement fidelity and full #167 acceptance remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked solution restore passed.",
+    "restoreLogSha256": "6f9591505d948d9421bf734c3e4b2b8f71937e1ce290b81b801b2086e8d79d0f",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "9b1f41bc20791fe3fa3add365657b967ff98b8114dcbf94a1575966e06587e9b",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2347,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "a30844fb96069a33a464023cd288001388d8292663d729a0e7b5222967566e6e"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2347,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "88e3c9fe357631dc8493fa2e391088951feb01cf5b745f973adb0f3dd04f52c0"
+    },
+    "capabilityMatrix": {
+      "profiles": 101,
+      "testMethods": 474,
+      "net10CasesPassed": 819,
+      "logSha256": "d5e2233e80822dc42ec7c4aad7b7eefd5468f70b3e8b3c4e10e12a0bef2be707"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "91319a1cf43ca6d436df54f71506d7e1e547653794db8999f26e47f340972a4b",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "64c79896babddb6d405a7eb3b8079954a1cae102d5568cfea3b3197efba6eb1a",
+      "wordnet.Fonts.1.5.0.nupkg": "81b50bbe26a3f874a87f824ec2aab5756ae83b257039056d4ee03569aa82a5df",
+      "wordnet.Ocr.1.5.0.nupkg": "03b31f7a68bf9bf9a8d2ee8edc89be70470505502a3c11b009890016d979a577"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 39.1509,
+      "CandidateMedianMilliseconds": 39.207300000000004,
+      "Ratio": 1.0014405799100405,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40131568.0,
+      "PeakSampledManagedBytes": 27640232.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-layout-images-performance-03ab8d0.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-layout-images-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "483e526e1a49ed8670306fd7a1f59828c3ef05a553ce637dd4043678456123a9",
+    "assemblyNote": "Before the environment restart the independent probe assembly, source assembly and packaged net10 assembly all produced this SHA256. Source and package were rechecked after restart.",
+    "schemaLogSha256": "9dd9f6f4128e5fc09ad55518c193ea2303a2ceceb39116c5dd012af3db8888ca",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierSha256": "bb9e166b19a4964e57618b45de2fe03f46b5066fe4a3da30ac660ee329d28b2e",
+    "verifierLogSha256": "351be5bdafed8c0d3f8a9702cc996fd602f870c012d7536d8a81e77ae5deaecc",
+    "documents": {
+      "inline": {
+        "inputDocxSha256": "39cf2d9dd3bbcf74902bb8465e539b72aa469c88f528095737acdf9cf1f1964f",
+        "snapshotSha256": "158394b120d9d7bd7cc15420325e662b4f72cc502974130270953eeaee7d98cb",
+        "pdfSha256": "2a1c50f30cd502ca5d77542b7bc22211b1f3e42d6b731830bb5919304a867062",
+        "svgSha256": "b0602a8539a9799881ac8b5d52bebf29cee3740f4b260eadc269fa2e46dcecb1",
+        "officePdfSha256": "1ce39d31f7d20cd6354bf88f9160854aad5acb6d12341bc46f1e7a89e0e96c55"
+      },
+      "inline-zero-dist": {
+        "inputDocxSha256": "622329ca0d9b72aaba79b1c6880423a988c78f9787b1b7da3ff17e994caebbb2",
+        "snapshotSha256": "158394b120d9d7bd7cc15420325e662b4f72cc502974130270953eeaee7d98cb",
+        "pdfSha256": "336892ec96c0dde174aa3b894bb13477fe9fa9c055804f8c1a49896460cf52f9",
+        "svgSha256": "b0602a8539a9799881ac8b5d52bebf29cee3740f4b260eadc269fa2e46dcecb1",
+        "officePdfSha256": "a81694df4c0e94a823ceb341eab481f15807d13b92a4930e58e58daf7553d3c4"
+      },
+      "cropped": {
+        "inputDocxSha256": "e8670b71bf5e8ce756aa7ba66d75ee6eec83e1496fe9f5df6521a99454805619",
+        "snapshotSha256": "0822fd5a51d06e4d7c4ff84b7c719547bb664402944b654f40b32599267bf3ab",
+        "pdfSha256": "148b7d52f8ead8aef092d648d00cb601c9185321ce3d0071083bf113ef94bef3",
+        "svgSha256": "d28d38edc9ad340ed3315216e6499a49dd2fe51d5ef97517b80265e66f08f037",
+        "officePdfSha256": "61cc669048726b98b7fce55f78e1df8deda6f77902a953cc171442736615e321"
+      }
+    },
+    "result": {
+      "specimens": {
+        "inline": {
+          "qualified": true,
+          "boundsPt": [
+            72,
+            72,
+            192,
+            132
+          ],
+          "maximumFrameDeltaPt": 0.0,
+          "pixels": [
+            4,
+            4
+          ]
+        },
+        "inline-zero-dist": {
+          "qualified": true,
+          "boundsPt": [
+            72,
+            72,
+            192,
+            132
+          ],
+          "maximumFrameDeltaPt": 0.0,
+          "pixels": [
+            4,
+            4
+          ]
+        },
+        "cropped": {
+          "qualified": false,
+          "reason": "UnqualifiedOwner"
+        }
+      },
+      "negativeControls": {
+        "wrong source path": "Inline drawing identity or status changed",
+        "shifted bounds": "Snapshot, PDF and SVG image frames differ",
+        "moved SVG frame": "Snapshot, PDF and SVG image frames differ",
+        "moved PDF frame": "Snapshot, PDF and SVG image frames differ",
+        "changed source extent": "Image frame differs from the source extent",
+        "changed image pixels": "Decoded image pixels differ",
+        "mapped cropped image": "Cropped image was assigned qualified geometry",
+        "changed image relationship": "Drawing no longer references the expected local image",
+        "changed explicit distances": "Inline distance contrast changed"
+      },
+      "controlMethod": "Parsed source/output measurements changed in memory.",
+      "officeComparison": {
+        "inline": {
+          "actualBoundsPt": [
+            72.0,
+            72.0,
+            192.0,
+            132.0
+          ],
+          "referenceBoundsPt": [
+            81.05000305175781,
+            71.95074462890625,
+            201.0500030517578,
+            131.95074462890625
+          ],
+          "maximumFrameDeltaPt": 9.050003051757812,
+          "geometryTolerancePt": 0.5,
+          "frameComparisonPassed": false
+        },
+        "inline-zero-dist": {
+          "actualBoundsPt": [
+            72.0,
+            72.0,
+            192.0,
+            132.0
+          ],
+          "referenceBoundsPt": [
+            72.0,
+            71.95074462890625,
+            192.0,
+            131.95074462890625
+          ],
+          "maximumFrameDeltaPt": 0.04925537109375,
+          "geometryTolerancePt": 0.5,
+          "frameComparisonPassed": true
+        }
+      }
+    },
+    "checkerNote": "The evidence-only successor strengthens the original seven-control checker with two further in-memory source relationship and inline distance controls. Both were exercised against the exact-source output before the environment restart."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, all remaining #167 criteria and roadmap #138 remain open."
+}

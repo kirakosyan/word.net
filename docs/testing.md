@@ -379,9 +379,14 @@ The inline-image increment checks a direct drawing's source and emitted frame,
 plus unsupported transformed, wrapped and placeholder cases. Its [independent
 observation](measurements/roadmap-138-layout-images-reference.json) checks three
 schema-valid synthetic inputs, PDF and SVG frame geometry and decoded pixels,
-with seven altered controls. The comparison retains a 9.05-point LibreOffice
+with seven original altered controls. The final checker also rejects a changed
+image relationship and changed explicit distances. The comparison retains a 9.05-point LibreOffice
 horizontal placement difference at the unchanged 0.5-point tolerance when inline
 distances are omitted, and a passing explicit-zero-distance contrast.
+The [exact-source receipt](measurements/roadmap-138-layout-images-03ab8d0.json)
+records both complete suites, the 819-case matrix, local packages and the nine
+checker controls. The unchanged [performance gate](measurements/roadmap-138-layout-images-performance-03ab8d0.json)
+passed; hosted exact-head and Windows Framework execution are separate checks.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner

@@ -17,6 +17,7 @@ from PIL import Image
 W = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
 WP = '{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}'
 A = '{http://schemas.openxmlformats.org/drawingml/2006/main}'
+R = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
 SVG = '{http://www.w3.org/2000/svg}'
 XLINK = '{http://www.w3.org/1999/xlink}'
 TRANSFORM = re.compile(r'translate\(([-.0-9]+) ([-.0-9]+)\) rotate\(0\) scale\(1 1\)')
@@ -41,6 +42,11 @@ def read(source, output):
         extent = pictures[0].find(WP + 'extent')
         if extent is None:
             raise ValueError('Source frame is missing')
+        blips = pictures[0].findall('.//' + A + 'blip')
+        if len(blips) != 1:
+            raise ValueError('Expected one source image reference')
+        source_embed = blips[0].get(R + 'embed')
+        distances = [pictures[0].get(key) for key in ('distT', 'distB', 'distL', 'distR')]
         source_size = [int(extent.get('cx')) / 12700, int(extent.get('cy')) / 12700]
         cropped = pictures[0].find('.//' + A + 'srcRect') is not None
         encoded = package.read('word/media/grid.png')
@@ -70,14 +76,18 @@ def read(source, output):
     if not href.startswith('data:image/png;base64,'):
         raise ValueError('Expected embedded SVG PNG data')
     svg_pixels = pixels(base64.b64decode(href.split(',', 1)[1], validate=True))
-    return {'sourceSize': source_size, 'cropped': cropped, 'sourcePixels': pixels(encoded),
+    return {'sourceSize': source_size, 'cropped': cropped, 'sourceEmbed': source_embed, 'sourceDistances': distances, 'sourcePixels': pixels(encoded),
             'sourcePngSha256': hashlib.sha256(encoded).hexdigest(), 'snapshot': snapshot,
             'pdfBox': pdf_box, 'pdfPixels': pdf_pixels, 'svgBox': svg_box, 'svgPixels': svg_pixels}
 
 
-def check(data, cropped):
+def check(data, cropped, zero_dist=False):
     if data['cropped'] != cropped or len(data['snapshot']) != 1:
         raise ValueError('Unexpected source or snapshot shape')
+    if data['sourceEmbed'] != 'image':
+        raise ValueError('Drawing no longer references the expected local image')
+    if data['sourceDistances'] != (['0'] * 4 if zero_dist else [None] * 4):
+        raise ValueError('Inline distance contrast changed')
     fragment = data['snapshot'][0]
     if fragment['page'] != 1 or fragment['part'] != 'word/document.xml' or fragment['path'] != '/document[1]/body[1]/p[1]' or fragment['text'] is not None:
         raise ValueError('Paragraph identity or privacy changed')
@@ -123,11 +133,13 @@ def main():
     parser.add_argument('--office', type=Path)
     args = parser.parse_args()
     values = {name: read(args.sources / (name + '.docx'), args.outputs / name) for name in ('inline', 'inline-zero-dist', 'cropped')}
-    result = {name: check(value, name == 'cropped') for name, value in values.items()}
+    result = {name: check(value, name == 'cropped', name == 'inline-zero-dist') for name, value in values.items()}
     negatives = {}
     for name in ('wrong source path', 'shifted bounds', 'moved SVG frame', 'moved PDF frame',
-                 'changed source extent', 'changed image pixels', 'mapped cropped image'):
-        data = copy.deepcopy(values['cropped' if name == 'mapped cropped image' else 'inline'])
+                 'changed source extent', 'changed image pixels', 'mapped cropped image',
+                 'changed image relationship', 'changed explicit distances'):
+        chosen = 'cropped' if name == 'mapped cropped image' else 'inline-zero-dist' if name == 'changed explicit distances' else 'inline'
+        data = copy.deepcopy(values[chosen])
         if name == 'wrong source path': data['snapshot'][0]['objectPath'] += '/changed'
         if name == 'shifted bounds': data['snapshot'][0]['bounds']['x'] += 2
         if name == 'moved SVG frame': data['svgBox'][0] += 2
@@ -135,8 +147,10 @@ def main():
         if name == 'changed source extent': data['sourceSize'][0] += 2
         if name == 'changed image pixels': data['svgPixels'] = ((4, 4), b'bad')
         if name == 'mapped cropped image': data['snapshot'][0]['objectPath'] = '/changed'
+        if name == 'changed image relationship': data['sourceEmbed'] = 'different'
+        if name == 'changed explicit distances': data['sourceDistances'][0] = None
         try:
-            check(data, name == 'mapped cropped image')
+            check(data, name == 'mapped cropped image', name == 'changed explicit distances')
         except (ValueError, KeyError, TypeError) as error:
             negatives[name] = str(error)
         else:
