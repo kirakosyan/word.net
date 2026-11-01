@@ -19,9 +19,12 @@ internal sealed class PlainDocxPolicyPlan
     private readonly CompatibilityPlanData plan;
     private readonly TemplateDataSchema schema;
     private readonly DateTimeOffset fieldTime;
+    private readonly FidelityMode fidelityMode;
+    private readonly PlainDocxPolicyInput sourceKind;
 
-    private PlainDocxPolicyPlan(WordConverter converter, ReusableTemplateInspection snapshot, CompatibilityPlanData plan, TemplateDataSchema schema, DateTimeOffset fieldTime)
-    { this.converter = converter; this.snapshot = snapshot; this.plan = plan; this.schema = schema; this.fieldTime = fieldTime; }
+    private PlainDocxPolicyPlan(WordConverter converter, ReusableTemplateInspection snapshot, CompatibilityPlanData plan, TemplateDataSchema schema,
+        DateTimeOffset fieldTime, FidelityMode fidelityMode, PlainDocxPolicyInput sourceKind)
+    { this.converter = converter; this.snapshot = snapshot; this.plan = plan; this.schema = schema; this.fieldTime = fieldTime; this.fidelityMode = fidelityMode; this.sourceKind = sourceKind; }
 
     internal string CanonicalJson(CancellationToken cancellationToken = default) => plan.CanonicalJson(cancellationToken);
     internal string PlanSha256(CancellationToken cancellationToken = default) => plan.CanonicalSha256(cancellationToken);
@@ -30,26 +33,31 @@ internal sealed class PlainDocxPolicyPlan
         => Compile(new WordConverter(), source, fieldTime, cancellationToken);
 
     internal static PlainDocxPolicyPlan Compile(WordConverter converter, Stream source, DateTimeOffset fieldTime, CancellationToken cancellationToken = default)
+        => Compile(converter, source, fieldTime, FidelityMode.Strict, cancellationToken);
+
+    internal static PlainDocxPolicyPlan Compile(WordConverter converter, Stream source, DateTimeOffset fieldTime, FidelityMode fidelityMode, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(converter, nameof(converter)); Guard.NotNull(source, nameof(source));
         if (!source.CanRead) throw new ArgumentException("The source must be readable.", nameof(source));
+        if (fidelityMode is not FidelityMode.Strict and not FidelityMode.BestEffort) throw new ArgumentOutOfRangeException(nameof(fidelityMode));
         byte[] input = ReadBounded(source, cancellationToken);
-        string sourceText;
-        using (var current = new MemoryStream(input, writable: false)) sourceText = PlainDocxPolicyProfile.ReadText(current, cancellationToken);
+        (string Text, PlainDocxPolicyInput Kind) profile;
+        using (var current = new MemoryStream(input, writable: false)) profile = PlainDocxPolicyProfile.Read(current, fidelityMode == FidelityMode.BestEffort, cancellationToken);
         DateTimeOffset fixedTime = fieldTime.ToUniversalTime(); var schema = new TemplateDataSchema();
-        var parseContext = new ConversionContext(Options(fixedTime), cancellationToken) { Inspecting = true, Destination = DocumentFormat.Pdf };
+        var parseContext = new ConversionContext(Options(fixedTime, fidelityMode), cancellationToken) { Inspecting = true, Destination = DocumentFormat.Pdf };
         DocumentModel model;
         using (var current = new MemoryStream(input, writable: false)) model = WordConverter.ReadDocument(current, DocumentFormat.Docx, parseContext);
         ParagraphBlock[] paragraphs = model.Paragraphs.Distinct().ToArray();
-        if (paragraphs.Length != 1 || paragraphs[0].Text != sourceText || parseContext.Result(0).Diagnostics.Count != 0)
+        if (paragraphs.Length != 1 || paragraphs[0].Text != profile.Text || !ExpectedDiagnostics(parseContext.Result(0).Diagnostics, profile.Kind))
             throw new NotSupportedException("Plan.Inspection: The parsed text does not match the narrow source profile.");
         ReusableTemplateInspection snapshot;
         using (var current = new MemoryStream(input, writable: false))
-            snapshot = converter.CompileReusableTemplateInspection(current, schema, DocumentFormat.Pdf, fixedTime, FidelityMode.Strict, cancellationToken);
+            snapshot = converter.CompileReusableTemplateInspection(current, schema, DocumentFormat.Pdf, fixedTime, fidelityMode, cancellationToken);
         DocumentInspection inspection;
         using (var current = new MemoryStream(input, writable: false))
-            inspection = converter.Inspect(current, DocumentFormat.Docx, DocumentFormat.Pdf, Options(fixedTime), includeLayout: true, cancellationToken);
-        if (!inspection.LayoutPerformed || inspection.PageCount != 1 || inspection.WouldRejectStrict || inspection.Diagnostics.Count != 0
+            inspection = converter.Inspect(current, DocumentFormat.Docx, DocumentFormat.Pdf, Options(fixedTime, fidelityMode), includeLayout: true, cancellationToken);
+        if (!inspection.LayoutPerformed || inspection.PageCount != 1 || inspection.WouldRejectStrict != (profile.Kind == PlainDocxPolicyInput.ThemeFont)
+            || !ExpectedDiagnostics(inspection.Diagnostics, profile.Kind)
             || inspection.Features.Paragraphs != 1 || inspection.Features.Tables != 0 || inspection.Features.Images != 0
             || inspection.Features.Fields != 0 || inspection.Features.ListItems != 0 || inspection.Characters is < 1 or > 40)
             throw new NotSupportedException("Plan.Inspection: The source did not satisfy the narrow clean inspection profile.");
@@ -59,10 +67,12 @@ internal sealed class PlainDocxPolicyPlan
             + "\",\"fonts\":\"" + snapshot.FontsSha256 + "\",\"providers\":\"" + snapshot.ProvidersSha256
             + "\",\"engine\":\"" + snapshot.EngineSha256 + "\"},\"sourceFormat\":\"docx\",\"destinationFormat\":\"pdf\","
             + "\"stages\":{\"parse\":\"performed\",\"destination\":\"performed\",\"layout\":\"performed\",\"write\":\"not-performed\",\"validation\":\"not-performed\"},"
-            + "\"requirements\":[],\"semantics\":[{\"code\":\"content.text\",\"assessment\":\"supported\"}],\"findings\":[],\"observedInputBytes\":"
+            + "\"requirements\":[],\"semantics\":[{\"code\":\"content.text\",\"assessment\":\"supported\"}],\"findings\":["
+            + (profile.Kind == PlainDocxPolicyInput.ThemeFont ? "{\"code\":\"Docx.ThemeFont\",\"phase\":\"parse\",\"evidence\":\"observed\",\"severity\":\"warning\",\"count\":1,\"locationsTruncated\":false,\"locations\":[{\"partId\":\"part-0001\",\"childIndexes\":[1,1,1,1]}],\"remediation\":\"Remediation.SetExplicitFont\"}" : "")
+            + "],\"observedInputBytes\":"
             + input.Length.ToString(CultureInfo.InvariantCulture) + ",\"estimatedPages\":1}";
         CompatibilityPlanData plan = CompatibilityPlanData.Parse(json, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested(); return new PlainDocxPolicyPlan(converter, snapshot, plan, schema, fixedTime);
+        cancellationToken.ThrowIfCancellationRequested(); return new PlainDocxPolicyPlan(converter, snapshot, plan, schema, fixedTime, fidelityMode, profile.Kind);
     }
 
     internal PlainDocxPolicyOutcome Execute(Stream source, Stream destination, string policyJson, CancellationToken cancellationToken = default)
@@ -73,7 +83,7 @@ internal sealed class PlainDocxPolicyPlan
         if (!destination.CanWrite) throw new ArgumentException("The destination must be writable.", nameof(destination));
         cancellationToken.ThrowIfCancellationRequested();
         CompatibilityPolicyData policy = CompatibilityPolicyData.Parse(policyJson, cancellationToken);
-        string admission = plan.CheckAdmission(policy, strict: true, cancellationToken);
+        string admission = plan.CheckAdmission(policy, strict: fidelityMode == FidelityMode.Strict, cancellationToken);
         if (admission != "Policy.Admitted") return Outcome("policy-rejected", admission, null, null, cancellationToken);
         byte[] input = ReadBounded(source, cancellationToken); string inputHash = Hash(input);
         string? stale = CheckCurrent(input, cancellationToken);
@@ -83,11 +93,11 @@ internal sealed class PlainDocxPolicyPlan
         try
         {
             using var current = new MemoryStream(input, writable: false);
-            conversion = converter.Convert(current, staged, DocumentFormat.Docx, DocumentFormat.Pdf, Options(fieldTime), cancellationToken);
+            conversion = converter.Convert(current, staged, DocumentFormat.Docx, DocumentFormat.Pdf, Options(fieldTime, fidelityMode), cancellationToken);
         }
         catch (NotSupportedException) { return Outcome("conversion-failed", "Policy.ConversionFailed", inputHash, null, cancellationToken); }
         catch (InvalidDataException) { return Outcome("conversion-failed", "Policy.ConversionFailed", inputHash, null, cancellationToken); }
-        if (conversion.Diagnostics.Count != 0) return Outcome("unexpected-finding", "Policy.UnexpectedFinding", inputHash, null, cancellationToken, conversion.Diagnostics);
+        if (!ExpectedDiagnostics(conversion.Diagnostics, sourceKind)) return Outcome("unexpected-finding", "Policy.UnexpectedFinding", inputHash, null, cancellationToken, conversion.Diagnostics);
         byte[] output = staged.ToArray(); string outputHash = Hash(output);
         stale = CheckCurrent(input, cancellationToken);
         if (stale != null) return Outcome(stale == "Plan.StaleInput" ? "source-changed" : "environment-changed", stale, inputHash, null, cancellationToken);
@@ -97,7 +107,9 @@ internal sealed class PlainDocxPolicyPlan
             cancellationToken.ThrowIfCancellationRequested(); int count = Math.Min(81920, output.Length - position);
             destination.Write(output, position, count); position += count;
         }
-        return Outcome("completed", "Policy.Completed", inputHash, outputHash, cancellationToken);
+        return sourceKind == PlainDocxPolicyInput.ThemeFont
+            ? Outcome("allowed-loss", "Policy.AllowedLoss", inputHash, outputHash, cancellationToken, conversion.Diagnostics)
+            : Outcome("completed", "Policy.Completed", inputHash, outputHash, cancellationToken);
     }
 
     private string? CheckCurrent(byte[] input, CancellationToken cancellationToken)
@@ -111,7 +123,19 @@ internal sealed class PlainDocxPolicyPlan
         IReadOnlyList<ConversionDiagnostic>? diagnostics = null) =>
         new PlainDocxPolicyOutcome(state, code, plan.CanonicalSha256(cancellationToken), snapshot.InputSha256, observedInput, snapshot.OptionsSha256, output, diagnostics);
 
-    private static ConversionOptions Options(DateTimeOffset fieldTime) => new ConversionOptions(FidelityMode.Strict, maximumInputBytes: MaximumInputBytes) { Clock = () => fieldTime };
+    private static ConversionOptions Options(DateTimeOffset fieldTime, FidelityMode fidelityMode) => new ConversionOptions(fidelityMode, maximumInputBytes: MaximumInputBytes) { Clock = () => fieldTime };
+
+    private static bool ExpectedDiagnostics(IReadOnlyList<ConversionDiagnostic> diagnostics, PlainDocxPolicyInput kind)
+    {
+        if (kind != PlainDocxPolicyInput.ThemeFont) return diagnostics.Count == 0;
+        if (diagnostics.Count != 1) return false;
+        ConversionDiagnostic finding = diagnostics[0];
+        if (finding.Code != "Docx.ThemeFont" || finding.Severity != DiagnosticSeverity.Warning || finding.Count != 1
+            || finding.LocationsTruncated || finding.Occurrences.Count != 1) return false;
+        DiagnosticOccurrence occurrence = finding.Occurrences[0];
+        return occurrence.Phase == DiagnosticPhase.Parse && occurrence.Location.Part == "word/document.xml"
+            && occurrence.Location.Path == "/document[1]/body[1]/p[1]/r[1]";
+    }
 
     private static byte[] ReadBounded(Stream source, CancellationToken cancellationToken)
     {

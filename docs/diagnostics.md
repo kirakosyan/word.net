@@ -418,13 +418,14 @@ exception message prefixes, not guarantees of output safety.
 
 The separate strict plain-DOCX policy profile reports `Policy.StalePlan`,
 `Policy.UnmatchedPermission`, `Plan.StaleInput`, `Plan.EnvironmentChanged`,
-`Policy.ConversionFailed`, `Policy.UnexpectedFinding` or `Policy.Completed` in its
+`Policy.ConversionFailed`, `Policy.UnexpectedFinding`, `Policy.AllowedLoss` or `Policy.Completed` in its
 outcome, as applicable. Invalid or unknown policy entries and resource bounds throw
 explicit exceptions before output. Reported unexpected findings contain stable
 codes, severity, counts and observed phases, without messages or source locations.
-Strict loss exceptions currently surface as conversion failures; the profile has
-not demonstrated a real unexpected write-stage finding or an accepted loss.
-Independent validation remains `not-performed`.
+Strict loss exceptions currently surface as conversion failures. Explicit BestEffort
+can accept `Docx.ThemeFont` at the planned run only, and an unchecked missing
+internal link produces the observed write-stage `Pdf.OmittedDestination`, rejecting
+staged output. Independent validation remains `not-performed`.
 
 For inspected direct simple fields and bounded same-paragraph complex-field begin
 markers, an explicit true `w:dirty` flag produces unknown `Plan.FieldMarkedDirty`

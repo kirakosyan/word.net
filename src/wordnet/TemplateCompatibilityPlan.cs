@@ -9,9 +9,10 @@ using WordNet.Internal;
 namespace WordNet;
 
 /// <summary>An in-process, bounded compatibility plan for the documented plain DOCX-to-PDF profile.</summary>
-/// <remarks>The current profile admits only a minimal DOCX package containing one alphanumeric run of at most 40
-/// characters, an empty data schema, Strict defaults, bundled fonts and no optional providers. Templates with fields,
-/// controls, other text or structured parts are not admitted. The plan is not portable and its runtime/module identity
+/// <remarks>The Strict profile admits only a minimal DOCX package containing one alphanumeric run of at most 40
+/// characters, an empty data schema, bundled fonts and no optional providers. Explicit BestEffort also admits a single
+/// missing-theme font reference or an unchecked internal hyperlink; exact policy permissions still control output. Templates with fields,
+/// controls, other text or extra package parts are not admitted. The plan is not portable and its runtime/module identity
 /// is not binary attestation. Canonical plans and hashes can fingerprint sensitive input. Layout is inspected, but writing
 /// and independent validation are not performed while compiling; a plan does not prove output fidelity.</remarks>
 public sealed class TemplateCompatibilityPlan
@@ -26,8 +27,9 @@ public sealed class TemplateCompatibilityPlan
     public string GetIdentitySha256(CancellationToken cancellationToken = default) => plan.PlanSha256(cancellationToken);
 
     /// <summary>Executes the exact bound source under an explicit version-1 policy, staging PDF output before copying.</summary>
-    /// <remarks>The policy binds this plan digest and may require <c>content.text</c>; this Strict-only profile permits
-    /// no loss. Caller streams remain open and are consumed from their current positions. Policy, stale-source and staged
+    /// <remarks>The policy binds this plan digest and may require <c>content.text</c>. Strict permits no loss. The explicit
+    /// BestEffort profile requires the exact planned theme-font loss to be allowed; unexpected observations reject output.
+    /// Caller streams remain open and are consumed from their current positions. Policy, stale-source and staged
     /// conversion failures leave destination untouched. Cancellation or I/O failure during the final copy can leave partial
     /// output. The reported output hash identifies staged bytes handed to the destination, not durable storage. No independent
     /// validator is run. Unknown or unexpected diagnostics reject staged output.</remarks>
@@ -47,7 +49,7 @@ public sealed class TemplatePolicyOutcome
         findings = Array.AsReadOnly(outcome.Findings.Select(item => new TemplatePolicyFinding(item)).ToArray());
     }
 
-    /// <summary>Gets completed, policy-rejected, source-changed, environment-changed, conversion-failed or unexpected-finding.</summary>
+    /// <summary>Gets completed, allowed-loss, policy-rejected, source-changed, environment-changed, conversion-failed or unexpected-finding.</summary>
     public string State { get; }
     /// <summary>Gets the stable machine-readable outcome code.</summary>
     public string Code { get; }
@@ -63,11 +65,11 @@ public sealed class TemplatePolicyOutcome
     public string? OutputSha256 { get; }
     /// <summary>Gets <c>not-performed</c>; this profile does not run independent validation.</summary>
     public string IndependentValidation { get; }
-    /// <summary>Gets privacy-safe summaries of unexpected diagnostics, if any.</summary>
+    /// <summary>Gets privacy-safe summaries of observed allowed or unexpected diagnostics, if any.</summary>
     public IReadOnlyList<TemplatePolicyFinding> Findings => findings;
 }
 
-/// <summary>A privacy-safe summary of an unexpected conversion diagnostic.</summary>
+/// <summary>A privacy-safe summary of an observed conversion diagnostic.</summary>
 public sealed class TemplatePolicyFinding
 {
     private readonly ReadOnlyCollection<DiagnosticPhase> phases;
@@ -98,11 +100,18 @@ public sealed partial class WordConverter
     /// templates or run output validation. See <see cref="TemplateCompatibilityPlan"/> for its exact source limits.</remarks>
     public TemplateCompatibilityPlan CompileTemplateCompatibilityPlan(Stream source, TemplateDataSchema schema,
         DocumentFormat destination, DateTimeOffset fieldTime, CancellationToken cancellationToken = default)
+        => CompileTemplateCompatibilityPlan(source, schema, destination, fieldTime, FidelityMode.Strict, cancellationToken);
+
+    /// <summary>Compiles the bounded DOCX-to-PDF plan with an explicit fidelity mode.</summary>
+    /// <remarks>Only Strict and BestEffort are accepted. BestEffort does not authorize a loss without an exact policy
+    /// permission. See <see cref="TemplateCompatibilityPlan"/> for the source and execution limitations.</remarks>
+    public TemplateCompatibilityPlan CompileTemplateCompatibilityPlan(Stream source, TemplateDataSchema schema,
+        DocumentFormat destination, DateTimeOffset fieldTime, FidelityMode fidelityMode, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(source, nameof(source)); Guard.NotNull(schema, nameof(schema));
         cancellationToken.ThrowIfCancellationRequested();
         if (schema.Paths.Count != 0) throw new NotSupportedException("Plan.DataProfile: This profile admits only an empty data schema.");
         if (destination != DocumentFormat.Pdf) throw new NotSupportedException("Plan.DestinationProfile: This profile admits only PDF output.");
-        return new TemplateCompatibilityPlan(PlainDocxPolicyPlan.Compile(this, source, fieldTime, cancellationToken));
+        return new TemplateCompatibilityPlan(PlainDocxPolicyPlan.Compile(this, source, fieldTime, fidelityMode, cancellationToken));
     }
 }

@@ -3,6 +3,18 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "best-effort-location-bound-policy",
+      "issue": 172,
+      "outcome": "supported-bounded",
+      "boundary": "Explicit BestEffort admits a single missing-theme font fallback only when the policy permits its exact run location; an unpredicted missing-link PDF write finding rejects staged output. Strict and all unqualified formatting remain rejected, and independent validation is not performed.",
+      "tests": [
+        { "class": "TemplateCompatibilityPolicyLossTests", "method": "ExplicitThemeLossRequiresTheExactPermissionAndRetainsItsObservation" },
+        { "class": "TemplateCompatibilityPolicyLossTests", "method": "UnexpectedMissingLinkDestinationIsObservedAtWriteAndNeverPublished" },
+        { "class": "TemplateCompatibilityPolicyLossTests", "method": "StrictNeverDowngradesAndUnsupportedModeRejectsBeforeReading" },
+        { "class": "TemplateCompatibilityPolicyLossTests", "method": "BestEffortDoesNotAdmitUnqualifiedFormattingOrLinks" }
+      ]
+    },
+    {
       "id": "strict-policy-data-boundaries",
       "issue": 172,
       "outcome": "supported-bounded",
@@ -43,7 +55,7 @@
       "id": "strict-plain-docx-policy-execution",
       "issue": 172,
       "outcome": "supported-bounded",
-      "boundary": "The in-process plan binds the source and fixed PDF profile, rejects stale or unmatched policies before output, and stages strict conversion. Allowed losses, independent validation and a real unexpected write-stage finding remain open; final-copy I/O can leave partial output.",
+      "boundary": "The in-process plan binds the source and fixed PDF profile, rejects stale or unmatched policies before output, and stages strict conversion. Strict allows no loss; independent validation is not performed and final-copy I/O can leave partial output.",
       "tests": [
         { "class": "PlainDocxPolicyPlanTests", "method": "CompiledPlanAndStagedExecutionPreserveOwnershipAndReportUnperformedValidation" },
         { "class": "PlainDocxPolicyPlanTests", "method": "StalePolicyChangedSourceAndUnmatchedLossLeaveOutputUntouched" },

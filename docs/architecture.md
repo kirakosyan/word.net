@@ -35,9 +35,11 @@ The separate strict plain-DOCX policy profile scans a minimal OPC package, compa
 its sole run with the parsed model, inspects one-page PDF layout, and binds the
 source and fixed in-process environment into a canonical plan. A closed policy
 parser admits only the supported `content.text` requirement and no loss for this
-profile. Execution rechecks the binding, stages strict output, and copies only after
-the observed conversion and environment checks. It cannot attest binaries or
-provide general policy coverage, allowed losses or independent validation.
+strict profile. An explicit BestEffort profile can admit one observed theme-font
+fallback at its exact source position; it compares actual diagnostics to the plan
+before publishing staged output. An unchecked internal link provides a bounded
+write-stage rejection case. It cannot attest binaries or provide general policy
+coverage, arbitrary allowed losses or independent validation.
 
 Unreleased #142 direct table borders and clear RGB shading stay on the table model
 through cloning and DOCX writing. Managed layout, HTML and ODT compute the

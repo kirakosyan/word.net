@@ -40,8 +40,10 @@ The additive `CompileTemplateCompatibilityPlan`, `TemplateCompatibilityPlan`,
 [strict plain-DOCX policy profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy).
 It uses the same five target frameworks and has no published-package availability;
 exact runtime and package qualification are recorded separately. Only an empty
-schema, minimal single-run source and strict PDF destination are accepted. General
-loss permissions, template data and portable execution are not implemented.
+schema and minimal single-run source are accepted. An additive overload explicitly
+selects Strict or BestEffort PDF output; BestEffort admits the documented exact
+theme-font loss only with its location-bound permission. General loss permissions,
+template data and portable execution are not implemented.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`
 snapshot property for admitted nested typed owners. This additive property does

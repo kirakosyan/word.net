@@ -597,14 +597,24 @@ and [performance samples](measurements/roadmap-138-strict-policy-performance-994
 retain exact identities. Hosted checks and actual Framework execution are separate;
 general template data, allowed losses and complete write-stage reporting remain open.
 
-The separate strict plain-DOCX policy prototype has 25 focused tests covering
+The earlier strict plain-DOCX policy prototype had 25 focused tests covering
 closed plan/policy admission, stale input, stream ownership, cancellation and the
 documented partial final-copy limit. Its [prototype reference](measurements/roadmap-138-public-policy-reference.json)
 records eleven independently authored schema-valid inputs, five admitted staged
 PDFs checked with Poppler for text, pages and fonts, and 22 altered-observation
 controls. It also retains the initial compiler and [Python environment](measurements/roadmap-138-public-policy-design-environment-initial.txt)
-failures. These are prototype observations, not exact-source or hosted qualification;
-allowed losses and a real unexpected write-stage finding have not been demonstrated.
+failures. Those historical prototype observations are not exact-source or hosted
+qualification; that earlier prototype did not demonstrate allowed losses or a real
+unexpected write-stage finding.
+
+The subsequent BestEffort prototype admits one precisely located theme-font
+fallback only when it is explicitly permitted and compares the observed warning
+before output is copied. It also checks a missing internal link that produces a
+real write-stage `Pdf.OmittedDestination` and rejects the staged output. The
+[independent prototype receipt](measurements/roadmap-138-allowed-loss-reference.json)
+records schema-checked synthetic inputs, canonical plan/policy checks, external PDF
+text/page/font observations and altered-observation controls. This remains a narrow
+profile, not general policy enforcement or independent validation during execution.
 
 The later head `7f476dd` passed both unchanged [hosted performance jobs](measurements/roadmap-138-performance-7f-hosted-success.json):
 the PR merge was 1.032 against `bf5ab00` and the push was 1.012 against `b57f10e`.

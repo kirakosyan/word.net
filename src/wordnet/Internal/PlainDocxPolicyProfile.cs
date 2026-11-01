@@ -26,6 +26,9 @@ internal static class PlainDocxPolicyProfile
     internal static void Validate(Stream input, CancellationToken cancellationToken = default) => _ = ReadText(input, cancellationToken);
 
     internal static string ReadText(Stream input, CancellationToken cancellationToken = default)
+        => Read(input, allowBestEffort: false, cancellationToken).Text;
+
+    internal static (string Text, PlainDocxPolicyInput Kind) Read(Stream input, bool allowBestEffort, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(input, nameof(input));
         if (!input.CanRead || !input.CanSeek || input.Position != 0) throw new ArgumentException("The source must be a readable seekable buffer positioned at zero.", nameof(input));
@@ -62,11 +65,39 @@ internal static class PlainDocxPolicyProfile
 
         XElement document = Root(package.ReadXml("word/document.xml"), Word + "document");
         XElement body = Child(document, Word + "body"); XElement paragraph = Child(body, Word + "p");
-        XElement run = Child(paragraph, Word + "r"); XElement text = Child(run, Word + "t");
+        XElement owner = Children(paragraph, 1)[0]; XElement run;
+        PlainDocxPolicyInput kind = PlainDocxPolicyInput.Plain;
+        if (owner.Name == Word + "hyperlink" && allowBestEffort)
+        {
+            XAttribute[] attributes = owner.Attributes().Where(attribute => !attribute.IsNamespaceDeclaration).ToArray();
+            string? anchor = (string?)owner.Attribute(Word + "anchor");
+            if (attributes.Length != 1 || attributes[0].Name != Word + "anchor" || anchor == null || anchor.Length is < 1 or > 40
+                || anchor.Any(character => character is not (>= 'A' and <= 'Z') and not (>= 'a' and <= 'z') and not (>= '0' and <= '9')))
+                throw Unsupported();
+            run = Child(owner, Word + "r"); kind = PlainDocxPolicyInput.UncheckedLink;
+        }
+        else
+        {
+            if (owner.Name != Word + "r" || !OnlyAttributes(owner)) throw Unsupported();
+            run = owner;
+        }
+        XElement[] runChildren = run.Elements().Take(3).ToArray(); XElement text;
+        if (allowBestEffort && kind == PlainDocxPolicyInput.Plain && runChildren.Length == 2 && runChildren[0].Name == Word + "rPr")
+        {
+            _ = Children(run, 2); XElement properties = runChildren[0];
+            if (!OnlyAttributes(properties)) throw Unsupported();
+            XElement font = Children(properties, 1)[0]; if (font.Name != Word + "rFonts") throw Unsupported();
+            XAttribute[] attributes = font.Attributes().Where(attribute => !attribute.IsNamespaceDeclaration).ToArray();
+            if (attributes.Length != 2 || (string?)font.Attribute(Word + "asciiTheme") != "minorHAnsi"
+                || (string?)font.Attribute(Word + "hAnsiTheme") != "minorHAnsi" || Children(font, 0).Length != 0) throw Unsupported();
+            text = runChildren[1]; if (text.Name != Word + "t") throw Unsupported();
+            kind = PlainDocxPolicyInput.ThemeFont;
+        }
+        else text = Child(run, Word + "t");
         if (!OnlyAttributes(text) || text.Nodes().Count() != 1 || text.FirstNode is not XText value || value.GetType() != typeof(XText)
             || value.Value.Length is < 1 or > 40 || value.Value.Any(character => character is not (>= 'A' and <= 'Z') and not (>= 'a' and <= 'z') and not (>= '0' and <= '9')))
             throw Unsupported();
-        cancellationToken.ThrowIfCancellationRequested(); return value.Value;
+        cancellationToken.ThrowIfCancellationRequested(); return (value.Value, kind);
     }
 
     private static XElement Root(XDocument document, XName expected)
@@ -95,4 +126,11 @@ internal static class PlainDocxPolicyProfile
     }
 
     private static NotSupportedException Unsupported() => new NotSupportedException("Plan.SourceProfile: This source is outside the narrow plain-DOCX policy profile.");
+}
+
+internal enum PlainDocxPolicyInput
+{
+    Plain,
+    ThemeFont,
+    UncheckedLink,
 }

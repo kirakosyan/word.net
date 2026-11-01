@@ -9,7 +9,7 @@ all five target frameworks and existing platform limits remain. Historical resul
 below retain their original source/package identities.
 
 The [compatibility-plan design](template-compatibility-plan-design.md) describes
-typed requirements and loss policies. The strict plain-DOCX profile below implements
+typed requirements and loss policies. The bounded plain-DOCX profile below implements
 only a small subset; general template-plan compilation and enforcement remain open.
 
 ## Unreleased source: bounded template inspection
@@ -163,8 +163,39 @@ or environment and staged conversion failures leave the destination untouched.
 Final-copy I/O or cancellation can leave partial output; the output hash identifies
 the staged bytes handed to the stream, not durable storage. The outcome explicitly
 reports independent validation as `not-performed`. Strict loss exceptions currently
-report a conversion failure rather than a complete write-stage diagnostic; allowed
-losses, output validation and general policy execution remain unfinished.
+report a conversion failure rather than a complete write-stage diagnostic; general
+loss permissions, output validation and policy execution remain unfinished.
+
+An explicit `FidelityMode.BestEffort` overload admits two additional minimal
+single-run sources: one `minorHAnsi` theme-font reference with no theme package,
+or one internal hyperlink with an alphanumeric anchor. The former plans one
+observed `Docx.ThemeFont` loss at the run and requires a permission for exactly
+that code and location. It uses the bundled fallback font, so the original theme
+appearance is not guaranteed. For the latter, the plan checks logical text, not
+the link target; writing can discover `Pdf.OmittedDestination` and reject the
+staged output as an unexpected finding. The source contains no bookmark under
+this profile, so such a link cannot complete successfully. Other formatting,
+relationships, themes and link constructs remain outside the profile.
+
+```csharp
+using var source = File.OpenRead("minimal-theme.docx");
+var plan = new WordConverter().CompileTemplateCompatibilityPlan(
+    source, new TemplateDataSchema(), DocumentFormat.Pdf, clock, FidelityMode.BestEffort);
+string policy = "{\"schemaVersion\":\"1.0\",\"planDigest\":\"" + plan.GetIdentitySha256()
+    + "\",\"requiredSemantics\":[\"content.text\"],\"allowedLosses\":["
+    + "{\"code\":\"Docx.ThemeFont\",\"location\":{\"partId\":\"part-0001\",\"childIndexes\":[1,1,1,1]}}]}";
+source.Position = 0;
+using var output = new MemoryStream();
+TemplatePolicyOutcome result = plan.Execute(source, output, policy);
+if (result.State != "allowed-loss") throw new InvalidOperationException(result.Code);
+```
+
+BestEffort is an explicit choice; Strict never accepts this loss. The observed
+diagnostic must still match the planned code, location, phase and count before
+output is copied. A missing or mismatched permission fails before reading the
+source. Findings in the outcome expose codes, phases and counts without source
+paths or messages. These controls do not implement arbitrary loss permissions,
+template-data binding or independent validation.
 
 The table subset is a direct `word/document.xml` body table with a rectangular
 grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped

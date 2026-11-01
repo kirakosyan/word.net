@@ -28,9 +28,10 @@ A separate fixed-profile in-process snapshot binds the source, declaration, DOCX
 destination, defaults, font resources, provider profile and module/runtime descriptor for reusing only the
 inspection. It retains every unknown, does not attest binaries, and does not execute
 conversion or enforce policies. A separate [strict plain-DOCX policy profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy)
-compiles and executes a bound minimal single-run source with no allowed losses.
-Uninspected scopes, portable plans, actual unexpected write-stage findings, allowed
-losses, output validation and full #172 enforcement remain open.
+compiles and executes a bound minimal single-run source. An explicit BestEffort
+subset allows one precisely located theme-font fallback and rejects an unexpected
+missing-link finding observed during PDF writing. Uninspected scopes, portable plans,
+general loss permissions, output validation and full #172 enforcement remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the
