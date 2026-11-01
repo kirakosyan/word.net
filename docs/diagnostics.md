@@ -387,7 +387,8 @@ advertised yet.
 `Plan.InvalidControl`, `Plan.InvalidControlPath` and `Plan.InvalidControlStructure`
 identify definite problems in the narrow inspected profile. `Plan.OptionalPath`,
 `Plan.OptionalParent`, `Plan.PathTypeUnknown`, `Plan.ParentTypeUnknown`,
-`Plan.ControlCoverage`, `Plan.RepeatScope`, `Plan.RepeatFieldScopeUnknown`, `Plan.RepeatFieldTypeMismatch`, `Plan.OwnerCoverage`,
+`Plan.ControlCoverage`, `Plan.RepeatScope`, `Plan.RepeatFieldScopeUnknown`, `Plan.RepeatFieldTypeMismatch`,
+`Plan.RepeatFieldParentUnknown`, `Plan.RepeatFieldParentOptional`, `Plan.RepeatFieldParentTypeMismatch`, `Plan.OwnerCoverage`,
 `Plan.FieldCoverage`, `Plan.LocationCoverage`, `Plan.UninspectedCoverage`,
 `Plan.ProtectedOwner` and `Plan.ReuseUnavailable` describe uncertainty or a
 protected owner; they never mean that output is safe. Each includes a stable
@@ -395,9 +396,10 @@ protected owner; they never mean that output is safe. Each includes a stable
 `Plan.RepeatScope` does not prevent definite findings for separately verified
 root-owned body fields and simple body or cell controls. An admitted simple repeat
 field may be located and counted without guessing its data scope, type or presence.
-A required single-segment item declaration identifies item scope if the field
-executes; `Plan.RepeatFieldTypeMismatch` is unknown because an empty collection
-need not evaluate it. `ScopePathId` is an opaque collection alias, including when
+A required item declaration with required mapping declarations for every dotted
+parent identifies item scope if the field executes. The parent findings and
+`Plan.RepeatFieldTypeMismatch` are unknown because an empty collection need not
+evaluate the field. `ScopePathId` is an opaque collection alias, including when
 item versus fallback lookup remains unknown. Other repeated contents and flattened
 wrapper scopes remain unknown. Source diagnostic codes, severity and
 counts are preserved without messages or source

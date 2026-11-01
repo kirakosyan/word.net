@@ -41,12 +41,17 @@ expanding the repeat. A simple `MERGEFIELD` inside that admitted repeat produces
 an opaque requirement and a numeric source position for any finding. The actual
 merge can select a value from the item or fall back to a parent/root value. By
 default its type, presence and lookup scope remain unknown. To declare that every
-item in a root collection has a single-segment path, use
+item in a root collection has a path, use
 `TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar)`.
 A required item declaration lets inspection identify that item's scope and type
 if the field executes. It is a caller promise, not a data check or a guarantee
-that the collection is nonempty. An optional or missing declaration, a dotted
-item path and other repeat contents retain `Plan.RepeatFieldScopeUnknown`.
+that the collection is nonempty. For a dotted item path, declare every parent in
+the same repeat scope as a required `Mapping`, for example both `Customer` and
+`Customer.Name`. A missing, optional or non-mapping parent produces an unknown
+`Plan.RepeatFieldParentUnknown`, `Plan.RepeatFieldParentOptional` or
+`Plan.RepeatFieldParentTypeMismatch`, respectively, as well as
+`Plan.RepeatFieldScopeUnknown`. An optional or missing item declaration and
+other repeat contents also retain unknown scope.
 An incompatible declared item type produces unknown `Plan.RepeatFieldTypeMismatch`,
 because an empty collection may never evaluate the field. A root field with the
 same path has a separate requirement using the same path alias; `ScopePathId`

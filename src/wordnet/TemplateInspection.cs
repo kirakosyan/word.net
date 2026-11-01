@@ -37,14 +37,13 @@ public sealed class TemplateSchemaPath
         if (type is < TemplatePathType.Scalar or > TemplatePathType.Collection) throw new ArgumentOutOfRangeException(nameof(type));
         Path = path; Type = type; Required = required; RepeatCollectionPath = repeatCollectionPath;
     }
-    /// <summary>Declares a single-segment path relative to every item of a named root repeat collection.</summary>
-    /// <remarks>A required declaration promises the path exists on every item; template inspection does not examine data or guarantee a nonempty collection.</remarks>
+    /// <summary>Declares a bounded dotted path relative to every item of a named root repeat collection.</summary>
+    /// <remarks>A required declaration promises the path exists on every item; template inspection does not examine data or guarantee a nonempty collection. Declare each dotted parent separately as a required Mapping to resolve item scope.</remarks>
     public static TemplateSchemaPath ForRepeatItem(string collectionPath, string path, TemplatePathType type, bool required = true)
     {
         Guard.NotNull(collectionPath, nameof(collectionPath)); Guard.NotNull(path, nameof(path));
         if (collectionPath.Length > 256 || !collectionPath.Split('.').All(TemplateData.Identifier))
             throw new ArgumentException("Template.Path: Unsupported repeat collection path.", nameof(collectionPath));
-        if (!TemplateData.Identifier(path)) throw new ArgumentException("Template.Path: A repeat item path must be a single identifier.", nameof(path));
         return new TemplateSchemaPath(path, type, required, collectionPath);
     }
     /// <summary>Gets the caller-supplied path. Do not publish it if names are sensitive.</summary>

@@ -10,7 +10,9 @@ Selected incompatible PDF option combinations are flagged statically, without
 running conversion or claiming that the remaining destination checks passed.
 The additive `TemplateInspectionFinding.SourceElementIndices` exposes a bounded
 numeric source position where available, without exposing names by default.
-`TemplateSchemaPath.ForRepeatItem` adds an explicit per-item declaration, and the
+`TemplateSchemaPath.ForRepeatItem` adds an explicit single or dotted per-item
+declaration; dotted parents must be separately declared as required mappings for
+template scope to be known. The
 additive `ScopePathId` on findings and requirements identifies an opaque repeat
 collection alias when known; existing root declarations and constructors remain.
 `TemplateDataSchema.InspectJson` adds a separate immutable, privacy-safe report of

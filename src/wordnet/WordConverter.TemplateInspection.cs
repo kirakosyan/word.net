@@ -14,7 +14,7 @@ public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
     /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths.
-    /// A single simple field inside an admitted root repeat has known item scope only when the caller declares that item path required; other repeated contents, controls and owners remain uninspected. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
+    /// A single simple field inside an admitted root repeat has known item scope only when the caller declares that item path required and any dotted item parents as required mappings; other repeated contents, controls and owners remain uninspected. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
@@ -124,6 +124,20 @@ public sealed partial class WordConverter
         {
             TemplateSchemaPath? item = null;
             bool requiredItem = repeatScope != null && itemDeclarations.TryGetValue((repeatScope, path), out item) && item?.Required == true;
+            if (requiredItem)
+            {
+                string[] parts = path.Split('.');
+                for (int i = 1; i < parts.Length; i++)
+                {
+                    Work(); string parent = string.Join(".", parts.Take(i));
+                    if (!itemDeclarations.TryGetValue((repeatScope!, parent), out TemplateSchemaPath? ancestor))
+                    { Add("Plan.RepeatFieldParentUnknown", "Remediation.DeclareParent", parent, part, unknown: true, indices: location(), scope: repeatScope); requiredItem = false; }
+                    else if (ancestor.Type != TemplatePathType.Mapping)
+                    { Add("Plan.RepeatFieldParentTypeMismatch", "Remediation.FixPathType", parent, part, unknown: true, indices: location(), scope: repeatScope); requiredItem = false; }
+                    else if (!ancestor.Required)
+                    { Add("Plan.RepeatFieldParentOptional", "Remediation.RequirePath", parent, part, unknown: true, indices: location(), scope: repeatScope); requiredItem = false; }
+                }
+            }
             bool scopeUnknown = scoped && !rootScope && !requiredItem;
             var key = (Path: path, ScopeUnknown: scopeUnknown, Scope: repeatScope);
             bool present = observedPaths.TryGetValue(key, out int prior);

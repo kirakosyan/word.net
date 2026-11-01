@@ -1354,7 +1354,7 @@
       "id": "template-inspection-simple-root-repeat",
       "issue": 171,
       "outcome": "supported-bounded",
-      "boundary": "Non-reusable inspection checks a directly owned simple root repeat and a single repeated merge field. A required single-segment item declaration identifies its scope if executed; optional or absent declarations retain unknown fallback scope. Root and different repeat requirements remain separate; broader repeat coverage remains unknown.",
+      "boundary": "Non-reusable inspection checks a directly owned simple root repeat and a single repeated merge field. A required item path with required dotted-parent mappings identifies its scope if executed; missing, optional or incompatible parents and optional or absent paths retain unknown fallback scope. Root and different repeat requirements remain separate; broader repeat coverage remains unknown.",
       "tests": [
         { "class": "TemplateInspectionTests", "method": "SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents" },
         { "class": "TemplateInspectionTests", "method": "RepeatedFieldAndRootFieldKeepSeparateScopeEvidence" },
@@ -1362,35 +1362,27 @@
         { "class": "TemplateInspectionTests", "method": "OptionalRepeatItemStillHasUnknownFallbackScope" },
         { "class": "TemplateInspectionTests", "method": "RepeatsWithTheSameFieldKeepIndependentCollectionScopes" },
         { "class": "TemplateInspectionTests", "method": "RepeatItemTypeMismatchIsUncertainWhenTheCollectionMayBeEmpty" },
-        { "class": "TemplateInspectionTests", "method": "UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty" }
+        { "class": "TemplateInspectionTests", "method": "UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty" },
+        { "class": "TemplateInspectionTests", "method": "RequiredDottedRepeatItemPathKeepsRootScopeSeparateAndChecksFallbackData" },
+        { "class": "TemplateInspectionTests", "method": "DottedRepeatItemParentUncertaintyRemainsUnknownForAnEmptyCollection" },
+        { "class": "TemplateInspectionTests", "method": "DottedRepeatItemPathsRequireEveryDeclaredParentMapping" },
+        { "class": "TemplateInspectionTests", "method": "DottedRepeatItemPathsDoNotSkipIntermediateParentDeclarations" }
       ]
     },
     {
-    "id": "template-json-data-schema",
-    "issue": 171,
-    "outcome": "supported-bounded",
-    "boundary": "A separate privacy-safe report compares bounded JSON data to all declared root and repeat-item paths. Required item paths are checked even when merge could fall back to root; absent scopes remain unknown. Null is admitted, JSON does not supply typed dates or images, and the report does not guarantee template output.",
-    "tests": [
-      {
-        "class": "TemplateInspectionTests",
-        "method": "JsonSchemaInspectionFindsAnItemPromiseViolationDespiteRootFallback"
-      },
-      {
-        "class": "TemplateInspectionTests",
-        "method": "JsonSchemaInspectionPreservesOptionalFallbackAndMissingScopeUncertainty"
-      },
-      {
-        "class": "TemplateInspectionTests",
-        "method": "JsonSchemaInspectionChecksItemTypesAndAdmitsNullWithoutConvertingStrings"
-      },
-      {
-        "class": "TemplateInspectionTests",
-        "method": "JsonSchemaInspectionHonorsMalformedInputCancellationAndLimits"
-      }
-    ]
-  },
-  {
-    "id": "template-inspection-unqualified-repeat-scopes",
+      "id": "template-json-data-schema",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "A separate privacy-safe report compares bounded JSON data to all declared root and repeat-item paths. Required item paths are checked even when merge could fall back to root; absent scopes remain unknown. Null is admitted, JSON does not supply typed dates or images, and the report does not guarantee template output.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "JsonSchemaInspectionFindsAnItemPromiseViolationDespiteRootFallback" },
+        { "class": "TemplateInspectionTests", "method": "JsonSchemaInspectionPreservesOptionalFallbackAndMissingScopeUncertainty" },
+        { "class": "TemplateInspectionTests", "method": "JsonSchemaInspectionChecksItemTypesAndAdmitsNullWithoutConvertingStrings" },
+        { "class": "TemplateInspectionTests", "method": "JsonSchemaInspectionHonorsMalformedInputCancellationAndLimits" }
+      ]
+    },
+    {
+      "id": "template-inspection-unqualified-repeat-scopes",
       "issue": 171,
       "outcome": "rejected",
       "boundary": "Flattened wrapper scopes and multi-paragraph repeat owners remain unknown; a wrong root collection type is reported and fails merge.",

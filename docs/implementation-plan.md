@@ -15,7 +15,7 @@ or #172. Their compilation, enforcement and independent outcome evidence remain 
 Pending #171 adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
 for declared ordinary body and bounded simple-cell merge fields and inline controls,
 including beside repeats, plain root-repeat paths and selected repeated fields with
-declared item or unknown fallback scope, with optional numeric positions and selected static PDF option conflicts.
+declared single or dotted item paths or unknown fallback scope, with optional numeric positions and selected static PDF option conflicts.
 It also checks root and repeat-item declarations against bounded JSON data,
 independently of a particular template or output.
 It explicitly retains uninspected scopes,
