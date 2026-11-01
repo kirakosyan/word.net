@@ -626,6 +626,18 @@ real write-stage `Pdf.OmittedDestination` and rejects the staged output. The
 records schema-checked synthetic inputs, canonical plan/policy checks, external PDF
 text/page/font observations and altered-observation controls. This remains a narrow
 profile, not general policy enforcement or independent validation during execution.
+Exact required-link source `cf7b610` passed the five-target Release rebuild,
+formatting, local package/API checks and both complete .NET 8/.NET 10 conversion and
+English OCR suites (2,466 cases each, no skips). The executable matrix passed 936
+cases; independent corpora rejected 329 altered observations, including 28 for the
+allowed-loss, required-semantic and unexpected-write profiles. The unchanged local single-core PDF gate passed at
+1.121 versus `13886f4`; its reference round medians were
+43.606 and 41.151 ms, and candidate medians were
+37.252 and 54.251 ms. The [source receipt](measurements/roadmap-138-required-link-cf7b610.json)
+and [performance samples](measurements/roadmap-138-required-link-performance-cf7b610.json)
+retain exact identities. Hosted checks and actual Framework execution are separate;
+general template data, loss permissions and complete write-stage reporting remain open.
+
 The later [required-link prototype](measurements/roadmap-138-required-link-reference.json)
 also checks that an unsupported or unassessed `content.links` requirement is
 rejected before execution input is read or output is touched. Its observations
@@ -634,9 +646,13 @@ are separate from exact-source and hosted qualification.
 The later head `7f476dd` passed both unchanged [hosted performance jobs](measurements/roadmap-138-performance-7f-hosted-success.json):
 the PR merge was 1.032 against `bf5ab00` and the push was 1.012 against `b57f10e`.
 The two jobs used different references. Its actual Framework 4.7.2 legacy-JIT
-[PR source guest](measurements/wordnet-138-framework-7f-pr-source-success.json)
-passed 2,433 cases and cleanup. Other guests and newer source require separate
-evidence, and the earlier failed timing verdict is retained.
+[PR source](measurements/wordnet-138-framework-7f-pr-source-success.json),
+[PR package](measurements/wordnet-138-framework-7f-pr-package-success.json) and
+[push source](measurements/wordnet-138-framework-7f-push-source-success.json) guests
+each passed 2,433 cases and cleanup. The PR package guest's archives and loaded
+assemblies match the separately retained [workflow packages](measurements/wordnet-138-framework-7f-pr-package-identity.json).
+The push package guest and newer source require separate evidence, and the earlier
+failed timing verdict is retained.
 
 For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
