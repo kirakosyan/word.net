@@ -395,6 +395,10 @@ namespace-collision negatives. The original malformed fixture, unresolved hyperl
 and preliminary namespace-attribution test failures remain recorded. The pinned-font
 office comparison retains table-cell and following-link differences at the unchanged
 0.25-point threshold.
+The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
+records both complete suites, the 822-case matrix, local packages and the independent
+controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
+passed; hosted exact-head and Windows Framework execution remain separate checks.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner
