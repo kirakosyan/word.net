@@ -1,0 +1,72 @@
+{
+  "roadmap": 138,
+  "issues": [
+    171,
+    172
+  ],
+  "recordedUtc": "2026-11-01",
+  "qualification": "Uncommitted internal source-profile prototype only; it does not compile a trusted plan, enforce policy or validate arbitrary output. Exact-source and hosted qualification are separate.",
+  "baseCommit": "9cb2c2af4ed995f9c9901b9683648ebd3cb40bd7",
+  "prototypeSourceFiles": {
+    "src/wordnet/Internal/PlainDocxPolicyProfile.cs": "2f39365fa5d6f3b61099f4fe840a10d9b8b9d4b0d684fc48ccff71cd5986cbef",
+    "tests/wordnet.Conversion.Tests/PlainDocxPolicyProfileTests.cs": "4609209cf9b4047087d899023e3a939defaa6152634866180203fbdc5f9526dd",
+    "eng/generate-roadmap-138-plain-policy.py": "566b8f00270997d550958199fe76077b754574009c79608b9cfb12d53c7e5e8c",
+    "eng/roadmap-138-plain-policy-probe.cs": "fde9d2ce0d7c9c36669a03ab6ee945f1034698ba99c159c3bfa5101a2ec844d8",
+    "eng/verify-roadmap-138-plain-policy.py": "0f73a93b56c46f476605b74480cb878c510aad0f91bd5d3f6ebc43861a09387e"
+  },
+  "loadedCoreSha256": "9532b09792d972b094f70ad9f81defb4df3185c7d8d25d63f1b07f8364187f24",
+  "inputManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+    "generatorSha256": "566b8f00270997d550958199fe76077b754574009c79608b9cfb12d53c7e5e8c",
+    "documents": {
+      "short.docx": "c1a63e4ad9c46b677adfc4562dceb47c87d408b797d8877278446f7122683a8d",
+      "maximum.docx": "3009627667b4235d3b9aa4f7b7c1382865da103bcba5cec6753b86da204c762e",
+      "two-paragraphs.docx": "45747c0dfa6397d0485b75aaa29c245d31e3d45c6348e122f3304b77477b94e9",
+      "formatted.docx": "b26445220355361a19b3157de101c88296ec672f1fcb4bb7e0bac93a076d28d0",
+      "field.docx": "7213a472c37ff3a8632342c0cf9e6762987e4be1d790dca43d116f52940e72f7",
+      "space.docx": "2df452dad459460eeca1ef432b906184a2520e00106aa06e8491b5e90110fee2",
+      "long.docx": "a197994b0ac727ccd557108c00fbc63ce38840f8a11e1e04f751ff02cef66eb4",
+      "styles.docx": "638d2966b0d298f760ec36d97d33c090345f7322a680d31bc96c3297eb4fd4f3"
+    },
+    "expectedAcceptedText": {
+      "short": "Alpha123",
+      "maximum": "ABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234"
+    }
+  },
+  "schemaLogSha256": "29c1ed84fb4b0e7e4d711e92f9125a9eabf1c213ed84ed2ed9898b6140619b12",
+  "focusedTests": {
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "e5891cff861409a5b27a04ce452a0efa762050b4577f86591fe7bc07a2a8f51d"
+  },
+  "independentTools": "Open XML SDK 3.5.1; Poppler 24.02.0 in the pinned reference container; fixed field clock 2026-11-01T12:00:00Z.",
+  "independentCheck": {
+    "result": {
+      "schemaValidInputs": 8,
+      "acceptedPlainInputs": 2,
+      "rejectedStructuredInputs": 6,
+      "independentPdfTextAndPageCountMatch": true,
+      "limitations": "Uncommitted source-profile prototype only; these PDFs do not establish policy execution or general template support."
+    },
+    "negativeControls": {
+      "manifest": "Independent input manifest changed",
+      "source identity": "Source identity or stream ownership changed",
+      "core assembly": "Loaded core or scenario set changed",
+      "schema validation": "Independent input schema validation missing",
+      "stream ownership": "Source identity or stream ownership changed",
+      "field admitted": "Out-of-profile source was admitted",
+      "format admitted": "Out-of-profile source was admitted",
+      "style admitted": "Out-of-profile source was admitted",
+      "extra output": "Unexpected output set",
+      "missing output": "Unexpected output set",
+      "output hash": "Accepted conversion result changed",
+      "diagnostic": "Accepted conversion result changed",
+      "pdf text": "Independent PDF text or page count changed",
+      "page count": "Independent PDF text or page count changed",
+      "font": "Independent PDF font observation changed"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "limitations": "Only two synthetic single-run, alphanumeric DOCX inputs were admitted; six independently authored schema-valid variants were rejected. Strict PDF text and page count matched the independent reader for those inputs only."
+}

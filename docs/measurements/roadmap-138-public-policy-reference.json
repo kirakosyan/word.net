@@ -1,0 +1,108 @@
+{
+  "roadmap": 138,
+  "issues": [
+    171,
+    172
+  ],
+  "recordedUtc": "2026-11-01",
+  "qualification": "Uncommitted public-wrapper prototype only. Exact-source, package and hosted qualification are separate.",
+  "baseCommit": "430ac1c2fcd8201926be1b85fbc59c56c86df5e4",
+  "prototypeSourceFiles": {
+    "src/wordnet/Internal/CompatibilityPolicyData.cs": "d3928bc1b77812fb462b47e72b01903cb60625f0213a3283e3675a1847151bdb",
+    "src/wordnet/Internal/CompatibilityPlanData.cs": "505f6fee20a89503062a1ae9b15c648ce65ae4a123a09bfc34c5eac4f0b2fb42",
+    "src/wordnet/Internal/PlainDocxPolicyProfile.cs": "1e36c9fb5e0cb088a7506431092a1fb0eb3b775940d62f9f758be9f14b64753c",
+    "src/wordnet/Internal/PlainDocxPolicyPlan.cs": "f63dd190a04c69459c3803c82ebdea8b47c311a73976ba806071e49dcb612091",
+    "src/wordnet/TemplateCompatibilityPlan.cs": "fa483b46561112167e17366e544479d7219bfbf442501165fce0cdb21c668e7d",
+    "tests/wordnet.Conversion.Tests/CompatibilityPolicyDataTests.cs": "4fa71eaeb55c1f1cdf1bdddc6e4ef9d57c3263d785ade2952b15a8fed9db2fa3",
+    "tests/wordnet.Conversion.Tests/CompatibilityPlanDataTests.cs": "7664c5101be5084d73a282aa4e9f7b91228a11f662298a58b36af94aa67c211f",
+    "tests/wordnet.Conversion.Tests/PlainDocxPolicyProfileTests.cs": "4609209cf9b4047087d899023e3a939defaa6152634866180203fbdc5f9526dd",
+    "tests/wordnet.Conversion.Tests/PlainDocxPolicyPlanTests.cs": "bbd0e7f7f2edd7197af408eb2c76a2677b10a7d427eb63bad953971ca51fc4fd",
+    "tests/wordnet.Conversion.Tests/TemplateCompatibilityPublicTests.cs": "ec99df5d25d7deca4864e236ef6a441041463019d339388489fb011dc59f95f0",
+    "eng/generate-roadmap-138-plain-policy.py": "2d2e86b0642880b1ef90684c83f3ee13fdfca3e6af8bd70743a1f6b728b44e25",
+    "eng/roadmap-138-staged-policy-probe.cs": "e8e7a42a340114fc91814cfb3d6c0154a768f011c608a2b5f7f5da8e59f47601",
+    "eng/verify-roadmap-138-staged-policy.py": "24fed89411ca1677032de7d4d117bb45ee8c3a5955946b3eb6b1f89cd4625d3d",
+    "docs/design/template-compatibility-plan.schema.json": "c622a894b73bf27a2002275b54edf2dac55682d1de028b4ccf5081edddeb05f9",
+    "docs/design/template-compatibility-policy.schema.json": "7ec896b49e878b084d1f87d2170bc34b54cf9b8465a7308fec6c196fa1c4a800"
+  },
+  "loadedCoreSha256": "ad90803fcf9f4600e60006ac705d5b1dcb24c047baa25ffc43db7d26919eecf4",
+  "inputManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+    "generatorSha256": "2d2e86b0642880b1ef90684c83f3ee13fdfca3e6af8bd70743a1f6b728b44e25",
+    "documents": {
+      "short.docx": "c1a63e4ad9c46b677adfc4562dceb47c87d408b797d8877278446f7122683a8d",
+      "maximum.docx": "3009627667b4235d3b9aa4f7b7c1382865da103bcba5cec6753b86da204c762e",
+      "single.docx": "25406a713b356e5709dca5fd2c44520443131aff7fb4ec9b97834cfcf7a68765",
+      "lowercase.docx": "ddf2df3b51c05156e621ef13c8ab525c85dbd180d963b4f60899ca97bfd1caf4",
+      "mixed.docx": "433948323604c27375fe6ade8bf1b7c90c125a72e0a5d9184cbd7c8757c5e605",
+      "two-paragraphs.docx": "45747c0dfa6397d0485b75aaa29c245d31e3d45c6348e122f3304b77477b94e9",
+      "formatted.docx": "b26445220355361a19b3157de101c88296ec672f1fcb4bb7e0bac93a076d28d0",
+      "field.docx": "7213a472c37ff3a8632342c0cf9e6762987e4be1d790dca43d116f52940e72f7",
+      "space.docx": "2df452dad459460eeca1ef432b906184a2520e00106aa06e8491b5e90110fee2",
+      "long.docx": "a197994b0ac727ccd557108c00fbc63ce38840f8a11e1e04f751ff02cef66eb4",
+      "styles.docx": "638d2966b0d298f760ec36d97d33c090345f7322a680d31bc96c3297eb4fd4f3"
+    },
+    "expectedAcceptedText": {
+      "short": "Alpha123",
+      "maximum": "ABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234",
+      "single": "A",
+      "lowercase": "abcdefghijklmnopqrstuvwxyz",
+      "mixed": "A0b1C2d3E4f5G6h7I8j9K0l1M2n3O4p5Q6r7S8t9"
+    }
+  },
+  "schemaLogSha256": "aaa274b14d98db6ac2cfe561fd5d51ccece06adec9dc5f6fb947dc7526cab698",
+  "focusedTests": {
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "cb3bfa5670f8c8b07c34e191efaaf55739597363f0ff42f0e49143b822377c88"
+  },
+  "independentTools": "Open XML SDK 3.5.1; Python jsonschema and rfc8785 0.1.4; Poppler 24.02.0 in the pinned reference container; fixed field clock 2026-11-01T12:00:00Z.",
+  "independentCheck": {
+    "result": {
+      "schemaValidInputs": 11,
+      "stagedPdfCases": 5,
+      "canonicalPlanAndPolicySchemasMatch": true,
+      "independentPdfTextAndPageCountMatch": true,
+      "failClosedRuntimeNegatives": 4,
+      "limitations": "Prototype public wrapper covers only single-run alphanumeric DOCX to strict PDF without loss or template data; live independent validation is not performed."
+    },
+    "negativeControls": {
+      "fixture manifest": "Independent source manifest changed",
+      "loaded core": "Loaded assembly or output set changed",
+      "schema evidence": "Independent source schema validation missing",
+      "plan bytes": "Plan or policy violates its design schema",
+      "plan digest": "Canonical plan or policy binding changed",
+      "source hash": "Input fingerprint or length changed",
+      "source length": "Input fingerprint or length changed",
+      "options hash": "Data declaration or fixed PDF options identity changed",
+      "output hash": "Output identity changed",
+      "output missing": "Loaded assembly or output set changed",
+      "execution state": "Staged execution result or stream ownership changed",
+      "independent validation overstated": "Staged execution result or stream ownership changed",
+      "destination changed early": "Staged execution result or stream ownership changed",
+      "stream closed": "Staged execution result or stream ownership changed",
+      "source leaked": "Canonical plan or policy binding changed",
+      "pdf text": "Independent PDF text or page count changed",
+      "pdf pages": "Independent PDF text or page count changed",
+      "pdf font": "Independent PDF font observation changed",
+      "changed source accepted": "Changed source did not fail before output",
+      "stale policy consumed input": "Stale policy did not fail before input or output",
+      "unmatched loss accepted": "Unmatched loss did not fail before input or output",
+      "unknown semantic accepted": "Unknown semantic did not fail before input or output"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "observedOutputsSha256": {
+    "lowercase.pdf": "40f56726e9e600ad237e129c99c1514c347522880adf807de02eed141427f78a",
+    "maximum.pdf": "c75e813786f9216a3231c9f103f38f1dd616d73f3de132727c00f09e4f8f09e0",
+    "mixed.pdf": "4c8d9a8877cb2005b499c01c839ccbb595e0dfef322032fc2746a16a070bff78",
+    "short.pdf": "9cb9fa83b3db638bd43662a11bbf8f4ff42df0f2d38e60353e2198a9430167c1",
+    "single.pdf": "b498246e790c7f2aa61496767bf72af4d711bb80ae56040669ca3051fc4d89cd"
+  },
+  "initialCompilerFailures": [
+    "docs/measurements/roadmap-138-staged-policy-prototype-initial.txt",
+    "docs/measurements/roadmap-138-staged-policy-diagnostics-initial.txt",
+    "docs/measurements/roadmap-138-public-policy-prototype-initial.txt"
+  ],
+  "limitations": "Five schema-valid single-run alphanumeric DOCX inputs were accepted. Stale input, stale policy, unmatched permission and unknown semantic rejected without touching output. This profile does not admit template data or allowed losses, independently validate output during execution, or demonstrate a real unexpected write-stage finding. Strict loss exceptions are classified as conversion failures."
+}

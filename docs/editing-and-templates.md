@@ -9,8 +9,8 @@ all five target frameworks and existing platform limits remain. Historical resul
 below retain their original source/package identities.
 
 The [compatibility-plan design](template-compatibility-plan-design.md) describes
-future typed requirements and loss policies; template-plan compilation and policy
-enforcement are not implemented by that design.
+typed requirements and loss policies. The strict plain-DOCX profile below implements
+only a small subset; general template-plan compilation and enforcement remain open.
 
 ## Unreleased source: bounded template inspection
 
@@ -126,6 +126,45 @@ unknowns are unchanged, and
 mean that a reusable conversion-policy plan is unavailable. The snapshot does not
 bind data, authorize conversion, enforce a loss policy, validate output or permit
 arbitrary caller options, fonts or providers.
+
+### Unreleased source: strict plain DOCX policy
+
+`CompileTemplateCompatibilityPlan` supports only a minimal DOCX package with one
+body paragraph, one text run and 1–40 ASCII letters or digits. Other content,
+formatting, styles, fields, controls, relationships and extra parts are rejected;
+an empty document relationship part is permitted. It accepts only an empty data
+schema and a PDF destination, using strict defaults, bundled fonts, no optional
+providers and a fixed caller-supplied clock. It checks the source, destination and
+one-page layout, but does not write or independently validate output when compiling.
+This deliberately small profile does not fill a template or accept any loss.
+
+```csharp
+var converter = new WordConverter();
+var clock = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+using var source = File.OpenRead("minimal.docx");
+TemplateCompatibilityPlan plan = converter.CompileTemplateCompatibilityPlan(
+    source, new TemplateDataSchema(), DocumentFormat.Pdf, clock);
+string policy = "{\"schemaVersion\":\"1.0\",\"planDigest\":\"" + plan.GetIdentitySha256()
+    + "\",\"requiredSemantics\":[\"content.text\"],\"allowedLosses\":[]}";
+source.Position = 0;
+using var output = new MemoryStream();
+TemplatePolicyOutcome outcome = plan.Execute(source, output, policy);
+if (outcome.State != "completed") throw new InvalidOperationException(outcome.Code);
+// Independently validate or persist output according to the caller's requirements.
+```
+
+The policy and plan are version-1 canonicalizable data, but only the original
+in-process plan object authorizes execution. Its checked runtime/module descriptor
+is not binary attestation, and its hashes can fingerprint sensitive input. The
+source is read from its current position, checked again against the plan, and
+converted into private staging storage before copying to the caller's current
+destination position. Both streams remain open. Rejected policies, changed source
+or environment and staged conversion failures leave the destination untouched.
+Final-copy I/O or cancellation can leave partial output; the output hash identifies
+the staged bytes handed to the stream, not durable storage. The outcome explicitly
+reports independent validation as `not-performed`. Strict loss exceptions currently
+report a conversion failure rather than a complete write-stage diagnostic; allowed
+losses, output validation and general policy execution remain unfinished.
 
 The table subset is a direct `word/document.xml` body table with a rectangular
 grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped

@@ -10,8 +10,8 @@ Source implementation, exact-runtime qualification and public package availabili
 are separate facts; publication is outside this roadmap's implementation request.
 
 The proposed [compatibility-plan and loss-policy contract](template-compatibility-plan-design.md)
-is a design and executable schema example for #170, not an implementation of #171
-or #172. Their compilation, enforcement and independent outcome evidence remain open.
+is a design and executable schema example for #170. General #171 compilation and
+#172 enforcement and independent outcome evidence remain open.
 Pending #171 adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
 for declared ordinary body and bounded simple-cell merge fields and inline controls,
 including beside repeats, plain root-repeat paths and selected repeated fields with
@@ -27,8 +27,10 @@ establish freshness.
 A separate fixed-profile in-process snapshot binds the source, declaration, DOCX/PDF/XPS
 destination, defaults, font resources, provider profile and module/runtime descriptor for reusing only the
 inspection. It retains every unknown, does not attest binaries, and does not execute
-conversion or enforce policies. Uninspected scopes, portable plan compilation,
-output validation and #172 remain open.
+conversion or enforce policies. A separate [strict plain-DOCX policy profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy)
+compiles and executes a bound minimal single-run source with no allowed losses.
+Uninspected scopes, portable plans, actual unexpected write-stage findings, allowed
+losses, output validation and full #172 enforcement remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the

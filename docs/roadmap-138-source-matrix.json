@@ -3,6 +3,60 @@
   "availability": "Unreleased draft source; outcomes do not qualify public packages or runtimes.",
   "profiles": [
     {
+      "id": "strict-policy-data-boundaries",
+      "issue": 172,
+      "outcome": "supported-bounded",
+      "boundary": "The version-1 policy parser has a closed code registry, exact locations, canonical ordering and explicit size, duplication and cancellation failures; parsing alone does not authorize output.",
+      "tests": [
+        { "class": "CompatibilityPolicyDataTests", "method": "DesignExampleHasStableIndependentCanonicalBytesAndImmutableLocations" },
+        { "class": "CompatibilityPolicyDataTests", "method": "UnorderedLocationsNormalizeAndDuplicateLocationsReject" },
+        { "class": "CompatibilityPolicyDataTests", "method": "UnknownCodesMalformedShapesAndDuplicateKeysCannotBecomePermissions" },
+        { "class": "CompatibilityPolicyDataTests", "method": "BoundsAndCancellationFailWithoutPublishingAPartialPolicy" }
+      ]
+    },
+    {
+      "id": "strict-policy-plan-admission",
+      "issue": 172,
+      "outcome": "supported-bounded",
+      "boundary": "Bounded plan parsing rejects unknown requirements, stale or unmatched permissions, missing locations and malformed stages. Internal parsed JSON alone is not an authorized execution plan.",
+      "tests": [
+        { "class": "CompatibilityPlanDataTests", "method": "IndependentDesignExampleIsAdmittedOnlyByTheExactNonStrictPolicy" },
+        { "class": "CompatibilityPlanDataTests", "method": "UnknownRequirementsSemanticsAndFindingsCannotBeAdmitted" },
+        { "class": "CompatibilityPlanDataTests", "method": "TruncatedUnlocatedOrUnmatchedLossesAndPermissionsReject" },
+        { "class": "CompatibilityPlanDataTests", "method": "InvalidStagesDuplicateKeysAndMalformedLocationsFailClosed" },
+        { "class": "CompatibilityPlanDataTests", "method": "CanonicalizationSortsRequirementsAndHonorsBoundsAndCancellation" }
+      ]
+    },
+    {
+      "id": "strict-plain-docx-policy-source",
+      "issue": 172,
+      "outcome": "supported-bounded",
+      "boundary": "Only a minimal DOCX package with one unformatted alphanumeric run of one to forty characters is admitted; extra parts, structured content and unbounded input reject.",
+      "tests": [
+        { "class": "PlainDocxPolicyProfileTests", "method": "AdmitsOnlyTheNarrowOneRunProfileAndLeavesTheStreamOpen" },
+        { "class": "PlainDocxPolicyProfileTests", "method": "StructuredContentFormattingAndUnqualifiedTextReject" },
+        { "class": "PlainDocxPolicyProfileTests", "method": "ExtraPartsRelationshipsAndActiveXmlDoNotEnterTheProfile" },
+        { "class": "PlainDocxPolicyProfileTests", "method": "DuplicatePartsOversizedBuffersAndCancellationFailBeforeAdmission" }
+      ]
+    },
+    {
+      "id": "strict-plain-docx-policy-execution",
+      "issue": 172,
+      "outcome": "supported-bounded",
+      "boundary": "The in-process plan binds the source and fixed PDF profile, rejects stale or unmatched policies before output, and stages strict conversion. Allowed losses, independent validation and a real unexpected write-stage finding remain open; final-copy I/O can leave partial output.",
+      "tests": [
+        { "class": "PlainDocxPolicyPlanTests", "method": "CompiledPlanAndStagedExecutionPreserveOwnershipAndReportUnperformedValidation" },
+        { "class": "PlainDocxPolicyPlanTests", "method": "StalePolicyChangedSourceAndUnmatchedLossLeaveOutputUntouched" },
+        { "class": "PlainDocxPolicyPlanTests", "method": "UnsupportedSemanticsInputAndCancellationFailBeforeOutputMutation" },
+        { "class": "PlainDocxPolicyPlanTests", "method": "FinalCopyIoFailureCanLeavePartialOutputAndDoesNotCloseStreams" },
+        { "class": "PlainDocxPolicyPlanTests", "method": "CancellationDuringInputReadCannotPublishOutput" },
+        { "class": "PlainDocxPolicyPlanTests", "method": "UnexpectedDiagnosticSnapshotPreservesCodeCountAndPhaseWithoutSourceLocations" },
+        { "class": "TemplateCompatibilityPublicTests", "method": "PublicPlanExecutesTheBoundPlainProfileWithoutClaimingValidation" },
+        { "class": "TemplateCompatibilityPublicTests", "method": "UnsupportedDataAndDestinationRejectBeforeReadingSource" },
+        { "class": "TemplateCompatibilityPublicTests", "method": "PublicPolicyRejectionAndChangedSourceDoNotTouchOutput" }
+      ]
+    },
+    {
       "id": "plain-fixed-docx-table-geometry",
       "issue": 142,
       "outcome": "supported-bounded",

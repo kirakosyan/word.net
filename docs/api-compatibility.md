@@ -35,6 +35,14 @@ independently authorize reuse of a conversion policy, and no output or loss poli
 enforced. The module fingerprint is not binary attestation. These APIs are unreleased
 and are not in published 1.5.0.
 
+The additive `CompileTemplateCompatibilityPlan`, `TemplateCompatibilityPlan`,
+`TemplatePolicyOutcome` and `TemplatePolicyFinding` expose the separate
+[strict plain-DOCX policy profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy).
+It uses the same five target frameworks and has no published-package availability;
+exact runtime and package qualification are recorded separately. Only an empty
+schema, minimal single-run source and strict PDF destination are accepted. General
+loss permissions, template data and portable execution are not implemented.
+
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`
 snapshot property for admitted nested typed owners. This additive property does
 not change existing constructor or method signatures; handles retain their

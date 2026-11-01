@@ -586,6 +586,20 @@ prototype [receipt](measurements/roadmap-138-reusable-inspection-destinations-re
 records seven focused tests and 28 altered observations, including distinct DOCX,
 PDF and XPS fingerprints; it does not establish exact-source or hosted qualification.
 
+The separate strict plain-DOCX policy prototype has 25 focused tests covering
+closed plan/policy admission, stale input, stream ownership, cancellation and the
+documented partial final-copy limit. Its [prototype reference](measurements/roadmap-138-public-policy-reference.json)
+records eleven independently authored schema-valid inputs, five admitted staged
+PDFs checked with Poppler for text, pages and fonts, and 22 altered-observation
+controls. It also retains the initial compiler and [Python environment](measurements/roadmap-138-public-policy-design-environment-initial.txt)
+failures. These are prototype observations, not exact-source or hosted qualification;
+allowed losses and a real unexpected write-stage finding have not been demonstrated.
+
+The later head `7f476dd` passed both unchanged [hosted performance jobs](measurements/roadmap-138-performance-7f-hosted-success.json):
+the PR merge was 1.032 against `bf5ab00` and the push was 1.012 against `b57f10e`.
+The two jobs used different references; other hosted checks and actual Framework
+guests require separate evidence, and the earlier failed timing verdict is retained.
+
 For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
 [PR package](measurements/wordnet-138-framework-526-pr-package-success.json),

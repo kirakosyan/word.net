@@ -1,0 +1,76 @@
+{
+  "roadmap": 138,
+  "issues": [
+    170,
+    171,
+    172
+  ],
+  "recordedUtc": "2026-11-01",
+  "qualification": "Uncommitted internal design-example admission prototype only. It does not bind live source, authorize conversion, enforce losses or validate output. Full exact-source and hosted qualification is separate.",
+  "baseCommit": "182c28ae0c4ce49d989502a727a5d1f9992c07fc",
+  "prototypeSourceFiles": {
+    "src/wordnet/Internal/CompatibilityPolicyData.cs": "d3928bc1b77812fb462b47e72b01903cb60625f0213a3283e3675a1847151bdb",
+    "src/wordnet/Internal/CompatibilityPlanData.cs": "505f6fee20a89503062a1ae9b15c648ce65ae4a123a09bfc34c5eac4f0b2fb42",
+    "tests/wordnet.Conversion.Tests/CompatibilityPolicyDataTests.cs": "4fa71eaeb55c1f1cdf1bdddc6e4ef9d57c3263d785ade2952b15a8fed9db2fa3",
+    "tests/wordnet.Conversion.Tests/CompatibilityPlanDataTests.cs": "7664c5101be5084d73a282aa4e9f7b91228a11f662298a58b36af94aa67c211f",
+    "eng/roadmap-138-policy-probe.cs": "15dc6ecb33f27d5ea517c4cd437bacdb68aaa40daf21ead81fabbe37ca7ede4b",
+    "eng/verify-roadmap-138-policy.py": "6c4db28d71c19440c55fc795efec17ce92abb450578e5e695ee8d1b5fc6d67cf"
+  },
+  "loadedCoreSha256": "5f20bf52d78f4cf3afb560c1e4631f1df31133a164e19153bfde02193707565d",
+  "policyInputSha256": "80fa55ef6e9ac97b3553825c2cd933919fef4f9109ea8afa6253657a51a116f4",
+  "planInputSha256": "1bd78e1cd4a3b908a6fa3f261ee4ef0bc715fdc8022b3b20c0b30c67d500949a",
+  "canonicalPolicySha256": "c9e44c64611ed28b1f141ea18ba9b1d3e41fea04bd632b4a527d419efae25fa0",
+  "canonicalPlanSha256": "48cf686f2c60bce1018b9bd12303e4116e3ffa67926614b167a6ae10b05a3544",
+  "prototypeBuild": "Five-target incremental Release build passed.",
+  "buildLogSha256": "4004090a94de85baec256d1f41e1057984e2742ca7609a1d7b8df100eb57402c",
+  "focusedTests": {
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "1bafb018b066a7a723374545bf2dab4db3664bc797343020760e70371b655702"
+  },
+  "designOracle": {
+    "passed": 7,
+    "logSha256": "3bed887726824c8bd3e2c4e0cea9f92eca3d71e8e2371cfaf8e45eabe1240dda"
+  },
+  "independentTools": "jsonschema 4.26.0; rfc8785 0.1.4 (Apache-2.0), installed only in a temporary validation path.",
+  "independentCheck": {
+    "result": {
+      "independentlyValidatedSchemas": 2,
+      "rfc8785CanonicalBytesMatch": true,
+      "locationOrderingChecked": true,
+      "planDigestMatchesIndependentExample": true,
+      "policyRuntimeNegatives": 5,
+      "admissionRuntimeNegatives": 5,
+      "limitations": "Internal design-example admission only; no live source binding, conversion or loss enforcement is implemented."
+    },
+    "negativeControls": {
+      "policy input": "Input or loaded assembly changed",
+      "loaded core": "Input or loaded assembly changed",
+      "plan identity": "Policy no longer binds the independent example plan",
+      "plan contents": "Policy no longer binds the independent example plan",
+      "plan source identity": "Canonical plan bytes or identity changed",
+      "plan canonical bytes": "Canonical plan bytes or identity changed",
+      "plan canonical hash": "Canonical plan bytes or identity changed",
+      "strict loss accepted": "Fail-closed admission observations changed",
+      "stale plan accepted": "Fail-closed admission observations changed",
+      "unknown semantic accepted": "Fail-closed admission observations changed",
+      "truncated location accepted": "Fail-closed admission observations changed",
+      "mismatched loss accepted": "Fail-closed admission observations changed",
+      "schema validation": "Design schema or example changed",
+      "canonical bytes": "Canonical RFC 8785 policy bytes or hash changed",
+      "canonical hash": "Canonical RFC 8785 policy bytes or hash changed",
+      "sorted policy": "Canonical policy ordering or numeric normalization changed",
+      "sorted hash": "Canonical policy ordering or numeric normalization changed",
+      "unsorted input": "Unsorted policy no longer meets the design schema",
+      "required semantic": "Policy permissions changed",
+      "allowed code": "Policy permissions changed",
+      "part identity": "Policy permissions changed",
+      "child position": "Policy permissions changed",
+      "unknown loss accepted": "Malformed or unregistered input was not rejected",
+      "duplicate key accepted": "Malformed or unregistered input was not rejected"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "prototypeFailure": "docs/measurements/roadmap-138-plan-admission-prototype-initial.txt"
+}

@@ -1,0 +1,8 @@
+Command: python3 eng/test-template-plan-design.py
+Result: failed before running tests because the global Python environment did not have rfc8785 on its module search path.
+Traceback (most recent call last):
+  File "/workspace/wordnet-138-policy-work/eng/test-template-plan-design.py", line 9, in <module>
+    import rfc8785
+ModuleNotFoundError: No module named 'rfc8785'
+
+The separately installed, pinned reference package is available under /tmp/wordnet-138-policy-python. The subsequent run supplies that directory through PYTHONPATH; it does not change the converter or test thresholds.

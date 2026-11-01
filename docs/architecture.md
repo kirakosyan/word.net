@@ -31,6 +31,14 @@ hashes and a fixed destination, options, provider, bundled-font and module/runti
 returning the same immutable inspection. It neither attests binary integrity nor
 implements a portable plan, conversion execution or loss-policy enforcement.
 
+The separate strict plain-DOCX policy profile scans a minimal OPC package, compares
+its sole run with the parsed model, inspects one-page PDF layout, and binds the
+source and fixed in-process environment into a canonical plan. A closed policy
+parser admits only the supported `content.text` requirement and no loss for this
+profile. Execution rechecks the binding, stages strict output, and copies only after
+the observed conversion and environment checks. It cannot attest binaries or
+provide general policy coverage, allowed losses or independent validation.
+
 Unreleased #142 direct table borders and clear RGB shading stay on the table model
 through cloning and DOCX writing. Managed layout, HTML and ODT compute the
 applicable outside and inside edges and cell fills from the current rows.

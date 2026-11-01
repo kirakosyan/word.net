@@ -1,0 +1,4 @@
+The initial uncommitted staged-policy prototype stopped before tests because analyzer CA1822 flagged a constant instance property. The validation status was changed to immutable instance data; this is not exact-source or hosted evidence.
+
+  wordnet.Fonts -> /workspace/wordnet-138-policy-work/src/wordnet.Fonts/bin/Release/netstandard2.0/wordnet.Fonts.dll
+/workspace/wordnet-138-policy-work/src/wordnet/Internal/PlainDocxPolicyPlan.cs(150,21): error CA1822: Member 'IndependentValidation' does not access instance data and can be marked as static (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822) [/workspace/wordnet-138-policy-work/src/wordnet/wordnet.csproj::TargetFramework=net10.0]
