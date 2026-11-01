@@ -169,7 +169,7 @@ Inspect can reject malformed inputs and limits; serialization-only findings and
 independent validation are unavailable. #171 must map occurrences without inventing
 precision, add bounded typed requirements and explicit unknowns, and keep current
 Inspect behavior/API intact. #172 must compare the later conversion's diagnostics
-without discarding original phases or counts. No policy or plan API exists yet.
+without discarding original phases or counts. The unreleased [strict plain-DOCX profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy) implements only a small subset of that contract.
 
 Validate the illustrative schemas and examples with a JSON Schema 2020-12 validator,
 including malformed properties, invalid identities, conflicting stages, changed plan

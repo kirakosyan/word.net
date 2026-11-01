@@ -586,6 +586,17 @@ prototype [receipt](measurements/roadmap-138-reusable-inspection-destinations-re
 records seven focused tests and 28 altered observations, including distinct DOCX,
 PDF and XPS fingerprints; it does not establish exact-source or hosted qualification.
 
+Exact strict-policy source `9949d24` passed the five-target Release rebuild,
+formatting, local package/API checks and both complete .NET 8/.NET 10 conversion and
+English OCR suites (2,458 cases each, no skips). The executable matrix passed 928
+cases; independent corpora rejected 301 altered observations, including 61 for the
+policy and narrow staged profile. The unchanged local single-core PDF gate passed at
+0.905 versus `7f476dd`; reference round medians varied from 42.187 to 49.162 ms.
+The [source receipt](measurements/roadmap-138-strict-policy-9949d24.json)
+and [performance samples](measurements/roadmap-138-strict-policy-performance-9949d24.json)
+retain exact identities. Hosted checks and actual Framework execution are separate;
+general template data, allowed losses and complete write-stage reporting remain open.
+
 The separate strict plain-DOCX policy prototype has 25 focused tests covering
 closed plan/policy admission, stale input, stream ownership, cancellation and the
 documented partial final-copy limit. Its [prototype reference](measurements/roadmap-138-public-policy-reference.json)
