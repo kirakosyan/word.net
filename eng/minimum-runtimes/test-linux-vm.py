@@ -2,17 +2,72 @@
 """Negative controls for accepting minimum-runtime qualification evidence."""
 
 import copy
+from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 spec = importlib.util.spec_from_file_location('linux_vm', Path(__file__).with_name('run-linux-vm.py'))
 vm = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(vm)
+storage_spec = importlib.util.spec_from_file_location(
+    'vm_storage', Path(__file__).with_name('select-linux-vm-storage.py'))
+storage = importlib.util.module_from_spec(storage_spec)
+storage_spec.loader.exec_module(storage)
+
+
+class StorageSelectionTests(unittest.TestCase):
+    def setUp(self):
+        self.workspace = Path('/checkout/artifacts')
+        self.temporary = Path('/mnt')
+        self.required = 60 * 1024**3
+
+    def usage(self, workspace_free, temporary_free):
+        def disk_usage(path):
+            return mock.Mock(free=workspace_free if path == self.workspace else temporary_free)
+        return mock.patch.object(storage.shutil, 'disk_usage', side_effect=disk_usage)
+
+    def test_checkout_is_preferred_at_the_full_required_boundary(self):
+        with self.usage(self.required, self.required + 1), \
+                mock.patch.object(Path, 'is_mount', side_effect=AssertionError('unneeded mount probe')):
+            self.assertEqual('workspace', storage.choose_storage(self.workspace, self.temporary))
+
+    def test_separate_disk_with_full_required_space_is_used_when_checkout_is_short(self):
+        with self.usage(self.required - 1, self.required), \
+                mock.patch.object(Path, 'is_symlink', return_value=False), \
+                mock.patch.object(Path, 'is_mount', return_value=True), \
+                mock.patch.object(storage.subprocess, 'run', return_value=mock.Mock(stdout='ext4\n')):
+            self.assertEqual('temporary', storage.choose_storage(self.workspace, self.temporary))
+
+    def test_insufficient_unmounted_symlink_and_memory_backed_temp_fall_back(self):
+        cases = [(False, True, 'ext4', self.required - 1),
+                 (False, False, 'ext4', self.required + 1),
+                 (True, True, 'ext4', self.required + 1),
+                 (False, True, 'tmpfs', self.required + 1),
+                 (False, True, 'ramfs', self.required + 1),
+                 (False, True, '', self.required + 1)]
+        for symlink, mounted, filesystem, free in cases:
+            with self.subTest(symlink=symlink, mounted=mounted, filesystem=filesystem, free=free), \
+                    self.usage(self.required - 1, free), \
+                    mock.patch.object(Path, 'is_symlink', return_value=symlink), \
+                    mock.patch.object(Path, 'is_mount', return_value=mounted), \
+                    mock.patch.object(storage.subprocess, 'run', return_value=mock.Mock(stdout=filesystem)):
+                self.assertEqual('workspace', storage.choose_storage(self.workspace, self.temporary))
+
+    def test_uninspectable_mount_still_runs_the_launchers_workspace_preflight(self):
+        output, errors = io.StringIO(), io.StringIO()
+        with mock.patch.object(storage, 'choose_storage', side_effect=OSError('mount unavailable')), \
+                mock.patch('sys.argv', ['select-linux-vm-storage.py', '--workspace', str(self.workspace)]), \
+                redirect_stdout(output), redirect_stderr(errors):
+            storage.main()
+        self.assertEqual('workspace\n', output.getvalue())
+        self.assertIn('mount unavailable', errors.getvalue())
 
 
 class EvidenceTests(unittest.TestCase):

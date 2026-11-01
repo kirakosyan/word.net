@@ -1,0 +1,26 @@
+{
+  "qualification": "1.6.0 candidate push, actual Framework 4.7.2 source",
+  "workflowRun": 41345996479,
+  "workflowRunUrl": "https://github.com/kirakosyan/word.net/actions/runs/41345996479",
+  "job": 124971662086,
+  "artifact": 13099898186,
+  "artifactName": "minimum-framework472-source",
+  "artifactArchiveSha256": "a466bfd3c3e3928bb11980896267f6943ac41697508dd59c713961a33bfaa491",
+  "sourceCommit": "e3445b6df2536eedfe8ffa42182cbf45d3d26a69",
+  "requiredCases": 2466,
+  "runnerImage": "ubuntu-24.04/20261018.96.1",
+  "workspaceFilesystem": "/dev/mapper/cow-root",
+  "reportedFilesystemSize": "72G",
+  "reportedFilesystemFree": "37G",
+  "requiredFreeBytes": 64424509440,
+  "hostError": "The VM requires at least 60 GiB free for its disk, ISO and setup.",
+  "guestStarted": false,
+  "testsExecuted": false,
+  "cleanup": {
+    "containersRemoved": true,
+    "networkRemoved": true,
+    "stateRemoved": true,
+    "imageRemoved": true
+  },
+  "interpretation": "The guest did not start and this job is not a Framework qualification pass. A later passing run must qualify the exact candidate and final main package."
+}
