@@ -647,12 +647,14 @@ The later head `7f476dd` passed both unchanged [hosted performance jobs](measure
 the PR merge was 1.032 against `bf5ab00` and the push was 1.012 against `b57f10e`.
 The two jobs used different references. Its actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-7f-pr-source-success.json),
-[PR package](measurements/wordnet-138-framework-7f-pr-package-success.json) and
-[push source](measurements/wordnet-138-framework-7f-push-source-success.json) guests
-each passed 2,433 cases and cleanup. The PR package guest's archives and loaded
-assemblies match the separately retained [workflow packages](measurements/wordnet-138-framework-7f-pr-package-identity.json).
-The push package guest and newer source require separate evidence, and the earlier
-failed timing verdict is retained.
+[PR package](measurements/wordnet-138-framework-7f-pr-package-success.json),
+[push source](measurements/wordnet-138-framework-7f-push-source-success.json) and
+[push package](measurements/wordnet-138-framework-7f-push-package-success.json) guests
+each passed 2,433 cases and cleanup. Both package guests' archives and loaded
+assemblies match their separate [PR](measurements/wordnet-138-framework-7f-pr-package-identity.json)
+and [push](measurements/wordnet-138-framework-7f-push-package-identity.json) workflow
+artifacts. Both hosted workflows passed; newer source requires separate evidence,
+and the earlier failed timing verdict is retained.
 
 For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
