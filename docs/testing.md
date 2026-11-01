@@ -437,6 +437,13 @@ independent recheck with the packaged assembly. Its unchanged local
 [performance gate](measurements/roadmap-138-repeat-item-schema-performance-697f46d.json)
 passed at 1.029 against the preceding head; its candidate round medians varied from
 40.015 to 50.358 ms. Hosted and actual Framework checks for this source are separate.
+The [JSON schema-data observation](measurements/roadmap-138-schema-data-reference.json)
+uses ten independently authored JSON scenarios and seven DOCX merge contrasts;
+Open XML and LibreOffice validate the saved documents, and 24 altered reports or
+observations are rejected. The check distinguishes an item declaration violation
+from an otherwise successful root-fallback merge and preserves the initial test
+analyzer failure as well as its corrected focused run. Full execution and package
+qualification are recorded separately for the exact source revision.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json) and
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) actual

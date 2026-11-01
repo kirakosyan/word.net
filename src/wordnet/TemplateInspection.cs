@@ -6,7 +6,7 @@ using WordNet.Internal;
 
 namespace WordNet;
 
-/// <summary>The declared type of a template data path; no data values are inspected.</summary>
+/// <summary>The declared type of a template data path.</summary>
 public enum TemplatePathType
 {
     /// <summary>A scalar whose more precise type is not specified.</summary>
@@ -38,7 +38,7 @@ public sealed class TemplateSchemaPath
         Path = path; Type = type; Required = required; RepeatCollectionPath = repeatCollectionPath;
     }
     /// <summary>Declares a single-segment path relative to every item of a named root repeat collection.</summary>
-    /// <remarks>A required declaration promises the path exists on every item; inspection does not examine data or guarantee a nonempty collection.</remarks>
+    /// <remarks>A required declaration promises the path exists on every item; template inspection does not examine data or guarantee a nonempty collection.</remarks>
     public static TemplateSchemaPath ForRepeatItem(string collectionPath, string path, TemplatePathType type, bool required = true)
     {
         Guard.NotNull(collectionPath, nameof(collectionPath)); Guard.NotNull(path, nameof(path));
@@ -58,7 +58,7 @@ public sealed class TemplateSchemaPath
 }
 
 /// <summary>An immutable, bounded declaration of template paths, with no values or caller property access.</summary>
-public sealed class TemplateDataSchema
+public sealed partial class TemplateDataSchema
 {
     private readonly ReadOnlyCollection<TemplateSchemaPath> paths;
     /// <summary>Copies up to 4,096 unique path declarations.</summary>

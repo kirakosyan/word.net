@@ -57,6 +57,19 @@ produces unknown `Plan.FieldCoverage`, since an empty collection may never execu
 Multi-paragraph, nested, table and other repeats stay uninspected, and
 `Plan.RepeatScope` remains unknown for all repeated contents.
 
+`TemplateDataSchema.InspectJson` separately checks a JSON object against every
+declared root and item path, including declarations unused by a particular
+template. A required item path must exist on each item even when an eventual
+merge could use a root fallback; an optional missing item path is admitted. A
+missing collection leaves its item assessment unknown, and a non-array collection
+is a definite mismatch. Null is admitted as an empty value, including for an
+empty repeat. JSON strings are not converted to dates or images: a non-null value
+cannot satisfy `Date` or `Image` declarations through this JSON-only API. These
+checks describe the caller's declarations, not whether a particular merge will
+succeed; an unformatted field, for example, can accept a string even when a
+`Number` declaration reports a mismatch. No template, caller property getter,
+field clock or output is evaluated.
+
 For a PDF destination, inspection flags missing PDF options, invalid conformance,
 accessibility, reading-order or vector-semantics enum values, plus PDF/A-2a
 without PDF/UA-1, tagged PDF/A-2b, and native typography with archival PDF.
@@ -83,6 +96,24 @@ using var input = File.OpenRead("invoice.docx");
 TemplateInspection report = new WordConverter().InspectTemplate(
     input, schema, DocumentFormat.Pdf);
 ```
+
+For a separate JSON check, use the same declarations and examine both errors
+and unknowns before deciding what further validation is needed:
+
+```csharp
+var itemSchema = new TemplateDataSchema(
+    new TemplateSchemaPath("Items", TemplatePathType.Collection),
+    TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar));
+TemplateDataInspection dataReport = itemSchema.InspectJson(json);
+bool needsReview = dataReport.HasErrors || dataReport.HasUnknowns;
+```
+
+The default JSON report contains opaque path aliases, codes, zero-based item
+indices and certainty only. Indices can reveal data structure. Calling
+`GetSensitivePathAliases()` explicitly reveals the declaration names; aliases are
+local to each report and must not be assumed to match another inspection. JSON,
+array size, depth, expansion, alias, finding and work bounds apply; malformed or
+oversized input and cancellation fail without a partial report.
 
 The [local example](../examples/WordNet.TemplateLint/Program.cs) prints JSON:
 `dotnet run --project examples/WordNet.TemplateLint -- invoice.docx`. Change its

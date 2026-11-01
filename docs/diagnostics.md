@@ -405,6 +405,15 @@ values. A common retained phase is exposed when known; omitted locations set
 `LocationsTruncated` and produce `Plan.LocationCoverage`. See the
 [profile and example](editing-and-templates.md#unreleased-source-bounded-template-inspection).
 
+The separate `TemplateDataSchema.InspectJson` report uses `Data.MissingPath` and
+`Data.PathType` for root declarations, `Data.MissingItemPath` and
+`Data.ItemPathType` for individual repeat items, and `Data.ScopeType` for a
+non-array repeat collection. `Data.ScopeMissing` is unknown: absent collection
+data prevented item assessment. These are declaration checks rather than
+predictions of a merge, and all declared paths are checked even if a template
+does not use them. Names are opaque by default; item indices can disclose data
+structure. Failure or cancellation returns no partial report.
+
 For a PDF destination, `Plan.PdfOptionsMissing`, `Plan.PdfOptionsInvalid`,
 `Plan.PdfTaggedArchiveConflict` and `Plan.PdfNativeArchiveConflict` are static
 predictions from supplied options. Their source phase is null: no writer ran, and

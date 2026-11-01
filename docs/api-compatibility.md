@@ -13,6 +13,10 @@ numeric source position where available, without exposing names by default.
 `TemplateSchemaPath.ForRepeatItem` adds an explicit per-item declaration, and the
 additive `ScopePathId` on findings and requirements identifies an opaque repeat
 collection alias when known; existing root declarations and constructors remain.
+`TemplateDataSchema.InspectJson` adds a separate immutable, privacy-safe report of
+declared root and repeat-item mismatches in bounded JSON data. Its aliases are
+local to that report, and item indices disclose structure. It checks declarations
+independently of any template and cannot guarantee a merge or output.
 It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`

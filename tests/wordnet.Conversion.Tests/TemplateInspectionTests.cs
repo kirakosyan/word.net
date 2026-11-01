@@ -280,6 +280,74 @@ public sealed class TemplateInspectionTests
     }
 
     [Fact]
+    public void JsonSchemaInspectionFindsAnItemPromiseViolationDespiteRootFallback()
+    {
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            new TemplateSchemaPath("Name", TemplatePathType.Scalar), TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar));
+        const string data = "{\"Name\":\"root\",\"Items\":[{\"Name\":\"child\"},{\"Other\":1}]}";
+        TemplateDataInspection report = schema.InspectJson(data, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateDataFinding finding = Assert.Single(report.Findings);
+        Assert.Equal("Data.MissingItemPath", finding.Code); Assert.Equal(1, finding.ItemIndex); Assert.False(finding.Unknown);
+        Assert.Equal("Name", report.GetSensitivePathAliases()[finding.PathId]);
+        Assert.Equal("Items", report.GetSensitivePathAliases()[finding.ScopePathId!]);
+        Assert.True(report.HasErrors); Assert.False(report.HasUnknowns);
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Name", json, StringComparison.Ordinal); Assert.DoesNotContain("Items", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("root", json, StringComparison.Ordinal); Assert.DoesNotContain("child", json, StringComparison.Ordinal);
+        using var source = new MemoryStream(Document(RootRepeat("Items", Field("MERGEFIELD Name"))));
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson(data, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("child,root", string.Join(",", document.Paragraphs.Select(paragraph => paragraph.Text)));
+    }
+
+    [Fact]
+    public void JsonSchemaInspectionPreservesOptionalFallbackAndMissingScopeUncertainty()
+    {
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection, required: false),
+            TemplateSchemaPath.ForRepeatItem("Items", "Name", TemplatePathType.Scalar, required: false));
+        TemplateDataInspection fallback = schema.InspectJson("{\"Items\":[{\"Name\":\"child\"},{}]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Empty(fallback.Findings); Assert.False(fallback.HasErrors); Assert.False(fallback.HasUnknowns);
+        TemplateDataInspection missing = schema.InspectJson("{}", cancellationToken: TestContext.Current.CancellationToken);
+        TemplateDataFinding finding = Assert.Single(missing.Findings);
+        Assert.Equal("Data.ScopeMissing", finding.Code); Assert.True(finding.Unknown); Assert.Null(finding.ItemIndex);
+        Assert.False(missing.HasErrors); Assert.True(missing.HasUnknowns);
+        Assert.Empty(schema.InspectJson("{\"Items\":null}", cancellationToken: TestContext.Current.CancellationToken).Findings);
+        Assert.Empty(schema.InspectJson("{\"Items\":[]}", cancellationToken: TestContext.Current.CancellationToken).Findings);
+    }
+
+    [Fact]
+    public void JsonSchemaInspectionChecksItemTypesAndAdmitsNullWithoutConvertingStrings()
+    {
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection),
+            TemplateSchemaPath.ForRepeatItem("Items", "Price", TemplatePathType.Number),
+            new TemplateSchemaPath("When", TemplatePathType.Date), new TemplateSchemaPath("Logo", TemplatePathType.Image));
+        TemplateDataInspection report = schema.InspectJson("{\"Items\":[{\"Price\":\"3\"},{\"Price\":null},{\"Price\":12.5}],\"When\":\"2026-01-01\",\"Logo\":null}",
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.True(report.HasErrors); Assert.False(report.HasUnknowns);
+        TemplateDataFinding item = Assert.Single(report.Findings, finding => finding.Code == "Data.ItemPathType");
+        Assert.Equal(0, item.ItemIndex); Assert.Equal("Price", report.GetSensitivePathAliases()[item.PathId]);
+        TemplateDataFinding date = Assert.Single(report.Findings, finding => finding.Code == "Data.PathType");
+        Assert.Equal("When", report.GetSensitivePathAliases()[date.PathId]);
+        Assert.DoesNotContain(report.Findings, finding => report.GetSensitivePathAliases()[finding.PathId] == "Logo");
+    }
+
+    [Fact]
+    public void JsonSchemaInspectionHonorsMalformedInputCancellationAndLimits()
+    {
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection));
+        Assert.Throws<InvalidDataException>(() => schema.InspectJson("{\"Items\":[],\"Items\":[]}", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentOutOfRangeException>(() => schema.InspectJson("{}", maximumRows: 0, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<InvalidDataException>(() => schema.InspectJson("{\"Items\":[1,2]}", maximumRows: 1, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<InvalidDataException>(() => schema.InspectJson("{\"Items\":[]}", options: new ConversionOptions(maximumCharacters: 5), cancellationToken: TestContext.Current.CancellationToken));
+        using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
+        Assert.Throws<OperationCanceledException>(() => schema.InspectJson("{}", cancellationToken: cancellation.Token));
+        var many = new TemplateDataSchema(Enumerable.Range(0, 8).Select(index => TemplateSchemaPath.ForRepeatItem("Items", "P" + index, TemplatePathType.Scalar, false)).ToArray());
+        string data = "{\"Items\":[" + string.Join(",", Enumerable.Repeat("{}", 8000)) + "]}";
+        InvalidDataException work = Assert.Throws<InvalidDataException>(() => many.InspectJson(data, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Limit.TemplateDataInspection:", work.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty()
     {
         byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Bad-Name")));
