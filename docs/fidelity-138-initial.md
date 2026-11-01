@@ -223,3 +223,46 @@ values from the generated PDFs. The [source](measurements/roadmap-138-contrasts/
 and [package](measurements/roadmap-138-contrasts/workflow-package.json) records
 include exact inputs, assembly identities, diagnostics and outcomes. Different
 PDF hashes do not imply different text or review decisions.
+
+## Theme-font and table-style combination controls — 2026-11-01
+
+Four independently authored, schema-valid DOCX controls vary a theme font versus
+an explicit Liberation Mono font and conditional first-row table shading versus
+direct shading. The pinned LibreOffice 24.2.7.2 reference renders all four with
+identical pixels, including the intended blue shading. The clean release source
+`bf5ab00` and independently restored public 1.5.0 package produce identical
+glyph snapshots, raster pixels and verdicts for these inputs. All four retain
+authored text/order, one authored page and independently read editable DOC text.
+
+| Release input | Unexpected warning codes | Reference glyph placement | Reference raster |
+| --- | --- | --- | --- |
+| Explicit font, direct shading | None | Pass | Pass |
+| Explicit font, conditional shading | `Docx.TableFormatting` | Pass | Fail |
+| Theme font, direct shading | `Docx.ThemeFont` | Fail | Fail |
+| Theme font, conditional shading | Both codes above | Fail | Fail |
+
+The theme cases reach 8.449 pt maximum aligned-glyph displacement against the
+unchanged 0.25 pt threshold. In the styled cases the reference has blue first-row
+pixels while the release output has none; the direct-shading contrast retains
+them. All four also fail the unchanged 0.01 pt page-geometry tolerance because
+the reference A4 height is 841.889764 pt and the release output is 841.9 pt; this
+specific height difference is the previously identified reference-unit policy
+difference. Both comparison commands exited 1, and all eight failed case results
+and their individual verdicts remain in the ranked reports.
+
+The [machine-readable matrix](measurements/roadmap-138-combination-baseline/factor-matrix.json)
+and [receipt](measurements/roadmap-138-combination-baseline/receipt.json) retain
+the input, open reference and output files, hashes, raw measurements, ranked
+findings, package identities and 18 altered-report/image controls. The public fonts
+archive was verified but not loaded; these cases supply the pinned fonts explicitly.
+Licensed desktop Word and Aspose were not provisioned. These are observations of
+the released baseline, not proof of the behavior of newer source or untested combinations;
+#139 remains open for its remaining controls and qualification.
+
+To recheck the retained corpus, use Pillow 12.3.0 and run the verifier with the
+four subdirectories under `docs/measurements/roadmap-138-combination-baseline`,
+followed by the clean release build's `wordnet.dll` and the downloaded public
+`wordnet.1.5.0.nupkg`. The verifier checks their hashes and detects altered
+verdicts and images. Regeneration uses
+`python eng/generate-roadmap-138-baseline-combinations.py --output <new-directory>`;
+the reference image digest and executable identities are pinned in the receipt.

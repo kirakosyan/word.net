@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><IsPackable>false</IsPackable></PropertyGroup><ItemGroup><PackageReference Include="wordnet" VersionOverride="1.5.0"/><PackageReference Include="BenchmarkDotNet"/></ItemGroup></Project>

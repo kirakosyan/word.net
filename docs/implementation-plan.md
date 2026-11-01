@@ -29,6 +29,8 @@ The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/packag
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the
 recorded verdicts and distinguishes unknowns from the bounded documented cases.
+Four additional release-baseline theme-font/table-style combinations retain their
+[separate matrix and evidence](measurements/roadmap-138-combination-baseline/factor-matrix.json).
 #139 remains incomplete until its additional feature controls and requested
 combination evidence are delivered.
 The pending #140 documentation reconciliation distinguishes current 1.5.0 support

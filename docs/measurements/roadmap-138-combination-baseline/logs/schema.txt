@@ -1,0 +1,12 @@
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+explicit-direct.docx 0f3090600c90364d3868415a1f86ec9344a88e392e0d60b5aa6acfe80d0bd97a errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+explicit-styled.docx 0f15368f9b006427f7cefde4e96818eb7fdf22f839b48c471bc106c67aa764b9 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+theme-direct.docx 1da7ef9e622ef2e79d1e658986effea263ab0b9985c3f69c87abf18271ecf026 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+theme-styled.docx c8774ca4e553c2df3c258839f43ecbd8ec8506544c17c21202f95654a48f41b7 errors=0

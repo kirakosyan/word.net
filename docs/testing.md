@@ -483,7 +483,10 @@ PR merge whose tree matches the head. Other runtime and package checks are separ
 The same head's actual Framework 4.7.2 legacy-JIT source guests passed 2,398
 cases and cleaned up on the [push](measurements/roadmap-138-framework-21dc-push-source-success.json)
 and [PR merge](measurements/roadmap-138-framework-21dc-pr-source-success.json);
-package guests and later source revisions require separate evidence.
+its local-package guests also passed 2,398 cases and cleaned up on the
+[push](measurements/roadmap-138-framework-21dc-push-package-success.json) and
+[PR merge](measurements/roadmap-138-framework-21dc-pr-package-success.json).
+Later source and package revisions require separate evidence.
 The [schema-identity observation](measurements/roadmap-138-schema-identity-reference.json)
 independently canonicalizes ten synthetic declaration sets, checks both report
 identities and detects 22 altered observations; a 4,096-path boundary is also
@@ -497,6 +500,10 @@ independent altered-observation controls. Its unchanged local
 passed at 0.963 against `21dc6a0`; reference round medians ranged from
 42.294 to 42.953 ms. Hosted and actual Framework
 checks for this exact source remain separate.
+The later `52695c9` [hosted performance evidence](measurements/roadmap-138-performance-526-hosted-success.json)
+passed at 0.858 against `21dc6a0` on the push and 0.999 against `bf5ab00` on
+the PR merge whose tree matches the head. Other hosted and Framework checks are
+separate; earlier performance failures remain retained.
 The [dirty-field observation](measurements/roadmap-138-dirty-fields-reference.json)
 checks eight independently authored DOCX contrasts, including six schema-valid
 inputs, two deliberately invalid values and 18 altered-report controls. It retains
@@ -809,6 +816,13 @@ independent output validation or any runtime/package qualification.
 The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) record a separate
 36-input source/public-package comparison and schema checks. They do not complete
 the additional controls and platform qualification required by roadmap #138.
+The [later four-case theme/table combination baseline](fidelity-138-initial.md#theme-font-and-table-style-combination-controls--2026-11-01)
+retains both release-source and public-package reports, independent reference
+and output files, the original failed verdicts and 18 mutation controls. Its
+comparison-tool controls initially failed because the benchmark executable was
+not built in that worktree; after a locked restore/build, all 13 controls and six
+existing ledger controls passed. The failure and retry are retained. Its measured
+release identities do not qualify newer source.
 Run `python eng/test-roadmap-138-ledger.py` to check the derived failure index
 against its retained raw reports; the generated ledger remains dated baseline
 evidence, not a fresh execution or current-source qualification.
