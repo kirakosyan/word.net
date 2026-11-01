@@ -401,8 +401,13 @@ head in the push. Both retain their raw samples; the earlier failure remains rec
 The [push source guest](measurements/roadmap-138-framework-958-push-source-success.json)
 and [PR source guest](measurements/roadmap-138-framework-958-pr-source-success.json)
 for that head each passed 2,373 cases on actual Framework 4.7.2 with the legacy JIT
-and completed cleanup. The PR merge tree matches the head. These do not qualify
-later source or the separate package guests.
+and completed cleanup. The [push package guest](measurements/roadmap-138-framework-958-push-package-success.json)
+and [PR package guest](measurements/roadmap-138-framework-958-pr-package-success.json)
+also passed 2,373 cases and completed cleanup. The PR merge tree matches the head;
+these results do not qualify later source.
+On later head `d85247c`, the [hosted performance gates](measurements/roadmap-138-performance-d852-hosted-success.json)
+passed at 0.984 against the release baseline in the PR and 0.814 against the previous
+head in the push. Their raw samples and the earlier hosted failure remain recorded.
 The next [root-scope observation](measurements/roadmap-138-preflight-root-scopes-reference.json)
 compares independently authored, schema-validated repeat and wrapper samples with
 actual merges and source positions. Twelve altered observations are rejected;
@@ -416,6 +421,11 @@ checks seven schema-valid independent templates, four schema-valid merge results
 LibreOffice text order and numeric source positions. It distinguishes root from
 unknown repeated scope and rejects 16 altered observations. The initial focused
 test failure from an outdated requirement count is retained in the record.
+The [exact-source repeat-field receipt](measurements/roadmap-138-preflight-repeat-fields-c49f86b.json)
+records both 2,379-case suites, the 851-case matrix, local package checks and the
+independent recheck using the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-preflight-repeat-fields-performance-c49f86b.json)
+passed at 0.979 against the preceding head. Hosted and actual Framework checks for
+this source remain separate.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves
