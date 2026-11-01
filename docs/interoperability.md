@@ -485,7 +485,7 @@ hyperlink positions differ by 5.5 and 5.95 points, respectively, exceeding the
 unchanged 0.25-point tolerance in that historical observation. A later
 [plain fixed-table correction](document-fidelity.md#unreleased-source-plain-fixed-table-geometry)
 passes the same comparison at the unchanged tolerance. A later follow-up covers
-partially specified margins and their table/cell ownership. A later single-cell
+partially specified margins and their table/cell ownership. A later small-grid
 uniform-border subset is compared separately; other bordered tables and placements
 retain unresolved differences.
 

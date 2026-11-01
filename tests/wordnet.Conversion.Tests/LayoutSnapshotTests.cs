@@ -13,6 +13,7 @@ namespace WordNet.Tests;
 public sealed class LayoutSnapshotTests
 {
     private static readonly string[] BorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
+    private static readonly string[] BorderCells = { "M", "N", "P", "Q", "R", "S", "U", "V", "W" };
     private static byte[] Source(string body) => TestDocuments.Docx(TestDocuments.Body(body));
     private static string P(string text) => TestDocuments.TextParagraph(text);
 
@@ -27,6 +28,73 @@ public sealed class LayoutSnapshotTests
             + "<w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/>" + cellMargins + "</w:tcPr>"
             + (content ?? BorderParagraph("N")) + "</w:tc></w:tr></w:tbl>";
         return Source(BorderParagraph("A") + table + BorderParagraph("T"));
+    }
+
+    private static byte[] BorderGridSource(string border, int rows, int columns, int precedingParagraphs = 1, bool multipleColumns = false)
+    {
+        string edges = string.Concat(BorderSides.Select(side => "<w:" + side + " " + border + "/>"));
+        int width = 3000 / columns;
+        string grid = string.Concat(Enumerable.Repeat("<w:gridCol w:w='" + width + "'/>", columns));
+        string body = string.Concat(Enumerable.Range(0, rows).Select(row => "<w:tr>" + string.Concat(Enumerable.Range(0, columns).Select(column =>
+            "<w:tc><w:tcPr><w:tcW w:w='" + width + "' w:type='dxa'/></w:tcPr>" + BorderParagraph(BorderCells[row * columns + column]) + "</w:tc>")) + "</w:tr>"));
+        string table = "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblBorders>" + edges + "</w:tblBorders>"
+            + "<w:tblLayout w:type='fixed'/></w:tblPr><w:tblGrid>" + grid + "</w:tblGrid>" + body + "</w:tbl>";
+        return Source(string.Concat(Enumerable.Repeat(BorderParagraph("A"), precedingParagraphs)) + table + BorderParagraph("T")
+            + (multipleColumns ? "<w:sectPr><w:cols w:num='2'/></w:sectPr>" : ""));
+    }
+
+    [Fact]
+    public void SmallUniformBorderGridsReserveSharedEdgesAndSurviveSave()
+    {
+        const string none = "w:val='nil'", single = "w:val='single' w:sz='8' w:color='000000'";
+        Dictionary<string, LayoutBounds> Bounds(byte[] bytes)
+        {
+            using var input = new MemoryStream(bytes);
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        var disabled = Bounds(BorderGridSource(none, 2, 2)); byte[] source = BorderGridSource(single, 2, 2); var bordered = Bounds(source);
+        foreach (string text in new[] { "M", "N", "P", "Q" }) Assert.Equal(disabled[text].X + .5, bordered[text].X, 3);
+        foreach (string text in new[] { "M", "N" }) Assert.Equal(disabled[text].Y + 1, bordered[text].Y, 3);
+        foreach (string text in new[] { "P", "Q" }) Assert.Equal(disabled[text].Y + 2, bordered[text].Y, 3);
+        Assert.Equal(disabled["T"].Y + 3, bordered["T"].Y, 3);
+        using var input = new MemoryStream(source);
+        WordDocument document = WordDocument.Load(input, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
+        using var saved = new MemoryStream(); document.Save(saved, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        var restored = Bounds(saved.ToArray());
+        foreach (string text in new[] { "M", "N", "P", "Q", "T" })
+        { Assert.Equal(bordered[text].X, restored[text].X, 3); Assert.Equal(bordered[text].Y, restored[text].Y, 3); }
+    }
+
+    [Fact]
+    public void LargerAndMultiPageBorderGridsRemainOutsideQualifiedGeometry()
+    {
+        const string single = "w:val='single' w:sz='8' w:color='000000'";
+        using var larger = new MemoryStream(BorderGridSource(single, 3, 2));
+        var preview = new WordConverter().RenderPages(larger, DocumentFormat.Docx,
+            new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
+            new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        LayoutFragment outside = Assert.Single(preview.Layout!.Fragments, f => f.Text == "M");
+        using var bounded = new MemoryStream(BorderGridSource(single, 2, 2));
+        var supported = new WordConverter().RenderPages(bounded, DocumentFormat.Docx,
+            new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+        LayoutFragment inside = Assert.Single(supported.Layout!.Fragments, f => f.Text == "M");
+        Assert.True(inside.Bounds!.X > outside.Bounds!.X + 5);
+        byte[] split = BorderGridSource(single, 2, 2, 48);
+        using var strict = new MemoryStream(split);
+        var error = Assert.Throws<NotSupportedException>(() => new WordConverter().RenderPages(strict, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", error.Message, StringComparison.Ordinal);
+        using var lenient = new MemoryStream(split);
+        var approximate = new WordConverter().RenderPages(lenient, DocumentFormat.Docx, options: new ConversionOptions(FidelityMode.Lenient),
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(approximate.Result.Diagnostics, diagnostic => diagnostic.Code == "Table.BorderGeometry");
+        using var columns = new MemoryStream(BorderGridSource(single, 2, 2, multipleColumns: true));
+        error = Assert.Throws<NotSupportedException>(() => new WordConverter().RenderPages(columns, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", error.Message, StringComparison.Ordinal);
     }
 
     [Fact]

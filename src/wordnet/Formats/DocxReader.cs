@@ -706,7 +706,8 @@ internal sealed partial class DocxReader
     private bool PlainUniformBorders(XElement source, TableBlock table, out double width)
     {
         width = 0;
-        if (table.Rows.Count != 1 || table.Rows[0].Count != 1 || source.Attributes().Any(a => !a.IsNamespaceDeclaration)
+        if (table.Rows.Count is < 1 or > 2 || table.Rows[0].Count is < 1 or > 2
+            || table.Rows.Any(row => row.Count != table.Rows[0].Count) || source.Attributes().Any(a => !a.IsNamespaceDeclaration)
             || source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) return false;
         XElement[] entries = source.Elements().ToArray();
         if (entries.Length != PlainBorderSides.Length || PlainBorderSides.Any(side => entries.Count(entry => entry.Name == W + side) != 1)) return false;
@@ -733,9 +734,11 @@ internal sealed partial class DocxReader
         }
         // The reference rounds some half-border positions beyond the unchanged
         // glyph tolerance when the horizontal defaults are omitted.
-        if (firstSize.GetValueOrDefault() % 2 != 0
-            || firstSize.GetValueOrDefault() % 4 != 0 && ((table.Rows[0][0].Padding?.SourceSides ?? 0) & 10) != 10) return false;
-        width = firstSize.GetValueOrDefault() / 8.0;
+        if (firstSize.GetValueOrDefault() % 2 != 0 || firstSize.GetValueOrDefault() % 4 != 0
+            && table.Rows.SelectMany(row => row).Any(cell => ((cell.Padding?.SourceSides ?? 0) & 10) != 10)) return false;
+        double borderWidth = firstSize.GetValueOrDefault() / 8.0;
+        if (table.ColumnWidths.Any(column => column <= borderWidth)) return false;
+        width = borderWidth;
         return true;
     }
 

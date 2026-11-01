@@ -575,14 +575,16 @@ internal static partial class FixedLayout
         void RenderTable(TableBlock table)
         {
             if (table.PlainDocxUniformBorderWidth.HasValue && !context.Typography.Enabled && !UniformPlainBorder(table))
-                context.Loss("Table.BorderGeometry", "The qualified single-cell border geometry no longer applies after structural edits.");
+                context.Loss("Table.BorderGeometry", "The qualified small-grid border geometry no longer applies after structural edits.");
             bool reportedBorderRepeat = false, reportedShadingRepeat = false;
             double tablePageLeft = settings.Left;
             double tableWidth = settings.Width - settings.Left - settings.Right;
             ListCounter tableCounter = counter.Copy();
             List<RowLayout> rows = BuildRows(table, settings.Left, settings.Width - settings.Left - settings.Right, 0);
-            if (UniformPlainBorder(table) && rows[0].Cells[0].Lines.Count != 1)
-                context.Loss("Table.BorderGeometry", "The qualified single-cell border geometry does not cover multiple lines or paragraphs.");
+            if (UniformPlainBorder(table) && rows.SelectMany(row => row.Cells).Any(cell => cell.Lines.Count != 1))
+                context.Loss("Table.BorderGeometry", "The qualified small-grid border geometry does not cover multiple lines or paragraphs.");
+            if (UniformPlainBorder(table) && rows.Count > 1 && y + rows.Sum(row => row.Height) > settings.Height - settings.Bottom)
+                context.Loss("Table.BorderGeometry", "The qualified small-grid border geometry does not cover a multi-page table.");
             ListCounter afterTableCounter = counter.Copy();
             double headerHeight = rows.Take(table.HeaderRowCount).Sum(row => row.Height);
             double pageHeight = settings.Height - settings.Top - settings.Bottom;
@@ -798,7 +800,8 @@ internal static partial class FixedLayout
                         int cellSides = cell.PlainDocxCellMargins?.SourceSides ?? 0;
                         if ((cellSides & 8) == 0) padding.Left = Math.Max(padding.Left, borderWidth / 2);
                         if ((cellSides & 2) == 0) padding.Right = Math.Max(padding.Right, borderWidth / 2);
-                        padding.Top += borderWidth; padding.Bottom += borderWidth;
+                        padding.Top += borderWidth;
+                        if (r == table.Rows.Count - 1) padding.Bottom += borderWidth;
                     }
                     if (left < -0.1 || left + width > settings.Width + 0.1 || width <= padding.Left + padding.Right
                         || sourceSettings.ExplicitColumns.Count != 0 && (left < origin - 0.1 || left + width > origin + availableWidth + 0.1))
@@ -897,20 +900,28 @@ internal static partial class FixedLayout
             return (minimum + padding.Left + padding.Right, preferred + padding.Left + padding.Right);
         }
 
-        bool UniformPlainBorder(TableBlock table) => table.PlainDocxUniformBorderWidth is double width && !context.Typography.Enabled
-            && table.PlainDocxGeometry && table.Style == null && !table.AutoFit && table.Width.HasValue && table.WidthPercent == null
-            && table.Control == null && table.TypedControlId == null && table.NestedControls.Count == 0
-            && table.RowControls.Count == 0 && table.TypedRowControls.Count == 0 && !table.HasTableShading
-            && table.Rows.Count == 1 && table.Rows[0].Count == 1
-            && table.Rows[0][0].ColumnSpan == 1 && table.Rows[0][0].Merge == VerticalMerge.None && table.Rows[0][0].Borders.Count == 0
-            && table.Rows[0][0].TypedControlId == null && table.Rows[0][0].Background == null
-            && table.Rows[0][0].Blocks.All(block => block is ParagraphBlock paragraph && paragraph.Control == null
-                && paragraph.TypedControlId == null && paragraph.NestedControls.Count == 0 && paragraph.Section == null && paragraph.List == null
-                && paragraph.Runs.All(run => run.Control == null && run.TypedControlId == null && run.FieldInstruction == null
-                    && run.Image == null && run.Note == null && run.Box == null && run.Object == null && run.Bookmark == null
-                    && run.Link == null && run.Revision == null && run.FormatRevision == null && run.Comment == null))
-            && table.Borders.Count == 6 && table.Borders.Values.All(border => border.Width == width
-                && border.Style == (width == 0 ? "nil" : "single") && border.Color == "000000");
+        bool UniformPlainBorder(TableBlock table)
+        {
+            if (table.PlainDocxUniformBorderWidth is not double width || context.Typography.Enabled || sourceSettings.Columns != 1 || sourceSettings.ExplicitColumns.Count != 0
+                || !table.PlainDocxGeometry || table.Style != null || table.AutoFit || !table.Width.HasValue || table.WidthPercent != null
+                || table.Control != null || table.TypedControlId != null || table.NestedControls.Count != 0
+                || table.RowControls.Count != 0 || table.TypedRowControls.Count != 0 || table.HasTableShading || table.HeaderRowCount != 0
+                || table.NonSplittingRows.Count != 0 || table.RowHeights.Count != 0 || table.LeftIndent != 0
+                || table.Rows.Count is < 1 or > 2 || table.Rows[0].Count is < 1 or > 2 || table.Rows.Any(row => row.Count != table.Rows[0].Count)
+                || table.ColumnWidths.Count != table.Rows[0].Count || table.ColumnWidths.Any(column => column <= width)
+                || Math.Abs(table.Width.Value - table.ColumnWidths.Sum()) > .01
+                || table.Rows.Any(row => row.Where((cell, column) => !cell.CellWidth.HasValue || cell.WidthPercent.HasValue
+                    || Math.Abs(cell.CellWidth.Value - table.ColumnWidths[column]) > .01).Any())
+                || table.Borders.Count != 6 || table.Borders.Values.Any(border => border.Width != width
+                    || border.Style != (width == 0 ? "nil" : "single") || border.Color != "000000")) return false;
+            return table.Rows.SelectMany(row => row).All(cell => cell.ColumnSpan == 1 && cell.Merge == VerticalMerge.None
+                && cell.Borders.Count == 0 && cell.TypedControlId == null && cell.Background == null
+                && cell.Blocks.All(block => block is ParagraphBlock paragraph && paragraph.Control == null
+                    && paragraph.TypedControlId == null && paragraph.NestedControls.Count == 0 && paragraph.Section == null && paragraph.List == null
+                    && paragraph.Runs.All(run => run.Control == null && run.TypedControlId == null && run.FieldInstruction == null
+                        && run.Image == null && run.Note == null && run.Box == null && run.Object == null && run.Bookmark == null
+                        && run.Link == null && run.Revision == null && run.FormatRevision == null && run.Comment == null)));
+        }
 
         // ISO/IEC 29500 specifies 115 twentieths of a point for omitted horizontal margins without a table style.
         CellPadding CellMargins(TableCell cell)
@@ -937,11 +948,17 @@ internal static partial class FixedLayout
             if (background != null) yield return new FixedShape(cell.Left, top, cell.Width, height, background);
             if (cell.Table is TableBlock table && UniformPlainBorder(table) && table.PlainDocxUniformBorderWidth is double width && width > 0)
             {
-                double x = cell.Left - width / 2;
-                yield return new FixedShape(x, top + width / 2, cell.Width + width, 0, "000000", width, "single");
-                yield return new FixedShape(x, top + height - width / 2, cell.Width + width, 0, "000000", width, "single");
-                yield return new FixedShape(cell.Left, top, 0, height, "000000", width, "single");
-                yield return new FixedShape(cell.Left + cell.Width, top, 0, height, "000000", width, "single");
+                bool firstRow = cell.Row == 0, lastRow = cell.Row == table.Rows.Count - 1;
+                bool firstColumn = cell.CellIndex == 0, lastColumn = cell.CellIndex == table.Rows[cell.Row].Count - 1;
+                double x = cell.Left - (firstColumn ? width / 2 : 0);
+                double end = cell.Left + cell.Width + (lastColumn ? width / 2 : 0);
+                double innerX = x + (!firstRow && firstColumn ? width : 0), innerEnd = end - (!firstRow && lastColumn ? width : 0);
+                yield return new FixedShape(innerX, top + width / 2, innerEnd - innerX, 0, "000000", width, "single");
+                if (lastRow) yield return new FixedShape(x, top + height - width / 2, end - x, 0, "000000", width, "single");
+                double verticalTop = top + (!firstColumn && firstRow ? width : 0);
+                double verticalEnd = top + height - (!firstColumn && lastRow ? width : 0);
+                yield return new FixedShape(cell.Left, verticalTop, 0, verticalEnd - verticalTop, "000000", width, "single");
+                if (lastColumn) yield return new FixedShape(cell.Left + cell.Width, top, 0, height, "000000", width, "single");
                 yield break;
             }
             IEnumerable<KeyValuePair<string, CellBorder>> borders = cell.Table == null ? cell.Source.Borders : cell.Table.CellBorders(cell.Row, cell.CellIndex);

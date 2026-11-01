@@ -537,6 +537,11 @@ records both 2,377-case suites, the 849-case matrix, local package checks and th
 independent recheck with the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-border-geometry-performance-b3a8ec4.json)
 passed at 1.008 against the preceding head. Hosted and actual Framework checks for
 this source remain separate.
+The later [small-grid reference record](measurements/roadmap-138-multicell-borders-reference.json)
+checks 59 schema-valid independent sources and 50 saved DOCX packages. Fifty cases
+match pinned-font glyph and normalized stroke geometry at the unchanged tolerance;
+six controls retain their prior differences and three unqualified cases are
+diagnosed and strict-rejected. Twenty altered observations are rejected.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
