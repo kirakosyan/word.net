@@ -626,6 +626,10 @@ real write-stage `Pdf.OmittedDestination` and rejects the staged output. The
 records schema-checked synthetic inputs, canonical plan/policy checks, external PDF
 text/page/font observations and altered-observation controls. This remains a narrow
 profile, not general policy enforcement or independent validation during execution.
+The later [required-link prototype](measurements/roadmap-138-required-link-reference.json)
+also checks that an unsupported or unassessed `content.links` requirement is
+rejected before execution input is read or output is touched. Its observations
+are separate from exact-source and hosted qualification.
 
 The later head `7f476dd` passed both unchanged [hosted performance jobs](measurements/roadmap-138-performance-7f-hosted-success.json):
 the PR merge was 1.032 against `bf5ab00` and the push was 1.012 against `b57f10e`.

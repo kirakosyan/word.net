@@ -11,7 +11,7 @@ namespace WordNet;
 /// <summary>An in-process, bounded compatibility plan for the documented plain DOCX-to-PDF profile.</summary>
 /// <remarks>The Strict profile admits only a minimal DOCX package containing one alphanumeric run of at most 40
 /// characters, an empty data schema, bundled fonts and no optional providers. Explicit BestEffort also admits a single
-/// missing-theme font reference or an unchecked internal hyperlink; exact policy permissions still control output. Templates with fields,
+/// missing-theme font reference or an unresolved internal hyperlink; exact policy permissions still control output. Templates with fields,
 /// controls, other text or extra package parts are not admitted. The plan is not portable and its runtime/module identity
 /// is not binary attestation. Canonical plans and hashes can fingerprint sensitive input. Layout is inspected, but writing
 /// and independent validation are not performed while compiling; a plan does not prove output fidelity.</remarks>
@@ -27,7 +27,8 @@ public sealed class TemplateCompatibilityPlan
     public string GetIdentitySha256(CancellationToken cancellationToken = default) => plan.PlanSha256(cancellationToken);
 
     /// <summary>Executes the exact bound source under an explicit version-1 policy, staging PDF output before copying.</summary>
-    /// <remarks>The policy binds this plan digest and may require <c>content.text</c>. Strict permits no loss. The explicit
+    /// <remarks>The policy binds this plan digest and may require <c>content.text</c> or <c>content.links</c>. The latter
+    /// is unsupported for the admitted missing-link profile and unassessed elsewhere. Strict permits no loss. The explicit
     /// BestEffort profile requires the exact planned theme-font loss to be allowed; unexpected observations reject output.
     /// Caller streams remain open and are consumed from their current positions. Policy, stale-source and staged
     /// conversion failures leave destination untouched. Cancellation or I/O failure during the final copy can leave partial

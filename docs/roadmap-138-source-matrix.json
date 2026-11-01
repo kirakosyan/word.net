@@ -6,10 +6,11 @@
       "id": "best-effort-location-bound-policy",
       "issue": 172,
       "outcome": "supported-bounded",
-      "boundary": "Explicit BestEffort admits a single missing-theme font fallback only when the policy permits its exact run location; an unpredicted missing-link PDF write finding rejects staged output. Strict and all unqualified formatting remain rejected, and independent validation is not performed.",
+      "boundary": "Explicit BestEffort admits a single missing-theme font fallback only when the policy permits its exact run location. A required missing-link semantic rejects before input; when only text is required, the PDF write finding rejects staged output. Strict and unqualified formatting remain rejected, and independent validation is not performed.",
       "tests": [
         { "class": "TemplateCompatibilityPolicyLossTests", "method": "ExplicitThemeLossRequiresTheExactPermissionAndRetainsItsObservation" },
         { "class": "TemplateCompatibilityPolicyLossTests", "method": "UnexpectedMissingLinkDestinationIsObservedAtWriteAndNeverPublished" },
+        { "class": "TemplateCompatibilityPolicyLossTests", "method": "RequiredLinkSemanticRejectsBeforeReadingOrPublishing" },
         { "class": "TemplateCompatibilityPolicyLossTests", "method": "StrictNeverDowngradesAndUnsupportedModeRejectsBeforeReading" },
         { "class": "TemplateCompatibilityPolicyLossTests", "method": "BestEffortDoesNotAdmitUnqualifiedFormattingOrLinks" }
       ]

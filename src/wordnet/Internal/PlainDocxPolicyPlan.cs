@@ -67,7 +67,9 @@ internal sealed class PlainDocxPolicyPlan
             + "\",\"fonts\":\"" + snapshot.FontsSha256 + "\",\"providers\":\"" + snapshot.ProvidersSha256
             + "\",\"engine\":\"" + snapshot.EngineSha256 + "\"},\"sourceFormat\":\"docx\",\"destinationFormat\":\"pdf\","
             + "\"stages\":{\"parse\":\"performed\",\"destination\":\"performed\",\"layout\":\"performed\",\"write\":\"not-performed\",\"validation\":\"not-performed\"},"
-            + "\"requirements\":[],\"semantics\":[{\"code\":\"content.text\",\"assessment\":\"supported\"}],\"findings\":["
+            + "\"requirements\":[],\"semantics\":["
+            + (profile.Kind == PlainDocxPolicyInput.UncheckedLink ? "{\"code\":\"content.links\",\"assessment\":\"unsupported\"}," : "")
+            + "{\"code\":\"content.text\",\"assessment\":\"supported\"}],\"findings\":["
             + (profile.Kind == PlainDocxPolicyInput.ThemeFont ? "{\"code\":\"Docx.ThemeFont\",\"phase\":\"parse\",\"evidence\":\"observed\",\"severity\":\"warning\",\"count\":1,\"locationsTruncated\":false,\"locations\":[{\"partId\":\"part-0001\",\"childIndexes\":[1,1,1,1]}],\"remediation\":\"Remediation.SetExplicitFont\"}" : "")
             + "],\"observedInputBytes\":"
             + input.Length.ToString(CultureInfo.InvariantCulture) + ",\"estimatedPages\":1}";

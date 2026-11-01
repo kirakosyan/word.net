@@ -417,15 +417,16 @@ profile. `Limit.TemplateInspection` reports an input or font-byte limit. These a
 exception message prefixes, not guarantees of output safety.
 
 The separate strict plain-DOCX policy profile reports `Policy.StalePlan`,
-`Policy.UnmatchedPermission`, `Plan.StaleInput`, `Plan.EnvironmentChanged`,
+`Policy.UnmatchedPermission`, `Policy.RequiredSemanticUnknown`, `Policy.RequiredSemanticUnsupported`, `Plan.StaleInput`, `Plan.EnvironmentChanged`,
 `Policy.ConversionFailed`, `Policy.UnexpectedFinding`, `Policy.AllowedLoss` or `Policy.Completed` in its
 outcome, as applicable. Invalid or unknown policy entries and resource bounds throw
 explicit exceptions before output. Reported unexpected findings contain stable
 codes, severity, counts and observed phases, without messages or source locations.
 Strict loss exceptions currently surface as conversion failures. Explicit BestEffort
-can accept `Docx.ThemeFont` at the planned run only, and an unchecked missing
-internal link produces the observed write-stage `Pdf.OmittedDestination`, rejecting
-staged output. Independent validation remains `not-performed`.
+can accept `Docx.ThemeFont` at the planned run only. Requiring `content.links`
+for an admitted missing-link source rejects before input, while requiring only text
+permits staged execution to proceed to the observed write-stage `Pdf.OmittedDestination`
+and staged-output rejection. Independent validation remains `not-performed`.
 
 For inspected direct simple fields and bounded same-paragraph complex-field begin
 markers, an explicit true `w:dirty` flag produces unknown `Plan.FieldMarkedDirty`

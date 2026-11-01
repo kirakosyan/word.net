@@ -14,8 +14,8 @@ public sealed class TemplateCompatibilityPolicyLossTests
     private const string FontPermission = "{\"code\":\"Docx.ThemeFont\",\"location\":{\"partId\":\"part-0001\",\"childIndexes\":[1,1,1,1]}}";
 
     private static byte[] Source(string body) => TestDocuments.Docx(TestDocuments.Body(body));
-    private static string Policy(TemplateCompatibilityPlan plan, string loss = "") =>
-        "{\"schemaVersion\":\"1.0\",\"planDigest\":\"" + plan.GetIdentitySha256() + "\",\"requiredSemantics\":[\"content.text\"],\"allowedLosses\":[" + loss + "]}";
+    private static string Policy(TemplateCompatibilityPlan plan, string loss = "", string semantics = "\"content.text\"") =>
+        "{\"schemaVersion\":\"1.0\",\"planDigest\":\"" + plan.GetIdentitySha256() + "\",\"requiredSemantics\":[" + semantics + "],\"allowedLosses\":[" + loss + "]}";
 
     [Fact]
     public void ExplicitThemeLossRequiresTheExactPermissionAndRetainsItsObservation()
@@ -64,6 +64,29 @@ public sealed class TemplateCompatibilityPolicyLossTests
         Assert.Equal("Pdf.OmittedDestination", finding.Code); Assert.Equal(DiagnosticPhase.Write, Assert.Single(finding.Phases));
         Assert.Equal(1, finding.Count); Assert.False(finding.SourceLocationsAvailable); Assert.Null(result.OutputSha256);
         Assert.Equal(45, Assert.Single(output.ToArray())); Assert.True(execution.CanRead); Assert.True(output.CanWrite);
+    }
+
+    [Fact]
+    public void RequiredLinkSemanticRejectsBeforeReadingOrPublishing()
+    {
+        byte[] source = Source("<w:p><w:hyperlink w:anchor='Missing'><w:r><w:t>Alpha123</w:t></w:r></w:hyperlink></w:p>");
+        using var initial = new MemoryStream(source);
+        TemplateCompatibilityPlan plan = new WordConverter().CompileTemplateCompatibilityPlan(initial, new TemplateDataSchema(), DocumentFormat.Pdf,
+            Clock, FidelityMode.BestEffort, TestContext.Current.CancellationToken);
+        using JsonDocument json = JsonDocument.Parse(plan.GetCanonicalJson(TestContext.Current.CancellationToken));
+        JsonElement link = json.RootElement.GetProperty("semantics").EnumerateArray().Single(item => item.GetProperty("code").GetString() == "content.links");
+        Assert.Equal("unsupported", link.GetProperty("assessment").GetString());
+        using var input = new MemoryStream(source); using var output = new MemoryStream(); output.WriteByte(46);
+        TemplatePolicyOutcome result = plan.Execute(input, output, Policy(plan, semantics: "\"content.links\",\"content.text\""), TestContext.Current.CancellationToken);
+        Assert.Equal("policy-rejected", result.State); Assert.Equal("Policy.RequiredSemanticUnsupported", result.Code);
+        Assert.Equal(0, input.Position); Assert.Equal(46, Assert.Single(output.ToArray())); Assert.True(input.CanRead); Assert.True(output.CanWrite);
+        byte[] plain = Source("<w:p><w:r><w:t>Plain123</w:t></w:r></w:p>"); using var plainInitial = new MemoryStream(plain);
+        TemplateCompatibilityPlan plainPlan = new WordConverter().CompileTemplateCompatibilityPlan(plainInitial, new TemplateDataSchema(), DocumentFormat.Pdf,
+            Clock, FidelityMode.BestEffort, TestContext.Current.CancellationToken);
+        using var plainInput = new MemoryStream(plain); using var plainOutput = new MemoryStream(); plainOutput.WriteByte(47);
+        TemplatePolicyOutcome unknown = plainPlan.Execute(plainInput, plainOutput, Policy(plainPlan, semantics: "\"content.links\",\"content.text\""), TestContext.Current.CancellationToken);
+        Assert.Equal("policy-rejected", unknown.State); Assert.Equal("Policy.RequiredSemanticUnknown", unknown.Code);
+        Assert.Equal(0, plainInput.Position); Assert.Equal(47, Assert.Single(plainOutput.ToArray()));
     }
 
     [Fact]

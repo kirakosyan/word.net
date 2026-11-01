@@ -1,0 +1,120 @@
+{
+  "roadmap": 138,
+  "issue": 172,
+  "recordedUtc": "2026-11-01",
+  "qualification": "Uncommitted public-wrapper prototype only. Exact-source, package and hosted qualification are separate.",
+  "baseCommit": "4a13ad8d655f928c8ddd5c94275742c84daa833e",
+  "prototypeSourceFiles": {
+    "src/wordnet/Internal/CompatibilityPolicyData.cs": "72c9c5286c1bcf509ec2c45ff956219980bd67353c64823c6f4fb9e4739f1282",
+    "src/wordnet/Internal/CompatibilityPlanData.cs": "305318fbc58423f96493f3b318e1ce7d03c832c51da4ec7a3c54f4d8a62acd73",
+    "src/wordnet/Internal/PlainDocxPolicyProfile.cs": "3d4d18afaf2801d642f8a8ae7e0ee418dd337ccce1ba310a28a25c3a2f8a9a38",
+    "src/wordnet/Internal/PlainDocxPolicyPlan.cs": "f7480698aeedec06465796ceb1afbb7d6632fa4bf1eef8c10318cb9f95fb80e7",
+    "src/wordnet/TemplateCompatibilityPlan.cs": "99e655d09118935cf892948ee25f8389d5888e431f3c37d978e4a234759ef059",
+    "tests/wordnet.Conversion.Tests/TemplateCompatibilityPolicyLossTests.cs": "f5e5aaa91d96a4d7d687bdbdb01b318daf708d5ab5ab50cf62b1f1aadad04335",
+    "eng/generate-roadmap-138-policy-loss.py": "061edc112bbc239c1f148c74afe53691f62661f0e36a0c90052410901971b0ce",
+    "eng/roadmap-138-policy-loss-probe.cs": "4497f49c21b7cce4b438c4c48c41f9804417437d13992405052ae92cd94c6c70",
+    "eng/verify-roadmap-138-policy-loss.py": "300f7ca5d45babc1adadaa41a780d050bd9d12b2f6710322f86945d853404a2b",
+    "docs/design/template-compatibility-plan.schema.json": "c622a894b73bf27a2002275b54edf2dac55682d1de028b4ccf5081edddeb05f9",
+    "docs/design/template-compatibility-policy.schema.json": "7ec896b49e878b084d1f87d2170bc34b54cf9b8465a7308fec6c196fa1c4a800"
+  },
+  "loadedCoreSha256": "3f0e685b7099b95cd57e0d410d2ec09a9045be49370b6f82abaaba980ed4a08e",
+  "inputManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serializer.",
+    "generatorSha256": "061edc112bbc239c1f148c74afe53691f62661f0e36a0c90052410901971b0ce",
+    "documents": {
+      "theme.docx": "c8b63edcdd1bd59bed03f924d5f0a423044d36d46e9d13f3292d67db00b1c5f6",
+      "theme-second.docx": "0d88e265ef85f194ccb5c8546ba670a3cbd4e8aaaa1c562547b6721b8631d56a",
+      "missing-link.docx": "89addbe089fbb76b42a7a3b810eddeb40007a53c9ca95ede3433e91ddfcf7fda",
+      "plain.docx": "e7cdf3bd2d0f65a8a90fef5567ff27eb5e5d948b4de55bed85bd75b556d49cd3"
+    },
+    "expectedText": {
+      "theme": "Alpha123",
+      "theme-second": "Bravo456",
+      "missing-link": "Linked123",
+      "plain": "Plain123"
+    }
+  },
+  "schemaLogSha256": "2d4487e235a169dda5a12935d971ecc65748a262612ab010364f5c1f8671315c",
+  "focusedTests": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "2afcfc0f7fe4d20e6a5d7c0a556efda3777fc7a7b020aeec5fa34ed779a7267c"
+  },
+  "requiredSemanticNegatives": {
+    "missingPermission": {
+      "State": "policy-rejected",
+      "Code": "Policy.LossNotAllowed",
+      "inputPosition": 0,
+      "unchangedOutput": true
+    },
+    "wrongLocation": {
+      "State": "policy-rejected",
+      "Code": "Policy.LossNotAllowed",
+      "inputPosition": 0,
+      "unchangedOutput": true
+    },
+    "strictError": "Plan.SourceProfile",
+    "requiredLink": {
+      "State": "policy-rejected",
+      "Code": "Policy.RequiredSemanticUnsupported",
+      "inputPosition": 0,
+      "unchangedOutput": true
+    },
+    "unknownLink": {
+      "State": "policy-rejected",
+      "Code": "Policy.RequiredSemanticUnknown",
+      "inputPosition": 0,
+      "unchangedOutput": true
+    }
+  },
+  "independentTools": "Open XML SDK 3.5.1; Python jsonschema and rfc8785 0.1.4; Poppler 24.02.0 in the pinned reference container; fixed field clock 2026-11-01T12:00:00Z.",
+  "independentCheck": {
+    "result": {
+      "schemaValidInputs": 4,
+      "allowedLossCases": 2,
+      "cleanBestEffortCases": 1,
+      "actualUnexpectedWriteFindings": 1,
+      "independentPdfTextAndPageCountMatch": true,
+      "canonicalPlanAndPolicySchemasMatch": true,
+      "limitations": "Only the exact local theme-font fallback and one missing internal link profile are checked; output is not independently validated during execution."
+    },
+    "negativeControls": {
+      "fixture hash": "Independent fixture manifest changed",
+      "core identity": "Loaded core, scenario or output set changed",
+      "schema evidence": "Independent input schema validation missing",
+      "plan bytes": "Plan or policy violates its design schema",
+      "plan digest": "Canonical plan or policy binding changed",
+      "source hash": "Source identity changed",
+      "options hash": "Output options identity changed",
+      "output hash": "Admitted outcome or output identity changed",
+      "missing pdf": "Loaded core, scenario or output set changed",
+      "output text": "Independent PDF text or page count changed",
+      "output page": "Independent PDF text or page count changed",
+      "output font": "Independent PDF font observation changed",
+      "independent validation": "Policy, independent-validation or stream contract changed",
+      "stream ownership": "Policy, independent-validation or stream contract changed",
+      "loss code": "Observed diagnostic summary changed",
+      "loss count": "Observed diagnostic summary changed",
+      "loss phase": "Observed diagnostic summary changed",
+      "missing loss permission": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "wrong loss location": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "strict downgrade": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "required semantic accepted": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "required semantic mutated output": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "unassessed semantic accepted": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "unassessed semantic mutated output": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "write not unexpected": "Unexpected write finding was not observed and contained",
+      "write leaked output": "Unexpected write finding was not observed and contained",
+      "write phase": "Unexpected write finding was not observed and contained",
+      "write code": "Unexpected write finding was not observed and contained"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "observedOutputsSha256": {
+    "plain.pdf": "53258e1e97ba779b4e3e577e9471277f41c74553e331da7526ecbfb713bcba5f",
+    "theme-second.pdf": "214fc6c0129330a422872b112f176f9ace7e627490c8e7ef71ac1f2958d14725",
+    "theme.pdf": "9cb9fa83b3db638bd43662a11bbf8f4ff42df0f2d38e60353e2198a9430167c1"
+  },
+  "limitations": "Only the minimal missing-theme fallback and missing internal link profile are checked. Required content.links rejects as unsupported for the missing link and unknown for the plain document; both reject before source read or output mutation. Template data, general loss permissions and independent validation during execution remain open."
+}

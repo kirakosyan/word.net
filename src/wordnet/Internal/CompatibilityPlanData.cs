@@ -114,9 +114,14 @@ internal sealed class CompatibilityPlanData
             if ((string)item["type"]! == "unknown" || (string)item["owner"]! == "unknown" || (string)item["support"]! != "supported") return "Policy.PathUnknown";
         }
         var semantics = Array(plan["semantics"], 256).Select(value => (Dictionary<string, object?>)value!).ToDictionary(item => (string)item["code"]!, StringComparer.Ordinal);
-        if (semantics.Any(item => item.Key != "content.text" || (string)item.Value["assessment"]! != "supported")) return "Policy.SemanticUnknown";
+        if (semantics.Any(item => item.Key is not ("content.text" or "content.links")
+            || (string)item.Value["assessment"]! != "supported" && !(item.Key == "content.links" && (string)item.Value["assessment"]! == "unsupported"))) return "Policy.SemanticUnknown";
         foreach (string required in policy.RequiredSemantics)
-            if (required != "content.text" || !semantics.TryGetValue(required, out var value) || (string)value["assessment"]! != "supported") return "Policy.RequiredSemanticUnknown";
+        {
+            if (!semantics.TryGetValue(required, out var value)) return "Policy.RequiredSemanticUnknown";
+            if ((string)value["assessment"]! == "unsupported") return "Policy.RequiredSemanticUnsupported";
+            if ((string)value["assessment"]! != "supported") return "Policy.RequiredSemanticUnknown";
+        }
         var matched = new HashSet<CompatibilityPolicyLoss>();
         foreach (object? value in Array(plan["findings"], 4096))
         {

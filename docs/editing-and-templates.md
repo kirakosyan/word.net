@@ -171,10 +171,11 @@ single-run sources: one `minorHAnsi` theme-font reference with no theme package,
 or one internal hyperlink with an alphanumeric anchor. The former plans one
 observed `Docx.ThemeFont` loss at the run and requires a permission for exactly
 that code and location. It uses the bundled fallback font, so the original theme
-appearance is not guaranteed. For the latter, the plan checks logical text, not
-the link target; writing can discover `Pdf.OmittedDestination` and reject the
-staged output as an unexpected finding. The source contains no bookmark under
-this profile, so such a link cannot complete successfully. Other formatting,
+appearance is not guaranteed. For the latter, the source contains no bookmark, so
+the plan marks `content.links` unsupported. A policy requiring link destinations
+is rejected before reading the execution input. If only `content.text` is required,
+writing observes `Pdf.OmittedDestination` and rejects the staged output as an
+unexpected finding. Other formatting,
 relationships, themes and link constructs remain outside the profile.
 
 ```csharp
@@ -193,7 +194,8 @@ if (result.State != "allowed-loss") throw new InvalidOperationException(result.C
 BestEffort is an explicit choice; Strict never accepts this loss. The observed
 diagnostic must still match the planned code, location, phase and count before
 output is copied. A missing or mismatched permission fails before reading the
-source. Findings in the outcome expose codes, phases and counts without source
+source. `content.links` is otherwise unassessed; this does not establish general
+link support. Findings in the outcome expose codes, phases and counts without source
 paths or messages. These controls do not implement arbitrary loss permissions,
 template-data binding or independent validation.
 

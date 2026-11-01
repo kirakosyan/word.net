@@ -34,11 +34,12 @@ implements a portable plan, conversion execution or loss-policy enforcement.
 The separate strict plain-DOCX policy profile scans a minimal OPC package, compares
 its sole run with the parsed model, inspects one-page PDF layout, and binds the
 source and fixed in-process environment into a canonical plan. A closed policy
-parser admits only the supported `content.text` requirement and no loss for this
-strict profile. An explicit BestEffort profile can admit one observed theme-font
+parser admits the `content.text` and `content.links` requirements and no loss for
+this strict profile; unassessed or unsupported required semantics reject. An explicit BestEffort profile can admit one observed theme-font
 fallback at its exact source position; it compares actual diagnostics to the plan
-before publishing staged output. An unchecked internal link provides a bounded
-write-stage rejection case. It cannot attest binaries or provide general policy
+before publishing staged output. A missing internal link marks link semantics as
+unsupported and provides a bounded write-stage rejection case when only text is
+required. It cannot attest binaries or provide general policy
 coverage, arbitrary allowed losses or independent validation.
 
 Unreleased #142 direct table borders and clear RGB shading stay on the table model

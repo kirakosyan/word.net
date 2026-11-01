@@ -13,8 +13,8 @@ Directory.CreateDirectory(outputDirectory);
 var clock = new DateTimeOffset(2026, 11, 1, 12, 0, 0, TimeSpan.Zero);
 string Hash(byte[] value) => Convert.ToHexStringLower(SHA256.HashData(value));
 string permission = "{\"code\":\"Docx.ThemeFont\",\"location\":{\"partId\":\"part-0001\",\"childIndexes\":[1,1,1,1]}}";
-string Policy(string digest, string loss = "") => "{\"schemaVersion\":\"1.0\",\"planDigest\":\"" + digest
-    + "\",\"requiredSemantics\":[\"content.text\"],\"allowedLosses\":[" + loss + "]}";
+string Policy(string digest, string loss = "", string semantics = "\"content.text\"") => "{\"schemaVersion\":\"1.0\",\"planDigest\":\"" + digest
+    + "\",\"requiredSemantics\":[" + semantics + "],\"allowedLosses\":[" + loss + "]}";
 var cases = new Dictionary<string, object>(StringComparer.Ordinal);
 foreach (string name in new[] { "theme", "theme-second", "missing-link", "plain" })
 {
@@ -53,11 +53,23 @@ using (var input = new MemoryStream(themed, writable: false))
     try { _ = new WordConverter().CompileTemplateCompatibilityPlan(input, new TemplateDataSchema(), DocumentFormat.Pdf, clock, FidelityMode.Strict); }
     catch (NotSupportedException error) { strictError = error.Message.Split(':')[0]; }
 }
+byte[] linked = File.ReadAllBytes(Path.Combine(fixtureDirectory, "missing-link.docx"));
+using var linkInitial = new MemoryStream(linked, writable: false);
+TemplateCompatibilityPlan linkPlan = new WordConverter().CompileTemplateCompatibilityPlan(linkInitial, new TemplateDataSchema(), DocumentFormat.Pdf, clock, FidelityMode.BestEffort);
+using var linkInput = new MemoryStream(linked, writable: false); using var linkOutput = new MemoryStream(); linkOutput.WriteByte(44);
+TemplatePolicyOutcome requiredLink = linkPlan.Execute(linkInput, linkOutput, Policy(linkPlan.GetIdentitySha256(), semantics: "\"content.links\",\"content.text\""));
+byte[] plain = File.ReadAllBytes(Path.Combine(fixtureDirectory, "plain.docx"));
+using var plainInitial = new MemoryStream(plain, writable: false);
+TemplateCompatibilityPlan plainPlan = new WordConverter().CompileTemplateCompatibilityPlan(plainInitial, new TemplateDataSchema(), DocumentFormat.Pdf, clock, FidelityMode.BestEffort);
+using var plainInput = new MemoryStream(plain, writable: false); using var plainOutput = new MemoryStream(); plainOutput.WriteByte(45);
+TemplatePolicyOutcome unknownLink = plainPlan.Execute(plainInput, plainOutput, Policy(plainPlan.GetIdentitySha256(), semantics: "\"content.links\",\"content.text\""));
 var report = new
 {
     coreSha256 = Hash(File.ReadAllBytes(typeof(WordConverter).Assembly.Location)), cases,
     negatives = new { missingPermission = Reject(Policy(themePlan.GetIdentitySha256())),
-        wrongLocation = Reject(Policy(themePlan.GetIdentitySha256(), permission.Replace("[1,1,1,1]", "[1,1,1,2]"))), strictError }
+        wrongLocation = Reject(Policy(themePlan.GetIdentitySha256(), permission.Replace("[1,1,1,1]", "[1,1,1,2]"))), strictError,
+        requiredLink = new { requiredLink.State, requiredLink.Code, inputPosition = linkInput.Position, unchangedOutput = linkOutput.ToArray().SequenceEqual(new byte[] { 44 }) },
+        unknownLink = new { unknownLink.State, unknownLink.Code, inputPosition = plainInput.Position, unchangedOutput = plainOutput.ToArray().SequenceEqual(new byte[] { 45 }) } }
 };
 File.WriteAllText(Path.Combine(outputDirectory, "report.json"), JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }) + "\n");
 Console.WriteLine("Captured exact permission and actual unexpected PDF write-stage observations.");

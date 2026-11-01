@@ -42,7 +42,7 @@ internal sealed class CompatibilityPolicyData
         foreach (object? item in rawSemantics)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (item is not string name || name != "content.text") throw new InvalidDataException("Policy.UnknownSemantic: The required semantic is not registered.");
+            if (item is not string name || name is not ("content.text" or "content.links")) throw new InvalidDataException("Policy.UnknownSemantic: The required semantic is not registered.");
             semantics.Add(name);
         }
         semantics.Sort(StringComparer.Ordinal);

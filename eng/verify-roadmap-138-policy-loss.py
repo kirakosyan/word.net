@@ -62,7 +62,9 @@ def check(data):
             raise ValueError('Output options identity changed')
         if plan['stages'] != {'parse': 'performed', 'destination': 'performed', 'layout': 'performed', 'write': 'not-performed', 'validation': 'not-performed'}:
             raise ValueError('Plan stage claims changed')
-        if plan['requirements'] != [] or plan['semantics'] != [{'code': 'content.text', 'assessment': 'supported'}]:
+        semantics = ([{'code': 'content.links', 'assessment': 'unsupported'}] if name == 'missing-link' else [])
+        semantics.append({'code': 'content.text', 'assessment': 'supported'})
+        if plan['requirements'] != [] or plan['semantics'] != semantics:
             raise ValueError('Bounded plan semantics changed')
         if policy['requiredSemantics'] != ['content.text'] or case['IndependentValidation'] != 'not-performed' or case['prefix'] != 42 or not case['streamsOpen']:
             raise ValueError('Policy, independent-validation or stream contract changed')
@@ -95,7 +97,9 @@ def check(data):
         if text in case['canonical'] or 'word/document.xml' in case['canonical']:
             raise ValueError('Plan exposed document text or source part names')
     rejection = {'State': 'policy-rejected', 'Code': 'Policy.LossNotAllowed', 'inputPosition': 0, 'unchangedOutput': True}
-    if report['negatives'] != {'missingPermission': rejection, 'wrongLocation': rejection, 'strictError': 'Plan.SourceProfile'}:
+    required_link = {'State': 'policy-rejected', 'Code': 'Policy.RequiredSemanticUnsupported', 'inputPosition': 0, 'unchangedOutput': True}
+    unknown_link = {'State': 'policy-rejected', 'Code': 'Policy.RequiredSemanticUnknown', 'inputPosition': 0, 'unchangedOutput': True}
+    if report['negatives'] != {'missingPermission': rejection, 'wrongLocation': rejection, 'strictError': 'Plan.SourceProfile', 'requiredLink': required_link, 'unknownLink': unknown_link}:
         raise ValueError('Missing/wrong permission or Strict unexpectedly admitted loss')
     return {'schemaValidInputs': 4, 'allowedLossCases': 2, 'cleanBestEffortCases': 1, 'actualUnexpectedWriteFindings': 1,
             'independentPdfTextAndPageCountMatch': True, 'canonicalPlanAndPolicySchemasMatch': True,
@@ -131,6 +135,10 @@ def main():
         'missing loss permission': lambda d: d['report']['negatives']['missingPermission'].update(State='allowed-loss'),
         'wrong loss location': lambda d: d['report']['negatives']['wrongLocation'].update(unchangedOutput=False),
         'strict downgrade': lambda d: d['report']['negatives'].update(strictError='accepted'),
+        'required semantic accepted': lambda d: d['report']['negatives']['requiredLink'].update(State='completed'),
+        'required semantic mutated output': lambda d: d['report']['negatives']['requiredLink'].update(unchangedOutput=False),
+        'unassessed semantic accepted': lambda d: d['report']['negatives']['unknownLink'].update(State='completed'),
+        'unassessed semantic mutated output': lambda d: d['report']['negatives']['unknownLink'].update(unchangedOutput=False),
         'write not unexpected': lambda d: d['report']['cases']['missing-link'].update(State='completed'),
         'write leaked output': lambda d: d['report']['cases']['missing-link'].update(outputLength=1),
         'write phase': lambda d: d['report']['cases']['missing-link']['findings'][0].update(phases=['Parse']),
