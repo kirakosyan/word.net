@@ -1,0 +1,301 @@
+{
+  "roadmap": 138,
+  "issues": [
+    142,
+    167
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "27ae60925b5d00433f03c67718ea8a01d570cecd",
+  "sourceTree": "8b46b364c6e7746a43823e14142068ec05db1d98",
+  "scope": "Bounded plain fixed-grid DOCX table default margins and trailing managed layout.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "6c99deb037a92f85b9081b94104a69da9685f86d2e19d1b3990cd4350494158f",
+    "releaseBuild": "Five targets and net472 test executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "3adbefd5bc2d17c3681b122e08b365235d372f9a88d8e54d833ff4524283733d",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution for this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2373,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "3a095994c9bc08df873e5c4f2cb688d96169b2d42db0b1332534bcf10529d0eb"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2373,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "668c172c6ac3258a92faf4a7f7cf466d4ceeec7414ed251e7573ee9d0f83087f"
+    },
+    "capabilityMatrix": {
+      "profiles": 116,
+      "testMethods": 497,
+      "net10CasesPassed": 845,
+      "logSha256": "3006d193ec13f7db9289612fd8b55272cdb50d01c2c7c92e74ccee76847d02a5"
+    },
+    "packageVerification": "Local serial core, fonts and OCR 1.5.0 packages passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "734c988eebdce99db541a770374185f4a22afdf2cd938116d156e20b6e0726eb",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "d1532118a05f4252d7b96879099a97542c095cb49346e8430719134c11091568",
+      "wordnet.Fonts.1.5.0.nupkg": "ae0df50ce76d87439be5ac5cb46713fe0124699d76d3f9fccbbf79942e21c76d",
+      "wordnet.Ocr.1.5.0.nupkg": "9767954fb807f063a833116d686f9477e370d630f2a71229dbac9374c4fe83a9"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 38.91905,
+      "CandidateMedianMilliseconds": 42.03985,
+      "Ratio": 1.0801869521481127,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40113496.0,
+      "PeakSampledManagedBytes": 26069344.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-plain-table-performance-27ae609.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-plain-table-reference.json",
+    "sourceProbeSaveProbeAndPackageNet10AssemblySha256": "591ee1058198dd369700cc267ba062a2d4848f02a17d8e7c2f855e97005907b2",
+    "sourceSchemaLogSha256": "29657de148cc2620412d03e213d738979d3b2b39b029e9555df2ee4e3c2398ff",
+    "savedSchemaLogSha256": "34ffe27b5f5ec57e63755e6210979e66808c4bb90f8544a6edcea076bb18cf86",
+    "verifierLogSha256": "e16a32676a011a6f7bc875f7e842677a2192ec2e8bb2ef5501546db46a202bd7",
+    "runVerifierLogSha256": "299a40b44d9b101c663fc8f70a01042fc78afe7d8c161ddfee0925a6a4bfaee1",
+    "fixtures": {
+      "implicit": {
+        "candidatePdfSha256": "59817adbbf1ff4987e9ec2bbadb3b3b27b588b9c632d83bf1ec7a869583e6351",
+        "snapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "7b906dbfd1184d63961819538a62c5058b5c607533c48b1de140c4f8df22be9f",
+        "savedPdfSha256": "b3b738b069548467cbd3581b9800b34d2cb67f624cadabe51b429bb2ae7934dd"
+      },
+      "two-columns": {
+        "candidatePdfSha256": "26a98dc03f9ff7d379f8e1469c9f674c22a5f90247eed025036907bd951acb67",
+        "snapshotSha256": "cbcd97473e5459af676c0c18328faa329d5827ff0aa0ef095abc90066c23b6b9",
+        "savedDocxSha256": "3a3769cab8f8c1507f2ddc4263ba9292a2a643eb8e7ccc5736146235aa54cb3d",
+        "savedPdfSha256": "3662078b7f4535b5f088e7fc44ca415b221942767b61b53ceffbfdb9ac3027de"
+      },
+      "two-rows": {
+        "candidatePdfSha256": "a5c7855f73ff9f56460318ad9a3d3d62932c3d331aba1efe2c029aa7203462e3",
+        "snapshotSha256": "9018c36e46e067773a21b2d5dc78aeea1af7e7e76216bf77cd04e06ae0c84781",
+        "savedDocxSha256": "0cb940b37bae426c59db56010d9757b08d45d9cebdce189860530c3027056d9d",
+        "savedPdfSha256": "e6deba9548cb83bce18b4a4284ed5a98bcfa9f65e667bc585816e1165b1554c2"
+      },
+      "explicit-115": {
+        "candidatePdfSha256": "6d580cea50a50972cffaa50f7d348e7c9e0ad9e1d4faeb738677adc3140b758b",
+        "snapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+        "savedDocxSha256": "2ff1d9671b3a1d4bc800d0f4ba5ae4a3089d21caaadf30c5a6874261f53d4e5d",
+        "savedPdfSha256": "a518e6d5979228a0ae425082ca512ce5301f402945dda4de6d9741ec97338f40"
+      },
+      "explicit-108": {
+        "candidatePdfSha256": "ac3cf2a7e8ee8f157c02c5fc55a746368d09fbf439ef5a304928c5aa1ae48c63",
+        "snapshotSha256": "13b25df03b5383aaa821841882321583899bbfb85263b47180da6683dfd45eeb",
+        "savedDocxSha256": "335910acc67b3cd59e86b5b8803e566e9c628c0761b110a36eedd4c70fdf811a",
+        "savedPdfSha256": "fcaf8e28c09f87585faceb58ffccefec7a4bcdc24fd5ccabaf2c15f78c83be45"
+      },
+      "explicit-zero": {
+        "candidatePdfSha256": "e96a0a645d904b18e5d6bff104e41648df9a71ebf999e290bd4ab178c43fcb50",
+        "snapshotSha256": "f12fa5298a83aad7b883913989f41624c3195f0fc37fccf6fc6809f66adc3fa7",
+        "savedDocxSha256": "b62f5c90d9fd14827ff8126c3d2d7e9b896e5de4ea2e009cf0f3f2ef04778b6c",
+        "savedPdfSha256": "d2adbaca90d649839bfa5b4d297126704a29589ed0d74a42afb92db0ef9626aa"
+      },
+      "cell-zero": {
+        "candidatePdfSha256": "6348fcf643a124cee0bf3df97d05e54dfe1a53b42c341ba2e04870ca11047d37",
+        "snapshotSha256": "f12fa5298a83aad7b883913989f41624c3195f0fc37fccf6fc6809f66adc3fa7",
+        "savedDocxSha256": "b62f5c90d9fd14827ff8126c3d2d7e9b896e5de4ea2e009cf0f3f2ef04778b6c",
+        "savedPdfSha256": "d3f518b5f8b3c789dcaf5350a3027f61d751eac6f79339f7d26699811a97deb6"
+      },
+      "only-top": {
+        "candidatePdfSha256": "8f01094d022b0d0867096788a39efacf3d6dc65c8fcaf36890fb0ab77c9c6527",
+        "snapshotSha256": "5a93319be0fc20fac6e58878b0b2e70044309dc2a69435797614d7771fc19dce"
+      },
+      "border": {
+        "candidatePdfSha256": "2c9b14d910806d93b289b669f41e81ea9b973c21394a89cd2274c87aadf69a3c",
+        "snapshotSha256": "c366d7c19e3008b3045977fcb637126e530dad43887bddabe87322034b85a3e7"
+      }
+    },
+    "contrasts": {
+      "glyphOriginTolerancePt": 0.25,
+      "cases": {
+        "implicit": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "two-columns": {
+          "characters": 16,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "two-rows": {
+          "characters": 16,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "explicit-115": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "explicit-108": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "explicit-zero": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "cell-zero": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+          "officeGlyphComparisonPassed": true,
+          "savedGeometryMatches": true
+        },
+        "only-top": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false,
+          "savedGeometryMatches": null
+        },
+        "border": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 6.0,
+          "officeGlyphComparisonPassed": false,
+          "savedGeometryMatches": null
+        }
+      },
+      "negativeControls": {
+        "wrong text": "Saved output changes glyphs or geometry: implicit",
+        "wrong font": "Saved output changes glyphs or geometry: implicit",
+        "shifted cell": "Saved output changes glyphs or geometry: implicit",
+        "shifted following text": "Saved output changes glyphs or geometry: implicit",
+        "changed plain body": "Saved output changes glyphs or geometry: implicit",
+        "changed explicit margin": "Saved output changes glyphs or geometry: explicit-zero",
+        "changed border": "Unexpected source-bounded geometry change: border",
+        "changed partial margin": "Unexpected source-bounded geometry change: only-top",
+        "shifted office reference": "Office glyph-origin tolerance exceeded: implicit",
+        "wrong source role": "Unexpected source-bounded geometry change: implicit",
+        "missing character": "Source and output character counts differ: implicit",
+        "changed saved glyph": "Saved output changes glyphs or geometry: implicit",
+        "introduced default margin": "Saved margin omission or explicit values differ: implicit",
+        "changed saved margin": "Saved margin omission or explicit values differ: explicit-zero"
+      },
+      "controlMethod": "Parsed glyph observations changed in memory."
+    },
+    "priorRunFixture": {
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "specimen": {
+        "pages": 1,
+        "fragments": 8,
+        "mappedRuns": 3,
+        "unmappedFragments": 5,
+        "maximumFontSvgBoundsDeltaPt": 8.526512829121202e-14
+      },
+      "namespaceNegatives": {
+        "namespace-run": {
+          "runSource": null,
+          "diagnostic": "Docx.Inline",
+          "visibleTextPreserved": true
+        },
+        "namespace-paragraph": {
+          "runSource": null,
+          "diagnostic": "Docx.Block",
+          "visibleTextPreserved": true
+        }
+      },
+      "negativeControls": {
+        "wrong run path": "Source run identity is missing or ambiguous",
+        "mapped coalesced run": "Source run identity is missing or ambiguous",
+        "mapped wrapped run": "Source run identity is missing or ambiguous",
+        "changed source text": "Source paragraph, order or text changed",
+        "shifted bounds": "Snapshot and independent SVG/font bounds differ",
+        "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
+        "changed PDF character": "PDF/SVG glyph text differs from source",
+        "wrong cell path": "Cell identity differs from source XML",
+        "mapped namespace-run": "Ambiguous namespace path was assigned a run owner",
+        "mapped namespace-paragraph": "Ambiguous namespace path was assigned a run owner"
+      },
+      "controlMethod": "Parsed source/output measurements changed in memory.",
+      "officeComparison": {
+        "wholePage": {
+          "actualPages": 1,
+          "referencePages": 1,
+          "glyphOriginTolerancePt": 0.25,
+          "glyphComparisonPassed": true,
+          "pages": [
+            {
+              "page": 1,
+              "actualCharacters": 24,
+              "referenceCharacters": 24,
+              "actualFonts": [
+                "NotoSans-Regular"
+              ],
+              "referenceFonts": [
+                "NotoSans-Regular"
+              ],
+              "textOrderAgrees": true,
+              "fontNamesAgree": true,
+              "maximumGlyphOriginDeltaPt": 0.25,
+              "glyphComparisonPassed": true
+            }
+          ]
+        },
+        "segments": {
+          "textOrderAgrees": true,
+          "glyphOriginTolerancePt": 0.25,
+          "segments": [
+            {
+              "name": "first direct run",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.09999847412109375,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "second direct run",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.092010498046875,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "coalesced runs",
+              "characters": 8,
+              "maximumGlyphOriginDeltaPt": 0.100006103515625,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "table cell",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.25,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "wrapped hyperlink",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.09999847412109375,
+              "glyphComparisonPassed": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "qualification": "Hosted exact-head and actual Windows Framework execution, partial margins, borders, style inheritance and broader roadmap #138 remain open at this source."
+}

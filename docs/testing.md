@@ -387,6 +387,10 @@ against prior head `45c43ab`. Their different baselines do not resolve the failu
 The same head's [push Framework source guest](measurements/roadmap-138-framework-a34-push-source-failure.json)
 exited before exporting qualification evidence; its cleanup completed. The guest's
 test execution and case count were not established.
+The separate [PR source guest](measurements/roadmap-138-framework-a34-pr-source-success.json)
+passed 2,365 cases on actual Framework 4.7.2 with cleanup and a matching merge tree;
+the [PR package guest](measurements/roadmap-138-framework-a34-pr-package-success.json)
+also passed 2,365 cases with cleanup. Neither qualifies later source or erases the failed guest.
 The same release-to-PR comparison [passed locally](measurements/roadmap-138-performance-a34-local-release-comparison.json)
 at 1.070 under the unchanged 1.25 limit. This different host does not replace the
 failed hosted result; both records retain their individual timing samples.
@@ -483,6 +487,10 @@ The later [plain-table reference record](measurements/roadmap-138-plain-table-re
 reruns that sample and nine schema-valid contrasts under the same threshold. Seven
 match, including after DOCX save; the partial-margin and bordered controls retain
 their failed geometry comparisons. Fourteen altered observations are rejected.
+The [exact-source receipt](measurements/roadmap-138-plain-table-27ae609.json)
+records both 2,373-case suites, the 845-case matrix, local package checks and the
+independent recheck with the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-plain-table-performance-27ae609.json)
+passed against the preceding head; hosted and actual Framework checks remain separate.
 The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
