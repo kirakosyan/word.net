@@ -37,8 +37,8 @@ public sealed class LayoutBounds
 /// <summary>One positioned item and its source paragraph, where known.</summary>
 public sealed class LayoutFragment
 {
-    internal LayoutFragment(int page, int order, SourceLocation? source, SourceLocation? cellSource, SourceLocation? objectSource, LayoutBounds? bounds, string? text, string? unavailable, bool? outsidePage)
-    { Page = page; Order = order; Source = source; CellSource = cellSource; ObjectSource = objectSource; Bounds = bounds; Text = text; UnavailableReason = unavailable; ExtendsOutsidePage = outsidePage; }
+    internal LayoutFragment(int page, int order, SourceLocation? source, SourceLocation? cellSource, SourceLocation? objectSource, SourceLocation? runSource, LayoutBounds? bounds, string? text, string? unavailable, bool? outsidePage)
+    { Page = page; Order = order; Source = source; CellSource = cellSource; ObjectSource = objectSource; RunSource = runSource; Bounds = bounds; Text = text; UnavailableReason = unavailable; ExtendsOutsidePage = outsidePage; }
     /// <summary>Gets the one-based physical source page.</summary>
     public int Page { get; }
     /// <summary>Gets the zero-based item order emitted by layout on this page, not a reading-order guarantee.</summary>
@@ -49,6 +49,8 @@ public sealed class LayoutFragment
     public SourceLocation? CellSource { get; }
     /// <summary>Gets the source drawing location for an admitted inline image; otherwise null.</summary>
     public SourceLocation? ObjectSource { get; }
+    /// <summary>Gets the source run location for an admitted unambiguous text fragment; otherwise null.</summary>
+    public SourceLocation? RunSource { get; }
     /// <summary>Gets managed glyph bounds or an admitted inline image frame, or null when geometry is unavailable.</summary>
     public LayoutBounds? Bounds { get; }
     /// <summary>Gets retained item text only when the caller opted in; otherwise null.</summary>

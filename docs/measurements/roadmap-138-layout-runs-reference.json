@@ -1,0 +1,131 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "4f02e804ffd234e1c45751110116f0d880f4646c",
+  "scope": "Working-tree evidence for unambiguous direct DOCX text-run identities in admitted body paragraphs and simple cells. Other run, cell, object and story mappings remain open.",
+  "provenance": "Synthetic OOXML was independently authored using the MIT fixture helper without wordnet serialization. Two generations were byte-identical. Open XML SDK 3.5.1 validated the corrected input; FontTools 4.61.1 and PyMuPDF 1.27.2.2 independently checked source identity, pinned font outlines, SVG bounds and PDF characters. LibreOffice 24.2.7.2 ran in a network-disabled container with the embedded Noto Sans fonts mounted read-only.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-layout-runs.py": "11911c8c027e447dcfac6de6a0bdcf73befd4232f7a1b6a89f2bfd50b77b2614",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-layout-runs-probe.cs": "2c81b1aca534d25be26484b227aec97ed25d99ab3cedaa63972726f690b68dc2",
+    "eng/verify-roadmap-138-layout-runs.py": "f9f644f3ce423dd595592b995f1765e7bf54aa53fc077a128810f8688a46ec18",
+    "eng/verify-roadmap-138-layout-cells.py": "08ba843a3312169d03a279a1aa787c1ebefab259aa227f9ac26a41d29cd1112f",
+    "src/wordnet/DocumentLayoutSnapshot.cs": "fdfd9149aadd581351f59e138611c606deebac8f9efa192160cb3178eb5ada93",
+    "src/wordnet/Formats/DocxReader.cs": "129cd95126b9ccd48a3ea8ffadf153d47666a3c803aee917b627d2b249cca9c1",
+    "src/wordnet/Model/DocumentModel.cs": "ad45a7c739c833077d4b28611856f930315d8338dbcf8d40c483f711cd84240d",
+    "src/wordnet/WordConverter.LayoutSnapshot.cs": "32d95cd02d50c39b0f7f1827d2fbba7820f540b5e0ca91ce7d98a3bb270b564d",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "fdc8680522d91abbc39507a923a009e9153b22f53af25d1be65489e98266146e"
+  },
+  "probeWordnetAssemblySha256": "c1a02d8126c2b6189d3936432784ad3d63d9dd705cf45580bf04def3e70a1e9f",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "validatorLogSha256": "877f5afb4ef2fe16c6c8e868a33762870781f87fa0048800bdf3aa0440adb3a7",
+  "independentVerifierLogSha256": "3061505274b59ccf7bd5204bab67caa54f431269fef29985f44b1299ef195d01",
+  "referenceImage": "wordnet-138-reference:temporary sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; LibreOffice 24.2.7.2, --network none",
+  "specimenHashes": {
+    "inputDocxSha256": "ee618813ad83e2a071414388f9babac76009c6b4fc1cbea2ea3ab2d6fccc4dcb",
+    "pdfSha256": "0051187993240420fe7d7f820ae81d325ceadd441d5b5415e126b5b89489cc1b",
+    "svgSha256": "ed37f0a05c4a2a622e80277b9e8646c94aa27f5d64c1db7c2947c42c0b3fb30c",
+    "snapshotSha256": "c4cef51e5069469cb4bf95f1fd22a19bfa9218090e80f205c6dc1c18ce35fa31",
+    "officePdfSha256": "760f3f0927b05887bab25eb5970eed7ec45470b154d2cb127568aa1e03d4cdad"
+  },
+  "result": {
+    "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+    "specimen": {
+      "pages": 1,
+      "fragments": 8,
+      "mappedRuns": 3,
+      "unmappedFragments": 5,
+      "maximumFontSvgBoundsDeltaPt": 8.526512829121202e-14
+    },
+    "negativeControls": {
+      "wrong run path": "Source run identity is missing or ambiguous",
+      "mapped coalesced run": "Source run identity is missing or ambiguous",
+      "mapped wrapped run": "Source run identity is missing or ambiguous",
+      "changed source text": "Source paragraph, order or text changed",
+      "shifted bounds": "Snapshot and independent SVG/font bounds differ",
+      "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
+      "changed PDF character": "PDF/SVG glyph text differs from source",
+      "wrong cell path": "Cell identity differs from source XML"
+    },
+    "controlMethod": "Parsed source/output measurements changed in memory.",
+    "officeComparison": {
+      "wholePage": {
+        "actualPages": 1,
+        "referencePages": 1,
+        "glyphOriginTolerancePt": 0.25,
+        "glyphComparisonPassed": false,
+        "pages": [
+          {
+            "page": 1,
+            "actualCharacters": 24,
+            "referenceCharacters": 24,
+            "actualFonts": [
+              "NotoSans-Regular"
+            ],
+            "referenceFonts": [
+              "NotoSans-Regular"
+            ],
+            "textOrderAgrees": true,
+            "fontNamesAgree": true,
+            "maximumGlyphOriginDeltaPt": 5.9542236328125,
+            "glyphComparisonPassed": false
+          }
+        ]
+      },
+      "segments": {
+        "textOrderAgrees": true,
+        "glyphOriginTolerancePt": 0.25,
+        "segments": [
+          {
+            "name": "first direct run",
+            "characters": 4,
+            "maximumGlyphOriginDeltaPt": 0.09999847412109375,
+            "glyphComparisonPassed": true
+          },
+          {
+            "name": "second direct run",
+            "characters": 4,
+            "maximumGlyphOriginDeltaPt": 0.092010498046875,
+            "glyphComparisonPassed": true
+          },
+          {
+            "name": "coalesced runs",
+            "characters": 8,
+            "maximumGlyphOriginDeltaPt": 0.100006103515625,
+            "glyphComparisonPassed": true
+          },
+          {
+            "name": "table cell",
+            "characters": 4,
+            "maximumGlyphOriginDeltaPt": 5.5,
+            "glyphComparisonPassed": false
+          },
+          {
+            "name": "wrapped hyperlink",
+            "characters": 4,
+            "maximumGlyphOriginDeltaPt": 5.9542236328125,
+            "glyphComparisonPassed": false
+          }
+        ]
+      }
+    }
+  },
+  "retainedFailures": [
+    {
+      "stage": "initial independent fixture schema validation",
+      "inputDocxSha256": "590b0536605b180385509b38a917b0b650c5a1de937e5d08337bff633d2654fe",
+      "logSha256": "417d3d974eabec3940d7d742ee750d827d64269b45a342c02e694ae2ab9e5e06",
+      "result": "Failed with seven XML schema errors caused by run property ordering and an incomplete table. The fixture was corrected and the new input validated with zero errors."
+    },
+    {
+      "stage": "initial strict PDF probe",
+      "logSha256": "df9be6532a4a05ec21f13576d61af52b0521b2014fe35009758320c41c413247",
+      "result": "Failed with Pdf.OmittedDestination because the original synthetic hyperlink named an absent bookmark. The corrected input uses an explicit external hyperlink relationship; no resource is fetched."
+    },
+    {
+      "stage": "pinned-font office geometry",
+      "result": "At the unchanged 0.25-point glyph-origin tolerance, direct body runs pass within 0.10 point while the table cell differs by 5.5 points and its following hyperlink by 5.9543 points. These whole-page reference differences remain open."
+    }
+  ]
+}

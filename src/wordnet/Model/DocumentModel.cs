@@ -434,6 +434,9 @@ internal sealed class TextRun
     internal int? TypedControlId { get; set; }
     internal bool ControlDisplay { get; set; }
     internal ControlGlyph? ControlGlyph { get; set; }
+    // Captured only for a directly owned source run in an opted-in preview.
+    // Rebuilt or coalesced runs deliberately do not inherit this identity.
+    internal SourceLocation? SnapshotSource { get; set; }
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
         double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
     {

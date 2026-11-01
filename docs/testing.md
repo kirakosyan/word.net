@@ -387,6 +387,13 @@ The [exact-source receipt](measurements/roadmap-138-layout-images-03ab8d0.json)
 records both complete suites, the 819-case matrix, local packages and the nine
 checker controls. The unchanged [performance gate](measurements/roadmap-138-layout-images-performance-03ab8d0.json)
 passed; hosted exact-head and Windows Framework execution are separate checks.
+The direct-run increment checks body and simple-cell source paths without changing
+preview bytes; coalesced, wrapped and composite runs retain null run identity.
+Its [independent observation](measurements/roadmap-138-layout-runs-reference.json)
+checks a schema-valid synthetic DOCX, PDF characters and SVG/font geometry with
+eight altered controls. The original malformed fixture and unresolved hyperlink
+failures remain recorded. The pinned-font office comparison retains table-cell and
+following-link differences at the unchanged 0.25-point threshold.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner

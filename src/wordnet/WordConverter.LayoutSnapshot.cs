@@ -20,14 +20,15 @@ public sealed partial class WordConverter
         static bool Plain(ParagraphBlock p) => p.Control == null && p.NestedControl == null
             && !p.TypedControlId.HasValue && p.List == null && p.Runs.All(run => run.Control == null && !run.TypedControlId.HasValue
                 && run.FieldInstruction == null && run.Bookmark == null && run.Note == null && run.Image == null && run.Box == null && run.Object == null);
-        static bool BodyElement(string path, string element)
+        static bool ChildElement(string path, string parent, string element)
         {
-            string prefix = "/document[1]/body[1]/" + element + "[";
+            string prefix = parent + "/" + element + "[";
             if (!path.StartsWith(prefix, StringComparison.Ordinal) || path.Length <= prefix.Length + 1
                 || path[path.Length - 1] != ']' || path[prefix.Length] is < '1' or > '9') return false;
             for (int i = prefix.Length + 1; i < path.Length - 1; i++) if (path[i] is < '0' or > '9') return false;
             return true;
         }
+        static bool BodyElement(string path, string element) => ChildElement(path, "/document[1]/body[1]", element);
         var admitted = new HashSet<ParagraphBlock>(model.Blocks.OfType<ParagraphBlock>().Where(Plain));
         var cells = new Dictionary<ParagraphBlock, SourceLocation>();
         var ambiguous = new HashSet<ParagraphBlock>(); var images = new HashSet<ParagraphBlock>(); long ownerWork = 0;
@@ -103,9 +104,16 @@ public sealed partial class WordConverter
                 SourceLocation? objectSource = item.Image?.Source != null && item.SourceParagraph != null && images.Contains(item.SourceParagraph)
                     ? new SourceLocation(item.Image.Source.Part, item.Image.Source.Path) : null;
                 string? text = policy.IncludeText ? item.Text : null;
+                SourceLocation? runLocation = item.SourceRun?.SnapshotSource;
+                SourceLocation? runSource = item.Image == null && item.Box == null && item.Visual == null && item.Field == null
+                    && item.NativeShape == null && !item.IsLabel && source != null && source.Part == "word/document.xml"
+                    && (cellSource != null || BodyElement(source.Path, "p")) && admitted.Contains(item.SourceParagraph!)
+                    && runLocation != null && runLocation.Part == source.Part && ChildElement(runLocation.Path, source.Path, "r")
+                    ? new SourceLocation(runLocation.Part, runLocation.Path) : null;
                 size = checked(size + 128 + 2L * ((source?.Part.Length ?? 0) + (source?.Path.Length ?? 0)
                     + (cellSource?.Part.Length ?? 0) + (cellSource?.Path.Length ?? 0)
-                    + (objectSource?.Part.Length ?? 0) + (objectSource?.Path.Length ?? 0) + (text?.Length ?? 0)));
+                    + (objectSource?.Part.Length ?? 0) + (objectSource?.Path.Length ?? 0)
+                    + (runSource?.Part.Length ?? 0) + (runSource?.Path.Length ?? 0) + (text?.Length ?? 0)));
                 if (size > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.LayoutSnapshot: Layout snapshot exceeds the expanded-byte limit.");
                 LayoutBounds? bounds = null; string? reason = null;
                 if (source == null) reason = "SourceUnavailable";
@@ -145,9 +153,10 @@ public sealed partial class WordConverter
                         bounds = new LayoutBounds(left, y, width, height);
                     }
                 }
+                if (bounds == null) runSource = null;
                 bool? outsidePage = bounds == null ? null : bounds.X < 0 || bounds.Y < 0
                     || bounds.X + bounds.Width > page.Settings.Width || bounds.Y + bounds.Height > page.Settings.Height;
-                fragments.Add(new LayoutFragment(number, order, source, cellSource, objectSource, bounds, text, reason, outsidePage));
+                fragments.Add(new LayoutFragment(number, order, source, cellSource, objectSource, runSource, bounds, text, reason, outsidePage));
             }
         }
         return new DocumentLayoutSnapshot(fragments, graphics);

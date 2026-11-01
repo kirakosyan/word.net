@@ -146,8 +146,8 @@ directions, stream contract, unsupported active/protected input and qualificatio
 limits; it does not change published 1.5.0 support.
 Pending #167 source attaches a bounded [layout snapshot](interoperability.md#unreleased-source-preview-layout-snapshots)
 to the same preview render for simple managed body paragraphs, bounded direct
-DOCX table-cell text and simple inline images. Reference placement differences and other
-cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
+DOCX table-cell text and simple inline images, with bounded direct run identities.
+Reference placement differences and other run/cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
 identities remain open.
 Pending #168 work adds bounded matrix expressions, OMML and ordinary managed
 layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)

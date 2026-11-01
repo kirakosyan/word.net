@@ -463,6 +463,15 @@
       ]
     },
     {
+      "id": "preview-layout-direct-docx-runs",
+      "issue": 167,
+      "outcome": "supported-bounded",
+      "boundary": "Unambiguous direct DOCX body and simple-cell text runs expose source identities for glyph fragments without changing the preview; coalesced or wrapped owners remain unmapped.",
+      "tests": [
+        { "class": "LayoutSnapshotTests", "method": "DirectDocxRunsMapToTheSamePreviewGeometryWithoutChangingItsBytes" }
+      ]
+    },
+    {
       "id": "preview-layout-simple-docx-inline-image",
       "issue": 167,
       "outcome": "supported-bounded",
@@ -479,6 +488,7 @@
       "tests": [
         { "class": "LayoutSnapshotTests", "method": "MissingSourceGeometryIsExplicitAndFragmentLimitsFail" },
         { "class": "LayoutSnapshotTests", "method": "MergedNestedWrappedAndExplicitHeightCellsRemainUnqualified" },
+        { "class": "LayoutSnapshotTests", "method": "CoalescedWrappedAndCompositeRunsDoNotClaimOneSourceRun" },
         { "class": "LayoutSnapshotTests", "method": "TransformedWrappedAndMixedInlineImagesRemainUnqualified" },
         { "class": "LayoutSnapshotTests", "method": "UnsupportedImagePlaceholderIsNotMappedAsTheSourceImage" },
         { "class": "LayoutSnapshotTests", "method": "TableCellOwnerWorkUsesTheExpansionBudget" },

@@ -470,6 +470,19 @@ order but differs by 0.81 and 0.45 point on its two pages, above the unchanged
 0.25-point glyph-origin tolerance. This reference difference remains open; the
 snapshot describes the emitted preview and is not a cross-editor fidelity guarantee.
 
+For admitted DOCX body and simple-cell text, `RunSource` can identify the direct
+`w:r` containing one `w:t` that produced a fragment. `Source` remains the paragraph;
+the fragment bounds describe emitted glyphs, not necessarily the entire run. A run
+can produce several fragments or pages. The identity is omitted when runs are
+coalesced for rendering, a run is wrapped or has multiple text elements, or its
+owner and geometry are otherwise unqualified. Capturing these identities does not
+change the rendered preview; the same snapshot size and privacy limits apply.
+The [independent run comparison](measurements/roadmap-138-layout-runs-reference.json)
+checks source paths and PDF/SVG glyph ink. Its two direct body runs agree with the
+pinned-font office reference within 0.1 point. The table-cell and following
+hyperlink positions differ by 5.5 and 5.96 points, respectively, exceeding the
+unchanged 0.25-point tolerance. These placement differences remain open.
+
 An untransformed inline raster image in a direct `word/document.xml` body
 paragraph containing only that image can also expose `ObjectSource` for its source
 `w:drawing`. Its `Bounds` describe the image frame emitted by that preview;
@@ -489,7 +502,7 @@ contrast; default handling and cross-editor placement remain unresolved.
 Only positioned items are listed. Unqualified owners, transformed/native text,
 fields and generated items return null bounds with an `UnavailableReason`, and
 `HasUnmappedGraphics` reports non-text shapes without pretending to locate them.
-Other cell, object, note and story identities, arbitrary clipping, review displays and
+Other run, cell, object, note and story identities, arbitrary clipping, review displays and
 cross-edit identity remain open; requesting a detached review-display snapshot
 fails explicitly. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
 checks two simple paragraphs against font outlines, SVG and PDF. This source work

@@ -16,6 +16,50 @@ public sealed class LayoutSnapshotTests
     private static string P(string text) => TestDocuments.TextParagraph(text);
 
     [Fact]
+    public void DirectDocxRunsMapToTheSamePreviewGeometryWithoutChangingItsBytes()
+    {
+        string body = "<w:p><w:r><w:t>Alpha</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>Bold</w:t></w:r></w:p>";
+        byte[] source = Source(body); var converter = new WordConverter();
+        using var regularInput = new MemoryStream(source);
+        DocumentPreview regular = converter.RenderPages(regularInput, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        using var input = new MemoryStream(source);
+        DocumentPreview preview = converter.RenderPages(input, DocumentFormat.Docx,
+            new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Assert.Single(regular.Pages).GetBytes(), Assert.Single(preview.Pages).GetBytes());
+        LayoutFragment[] fragments = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(item => item.Bounds != null).ToArray();
+        LayoutFragment alpha = Assert.Single(fragments, item => item.Text == "Alpha");
+        LayoutFragment bold = Assert.Single(fragments, item => item.Text == "Bold");
+        Assert.Equal("word/document.xml", alpha.RunSource!.Part);
+        Assert.Equal("/document[1]/body[1]/p[1]/r[1]", alpha.RunSource.Path);
+        Assert.Equal("/document[1]/body[1]/p[1]/r[2]", bold.RunSource!.Path);
+        Assert.Equal(alpha.Source!.Path, bold.Source!.Path);
+        using var pdf = PdfDocument.Open(converter.ConvertToPdf(source));
+        var letters = pdf.GetPage(1).Letters.Take(5).ToArray();
+        Assert.Equal(letters.Min(letter => letter.BoundingBox.Left), alpha.Bounds!.X, 3);
+        Assert.Equal(letters.Max(letter => letter.BoundingBox.Right) - alpha.Bounds.X, alpha.Bounds.Width, 3);
+    }
+
+    [Fact]
+    public void CoalescedWrappedAndCompositeRunsDoNotClaimOneSourceRun()
+    {
+        string coalesced = "<w:p><w:r><w:t>Joined</w:t></w:r><w:r><w:t>Word</w:t></w:r></w:p>";
+        string wrapped = "<w:p><w:hyperlink w:anchor='target'><w:r><w:t>Linked</w:t></w:r></w:hyperlink></w:p>";
+        string composite = "<w:p><w:r><w:t>Multi</w:t><w:t>Part</w:t></w:r></w:p>";
+        foreach (string body in new[] { coalesced, wrapped, composite })
+        {
+            byte[] source = Source(body); var converter = new WordConverter();
+            using var regularInput = new MemoryStream(source);
+            var regular = converter.RenderPages(regularInput, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+            using var input = new MemoryStream(source);
+            var preview = converter.RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+            Assert.Equal(Assert.Single(regular.Pages).GetBytes(), Assert.Single(preview.Pages).GetBytes());
+            LayoutFragment[] fragments = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(item => item.Bounds != null).ToArray();
+            Assert.NotEmpty(fragments); Assert.All(fragments, item => Assert.Null(item.RunSource));
+        }
+    }
+
+    [Fact]
     public void PreviewCapturesPrivateSourceLocationsAndManagedGlyphBounds()
     {
         byte[] source = Source(P("Alpha") + P("Beta")); var converter = new WordConverter();
@@ -27,7 +71,7 @@ public sealed class LayoutSnapshotTests
         DocumentPreview preview = converter.RenderPages(input, DocumentFormat.Docx, policy, cancellationToken: TestContext.Current.CancellationToken);
         Assert.True(input.CanRead); var layout = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout);
         var fragments = layout.Fragments.Where(item => item.Bounds != null).ToArray(); Assert.Equal(2, fragments.Length);
-        Assert.All(fragments, item => { Assert.Null(item.Text); Assert.NotNull(item.Source); Assert.Null(item.CellSource); Assert.Null(item.ObjectSource); Assert.Equal("word/document.xml", item.Source!.Part); Assert.False(item.ExtendsOutsidePage); });
+        Assert.All(fragments, item => { Assert.Null(item.Text); Assert.NotNull(item.Source); Assert.NotNull(item.RunSource); Assert.Null(item.CellSource); Assert.Null(item.ObjectSource); Assert.Equal("word/document.xml", item.Source!.Part); Assert.False(item.ExtendsOutsidePage); });
         Assert.NotEqual(fragments[0].Source!.Path, fragments[1].Source!.Path);
         Assert.Throws<NotSupportedException>(() => ((ICollection<LayoutFragment>)layout.Fragments).Add(fragments[0]));
         Assert.Contains("<svg", Encoding.UTF8.GetString(Assert.Single(preview.Pages).GetBytes()), StringComparison.Ordinal);
@@ -101,6 +145,7 @@ public sealed class LayoutSnapshotTests
         Assert.Equal("/document[1]/body[1]/tbl[1]/tr[1]/tc[1]/p[1]", fragment.Source!.Path);
         Assert.Equal("word/document.xml", fragment.CellSource!.Part);
         Assert.Equal("/document[1]/body[1]/tbl[1]/tr[1]/tc[1]", fragment.CellSource.Path);
+        Assert.Equal("/document[1]/body[1]/tbl[1]/tr[1]/tc[1]/p[1]/r[1]", fragment.RunSource!.Path);
         Assert.NotNull(fragment.Bounds); Assert.False(fragment.ExtendsOutsidePage); Assert.Null(fragment.UnavailableReason);
         using var pdf = PdfDocument.Open(converter.ConvertToPdf(source)); var letters = pdf.GetPage(1).Letters.ToArray();
         double left = letters.Min(letter => letter.BoundingBox.Left), right = letters.Max(letter => letter.BoundingBox.Right);
@@ -126,7 +171,7 @@ public sealed class LayoutSnapshotTests
         Assert.True(preview.SourcePageCount > 1);
         LayoutFragment[] headers = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(item => item.Text == "HEADER").ToArray();
         Assert.Equal(preview.SourcePageCount, headers.Length); Assert.Equal(preview.SourcePageCount, headers.Select(item => item.Page).Distinct().Count());
-        Assert.All(headers, item => { Assert.Equal("/document[1]/body[1]/tbl[1]/tr[1]/tc[1]", item.CellSource!.Path); Assert.NotNull(item.Bounds); });
+        Assert.All(headers, item => { Assert.Equal("/document[1]/body[1]/tbl[1]/tr[1]/tc[1]", item.CellSource!.Path); Assert.Equal("/document[1]/body[1]/tbl[1]/tr[1]/tc[1]/p[1]/r[1]", item.RunSource!.Path); Assert.NotNull(item.Bounds); });
         policy.Pages.Add(new PageRange(2, 2)); input.Position = 0;
         DocumentPreview selected = converter.RenderPages(input, DocumentFormat.Docx, policy, cancellationToken: TestContext.Current.CancellationToken);
         LayoutFragment repeated = Assert.Single(Assert.IsType<DocumentLayoutSnapshot>(selected.Layout).Fragments, item => item.Text == "HEADER");
@@ -195,7 +240,7 @@ public sealed class LayoutSnapshotTests
         Assert.Equal("/document[1]/body[1]/p[1]", fragment.Source!.Path);
         Assert.Equal("word/document.xml", fragment.ObjectSource!.Part);
         Assert.Equal("/document[1]/body[1]/p[1]/r[1]/drawing[1]", fragment.ObjectSource.Path);
-        Assert.Null(fragment.CellSource); Assert.Null(fragment.Text); Assert.Null(fragment.UnavailableReason); Assert.False(fragment.ExtendsOutsidePage);
+        Assert.Null(fragment.CellSource); Assert.Null(fragment.RunSource); Assert.Null(fragment.Text); Assert.Null(fragment.UnavailableReason); Assert.False(fragment.ExtendsOutsidePage);
         LayoutBounds bounds = Assert.IsType<LayoutBounds>(fragment.Bounds); Assert.Equal(120, bounds.Width, 3); Assert.Equal(60, bounds.Height, 3);
         using var pdfBytes = new MemoryStream(); input.Position = 0;
         converter.Convert(input, pdfBytes, DocumentFormat.Docx, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
