@@ -26,8 +26,9 @@ unknown for a date or number switch. Declarations are a caller promise, not a ch
 that a later data object actually contains a value.
 
 The inspection also checks simple direct body-paragraph and admitted simple-cell
-`merge:`, `image:` and `if:` inline controls when no repeat control occurs in the
-document. The admitted control has only `tag`, optional `id`/`alias` metadata and one plain text run; it
+`merge:`, `image:` and `if:` inline controls. These root-owned controls and fields
+remain inspectable when a separate repeat occurs elsewhere in the document. The
+admitted control has only `tag`, optional `id`/`alias` metadata and one plain text run; it
 checks presence, parent mappings and scalar/image type as applicable. An `if:`
 control accepts any declared value type and `!` negates the condition. Formatted,
 nested, merged-cell, story and other controls remain uninspected. Even when a simple
@@ -54,8 +55,8 @@ grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped
 tables and rows, merged cells, non-admitted controls, revision-bearing owners, links, notes,
 images and other structured cell content are outside this subset. If any table is
 present, `Plan.OwnerCoverage` remains unknown even when some simple-cell fields
-are inspected; the report does not assert a complete table inventory. Repeating
-contents continue to make path resolution unknown.
+are inspected; the report does not assert a complete table inventory. Repeated
+contents and flattened wrapper scopes continue to make path resolution unknown.
 
 ```csharp
 var schema = new TemplateDataSchema(

@@ -1346,9 +1346,19 @@
       "id": "template-inspection-unqualified-repeat-scopes",
       "issue": 171,
       "outcome": "rejected",
-      "boundary": "Mixed-scope observations and multi-paragraph repeat owners remain unknown; a wrong root collection type is reported and fails merge.",
+      "boundary": "Flattened wrapper scopes and multi-paragraph repeat owners remain unknown; a wrong root collection type is reported and fails merge.",
       "tests": [
-        { "class": "TemplateInspectionTests", "method": "RootRepeatTypeMismatchMatchesMergeAndMixedScopesStayUnknown" }
+        { "class": "TemplateInspectionTests", "method": "RootRepeatTypeMismatchMatchesMergeAndOutsideFieldUsesRootScope" },
+        { "class": "TemplateInspectionTests", "method": "FlattenedWrapperFieldsDoNotGainAnAssumedRootScope" }
+      ]
+    },
+    {
+      "id": "template-inspection-root-owners-beside-repeat",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Direct body fields and simple body/cell controls retain root scope beside an unrelated repeat; repeated contents and other owner coverage remain unknown.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "IndependentRootFieldsAndControlsRemainInspectableWhenARepeatExists" }
       ]
     },
     {

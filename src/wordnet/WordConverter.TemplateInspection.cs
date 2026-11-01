@@ -13,8 +13,8 @@ namespace WordNet;
 public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
-    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths. Other controls, repeated contents, other owners,
-    /// Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
+    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths.
+    /// Repeated contents, other controls and owners remain uninspected. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
@@ -158,6 +158,22 @@ public sealed partial class WordConverter
             || model.Notes.Count != 0 || model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection })
                 .Where(s => s != null).Any(s => s!.Stories.Any(story => story.Value.Count != 0));
         var paragraphs = model.Blocks.OfType<ParagraphBlock>().ToList();
+        var rootParagraphs = new HashSet<ParagraphBlock>();
+        if (scoped)
+        {
+            // A repeat elsewhere does not change the scope of a direct body paragraph.
+            // Do not infer that for paragraphs flattened from wrappers or other owners.
+            const string prefix = "/document[1]/body[1]/p[";
+            foreach (ParagraphBlock paragraph in paragraphs)
+            {
+                Work(); SourceLocation? location = paragraph.Location;
+                string path = location?.Path ?? "";
+                if (location?.Part == "word/document.xml" && path.StartsWith(prefix, StringComparison.Ordinal)
+                    && path.Length > prefix.Length + 1 && path[path.Length - 1] == ']' && path[prefix.Length] is >= '1' and <= '9'
+                    && !path.Substring(prefix.Length + 1, path.Length - prefix.Length - 2).Any(character => character is < '0' or > '9'))
+                    rootParagraphs.Add(paragraph);
+            }
+        }
         foreach (TableBlock table in model.Blocks.OfType<TableBlock>())
         {
             Work();
@@ -217,7 +233,11 @@ public sealed partial class WordConverter
                     if (index == 0) simple = false;
                 }
             }
-            if (simple) paragraphs.AddRange(candidates);
+            if (simple)
+            {
+                paragraphs.AddRange(candidates);
+                if (scoped) rootParagraphs.UnionWith(candidates);
+            }
         }
         var inspectedControls = new HashSet<TemplateControl>();
         foreach (ParagraphBlock paragraph in paragraphs)
@@ -248,6 +268,7 @@ public sealed partial class WordConverter
                 InspectPath(tag.Path, paragraph.Location?.Part, "repeat", null, RepeatLocation, rootScope: true);
                 continue;
             }
+            bool rootScope = !scoped || rootParagraphs.Contains(paragraph);
             foreach (TextRun run in paragraph.Runs)
             {
                 Work();
@@ -256,7 +277,7 @@ public sealed partial class WordConverter
                     otherOwners = true;
                     TemplateControl control = run.Control;
                     var controlElement = control.InspectionElement;
-                    if (scoped || controlElement == null || !control.Executable || !inspectedControls.Add(control)) continue;
+                    if (!rootScope || controlElement == null || !control.Executable || !inspectedControls.Add(control)) continue;
                     (string Kind, string Path) tag;
                     try { tag = WordDocument.Tag(control.Tag); }
                     catch (InvalidDataException) { continue; }
@@ -273,7 +294,7 @@ public sealed partial class WordConverter
                         }
                         return controlIndices;
                     }
-                    InspectPath(path, paragraph.Location?.Part, tag.Kind, null, ControlLocation);
+                    InspectPath(path, paragraph.Location?.Part, tag.Kind, null, ControlLocation, rootScope);
                     continue;
                 }
                 if (run.Box != null || run.Note != null) { otherOwners = true; continue; }
@@ -296,7 +317,7 @@ public sealed partial class WordConverter
                 (string Path, string? Format, string? Switch) field;
                 try { field = WordDocument.MergeField(run.FieldInstruction); }
                 catch (InvalidDataException) { Add("Plan.InvalidField", "Remediation.FixField", part: part, indices: Location()); continue; }
-                InspectPath(field.Path, part, "field", field.Switch, Location);
+                InspectPath(field.Path, part, "field", field.Switch, Location, rootScope);
             }
         }
         if (otherOwners) Add("Plan.OwnerCoverage", "Remediation.ReviewOwners", unknown: true);

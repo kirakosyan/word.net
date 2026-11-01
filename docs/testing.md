@@ -387,6 +387,10 @@ against prior head `45c43ab`. Their different baselines do not resolve the failu
 The same release-to-PR comparison [passed locally](measurements/roadmap-138-performance-a34-local-release-comparison.json)
 at 1.070 under the unchanged 1.25 limit. This different host does not replace the
 failed hosted result; both records retain their individual timing samples.
+The next [root-scope observation](measurements/roadmap-138-preflight-root-scopes-reference.json)
+compares independently authored, schema-validated repeat and wrapper samples with
+actual merges and source positions. Twelve altered observations are rejected;
+repeated contents and flattened wrapper scopes remain unknown.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

@@ -4,7 +4,7 @@
 
 Pending #171 adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
 and privacy-safe `TemplateInspection` snapshots. Its ordinary-body and bounded
-simple-cell field and inline-control, and plain root-repeat path scope and
+simple-cell field and inline-control, including beside repeats, and plain root-repeat path scope and
 explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
 Selected incompatible PDF option combinations are flagged statically, without
 running conversion or claiming that the remaining destination checks passed.

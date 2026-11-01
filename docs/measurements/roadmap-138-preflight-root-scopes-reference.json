@@ -1,0 +1,70 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "scope": "Independent DOCX source positions and actual merge observations for root-owned fields and controls beside repeats; repeated contents and flattened owner scope remain unknown.",
+  "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+    "generatorSha256": "3254f23bc1a402d06bce10ee3939bcfc92a8eb6180da0e2690269f13f3f97aee",
+    "documents": {
+      "root.docx": "25472cc46110cffdd182f80a1fac7d39303ba69b915a79785662297c2e7de539",
+      "wrapped.docx": "07d1273b1c34c83cb6f07572f72766065a8fd7bcc050fa8c5ad5e5a4c48a80f1",
+      "repeat_table.docx": "e61a7abf91e5037223b7fb37c3bd97506ed29f43902685aa2be5e4c7e7f14a95"
+    }
+  },
+  "twoIndependentGenerationsIdentical": true,
+  "generatorSha256": "3254f23bc1a402d06bce10ee3939bcfc92a8eb6180da0e2690269f13f3f97aee",
+  "probeSha256": "39a93fe4bdcc735507d0ee72785890f5ef91039b1edcaafe2507ea2439f1f073",
+  "verifierSha256": "b74bfe935ace3f98815fe4025194c19f69fe7fdb3a968d1f95d953fd7569806c",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceSchemaLogSha256": "576dcb18a0a5374fa0770f9b2852314f2bdd1f3709bc029bbad23d0fdc264ca1",
+  "outputSchemaLogSha256": "8e8c6d67e9412474e185e567f32bc24ceaf843626c572097dc5405bdf4f1b956",
+  "sourceAndProbeNet10AssemblySha256": "bcaad205bf31a5e6a1b910bfa63e885bc88981242b15ed607c550a010964b908",
+  "observations": {
+    "root": {
+      "defaultSha256": "33fdbe1c6b027acb4256512b3b54ba3fdbe7e741edc2c4bafd745e3c32f7c77a",
+      "resultSha256": "db61657da01e4bb3749423379675ed17f757c3168c81936c8fb96f691dd677dd"
+    },
+    "wrapped": {
+      "defaultSha256": "e1ab9ac2470ed4a6af2695323fcc68e5043e228eb41053a2882e4fb597acd5d1",
+      "resultSha256": "f0a60e80d1bd7c54076104f44aa0768782d5c486eec829a72c97f6a86ff76038"
+    },
+    "repeat_table": {
+      "defaultSha256": "9b316c39e804fd89724e7708f30c3b61a704ddb2979a10a6ca8e1b3bd15a95b2",
+      "resultSha256": "e905690f087fe4c2a96b561f0ff6f6ebdb8fac950d731e8255beabb7d5e31042"
+    }
+  },
+  "mergedDocxSha256": "454ad159ed225399d67087dcf059c2562aa1778294911925ddea4f7091913777",
+  "verification": {
+    "result": {
+      "rootPaths": [
+        "Body",
+        "Cell",
+        "Outside"
+      ],
+      "rootPositionsMatchXml": true,
+      "failedMergeUnchanged": true,
+      "independentOutputMatches": true,
+      "wrappedAndRepeatedContentsRemainUnknown": true,
+      "defaultNamesDisclosed": false
+    },
+    "negativeControls": {
+      "wrong path": "Root-owned missing paths differ",
+      "wrong position": "Root finding position or part alias differs",
+      "wrong root scope": "Root requirements or scope differ",
+      "changed failed merge": "Failed merge changed the source or used a different error",
+      "changed output": "Successful merge or independently read DOCX differs",
+      "wrapper marked known": "Flattened wrapper scope was treated as known",
+      "wrapper false missing": "Flattened wrapper received a definite missing-path finding",
+      "repeat table leaked": "A repeated table field was confused with the independent root field",
+      "lost repeat uncertainty": "Repeat uncertainty or reuse boundary changed",
+      "lost owner uncertainty": "Whole-document owner coverage was treated as complete",
+      "reusable report": "Repeat uncertainty or reuse boundary changed",
+      "leaked name": "Default report disclosed a source or path name"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  },
+  "boundaries": "Local source only. This observation does not qualify public packages, other runtimes, policy reuse, repeat children or whole-document owner coverage."
+}
