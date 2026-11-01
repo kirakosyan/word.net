@@ -26,7 +26,10 @@ owners and later pipeline stages remain explicit unknowns. Captured direct simpl
 field elements and bounded same-paragraph complex-field begin markers can report
 an explicit refresh flag without treating a missing flag as evidence that the
 cached result is current. Cross-paragraph, locked, nested and repeat markers remain
-outside this coverage.
+outside this coverage. A separate in-process wrapper checks source and declaration
+hashes and a fixed options, provider, bundled-font and module/runtime profile before
+returning the same immutable inspection. It neither attests binary integrity nor
+implements a portable plan, conversion execution or loss-policy enforcement.
 
 Unreleased #142 direct table borders and clear RGB shading stay on the table model
 through cloning and DOCX writing. Managed layout, HTML and ODT compute the

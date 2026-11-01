@@ -92,7 +92,37 @@ These are static predictions from the supplied
 options, with no observed write phase. They do not run a conversion or check
 page selections, document-dependent semantics, font resources, layout, writing or validation;
 `Plan.UninspectedCoverage` remains unknown. Options can change after inspection,
-and this report cannot authorize reuse or an output policy.
+and this report cannot authorize an output policy.
+
+### Fixed-profile in-process inspection reuse
+
+`CompileReusableTemplateInspection` captures the existing inspection for DOCX output
+under default bounds, built-in fonts, no optional provider and a caller-supplied fixed
+field time. It binds the source bytes, declaration, fixed options and clock, loaded
+font resource bytes, provider profile and module/runtime descriptor. `Reuse` checks
+the current schema before reading, then hashes the current source from its current
+position with the same 16 MiB input bound. It rechecks the in-process environment
+and returns the same immutable snapshot only when the identities match. Streams remain
+open; cancellation and limit failures are explicit. The snapshot is valid only in the
+same process and is not a serialized plan. Hashes can identify documents or reveal
+guessed schema names; protect them as sensitive metadata. The module/runtime
+descriptor is not binary attestation and cannot detect code patches that retain the
+same module identity.
+
+```csharp
+using var template = File.OpenRead("invoice.docx");
+var clock = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+ReusableTemplateInspection snapshot = new WordConverter()
+    .CompileReusableTemplateInspection(template, schema, clock);
+template.Position = 0;
+TemplateInspection checkedReport = snapshot.Reuse(template, schema);
+```
+
+Only an inspection snapshot is reused. Findings and unknowns are unchanged, and
+`TemplateInspection.IsReusable` remains false: `Plan.ReuseUnavailable` continues to
+mean that a reusable conversion-policy plan is unavailable. The snapshot does not
+bind data, authorize conversion, enforce a loss policy, validate output or permit
+arbitrary caller options, fonts or providers.
 
 The table subset is a direct `word/document.xml` body table with a rectangular
 grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped

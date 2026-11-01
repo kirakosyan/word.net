@@ -1512,6 +1512,27 @@
         { "class": "ObjectFoundationTests", "method": "UnsupportedNaryConversionReportsLossAndStrictModeLeavesOutputUntouched" },
         { "class": "ObjectFoundationTests", "method": "NaryFactoriesEnforceOperandsEnumsAndCancellation" }
       ]
+    },
+    {
+      "id": "template-inspection-snapshot-reuse",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "The fixed DOCX profile reuses an immutable inspection only in-process after checking input, declaration and fixed environment identities; it does not authorize output.",
+      "tests": [
+        { "class": "ReusableTemplateInspectionTests", "method": "ReuseVerifiesCurrentBytesAndReturnsTheOriginalBoundedInspection" },
+        { "class": "ReusableTemplateInspectionTests", "method": "FixedClockAndFidelityChangeOptionsWithoutChangingTheSchemaOrFontIdentity" }
+      ]
+    },
+    {
+      "id": "template-inspection-snapshot-stale-bounds",
+      "issue": 171,
+      "outcome": "rejected",
+      "boundary": "Changed input or declaration, oversized input and cancellation cannot reuse the fixed-profile snapshot; portable policy and output validation remain unavailable.",
+      "tests": [
+        { "class": "ReusableTemplateInspectionTests", "method": "ChangedSchemaOrBytesCannotReuseTheInspection" },
+        { "class": "ReusableTemplateInspectionTests", "method": "ReuseEnforcesInputLimitAndCancellationWithoutClosingStreams" },
+        { "class": "ReusableTemplateInspectionTests", "method": "CancellationDuringSourceReadDoesNotPublishAndLeavesStreamsOpen" }
+      ]
     }
   ]
 }

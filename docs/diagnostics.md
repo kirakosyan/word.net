@@ -409,6 +409,13 @@ values. A common retained phase is exposed when known; omitted locations set
 `LocationsTruncated` and produce `Plan.LocationCoverage`. See the
 [profile and example](editing-and-templates.md#unreleased-source-bounded-template-inspection).
 
+The fixed-profile in-process snapshot leaves those findings unchanged, including
+`Plan.ReuseUnavailable` for conversion-policy reuse. Its `Reuse` method raises
+`Plan.StaleSchema` before reading a mismatched declaration, `Plan.StaleInput` after
+reading changed source bytes, and `Plan.EnvironmentChanged` for a changed checked
+profile. `Limit.TemplateInspection` reports an input or font-byte limit. These are
+exception message prefixes, not guarantees of output safety.
+
 For inspected direct simple fields and bounded same-paragraph complex-field begin
 markers, an explicit true `w:dirty` flag produces unknown `Plan.FieldMarkedDirty`
 with `Remediation.RefreshField`; an unrecognized value produces unknown

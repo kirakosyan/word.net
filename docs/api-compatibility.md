@@ -27,7 +27,12 @@ disclosing path names or values.
 `TemplateDataSchema.IdentitySha256` and the reports' `DataSchemaSha256` expose
 the same deterministic declaration fingerprint. It can reveal guessed names and
 does not bind a template or execution environment.
-It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
+The additive `CompileReusableTemplateInspection` and `ReusableTemplateInspection`
+permit only fixed-profile in-process reuse of the immutable inspection after checking
+input, schema and environment fingerprints. The underlying report still cannot
+independently authorize reuse of a conversion policy, and no output or loss policy is
+enforced. The module fingerprint is not binary attestation. These APIs are unreleased
+and are not in published 1.5.0.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`
 snapshot property for admitted nested typed owners. This additive property does

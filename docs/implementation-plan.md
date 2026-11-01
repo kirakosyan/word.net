@@ -24,8 +24,11 @@ options, fonts, providers or engine identity. Inspected direct simple fields and
 bounded same-paragraph complex-field begin markers also report an explicit dirty
 flag as an unknown refresh requirement; other fields and absent flags cannot
 establish freshness.
-It explicitly retains uninspected scopes,
-output and environment identity; full plan compilation and #172 remain open.
+A separate fixed-profile in-process snapshot binds the source, declaration, defaults,
+font resources, provider profile and module/runtime descriptor for reusing only the
+inspection. It retains every unknown, does not attest binaries, and does not execute
+conversion or enforce policies. Uninspected scopes, portable plan compilation,
+output validation and #172 remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
 the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the

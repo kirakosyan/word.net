@@ -542,6 +542,14 @@ gate passed at 0.969 against `e237a6f`; its two reference rounds ranged from
 37.275 to 43.704 ms. Hosted and actual Framework checks for this exact source
 remain separate.
 
+The uncommitted fixed-profile inspection-reuse prototype has five focused tests
+covering stale identities, privacy, input bounds, cancellation, clock changes and
+concurrency. Its [independent prototype receipt](measurements/roadmap-138-reusable-inspection-reference.json)
+recomputes six fingerprints, verifies 24 bundled font resources and rejects 24
+altered observations against a separately authored schema-valid input. This is not
+an exact-source or hosted qualification and does not test portable plans, binary
+attestation, conversion authorization or loss policies.
+
 For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
 [PR package](measurements/wordnet-138-framework-526-pr-package-success.json),

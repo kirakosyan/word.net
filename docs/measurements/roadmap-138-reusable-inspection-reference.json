@@ -1,0 +1,52 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "qualification": "Prototype only. The binary was built before a subsequent XML-comment-only amendment; recorded source-file hashes describe the later prototype snapshot. Exact-source and hosted qualification require separate receipts.",
+  "baseCommit": "b57f10e40b8084f7fb98702310097501b0db156c",
+  "sourceFiles": {
+    "src/wordnet/ReusableTemplateInspection.cs": "669a2d2839c0693d4b156d06a835f32fcae3a939d512e1265d6731ee292ed203",
+    "tests/wordnet.Conversion.Tests/ReusableTemplateInspectionTests.cs": "6be77d70827c2975d308250f458d135f8dd4076abc6da9d4a9d9c8ebf8b0ada5",
+    "eng/roadmap-138-reusable-inspection-probe.cs": "9feee13b3302f6db9de2f72bda5a9112d470b7c8dbe6f03aa913f79d3a4b8733",
+    "eng/verify-roadmap-138-reusable-inspection.py": "9b338280834bf3e5a819b70bcc1ebe4b13ec22dd82eab5004fb8f776453d5d79"
+  },
+  "independentlyAuthoredInputSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+  "prototypeCoreSha256": "b42caf232b74807d6784ba5d0f6f1e42d939863a2cf67e66a2d4fabb7e9b9b64",
+  "schemaValidation": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nsimple.docx 59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18 errors=0\n",
+  "independentCheck": {
+    "result": {
+      "independentSchemaValidInputs": 1,
+      "fingerprintsIndependentlyRecomputed": 6,
+      "repositoryFontResourcesMatched": 24,
+      "staleAndBoundedNegativesPassed": true,
+      "limitations": "In-process inspection snapshot only; no portable plan, conversion authorization, loss policy or binary attestation."
+    },
+    "negativeControls": {
+      "fixture": "Independent input identity changed",
+      "schema validation": "Independent source schema validation missing",
+      "input fingerprint": "Input fingerprint changed",
+      "core binary": "Loaded core assembly changed",
+      "declaration fingerprint": "Declaration fingerprint changed",
+      "options fingerprint": "Fixed profile or clock fingerprint changed",
+      "clock": "Fixed profile or clock fingerprint changed",
+      "provider fingerprint": "Provider profile fingerprint changed",
+      "module fingerprint": "Module/runtime descriptor fingerprint changed",
+      "runtime descriptor": "Module/runtime descriptor fingerprint changed",
+      "font fingerprint": "Font identity changed",
+      "font resource bytes": "Loaded font bytes differ from independently hashed repository resources",
+      "font inventory": "Bundled font inventory changed",
+      "coverage": "Inspection coverage or reusable-policy limitation changed",
+      "reusable policy": "Inspection coverage or reusable-policy limitation changed",
+      "requirement": "Declared requirements changed",
+      "privacy": "Serialized snapshot leaked a sensitive alias",
+      "input stale": "Reuse, stale, bounded or cancellation behavior changed",
+      "schema stale": "Reuse, stale, bounded or cancellation behavior changed",
+      "schema consumed": "Reuse, stale, bounded or cancellation behavior changed",
+      "limit": "Reuse, stale, bounded or cancellation behavior changed",
+      "cancellation": "Reuse, stale, bounded or cancellation behavior changed",
+      "stream ownership": "Reuse, stale, bounded or cancellation behavior changed",
+      "snapshot": "Reuse, stale, bounded or cancellation behavior changed"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "limitation": "Module/runtime identity does not attest binaries or detect patches retaining module identity; snapshots do not authorize output."
+}
