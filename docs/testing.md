@@ -309,6 +309,11 @@ passed 2,253 cases each on actual Framework 4.7.2 for push source/package and
 PR-merge package, with verified cleanup and exact binary/artifact identities.
 The [PR source retry](measurements/roadmap-138-framework-6d021ea-pr-source-retry.json)
 also passed 2,253 cases with verified cleanup; the original setup failure remains.
+On later PR head `4f02e80`, the [PR source guest](measurements/roadmap-138-framework-4f-pr-source-success.json)
+passed 2,347 cases on actual Framework 4.7.2 x64 legacy JIT and reported cleanup;
+its merge tree matched that head. The separate [push source guest](measurements/roadmap-138-framework-4f-push-source-space-failure.json)
+failed before the VM started because the runner had 37 GiB free against the
+unchanged 60 GiB preflight. Neither result qualifies later source.
 
 Pending #171 tests compare body merge-path findings with actual successful and
 missing-data merges, and exercise types, parent declarations, repeat uncertainty,
@@ -319,6 +324,10 @@ successful merges, while retaining unknown coverage for merged, nested and wrapp
 owners. Its [independent observation](measurements/roadmap-138-preflight-cells-reference.json)
 checks three schema-valid synthetic templates, a schema-valid merged result and
 nine altered controls; the initial analyzer failure is retained.
+The [exact-source receipt](measurements/roadmap-138-preflight-cells-4e4edd0.json)
+records both complete suites, the 824-case matrix, local packages and reproduced
+independent checks. The unchanged [performance gate](measurements/roadmap-138-preflight-cells-performance-4e4edd0.json)
+passed; hosted exact-head and Windows Framework execution remain separate checks.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

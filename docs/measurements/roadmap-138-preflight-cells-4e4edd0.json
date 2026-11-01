@@ -1,0 +1,108 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "4e4edd055fcc8764b62530804c76328128c24b08",
+  "sourceTree": "675bc74e894e8def1e8546cc50c92461dea0a2d4",
+  "scope": "Non-reusable inspection checks admitted direct simple-cell merge fields while retaining unknown table and destination coverage; reusable plans and loss policy remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked solution restore passed.",
+    "restoreLogSha256": "19fc43bc3f9f08ebe0c8df1b70d3d64014338c3ddc252fea310be57891401820",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "f5442188002e44e8f21af8ac663701f0213fe46667a3e46c745fc037dd2a9b91",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2352,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "51919507e69de6b295d7358199ec491dbb8686c6498a70e1fc4adaa067cb2394"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2352,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "e90eced998051e01c61e2e857465b976d73e14108017bed5a017c3184bc579a5"
+    },
+    "capabilityMatrix": {
+      "profiles": 104,
+      "testMethods": 479,
+      "net10CasesPassed": 824,
+      "logSha256": "7975e344ec666e0d1ca0f41ecb44b8b78ec10272d190fa908950f6db9925580d"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "00c6a699a4cbb8e62b03ad75bc8b03d4f5405ac32ef6c4202a20b85fe83fb9db",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "68cba28a620efef2a23f4caa84c74f05d4c5081e639c57effb6661b5435a3747",
+      "wordnet.Fonts.1.5.0.nupkg": "14a6e48d48f7743bc0ff56a2dd449d15fade897ba46dbfa1c86248a5709f93bd",
+      "wordnet.Ocr.1.5.0.nupkg": "810b538ff4bab8a06e7c63d8f07d9d4ad22ea432c94661f63a1fb25abb9ebcff"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 41.2958,
+      "CandidateMedianMilliseconds": 39.19725,
+      "Ratio": 0.94918248344868,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40134872.0,
+      "PeakSampledManagedBytes": 27736728.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-preflight-cells-performance-4e4edd0.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preflight-cells-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "67eaa9d2bd5885a2be2d96f8fabc35b35efbf303d8a5b1ec7efca3a27139b94e",
+    "sourceSchemaLogSha256": "7ebc3353f9a52bf7559f8be49249875fd11e438de042fd0505915f21a2158ee8",
+    "outputSchemaLogSha256": "c98ed98bb7c42d2598da370356a96542192d6109cc81b08347ebd44f1f05ed57",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "89c1f229f263950a60e609b20847e1744a35ca532c03b2baa0acc1fbc3b6b6f7",
+    "documents": {
+      "simple": {
+        "inputDocxSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+        "defaultReportSha256": "00c407cb858c446c0bc5bb862d9695a793d9b62afa0f3ab4803d9b9815e5ec33",
+        "observationSha256": "674e347f0198ce688752a3301ad40b7702086935580f861f872dadc1ce1e2dc3",
+        "mergedDocxSha256": "6921483e7804746e1f4ad37f0c2eb93853f7c03d737ce9b6b83db77c19e7a335"
+      },
+      "merged": {
+        "inputDocxSha256": "3e945ee30913ef5b5fe3155ef76717e4597034bdd26c21fae7d14437493b902b",
+        "defaultReportSha256": "aa9da7975e8bcbaab3220cea4ab1d69b3f698c8ef7391c7a00bf7740784bffde",
+        "observationSha256": "c9bd388ab2d0082ae4382a9dcf48f5af1df04ef710a4135957ade90722ee3777"
+      },
+      "nested": {
+        "inputDocxSha256": "6347fddc5b6b5783785eed44a6933d1690bbd8b1fe0527b166cf56ede2278ee1",
+        "defaultReportSha256": "e9fce6a72292cebc272d58b99a76adcd47cef61872863dda5c43423c99fdeb32",
+        "observationSha256": "c9bd388ab2d0082ae4382a9dcf48f5af1df04ef710a4135957ade90722ee3777"
+      }
+    },
+    "result": {
+      "result": {
+        "simpleRequirements": 2,
+        "missingCellPaths": 1,
+        "successfulMergeChanges": 2,
+        "failedMergeUnchanged": true,
+        "unsupportedOwnersUnknown": [
+          "merged",
+          "nested"
+        ],
+        "defaultNamesDisclosed": false
+      },
+      "negativeControls": {
+        "changed source field": "Simple source field or owner structure changed",
+        "missing requirement": "Inspected body and cell requirements differ from source XML",
+        "wrong prediction": "Missing cell-path prediction differs from the source",
+        "reused inspection": "Inspection reuse or observed merge outcome changed",
+        "failed merge mutated": "Failed merge changed the document",
+        "wrong saved cell text": "Successful merge did not produce the expected independent XML text",
+        "leaked default path": "Default output disclosed a path or claimed reuse",
+        "fabricated merged requirement": "An unsupported table owner was treated as inspected",
+        "lost unknown coverage": "Uninspected coverage was not retained"
+      },
+      "controlMethod": "Parsed source/output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, broader owner coverage, identity-bound reusable plans, loss policy and roadmap #138 remain open."
+}
