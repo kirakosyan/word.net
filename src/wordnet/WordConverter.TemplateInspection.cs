@@ -26,7 +26,7 @@ public sealed partial class WordConverter
         options ??= new ConversionOptions();
         // Template binding begins from WordDocument.Load, whose reader destination is DOCX.
         // The caller's requested eventual destination is not assessed in this snapshot.
-        var context = new ConversionContext(options, cancellationToken) { Editing = true, Inspecting = true, Destination = DocumentFormat.Docx };
+        var context = new ConversionContext(options, cancellationToken) { Editing = true, Inspecting = true, CaptureTemplateFieldSources = true, Destination = DocumentFormat.Docx };
         context.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
         Copy(source, input, context, options.MaximumInputBytes);
@@ -47,15 +47,17 @@ public sealed partial class WordConverter
         DocumentModel model = ReadDocument(input, DocumentFormat.Docx, context);
         WordDocument.Admit(model, context);
         var findings = new List<(string Code, string Remediation, string? Path, string? Part, int Count, bool Unknown,
-            DiagnosticSeverity Severity, DiagnosticPhase? Phase, bool Truncated)>();
+            DiagnosticSeverity Severity, DiagnosticPhase? Phase, bool Truncated, IReadOnlyList<int>? Indices)>();
         var declarations = schema.Paths.ToDictionary(p => p.Path, StringComparer.Ordinal);
         var observedPaths = new Dictionary<string, int>(StringComparer.Ordinal);
-        int work = 0;
+        int work = 0; long locationBytes = 0;
         void Add(string code, string remediation, string? path = null, string? part = null, int count = 1, bool unknown = false,
-            DiagnosticSeverity? severity = null, DiagnosticPhase? phase = null, bool truncated = false)
+            DiagnosticSeverity? severity = null, DiagnosticPhase? phase = null, bool truncated = false, IReadOnlyList<int>? indices = null)
         {
             if (findings.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Finding limit exceeded.");
-            findings.Add((code, remediation, path, part, count, unknown, severity ?? (unknown ? DiagnosticSeverity.Info : DiagnosticSeverity.Warning), phase, truncated));
+            locationBytes = checked(locationBytes + 4L * (indices?.Count ?? 0));
+            if (locationBytes > options.MaximumExpandedBytes) throw new InvalidDataException("Limit.TemplateInspection: Source positions exceed the expanded-byte limit.");
+            findings.Add((code, remediation, path, part, count, unknown, severity ?? (unknown ? DiagnosticSeverity.Info : DiagnosticSeverity.Warning), phase, truncated, indices));
         }
         void Work()
         {
@@ -162,20 +164,30 @@ public sealed partial class WordConverter
                 if (run.Control != null || run.Box != null || run.Note != null) { otherOwners = true; continue; }
                 if (run.FieldInstruction == null) continue;
                 string? part = paragraph.Location?.Part;
+                IReadOnlyList<int>? indices = null; bool located = false;
+                IReadOnlyList<int>? Location()
+                {
+                    if (!located)
+                    {
+                        located = true;
+                        if (part != null && run.TemplateFieldElement != null) indices = XmlSourceLocation.ChildIndices(run.TemplateFieldElement, Work);
+                    }
+                    return indices;
+                }
                 if (DocumentFields.Kind(run.FieldInstruction) != "MERGEFIELD")
-                { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true); continue; }
+                { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true, indices: Location()); continue; }
                 if (run.FieldChildren?.Count > 0)
-                { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true); continue; }
+                { Add("Plan.FieldCoverage", "Remediation.ReviewFields", part: part, unknown: true, indices: Location()); continue; }
                 (string Path, string? Format, string? Switch) field;
                 try { field = WordDocument.MergeField(run.FieldInstruction); }
-                catch (InvalidDataException) { Add("Plan.InvalidField", "Remediation.FixField", part: part); continue; }
+                catch (InvalidDataException) { Add("Plan.InvalidField", "Remediation.FixField", part: part, indices: Location()); continue; }
                 bool present = observedPaths.TryGetValue(field.Path, out int count);
                 if (!present && observedPaths.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Requirement limit exceeded.");
                 observedPaths[field.Path] = checked(count + 1);
                 if (scoped) continue;
                 if (!declarations.TryGetValue(field.Path, out TemplateSchemaPath? declared))
-                { Add("Plan.MissingPath", "Remediation.DeclarePath", field.Path, part); continue; }
-                if (!declared.Required) Add("Plan.OptionalPath", "Remediation.RequirePath", field.Path, part, unknown: true);
+                { Add("Plan.MissingPath", "Remediation.DeclarePath", field.Path, part, indices: Location()); continue; }
+                if (!declared.Required) Add("Plan.OptionalPath", "Remediation.RequirePath", field.Path, part, unknown: true, indices: Location());
                 bool unknownType = field.Switch != null && declared.Type == TemplatePathType.Scalar;
                 bool compatible = field.Switch switch
                 {
@@ -183,17 +195,17 @@ public sealed partial class WordConverter
                     "\\#" => declared.Type == TemplatePathType.Number,
                     _ => declared.Type is TemplatePathType.Scalar or TemplatePathType.Number or TemplatePathType.Date,
                 };
-                if (unknownType) Add("Plan.PathTypeUnknown", "Remediation.DeclarePathType", field.Path, part, unknown: true);
-                else if (!compatible) Add("Plan.PathType", "Remediation.FixPathType", field.Path, part);
+                if (unknownType) Add("Plan.PathTypeUnknown", "Remediation.DeclarePathType", field.Path, part, unknown: true, indices: Location());
+                else if (!compatible) Add("Plan.PathType", "Remediation.FixPathType", field.Path, part, indices: Location());
                 string[] segments = field.Path.Split('.');
                 for (int i = 1; i < segments.Length; i++)
                 {
                     Work(); string parent = string.Join(".", segments.Take(i));
                     if (!declarations.TryGetValue(parent, out TemplateSchemaPath? ancestor))
-                        Add("Plan.ParentTypeUnknown", "Remediation.DeclareParent", parent, part, unknown: true);
+                        Add("Plan.ParentTypeUnknown", "Remediation.DeclareParent", parent, part, unknown: true, indices: Location());
                     else if (ancestor.Type != TemplatePathType.Mapping)
-                        Add("Plan.ParentType", "Remediation.FixPathType", parent, part);
-                    else if (!ancestor.Required) Add("Plan.OptionalParent", "Remediation.RequirePath", parent, part, unknown: true);
+                        Add("Plan.ParentType", "Remediation.FixPathType", parent, part, indices: Location());
+                    else if (!ancestor.Required) Add("Plan.OptionalParent", "Remediation.RequirePath", parent, part, unknown: true, indices: Location());
                 }
             }
         }
@@ -203,7 +215,7 @@ public sealed partial class WordConverter
         Dictionary<string, string> partIds = Aliases(findings.Select(f => f.Part), "part");
         var result = findings.Select(f => new TemplateInspectionFinding(f.Code, f.Remediation,
             f.Path == null ? null : pathIds[f.Path], f.Part == null ? null : partIds[f.Part], f.Count, f.Unknown,
-            f.Severity, f.Phase, f.Truncated)).ToList();
+            f.Severity, f.Phase, f.Truncated, f.Indices)).ToList();
         context.CheckCancellation();
         var requirements = observedPaths.OrderBy(pair => pathIds[pair.Key], StringComparer.Ordinal).Select(pair =>
         {

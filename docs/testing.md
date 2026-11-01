@@ -328,6 +328,11 @@ The [exact-source receipt](measurements/roadmap-138-preflight-cells-4e4edd0.json
 records both complete suites, the 824-case matrix, local packages and reproduced
 independent checks. The unchanged [performance gate](measurements/roadmap-138-preflight-cells-performance-4e4edd0.json)
 passed; hosted exact-head and Windows Framework execution remain separate checks.
+The next inspection increment checks immutable numeric positions for simple body
+and cell fields, null positions for complex fields and bounded location work. Its
+[independent observation](measurements/roadmap-138-preflight-locations-reference.json)
+compares two schema-valid synthetic templates with parsed source XML and nine
+altered controls; it makes no reusable-plan or output-qualification claim.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

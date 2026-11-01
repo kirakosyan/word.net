@@ -1283,6 +1283,25 @@
       ]
     },
     {
+      "id": "template-inspection-simple-field-positions",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Findings for admitted direct simple fields can expose immutable numeric source positions without disclosing field or part names by default.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "SimpleFieldFindingsExposeImmutableNumericSourcePositions" }
+      ]
+    },
+    {
+      "id": "template-inspection-unqualified-field-positions",
+      "issue": 171,
+      "outcome": "rejected",
+      "boundary": "Complex fields retain null element positions and excessive position-indexing work fails instead of publishing partial findings.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "ComplexFieldFindingsDoNotInventAnElementPosition" },
+        { "class": "TemplateInspectionTests", "method": "SourcePositionWorkIsBoundedAndOnlyComputedForFindings" }
+      ]
+    },
+    {
       "id": "template-inspection-unqualified-table-owners",
       "issue": 171,
       "outcome": "rejected",

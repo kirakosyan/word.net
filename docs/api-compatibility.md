@@ -6,6 +6,8 @@ Pending #171 adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema
 and privacy-safe `TemplateInspection` snapshots. Its ordinary-body and bounded
 simple-cell field scope and
 explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
+The additive `TemplateInspectionFinding.SourceElementIndices` exposes a bounded
+numeric source position where available, without exposing names by default.
 It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`

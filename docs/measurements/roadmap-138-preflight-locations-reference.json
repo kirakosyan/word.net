@@ -1,0 +1,77 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "45c43abbaef67c933b6e933beca8da856b2637e9",
+  "scope": "Working-tree evidence for immutable numeric element-child positions on findings for admitted direct simple DOCX fields. Complex fields and other findings retain null positions; plan reuse and policy remain open.",
+  "provenance": "Two synthetic DOCX inputs were independently authored with MIT fixture helpers, without wordnet serialization; two generations were byte-identical. Open XML SDK 3.5.1 validated both inputs. Python independently parsed XML element-child positions and compared default privacy-safe reports and explicit synthetic alias observations; nine in-memory altered controls were rejected.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-preflight-locations.py": "8960b6bfdecda19967a82adb5d0251397ad2f3c922f379fee50a78bc48d4711d",
+    "eng/generate-roadmap-138-preflight-cells.py": "198bc6f24df90a16bfd7ad25d83ab4ab28c5694a5526837a1f1d115695bb94b9",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-preflight-locations-probe.cs": "9c2514c31ade64ebd25c5dc0ee05d52f36d0f2ba9351784c2057256ffeb0e81d",
+    "eng/verify-roadmap-138-preflight-locations.py": "ebe4d44e62c9a1b9a0ae1e76c932b0983f1248f097c61c9ce65305b2a247c773",
+    "src/wordnet/TemplateInspection.cs": "7ad56269a49394f2b5416e88b84373be5dba6a1f6e15844e6c2ddca05adc49f8",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "b408ad2c82df47cc4833a8da8149608a04ca1a81540db511902ae7aae104d24b",
+    "src/wordnet/Formats/DocxReader.cs": "6f3ecfb675b20faf60403a8dd58afc6c0c63f68262822cfe6dda88f9dba48221",
+    "src/wordnet/Internal/XmlSourceLocation.cs": "03cc23fbee7718ab41f6342a78b0082637e5595020242c2e5121687813decd35",
+    "src/wordnet/Internal/ConversionContext.cs": "7bc0bcb11a59a1b1c211dd560caa0d99ebc2844ee331b91805496a39b7cec64b",
+    "src/wordnet/Model/DocumentModel.cs": "fbc4cc14d99303906961be58c8ea9ed2d58ae47eed114b62b2de91f569aa2fd9",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "7753b02ec0ef291ae90c9b3d550da41e790821a6b509329c4e71202672f2fa75"
+  },
+  "probeWordnetAssemblySha256": "7288eadf0c7a3680ece4792a1774d6ec6ba302c60b11d1090709ebf3e7c97ce3",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "validatorLogSha256": "b7698a1a71954c8badd3cb0db4ac4ee0377ac24ee79c877d2f28b2e139658dab",
+  "verifierLogSha256": "84be8815bb097468aeae342a34809065e8e5264a83ba766a3a72379df246a1af",
+  "focusedTestsLogSha256": "b875b4efd507d988fb47c15a3dc8a933f765562c0eadcd2ff14956febd628b9d",
+  "positionWorkLimitTestLogSha256": "57d233aea0bb59a3eb447f91a1686fda6fc48ee4c885ff7b6bbdd0ad836f6256",
+  "specimenHashes": {
+    "simple": {
+      "inputDocxSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+      "defaultReportSha256": "d61e80d365550fe8a6534d6c84ea47cb0b42e46788e0f6253ec773ac6eddce16",
+      "findingsSha256": "e09e2c9c53435ae0e794da0b42c0274a9c7e6677e932e1811423d10754593efd"
+    },
+    "complex": {
+      "inputDocxSha256": "b8954abbc57b20c8e5c6ae21a7d49605df0f4941d63c7aa1a28a111150a3e0b7",
+      "defaultReportSha256": "56d474a99bf7624e66a7289be689e77e20ac2fe28332e0a95b2aab76a1ceb9ac",
+      "findingsSha256": "89a2a67ca36e395e76632738a003606b3c34b4a04155ad4d9f4c5f8065ccfc93"
+    }
+  },
+  "result": {
+    "result": {
+      "simpleFieldPositions": 2,
+      "complexPositionUnavailable": true,
+      "defaultNamesDisclosed": false,
+      "positions": {
+        "Customer.Name": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "Customer.Code": [
+          1,
+          1,
+          2,
+          3,
+          1,
+          2,
+          1
+        ]
+      }
+    },
+    "negativeControls": {
+      "changed source field": "Unexpected simple source fields",
+      "wrong body index": "Numeric source position does not identify the field",
+      "wrong cell index": "Numeric source position does not identify the field",
+      "missing simple position": "Numeric source position does not identify the field",
+      "invented complex position": "Complex field was omitted or assigned invented precision",
+      "leaked field name": "Default report disclosed source names or element names",
+      "leaked part name": "Default report disclosed source names or element names",
+      "lost unknown coverage": "Uninspected coverage or reuse boundary changed",
+      "changed default position": "Default report positions differ from the inspected findings"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  },
+  "preliminaryIdentityObservation": "An initial probe assembly f667e97105de265c42a195b07e92c3dd1893b632e0b9086cda4c9e8e942b1311 differed after a source XML documentation edit; the probe was rebuilt and the source and probe then matched as recorded above."
+}

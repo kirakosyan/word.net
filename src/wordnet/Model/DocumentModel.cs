@@ -439,6 +439,7 @@ internal sealed class TextRun
     // Rebuilt or coalesced runs deliberately do not inherit this identity.
     internal SourceLocation? SnapshotSource { get; set; }
     internal XElement? SnapshotElement { get; set; }
+    internal XElement? TemplateFieldElement { get; set; }
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
         double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
     {

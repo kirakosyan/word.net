@@ -60,14 +60,15 @@ public sealed class TemplateDataSchema
     public IReadOnlyList<TemplateSchemaPath> Paths => paths;
 }
 
-/// <summary>A privacy-safe finding. Part aliases identify whole parts, not individual XML elements.</summary>
+/// <summary>A privacy-safe finding with an opaque part alias and optional numeric source position.</summary>
 public sealed class TemplateInspectionFinding
 {
     internal TemplateInspectionFinding(string code, string remediation, string? path, string? part, int count, bool unknown,
-        DiagnosticSeverity severity, DiagnosticPhase? sourcePhase, bool locationsTruncated)
+        DiagnosticSeverity severity, DiagnosticPhase? sourcePhase, bool locationsTruncated, IReadOnlyList<int>? sourceElementIndices)
     {
         Code = code; Remediation = remediation; PathId = path; PartId = part; Count = count; Unknown = unknown;
         Severity = severity; SourcePhase = sourcePhase; LocationsTruncated = locationsTruncated;
+        SourceElementIndices = sourceElementIndices == null ? null : Array.AsReadOnly(sourceElementIndices.ToArray());
     }
     /// <summary>Gets a stable machine-readable finding code.</summary>
     public string Code { get; }
@@ -85,6 +86,9 @@ public sealed class TemplateInspectionFinding
     public DiagnosticPhase? SourcePhase { get; }
     /// <summary>Gets whether source occurrence locations were omitted or truncated.</summary>
     public bool LocationsTruncated { get; }
+    /// <summary>Gets one-based XML element-child positions within the aliased part when precisely known; otherwise null.</summary>
+    /// <remarks>The first position identifies the root element. Positions apply only to the inspected input bytes.</remarks>
+    public IReadOnlyList<int>? SourceElementIndices { get; }
     /// <summary>Gets whether the finding represents uninspected or uncertain coverage.</summary>
     public bool Unknown { get; }
 }

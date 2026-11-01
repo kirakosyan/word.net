@@ -47,8 +47,13 @@ The [local example](../examples/WordNet.TemplateLint/Program.cs) prints JSON:
 schema declarations to match the template. Exit 2 denotes a definite inspected
 path/control problem; exit 1 includes unknown coverage and must not be treated as
 approval. Findings contain opaque `path-0001` and `part-0001` aliases, stable codes
-and remediation identifiers. Part aliases have **part-level** precision; they are
-not XML child positions. `GetSensitivePathAliases()` and
+and remediation identifiers. Part aliases identify whole parts. For a direct
+simple field, a finding may also expose `SourceElementIndices`: one-based element
+child positions starting with the root element. They identify a node only within
+the inspected input bytes; complex fields and other unlocated findings return null.
+Positions contain neither element names nor values, but can still reveal document
+structure. Their work and retained size are bounded, and failure returns no partial
+report. `GetSensitivePathAliases()` and
 `GetSensitivePartAliases()` explicitly reveal their mappings. Default JSON excludes
 those mappings and data values, but the SHA-256 of input bytes can still fingerprint
 a document and must be protected.
@@ -62,6 +67,9 @@ a partial report. Streams are consumed from their current positions and left ope
 inspection performs no merge. Up to 4,096 declared paths, requirements, findings and
 aliases and 100,000 work items are admitted, in addition to conversion input bounds.
 The API is unreleased source, and full #171 acceptance remains open.
+The [independent location observation](measurements/roadmap-138-preflight-locations-reference.json)
+checks simple body/cell field positions against source XML and confirms that a
+complex field remains unlocated; nine altered controls exercise the checker.
 
 Pending #144 source supports an inline typed child inside an admitted rich-text
 block control. Inspect the child's `ParentId` snapshot and reacquire handles after

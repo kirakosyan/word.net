@@ -10,6 +10,56 @@ namespace WordNet.Tests;
 public sealed class TemplateInspectionTests
 {
     [Fact]
+    public void SimpleFieldFindingsExposeImmutableNumericSourcePositions()
+    {
+        byte[] bytes = Document(Field("MERGEFIELD Customer.Name") + Table(Field("MERGEFIELD Customer.Code")));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding[] findings = report.Findings.Where(f => f.Code == "Plan.MissingPath").ToArray();
+        Assert.Equal(2, findings.Length);
+        TemplateInspectionFinding body = Assert.Single(findings, f => report.GetSensitivePathAliases()[f.PathId!] == "Customer.Name");
+        TemplateInspectionFinding cell = Assert.Single(findings, f => report.GetSensitivePathAliases()[f.PathId!] == "Customer.Code");
+        Assert.Equal("1,1,1,1", string.Join(",", body.SourceElementIndices!));
+        Assert.Equal("1,1,2,3,1,2,1", string.Join(",", cell.SourceElementIndices!));
+        var positions = Assert.IsAssignableFrom<System.Collections.Generic.IList<int>>(cell.SourceElementIndices);
+        Assert.Throws<NotSupportedException>(() => positions[0] = 42);
+        Assert.Null(Assert.Single(report.Findings, f => f.Code == "Plan.OwnerCoverage").SourceElementIndices);
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Customer", json, StringComparison.Ordinal); Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("fldSimple", json, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ComplexFieldFindingsDoNotInventAnElementPosition()
+    {
+        const string body = "<w:p><w:r><w:fldChar w:fldCharType='begin'/></w:r><w:r><w:instrText> MERGEFIELD Secret </w:instrText></w:r>"
+            + "<w:r><w:fldChar w:fldCharType='separate'/></w:r><w:r><w:t>cached</w:t></w:r><w:r><w:fldChar w:fldCharType='end'/></w:r></w:p>";
+        using var source = new MemoryStream(Document(body));
+        TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding finding = Assert.Single(report.Findings, f => f.Code == "Plan.MissingPath");
+        Assert.Equal("Secret", report.GetSensitivePathAliases()[finding.PathId!]); Assert.NotNull(finding.PartId);
+        Assert.Null(finding.SourceElementIndices);
+    }
+
+    [Fact]
+    public void SourcePositionWorkIsBoundedAndOnlyComputedForFindings()
+    {
+        string body = "<w:p>" + string.Concat(Enumerable.Repeat("<w:r/>", 50000))
+            + "<w:fldSimple w:instr='MERGEFIELD Name'><w:r><w:t>cached</w:t></w:r></w:fldSimple></w:p>";
+        byte[] bytes = Document(body); using var source = new MemoryStream(bytes);
+        var converter = new WordConverter();
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar));
+        TemplateInspection complete = converter.InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Single(complete.Requirements); Assert.DoesNotContain(complete.Findings, f => f.Code == "Plan.MissingPath");
+        source.Position = 0;
+        InvalidDataException error = Assert.Throws<InvalidDataException>(() => converter.InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Limit.TemplateInspection:", error.Message, StringComparison.Ordinal); Assert.True(source.CanRead);
+    }
+
+    [Fact]
     public void SimpleTableCellFieldsMatchActualMergeAndKeepOwnerCoverageUnknown()
     {
         byte[] bytes = Document(Field("MERGEFIELD Customer.Name") + Table(Field("MERGEFIELD Customer.Code")));
