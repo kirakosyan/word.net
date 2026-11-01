@@ -1,0 +1,362 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "17de1e98756e29b39a92bf384ca2d0458bf8bcd0",
+  "sourceTree": "bb74c457a3845d79235271f0560135d20ad80c97",
+  "scope": "Diagnose otherwise qualified direct uniform-border grids exceeding four rows or columns in managed fixed output, preserving the prior lenient geometry and strict staging.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "8fe4fbd5667aeee63302bc18e1f609c41872c4cf6c0fd468348e6d130a5d03b1",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "cb95187885479af86bd0c3ca742cea02ca323cdd575d0aba574810799d370f0e",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2382,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "1b24a7336049d3b0b681f6b9b3aabdef206d1ec70c72ba4f70c86840706a746b"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2382,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "11f12499e4b09ec171d2543c9b39680f370a8668b872208238c916ff6ec50486"
+    },
+    "capabilityMatrix": {
+      "profiles": 116,
+      "testMethods": 506,
+      "net10CasesPassed": 854,
+      "logSha256": "e18bb0092c770cbbb57ec21c37a72dc9060263a263060750f14f2b6d5c94c7b3"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "aee72fd20485f41df6d094650af15be30e5c124e4eb802e3d288ad69fb5de7d9",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "f41878d5e476a0b114e0cfb801e8ff0aa1c6c66dd5bf8e35ef25a40a322628e6",
+      "wordnet.Fonts.1.5.0.nupkg": "c6ffc7b5a234746e533c366ed0030fc3705520133d6ec4433d2406829bba4271",
+      "wordnet.Ocr.1.5.0.nupkg": "d5bb4199e5780fbe7d62ead78936e3a1b28e0aac0d24726141b3ec3c7c056da8"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 40.1358,
+      "CandidateMedianMilliseconds": 42.917699999999996,
+      "Ratio": 1.0693121851314784,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40117304.0,
+      "PeakSampledManagedBytes": 27541976.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-grid-diagnostic-performance-17de1e9.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-grid-diagnostic-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "7c526735284682fe35fe644d54bff4d6c869fffbb74a4f31f3d8ca5667ae3064",
+    "sourceAndSavedSchemaLogSha256": "6a3cae1d58def46a2a32fb7daa3dbc7ee79b35eaacf23d61ef91129c5b9d253f",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "7f0982511dc860dc37c0ef4605b32f821df5f6b66a45a1914a95b41db12c44ad",
+    "outputs": {
+      "3x1-nil-implicit": {
+        "candidatePdfSha256": "c5485c3db1f036a7c6e153eefdb5905b656b67d140e9ad4d31f67c0885d75998",
+        "savedDocxSha256": "29fb5a1804d3eef28cc7eee06b8bbde42a0dd60a9c67bd0b155a6f0dc517f882",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "1x3-8-zero": {
+        "candidatePdfSha256": "ad124c41f1c95882eb0c32c03a444f19d76888c75d5e4afca6701eb614bc16f0",
+        "savedDocxSha256": "2d07bc12857a1aebcc4938fe64b8b2d3e71151dbc7ea5e5021f666dd85d1dfbe",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "3x3-16-implicit": {
+        "candidatePdfSha256": "de73af81d2013cdafcced867d182a72dffdadcef4c8f6f1d3d8195da2e0e1d9e",
+        "savedDocxSha256": "7cc3de4efb8bfabc0370f772186f3dc3735050a4d33384572664828ec67b4179",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "4x4-nil-zero": {
+        "candidatePdfSha256": "44e983a388fef6ddf7598ba00491ff25935a9d84303d28fc537868526fa6655d",
+        "savedDocxSha256": "b845c3b89ae7b8f7db8194cceb6e2fa9e1faa02608cc4bc4e3a9abf2a5672088",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "4x4-8-implicit": {
+        "candidatePdfSha256": "cb872f0fbcd7d92eb75689c2db2a1166bbf9f827ef076d1e0f36dc8334613a61",
+        "savedDocxSha256": "eee10a83fdb12aa90afe5acea7279c4cd6d3f0b9cae974f47b41586ad1f5d1d0",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "4x4-24-zero": {
+        "candidatePdfSha256": "e3f01f7683b1dea53ee467d084d5b43d2749fb3f666fb90ca82fd2a0dd4a4002",
+        "savedDocxSha256": "723d45f4ec229e8d84e8fa64a0f45b630eb2b39c71f9a89dfbf5ec4de915388e",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "2x4-8-implicit": {
+        "candidatePdfSha256": "33a34b8ae24ed9c0c93872c66b21fbb22b1f0bee93d1c4fccbd2454b5f803d0c",
+        "savedDocxSha256": "3b18df5bda0f25ab9b93052a01a030b17aaf492b6dd54521ebe8883f67eb2bce",
+        "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [],
+          "strict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": null,
+          "clonedUntouched": false,
+          "savedStrict": {
+            "error": null,
+            "outputUntouched": false,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "outside-5x1": {
+        "candidatePdfSha256": "367f7d4650987149a5d09634d6aaf77dd90d25682c7d8e79d11fae55374f48ce",
+        "savedDocxSha256": "bc5bac3ab1f0fe67f694613f40be50b65c035ee89c6bba35a9e876e5380f811a",
+        "observationSha256": "f7d184a122db3faae25c85136908dbc652b8b81d4381ae478ed538a9ca63ca15",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [
+            {
+              "Code": "Table.BorderGeometry",
+              "severity": "Warning",
+              "Count": 1,
+              "LocationsTruncated": false,
+              "locations": [
+                {
+                  "part": "word/document.xml",
+                  "path": "/document[1]/body[1]/tbl[1]",
+                  "phase": "Layout"
+                }
+              ]
+            }
+          ],
+          "strict": {
+            "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+            "outputUntouched": true,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "clonedUntouched": true,
+          "savedStrict": {
+            "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+            "outputUntouched": true,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "outside-1x5": {
+        "candidatePdfSha256": "ba4bfc4f613110171dbf2423d6268ec7bb8634835f343ed0e36b25bd9bea8b2a",
+        "savedDocxSha256": "8400ce585d58c2831025fe1d18a99665b5a744157d44c9883a7199926ab74dd0",
+        "observationSha256": "f7d184a122db3faae25c85136908dbc652b8b81d4381ae478ed538a9ca63ca15",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [
+            {
+              "Code": "Table.BorderGeometry",
+              "severity": "Warning",
+              "Count": 1,
+              "LocationsTruncated": false,
+              "locations": [
+                {
+                  "part": "word/document.xml",
+                  "path": "/document[1]/body[1]/tbl[1]",
+                  "phase": "Layout"
+                }
+              ]
+            }
+          ],
+          "strict": {
+            "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+            "outputUntouched": true,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "clonedUntouched": true,
+          "savedStrict": {
+            "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+            "outputUntouched": true,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      },
+      "outside-5x5": {
+        "candidatePdfSha256": "d9e266315f240baa6899e7358bbe8f73914d0d478840e38007b36f8840ea6d97",
+        "savedDocxSha256": "c9eb214ec357f3e7b21a0d74ec96ff30423a16d56e3cc2397c88b09c15e888bd",
+        "observationSha256": "f7d184a122db3faae25c85136908dbc652b8b81d4381ae478ed538a9ca63ca15",
+        "observations": {
+          "inputOpen": true,
+          "diagnostics": [
+            {
+              "Code": "Table.BorderGeometry",
+              "severity": "Warning",
+              "Count": 1,
+              "LocationsTruncated": false,
+              "locations": [
+                {
+                  "part": "word/document.xml",
+                  "path": "/document[1]/body[1]/tbl[1]",
+                  "phase": "Layout"
+                }
+              ]
+            }
+          ],
+          "strict": {
+            "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+            "outputUntouched": true,
+            "inputOpen": true,
+            "outputOpen": true
+          },
+          "clonedError": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "clonedUntouched": true,
+          "savedStrict": {
+            "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+            "outputUntouched": true,
+            "inputOpen": true,
+            "outputOpen": true
+          }
+        }
+      }
+    },
+    "controls": {
+      "supported": 7,
+      "outside": 3,
+      "negativeControls": {
+        "missing diagnostic": "Missing or imprecise diagnostic: outside-5x5",
+        "false positive": "Qualified geometry was rejected: 4x4-8-implicit",
+        "wrong severity": "Missing or imprecise diagnostic: outside-5x5",
+        "wrong count": "Missing or imprecise diagnostic: outside-5x5",
+        "truncated location": "Missing or imprecise diagnostic: outside-5x5",
+        "wrong part": "Missing or imprecise diagnostic: outside-5x5",
+        "wrong path": "Missing or imprecise diagnostic: outside-5x5",
+        "wrong phase": "Missing or imprecise diagnostic: outside-5x5",
+        "strict accepted": "Strict rejection or output atomicity changed: outside-5x5",
+        "strict changed output": "Strict rejection or output atomicity changed: outside-5x5",
+        "stream closed": "Caller stream closed: outside-5x5",
+        "clone accepted": "Strict rejection or output atomicity changed: outside-5x5",
+        "clone changed output": "Strict rejection or output atomicity changed: outside-5x5",
+        "saved accepted": "Strict rejection or output atomicity changed: outside-5x5",
+        "saved changed output": "Strict rejection or output atomicity changed: outside-5x5",
+        "shifted glyph": "Changed lenient glyphs outside-5x5: glyph or origin",
+        "changed stroke": "Changed lenient strokes outside-5x5: stroke geometry or color"
+      },
+      "controlMethod": "Parsed diagnostic, output-atomicity and vector observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, general border geometry and roadmap #138 remain open."
+}

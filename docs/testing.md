@@ -574,6 +574,12 @@ checks seven supported and three oversized independent cases. It retains the pri
 lenient glyph/stroke geometry, verifies the warning's source and layout phase, and
 checks strict output staging before and after cloning and DOCX save/reload. Seventeen
 altered observations are rejected; this does not qualify the larger layout itself.
+The [exact-source diagnostic receipt](measurements/roadmap-138-grid-diagnostic-17de1e9.json)
+records both 2,382-case suites, the 854-case matrix, local package checks and an
+independent recheck with the packaged assembly. The unchanged local
+[performance gate](measurements/roadmap-138-grid-diagnostic-performance-17de1e9.json)
+passed at 1.069 against the preceding head. Hosted and actual Framework checks for
+this source remain separate.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
