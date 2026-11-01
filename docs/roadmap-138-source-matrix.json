@@ -1274,6 +1274,24 @@
       ]
     },
     {
+      "id": "template-inspection-simple-cell-fields",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Non-reusable inspection checks admitted simple DOCX table-cell merge paths while retaining unknown coverage for tables and later stages.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "SimpleTableCellFieldsMatchActualMergeAndKeepOwnerCoverageUnknown" }
+      ]
+    },
+    {
+      "id": "template-inspection-unqualified-table-owners",
+      "issue": 171,
+      "outcome": "rejected",
+      "boundary": "Merged, nested and wrapped table owners are not treated as inspected and retain unknown coverage.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "MergedNestedAndWrappedTableOwnersRemainUninspected" }
+      ]
+    },
+    {
       "id": "nary-equation-managed",
       "issue": 169,
       "outcome": "supported-bounded",

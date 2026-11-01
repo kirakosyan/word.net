@@ -3,7 +3,8 @@
 ## Unreleased roadmap #138 API work
 
 Pending #171 adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
-and privacy-safe `TemplateInspection` snapshots. Its ordinary-body field scope and
+and privacy-safe `TemplateInspection` snapshots. Its ordinary-body and bounded
+simple-cell field scope and
 explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
 It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
 

@@ -13,7 +13,7 @@ namespace WordNet;
 public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
-    /// <remarks>This first inspection covers ordinary body merge fields only. Controls, repeated scopes, other owners,
+    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields. Controls, repeated scopes, other owners,
     /// output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
@@ -91,7 +91,68 @@ public sealed partial class WordConverter
         bool otherOwners = model.Blocks.Any(b => b is not ParagraphBlock)
             || model.Notes.Count != 0 || model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection })
                 .Where(s => s != null).Any(s => s!.Stories.Any(story => story.Value.Count != 0));
-        foreach (ParagraphBlock paragraph in model.Blocks.OfType<ParagraphBlock>())
+        var paragraphs = model.Blocks.OfType<ParagraphBlock>().ToList();
+        foreach (TableBlock table in model.Blocks.OfType<TableBlock>())
+        {
+            Work();
+            SourceLocation? location = table.Location;
+            const string prefix = "/document[1]/body[1]/tbl[";
+            string path = location?.Path ?? "";
+            if (location?.Part != "word/document.xml" || !path.StartsWith(prefix, StringComparison.Ordinal)
+                || path.Length <= prefix.Length + 1 || path[path.Length - 1] != ']' || path[prefix.Length] is < '1' or > '9'
+                || path.Substring(prefix.Length + 1, path.Length - prefix.Length - 2).Any(character => character is < '0' or > '9')
+                || table.Control != null || table.NestedControl != null || table.TypedControlId.HasValue
+                || table.RowControls.Count != 0 || table.TypedRowControls.Count != 0 || table.RowRevisions.Count != 0
+                || table.Rows.Count == 0 || table.Rows[0].Count == 0) continue;
+            var candidates = new List<ParagraphBlock>(); var seen = new HashSet<ParagraphBlock>(); bool simple = true;
+            for (int row = 0; row < table.Rows.Count && simple; row++)
+            {
+                Work();
+                if (table.Rows[row].Count != table.Rows[0].Count) { simple = false; break; }
+                for (int column = 0; column < table.Rows[row].Count && simple; column++)
+                {
+                    Work(); TableCell cell = table.Rows[row][column];
+                    if (cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None || cell.TypedControlId.HasValue) { simple = false; break; }
+                    string cellPath = path + "/tr[" + (row + 1).ToString(CultureInfo.InvariantCulture)
+                        + "]/tc[" + (column + 1).ToString(CultureInfo.InvariantCulture) + "]";
+                    int index = 0;
+                    foreach (DocumentBlock block in cell.Blocks)
+                    {
+                        Work();
+                        if (block is not ParagraphBlock item) { simple = false; break; }
+                        SourceLocation? paragraphLocation = item.Location;
+                        if (item.Control != null || item.NestedControl != null || item.TypedControlId.HasValue
+                            || item.StructuralRevision != null || item.ParagraphFormatRevision != null || !seen.Add(item)
+                            || paragraphLocation == null || paragraphLocation.Part != location.Part
+                            || paragraphLocation.Path != cellPath + "/p[" + (index + 1).ToString(CultureInfo.InvariantCulture) + "]")
+                        { simple = false; break; }
+                        foreach (TextRun run in item.Runs)
+                        {
+                            Work();
+                            if (run.Control != null || run.TypedControlId.HasValue || run.Note != null || run.Box != null || run.Object != null || run.Link != null
+                                || run.Image != null || run.Bookmark != null || run.Revision != null || run.FormatRevision != null || run.Comment != null)
+                            { simple = false; break; }
+                            if (run.FieldCache == null) continue;
+                            foreach (TextRun cached in run.FieldCache)
+                            {
+                                Work();
+                                if (cached.Control != null || cached.TypedControlId.HasValue || cached.Note != null || cached.Box != null || cached.Object != null
+                                    || cached.Image != null || cached.Bookmark != null || cached.FieldInstruction != null || cached.Link != null
+                                    || cached.Revision != null || cached.FormatRevision != null || cached.Comment != null)
+                                { simple = false; break; }
+                            }
+                            if (!simple) break;
+                        }
+                        if (!simple) break;
+                        candidates.Add(item);
+                        index++;
+                    }
+                    if (index == 0) simple = false;
+                }
+            }
+            if (simple) paragraphs.AddRange(candidates);
+        }
+        foreach (ParagraphBlock paragraph in paragraphs)
         {
             Work();
             if (paragraph.Control != null || paragraph.NestedControls.Count != 0) { otherOwners = true; continue; }

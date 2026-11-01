@@ -17,12 +17,20 @@ enforcement are not implemented by that design.
 Pending #171 adds `WordConverter.InspectTemplate` for a DOCX and an explicitly
 declared `TemplateDataSchema`. It parses using the same editable DOCX context as
 `WordDocument.Load`; the requested later destination is recorded but not assessed.
-It checks ordinary body `MERGEFIELD` paths and
+It checks ordinary body and direct simple-table-cell `MERGEFIELD` paths and
 date/number switches without binding values, calling data getters or writing output.
 Declare each dotted parent as a `Mapping`; missing, optional, incorrectly typed or
 undeclared parents produce findings. A scalar with an unspecified precise type is
 unknown for a date or number switch. Declarations are a caller promise, not a check
 that a later data object actually contains a value.
+
+The table subset is a direct `word/document.xml` body table with a rectangular
+grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped
+tables and rows, merged cells, controls, revision-bearing owners, links, notes,
+images and other structured cell content are outside this subset. If any table is
+present, `Plan.OwnerCoverage` remains unknown even when some simple-cell fields
+are inspected; the report does not assert a complete table inventory. Repeating
+scopes continue to make path resolution unknown.
 
 ```csharp
 var schema = new TemplateDataSchema(
@@ -47,7 +55,7 @@ a document and must be protected.
 
 This report always sets `IsReusable` to false: it does not bind effective options,
 fonts, providers or engine identities and cannot authorize #172 policy execution.
-Controls and repeat scopes, tables, stories, notes, text boxes, other fields,
+Controls and repeat scopes, other table structures, stories, notes, text boxes, other fields,
 destination compatibility, layout, writing and independent validation remain
 uninspected or unknown. Invalid input and resource limits throw instead of returning
 a partial report. Streams are consumed from their current positions and left open;

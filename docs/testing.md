@@ -313,7 +313,12 @@ also passed 2,253 cases with verified cleanup; the original setup failure remain
 Pending #171 tests compare body merge-path findings with actual successful and
 missing-data merges, and exercise types, parent declarations, repeat uncertainty,
 privacy, input bounds, stream ownership, cancellation and schema snapshots. They
-do not qualify reusable plan identity, output stages or other owners.
+do not qualify reusable plan identity, output stages or other owners. A later
+simple-cell increment compares a table-field missing-path finding with failed and
+successful merges, while retaining unknown coverage for merged, nested and wrapped
+owners. Its [independent observation](measurements/roadmap-138-preflight-cells-reference.json)
+checks three schema-valid synthetic templates, a schema-valid merged result and
+nine altered controls; the initial analyzer failure is retained.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

@@ -10,6 +10,46 @@ namespace WordNet.Tests;
 public sealed class TemplateInspectionTests
 {
     [Fact]
+    public void SimpleTableCellFieldsMatchActualMergeAndKeepOwnerCoverageUnknown()
+    {
+        byte[] bytes = Document(Field("MERGEFIELD Customer.Name") + Table(Field("MERGEFIELD Customer.Code")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+            new TemplateSchemaPath("Customer.Name", TemplatePathType.Scalar));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.False(report.IsReusable); Assert.Equal(2, report.Requirements.Count);
+        TemplateInspectionFinding missing = Assert.Single(report.Findings, finding => finding.Code == "Plan.MissingPath");
+        Assert.Equal("Customer.Code", report.GetSensitivePathAliases()[missing.PathId!]);
+        Assert.Equal("word/document.xml", report.GetSensitivePartAliases()[missing.PartId!]);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.OwnerCoverage" && finding.Unknown);
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Customer", json, StringComparison.Ordinal); Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+        source.Position = 0;
+        var document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Throws<InvalidDataException>(() => document.MergeJson("{\"Customer\":{\"Name\":\"Ada\"}}", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.All(document.Paragraphs, paragraph => Assert.Equal("cached", paragraph.Text));
+        Assert.Equal(2, document.MergeJson("{\"Customer\":{\"Name\":\"Ada\",\"Code\":\"Q42\"}}", cancellationToken: TestContext.Current.CancellationToken).Changes);
+        Assert.Collection(document.Paragraphs, paragraph => Assert.Equal("Ada", paragraph.Text), paragraph => Assert.Equal("Q42", paragraph.Text));
+    }
+
+    [Fact]
+    public void MergedNestedAndWrappedTableOwnersRemainUninspected()
+    {
+        string field = Field("MERGEFIELD Hidden");
+        string merged = "<w:tbl><w:tblGrid><w:gridCol w:w='1500'/><w:gridCol w:w='1500'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:gridSpan w:val='2'/></w:tcPr>" + field + "</w:tc></w:tr></w:tbl>";
+        string nested = "<w:tbl><w:tr><w:tc>" + Table(field) + "<w:p/></w:tc></w:tr></w:tbl>";
+        string wrapped = "<w:tbl><w:sdt><w:sdtPr><w:tag w:val='repeat:Items'/></w:sdtPr><w:sdtContent><w:tr><w:tc>" + field + "</w:tc></w:tr></w:sdtContent></w:sdt></w:tbl>";
+        foreach (string body in new[] { merged, nested, wrapped })
+        {
+            using var source = new MemoryStream(Document(body));
+            TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
+                new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+            Assert.Contains(report.Findings, finding => finding.Code == "Plan.OwnerCoverage" && finding.Unknown);
+            Assert.Empty(report.Requirements); Assert.DoesNotContain(report.Findings, finding => finding.Code == "Plan.MissingPath");
+        }
+    }
+
+    [Fact]
     public void DeclaredBodyFieldsMatchActualMergeWithoutDisclosingNames()
     {
         byte[] bytes = Document(Field("MERGEFIELD Customer.Name"));
@@ -166,4 +206,6 @@ public sealed class TemplateInspectionTests
 
     private static byte[] Document(string body) => TestDocuments.Docx(TestDocuments.Body(body));
     private static string Field(string instruction) => "<w:p><w:fldSimple w:instr='" + instruction + "'><w:r><w:t>cached</w:t></w:r></w:fldSimple></w:p>";
+    private static string Table(string content) => "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/></w:tblPr>"
+        + "<w:tblGrid><w:gridCol w:w='3000'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/></w:tcPr>" + content + "</w:tc></w:tr></w:tbl>";
 }
