@@ -733,6 +733,14 @@ The later [simple-cell observation](measurements/roadmap-138-cell-block-controls
 checks independently authored input and output schemas, static office text,
 owner rejection and 19 altered observations. Exact committed-source, runtime and
 package qualification are separate; story block creation remains open.
+The [exact-source cell receipt](measurements/roadmap-138-cell-block-bef8f36.json)
+records locked restore, five-target Release rebuild, format and local package/API
+checks. Both complete .NET 8 and .NET 10 conversion and English OCR suites passed
+2,425 cases without skips; 121 matrix profiles passed 897 mapped cases. The
+independent corpora passed 195 altered-observation controls. The unchanged local
+single-core PDF gate passed at 1.048 against `4becf04`; candidate round medians
+ranged from 40.423 to 49.567 ms. Actual Framework and hosted checks for this
+source remain separate.
 
 Pending #157 mixed-region tests cover three and five nested body levels, sibling
 order, empty collections, scope lookup, retained control IDs, notes and atomic
