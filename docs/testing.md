@@ -561,6 +561,14 @@ five-column controls retain their prior differences. Sixteen altered observation
 rejected. The previous 50 supported cases remain unchanged, and two former three-row
 and three-column differences now match the independent reference. The remaining
 prior controls and strict rejections are retained.
+The [exact-source larger-grid receipt](measurements/roadmap-138-larger-grid-b5be975.json)
+records both 2,382-case suites, the 854-case matrix, local package checks and an
+independent recheck with the packaged assembly. Its unchanged local
+[performance gate](measurements/roadmap-138-larger-grid-performance-b5be975.json)
+passed at 0.967 against the preceding head. The preceding `5cbf06e` hosted
+[performance record](measurements/roadmap-138-performance-5cb-hosted-success.json)
+passed both push and PR gates; its other hosted jobs and all checks for this newer
+source remain separate.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
