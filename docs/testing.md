@@ -486,6 +486,13 @@ identities and detects 22 altered observations; a 4,096-path boundary is also
 exercised. It retains an initial CA1850
 analyzer failure, a probe JSON-name collision and their corrected runs. Schema hashes identify declarations
 only; they do not authorize reuse or validate output.
+The [exact-source receipt](measurements/roadmap-138-schema-identity-a6b30b5.json)
+records both 2,401-case suites, the 873-case matrix, local packages and 101
+independent altered-observation controls. Its unchanged local
+[performance gate](measurements/roadmap-138-schema-identity-performance-a6b30b5.json)
+passed at 0.963 against `21dc6a0`; reference round medians ranged from
+42.294 to 42.953 ms. Hosted and actual Framework
+checks for this exact source remain separate.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
