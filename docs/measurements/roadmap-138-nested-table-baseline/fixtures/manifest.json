@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Synthetic MIT baseline fixture with independent XML-only factorial mutations; no document-library serializer.",
+  "baseFixture": "tests/wordnet.Conversion.Tests/Fixtures/Comparison/invoice-nested.docx",
+  "baseSha256": "7889299fb8b6ee11c16ac7d0af9591411740b96e13b7f7783d29a0261c971360",
+  "generator": "eng/generate-roadmap-138-nested-table-controls.py",
+  "generatorSha256": "3e4b9d9b434d5e339142b97bda3d85ab1d0b211243f947c653de48a10b08ab93",
+  "helperSha256": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+      "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+      "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+      "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+      "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+      "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+      "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+      "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+      "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    }
+  ],
+  "documents": [
+    {
+      "id": "wide-no-trailing-p",
+      "category": "invoice",
+      "path": "wide-no-trailing-p.docx",
+      "sha256": "528a6fa20ed42268ce56913f2dddc8e32872e2298589ad41763289a4ae9fe4a7",
+      "requiredText": [
+        "INVOICE N-202",
+        "Hardware bundle",
+        "Adapter",
+        "80 EUR",
+        "Total 480 EUR"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Vary nested-grid width and the terminal paragraph without changing the outer table.",
+      "expectationBasis": "authored-source-expectations; all reference differences remain retained",
+      "nestedGridTwips": 5000,
+      "terminalParagraph": false
+    },
+    {
+      "id": "wide-trailing-p",
+      "category": "invoice",
+      "path": "wide-trailing-p.docx",
+      "sha256": "03979dd471ddaec189d7b6951dac60378bc3c012da24e471f3dc900cd1bcde9f",
+      "requiredText": [
+        "INVOICE N-202",
+        "Hardware bundle",
+        "Adapter",
+        "80 EUR",
+        "Total 480 EUR"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Vary nested-grid width and the terminal paragraph without changing the outer table.",
+      "expectationBasis": "authored-source-expectations; all reference differences remain retained",
+      "nestedGridTwips": 5000,
+      "terminalParagraph": true
+    },
+    {
+      "id": "fit-no-trailing-p",
+      "category": "invoice",
+      "path": "fit-no-trailing-p.docx",
+      "sha256": "2eb3d325980fe582c24e9f7f52c6a1a73bbf82c3817b7a3ecdd4101ba5612f7f",
+      "requiredText": [
+        "INVOICE N-202",
+        "Hardware bundle",
+        "Adapter",
+        "80 EUR",
+        "Total 480 EUR"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Vary nested-grid width and the terminal paragraph without changing the outer table.",
+      "expectationBasis": "authored-source-expectations; all reference differences remain retained",
+      "nestedGridTwips": 2500,
+      "terminalParagraph": false
+    },
+    {
+      "id": "fit-trailing-p",
+      "category": "invoice",
+      "path": "fit-trailing-p.docx",
+      "sha256": "c55d3fe7ba1877dba543a9cb7f5fd20e7b6a8f8a14f0f52dd0622344e6687e45",
+      "requiredText": [
+        "INVOICE N-202",
+        "Hardware bundle",
+        "Adapter",
+        "80 EUR",
+        "Total 480 EUR"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Vary nested-grid width and the terminal paragraph without changing the outer table.",
+      "expectationBasis": "authored-source-expectations; all reference differences remain retained",
+      "nestedGridTwips": 2500,
+      "terminalParagraph": true
+    }
+  ]
+}

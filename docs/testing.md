@@ -656,6 +656,12 @@ and [push](measurements/wordnet-138-framework-7f-push-package-identity.json) wor
 artifacts. Both hosted workflows passed; newer source requires separate evidence,
 and the earlier failed timing verdict is retained.
 
+The later head `36ed20d` passed both unchanged [hosted performance jobs](measurements/roadmap-138-performance-36ed-hosted-success.json):
+the PR merge, with the same tree as the head, was 0.980 against `bf5ab00`; the
+push was 1.004 against `7f476dd`. The different baselines and raw samples are
+recorded separately. The other hosted jobs and actual Framework execution require
+their own evidence; these timing results do not replace the earlier failure.
+
 For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 [PR source](measurements/wordnet-138-framework-526-pr-source-success.json),
 [PR package](measurements/wordnet-138-framework-526-pr-package-success.json),
@@ -999,6 +1005,11 @@ comparison-tool controls initially failed because the benchmark executable was
 not built in that worktree; after a locked restore/build, all 13 controls and six
 existing ledger controls passed. The failure and retry are retained. Its measured
 release identities do not qualify newer source.
+The [nested-table factorial](fidelity-138-initial.md#nested-table-structure-controls--2026-11-01)
+reproduces the original release observation and retains four source/public-package
+and LibreOffice comparisons, schema checks, independent Poppler coordinates and
+23 altered-observation controls. All four reference comparisons still fail under
+the unchanged thresholds; licensed Word and newer source were not tested by it.
 The [exact-source receipt](measurements/roadmap-138-baseline-combo-5b6cd5c.json)
 records both 2,411-case suites, the 883-case matrix, local packages and 137
 independent altered-observation controls. Its unchanged local

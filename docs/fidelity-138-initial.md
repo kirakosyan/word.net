@@ -267,6 +267,43 @@ verdicts and images. Regeneration uses
 `python eng/generate-roadmap-138-baseline-combinations.py --output <new-directory>`;
 the reference image digest and executable identities are pinned in the receipt.
 
+## Nested-table structure controls — 2026-11-01
+
+The original `invoice-nested` case has a 134.503 pt maximum aligned-glyph
+displacement against the pinned LibreOffice reference. Four schema-valid controls
+vary the nested grid width and a terminal paragraph in the first outer cell. The
+outer grid remains 5,000 twips. The clean 1.5.0 source and independently restored
+public package produce identical glyph snapshots, raster pixels and reference
+verdicts; the wide/no-paragraph control reproduces the original observation.
+Both builds retain the authored text and independently readable editable DOC text,
+without diagnostics.
+
+| Nested grid | Terminal paragraph | Reference `Total` position, pt | Aligned-glyph result |
+| --- | --- | --- | --- |
+| 5,000 twips | Absent | (72.1, 116.992) | 134.503 pt maximum difference |
+| 2,500 twips | Absent | (72.1, 116.992) | 134.503 pt maximum difference |
+| 5,000 twips | Present | (197.1, 86.992) | Text and glyph sequences differ |
+| 2,500 twips | Present | (197.1, 86.992) | 9.503 pt maximum difference |
+
+Positions use Poppler's top-origin coordinates. The release output positions
+`Total` at (206.603, 86.982) in all four controls. In the wide/paragraph reference,
+Poppler does not extract the nested-cell text `80`; the reported zero maximum
+displacement for that mismatched sequence is not a passing measurement. All four
+comparisons fail the existing page-geometry and visual thresholds. Both comparison
+commands exited 1 and their failures remain retained. The A4 height difference
+includes the reference-unit policy described above.
+
+The [receipt](measurements/roadmap-138-nested-table-baseline/receipt.json) indexes
+the inputs, open references, release outputs, independent schema and Poppler
+observations, original verdicts and 23 altered-observation controls. Regenerate
+the inputs with `python eng/generate-roadmap-138-nested-table-controls.py --output
+<new-directory>`; the verifier accepts the retained fixture, office, source,
+package and Poppler directories, schema log, release and package workers, release
+core assembly and public package archive. The receipt records their identities.
+These contrasts show LibreOffice sensitivity to the structural changes; licensed
+Word was not provisioned, so they do not establish which renderer matches Word or
+attribute the original discrepancy. Other baseline differences remain unresolved.
+
 ## Additional fragment and review controls — 2026-11-01
 
 Four independently authored, schema-valid controls exercise a plain body-bookmark

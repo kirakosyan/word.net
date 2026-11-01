@@ -1,0 +1,2 @@
+# Preserve pdfinfo's original padding on empty metadata fields.
+*-info.txt whitespace=-blank-at-eol
