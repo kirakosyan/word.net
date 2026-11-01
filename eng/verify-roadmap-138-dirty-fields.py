@@ -27,6 +27,17 @@ def expected_fields(path):
         root = ET.fromstring(package.read('word/document.xml'))
     result = []
 
+    # The original complex contrast contains exactly one direct begin/separate/end
+    # sequence in a single body paragraph. Check that assumption independently before
+    # treating its begin marker as part of the newly admitted inspection subset.
+    if path.stem == 'complex':
+        body = root.find(W + 'body')
+        paragraphs = [] if body is None else body.findall(W + 'p')
+        markers = [] if len(paragraphs) != 1 else [child for run in paragraphs[0].findall(W + 'r')
+                                                   for child in run.findall(W + 'fldChar')]
+        if [item.get(W + 'fldCharType') for item in markers] != ['begin', 'separate', 'end']:
+            raise ValueError('Complex contrast no longer has its expected direct field boundaries')
+
     def walk(element, indices, repeat=False):
         current_repeat = repeat or element.tag == W + 'sdt'
         if element.tag == W + 'fldSimple':
@@ -40,6 +51,13 @@ def expected_fields(path):
                 if code:
                     remediation = 'Remediation.RefreshField' if code == 'Plan.FieldMarkedDirty' else 'Remediation.ReviewFields'
                     result.append((code, remediation, True, 'word/document.xml', 'Items' if current_repeat else None, tuple(indices)))
+        elif path.stem == 'complex' and element.tag == W + 'fldChar' and element.get(W + 'fldCharType') == 'begin':
+            dirty = element.get(W + 'dirty')
+            code = ('Plan.FieldMarkedDirty' if dirty in ('true', '1', 'on') else
+                    'Plan.FieldDirtyUnknown' if dirty not in (None, 'false', '0', 'off') else None)
+            if code:
+                remediation = 'Remediation.RefreshField' if code == 'Plan.FieldMarkedDirty' else 'Remediation.ReviewFields'
+                result.append((code, remediation, True, 'word/document.xml', None, tuple(indices)))
         for index, child in enumerate(element, 1):
             walk(child, indices + [index], current_repeat)
 
@@ -72,7 +90,7 @@ def check(fixtures, observations):
             raise ValueError('Non-merge field coverage became certain')
         if name == 'locked-repeat' and not any(f['Code'] == 'Plan.RepeatScope' and f['Unknown'] for f in report['findings']):
             raise ValueError('Unsupported repeat coverage became certain')
-    return {'scenarios': len(CASES), 'validFlagValues': 6, 'complexAndLockedFieldsRemainUnknown': True,
+    return {'scenarios': len(CASES), 'validFlagValues': 6, 'boundedComplexFlagAndLockedRepeatRemainUncertain': True,
             'positionsCheckedAgainstIndependentXml': True, 'defaultReportsRemainPrivate': True}
 
 
@@ -88,7 +106,7 @@ def main():
     names = ('finding omitted', 'finding code changed', 'remediation changed', 'unknown made certain',
              'position changed', 'part changed', 'repeat scope changed', 'repeat scope removed',
              'reuse claimed', 'coverage omitted', 'invalid accepted', 'false marked dirty',
-             'complex claimed', 'locked repeat claimed', 'default privacy leaked', 'default finding altered',
+             'complex finding omitted', 'locked repeat claimed', 'default privacy leaked', 'default finding altered',
              'input identity changed', 'nonmerge coverage omitted')
     for name in names:
         changed = copy.deepcopy(observed)
@@ -107,7 +125,9 @@ def main():
         elif name == 'coverage omitted': changed['marked']['result']['findings'] = [f for f in changed['marked']['result']['findings'] if f['Code'] != 'Plan.UninspectedCoverage']
         elif name == 'invalid accepted': next(f for f in changed['invalid']['result']['findings'] if f['Code'] == 'Plan.FieldDirtyUnknown')['Code'] = 'Plan.FieldMarkedDirty'
         elif name == 'false marked dirty': changed['clear']['result']['findings'].append(copy.deepcopy(root))
-        elif name == 'complex claimed': changed['complex']['result']['findings'].append(copy.deepcopy(root))
+        elif name == 'complex finding omitted':
+            complex_finding = next(f for f in changed['complex']['result']['findings'] if f['Code'] == 'Plan.FieldMarkedDirty')
+            changed['complex']['result']['findings'].remove(complex_finding)
         elif name == 'locked repeat claimed': changed['locked-repeat']['result']['findings'].append(copy.deepcopy(repeated))
         elif name == 'default privacy leaked': changed['marked']['default']['leak'] = 'Name'
         elif name == 'default finding altered': next(f for f in changed['marked']['default']['Findings'] if f['Code'] == 'Plan.FieldMarkedDirty')['Unknown'] = False

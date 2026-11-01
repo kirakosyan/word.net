@@ -521,8 +521,11 @@ The [complex-field observation](measurements/roadmap-138-complex-dirty-fields-re
 checks 11 independently authored DOCX contrasts, including ten schema-valid
 inputs, one deliberately invalid value and 23 altered-report controls. It checks
 begin-marker positions independently and leaves locked, nested, repeated and
-cross-paragraph cases unknown. Exact committed-source and runtime checks are
-separate from this prototype.
+cross-paragraph cases unknown. The first exact-source reference run, retained in
+[the initial log](measurements/roadmap-138-complex-e237-reference-initial.txt),
+failed because the prior simple-field oracle expected the now-admitted complex
+marker to remain unreported. The oracle now checks that marker independently;
+exact committed-source and runtime checks remain separate from this prototype.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
