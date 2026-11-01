@@ -24,6 +24,20 @@ and retain measured differences. The [earlier reference record](measurements/roa
 retains the former partial-margin and direct-run failures; the [follow-up](measurements/roadmap-138-partial-table-reference.json)
 records their bounded correction and the remaining bordered failure.
 
+A later bounded correction covers a single direct body cell with six identical
+black `single` borders or six disabled `nil` borders. It accounts for the border
+width in the row height, stroke placement and horizontal margin, retaining the
+table/cell margin owner on DOCX save. For omitted horizontal sides, the measured
+profile admits border widths of 0.5 to 3 points in 0.5-point increments; with both
+horizontal sides explicit, it also admits 0.25-point increments. The earlier
+0.25-point implicit-margin example exceeded the unchanged glyph tolerance, and a
+0.375-point stroke differed from the reference stroke width; neither is promoted
+to the corrected profile. Multiple lines or paragraphs, and later edits that add
+protected or non-text owners, report `Table.BorderGeometry` and reject strict output.
+Multi-cell, mixed-edge, styled, native and other border
+geometry remain separately unqualified. The independent [border record](measurements/roadmap-138-border-geometry-reference.json)
+retains these failures and the pinned-font comparisons; it does not establish Word behavior.
+
 ## Unreleased source: direct table borders
 
 Pending #142 work reads direct `w:tblBorders` on a simple rectangular DOCX

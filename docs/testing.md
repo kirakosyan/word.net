@@ -505,6 +505,11 @@ records both 2,375-case suites, the 847-case matrix, local package checks and th
 independent recheck with the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-partial-table-performance-1942fda.json)
 passed at 0.991 against the preceding head. Hosted and actual Framework checks for
 this source remain separate.
+The subsequent [uniform-border reference record](measurements/roadmap-138-border-geometry-reference.json)
+checks 34 independent source cases, including 24 matching single-cell outputs and
+saved DOCX packages, eight retained unqualified controls and two diagnosed multiline
+cases. Fifteen altered observations are rejected. The initial thin-border, stroke
+width and mixed-margin discrepancies remain recorded under the same tolerances.
 The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)

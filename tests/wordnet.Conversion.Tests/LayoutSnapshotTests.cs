@@ -12,8 +12,95 @@ namespace WordNet.Tests;
 
 public sealed class LayoutSnapshotTests
 {
+    private static readonly string[] BorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
     private static byte[] Source(string body) => TestDocuments.Docx(TestDocuments.Body(body));
     private static string P(string text) => TestDocuments.TextParagraph(text);
+
+    private static string BorderParagraph(string text) => "<w:p><w:pPr><w:spacing w:before='0' w:after='0' w:line='240' w:lineRule='auto'/></w:pPr>"
+        + "<w:r><w:rPr><w:sz w:val='22'/></w:rPr><w:t>" + text + "</w:t></w:r></w:p>";
+
+    private static byte[] BorderSource(string border, string tableMargins = "", string cellMargins = "", string? content = null)
+    {
+        string edges = string.Concat(BorderSides.Select(side => "<w:" + side + " " + border + "/>"));
+        string table = "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblBorders>" + edges + "</w:tblBorders>"
+            + "<w:tblLayout w:type='fixed'/>" + tableMargins + "</w:tblPr><w:tblGrid><w:gridCol w:w='3000'/></w:tblGrid>"
+            + "<w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/>" + cellMargins + "</w:tcPr>"
+            + (content ?? BorderParagraph("N")) + "</w:tc></w:tr></w:tbl>";
+        return Source(BorderParagraph("A") + table + BorderParagraph("T"));
+    }
+
+    [Fact]
+    public void UniformSingleCellBordersAccountForTheirWidthsAndMarginOwners()
+    {
+        const string none = "w:val='nil'", single = "w:val='single' w:sz='8' w:color='000000'";
+        const string tableZero = "<w:tblCellMar><w:left w:w='0' w:type='dxa'/><w:right w:w='0' w:type='dxa'/></w:tblCellMar>";
+        const string tableDefault = "<w:tblCellMar><w:left w:w='115' w:type='dxa'/><w:right w:w='115' w:type='dxa'/></w:tblCellMar>";
+        const string cellZero = "<w:tcMar><w:left w:w='0' w:type='dxa'/><w:right w:w='0' w:type='dxa'/></w:tcMar>";
+        Dictionary<string, LayoutBounds> Bounds(byte[] bytes)
+        {
+            using var input = new MemoryStream(bytes);
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        var disabled = Bounds(BorderSource(none)); var bordered = Bounds(BorderSource(single));
+        Assert.Equal(disabled["N"].X + .5, bordered["N"].X, 3);
+        Assert.Equal(disabled["N"].Y + 1, bordered["N"].Y, 3);
+        Assert.Equal(disabled["T"].Y + 2, bordered["T"].Y, 3);
+        var tableMargin = Bounds(BorderSource(single, tableZero));
+        byte[] source = BorderSource(single, tableDefault, cellZero); var cellMargin = Bounds(source);
+        Assert.Equal(cellMargin["N"].X + .5, tableMargin["N"].X, 3);
+        using var input = new MemoryStream(source);
+        WordDocument document = WordDocument.Load(input, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
+        using var saved = new MemoryStream(); document.Save(saved, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        var restored = Bounds(saved.ToArray());
+        foreach (string text in new[] { "N", "T" })
+        { Assert.Equal(cellMargin[text].X, restored[text].X, 3); Assert.Equal(cellMargin[text].Y, restored[text].Y, 3); }
+        using var archive = new ZipArchive(new MemoryStream(saved.ToArray()), ZipArchiveMode.Read);
+        using var part = archive.GetEntry("word/document.xml")!.Open();
+        XNamespace w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"; XDocument xml = XDocument.Load(part);
+        Assert.Equal(6, Assert.Single(xml.Descendants(w + "tblBorders")).Elements().Count());
+        Assert.Equal("115", (string?)Assert.Single(xml.Descendants(w + "tblCellMar")).Element(w + "left")!.Attribute(w + "w"));
+        Assert.Equal("0", (string?)Assert.Single(xml.Descendants(w + "tcMar")).Element(w + "left")!.Attribute(w + "w"));
+    }
+
+    [Fact]
+    public void UnqualifiedBorderWidthsAndMultilineGeometryStayVisible()
+    {
+        const string single = "w:val='single' w:sz='8' w:color='000000'";
+        const string odd = "w:val='single' w:sz='3' w:color='000000'";
+        Dictionary<string, LayoutBounds> Bounds(byte[] bytes)
+        {
+            using var input = new MemoryStream(bytes);
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
+                new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        var qualified = Bounds(BorderSource(single)); var unqualified = Bounds(BorderSource(odd));
+        Assert.True(qualified["N"].X > unqualified["N"].X + 5);
+        Assert.True(unqualified["T"].Y > qualified["T"].Y + 3);
+        byte[] multiple = BorderSource(single, content: BorderParagraph("N") + BorderParagraph("M"));
+        using var strict = new MemoryStream(multiple);
+        var error = Assert.Throws<NotSupportedException>(() => new WordConverter().RenderPages(strict, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", error.Message, StringComparison.Ordinal);
+        using var lenient = new MemoryStream(multiple);
+        var preview = new WordConverter().RenderPages(lenient, DocumentFormat.Docx, options: new ConversionOptions(FidelityMode.Lenient),
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(preview.Result.Diagnostics, diagnostic => diagnostic.Code == "Table.BorderGeometry");
+        using var editableInput = new MemoryStream(BorderSource(single));
+        WordDocument editable = WordDocument.Load(editableInput, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
+        editable.AddBookmark("cellmark", 1, 0, 1, TestContext.Current.CancellationToken);
+        using var strictOutput = new MemoryStream();
+        error = Assert.Throws<NotSupportedException>(() => editable.Save(strictOutput, DocumentFormat.Pdf, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", error.Message, StringComparison.Ordinal); Assert.Equal(0, strictOutput.Length);
+        using var lenientOutput = new MemoryStream();
+        ConversionResult result = editable.Save(lenientOutput, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "Table.BorderGeometry");
+    }
 
     [Fact]
     public void PlainFixedDocxTablesUseDefaultCellMarginsWithoutAnExtraFollowingGap()

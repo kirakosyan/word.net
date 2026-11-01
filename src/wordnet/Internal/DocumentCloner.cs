@@ -75,6 +75,7 @@ internal sealed class DocumentCloner
                 LayoutExplicit = table.LayoutExplicit,
                 PlainDocxGeometry = table.PlainDocxGeometry,
                 PlainDocxTableMargins = table.PlainDocxTableMargins?.Copy(),
+                PlainDocxUniformBorderWidth = table.PlainDocxUniformBorderWidth,
                 LeftIndent = table.LeftIndent,
                 Background = table.Background,
                 Style = table.Style,

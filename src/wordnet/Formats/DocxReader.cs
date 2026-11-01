@@ -12,6 +12,7 @@ namespace WordNet.Formats;
 internal sealed partial class DocxReader
 {
     private static readonly XNamespace W = DocxPackage.Word;
+    private static readonly string[] PlainBorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
     private readonly ConversionContext context;
     private readonly Dictionary<string, XElement> relationships;
     private readonly Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
@@ -627,6 +628,8 @@ internal sealed partial class DocxReader
         {
             table.PlainDocxGeometry = true;
             table.PlainDocxTableMargins = ReadPadding(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), null);
+            if (element.Element(W + "tblPr")?.Element(W + "tblBorders") is XElement borders && PlainUniformBorders(borders, table, out double borderWidth))
+                table.PlainDocxUniformBorderWidth = borderWidth;
             int rowIndex = 0;
             foreach (XElement row in element.Elements(W + "tr"))
             {
@@ -655,9 +658,11 @@ internal sealed partial class DocxReader
             || Math.Abs(table.Width.Value - table.ColumnWidths.Sum()) > 0.01) return false;
         XElement? properties = element.Element(W + "tblPr");
         if (properties == null || element.Elements(W + "tblPr").Skip(1).Any() || element.Elements(W + "tblGrid").Count() != 1
-            || properties.Elements().Any(property => property.Name != W + "tblW" && property.Name != W + "tblLayout" && property.Name != W + "tblCellMar")
+            || properties.Elements().Any(property => property.Name != W + "tblW" && property.Name != W + "tblLayout" && property.Name != W + "tblCellMar" && property.Name != W + "tblBorders")
             || properties.Elements(W + "tblW").Count() != 1 || properties.Elements(W + "tblLayout").Count() != 1
             || properties.Elements(W + "tblCellMar").Skip(1).Any()
+            || properties.Elements(W + "tblBorders").Skip(1).Any()
+            || properties.Element(W + "tblBorders") is XElement borders && !PlainUniformBorders(borders, table, out _)
             || !PlainMarginMarkup(properties.Element(W + "tblCellMar"))
             || element.Elements().Any(child => child.Name != W + "tblPr" && child.Name != W + "tblGrid" && child.Name != W + "tr")) return false;
         int rowIndex = 0;
@@ -696,6 +701,42 @@ internal sealed partial class DocxReader
             rowIndex++;
         }
         return rowIndex == table.Rows.Count;
+    }
+
+    private bool PlainUniformBorders(XElement source, TableBlock table, out double width)
+    {
+        width = 0;
+        if (table.Rows.Count != 1 || table.Rows[0].Count != 1 || source.Attributes().Any(a => !a.IsNamespaceDeclaration)
+            || source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) return false;
+        XElement[] entries = source.Elements().ToArray();
+        if (entries.Length != PlainBorderSides.Length || PlainBorderSides.Any(side => entries.Count(entry => entry.Name == W + side) != 1)) return false;
+        string? firstStyle = null; int? firstSize = null;
+        foreach (XElement entry in entries)
+        {
+            context.CheckCancellation();
+            string? style = (string?)entry.Attribute(W + "val"), sizeText = (string?)entry.Attribute(W + "sz"), color = (string?)entry.Attribute(W + "color");
+            if (entry.HasElements || entry.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+                || entry.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val" && a.Name != W + "sz" && a.Name != W + "color")) return false;
+            int size;
+            if (style == "nil")
+            {
+                if (sizeText is not (null or "0") || color is not (null or "000000")) return false;
+                size = 0;
+            }
+            else
+            {
+                if (style != "single" || color != "000000" || !int.TryParse(sizeText, NumberStyles.None, CultureInfo.InvariantCulture, out size)
+                    || size is < 2 or > 24) return false;
+            }
+            if (firstStyle != null && (style != firstStyle || size != firstSize)) return false;
+            firstStyle = style; firstSize = size;
+        }
+        // The reference rounds some half-border positions beyond the unchanged
+        // glyph tolerance when the horizontal defaults are omitted.
+        if (firstSize.GetValueOrDefault() % 2 != 0
+            || firstSize.GetValueOrDefault() % 4 != 0 && ((table.Rows[0][0].Padding?.SourceSides ?? 0) & 10) != 10) return false;
+        width = firstSize.GetValueOrDefault() / 8.0;
+        return true;
     }
 
     private bool PlainMarginMarkup(XElement? element)

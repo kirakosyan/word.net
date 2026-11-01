@@ -120,6 +120,8 @@ internal sealed class TableBlock : DocumentBlock
     internal bool PlainDocxGeometry { get; set; }
     // Keep the source table-level sides separate from cell overrides on DOCX save.
     internal CellPadding? PlainDocxTableMargins { get; set; }
+    // The independently checked direct, uniform, single-cell border profile.
+    internal double? PlainDocxUniformBorderWidth { get; set; }
     internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal Dictionary<int, int> TypedRowControls { get; } = new Dictionary<int, int>();
