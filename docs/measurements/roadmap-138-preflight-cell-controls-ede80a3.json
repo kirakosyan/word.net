@@ -1,0 +1,110 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "ede80a32a4455284bbe1b6883caab81b53126f7a",
+  "sourceTree": "62e053fc285232fea75df8fa326ead82ee67f572",
+  "scope": "Non-reusable inspection checks simple inline controls in admitted table cells and locates invalid direct plain control paths; broader owners and coverage remain unknown.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked single-worker restore passed after an initial worker-exit failure.",
+    "restoreLogSha256": "063b5f36b64fda7182211cecb81e49d1b79a69c3fe39bcfa2819e563c8b3d76d",
+    "initialRestoreFailure": {
+      "observation": "Parallel MSBuild child nodes exited unexpectedly; the referenced temporary diagnostic directory was unavailable. The locked restore was retried serially without relaxing dependencies.",
+      "logSha256": "36331cff5ee47d8cac7103725e18c4b7878e142237a40a5b55d4896b7b7edb45"
+    },
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "37e0417318d91e95085697f760be46666517459dc65fbc1ac7af9de4ae301e80",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2365,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "134b3fecf859bcda75dadc3cf0d4a3ba34bd9d3794ccbdf9768a75d4ffbd31fd"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2365,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "1a2cdd8a2023f850f4dc3e68f3927c37f660b67f4b66998d9b0bd0e8f2fabf98"
+    },
+    "capabilityMatrix": {
+      "profiles": 112,
+      "testMethods": 491,
+      "net10CasesPassed": 837,
+      "logSha256": "8baf06e4d4c62ae420442af0f549644d78650155bc0b70f2d8a1a440b2afd2dd"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "9a7166da115c326e71f337df46469a9c9390856937fe70866e6fceb434eca5ef",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "ebe77e44fb88d3af632e7646667d86bf4532e953b9144fe20636ce07f5fd47dd",
+      "wordnet.Fonts.1.5.0.nupkg": "558df9b3ac2d9a39a2c29741d20d017e7417938c8b5bdc1c9cf601eddf2ddb96",
+      "wordnet.Ocr.1.5.0.nupkg": "b98c32b8df3f03c8e8d830c1310c845f725a06a8cf27ea7f812ebbc6ae8de72f"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 40.85465,
+      "CandidateMedianMilliseconds": 41.30935,
+      "Ratio": 1.011129700046384,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40138184.0,
+      "PeakSampledManagedBytes": 27261624.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-preflight-cell-controls-performance-ede80a3.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preflight-cell-controls-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "adf8f7b311b513235fbe0a55ce2056061126ea479cc90452116be53e6734afb5",
+    "sourceSchemaLogSha256": "bc7a167b974a4994d3bff4cf5d2b22d33d29e56c851fe7ae6830568113883726",
+    "outputSchemaLogSha256": "c98ed98bb7c42d2598da370356a96542192d6109cc81b08347ebd44f1f05ed57",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "4c99007e70cfbadc2ed12e902b07e6187b44ec6948c2cca867a7614e431ba5a4",
+    "documents": {
+      "simple": {
+        "inputDocxSha256": "c5ef0d2bb315b8bea6dde235a1c4c510cf4a39c82c98f0d5018e27aaa47e1761",
+        "defaultReportSha256": "17fadaf7b26e55d00c26891ea0f4e99d2537c95797aec7d6c094f7038ad865c5",
+        "observationSha256": "983cb576088fb81ea8ce065b9c5a4c5eb78e90725d363d2b121e7dfe5aa7a191",
+        "mergedDocxSha256": "6921483e7804746e1f4ad37f0c2eb93853f7c03d737ce9b6b83db77c19e7a335"
+      },
+      "merged": {
+        "inputDocxSha256": "4899ab44dc7c27698a5c627b4a179246bb33343182779683c956d9082701a920",
+        "defaultReportSha256": "a4b98ab7dc0833146ab68b0411fedd0c6954dccb36acc13644ab016d12e7444f",
+        "observationSha256": "131e7cd4f0abf5231f75b1d4f87a0b8e33d475b12f780bc54280e6b7c9460acc"
+      },
+      "invalid": {
+        "inputDocxSha256": "542b80729947db389c1d17eba179d477256d1af9203dee7a4efc3ccec9e6313d",
+        "defaultReportSha256": "61501f73aaa38a113721953be30bf631651bca54c35f57d3f0a28e9b2c43adbb",
+        "observationSha256": "717e065d0ae15f3b79a0d4b2ea53c32734150e3e13c590ddd8b8ec9dff236132"
+      }
+    },
+    "result": {
+      "result": {
+        "cellControlLocated": true,
+        "failedMergesUnchanged": true,
+        "successfulControls": 2,
+        "invalidControlsLocated": 2,
+        "mergedOwnerUnknown": true,
+        "defaultNamesDisclosed": false
+      },
+      "negativeControls": {
+        "wrong cell position": "Cell control path or source location differs from XML",
+        "wrong path": "Cell control path or source location differs from XML",
+        "changed failed merge": "Missing cell path does not match unchanged failed merge",
+        "changed output": "Successful output differs from independent package read",
+        "merged requirement": "Merged table was incorrectly treated as inspected",
+        "wrong invalid position": "Invalid control source locations differ from XML",
+        "invalid path disclosure": "Default report disclosed a source or path name",
+        "leaked part": "Default report disclosed a source or path name",
+        "lost owner uncertainty": "Merged owner coverage is not explicitly unknown",
+        "lost control uncertainty": "Control coverage or reuse boundary changed"
+      },
+      "controlMethod": "Parsed source/output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, broader control/owner coverage, identity-bound reusable plans, loss policy and roadmap #138 remain open."
+}
