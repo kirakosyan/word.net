@@ -1,0 +1,172 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "826e5b7147af98e4b6506b9539dd85812915ce71",
+  "scope": "Source identities and glyph bounds for admitted direct rectangular DOCX body-table cells, including repeated headers; cell rectangles, general clipping and other owners remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "b7c46d76f8c97c7de0b6a66e4cf1a246f063cdf02de19df874e0001bbf88ad4e",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2344,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "080763a202097098a19fb1552d20b795d0c7d740ed664456c0288752f96c6863"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2344,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "aec546e3bbb7d53178d3fed34cc333b600491a97efee593b00600a3bd501d18c"
+    },
+    "capabilityMatrix": {
+      "profiles": 100,
+      "testMethods": 471,
+      "net10CasesPassed": 816
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "c49266021276a4132c0c93ebbb9dd9b8fece144307a47395730071ed0ae55a18",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "44bfe23a784bcc0c3ae277538d0d2afb402854405ef7851b1d13ecd85039600b",
+      "wordnet.Fonts.1.5.0.nupkg": "68bb5372b3872055668accd67a52e448aa714e2ae8a3181e6708efd6d0c50811",
+      "wordnet.Ocr.1.5.0.nupkg": "4a302cefcb917db7558a8369e930206b5731525e0b18c0e860677f5281e34c3e"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 105.4616,
+      "CandidateMedianMilliseconds": 112.2334,
+      "Ratio": 1.0642110493298034,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 41719224.0,
+      "PeakSampledManagedBytes": 27732104.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-layout-cells-performance-826e5b7.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-layout-cells-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "770f57226cd08580566db14f26e8301004ec5fbf06bc46e285e0b06b7c720bd0",
+    "schemaLogSha256": "0ec28de45092818f305f7b836765cb1c4726dad54564507656b31f49ecaef491",
+    "verifierLogSha256": "eec349643d89de1d13d18d1f99bcaeec2cf18ef717747835420df32c7b610e11",
+    "documents": {
+      "cells": {
+        "inputDocxSha256": "b3dbcbaaaeaa3b1702c044288c3b641f729f563412906f7bdb7b08eba2b5d565",
+        "snapshotSha256": "07466821c367723ee5ea9250ffb3f2d6153be0fba5e4f397d805bb3bdbc9dfdb",
+        "pdfSha256": "90a4ecb0fbea23980f7d02b465c66dae42cad0f640e6959e42e7846fa5a7cf1f",
+        "officePdfSha256": "e72b4f579909d12082b8628a955cf9c2849806aba1d0b78abbeb99483c6c1386",
+        "svgSha256": {
+          "page-1.svg": "84ae93744059641dacc23a4fb4624c63cce47336db82375abcc204f36d758b77"
+        }
+      },
+      "headers": {
+        "inputDocxSha256": "53e179fc0ef9183642f5bd5697388e129134496ae1f5251f3cfd0b7e67eaa848",
+        "snapshotSha256": "542b9f216d69e13e311a194d3a4f42c9cee745fb144369a787975128ce161d86",
+        "pdfSha256": "109ac189ea2b34ebbc03a4b4f8646d7db7746fb2c2f2701ef9a8f31d68b825c0",
+        "officePdfSha256": "759486bc3947ad3e4231a60e4d8edd6554a09bd63b766da01eee0340a64abdc7",
+        "svgSha256": {
+          "page-1.svg": "484ed4f9d638f46038c2b112e3d5b47ab480ef58df54f9b5c72f17f9e659f80a",
+          "page-2.svg": "ab1cb07d86bdf192cd89a5406f1e2247a6e9412a88cc6597641a66d2c44d3e7e"
+        }
+      }
+    },
+    "result": {
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "specimens": {
+        "cells": {
+          "pages": 1,
+          "sourceCells": 4,
+          "fragments": 4,
+          "repeatedHeaderOccurrences": 1,
+          "maximumFontSvgBoundsDeltaPt": 5.684341886080802e-14
+        },
+        "headers": {
+          "pages": 2,
+          "sourceCells": 142,
+          "fragments": 144,
+          "repeatedHeaderOccurrences": 2,
+          "maximumFontSvgBoundsDeltaPt": 9.094947017729282e-13
+        }
+      },
+      "negativeControls": {
+        "wrong cell path": "Cell source or text no longer matches independent XML",
+        "changed source text": "Cell source or text no longer matches independent XML",
+        "shifted bounds": "Snapshot and independent SVG/font bounds differ",
+        "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
+        "missing PDF word": "Page text or fragment count changed",
+        "missing repeated header": "Page text or fragment count changed"
+      },
+      "controlMethod": "Parsed source/output measurements changed in memory.",
+      "officeComparison": {
+        "cells": {
+          "actualPages": 1,
+          "referencePages": 1,
+          "glyphOriginTolerancePt": 0.25,
+          "glyphComparisonPassed": true,
+          "pages": [
+            {
+              "page": 1,
+              "actualCharacters": 16,
+              "referenceCharacters": 16,
+              "actualFonts": [
+                "NotoSans-Regular"
+              ],
+              "referenceFonts": [
+                "NotoSans-Regular"
+              ],
+              "textOrderAgrees": true,
+              "fontNamesAgree": true,
+              "maximumGlyphOriginDeltaPt": 0.100006103515625,
+              "glyphComparisonPassed": true
+            }
+          ]
+        },
+        "headers": {
+          "actualPages": 2,
+          "referencePages": 2,
+          "glyphOriginTolerancePt": 0.25,
+          "glyphComparisonPassed": false,
+          "pages": [
+            {
+              "page": 1,
+              "actualCharacters": 368,
+              "referenceCharacters": 368,
+              "actualFonts": [
+                "NotoSans-Regular"
+              ],
+              "referenceFonts": [
+                "NotoSans-Regular"
+              ],
+              "textOrderAgrees": true,
+              "fontNamesAgree": true,
+              "maximumGlyphOriginDeltaPt": 0.8017578125,
+              "glyphComparisonPassed": false
+            },
+            {
+              "page": 2,
+              "actualCharacters": 208,
+              "referenceCharacters": 208,
+              "actualFonts": [
+                "NotoSans-Regular"
+              ],
+              "referenceFonts": [
+                "NotoSans-Regular"
+              ],
+              "textOrderAgrees": true,
+              "fontNamesAgree": true,
+              "maximumGlyphOriginDeltaPt": 0.441741943359375,
+              "glyphComparisonPassed": false
+            }
+          ]
+        }
+      }
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, full #167 acceptance and roadmap #138 remain open."
+}

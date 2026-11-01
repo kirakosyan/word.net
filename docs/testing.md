@@ -371,6 +371,10 @@ checks two schema-valid synthetic documents, font outlines, SVG glyph bounds and
 PDF word boxes; six in-memory altered controls exercise the checker. The pinned-font
 office comparison retains repeated-header glyph-origin failures at the unchanged
 0.25-point tolerance, and the initial substituted-font run is separately identified.
+The [exact-source receipt](measurements/roadmap-138-layout-cells-826e5b7.json)
+records both complete suites, the 816-case matrix, local packages and reproduced
+fixtures. The unchanged [performance gate](measurements/roadmap-138-layout-cells-performance-826e5b7.json)
+passed, with the visible timing variation retained in its samples.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner
