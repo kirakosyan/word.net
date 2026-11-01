@@ -5,23 +5,24 @@
 Pending #142 source corrects the managed fixed-page placement of a direct DOCX
 body table with a fixed matching grid, ordinary text cells and no table style,
 border, shading, row properties or nested owners. With no margins declared, it
-uses the OOXML default of 115 twentieths of a point on each horizontal side and
-keeps the omission when saving DOCX. It uses explicit left and right table/cell
-margins when supplied. These qualified tables do not add an artificial six-point
+uses the OOXML default of 115 twentieths of a point on each omitted horizontal side.
+Explicit and partially specified table and cell margins keep their individual
+owners and omitted sides when saving DOCX. Unrecognized margin metadata remains
+outside this correction. These qualified tables do not add an artificial six-point
 gap after the last row. Native typography and other table structures retain their
 separately qualified behavior. The default rule is described by the published
 [OOXML table-margin definition](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.tablecellmargindefault?view=openxml-3.0.1)
 and its [leading](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.startmargin?view=openxml-3.0.1)
 and [trailing](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.endmargin?view=openxml-3.0.1) defaults.
 
-Seven independently authored controls agree with pinned-font LibreOffice glyph
+Twelve independently authored controls agree with pinned-font LibreOffice glyph
 origins within the unchanged 0.25-point tolerance, including two rows, two columns,
-explicit margins and cell overrides. LibreOffice used 108 twentieths for its omitted
+empty and partial margins, and cell overrides. LibreOffice used 108 twentieths for its omitted
 horizontal margin while the standard default is 115; the measured omitted-margin
-case lies exactly at the tolerance. Partially specified horizontal margins and
-bordered tables remain outside this correction and retain measured differences.
-The [reference record](measurements/roadmap-138-plain-table-reference.json) retains
-those failures, the prior direct-run failure and the comparison controls.
+case lies exactly at the tolerance. Bordered tables remain outside this correction
+and retain measured differences. The [earlier reference record](measurements/roadmap-138-plain-table-reference.json)
+retains the former partial-margin and direct-run failures; the [follow-up](measurements/roadmap-138-partial-table-reference.json)
+records their bounded correction and the remaining bordered failure.
 
 ## Unreleased source: direct table borders
 

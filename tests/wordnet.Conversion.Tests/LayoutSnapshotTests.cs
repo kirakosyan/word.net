@@ -72,6 +72,74 @@ public sealed class LayoutSnapshotTests
     }
 
     [Fact]
+    public void PartialMarginsUseDefaultsAndRetainTableAndCellOverrides()
+    {
+        string Paragraph(string text) => "<w:p><w:pPr><w:spacing w:before='0' w:after='0' w:line='240' w:lineRule='auto'/></w:pPr>"
+            + "<w:r><w:rPr><w:sz w:val='22'/></w:rPr><w:t>" + text + "</w:t></w:r></w:p>";
+        string first = Paragraph("A"), left = Paragraph("N"), right = Paragraph("M"), last = Paragraph("T");
+        string table = "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/>"
+            + "<w:tblCellMar><w:top w:w='40' w:type='dxa'/></w:tblCellMar></w:tblPr>"
+            + "<w:tblGrid><w:gridCol w:w='1500'/><w:gridCol w:w='1500'/></w:tblGrid><w:tr>"
+            + "<w:tc><w:tcPr><w:tcW w:w='1500' w:type='dxa'/></w:tcPr>" + left + "</w:tc>"
+            + "<w:tc><w:tcPr><w:tcW w:w='1500' w:type='dxa'/><w:tcMar><w:left w:w='0' w:type='dxa'/></w:tcMar></w:tcPr>" + right + "</w:tc></w:tr></w:tbl>";
+        Dictionary<string, LayoutBounds> Bounds(byte[] bytes)
+        {
+            using var input = new MemoryStream(bytes);
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } }, cancellationToken: TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        byte[] source = Source(first + table + last);
+        var ordinary = Bounds(Source(first + left + last)); var rightOrdinary = Bounds(Source(right)); var actual = Bounds(source);
+        Assert.Equal(ordinary["N"].X + 5.75, actual["N"].X, 3);
+        Assert.Equal(rightOrdinary["M"].X + 75, actual["M"].X, 3);
+        Assert.Equal(ordinary["N"].Y + 2, actual["N"].Y, 3);
+        Assert.Equal(ordinary["T"].Y + 2, actual["T"].Y, 3);
+        using var input = new MemoryStream(source);
+        WordDocument document = WordDocument.Load(input, DocumentFormat.Docx, out _, cancellationToken: TestContext.Current.CancellationToken);
+        using var saved = new MemoryStream(); document.Save(saved, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        using (var archive = new ZipArchive(new MemoryStream(saved.ToArray()), ZipArchiveMode.Read))
+        using (var part = archive.GetEntry("word/document.xml")!.Open())
+        {
+            XNamespace w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+            XDocument xml = XDocument.Load(part);
+            XElement defaults = Assert.Single(xml.Descendants(w + "tblCellMar"));
+            Assert.Equal("40", (string?)Assert.Single(defaults.Elements()).Attribute(w + "w"));
+            Assert.Equal(w + "top", Assert.Single(defaults.Elements()).Name);
+            XElement cellMargins = Assert.Single(xml.Descendants(w + "tcMar"));
+            XElement cellLeft = Assert.Single(cellMargins.Elements());
+            Assert.Equal(w + "left", cellLeft.Name); Assert.Equal("0", (string?)cellLeft.Attribute(w + "w"));
+        }
+        var restored = Bounds(saved.ToArray());
+        foreach (string text in new[] { "N", "M", "T" })
+        { Assert.Equal(actual[text].X, restored[text].X, 3); Assert.Equal(actual[text].Y, restored[text].Y, 3); }
+    }
+
+    [Fact]
+    public void UnknownMarginMetadataDoesNotEnterTheQualifiedTableProfile()
+    {
+        string Paragraph(string text) => "<w:p><w:pPr><w:spacing w:before='0' w:after='0'/></w:pPr><w:r><w:t>" + text + "</w:t></w:r></w:p>";
+        string table = "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/>"
+            + "<w:tblCellMar><w:top w:w='40' w:type='dxa' EXTRA/></w:tblCellMar></w:tblPr>"
+            + "<w:tblGrid><w:gridCol w:w='3000'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/></w:tcPr>"
+            + Paragraph("N") + "</w:tc></w:tr></w:tbl>" + Paragraph("T");
+        Dictionary<string, LayoutBounds> Bounds(string markup)
+        {
+            using var input = new MemoryStream(Source(markup));
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
+                new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+            return Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(f => f.Text != null && f.Bounds != null)
+                .ToDictionary(f => f.Text!, f => f.Bounds!, StringComparer.Ordinal);
+        }
+        var admitted = Bounds(table.Replace(" EXTRA", ""));
+        var unknown = Bounds(table.Replace("EXTRA", "w:unknown='1'"));
+        Assert.Equal(unknown["N"].X + 5.75, admitted["N"].X, 3);
+        Assert.Equal(admitted["T"].Y + 6, unknown["T"].Y, 3);
+    }
+
+    [Fact]
     public void DirectDocxRunsMapToTheSamePreviewGeometryWithoutChangingItsBytes()
     {
         string body = "<w:p><w:r><w:t>Alpha</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>Bold</w:t></w:r></w:p>";

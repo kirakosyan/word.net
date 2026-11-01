@@ -484,8 +484,9 @@ pinned-font office reference within 0.1 point. The table-cell and following
 hyperlink positions differ by 5.5 and 5.95 points, respectively, exceeding the
 unchanged 0.25-point tolerance in that historical observation. A later
 [plain fixed-table correction](document-fidelity.md#unreleased-source-plain-fixed-table-geometry)
-passes the same comparison at the unchanged tolerance; partially specified margins,
-bordered tables and other placements retain separate unresolved differences.
+passes the same comparison at the unchanged tolerance. A later follow-up covers
+partially specified margins and their table/cell ownership. Bordered tables
+and other placements retain separate unresolved differences.
 
 An untransformed inline raster image in a direct `word/document.xml` body
 paragraph containing only that image can also expose `ObjectSource` for its source

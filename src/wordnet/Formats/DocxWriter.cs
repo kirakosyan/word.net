@@ -386,6 +386,8 @@ internal sealed partial class DocxWriter
         if (table.Background != null) element.Element(W + "tblPr")!.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
             new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", table.Background)));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
+        if (table.PlainDocxGeometry && table.PlainDocxTableMargins != null)
+            element.Element(W + "tblPr")!.Add(SourceMargins("tblCellMar", table.PlainDocxTableMargins));
         if (table.Look != null)
         {
             var look = new XElement(W + "tblLook", new XAttribute(W + "val", table.Look.Mask.ToString("X4", CultureInfo.InvariantCulture)));
@@ -419,8 +421,11 @@ internal sealed partial class DocxWriter
                 if (cell.Borders.Count > 0) cellProperties.Add(new XElement(W + "tcBorders", cell.Borders.Select(b => new XElement(W + b.Key,
                     new XAttribute(W + "val", b.Value.Width == 0 ? "nil" : b.Value.Style), new XAttribute(W + "sz", Math.Round(b.Value.Width * 8)), new XAttribute(W + "color", b.Value.Color)))));
                 if (cell.Background != null) cellProperties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", cell.Background)));
-                if (cell.Padding != null) cellProperties.Add(new XElement(W + "tcMar",
-                    Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
+                if (table.PlainDocxGeometry && cell.PlainDocxCellMargins != null)
+                    cellProperties.Add(SourceMargins("tcMar", cell.PlainDocxCellMargins));
+                else if (!table.PlainDocxGeometry && cell.Padding != null)
+                    cellProperties.Add(new XElement(W + "tcMar",
+                        Margin("top", cell.Padding.Top), Margin("left", cell.Padding.Left), Margin("bottom", cell.Padding.Bottom), Margin("right", cell.Padding.Right)));
                 if (cell.VerticalAlignment != "top") cellProperties.Add(new XElement(W + "vAlign", new XAttribute(W + "val", cell.VerticalAlignment)));
                 var content = new XElement(W + "tc", cellProperties.HasElements ? cellProperties : null, Blocks(cell.Blocks));
                 row.Add(cell.TypedControlId is int cellControl ? TypedControl(cellControl, content) : content);
@@ -485,6 +490,11 @@ internal sealed partial class DocxWriter
 
     private static string Twips(double value) => Math.Round(value * 20).ToString(CultureInfo.InvariantCulture);
     private static XElement Margin(string side, double value) => new XElement(W + side, new XAttribute(W + "w", Twips(value)), new XAttribute(W + "type", "dxa"));
+    private static XElement SourceMargins(string name, CellPadding margins) => new XElement(W + name,
+        (margins.SourceSides & 1) != 0 ? Margin("top", margins.Top) : null,
+        (margins.SourceSides & 8) != 0 ? Margin("left", margins.Left) : null,
+        (margins.SourceSides & 4) != 0 ? Margin("bottom", margins.Bottom) : null,
+        (margins.SourceSides & 2) != 0 ? Margin("right", margins.Right) : null);
 
     private static XElement TableBorders(IReadOnlyDictionary<string, CellBorder> borders) => new XElement(W + "tblBorders", TableBorderSides
         .Where(side => borders.ContainsKey(side)).Select(side => new XElement(W + side,

@@ -883,8 +883,17 @@ internal static partial class FixedLayout
         }
 
         // ISO/IEC 29500 specifies 115 twentieths of a point for omitted horizontal margins without a table style.
-        CellPadding CellMargins(TableCell cell) => cell.Padding ?? (cell.PlainDocxDefaultMargins && !context.Typography.Enabled
-            ? new CellPadding { Left = 5.75, Right = 5.75 } : new CellPadding { Right = 12 });
+        CellPadding CellMargins(TableCell cell)
+        {
+            if (cell.PlainDocxDefaultMargins && !context.Typography.Enabled)
+            {
+                CellPadding resolved = cell.Padding?.Copy() ?? new CellPadding();
+                if ((resolved.SourceSides & 8) == 0) resolved.Left = 5.75;
+                if ((resolved.SourceSides & 2) == 0) resolved.Right = 5.75;
+                return resolved;
+            }
+            return cell.Padding ?? new CellPadding { Right = 12 };
+        }
 
         double CellOffset(CellLayout cell)
         {

@@ -626,7 +626,19 @@ internal sealed partial class DocxReader
         if (PlainFixedGeometryTable(element, table))
         {
             table.PlainDocxGeometry = true;
-            foreach (TableCell cell in table.Rows.SelectMany(row => row)) cell.PlainDocxDefaultMargins = cell.Padding == null;
+            table.PlainDocxTableMargins = ReadPadding(element.Element(W + "tblPr")?.Element(W + "tblCellMar"), null);
+            int rowIndex = 0;
+            foreach (XElement row in element.Elements(W + "tr"))
+            {
+                int column = 0;
+                foreach (XElement sourceCell in row.Elements(W + "tc"))
+                {
+                    context.CheckCancellation(); TableCell cell = table.Rows[rowIndex][column++];
+                    cell.PlainDocxDefaultMargins = cell.Padding == null || (cell.Padding.SourceSides & 10) != 10;
+                    cell.PlainDocxCellMargins = ReadPadding(sourceCell.Element(W + "tcPr")?.Element(W + "tcMar"), null);
+                }
+                rowIndex++;
+            }
         }
         AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
@@ -646,6 +658,7 @@ internal sealed partial class DocxReader
             || properties.Elements().Any(property => property.Name != W + "tblW" && property.Name != W + "tblLayout" && property.Name != W + "tblCellMar")
             || properties.Elements(W + "tblW").Count() != 1 || properties.Elements(W + "tblLayout").Count() != 1
             || properties.Elements(W + "tblCellMar").Skip(1).Any()
+            || !PlainMarginMarkup(properties.Element(W + "tblCellMar"))
             || element.Elements().Any(child => child.Name != W + "tblPr" && child.Name != W + "tblGrid" && child.Name != W + "tr")) return false;
         int rowIndex = 0;
         foreach (XElement row in element.Elements(W + "tr"))
@@ -658,12 +671,13 @@ internal sealed partial class DocxReader
             {
                 context.CheckCancellation(); TableCell modelCell = table.Rows[rowIndex][column];
                 XElement? cellProperties = cell.Element(W + "tcPr");
-                if (cellProperties == null || (modelCell.Padding != null && (modelCell.Padding.SourceAmbiguous || (modelCell.Padding.SourceSides & 10) != 10))
+                if (cellProperties == null || modelCell.Padding?.SourceAmbiguous == true
                     || modelCell.ColumnSpan != 1 || modelCell.Merge != VerticalMerge.None
                     || modelCell.CellWidth == null || modelCell.WidthPercent != null || Math.Abs(modelCell.CellWidth.Value - table.ColumnWidths[column]) > 0.01
                     || cell.Elements(W + "tcPr").Skip(1).Any() || cell.Elements().Any(child => child.Name != W + "tcPr" && child.Name != W + "p")
                     || cellProperties.Elements().Any(property => property.Name != W + "tcW" && property.Name != W + "tcMar")
                     || cellProperties.Elements(W + "tcW").Count() != 1 || cellProperties.Elements(W + "tcMar").Skip(1).Any()
+                    || !PlainMarginMarkup(cellProperties.Element(W + "tcMar"))
                     || !cell.Elements(W + "p").Any()) return false;
                 foreach (XElement paragraph in cell.Elements(W + "p"))
                 {
@@ -682,6 +696,23 @@ internal sealed partial class DocxReader
             rowIndex++;
         }
         return rowIndex == table.Rows.Count;
+    }
+
+    private bool PlainMarginMarkup(XElement? element)
+    {
+        if (element == null) return true;
+        if (element.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)
+            || element.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) return false;
+        var seen = new HashSet<XName>();
+        foreach (XElement side in element.Elements())
+        {
+            context.CheckCancellation();
+            if (side.Name != W + "top" && side.Name != W + "left" && side.Name != W + "bottom" && side.Name != W + "right"
+                || !seen.Add(side.Name) || side.HasElements || side.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))
+                || (string?)side.Attribute(W + "type") != "dxa" || side.Attribute(W + "w") == null
+                || side.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "type" && attribute.Name != W + "w")) return false;
+        }
+        return true;
     }
 
     private IEnumerable<XElement> TableContents(XElement container)

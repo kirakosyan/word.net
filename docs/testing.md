@@ -491,6 +491,11 @@ The [exact-source receipt](measurements/roadmap-138-plain-table-27ae609.json)
 records both 2,373-case suites, the 845-case matrix, local package checks and the
 independent recheck with the packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-plain-table-performance-27ae609.json)
 passed against the preceding head; hosted and actual Framework checks remain separate.
+The later [partial-margin record](measurements/roadmap-138-partial-table-reference.json)
+checks 13 schema-valid contrasts and an invalid-metadata control. Twelve match the
+pinned office within the same tolerance and retain editable DOCX margins; the bordered
+control still fails. Sixteen altered observations are rejected, and the prior
+partial-margin failure remains archived.
 The [exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)

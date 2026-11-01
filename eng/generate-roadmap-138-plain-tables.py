@@ -25,12 +25,13 @@ def margins(value):
 def table(rows, table_margins='', cell_margins='', borders=''):
     width = 3000 // len(rows[0])
     grid = ('<w:gridCol w:w="' + str(width) + '"/>') * len(rows[0])
-    def cell(text):
-        return ('<w:tc><w:tcPr><w:tcW w:w="' + str(width) + '" w:type="dxa"/>' + cell_margins
+    def cell(text, index):
+        margin = cell_margins[index] if isinstance(cell_margins, list) else cell_margins
+        return ('<w:tc><w:tcPr><w:tcW w:w="' + str(width) + '" w:type="dxa"/>' + margin
                 + '</w:tcPr>' + paragraph(text) + '</w:tc>')
     return ('<w:tbl><w:tblPr><w:tblW w:w="3000" w:type="dxa"/>' + borders
             + '<w:tblLayout w:type="fixed"/>' + table_margins + '</w:tblPr><w:tblGrid>'
-            + grid + '</w:tblGrid>' + ''.join('<w:tr>' + ''.join(cell(t) for t in row) + '</w:tr>' for row in rows) + '</w:tbl>')
+            + grid + '</w:tblGrid>' + ''.join('<w:tr>' + ''.join(cell(t, i) for i, t in enumerate(row)) + '</w:tr>' for row in rows) + '</w:tbl>')
 
 
 def main():
@@ -44,6 +45,9 @@ def main():
     zero = ('<w:tcMar><w:left w:w="0" w:type="dxa"/>'
             '<w:right w:w="0" w:type="dxa"/></w:tcMar>')
     top = '<w:tblCellMar><w:top w:w="40" w:type="dxa"/></w:tblCellMar>'
+    unknown = '<w:tblCellMar><w:top w:w="40" w:type="dxa" w:unknown="1"/></w:tblCellMar>'
+    left_only = '<w:tblCellMar><w:left w:w="0" w:type="dxa"/></w:tblCellMar>'
+    left_zero = '<w:tcMar><w:left w:w="0" w:type="dxa"/></w:tcMar>'
     border = '<w:tblBorders>' + ''.join('<w:' + side + ' w:val="single" w:sz="8" w:color="000000"/>'
                                       for side in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV')) + '</w:tblBorders>'
     cases = {
@@ -55,7 +59,12 @@ def main():
         'explicit-zero': table([['NNNN']], margins(0)),
         'cell-zero': table([['NNNN']], margins(115), zero),
         'only-top': table([['NNNN']], top),
+        'partial-mixed': table([['MMMM', 'NNNN']], top, ['', left_zero]),
+        'empty-table': table([['NNNN']], '<w:tblCellMar/>'),
+        'empty-cell': table([['NNNN']], '', '<w:tcMar/>'),
+        'left-only': table([['NNNN']], left_only),
         'border': table([['NNNN']], borders=border),
+        'invalid-metadata': table([['NNNN']], unknown),
     }
     hashes = {}
     for name, value in cases.items():
@@ -63,7 +72,8 @@ def main():
         reductions.write_zip(path, reductions.package(paragraph('AAAA') + value + paragraph('TTTT')))
         hashes[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
     manifest = {'provenance': 'Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.',
-                'generatorSha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), 'documents': hashes}
+                'generatorSha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), 'documents': hashes,
+                'negativeCases': 'invalid-metadata deliberately adds an unsupported margin attribute and must fail schema validation.'}
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(manifest))
 
