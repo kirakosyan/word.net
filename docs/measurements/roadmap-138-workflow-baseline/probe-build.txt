@@ -1,0 +1,14 @@
+  Probe -> /tmp/wordnet-138-workflow-source-probe/bin/Release/net10.0/Probe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.25
+  Probe -> /tmp/wordnet-138-workflow-package-probe/bin/Release/net10.0/Probe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.70

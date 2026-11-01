@@ -526,6 +526,10 @@ cross-paragraph cases unknown. The first exact-source reference run, retained in
 failed because the prior simple-field oracle expected the now-admitted complex
 marker to remain unreported. The oracle now checks that marker independently;
 exact committed-source and runtime checks remain separate from this prototype.
+The separate [released fragment and review corpus](measurements/roadmap-138-workflow-baseline/receipt.json)
+retains four authored inputs, six schema-checked outputs, pinned PDF-reader text,
+geometry and raster observations, and 16 altered-observation controls. It records
+release-source and public-package behavior rather than qualifying this newer source.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and

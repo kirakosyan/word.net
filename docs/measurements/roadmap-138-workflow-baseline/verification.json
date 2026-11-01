@@ -1,0 +1,31 @@
+{
+  "result": {
+    "fixtures": 4,
+    "outputsPerMode": 3,
+    "inputAndOutputSchemaValid": true,
+    "fieldFragmentRejectedAtomically": true,
+    "retainedHistoryPdfRejectedAtomically": true,
+    "explicitReviewViewsAndPlainFragmentMatch": true,
+    "sourceAndPublicTextGeometryAndPixelsMatch": true,
+    "limitations": "These controls do not implement a redline display or measure licensed-reference fidelity."
+  },
+  "negativeControls": {
+    "input changed": "Input fixture identities changed",
+    "source core changed": "Loaded input or core identity changed: source",
+    "public archive changed": "Public archive identity changed",
+    "package core changed": "Loaded input or core identity changed: package",
+    "fragment admitted": "Field-bearing fragment boundary or atomicity changed: source",
+    "fragment host mutated": "Field-bearing fragment boundary or atomicity changed: source",
+    "fragment source mutated": "Field-bearing fragment boundary or atomicity changed: source",
+    "review admitted": "Retained-history review boundary or atomicity changed: source",
+    "review output mutated": "Retained-history review boundary or atomicity changed: source",
+    "review history mutated": "Retained-history review boundary or atomicity changed: source",
+    "accepted text changed": "Output text, order or page count changed: source/accepted",
+    "rejected text changed": "Output text, order or page count changed: source/rejected",
+    "output hash changed": "Output hashes do not match the loaded worker: source/fragment",
+    "glyph position changed": "Source/package output observations differ: fragment",
+    "raster changed": "Source/package output observations differ: fragment",
+    "schema evidence missing": "Input schema evidence missing: field-fragment.docx"
+  },
+  "controlMethod": "Observation records were altered in memory and checked against independent XML, PDF, schema and identities."
+}

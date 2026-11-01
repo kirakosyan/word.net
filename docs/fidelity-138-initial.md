@@ -266,3 +266,25 @@ followed by the clean release build's `wordnet.dll` and the downloaded public
 verdicts and images. Regeneration uses
 `python eng/generate-roadmap-138-baseline-combinations.py --output <new-directory>`;
 the reference image digest and executable identities are pinned in the receipt.
+
+## Additional fragment and review controls — 2026-11-01
+
+Four independently authored, schema-valid controls exercise a plain body-bookmark
+fragment, a field-bearing fragment and a paragraph with an insertion and deletion.
+The clean 1.5.0 release source and independently restored public package both insert
+the plain fragment, reject the field-bearing fragment without changing either
+document, and reject PDF output of retained review history without changing the
+caller stream. Explicit accepted and rejected review views contain `Before new
+After` and `Before old After`. Open XML SDK validates all six output DOCX files;
+Poppler independently confirms each output's text and one-page geometry. The source
+and package renderings have matching glyph coordinates and pixels for these
+synthetic controls. Their PDF bytes can differ because creation times are sampled
+separately.
+
+The [receipt](measurements/roadmap-138-workflow-baseline/receipt.json) and its
+hash-indexed files retain the source and package identities, inputs, outputs,
+schema and tool transcripts, the initial compiler warning and corrected
+warning-free probe, and 16 altered-observation controls. The PDF comparisons are
+between the release builds; they do not measure a licensed reference or implement
+a redline renderer. #139 still needs its remaining combination evidence and final
+acceptance checks.

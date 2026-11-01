@@ -1,0 +1,33 @@
+{
+  "inputHashes": {
+    "field-fragment.docx": "9682a10d7dd72652da1919295e83b84af12e7b32f45ba63a4e90d8270e29a639",
+    "plain-fragment.docx": "5b286820d02ed41f137dc517e60b9888aadc4211856a905226a150aa2fbdfbcc",
+    "review.docx": "733fa1866c2f6964cef67b4a3555510b9b2420a22d6540941acea89605a6c8bd",
+    "target.docx": "a678db25754b7a7f47921e6934b3166983451e003e345022dc33fa0a27f51f43"
+  },
+  "assemblies": {
+    "wordnet": {
+      "version": "1.0.0.0",
+      "sha256": "43972736ce67430584d0c05fee1eb6c4dcb7ba97eb646572bca7ce49761530af"
+    }
+  },
+  "fragment": {
+    "fragmentException": "NotSupportedException",
+    "fragmentCode": "Fragment.Structure",
+    "hostUnchanged": true,
+    "fragmentUnchanged": true,
+    "outputDocxSha256": "844fba8f903913df628d33f88d5b6a99b4a3e419b1204d93b923398bd66332f2",
+    "outputPdfSha256": "8ba6fd302cf7b001a68ad91e85a6c22dcf57a427fec69bb687f532a812f65844"
+  },
+  "review": {
+    "reviewException": "NotSupportedException",
+    "reviewCode": "Review.ExplicitViewRequired",
+    "outputUntouched": true,
+    "originalUnchanged": true,
+    "retainedRevisions": 2,
+    "acceptedDocxSha256": "e4433bbf5e939977c5874f66af5615185aec687cc2981be55d3ceeb18eae21b8",
+    "rejectedDocxSha256": "a9abaa7370d9b649fea10dc411d39d6b6d80989bf7d918ed70189e4b9a506017",
+    "acceptedPdfSha256": "a3e88db121826c655ba7e1e337a9767820ce8cc3b033243044030e45ff2a887a",
+    "rejectedPdfSha256": "bbc7b583057dbebbe353fcacf7819b03f64ccae957d7a4b49c6792348866843b"
+  }
+}

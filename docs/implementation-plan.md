@@ -32,6 +32,8 @@ the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the
 recorded verdicts and distinguishes unknowns from the bounded documented cases.
 Four additional release-baseline theme-font/table-style combinations retain their
 [separate matrix and evidence](measurements/roadmap-138-combination-baseline/factor-matrix.json).
+[Additional fragment and review controls](fidelity-138-initial.md#additional-fragment-and-review-controls--2026-11-01)
+check output schemas and source/package text, geometry and raster equality.
 #139 remains incomplete until its additional feature controls and requested
 combination evidence are delivered.
 The pending #140 documentation reconciliation distinguishes current 1.5.0 support
