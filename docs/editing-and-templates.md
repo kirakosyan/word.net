@@ -35,8 +35,8 @@ control is checked, `Plan.ControlCoverage` remains unknown for the whole documen
 A directly owned body `repeat:` control containing one paragraph with one plain
 text run has an unambiguous root collection path. Inspection checks that path and
 its declared `Collection` type without evaluating items or expanding the repeat.
-The requirement has known root scope unless another occurrence of the same path
-has uncertain scope; multi-paragraph, nested, table and other repeats stay
+The requirement has known root scope unless another observed occurrence of the
+same path has uncertain scope; multi-paragraph, nested, table and other repeats stay
 uninspected. `Plan.RepeatScope` remains unknown for all repeated contents.
 
 The table subset is a direct `word/document.xml` body table with a rectangular
