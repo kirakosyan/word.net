@@ -480,6 +480,10 @@ source remain separate.
 The later `21dc6a0` [hosted performance evidence](measurements/roadmap-138-performance-21dc-hosted-success.json)
 passed at 0.982 against `90a77f1` on the push and 0.987 against `bf5ab00` on the
 PR merge whose tree matches the head. Other runtime and package checks are separate.
+The same head's actual Framework 4.7.2 legacy-JIT source guests passed 2,398
+cases and cleaned up on the [push](measurements/roadmap-138-framework-21dc-push-source-success.json)
+and [PR merge](measurements/roadmap-138-framework-21dc-pr-source-success.json);
+package guests and later source revisions require separate evidence.
 The [schema-identity observation](measurements/roadmap-138-schema-identity-reference.json)
 independently canonicalizes ten synthetic declaration sets, checks both report
 identities and detects 22 altered observations; a 4,096-path boundary is also
@@ -499,6 +503,13 @@ inputs, two deliberately invalid values and 18 altered-report controls. It retai
 the initial failed repeat-coverage assertion and the corrected focused retry. This
 prototype does not establish freshness, reusable plans or output validation; exact
 committed-source and runtime evidence are separate.
+The [exact-source receipt](measurements/roadmap-138-dirty-fields-d4dd491.json)
+records both 2,411-case suites, the 883-case matrix, local packages and 119
+independent altered-observation controls. Its unchanged local
+[performance gate](measurements/roadmap-138-dirty-fields-performance-d4dd491.json)
+passed at 0.936 against `a277421`; reference round medians ranged from
+43.440 to 53.807 ms. Hosted and actual Framework
+checks for this exact source remain separate.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
