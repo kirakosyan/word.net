@@ -550,7 +550,13 @@ For the earlier PR head `52695c9`, the actual Framework 4.7.2 legacy-JIT
 guests each passed 2,411 cases and cleanup. The later head `e9de85c` passed the
 [hosted performance gates](measurements/wordnet-138-performance-e9-hosted-success.json)
 at 0.973 for the PR merge against release source and 1.150 for the push against
-`52695c9`. Other hosted checks for `e9de85c` are distinct and still running.
+`52695c9`. Both hosted workflows also succeeded on this head, including the actual
+Framework 4.7.2 legacy-JIT [PR source](measurements/wordnet-138-framework-e9-pr-source-success.json),
+[PR package](measurements/wordnet-138-framework-e9-pr-package-success.json),
+[push source](measurements/wordnet-138-framework-e9-push-source-success.json) and
+[push package](measurements/wordnet-138-framework-e9-push-package-success.json)
+guests; each passed 2,411 cases and verified cleanup. These results qualify the
+earlier head and do not substitute for execution on later revisions.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and
