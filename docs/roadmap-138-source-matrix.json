@@ -1351,9 +1351,11 @@
       "id": "template-inspection-simple-root-repeat",
       "issue": 171,
       "outcome": "supported-bounded",
-      "boundary": "Non-reusable inspection checks the collection path of a directly owned plain root repeat without claiming repeated content or overall scope coverage.",
+      "boundary": "Non-reusable inspection checks the collection path of a directly owned simple root repeat. A single simple repeated merge field is observed with unknown scope and a separate requirement from an identically named root field; broader repeat coverage remains unknown.",
       "tests": [
-        { "class": "TemplateInspectionTests", "method": "SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents" }
+        { "class": "TemplateInspectionTests", "method": "SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents" },
+        { "class": "TemplateInspectionTests", "method": "RepeatedFieldAndRootFieldKeepSeparateScopeEvidence" },
+        { "class": "TemplateInspectionTests", "method": "UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty" }
       ]
     },
     {

@@ -411,6 +411,11 @@ The [exact-source record](measurements/roadmap-138-preflight-root-scope-eb1ab9f.
 records both 2,371-case suites, the 843-case matrix, local packages and an independent
 recheck using the exact packaged assembly. Its unchanged local [performance gate](measurements/roadmap-138-preflight-root-scope-performance-eb1ab9f.json)
 passed against the preceding head; hosted and actual Framework checks remain separate.
+The later [repeated-field observation](measurements/roadmap-138-preflight-repeat-fields-reference.json)
+checks seven schema-valid independent templates, four schema-valid merge results,
+LibreOffice text order and numeric source positions. It distinguishes root from
+unknown repeated scope and rejects 16 altered observations. The initial focused
+test failure from an outdated requirement count is retained in the record.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

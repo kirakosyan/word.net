@@ -14,8 +14,9 @@ is a design and executable schema example for #170, not an implementation of #17
 or #172. Their compilation, enforcement and independent outcome evidence remain open.
 Pending #171 adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
 for declared ordinary body and bounded simple-cell merge fields and inline controls,
-including beside repeats, and plain root-repeat paths, with optional numeric positions and selected static
-PDF option conflicts. It explicitly retains uninspected scopes,
+including beside repeats, plain root-repeat paths and selected repeated fields with
+unknown scope, with optional numeric positions and selected static PDF option conflicts.
+It explicitly retains uninspected scopes,
 output and environment identity; full plan compilation and #172 remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
 comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);

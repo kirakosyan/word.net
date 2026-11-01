@@ -145,19 +145,64 @@ public sealed class TemplateInspectionTests
         TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
             cancellationToken: TestContext.Current.CancellationToken);
         string[] missing = report.Findings.Where(f => f.Code == "Plan.MissingPath").Select(f => report.GetSensitivePathAliases()[f.PathId!]).OrderBy(s => s).ToArray();
-        Assert.Equal("Body,Cell,Outside", string.Join(",", missing));
-        Assert.All(report.Requirements, requirement => Assert.False(requirement.ScopeUnknown));
-        Assert.DoesNotContain(report.GetSensitivePathAliases().Values, path => path == "Inside");
+        Assert.Equal("Body,Cell,Items,Outside", string.Join(",", missing));
+        TemplateInspectionRequirement inside = Assert.Single(report.Requirements, requirement => requirement.ScopeUnknown);
+        Assert.Equal("Inside", report.GetSensitivePathAliases()[inside.PathId]);
+        Assert.Null(inside.DeclaredType); Assert.Null(inside.Required);
+        Assert.Contains(report.Findings, f => f.Code == "Plan.RepeatFieldScopeUnknown" && f.Unknown && f.PathId == inside.PathId);
         Assert.Contains(report.Findings, f => f.Code == "Plan.RepeatScope" && f.Unknown);
         Assert.Contains(report.Findings, f => f.Code == "Plan.OwnerCoverage" && f.Unknown);
         string json = JsonSerializer.Serialize(report);
-        Assert.DoesNotContain("Outside", json, StringComparison.Ordinal); Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("Outside", json, StringComparison.Ordinal); Assert.DoesNotContain("Inside", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
         source.Position = 0;
         var document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
         Assert.Throws<InvalidDataException>(() => document.MergeJson("{\"Items\":[{\"Inside\":\"inner\"}]}", cancellationToken: TestContext.Current.CancellationToken));
         Assert.All(document.Paragraphs, paragraph => Assert.Equal("cached", paragraph.Text));
         document.MergeJson("{\"Items\":[{\"Inside\":\"inner\"}],\"Outside\":\"outer\",\"Cell\":\"cell\",\"Body\":\"body\"}", cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal("inner,outer,cell,body", string.Join(",", document.Paragraphs.Select(paragraph => paragraph.Text)));
+    }
+
+    [Fact]
+    public void RepeatedFieldAndRootFieldKeepSeparateScopeEvidence()
+    {
+        byte[] bytes = Document(Field("MERGEFIELD Name") + RootRepeat("Items", Field("MERGEFIELD Name")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection), new TemplateSchemaPath("Name", TemplatePathType.Scalar));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionRequirement[] names = report.Requirements.Where(requirement => report.GetSensitivePathAliases()[requirement.PathId] == "Name").ToArray();
+        Assert.Equal(2, names.Length); Assert.Equal(names[0].PathId, names[1].PathId);
+        TemplateInspectionRequirement root = Assert.Single(names, requirement => !requirement.ScopeUnknown);
+        TemplateInspectionRequirement repeated = Assert.Single(names, requirement => requirement.ScopeUnknown);
+        Assert.Equal(TemplatePathType.Scalar, root.DeclaredType); Assert.True(root.Required); Assert.Equal(1, root.Count);
+        Assert.Null(repeated.DeclaredType); Assert.Null(repeated.Required); Assert.Equal(1, repeated.Count);
+        TemplateInspectionFinding finding = Assert.Single(report.Findings, item => item.Code == "Plan.RepeatFieldScopeUnknown");
+        Assert.True(finding.Unknown); Assert.Equal(repeated.PathId, finding.PathId);
+        Assert.Equal("1,1,2,2,1,1", string.Join(",", finding.SourceElementIndices!));
+        Assert.DoesNotContain(report.Findings, item => item.Code is "Plan.MissingPath" or "Plan.PathType");
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Name", json, StringComparison.Ordinal); Assert.DoesNotContain("Items", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+        source.Position = 0;
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson("{\"Name\":\"root\",\"Items\":[{\"Name\":\"child\"},{\"Other\":1}]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal("root,child,root", string.Join(",", document.Paragraphs.Select(paragraph => paragraph.Text)));
+    }
+
+    [Fact]
+    public void UnparseableRepeatedFieldsRemainUnknownWhenTheirCollectionMayBeEmpty()
+    {
+        byte[] bytes = Document(RootRepeat("Items", Field("MERGEFIELD Bad-Name")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Items", TemplatePathType.Collection));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.FieldCoverage" && finding.Unknown && finding.SourceElementIndices != null);
+        Assert.DoesNotContain(report.Findings, finding => finding.Code == "Plan.InvalidField");
+        Assert.DoesNotContain(report.GetSensitivePathAliases().Values, path => path == "Bad-Name");
+        source.Position = 0;
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        document.MergeJson("{\"Items\":[]}", cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Empty(document.Paragraphs);
     }
 
     [Fact]
@@ -488,10 +533,12 @@ public sealed class TemplateInspectionTests
         TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Pdf, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Contains(report.Findings, f => f.Code == "Plan.RepeatScope" && f.Unknown);
         Assert.Contains(report.Findings, f => f.Code == "Plan.OwnerCoverage" && f.Unknown);
-        TemplateInspectionFinding missing = Assert.Single(report.Findings, f => f.Code == "Plan.MissingPath");
-        Assert.Equal("Outside", report.GetSensitivePathAliases()[missing.PathId!]);
-        TemplateInspectionRequirement requirement = Assert.Single(report.Requirements);
-        Assert.Equal("Outside", report.GetSensitivePathAliases()[requirement.PathId]); Assert.False(requirement.ScopeUnknown);
+        string[] missing = report.Findings.Where(f => f.Code == "Plan.MissingPath").Select(f => report.GetSensitivePathAliases()[f.PathId!]).OrderBy(path => path).ToArray();
+        Assert.Equal("Items,Outside", string.Join(",", missing));
+        Assert.Contains(report.Requirements, requirement => requirement.ScopeUnknown && report.GetSensitivePathAliases()[requirement.PathId] == "Name");
+        Assert.Contains(report.Findings, finding => finding.Code == "Plan.RepeatFieldScopeUnknown" && finding.Unknown);
+        TemplateInspectionRequirement requirement = Assert.Single(report.Requirements, item => report.GetSensitivePathAliases()[item.PathId] == "Outside");
+        Assert.False(requirement.ScopeUnknown);
     }
 
     [Fact]

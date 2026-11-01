@@ -35,11 +35,17 @@ nested, merged-cell, story and other controls remain uninspected. Even when a si
 control is checked, `Plan.ControlCoverage` remains unknown for the whole document.
 
 A directly owned body `repeat:` control containing one paragraph with one plain
-text run has an unambiguous root collection path. Inspection checks that path and
-its declared `Collection` type without evaluating items or expanding the repeat.
-The requirement has known root scope unless another observed occurrence of the
-same path has uncertain scope; multi-paragraph, nested, table and other repeats stay
-uninspected. `Plan.RepeatScope` remains unknown for all repeated contents.
+text run or one simple field has an unambiguous root collection path. Inspection
+checks that path and its declared `Collection` type without evaluating items or
+expanding the repeat. A simple `MERGEFIELD` inside that admitted repeat also
+produces an opaque requirement and `Plan.RepeatFieldScopeUnknown` finding with a
+numeric source position. Its type, presence and scope remain unknown: the actual
+merge can select a value from the item or fall back to a parent/root value. A root
+field with the same path has a separate known-scope requirement using the same
+alias; their counts do not combine. An unparseable or non-merge field instead
+produces unknown `Plan.FieldCoverage`, since an empty collection may never execute it.
+Multi-paragraph, nested, table and other repeats stay uninspected, and
+`Plan.RepeatScope` remains unknown for all repeated contents.
 
 For a PDF destination, inspection flags missing PDF options, invalid conformance,
 accessibility, reading-order or vector-semantics enum values, plus PDF/A-2a

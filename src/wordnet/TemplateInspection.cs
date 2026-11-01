@@ -129,6 +129,7 @@ public sealed class TemplateInspection
     /// <summary>Gets privacy-safe findings. An empty set would not prove conversion or fidelity.</summary>
     public IReadOnlyList<TemplateInspectionFinding> Findings { get; }
     /// <summary>Gets observed bounded field and control requirements, not a complete template inventory.</summary>
+    /// <remarks>The same path alias can have separate known-root and unknown-repeat entries, with independent counts.</remarks>
     public IReadOnlyList<TemplateInspectionRequirement> Requirements { get; }
     /// <summary>Always false: options, fonts and provider identities are not bound by this inspection.</summary>
     public bool IsReusable { get; }

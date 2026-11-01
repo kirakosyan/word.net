@@ -384,14 +384,15 @@ advertised yet.
 `Plan.InvalidControl`, `Plan.InvalidControlPath` and `Plan.InvalidControlStructure`
 identify definite problems in the narrow inspected profile. `Plan.OptionalPath`,
 `Plan.OptionalParent`, `Plan.PathTypeUnknown`, `Plan.ParentTypeUnknown`,
-`Plan.ControlCoverage`, `Plan.RepeatScope`, `Plan.OwnerCoverage`,
+`Plan.ControlCoverage`, `Plan.RepeatScope`, `Plan.RepeatFieldScopeUnknown`, `Plan.OwnerCoverage`,
 `Plan.FieldCoverage`, `Plan.LocationCoverage`, `Plan.UninspectedCoverage`,
 `Plan.ProtectedOwner` and `Plan.ReuseUnavailable` describe uncertainty or a
 protected owner; they never mean that output is safe. Each includes a stable
 `Remediation.*` identifier and may carry opaque path and part aliases.
 `Plan.RepeatScope` does not prevent definite findings for separately verified
-root-owned body fields and simple body or cell controls. Repeated contents and
-flattened wrapper scopes remain unknown. Source diagnostic codes, severity and
+root-owned body fields and simple body or cell controls. An admitted simple repeat
+field may be located and counted without guessing its data scope, type or presence;
+other repeated contents and flattened wrapper scopes remain unknown. Source diagnostic codes, severity and
 counts are preserved without messages or source
 values. A common retained phase is exposed when known; omitted locations set
 `LocationsTruncated` and produce `Plan.LocationCoverage`. See the
