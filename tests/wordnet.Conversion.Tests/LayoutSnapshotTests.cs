@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using UglyToad.PdfPig;
 using Xunit;
 
@@ -26,7 +27,7 @@ public sealed class LayoutSnapshotTests
         DocumentPreview preview = converter.RenderPages(input, DocumentFormat.Docx, policy, cancellationToken: TestContext.Current.CancellationToken);
         Assert.True(input.CanRead); var layout = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout);
         var fragments = layout.Fragments.Where(item => item.Bounds != null).ToArray(); Assert.Equal(2, fragments.Length);
-        Assert.All(fragments, item => { Assert.Null(item.Text); Assert.NotNull(item.Source); Assert.Null(item.CellSource); Assert.Equal("word/document.xml", item.Source!.Part); Assert.False(item.ExtendsOutsidePage); });
+        Assert.All(fragments, item => { Assert.Null(item.Text); Assert.NotNull(item.Source); Assert.Null(item.CellSource); Assert.Null(item.ObjectSource); Assert.Equal("word/document.xml", item.Source!.Part); Assert.False(item.ExtendsOutsidePage); });
         Assert.NotEqual(fragments[0].Source!.Path, fragments[1].Source!.Path);
         Assert.Throws<NotSupportedException>(() => ((ICollection<LayoutFragment>)layout.Fragments).Add(fragments[0]));
         Assert.Contains("<svg", Encoding.UTF8.GetString(Assert.Single(preview.Pages).GetBytes()), StringComparison.Ordinal);
@@ -181,5 +182,75 @@ public sealed class LayoutSnapshotTests
         var error = Assert.Throws<InvalidDataException>(() => new WordConverter().RenderPages(input, DocumentFormat.Docx,
             new PreviewOptions { Layout = new LayoutSnapshotOptions() }, options, TestContext.Current.CancellationToken));
         Assert.StartsWith("Limit.LayoutSnapshot: Cell owner inspection", error.Message, StringComparison.Ordinal); Assert.True(input.CanRead);
+    }
+
+    [Fact]
+    public void InlineImageSnapshotMapsTheSourceDrawingAndRenderedFrame()
+    {
+        byte[] source = FidelityDocuments.Docx("color-grid.png", FidelityDocuments.ImageParagraph());
+        var options = new ConversionOptions(FidelityMode.BestEffort); var converter = new WordConverter();
+        using var input = new MemoryStream(source);
+        var preview = converter.RenderPages(input, DocumentFormat.Docx, new PreviewOptions { Layout = new LayoutSnapshotOptions() }, options, TestContext.Current.CancellationToken);
+        LayoutFragment fragment = Assert.Single(Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments);
+        Assert.Equal("/document[1]/body[1]/p[1]", fragment.Source!.Path);
+        Assert.Equal("word/document.xml", fragment.ObjectSource!.Part);
+        Assert.Equal("/document[1]/body[1]/p[1]/r[1]/drawing[1]", fragment.ObjectSource.Path);
+        Assert.Null(fragment.CellSource); Assert.Null(fragment.Text); Assert.Null(fragment.UnavailableReason); Assert.False(fragment.ExtendsOutsidePage);
+        LayoutBounds bounds = Assert.IsType<LayoutBounds>(fragment.Bounds); Assert.Equal(120, bounds.Width, 3); Assert.Equal(60, bounds.Height, 3);
+        using var pdfBytes = new MemoryStream(); input.Position = 0;
+        converter.Convert(input, pdfBytes, DocumentFormat.Docx, DocumentFormat.Pdf, options, TestContext.Current.CancellationToken);
+        using var pdf = PdfDocument.Open(pdfBytes.ToArray()); var page = pdf.GetPage(1); var image = Assert.Single(page.GetImages());
+        Assert.Equal(image.BoundingBox.Left, bounds.X, 3); Assert.Equal(page.Height - image.BoundingBox.Top, bounds.Y, 3);
+        Assert.Equal(image.BoundingBox.Width, bounds.Width, 3); Assert.Equal(image.BoundingBox.Height, bounds.Height, 3);
+    }
+
+    [Fact]
+    public void TransformedWrappedAndMixedInlineImagesRemainUnqualified()
+    {
+        string original = FidelityDocuments.ImageParagraph();
+        string cropped = original.Replace("<a:stretch>", "<a:srcRect l='50000'/><a:stretch>");
+        string rotated = original.Replace("<a:xfrm>", "<a:xfrm rot='5400000'>");
+        string tiled = original.Replace("<a:stretch><a:fillRect/></a:stretch>", "<a:tile/>");
+        string shifted = original.Replace("<a:off x='0' y='0'/>", "<a:off x='12700' y='0'/>");
+        string unknownGraphic = original.Replace("uri='http://schemas.openxmlformats.org/drawingml/2006/picture'", "uri='urn:unknown'");
+        string anchored = original.Replace("<wp:inline ", "<wp:anchor behindDoc='0' ")
+            .Replace("<wp:extent", "<wp:positionH relativeFrom='margin'><wp:posOffset>0</wp:posOffset></wp:positionH><wp:positionV relativeFrom='margin'><wp:posOffset>0</wp:posOffset></wp:positionV><wp:wrapNone/><wp:extent")
+            .Replace("</wp:inline>", "</wp:anchor>");
+        string mixed = original.Replace("</w:p>", "<w:r><w:t>After</w:t></w:r></w:p>");
+        string wrapped = original.Replace("<w:r>", "<w:hyperlink w:anchor='target'><w:r>").Replace("</w:r>", "</w:r></w:hyperlink>");
+        foreach (string body in new[] { cropped, rotated, tiled, shifted, unknownGraphic, anchored, mixed, wrapped })
+        {
+            byte[] source = FidelityDocuments.Docx("color-grid.png", body); using var input = new MemoryStream(source);
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx, new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
+                new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+            LayoutFragment image = Assert.Single(Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments, item => item.Text == string.Empty && item.Source != null && item.Bounds == null);
+            Assert.Null(image.ObjectSource); Assert.Equal("UnqualifiedOwner", image.UnavailableReason);
+        }
+    }
+
+    [Fact]
+    public void UnsupportedImagePlaceholderIsNotMappedAsTheSourceImage()
+    {
+        byte[] original = FidelityDocuments.Docx("color-grid.png", FidelityDocuments.ImageParagraph());
+        using var edited = new MemoryStream(); edited.Write(original, 0, original.Length);
+        using (var package = new ZipArchive(edited, ZipArchiveMode.Update, true))
+        {
+            ZipArchiveEntry relationships = package.GetEntry("word/_rels/document.xml.rels")!;
+            string xml; using (var reader = new StreamReader(relationships.Open())) xml = reader.ReadToEnd();
+            relationships.Delete();
+            FidelityDocuments.Add(package, "word/_rels/document.xml.rels", Encoding.UTF8.GetBytes(xml.Replace("media/color-grid.png", "media/replacement.svg")));
+            FidelityDocuments.Add(package, "word/media/replacement.svg", Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg'/>"));
+            ZipArchiveEntry typesEntry = package.GetEntry("[Content_Types].xml")!;
+            XDocument types; using (Stream stream = typesEntry.Open()) types = XDocument.Load(stream);
+            XNamespace contentTypes = "http://schemas.openxmlformats.org/package/2006/content-types";
+            types.Root!.Add(new XElement(contentTypes + "Default", new XAttribute("Extension", "svg"), new XAttribute("ContentType", "image/svg+xml")));
+            typesEntry.Delete(); FidelityDocuments.Add(package, "[Content_Types].xml", Encoding.UTF8.GetBytes(types.ToString()));
+        }
+        using var input = new MemoryStream(edited.ToArray());
+        var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx, new PreviewOptions { Layout = new LayoutSnapshotOptions() },
+            new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+        Assert.Contains(preview.Result.Diagnostics, diagnostic => diagnostic.Code == "Image.UnsupportedFormat");
+        LayoutFragment fragment = Assert.Single(Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments);
+        Assert.Null(fragment.ObjectSource); Assert.Null(fragment.Bounds); Assert.Equal("UnqualifiedOwner", fragment.UnavailableReason);
     }
 }

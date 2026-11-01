@@ -423,7 +423,11 @@ internal sealed partial class DocxReader
                     continue;
                 }
                 DocumentImage? image = ReadDrawing(child);
-                if (image != null) Emit(runs, new TextRun("", link: link, image: image));
+                if (image != null)
+                {
+                    if (context.CaptureLayoutSources && SnapshotInlineImage(child, image)) image.Source = context.Location;
+                    Emit(runs, new TextRun("", link: link, image: image));
+                }
             }
             else if (child.Name == W + "footnoteReference" || child.Name == W + "endnoteReference")
             {

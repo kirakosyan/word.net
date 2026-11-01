@@ -20,9 +20,9 @@ public sealed partial class WordConverter
         static bool Plain(ParagraphBlock p) => p.Control == null && p.NestedControl == null
             && !p.TypedControlId.HasValue && p.List == null && p.Runs.All(run => run.Control == null && !run.TypedControlId.HasValue
                 && run.FieldInstruction == null && run.Bookmark == null && run.Note == null && run.Image == null && run.Box == null && run.Object == null);
-        static bool BodyTable(string path)
+        static bool BodyElement(string path, string element)
         {
-            const string prefix = "/document[1]/body[1]/tbl[";
+            string prefix = "/document[1]/body[1]/" + element + "[";
             if (!path.StartsWith(prefix, StringComparison.Ordinal) || path.Length <= prefix.Length + 1
                 || path[path.Length - 1] != ']' || path[prefix.Length] is < '1' or > '9') return false;
             for (int i = prefix.Length + 1; i < path.Length - 1; i++) if (path[i] is < '0' or > '9') return false;
@@ -30,14 +30,28 @@ public sealed partial class WordConverter
         }
         var admitted = new HashSet<ParagraphBlock>(model.Blocks.OfType<ParagraphBlock>().Where(Plain));
         var cells = new Dictionary<ParagraphBlock, SourceLocation>();
-        var ambiguous = new HashSet<ParagraphBlock>(); long ownerWork = 0;
+        var ambiguous = new HashSet<ParagraphBlock>(); var images = new HashSet<ParagraphBlock>(); long ownerWork = 0;
+        foreach (ParagraphBlock paragraph in model.Blocks.OfType<ParagraphBlock>())
+        {
+            context.CheckCancellation();
+            if (paragraph.Runs.Count != 1 || paragraph.Control != null || paragraph.NestedControl != null || paragraph.TypedControlId.HasValue
+                || paragraph.List != null) continue;
+            TextRun run = paragraph.Runs[0];
+            if (run.Image is not DocumentImage image || run.Link != null || run.Control != null || run.TypedControlId.HasValue || run.FieldInstruction != null || run.Note != null
+                || run.Box != null || run.Object != null || run.Bookmark != null || image.Source == null || image.Anchor != null || image.Transformed) continue;
+            if (++ownerWork > Math.Min(100000L, context.Options.MaximumExpandedBytes / 128))
+                throw new InvalidDataException("Limit.LayoutSnapshot: Image owner inspection exceeds the snapshot work budget.");
+            SourceLocation? location = paragraph.Location;
+            if (location != null && location.Part == "word/document.xml" && BodyElement(location.Path, "p")
+                && image.Source.Part == location.Part && image.Source.Path == location.Path + "/r[1]/drawing[1]") images.Add(paragraph);
+        }
         foreach (TableBlock table in model.Blocks.OfType<TableBlock>())
         {
             context.CheckCancellation();
             if (++ownerWork > Math.Min(100000L, context.Options.MaximumExpandedBytes / 128))
                 throw new InvalidDataException("Limit.LayoutSnapshot: Cell owner inspection exceeds the snapshot work budget.");
             SourceLocation? tableLocation = table.Location;
-            if (tableLocation == null || tableLocation.Part != "word/document.xml" || !BodyTable(tableLocation.Path)
+            if (tableLocation == null || tableLocation.Part != "word/document.xml" || !BodyElement(tableLocation.Path, "tbl")
                 || table.Control != null || table.NestedControl != null || table.TypedControlId.HasValue
                 || table.RowControls.Count != 0 || table.TypedRowControls.Count != 0 || table.RowRevisions.Count != 0
                 || table.RowHeights.Count != 0 || table.Rows.Count == 0) continue;
@@ -86,12 +100,22 @@ public sealed partial class WordConverter
                 SourceLocation? source = location == null ? null : new SourceLocation(location.Part, location.Path);
                 SourceLocation? cellSource = item.SourceParagraph != null && cells.TryGetValue(item.SourceParagraph, out SourceLocation? owner)
                     ? new SourceLocation(owner.Part, owner.Path) : null;
+                SourceLocation? objectSource = item.Image?.Source != null && item.SourceParagraph != null && images.Contains(item.SourceParagraph)
+                    ? new SourceLocation(item.Image.Source.Part, item.Image.Source.Path) : null;
                 string? text = policy.IncludeText ? item.Text : null;
                 size = checked(size + 128 + 2L * ((source?.Part.Length ?? 0) + (source?.Path.Length ?? 0)
-                    + (cellSource?.Part.Length ?? 0) + (cellSource?.Path.Length ?? 0) + (text?.Length ?? 0)));
+                    + (cellSource?.Part.Length ?? 0) + (cellSource?.Path.Length ?? 0)
+                    + (objectSource?.Part.Length ?? 0) + (objectSource?.Path.Length ?? 0) + (text?.Length ?? 0)));
                 if (size > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.LayoutSnapshot: Layout snapshot exceeds the expanded-byte limit.");
                 LayoutBounds? bounds = null; string? reason = null;
                 if (source == null) reason = "SourceUnavailable";
+                else if (objectSource != null && item.Image is DocumentImage image && item.Rotation == 0)
+                {
+                    double x = item.X, y = item.Y - image.Height, width = image.Width, height = image.Height;
+                    if (!Finite(x) || !Finite(y) || !Finite(width) || !Finite(height) || width <= 0 || height <= 0)
+                        throw new InvalidDataException("Layout.SnapshotGeometry: Invalid image-frame bounds cannot be reported.");
+                    bounds = new LayoutBounds(x, y, width, height);
+                }
                 else if (!admitted.Contains(item.SourceParagraph!)) reason = "UnqualifiedOwner";
                 else if (item.Image != null || item.Box != null || item.Visual != null || item.Field != null || item.Rotation != 0 || item.NativeShape != null || item.IsLabel)
                     reason = "StructuredOrTransformed";
@@ -123,7 +147,7 @@ public sealed partial class WordConverter
                 }
                 bool? outsidePage = bounds == null ? null : bounds.X < 0 || bounds.Y < 0
                     || bounds.X + bounds.Width > page.Settings.Width || bounds.Y + bounds.Height > page.Settings.Height;
-                fragments.Add(new LayoutFragment(number, order, source, cellSource, bounds, text, reason, outsidePage));
+                fragments.Add(new LayoutFragment(number, order, source, cellSource, objectSource, bounds, text, reason, outsidePage));
             }
         }
         return new DocumentLayoutSnapshot(fragments, graphics);

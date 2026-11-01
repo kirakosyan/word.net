@@ -375,6 +375,13 @@ The [exact-source receipt](measurements/roadmap-138-layout-cells-826e5b7.json)
 records both complete suites, the 816-case matrix, local packages and reproduced
 fixtures. The unchanged [performance gate](measurements/roadmap-138-layout-cells-performance-826e5b7.json)
 passed, with the visible timing variation retained in its samples.
+The inline-image increment checks a direct drawing's source and emitted frame,
+plus unsupported transformed, wrapped and placeholder cases. Its [independent
+observation](measurements/roadmap-138-layout-images-reference.json) checks three
+schema-valid synthetic inputs, PDF and SVG frame geometry and decoded pixels,
+with seven altered controls. The comparison retains a 9.05-point LibreOffice
+horizontal placement difference at the unchanged 0.5-point tolerance when inline
+distances are omitted, and a passing explicit-zero-distance contrast.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner

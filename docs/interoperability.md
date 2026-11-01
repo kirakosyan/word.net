@@ -470,6 +470,22 @@ order but differs by 0.81 and 0.45 point on its two pages, above the unchanged
 0.25-point glyph-origin tolerance. This reference difference remains open; the
 snapshot describes the emitted preview and is not a cross-editor fidelity guarantee.
 
+An untransformed inline raster image in a direct `word/document.xml` body
+paragraph containing only that image can also expose `ObjectSource` for its source
+`w:drawing`. Its `Bounds` describe the image frame emitted by that preview;
+`Source` still identifies the paragraph. This profile excludes linked or wrapped
+owners, mixed content, anchored, cropped, tiled, rotated or flipped images,
+unsupported transformations, image effects and placeholder images. Alternative
+text is not included in the snapshot. Image-owner inspection shares the same
+bounded work and expansion budget. Source locations identify the captured revision
+and are not stable editing identities.
+The [independent image observation](measurements/roadmap-138-layout-images-reference.json)
+checks source identity, image pixels and the frame against PDF and SVG output. In
+the included specimen with omitted inline distances LibreOffice places the image
+9.05 points farther right, outside the unchanged 0.5-point tolerance. Setting all
+four distances explicitly to zero makes the horizontal positions agree in the
+contrast; default handling and cross-editor placement remain unresolved.
+
 Only positioned items are listed. Unqualified owners, transformed/native text,
 fields and generated items return null bounds with an `UnavailableReason`, and
 `HasUnmappedGraphics` reports non-text shapes without pretending to locate them.

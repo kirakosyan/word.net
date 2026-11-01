@@ -73,6 +73,7 @@ internal sealed class ConversionContext
     internal bool HtmlImport { get; set; }
     internal bool PreviewIntermediate { get; set; }
     internal bool RenderingPreview { get; set; }
+    internal bool CaptureLayoutSources { get; set; }
     internal OcrMetadataOptions OcrMetadata { get; }
     internal TypographyOptions Typography { get; }
     internal HyphenationOptions Hyphenation { get; }

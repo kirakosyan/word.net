@@ -28,7 +28,7 @@ public sealed partial class WordConverter
         ValidatePreview(preview, options);
         PageRange[] ranges = preview.Pages.ToArray();
         LayoutSnapshotOptions? layout = preview.Layout?.Snapshot();
-        var context = new ConversionContext(options, cancellationToken) { Destination = DocumentFormat.Pdf };
+        var context = new ConversionContext(options, cancellationToken) { Destination = DocumentFormat.Pdf, CaptureLayoutSources = layout != null };
         using var input = new BoundedMemoryStream(options.MaximumInputBytes); Copy(source, input, context, options.MaximumInputBytes);
         DocumentModel model = ReadDocument(input, sourceFormat, context);
         return RenderModel(model, format, dpi, pixelLimit, ranges, context, layout);

@@ -122,6 +122,37 @@ internal sealed partial class DocxReader
         }
     }
 
+    private static bool SnapshotInlineImage(XElement drawing, DocumentImage image)
+    {
+        if (image.IsPlaceholder || image.Anchor != null || image.Transformed) return false;
+        XElement? inline = drawing.Element(Wp + "inline");
+        XElement? graphic = inline?.Element(A + "graphic"), data = graphic?.Element(A + "graphicData");
+        XElement? picture = data?.Element(Pic + "pic");
+        XElement? fill = picture?.Element(Pic + "blipFill"), shape = picture?.Element(Pic + "spPr");
+        XElement? transform = shape?.Element(A + "xfrm"), blip = fill?.Element(A + "blip"), stretch = fill?.Element(A + "stretch");
+        XElement? fillRect = stretch?.Element(A + "fillRect"), frame = inline?.Element(Wp + "extent");
+        XElement? offset = transform?.Element(A + "off"), extent = transform?.Element(A + "ext");
+        return inline != null && drawing.Elements().Count() == 1 && inline.Element(Wp + "effectExtent") == null && fill != null && shape != null
+            && inline.Elements(Wp + "extent").Count() == 1 && inline.Elements(A + "graphic").Count() == 1
+            && graphic != null && graphic.Elements().Count() == 1 && data != null
+            && (string?)data.Attribute("uri") == Pic.NamespaceName && data.Elements().Count() == 1
+            && fill.Element(A + "srcRect") == null && blip != null && !blip.HasElements
+            && fill.Elements(A + "blip").Count() == 1 && fill.Elements(A + "stretch").Count() == 1
+            && stretch != null && stretch.Elements(A + "fillRect").Count() <= 1 && stretch.Elements().All(element => element.Name == A + "fillRect")
+            && (fillRect == null || !fillRect.HasAttributes && !fillRect.HasElements)
+            && fill.Elements().All(element => element.Name == A + "blip" || element.Name == A + "stretch")
+            && picture!.Elements().All(element => element.Name == Pic + "nvPicPr" || element.Name == Pic + "blipFill" || element.Name == Pic + "spPr")
+            && picture.Elements(Pic + "blipFill").Count() == 1 && picture.Elements(Pic + "spPr").Count() == 1
+            && shape.Elements(A + "xfrm").Count() <= 1 && shape.Elements(A + "prstGeom").Count() <= 1
+            && (transform == null || transform.Attributes().All(attribute => attribute.IsNamespaceDeclaration)
+                && transform.Elements(A + "off").Count() == 1 && transform.Elements(A + "ext").Count() == 1
+                && offset != null && (string?)offset.Attribute("x") == "0" && (string?)offset.Attribute("y") == "0"
+                && extent != null && (string?)extent.Attribute("cx") == (string?)frame!.Attribute("cx") && (string?)extent.Attribute("cy") == (string?)frame.Attribute("cy")
+                && transform.Elements().All(element => element.Name == A + "off" || element.Name == A + "ext"))
+            && shape.Elements().All(element => element.Name == A + "xfrm" || element.Name == A + "prstGeom")
+            && ((string?)shape.Element(A + "prstGeom")?.Attribute("prst") is null or "rect");
+    }
+
     private DocumentImage? ReadDrawing(XElement drawing)
     {
         XElement? inline = drawing.Element(Wp + "inline");

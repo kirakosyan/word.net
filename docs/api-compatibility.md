@@ -213,8 +213,8 @@ See the [bounded block profile](content-controls.md#unreleased-source-creating-a
 it is not in published 1.5.0 packages.
 
 Unreleased #167 source adds `PreviewOptions.Layout` and immutable preview-layout
-snapshot types. The additive `LayoutFragment.CellSource` identifies a bounded
-DOCX cell owner when available. They expose no provider or model types; text is
+snapshot types. The additive `LayoutFragment.CellSource` and `ObjectSource` identify
+bounded DOCX cell and inline-drawing owners when available. They expose no provider or model types; text is
 opt-in and unqualified geometry is nullable. See the [snapshot profile](interoperability.md#unreleased-source-preview-layout-snapshots).
 The published 1.5.0 API does not include them.
 
