@@ -33,6 +33,24 @@ internal sealed partial class DocxReader
             context.Loss("Template.ControlProperties", "Control-specific validation, locking, data bindings and appearance are outside the editable tagged-control profile.");
         if (tag.Length > 256) throw new InvalidDataException("Template.TagLength: A control tag exceeds the supported length.");
         var control = new TemplateControl(tag);
+        // Only retain a source node for the small, directly owned inline-control
+        // profile that template inspection can examine without binding data.
+        if (context.CaptureTemplateSources && element.Parent?.Name == W + "p"
+            && element.Parent.Parent?.Name == W + "body" && element.Parent.Parent.Parent?.Name == W + "document")
+        {
+            XElement[] pieces = element.Elements().Take(3).ToArray();
+            if (pieces.Length == 2 && pieces[0].Name == W + "sdtPr" && pieces[1].Name == W + "sdtContent")
+            {
+                XElement[] properties = pieces[0].Elements().Take(4).ToArray();
+                XElement[] contents = pieces[1].Elements().Take(2).ToArray();
+                if (properties.All(p => p.Name == W + "tag" || p.Name == W + "id" || p.Name == W + "alias")
+                    && contents.Length == 1 && contents[0].Name == W + "r")
+                {
+                    XElement[] run = contents[0].Elements().Take(2).ToArray();
+                    if (run.Length == 1 && run[0].Name == W + "t" && !run[0].HasElements) control.InspectionElement = element;
+                }
+            }
+        }
         if (element.Element(W + "sdtPr")?.Element(W + "id") is XElement id)
         {
             string value = DocxPackage.RequiredAttribute(id, W + "val");

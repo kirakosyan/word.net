@@ -24,6 +24,14 @@ undeclared parents produce findings. A scalar with an unspecified precise type i
 unknown for a date or number switch. Declarations are a caller promise, not a check
 that a later data object actually contains a value.
 
+The inspection also checks simple direct body-paragraph `merge:`, `image:` and
+`if:` inline controls when no repeat control occurs in the document. The admitted
+control has only `tag`, optional `id`/`alias` metadata and one plain text run; it
+checks presence, parent mappings and scalar/image type as applicable. An `if:`
+control accepts any declared value type and `!` negates the condition. Formatted,
+nested, table-cell, story and other controls remain uninspected. Even when a simple
+control is checked, `Plan.ControlCoverage` remains unknown for the whole document.
+
 The table subset is a direct `word/document.xml` body table with a rectangular
 grid, unmerged cells and ordinary, directly owned paragraphs. Nested or wrapped
 tables and rows, merged cells, controls, revision-bearing owners, links, notes,
@@ -48,7 +56,7 @@ schema declarations to match the template. Exit 2 denotes a definite inspected
 path/control problem; exit 1 includes unknown coverage and must not be treated as
 approval. Findings contain opaque `path-0001` and `part-0001` aliases, stable codes
 and remediation identifiers. Part aliases identify whole parts. For a direct
-simple field, a finding may also expose `SourceElementIndices`: one-based element
+simple field or admitted inline control, a finding may also expose `SourceElementIndices`: one-based element
 child positions starting with the root element. They identify a node only within
 the inspected input bytes; complex fields and other unlocated findings return null.
 Positions contain neither element names nor values, but can still reveal document
@@ -60,7 +68,7 @@ a document and must be protected.
 
 This report always sets `IsReusable` to false: it does not bind effective options,
 fonts, providers or engine identities and cannot authorize #172 policy execution.
-Controls and repeat scopes, other table structures, stories, notes, text boxes, other fields,
+Other controls and repeat scopes, other table structures, stories, notes, text boxes, other fields,
 destination compatibility, layout, writing and independent validation remain
 uninspected or unknown. Invalid input and resource limits throw instead of returning
 a partial report. Streams are consumed from their current positions and left open;
@@ -70,6 +78,9 @@ The API is unreleased source, and full #171 acceptance remains open.
 The [independent location observation](measurements/roadmap-138-preflight-locations-reference.json)
 checks simple body/cell field positions against source XML and confirms that a
 complex field remains unlocated; nine altered controls exercise the checker.
+The [independent control observation](measurements/roadmap-138-preflight-controls-reference.json)
+compares source positions and path/type findings with actual failed and successful
+merges, including unknown formatted and repeated controls.
 
 Pending #144 source supports an inline typed child inside an admitted rich-text
 block control. Inspect the child's `ParentId` snapshot and reacquire handles after

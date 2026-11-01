@@ -93,7 +93,7 @@ public sealed class TemplateInspectionFinding
     public bool Unknown { get; }
 }
 
-/// <summary>A body merge-field path observed without evaluating its value.</summary>
+/// <summary>A bounded body merge-field or inline-control path observed without evaluating its value.</summary>
 public sealed class TemplateInspectionRequirement
 {
     internal TemplateInspectionRequirement(string path, TemplatePathType? type, bool? required, bool scopeUnknown, int count)
@@ -128,7 +128,7 @@ public sealed class TemplateInspection
     public DocumentFormat Destination { get; }
     /// <summary>Gets privacy-safe findings. An empty set would not prove conversion or fidelity.</summary>
     public IReadOnlyList<TemplateInspectionFinding> Findings { get; }
-    /// <summary>Gets observed ordinary-body field requirements, not a complete template inventory.</summary>
+    /// <summary>Gets observed bounded field and inline-control requirements, not a complete template inventory.</summary>
     public IReadOnlyList<TemplateInspectionRequirement> Requirements { get; }
     /// <summary>Always false: options, fonts and provider identities are not bound by this inspection.</summary>
     public bool IsReusable { get; }

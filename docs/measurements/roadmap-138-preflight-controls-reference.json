@@ -1,0 +1,89 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "636f00914d082b36ef46e6c5a7a5a58b54d7843e",
+  "scope": "Working-tree evidence for bounded, non-reusable inspection of plain direct inline body controls; other controls and repeat scopes remain unknown.",
+  "provenance": "Five synthetic DOCX inputs were independently authored with MIT fixture helpers, without wordnet serialization; two generations were byte-identical. Open XML SDK 3.5.1 validated all five inputs and the successful merged output. Python independently parsed XML positions and merged text, compared predictions with actual merge outcomes and rejected ten in-memory altered controls.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-preflight-controls.py": "d6cbab525f88b0572b8a6a9d512e5ad8274874dee639867dbef2752d2488a6d2",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-preflight-controls-probe.cs": "fc7ea4ddcabbb228317b88252191c4f22372f81b2aca5062cd48d079f1d0eee6",
+    "eng/verify-roadmap-138-preflight-controls.py": "a638a2d5f4e92212e284a2f397bde1a0195110c7f36e2df9b60bc6b15a6d2dd0",
+    "src/wordnet/TemplateInspection.cs": "b2a46c795812781b095ece74855202d9d2c434607625291b155085e1c30bbaac",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "5e4e431e47ec847147ccff18fcec0d10fe37582fc4abe9196e45bac6b90fb965",
+    "src/wordnet/Formats/DocxReader.cs": "40f1bc954aea5113f57d08893ee9eab0dbf3aa7809459cfb4c7cdc4a07dd6e09",
+    "src/wordnet/Formats/DocxReader.Templates.cs": "89a87e5ce7ee4b14d7f6c7ffc00d6171b52ddea88dc80849195617aac5d266cd",
+    "src/wordnet/Internal/ConversionContext.cs": "79aab02ca0f94639dc178e15c13faaaba4733f4876b1db644afd0a2390fdfff3",
+    "src/wordnet/Internal/XmlSourceLocation.cs": "03cc23fbee7718ab41f6342a78b0082637e5595020242c2e5121687813decd35",
+    "src/wordnet/Model/DocumentModel.cs": "9ee723afbce4c72447ddd5e6639b325579de5c70652b832db7a34f01b4f1f103",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "deed5e025adf08114a2e872b5649390cf6375d4f7a7ab8ede7ae013ee5d3b071"
+  },
+  "probeWordnetAssemblySha256": "a44e2c73bc9359ca3b007579487a84edb31f8e8f17fd9d14c863fe47082d0207",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "inputSchemaLogSha256": "de7d7e58dc69c7804b97d05484f593ddb74a36ce2e7773a224bcbecbcd19b492",
+  "outputSchemaLogSha256": "d9f0c923416c96dc74d0a6c2f892977eed7c0e3bd6fa9891b8eac881c7b3e0d9",
+  "verifierLogSha256": "af8526e1df7f27daaa3c7b7506a386219232b731a587d49f3b5bdf733a509727",
+  "focusedTestsLogSha256": "0c5e731117a701944ee1e15885355cf82ef4526eda628227c0fe51276b051cae",
+  "specimenHashes": {
+    "simple": {
+      "inputDocxSha256": "3963142e5bb1172babf6c76f3cfa85c35795cc0208a1d898a438138621ce474b",
+      "defaultReportSha256": "7eb38d83d819d28adfb63d94625a4bebdc3fbe4b818d4dcf0a78e708ab2ca364",
+      "observationSha256": "248283b2f90f9470cb6a385df360b8201fa1f023ff3d877d7cabcea8a0bd0a6d",
+      "mergedDocxSha256": "c98bc7e28fe0994cd2c2fb96125e60527155f828dbc05cbc4e7afd8cc2dd04a7"
+    },
+    "image": {
+      "inputDocxSha256": "a34ef66d82a8a44a6fd1e03db8ef335282c86b3e400f32a3f673746c04913aa7",
+      "defaultReportSha256": "fcd795eb4d17b65bfa108eb9d238466b94f13777a06d164431cf0c60485721f4",
+      "observationSha256": "aad35ec57f7ac253c65fe1a7b3a6ac0ecb52263f8405fefed0153e52851b8f8a"
+    },
+    "formatted": {
+      "inputDocxSha256": "f29ea3c4053598b5a170c6d2734b0141258c3261b760ec45552a54b5bf55f14c",
+      "defaultReportSha256": "790baff31de98352faff4ad6128ac0f4be261fd19fbd38862095b341cc981f25",
+      "observationSha256": "df3ddf1f6dcb0baabf04f94f9edf7f576f60c3ce031fa1be4c8c606ca094dbb5"
+    },
+    "invalid": {
+      "inputDocxSha256": "01da71475897ae136fd76aa2d29a3dd98a9a950b9dc1376df1226e426f794729",
+      "defaultReportSha256": "022563f36ab9858cd7b61fb35f80e05bff8189eed6a2920c30eedcfc05d2e4be",
+      "observationSha256": "2fa96ea1bb86b1fb705715ed43b8cbbd93e35eef86bc18be621bd9a683b3b556"
+    },
+    "repeat": {
+      "inputDocxSha256": "b6aeb105f5a54f3876b56e6713e26f669f1d365af08197b4aadb7dfce8ad31c8",
+      "defaultReportSha256": "fad31ab2ee0f782da545c237479ef8d4b058143c4507586403e3db9c272677cc",
+      "observationSha256": "7f17462daa81df2b5a0c04a835c670dafe183071dabf477b22a18989392edc75"
+    }
+  },
+  "result": {
+    "result": {
+      "simpleControls": 2,
+      "imageTypeRejected": true,
+      "formattedControlUnknown": true,
+      "invalidPathRejected": true,
+      "repeatScopeUnknown": true,
+      "defaultNamesDisclosed": false
+    },
+    "negativeControls": {
+      "wrong source position": "Missing control path or source position differs from XML",
+      "missing path": "Missing control path or source position differs from XML",
+      "image type": "Image type finding differs from source",
+      "changed failed merge": "Missing-path prediction does not match the unchanged failed merge",
+      "changed output": "Successful merged content differs from the independent package read",
+      "leaked path": "Default report disclosed a source or path name",
+      "leaked part": "Default report disclosed a source or path name",
+      "lost control coverage": "Control coverage or reuse boundary changed",
+      "invented repeat requirement": "Repeated scope is not explicitly unknown",
+      "missing invalid diagnostic": "Invalid control path differs from merge admission"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  },
+  "retainedFailures": [
+    {
+      "observation": "Initial focused build failed analyzer CA1865 on a single-character string prefix; code was corrected without suppression.",
+      "logSha256": "ac68e9ca9fc81eb73de19475762ae7f302c5b567360d4589980db75b70e58334"
+    },
+    {
+      "observation": "Initial invalid-path probe used an invalid JSON key and failed during data snapshot before reaching the control; the probe was corrected to use an empty object.",
+      "logSha256": "2d210884a5eccd14ab40219e545052df3d895472504bf03588123cab900de015"
+    }
+  ]
+}

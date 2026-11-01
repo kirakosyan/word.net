@@ -13,7 +13,7 @@ namespace WordNet;
 public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
-    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields. Controls, repeated scopes, other owners,
+    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline body controls. Other controls, repeated scopes, other owners,
     /// output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
@@ -26,7 +26,7 @@ public sealed partial class WordConverter
         options ??= new ConversionOptions();
         // Template binding begins from WordDocument.Load, whose reader destination is DOCX.
         // The caller's requested eventual destination is not assessed in this snapshot.
-        var context = new ConversionContext(options, cancellationToken) { Editing = true, Inspecting = true, CaptureTemplateFieldSources = true, Destination = DocumentFormat.Docx };
+        var context = new ConversionContext(options, cancellationToken) { Editing = true, Inspecting = true, CaptureTemplateSources = true, Destination = DocumentFormat.Docx };
         context.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes);
         Copy(source, input, context, options.MaximumInputBytes);
@@ -89,6 +89,40 @@ public sealed partial class WordConverter
             catch (InvalidDataException) { Add("Plan.InvalidControlPath", "Remediation.FixControl"); }
             catch (NotSupportedException) { Add("Plan.InvalidControl", "Remediation.FixControl"); }
             if (!control.Executable) Add("Plan.InvalidControlStructure", "Remediation.FixControl");
+        }
+        void InspectPath(string path, string? part, string kind, string? formatSwitch, Func<IReadOnlyList<int>?> location)
+        {
+            bool present = observedPaths.TryGetValue(path, out int count);
+            if (!present && observedPaths.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Requirement limit exceeded.");
+            observedPaths[path] = checked(count + 1);
+            if (scoped) return;
+            if (!declarations.TryGetValue(path, out TemplateSchemaPath? declared))
+            { Add("Plan.MissingPath", "Remediation.DeclarePath", path, part, indices: location()); return; }
+            if (!declared.Required) Add("Plan.OptionalPath", "Remediation.RequirePath", path, part, unknown: true, indices: location());
+            bool unknownType = kind == "field" && formatSwitch != null && declared.Type == TemplatePathType.Scalar;
+            bool compatible = kind switch
+            {
+                "if" => true,
+                "image" => declared.Type == TemplatePathType.Image,
+                _ => formatSwitch switch
+                {
+                    "\\@" => declared.Type == TemplatePathType.Date,
+                    "\\#" => declared.Type == TemplatePathType.Number,
+                    _ => declared.Type is TemplatePathType.Scalar or TemplatePathType.Number or TemplatePathType.Date,
+                },
+            };
+            if (unknownType) Add("Plan.PathTypeUnknown", "Remediation.DeclarePathType", path, part, unknown: true, indices: location());
+            else if (!compatible) Add("Plan.PathType", "Remediation.FixPathType", path, part, indices: location());
+            string[] segments = path.Split('.');
+            for (int i = 1; i < segments.Length; i++)
+            {
+                Work(); string parent = string.Join(".", segments.Take(i));
+                if (!declarations.TryGetValue(parent, out TemplateSchemaPath? ancestor))
+                    Add("Plan.ParentTypeUnknown", "Remediation.DeclareParent", parent, part, unknown: true, indices: location());
+                else if (ancestor.Type != TemplatePathType.Mapping)
+                    Add("Plan.ParentType", "Remediation.FixPathType", parent, part, indices: location());
+                else if (!ancestor.Required) Add("Plan.OptionalParent", "Remediation.RequirePath", parent, part, unknown: true, indices: location());
+            }
         }
         bool otherOwners = model.Blocks.Any(b => b is not ParagraphBlock)
             || model.Notes.Count != 0 || model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection })
@@ -154,6 +188,7 @@ public sealed partial class WordConverter
             }
             if (simple) paragraphs.AddRange(candidates);
         }
+        var inspectedControls = new HashSet<TemplateControl>();
         foreach (ParagraphBlock paragraph in paragraphs)
         {
             Work();
@@ -161,7 +196,32 @@ public sealed partial class WordConverter
             foreach (TextRun run in paragraph.Runs)
             {
                 Work();
-                if (run.Control != null || run.Box != null || run.Note != null) { otherOwners = true; continue; }
+                if (run.Control != null)
+                {
+                    otherOwners = true;
+                    TemplateControl control = run.Control;
+                    var controlElement = control.InspectionElement;
+                    if (scoped || controlElement == null || !control.Executable || !inspectedControls.Add(control)) continue;
+                    (string Kind, string Path) tag;
+                    try { tag = WordDocument.Tag(control.Tag); }
+                    catch (InvalidDataException) { continue; }
+                    catch (NotSupportedException) { continue; }
+                    if (tag.Kind == "repeat") continue;
+                    string path = tag.Kind == "if" && tag.Path.Length != 0 && tag.Path[0] == '!' ? tag.Path.Substring(1) : tag.Path;
+                    IReadOnlyList<int>? controlIndices = null; bool controlLocated = false;
+                    IReadOnlyList<int>? ControlLocation()
+                    {
+                        if (!controlLocated)
+                        {
+                            controlLocated = true;
+                            if (paragraph.Location?.Part != null) controlIndices = XmlSourceLocation.ChildIndices(controlElement, Work);
+                        }
+                        return controlIndices;
+                    }
+                    InspectPath(path, paragraph.Location?.Part, tag.Kind, null, ControlLocation);
+                    continue;
+                }
+                if (run.Box != null || run.Note != null) { otherOwners = true; continue; }
                 if (run.FieldInstruction == null) continue;
                 string? part = paragraph.Location?.Part;
                 IReadOnlyList<int>? indices = null; bool located = false;
@@ -181,32 +241,7 @@ public sealed partial class WordConverter
                 (string Path, string? Format, string? Switch) field;
                 try { field = WordDocument.MergeField(run.FieldInstruction); }
                 catch (InvalidDataException) { Add("Plan.InvalidField", "Remediation.FixField", part: part, indices: Location()); continue; }
-                bool present = observedPaths.TryGetValue(field.Path, out int count);
-                if (!present && observedPaths.Count == 4096) throw new InvalidDataException("Limit.TemplateInspection: Requirement limit exceeded.");
-                observedPaths[field.Path] = checked(count + 1);
-                if (scoped) continue;
-                if (!declarations.TryGetValue(field.Path, out TemplateSchemaPath? declared))
-                { Add("Plan.MissingPath", "Remediation.DeclarePath", field.Path, part, indices: Location()); continue; }
-                if (!declared.Required) Add("Plan.OptionalPath", "Remediation.RequirePath", field.Path, part, unknown: true, indices: Location());
-                bool unknownType = field.Switch != null && declared.Type == TemplatePathType.Scalar;
-                bool compatible = field.Switch switch
-                {
-                    "\\@" => declared.Type == TemplatePathType.Date,
-                    "\\#" => declared.Type == TemplatePathType.Number,
-                    _ => declared.Type is TemplatePathType.Scalar or TemplatePathType.Number or TemplatePathType.Date,
-                };
-                if (unknownType) Add("Plan.PathTypeUnknown", "Remediation.DeclarePathType", field.Path, part, unknown: true, indices: Location());
-                else if (!compatible) Add("Plan.PathType", "Remediation.FixPathType", field.Path, part, indices: Location());
-                string[] segments = field.Path.Split('.');
-                for (int i = 1; i < segments.Length; i++)
-                {
-                    Work(); string parent = string.Join(".", segments.Take(i));
-                    if (!declarations.TryGetValue(parent, out TemplateSchemaPath? ancestor))
-                        Add("Plan.ParentTypeUnknown", "Remediation.DeclareParent", parent, part, unknown: true, indices: Location());
-                    else if (ancestor.Type != TemplatePathType.Mapping)
-                        Add("Plan.ParentType", "Remediation.FixPathType", parent, part, indices: Location());
-                    else if (!ancestor.Required) Add("Plan.OptionalParent", "Remediation.RequirePath", parent, part, unknown: true, indices: Location());
-                }
+                InspectPath(field.Path, part, "field", field.Switch, Location);
             }
         }
         if (otherOwners) Add("Plan.OwnerCoverage", "Remediation.ReviewOwners", unknown: true);

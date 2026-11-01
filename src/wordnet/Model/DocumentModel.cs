@@ -500,6 +500,7 @@ internal sealed class TemplateControl
     internal TemplateControl(string tag) { Tag = tag; }
     internal string Tag { get; }
     internal bool Executable { get; set; } = true;
+    internal XElement? InspectionElement { get; set; }
 }
 
 internal sealed class RunAppearance

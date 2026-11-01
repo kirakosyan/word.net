@@ -341,6 +341,11 @@ remain separate. The earlier 4f push and PR package guests both passed on actual
 Framework 4.7.2 with cleanup; their [push](measurements/roadmap-138-framework-4f-push-package-success.json)
 and [PR](measurements/roadmap-138-framework-4f-pr-package-success.json) receipts do
 not qualify newer source.
+The following control-preflight increment compares direct inline control findings
+with actual missing, type-mismatched and successful merges. Five independently
+authored schema-valid inputs, a schema-valid merged output and ten altered controls
+are recorded in the [reference observation](measurements/roadmap-138-preflight-controls-reference.json).
+Formatted, nested, table-cell and repeated controls retain unknown coverage.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

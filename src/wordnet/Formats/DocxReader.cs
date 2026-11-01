@@ -366,7 +366,7 @@ internal sealed partial class DocxReader
                 FieldCapture field = fields.Pop();
                 if (fields.Count > 0 && !fields.Peek().Separated) CaptureChild(DocxPackage.RequiredAttribute(child, W + "instr"), field);
                 else EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result, field.NestedInstruction, field.RetainTree ? field.Children : null);
-                if (context.CaptureTemplateFieldSources && child.Parent?.Name == W + "p" && fields.Count == 0
+                if (context.CaptureTemplateSources && child.Parent?.Name == W + "p" && fields.Count == 0
                     && runs.Count == first + 1 && runs[first].FieldInstruction != null)
                     runs[first].TemplateFieldElement = child;
                 continue;

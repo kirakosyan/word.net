@@ -1311,6 +1311,29 @@
       ]
     },
     {
+      "id": "template-inspection-simple-inline-controls",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Non-reusable inspection checks direct plain inline body merge, image and condition controls without data binding while retaining unknown document-wide control coverage.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "SimpleInlineControlAndFieldRequirementsMatchMergeWithoutExposingNames" },
+        { "class": "TemplateInspectionTests", "method": "SimpleInlineControlTypeFindingsMatchMergeFailures" },
+        { "class": "TemplateInspectionTests", "method": "DeclaredImageControlCanBindCallerImageBytes" },
+        { "class": "TemplateInspectionTests", "method": "InlineConditionsUseTheDeclaredPathButComplexControlsStayUnknown" }
+      ]
+    },
+    {
+      "id": "template-inspection-unqualified-inline-controls",
+      "issue": 171,
+      "outcome": "rejected",
+      "boundary": "Formatted and other complex controls are not treated as inspected; repeat scopes retain explicit unknown coverage.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "InlineConditionsUseTheDeclaredPathButComplexControlsStayUnknown" },
+        { "class": "TemplateInspectionTests", "method": "NestedAndCellInlineControlsRemainUninspected" },
+        { "class": "TemplateInspectionTests", "method": "RepeatsAndUninspectedOwnersStayUnknown" }
+      ]
+    },
+    {
       "id": "nary-equation-managed",
       "issue": 169,
       "outcome": "supported-bounded",

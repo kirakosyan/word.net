@@ -4,7 +4,7 @@
 
 Pending #171 adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
 and privacy-safe `TemplateInspection` snapshots. Its ordinary-body and bounded
-simple-cell field scope and
+simple-cell field and simple inline body-control scope and
 explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
 The additive `TemplateInspectionFinding.SourceElementIndices` exposes a bounded
 numeric source position where available, without exposing names by default.
