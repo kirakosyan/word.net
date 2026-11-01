@@ -12,10 +12,12 @@ namespace WordNet;
 /// <summary>A privacy-safe mismatch between JSON data and a declared template path.</summary>
 public sealed class TemplateDataFinding
 {
-    internal TemplateDataFinding(string code, string path, string? scope, int? itemIndex, bool unknown)
-    { Code = code; PathId = path; ScopePathId = scope; ItemIndex = itemIndex; Unknown = unknown; }
+    internal TemplateDataFinding(string code, string remediation, string path, string? scope, int? itemIndex, bool unknown)
+    { Code = code; Remediation = remediation; PathId = path; ScopePathId = scope; ItemIndex = itemIndex; Unknown = unknown; }
     /// <summary>Gets a stable machine-readable finding code.</summary>
     public string Code { get; }
+    /// <summary>Gets a machine-readable action identifier without path names or data values.</summary>
+    public string Remediation { get; }
     /// <summary>Gets the opaque alias of the declared path.</summary>
     public string PathId { get; }
     /// <summary>Gets the opaque repeat collection alias for an item finding, or null.</summary>
@@ -81,7 +83,15 @@ public sealed partial class TemplateDataSchema
         {
             Work();
             if (findings.Count == 4096) throw new InvalidDataException("Limit.TemplateDataInspection: Finding limit exceeded.");
-            findings.Add(new TemplateDataFinding(code, aliases[path], scope == null ? null : aliases[scope], index, unknown));
+            string remediation = code switch
+            {
+                "Data.MissingPath" => "Remediation.ProvidePath",
+                "Data.MissingItemPath" => "Remediation.ProvideItemPath",
+                "Data.ScopeMissing" => "Remediation.ProvideCollection",
+                "Data.PathType" or "Data.ItemPathType" or "Data.ScopeType" => "Remediation.FixDataType",
+                _ => throw new InvalidOperationException("Unknown template data finding code."),
+            };
+            findings.Add(new TemplateDataFinding(code, remediation, aliases[path], scope == null ? null : aliases[scope], index, unknown));
         }
         bool Lookup(object? value, string path, out object? found)
         {

@@ -25,7 +25,10 @@ MERGED = {
 
 
 def finding(code, path, scope=None, index=None, unknown=False):
-    return {'Code': code, 'path': path, 'scope': scope, 'ItemIndex': index, 'Unknown': unknown}
+    remediation = {'Data.MissingPath': 'Remediation.ProvidePath', 'Data.MissingItemPath': 'Remediation.ProvideItemPath',
+                   'Data.ScopeMissing': 'Remediation.ProvideCollection', 'Data.PathType': 'Remediation.FixDataType',
+                   'Data.ItemPathType': 'Remediation.FixDataType', 'Data.ScopeType': 'Remediation.FixDataType'}[code]
+    return {'Code': code, 'Remediation': remediation, 'path': path, 'scope': scope, 'ItemIndex': index, 'Unknown': unknown}
 
 
 EXPECTED = {
@@ -95,7 +98,7 @@ def check(observations):
             raise ValueError('Default report finding count changed: ' + name)
         aliases = {}
         for public, resolved in zip(default['Findings'], expected):
-            for key in ('Code', 'ItemIndex', 'Unknown'):
+            for key in ('Code', 'Remediation', 'ItemIndex', 'Unknown'):
                 if public[key] != resolved[key]:
                     raise ValueError('Default report finding changed: ' + name)
             for alias, path in ((public['PathId'], resolved['path']), (public['ScopePathId'], resolved['scope'])):
@@ -148,7 +151,8 @@ def main():
                  'JSON date string admitted', 'error summary changed', 'unknown summary changed',
                  'default name leaked', 'default alias changed', 'malformed error changed',
                  'limit error changed', 'partial failure report', 'failed merge mutated',
-                 'independent office output changed', 'saved DOCX output changed'):
+                 'independent office output changed', 'saved DOCX output changed', 'item remediation changed',
+                 'unknown scope remediation changed', 'scope type remediation changed'):
         changed = copy.deepcopy(observations)
         fallback = changed['fallback']['result']['findings'][0]
         if name == 'missing item index': fallback['ItemIndex'] = 0
@@ -175,6 +179,9 @@ def main():
         if name == 'failed merge mutated': changed['missing-scope']['result']['before'] = ['changed']
         if name == 'independent office output changed': changed['fallback']['officeText'][2] = 'other'
         if name == 'saved DOCX output changed': changed['fallback']['mergedText'][2] = 'other'
+        if name == 'item remediation changed': fallback['Remediation'] = 'Remediation.ProvidePath'
+        if name == 'unknown scope remediation changed': changed['missing-scope']['result']['findings'][0]['Remediation'] = 'Remediation.FixDataType'
+        if name == 'scope type remediation changed': changed['scope-type']['result']['findings'][1]['Remediation'] = 'Remediation.ProvideCollection'
         try:
             check(changed)
         except (ValueError, KeyError, TypeError, IndexError) as error:

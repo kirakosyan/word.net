@@ -462,6 +462,11 @@ independent checks with the packaged assembly. The unchanged local
 [performance gate](measurements/roadmap-138-nested-repeat-item-performance-00abb80.json)
 passed at 0.931 against the preceding head; reference round medians varied from
 44.015 to 49.974 ms. Hosted and actual Framework checks for this source are separate.
+The [data-lint observation](measurements/roadmap-138-data-lint-reference.json)
+runs eleven independent CLI scenarios and the earlier ten JSON data cases,
+including 51 altered-observation controls. It retains an initial malformed-JSON
+stack-trace failure and the corrected retry. Malformed inputs now produce a generic
+error and no partial report in these cases; the example does not approve output.
 The earlier `5cbf06e` [push source](measurements/roadmap-138-framework-5cb-push-source-success.json),
 [push package](measurements/roadmap-138-framework-5cb-push-package-success.json),
 [PR source](measurements/roadmap-138-framework-5cb-pr-source-success.json) and

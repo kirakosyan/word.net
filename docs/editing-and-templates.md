@@ -121,10 +121,16 @@ array size, depth, expansion, alias, finding and work bounds apply; malformed or
 oversized input and cancellation fail without a partial report.
 
 The [local example](../examples/WordNet.TemplateLint/Program.cs) prints JSON:
-`dotnet run --project examples/WordNet.TemplateLint -- invoice.docx`. Change its
-schema declarations to match the template. Exit 2 denotes a definite inspected
-path/control problem; exit 1 includes unknown coverage and must not be treated as
-approval. Findings contain opaque `path-0001` and `part-0001` aliases, stable codes
+`dotnet run --project examples/WordNet.TemplateLint -- invoice.docx invoice-data.json`.
+The optional JSON file is read with a character bound and checked against all
+example schema declarations, not only paths observed in the template. With data,
+the output contains separate `template` and `data` reports; with the template
+alone, the original template report is printed. Change its schema declarations
+to match the application. Exit 2 denotes a definite inspected path/control or data
+problem, malformed input or an I/O error; failed input prints no partial report
+and uses a generic error message. Exit 1 includes unknown coverage and must not be
+treated as approval. Data findings include stable `Remediation.*` identifiers.
+Findings contain opaque `path-0001` and `part-0001` aliases, stable codes
 and remediation identifiers. Part aliases identify whole parts. For a direct
 simple field or admitted control, a finding may also expose `SourceElementIndices`: one-based element
 child positions starting with the root element. They identify a node only within

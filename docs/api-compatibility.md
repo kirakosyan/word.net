@@ -19,6 +19,8 @@ collection alias when known; existing root declarations and constructors remain.
 declared root and repeat-item mismatches in bounded JSON data. Its aliases are
 local to that report, and item indices disclose structure. It checks declarations
 independently of any template and cannot guarantee a merge or output.
+`TemplateDataFinding.Remediation` supplies a stable action identifier without
+disclosing path names or values.
 It is non-reusable and is not in published 1.5.0; it does not implement loss policy.
 
 The pending #144 source adds the nullable `DocumentContentControl.ParentId`

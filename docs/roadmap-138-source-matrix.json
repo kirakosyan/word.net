@@ -1373,7 +1373,7 @@
       "id": "template-json-data-schema",
       "issue": 171,
       "outcome": "supported-bounded",
-      "boundary": "A separate privacy-safe report compares bounded JSON data to all declared root and repeat-item paths. Required item paths are checked even when merge could fall back to root; absent scopes remain unknown. Null is admitted, JSON does not supply typed dates or images, and the report does not guarantee template output.",
+      "boundary": "A separate privacy-safe report compares bounded JSON data to all declared root and repeat-item paths and supplies action identifiers. Required item paths are checked even when merge could fall back to root; absent scopes remain unknown. Null is admitted, JSON does not supply typed dates or images, and the report does not guarantee template output.",
       "tests": [
         { "class": "TemplateInspectionTests", "method": "JsonSchemaInspectionFindsAnItemPromiseViolationDespiteRootFallback" },
         { "class": "TemplateInspectionTests", "method": "JsonSchemaInspectionPreservesOptionalFallbackAndMissingScopeUncertainty" },

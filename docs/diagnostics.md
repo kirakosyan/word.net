@@ -415,6 +415,10 @@ data prevented item assessment. These are declaration checks rather than
 predictions of a merge, and all declared paths are checked even if a template
 does not use them. Names are opaque by default; item indices can disclose data
 structure. Failure or cancellation returns no partial report.
+Each data finding has a machine-readable remediation: `Remediation.ProvidePath`,
+`Remediation.ProvideItemPath`, `Remediation.ProvideCollection` or
+`Remediation.FixDataType`. These identify possible caller actions without changing
+the data, exposing names, or claiming that conversion will succeed.
 
 For a PDF destination, `Plan.PdfOptionsMissing`, `Plan.PdfOptionsInvalid`,
 `Plan.PdfTaggedArchiveConflict` and `Plan.PdfNativeArchiveConflict` are static

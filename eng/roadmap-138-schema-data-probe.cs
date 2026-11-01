@@ -28,7 +28,7 @@ if (report != null)
 {
     File.WriteAllText(Path.Combine(directory, "default.json"), JsonSerializer.Serialize(report));
     var paths = report.GetSensitivePathAliases();
-    findings = report.Findings.Select(f => new { f.Code, path = paths[f.PathId], scope = f.ScopePathId == null ? null : paths[f.ScopePathId], f.ItemIndex, f.Unknown }).ToArray();
+    findings = report.Findings.Select(f => new { f.Code, f.Remediation, path = paths[f.PathId], scope = f.ScopePathId == null ? null : paths[f.ScopePathId], f.ItemIndex, f.Unknown }).ToArray();
 }
 string? mergeError = null; string[]? before = null, after = null;
 if (args[1] != "-")

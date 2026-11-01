@@ -302,6 +302,7 @@ public sealed class TemplateInspectionTests
         TemplateDataInspection dataReport = schema.InspectJson(data, cancellationToken: TestContext.Current.CancellationToken);
         TemplateDataFinding missing = Assert.Single(dataReport.Findings);
         Assert.Equal("Data.MissingItemPath", missing.Code); Assert.Equal(1, missing.ItemIndex);
+        Assert.Equal("Remediation.ProvideItemPath", missing.Remediation);
         Assert.Equal("Customer.Name", dataReport.GetSensitivePathAliases()[missing.PathId]);
         source.Position = 0;
         WordDocument document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
@@ -419,6 +420,7 @@ public sealed class TemplateInspectionTests
         TemplateDataInspection missing = schema.InspectJson("{}", cancellationToken: TestContext.Current.CancellationToken);
         TemplateDataFinding finding = Assert.Single(missing.Findings);
         Assert.Equal("Data.ScopeMissing", finding.Code); Assert.True(finding.Unknown); Assert.Null(finding.ItemIndex);
+        Assert.Equal("Remediation.ProvideCollection", finding.Remediation);
         Assert.False(missing.HasErrors); Assert.True(missing.HasUnknowns);
         Assert.Empty(schema.InspectJson("{\"Items\":null}", cancellationToken: TestContext.Current.CancellationToken).Findings);
         Assert.Empty(schema.InspectJson("{\"Items\":[]}", cancellationToken: TestContext.Current.CancellationToken).Findings);
@@ -435,6 +437,7 @@ public sealed class TemplateInspectionTests
         Assert.True(report.HasErrors); Assert.False(report.HasUnknowns);
         TemplateDataFinding item = Assert.Single(report.Findings, finding => finding.Code == "Data.ItemPathType");
         Assert.Equal(0, item.ItemIndex); Assert.Equal("Price", report.GetSensitivePathAliases()[item.PathId]);
+        Assert.Equal("Remediation.FixDataType", item.Remediation);
         TemplateDataFinding date = Assert.Single(report.Findings, finding => finding.Code == "Data.PathType");
         Assert.Equal("When", report.GetSensitivePathAliases()[date.PathId]);
         Assert.DoesNotContain(report.Findings, finding => report.GetSensitivePathAliases()[finding.PathId] == "Logo");

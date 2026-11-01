@@ -1,0 +1,163 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "b1a58820e47af08809e8d5f377da2c4c4bb66aa1",
+  "prototypeAssemblyBuildHead": "00abb80c57b54f649ff5246f21637f1d164393b3",
+  "prototypeIdentityNote": "The prototype binary included the uncommitted source changes before an evidence-only fast-forward; exact committed-source and package identities are checked separately.",
+  "scope": "Add data-finding remediation identifiers and extend the local lint example to bounded optional JSON input with privacy-safe errors.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML and JSON independently authored with MIT fixture helpers; no caller data.",
+    "generatorSha256": "51ecb6b59823b87b4879ccef7e9aa3551fb5a7ca797ae8b3c8f42fe6ae46664e",
+    "files": {
+      "bad-docx.docx": "4b8eee4a95cc18f58aa6381f8441d61ae4f2f8e25c33a0884142dc0cda608145",
+      "bad-utf8.json": "85674b1febd404a153721316e87955722a53757117d521e7030779d7d5c91c59",
+      "bad-xml.docx": "7d22a6b634a6507873766f0b2aa964b16550e5402cd9600de4211f3cf99a559d",
+      "duplicate.json": "8dfd15be4653d57a2ee2997bde7de3cb05d9e0fc56229a57248d330ed84ce26c",
+      "missing.json": "13889ba1fe6639ef204f9e41a8d0e0225cbe919c2362e4aa9680921899ea4128",
+      "oversized.json": "e2e0bf638c6ba3f0501f024427966cb12d68e8489bee9e1441b024c3f153e224",
+      "template.docx": "47285d2fdc2492917b97b8c9e8fd1ddb3d369605ec4d05a54d7397cf67de965e",
+      "undeclared.docx": "7074519d99cee5b66d49afd19e357d9f2e5d3e10f0b351e02057935618fef9db",
+      "valid.json": "a8526a9571c41fb6f37fd27c2828d62c7c337af93a8196b3f55f9adb78c41b8f",
+      "wrong-type.json": "f4b094ee19752bd0d5e1eeed5ac4858ed1fc6934092cabdbf69c1b9044e4ecd0"
+    }
+  },
+  "twoIndependentGenerationsAndFileHashesIdentical": true,
+  "sourceFilesSha256": {
+    "src/wordnet/TemplateDataInspection.cs": "f6a633391d745ff30c7049a2ebc1d6b8510445a6203f95b6129f7138e6373f88",
+    "examples/WordNet.TemplateLint/Program.cs": "395d6f1f2dddc149dd3818a13e5fcd1ee25e1558e46ec640e8f2bb827273b59b",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "129be86942ce03349d32017761341ce1b2c1f53a4c39ff5964a99b1421d9b7ec",
+    "eng/generate-roadmap-138-data-lint.py": "51ecb6b59823b87b4879ccef7e9aa3551fb5a7ca797ae8b3c8f42fe6ae46664e",
+    "eng/verify-roadmap-138-data-lint.py": "ebea3f23bfb58b8e43b772a7cbfacbdd5a0772ae9ccee1b5ccd99f482b7131e9",
+    "eng/roadmap-138-schema-data-probe.cs": "f8ce3c8898468d8f94e52b15c92efad6806fef35581bb947ac39f39bff6dff51",
+    "eng/verify-roadmap-138-schema-data.py": "ef9fa3a66badbb0a08834c641769d1f0a8c3820997a2a3b4f0399bafab7ec135"
+  },
+  "candidateExampleAndProbeNet10AssemblySha256": "7aabc722e0dd14f3153cbed6aee6305fb339c860d188a2b62ccaea6fbb6ceea5",
+  "exampleAssemblySha256": "3104f09fa0507cb3f89af678b3de573decff665797513ca661ce48623bef122e",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+  "validTemplateSchemaLogSha256": "9fcc2d9e15bfcb484be4e48cfa780f9efc112a8e12ebdd38a8b7601b74cd3a90",
+  "invalidTemplateControls": {
+    "badDocxLogSha256": "bb849f6883156c7281fd614b67adc17fc59f18d22028a8481de849c6a476b856",
+    "badDocxRawLog": "Unhandled exception. System.IO.FileFormatException: File contains corrupted data.\n   at System.IO.Packaging.ZipPackage..ctor(Stream s, FileMode packageFileMode, FileAccess packageFileAccess)\n   at System.IO.Packaging.Package.Open(Stream stream, FileMode packageMode, FileAccess packageAccess)\n   at DocumentFormat.OpenXml.Features.StreamPackageFeature.InitializePackage(Nullable`1 mode, Nullable`1 access)\n   at DocumentFormat.OpenXml.Features.StreamPackageFeature..ctor(Stream stream, PackageOpenMode openMode, Boolean isOwned)\n   at DocumentFormat.OpenXml.Features.FilePackageFeature..ctor(String path, PackageOpenMode mode)\n   at DocumentFormat.OpenXml.Builder.OpenXmlPackageBuilderExtensions.Open[TPackage](IPackageFactory`1 builder, String file, PackageOpenMode mode)\n   at DocumentFormat.OpenXml.Builder.OpenXmlPackageBuilderExtensions.Open[TPackage](IPackageFactory`1 builder, String file, Boolean isEditing)\n   at DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(String path, Boolean isEditable, OpenSettings openSettings)\n   at DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Open(String path, Boolean isEditable)\n   at Program.<Main>$(String[] args) in /tmp/wordnet-138-schema-runs/Program.cs:line 9\n",
+    "badXmlLogSha256": "7596c16508d89326385a78a7fb013486e0cae783e3726209395849d97dee209b",
+    "badXmlRawLog": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nbad-xml.docx 7d22a6b634a6507873766f0b2aa964b16550e5402cd9600de4211f3cf99a559d errors=1\nInner exception: Unexpected end of file has occurred. The following elements are not closed: w:body, w:document. Line 1, position 103..\n"
+  },
+  "initialFailure": {
+    "description": "Malformed JSON escaped the initial example error filter and emitted a stack trace. The filter was corrected before the final independent run.",
+    "verificationLogSha256": "3a0fe83343c331813660c3e5223a2c159dd4edb52626ac64d449ec4eaa641995",
+    "verificationRawLog": "Traceback (most recent call last):\n  File \"/workspace/wordnet-138-data-lint/eng/verify-roadmap-138-data-lint.py\", line 119, in <module>\n    main()\n  File \"/workspace/wordnet-138-data-lint/eng/verify-roadmap-138-data-lint.py\", line 76, in main\n    result = check(observations); controls = {}\n             ^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/wordnet-138-data-lint/eng/verify-roadmap-138-data-lint.py\", line 27, in check\n    raise ValueError('Exit status changed: ' + name)\nValueError: Exit status changed: duplicate\n",
+    "malformedProcessLogSha256": "aa82d08b33bc879da4743983e0ae08ddcc744a98d60432b2bec5f204071169e0",
+    "malformedProcessRaw": {
+      "exit": -6,
+      "stdout": "",
+      "stderr": "Unhandled exception. System.IO.InvalidDataException: Template.Json: Invalid, duplicate-key or unsupported JSON input.\n   at WordNet.Internal.TemplateData.<Json>g__Read|3_0(Int32 depth, <>c__DisplayClass3_0&) in /workspace/wordnet-138-data-lint/src/wordnet/Internal/TemplateData.cs:line 100\n   at WordNet.Internal.TemplateData.Json(String json, ConversionContext context) in /workspace/wordnet-138-data-lint/src/wordnet/Internal/TemplateData.cs:line 83\n   at WordNet.TemplateDataSchema.InspectJson(String json, Int32 maximumRows, ConversionOptions options, CancellationToken cancellationToken) in /workspace/wordnet-138-data-lint/src/wordnet/TemplateDataInspection.cs:line 66\n   at Program.<Main>$(String[] args) in /workspace/wordnet-138-data-lint/examples/WordNet.TemplateLint/Program.cs:line 41\n"
+    },
+    "initialFixtureManifest": {
+      "provenance": "Synthetic OOXML and JSON independently authored with MIT fixture helpers; no caller data.",
+      "generatorSha256": "5204f1711d7c51a83974ef8183d1a84546f092a05569414fcf7924d9d5b5e5a2",
+      "files": {
+        "bad-utf8.json": "85674b1febd404a153721316e87955722a53757117d521e7030779d7d5c91c59",
+        "duplicate.json": "8dfd15be4653d57a2ee2997bde7de3cb05d9e0fc56229a57248d330ed84ce26c",
+        "missing.json": "13889ba1fe6639ef204f9e41a8d0e0225cbe919c2362e4aa9680921899ea4128",
+        "oversized.json": "e2e0bf638c6ba3f0501f024427966cb12d68e8489bee9e1441b024c3f153e224",
+        "template.docx": "47285d2fdc2492917b97b8c9e8fd1ddb3d369605ec4d05a54d7397cf67de965e",
+        "undeclared.docx": "7074519d99cee5b66d49afd19e357d9f2e5d3e10f0b351e02057935618fef9db",
+        "valid.json": "a8526a9571c41fb6f37fd27c2828d62c7c337af93a8196b3f55f9adb78c41b8f",
+        "wrong-type.json": "f4b094ee19752bd0d5e1eeed5ac4858ed1fc6934092cabdbf69c1b9044e4ecd0"
+      }
+    }
+  },
+  "focusedTestLogSha256": "bf3c1fcd183c5fb72f26ddd26c72297339d6a83354ad71b335bd758d5cf11ee7",
+  "officeReference": "LibreOffice 24.2.7.2 in network-disabled wordnet-138-reference:temporary image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; Noto Sans pinned by fontconfig.",
+  "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "dataSchemaLogSha256": "9cbeca2a5cd87807886e7cb03c436a2c4b96be76444f2c0478c751ea429c2338",
+  "dataOfficeLogSha256": "31ab3eca5e2377ebb8b0a35411ae5dbba62d23c662fedfc2627fb8a8d8160068",
+  "syntheticProcessObservationSha256": {
+    "bad-docx": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+    "bad-utf8": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+    "bad-xml": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+    "duplicate": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+    "missing-file": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+    "missing": "9d5b81ba62690b37ac6f3c940f2db513e4f3bc41abb36df419dbed73a7576a31",
+    "oversized": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+    "template-only": "101e1b2928360fc4810d59853ac5e0fb680c1968088306ca26cca7b190cfa428",
+    "undeclared": "7c68b0c5cab4411278a54ccacb8cbeee41464150e358515db91189e335a4e2e9",
+    "valid": "9ec2e6781d72b406f46b967ad387b5d41700435472358a334e3670589d5dbf2d",
+    "wrong-type": "5a60d756514cad7be688a69e67bfaa666211bb419a56316b28f683c155748e60"
+  },
+  "lintControls": {
+    "result": {
+      "scenarios": 11,
+      "templateOnlyOutputPreserved": true,
+      "malformedAndOversizedInputsPublishNoPartialReport": true,
+      "privacySafeDefaults": true
+    },
+    "negativeControls": {
+      "valid exit changed": "Exit status changed: valid",
+      "template-only exit changed": "Exit status changed: template-only",
+      "template-only shape changed": "Template-only output shape changed",
+      "unknown coverage removed": "Unknown template coverage changed: valid",
+      "reuse claimed": "Unknown template coverage changed: valid",
+      "missing data accepted": "Exit status changed: missing",
+      "missing code changed": "Data finding or remediation changed: missing",
+      "missing remediation changed": "Data finding or remediation changed: missing",
+      "missing made unknown": "Data finding or remediation changed: missing",
+      "wrong type accepted": "Exit status changed: wrong-type",
+      "wrong type remediation changed": "Data finding or remediation changed: wrong-type",
+      "wrong type item index changed": "Data finding or remediation changed: wrong-type",
+      "data error summary changed": "Data summary changed: missing",
+      "data unknown summary changed": "Data summary changed: valid",
+      "undeclared path accepted": "Undeclared template path finding changed: undeclared",
+      "private path leaked": "Default JSON exposed a path, part or value: valid",
+      "private value leaked": "Default JSON exposed a path, part or value: valid",
+      "duplicate emitted partial report": "Failed input leaked data or returned a partial report: duplicate",
+      "duplicate error leaked": "Failed input leaked data or returned a partial report: duplicate",
+      "invalid encoding accepted": "Exit status changed: bad-utf8",
+      "oversized input accepted": "Exit status changed: oversized",
+      "missing file path leaked": "Failed input leaked data or returned a partial report: missing-file",
+      "malformed package accepted": "Exit status changed: bad-docx",
+      "malformed XML leaked": "Failed input leaked data or returned a partial report: bad-xml"
+    },
+    "controlMethod": "Observed process exit codes, default JSON and error output changed in memory."
+  },
+  "previousDataControls": {
+    "result": {
+      "jsonScenarios": 10,
+      "independentOfficeReads": 7,
+      "itemFallbackContrastObserved": true,
+      "failedInspectionsReturnNoPartialReport": true
+    },
+    "negativeControls": {
+      "missing item index": "Declaration finding changed: fallback",
+      "missing item path": "Declaration finding changed: fallback",
+      "missing item scope": "Declaration finding changed: fallback",
+      "missing item code": "Declaration finding changed: fallback",
+      "missing item certainty": "Declaration finding changed: fallback",
+      "missing item omitted": "Declaration finding changed: fallback",
+      "optional fallback rejected": "Declaration finding changed: optional",
+      "unknown scope made definite": "Declaration finding changed: missing-scope",
+      "unknown scope omitted": "Declaration finding changed: missing-scope",
+      "wrong item type admitted": "Declaration finding changed: wrong-type",
+      "root scope type admitted": "Declaration finding changed: scope-type",
+      "repeat scope type admitted": "Declaration finding changed: scope-type",
+      "null image rejected": "Declaration finding changed: typed-non-json",
+      "JSON date string admitted": "Declaration finding changed: typed-non-json",
+      "error summary changed": "Finding summary changed: fallback",
+      "unknown summary changed": "Finding summary changed: missing-scope",
+      "default name leaked": "Default report disclosed a data name or value: fallback",
+      "default alias changed": "Default report disclosed a data name or value: fallback",
+      "malformed error changed": "Inspection failure changed: malformed",
+      "limit error changed": "Inspection failure changed: limit",
+      "partial failure report": "A failed inspection returned a partial report: limit",
+      "failed merge mutated": "Failed merge changed the input: missing-scope",
+      "independent office output changed": "Saved DOCX or independent office text changed: fallback",
+      "saved DOCX output changed": "Saved DOCX or independent office text changed: fallback",
+      "item remediation changed": "Declaration finding changed: fallback",
+      "unknown scope remediation changed": "Declaration finding changed: missing-scope",
+      "scope type remediation changed": "Declaration finding changed: scope-type"
+    },
+    "controlMethod": "Reports, parsed inputs and saved-output observations changed in memory."
+  },
+  "limits": "Template coverage, reusable identity-bound plans, enforced policies and independent output validation remain unknown or unimplemented. JSON data values and path names are not included by default."
+}

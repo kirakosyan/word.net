@@ -17,7 +17,8 @@ for declared ordinary body and bounded simple-cell merge fields and inline contr
 including beside repeats, plain root-repeat paths and selected repeated fields with
 declared single or dotted item paths or unknown fallback scope, with optional numeric positions and selected static PDF option conflicts.
 It also checks root and repeat-item declarations against bounded JSON data,
-independently of a particular template or output.
+independently of a particular template or output, with remediation identifiers
+and an optional JSON input for the local lint example.
 It explicitly retains uninspected scopes,
 output and environment identity; full plan compilation and #172 remain open.
 The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
