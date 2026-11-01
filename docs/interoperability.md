@@ -474,13 +474,14 @@ For admitted DOCX body and simple-cell text, `RunSource` can identify the direct
 `w:r` containing one `w:t` that produced a fragment. `Source` remains the paragraph;
 the fragment bounds describe emitted glyphs, not necessarily the entire run. A run
 can produce several fragments or pages. The identity is omitted when runs are
-coalesced for rendering, a run is wrapped or has multiple text elements, or its
-owner and geometry are otherwise unqualified. Capturing these identities does not
+coalesced for rendering, a run is wrapped or has multiple text elements, different
+XML namespaces make a source path ambiguous, or its owner and geometry are
+otherwise unqualified. Capturing these identities does not
 change the rendered preview; the same snapshot size and privacy limits apply.
 The [independent run comparison](measurements/roadmap-138-layout-runs-reference.json)
 checks source paths and PDF/SVG glyph ink. Its two direct body runs agree with the
 pinned-font office reference within 0.1 point. The table-cell and following
-hyperlink positions differ by 5.5 and 5.96 points, respectively, exceeding the
+hyperlink positions differ by 5.5 and 5.95 points, respectively, exceeding the
 unchanged 0.25-point tolerance. These placement differences remain open.
 
 An untransformed inline raster image in a direct `word/document.xml` body

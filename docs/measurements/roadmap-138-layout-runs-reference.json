@@ -4,29 +4,31 @@
   "recordedUtc": "2026-11-01",
   "sourceBaseCommit": "4f02e804ffd234e1c45751110116f0d880f4646c",
   "scope": "Working-tree evidence for unambiguous direct DOCX text-run identities in admitted body paragraphs and simple cells. Other run, cell, object and story mappings remain open.",
-  "provenance": "Synthetic OOXML was independently authored using the MIT fixture helper without wordnet serialization. Two generations were byte-identical. Open XML SDK 3.5.1 validated the corrected input; FontTools 4.61.1 and PyMuPDF 1.27.2.2 independently checked source identity, pinned font outlines, SVG bounds and PDF characters. LibreOffice 24.2.7.2 ran in a network-disabled container with the embedded Noto Sans fonts mounted read-only.",
+  "provenance": "Synthetic OOXML was independently authored using the MIT fixture helper without wordnet serialization. Two generations were byte-identical. Open XML SDK 3.5.1 validated the corrected input; FontTools 4.61.1 and PyMuPDF 1.27.2.2 independently checked source identity, pinned font outlines, SVG bounds and PDF characters. LibreOffice 24.2.7.2 ran in a network-disabled container with the embedded Noto Sans fonts mounted read-only. Two deliberately malformed namespace-collision documents were separately confirmed schema-invalid and exercised in lenient mode.",
   "toolsAndSourceSha256": {
-    "eng/generate-roadmap-138-layout-runs.py": "11911c8c027e447dcfac6de6a0bdcf73befd4232f7a1b6a89f2bfd50b77b2614",
+    "eng/generate-roadmap-138-layout-runs.py": "5421b28f91619af257ccc4821d88694ec46a5aedeb8a05224b6705d95ddda534",
     "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
-    "eng/roadmap-138-layout-runs-probe.cs": "2c81b1aca534d25be26484b227aec97ed25d99ab3cedaa63972726f690b68dc2",
-    "eng/verify-roadmap-138-layout-runs.py": "f9f644f3ce423dd595592b995f1765e7bf54aa53fc077a128810f8688a46ec18",
+    "eng/roadmap-138-layout-runs-probe.cs": "a7b88254ea47da8d67e60e557fb51907683d5bcc0105585ebe35963ac18dc431",
+    "eng/verify-roadmap-138-layout-runs.py": "0a4769c80297dc1a4868d98d73ad4d38cc0c30b8c4b34e43537984825db7e0ca",
     "eng/verify-roadmap-138-layout-cells.py": "08ba843a3312169d03a279a1aa787c1ebefab259aa227f9ac26a41d29cd1112f",
     "src/wordnet/DocumentLayoutSnapshot.cs": "fdfd9149aadd581351f59e138611c606deebac8f9efa192160cb3178eb5ada93",
-    "src/wordnet/Formats/DocxReader.cs": "129cd95126b9ccd48a3ea8ffadf153d47666a3c803aee917b627d2b249cca9c1",
-    "src/wordnet/Model/DocumentModel.cs": "ad45a7c739c833077d4b28611856f930315d8338dbcf8d40c483f711cd84240d",
-    "src/wordnet/WordConverter.LayoutSnapshot.cs": "32d95cd02d50c39b0f7f1827d2fbba7820f540b5e0ca91ce7d98a3bb270b564d",
-    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "fdc8680522d91abbc39507a923a009e9153b22f53af25d1be65489e98266146e"
+    "src/wordnet/Formats/DocxReader.cs": "1a1e2205ec9d5eb0139277370ad12252e702148fb9a255128ccc872b2c1a1a02",
+    "src/wordnet/Model/DocumentModel.cs": "5b241de7d5459c79574e5de0e4c19354b6b0317b780797f252247a140996b2c5",
+    "src/wordnet/WordConverter.LayoutSnapshot.cs": "74deca8513c585eabbda58ae286ebf94956321efe44e76a51875aa1cc487d7d3",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "e93a32ba0b497c4e2357eadbdbfa6564c5b881ad3c1768478f0b580499f84884",
+    "src/wordnet/Internal/XmlSourceLocation.cs": "f21aaed1bb05cf15d0c1ce691791ccef0954d4753809e7e4ec0f05da219c3d35"
   },
-  "probeWordnetAssemblySha256": "c1a02d8126c2b6189d3936432784ad3d63d9dd705cf45580bf04def3e70a1e9f",
+  "probeWordnetAssemblySha256": "3904a2dbc322a43559735bee36bd4959b1b84c466b4195adc3b01446b7a4d8ce",
   "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
   "validatorLogSha256": "877f5afb4ef2fe16c6c8e868a33762870781f87fa0048800bdf3aa0440adb3a7",
-  "independentVerifierLogSha256": "3061505274b59ccf7bd5204bab67caa54f431269fef29985f44b1299ef195d01",
+  "independentVerifierLogSha256": "4bff86a3a577bdc4d213b88cf0d987eaf596d3293a604c341c4f5176bbc5f054",
   "referenceImage": "wordnet-138-reference:temporary sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; LibreOffice 24.2.7.2, --network none",
   "specimenHashes": {
     "inputDocxSha256": "ee618813ad83e2a071414388f9babac76009c6b4fc1cbea2ea3ab2d6fccc4dcb",
-    "pdfSha256": "0051187993240420fe7d7f820ae81d325ceadd441d5b5415e126b5b89489cc1b",
+    "pdfSha256": "6cddf45c3db4730087412a680e69ccc5eec3612dc348ff29eb7712e5bff32d74",
     "svgSha256": "ed37f0a05c4a2a622e80277b9e8646c94aa27f5d64c1db7c2947c42c0b3fb30c",
     "snapshotSha256": "c4cef51e5069469cb4bf95f1fd22a19bfa9218090e80f205c6dc1c18ce35fa31",
+    "diagnosticsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "officePdfSha256": "760f3f0927b05887bab25eb5970eed7ec45470b154d2cb127568aa1e03d4cdad"
   },
   "result": {
@@ -38,6 +40,18 @@
       "unmappedFragments": 5,
       "maximumFontSvgBoundsDeltaPt": 8.526512829121202e-14
     },
+    "namespaceNegatives": {
+      "namespace-run": {
+        "runSource": null,
+        "diagnostic": "Docx.Inline",
+        "visibleTextPreserved": true
+      },
+      "namespace-paragraph": {
+        "runSource": null,
+        "diagnostic": "Docx.Block",
+        "visibleTextPreserved": true
+      }
+    },
     "negativeControls": {
       "wrong run path": "Source run identity is missing or ambiguous",
       "mapped coalesced run": "Source run identity is missing or ambiguous",
@@ -46,7 +60,9 @@
       "shifted bounds": "Snapshot and independent SVG/font bounds differ",
       "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
       "changed PDF character": "PDF/SVG glyph text differs from source",
-      "wrong cell path": "Cell identity differs from source XML"
+      "wrong cell path": "Cell identity differs from source XML",
+      "mapped namespace-run": "Ambiguous namespace path was assigned a run owner",
+      "mapped namespace-paragraph": "Ambiguous namespace path was assigned a run owner"
     },
     "controlMethod": "Parsed source/output measurements changed in memory.",
     "officeComparison": {
@@ -126,6 +142,34 @@
     {
       "stage": "pinned-font office geometry",
       "result": "At the unchanged 0.25-point glyph-origin tolerance, direct body runs pass within 0.10 point while the table cell differs by 5.5 points and its following hyperlink by 5.9543 points. These whole-page reference differences remain open."
+    },
+    {
+      "stage": "preliminary source-run namespace ambiguity test",
+      "preliminaryCommit": "094cb34ef4b98bc14e1da9ea686338b19db389a6",
+      "logSha256": "416ed4c7033dde9452f50c17ce9894eaf0b41e768b261f3c55ad33670016b893",
+      "result": "Failed because a foreign-namespace sibling shared the local name r and the snapshot assigned an ambiguous path. The corrected source declines that identity for both run and paragraph namespace collisions; both independent malformed fixtures are diagnosed and preserve visible text."
     }
-  ]
+  ],
+  "preliminaryVerifierLogSha256": "3061505274b59ccf7bd5204bab67caa54f431269fef29985f44b1299ef195d01",
+  "namespaceNegativeFixtures": {
+    "namespace-run": {
+      "inputDocxSha256": "d343248a47a42b924cbeb7e830188e914571f5f5fd3837b3dccef664cb0aa096",
+      "schemaRejectionLogSha256": "43ef5e5d99c6882eb38f745c10e6120699c68e4a445fd315fe4ff9d258443a5a",
+      "snapshotSha256": "429af0019e87a786c6a38905c58e74ab48c2561df53008154aa31e104f445713",
+      "diagnosticsSha256": "e7768365490c34fa089fcb5d7b837a1371c3dde1560d8c51e056b4a967a76a6a",
+      "pdfSha256": "53bf22b8610eb4bfbb16fd99bb385c7a2ddb3eb28b09111832526cc6fead72b7",
+      "svgSha256": "7ed1fffe7a7eb26a804609dfc9d4060a1dea9e4b95d83b5025f336b221d42cc7",
+      "schema": "Intentionally invalid foreign namespace sibling; the validator rejected the unexpected element."
+    },
+    "namespace-paragraph": {
+      "inputDocxSha256": "ec30e9ce5a658371ded540042bdcc69ab4e8181428dc6387ef472e24b493e07c",
+      "schemaRejectionLogSha256": "e47b170856984a2d11d4a893b914199a7704776c21a4bd54886797dd81a1b470",
+      "snapshotSha256": "429af0019e87a786c6a38905c58e74ab48c2561df53008154aa31e104f445713",
+      "diagnosticsSha256": "d8f9ee61fcc5827d572e17b21470956c1e06847a6f702f1aa4c7169aae846556",
+      "pdfSha256": "53bf22b8610eb4bfbb16fd99bb385c7a2ddb3eb28b09111832526cc6fead72b7",
+      "svgSha256": "7ed1fffe7a7eb26a804609dfc9d4060a1dea9e4b95d83b5025f336b221d42cc7",
+      "schema": "Intentionally invalid foreign namespace sibling; the validator rejected the unexpected element."
+    }
+  },
+  "preliminaryNamespaceVerifierLogSha256": "4bff86a3a577bdc4d213b88cf0d987eaf596d3293a604c341c4f5176bbc5f054"
 }

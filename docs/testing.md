@@ -390,10 +390,11 @@ passed; hosted exact-head and Windows Framework execution are separate checks.
 The direct-run increment checks body and simple-cell source paths without changing
 preview bytes; coalesced, wrapped and composite runs retain null run identity.
 Its [independent observation](measurements/roadmap-138-layout-runs-reference.json)
-checks a schema-valid synthetic DOCX, PDF characters and SVG/font geometry with
-eight altered controls. The original malformed fixture and unresolved hyperlink
-failures remain recorded. The pinned-font office comparison retains table-cell and
-following-link differences at the unchanged 0.25-point threshold.
+checks a schema-valid synthetic DOCX, PDF characters and SVG/font geometry, plus
+namespace-collision negatives. The original malformed fixture, unresolved hyperlink
+and preliminary namespace-attribution test failures remain recorded. The pinned-font
+office comparison retains table-cell and following-link differences at the unchanged
+0.25-point threshold.
 
 Pending #145 block-control creation covers six typed kinds, initial values and
 locks, local bindings, wrapper removal, fragment isolation and protected-owner

@@ -383,7 +383,10 @@ internal sealed partial class DocxReader
                     && child.Elements(W + "t").Count() == 1 && child.Elements(W + "rPr").Count() <= 1
                     && child.Elements().All(e => e.Name == W + "rPr" || e.Name == W + "t") && runs.Count == first + 1
                     && runs[first].Text == child.Element(W + "t")!.Value && runs[first].Revision == null && runs[first].FormatRevision == null)
+                {
                     runs[first].SnapshotSource = context.Location;
+                    runs[first].SnapshotElement = child;
+                }
             }
             else if (child.Name == W + "t")
             {

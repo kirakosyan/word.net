@@ -60,6 +60,22 @@ public sealed class LayoutSnapshotTests
     }
 
     [Fact]
+    public void NamespaceAmbiguousPathsDoNotClaimARunOwner()
+    {
+        string foreignRun = "<w:p><f:r xmlns:f='urn:foreign'/><w:r><w:t>Visible</w:t></w:r></w:p>";
+        string foreignParagraph = "<f:p xmlns:f='urn:foreign'/>" + P("Visible");
+        foreach (string body in new[] { foreignRun, foreignParagraph })
+        {
+            using var input = new MemoryStream(Source(body));
+            var preview = new WordConverter().RenderPages(input, DocumentFormat.Docx,
+                new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
+                new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+            LayoutFragment[] fragments = Assert.IsType<DocumentLayoutSnapshot>(preview.Layout).Fragments.Where(item => item.Text == "Visible").ToArray();
+            Assert.NotEmpty(fragments); Assert.All(fragments, item => { Assert.NotNull(item.Bounds); Assert.Null(item.RunSource); });
+        }
+    }
+
+    [Fact]
     public void PreviewCapturesPrivateSourceLocationsAndManagedGlyphBounds()
     {
         byte[] source = Source(P("Alpha") + P("Beta")); var converter = new WordConverter();

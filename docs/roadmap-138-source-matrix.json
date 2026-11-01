@@ -489,6 +489,7 @@
         { "class": "LayoutSnapshotTests", "method": "MissingSourceGeometryIsExplicitAndFragmentLimitsFail" },
         { "class": "LayoutSnapshotTests", "method": "MergedNestedWrappedAndExplicitHeightCellsRemainUnqualified" },
         { "class": "LayoutSnapshotTests", "method": "CoalescedWrappedAndCompositeRunsDoNotClaimOneSourceRun" },
+        { "class": "LayoutSnapshotTests", "method": "NamespaceAmbiguousPathsDoNotClaimARunOwner" },
         { "class": "LayoutSnapshotTests", "method": "TransformedWrappedAndMixedInlineImagesRemainUnqualified" },
         { "class": "LayoutSnapshotTests", "method": "UnsupportedImagePlaceholderIsNotMappedAsTheSourceImage" },
         { "class": "LayoutSnapshotTests", "method": "TableCellOwnerWorkUsesTheExpansionBudget" },

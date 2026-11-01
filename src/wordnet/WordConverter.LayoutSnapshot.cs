@@ -109,6 +109,7 @@ public sealed partial class WordConverter
                     && item.NativeShape == null && !item.IsLabel && source != null && source.Part == "word/document.xml"
                     && (cellSource != null || BodyElement(source.Path, "p")) && admitted.Contains(item.SourceParagraph!)
                     && runLocation != null && runLocation.Part == source.Part && ChildElement(runLocation.Path, source.Path, "r")
+                    && item.SourceRun?.SnapshotElement is System.Xml.Linq.XElement runElement && XmlSourceLocation.Unambiguous(runElement, context)
                     ? new SourceLocation(runLocation.Part, runLocation.Path) : null;
                 size = checked(size + 128 + 2L * ((source?.Part.Length ?? 0) + (source?.Path.Length ?? 0)
                     + (cellSource?.Part.Length ?? 0) + (cellSource?.Path.Length ?? 0)

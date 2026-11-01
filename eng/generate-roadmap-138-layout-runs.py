@@ -34,14 +34,23 @@ def main():
              '<w:tblGrid><w:gridCol w:w="3000"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="3000" w:type="dxa"/></w:tcPr>'
              + paragraph(run('NNNN')) + '</w:tc></w:tr></w:tbl>')
     body += paragraph('<w:hyperlink r:id="link">' + run('TTTT') + '</w:hyperlink>')
-    path = destination / 'runs.docx'
-    parts = reductions.package(body)
-    parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels'].replace(
-        '</Relationships>', '<Relationship Id="link" Type="' + reductions.R + '/hyperlink" Target="https://example.com/" TargetMode="External"/></Relationships>')
-    reductions.write_zip(path, parts)
+    cases = {
+        'runs': body,
+        'namespace-run': paragraph('<f:r xmlns:f="urn:foreign"/>' + run('MMMM')),
+        'namespace-paragraph': '<f:p xmlns:f="urn:foreign"/>' + paragraph(run('MMMM')),
+    }
+    hashes = {}
+    for name, content in cases.items():
+        path = destination / (name + '.docx')
+        parts = reductions.package(content)
+        parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels'].replace(
+            '</Relationships>', '<Relationship Id="link" Type="' + reductions.R + '/hyperlink" Target="https://example.com/" TargetMode="External"/></Relationships>')
+        reductions.write_zip(path, parts)
+        hashes[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
     manifest = {'provenance': 'Synthetic OOXML independently authored using the MIT fixture helper; no wordnet serialization.',
                 'generatorSha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-                'inputSha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+                'documents': hashes,
+                'negativeCases': 'The two namespace-collision inputs intentionally contain non-WordprocessingML siblings.'}
     (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(manifest))
 

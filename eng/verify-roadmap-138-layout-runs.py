@@ -137,12 +137,49 @@ def office_segments(actual_path, reference_path, expected):
     return {'textOrderAgrees': True, 'glyphOriginTolerancePt': .25, 'segments': output}
 
 
+def read_namespace_case(source, output, name):
+    with ZipFile(source) as package:
+        document = ET.fromstring(package.read('word/document.xml'))
+    body = document.find(W + 'body')
+    if name == 'namespace-run':
+        parent, local, diagnostic = body.find(W + 'p'), 'r', 'Docx.Inline'
+    else:
+        parent, local, diagnostic = body, 'p', 'Docx.Block'
+    siblings = [element for element in parent if element.tag.split('}')[-1] == local]
+    namespaces = {element.tag.split('}')[0] for element in siblings}
+    if len(siblings) != 2 or len(namespaces) != 2 or W + local not in [element.tag for element in siblings]:
+        raise ValueError('Source does not contain the intended namespace collision')
+    fragments = json.loads((output / 'snapshot.json').read_text(encoding='utf-8'))
+    diagnostics = json.loads((output / 'diagnostics.json').read_text(encoding='utf-8'))
+    with fitz.open(output / 'output.pdf') as pdf:
+        if len(pdf) != 1:
+            raise ValueError('Expected one PDF page for the namespace negative')
+        text = ''.join(character['c'] for block in pdf[0].get_text('rawdict')['blocks'] for line in block.get('lines', [])
+                       for span in line['spans'] for character in span['chars'])
+    root = ET.parse(output / 'page-1.svg').getroot()
+    titles = [group.find(SVG + 'title').text for group in root.findall(SVG + 'g') if group.find(SVG + 'title') is not None]
+    return {'fragments': fragments, 'diagnostics': diagnostics, 'expectedDiagnostic': diagnostic, 'pdfText': text, 'svgTitles': titles}
+
+
+def check_namespace_case(value):
+    if len(value['fragments']) != 1 or value['expectedDiagnostic'] not in value['diagnostics']:
+        raise ValueError('Namespace conflict or its diagnostic disappeared')
+    item = value['fragments'][0]
+    if item['text'] != 'MMMM' or value['pdfText'] != 'MMMM' or value['svgTitles'] != ['MMMM']:
+        raise ValueError('Namespace-negative visible text changed')
+    if item['runPath'] is not None or item['runPart'] is not None or item['bounds'] is None or item['reason'] is not None:
+        raise ValueError('Ambiguous namespace path was assigned a run owner')
+    return {'runSource': None, 'diagnostic': value['expectedDiagnostic'], 'visibleTextPreserved': True}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source', type=Path)
     parser.add_argument('output', type=Path)
     parser.add_argument('font', type=Path)
     parser.add_argument('--office', type=Path)
+    parser.add_argument('--namespace-sources', type=Path)
+    parser.add_argument('--namespace-outputs', type=Path)
     args = parser.parse_args()
     digest = hashlib.sha256(args.font.read_bytes()).hexdigest()
     if digest != FONT_SHA:
@@ -168,9 +205,24 @@ def main():
             negatives[name] = str(error)
         else:
             raise ValueError('Negative control unexpectedly passed: ' + name)
+    if (args.namespace_sources is None) != (args.namespace_outputs is None):
+        parser.error('Provide both namespace directories or neither.')
+    namespace_results = {}
+    if args.namespace_sources is not None:
+        for name in ('namespace-run', 'namespace-paragraph'):
+            value = read_namespace_case(args.namespace_sources / (name + '.docx'), args.namespace_outputs / name, name)
+            namespace_results[name] = check_namespace_case(value)
+            altered = copy.deepcopy(value)
+            altered['fragments'][0]['runPath'] = '/wrong'
+            try:
+                check_namespace_case(altered)
+            except ValueError as error:
+                negatives['mapped ' + name] = str(error)
+            else:
+                raise ValueError('Namespace negative control unexpectedly passed: ' + name)
     office = None if args.office is None else {'wholePage': cells.compare_office(args.output / 'output.pdf', args.office),
                                                 'segments': office_segments(args.output / 'output.pdf', args.office, values[0])}
-    print(json.dumps({'fontSha256': digest, 'specimen': result, 'negativeControls': negatives,
+    print(json.dumps({'fontSha256': digest, 'specimen': result, 'namespaceNegatives': namespace_results, 'negativeControls': negatives,
                       'controlMethod': 'Parsed source/output measurements changed in memory.', 'officeComparison': office}, indent=2))
 
 
