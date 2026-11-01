@@ -574,8 +574,9 @@ internal static partial class FixedLayout
 
         void RenderTable(TableBlock table)
         {
-            if (table.PlainDocxUniformBorderWidth.HasValue && !context.Typography.Enabled && !UniformPlainBorder(table))
-                context.Loss("Table.BorderGeometry", "The qualified small-grid border geometry no longer applies after structural edits.");
+            if (!context.Typography.Enabled && (table.PlainDocxUnqualifiedBorderGeometry
+                || table.PlainDocxUniformBorderWidth.HasValue && !UniformPlainBorder(table)))
+                context.Loss("Table.BorderGeometry", "The qualified small-grid border geometry does not cover this table.");
             bool reportedBorderRepeat = false, reportedShadingRepeat = false;
             double tablePageLeft = settings.Left;
             double tableWidth = settings.Width - settings.Left - settings.Right;

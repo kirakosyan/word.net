@@ -643,13 +643,17 @@ internal sealed partial class DocxReader
                 rowIndex++;
             }
         }
+        else if ((table.Rows.Count > 4 || table.Rows.Count != 0 && table.Rows[0].Count > 4)
+            && element.Element(W + "tblPr")?.Element(W + "tblBorders") != null
+            && PlainFixedGeometryTable(element, table, allowLargerUniformBorders: true))
+            table.PlainDocxUnqualifiedBorderGeometry = true;
         AttachBookmarks(pendingTableBookmarks, new[] { table }, false);
         return table;
     }
 
     // Only direct, fixed-grid, unstyled plain-text tables are qualified here.
     // Other tables retain their existing behavior until their geometry is assessed.
-    private bool PlainFixedGeometryTable(XElement element, TableBlock table)
+    private bool PlainFixedGeometryTable(XElement element, TableBlock table, bool allowLargerUniformBorders = false)
     {
         if (element.Parent?.Name != W + "body" || element.Parent.Parent?.Name != W + "document"
             || defaultTableStyle != null || table.Style != null || !table.LayoutExplicit || table.AutoFit
@@ -662,7 +666,7 @@ internal sealed partial class DocxReader
             || properties.Elements(W + "tblW").Count() != 1 || properties.Elements(W + "tblLayout").Count() != 1
             || properties.Elements(W + "tblCellMar").Skip(1).Any()
             || properties.Elements(W + "tblBorders").Skip(1).Any()
-            || properties.Element(W + "tblBorders") is XElement borders && !PlainUniformBorders(borders, table, out _)
+            || properties.Element(W + "tblBorders") is XElement borders && !PlainUniformBorders(borders, table, out _, allowLargerUniformBorders)
             || !PlainMarginMarkup(properties.Element(W + "tblCellMar"))
             || element.Elements().Any(child => child.Name != W + "tblPr" && child.Name != W + "tblGrid" && child.Name != W + "tr")) return false;
         int rowIndex = 0;
@@ -703,12 +707,17 @@ internal sealed partial class DocxReader
         return rowIndex == table.Rows.Count;
     }
 
-    private bool PlainUniformBorders(XElement source, TableBlock table, out double width)
+    private bool PlainUniformBorders(XElement source, TableBlock table, out double width, bool allowLarger = false)
     {
         width = 0;
-        if (table.Rows.Count is < 1 or > 4 || table.Rows[0].Count is < 1 or > 4
-            || table.Rows.Any(row => row.Count != table.Rows[0].Count) || source.Attributes().Any(a => !a.IsNamespaceDeclaration)
+        if (table.Rows.Count < 1 || table.Rows[0].Count < 1 || !allowLarger && (table.Rows.Count > 4 || table.Rows[0].Count > 4)
+            || source.Attributes().Any(a => !a.IsNamespaceDeclaration)
             || source.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) return false;
+        foreach (List<TableCell> row in table.Rows)
+        {
+            context.CheckCancellation();
+            if (row.Count != table.Rows[0].Count) return false;
+        }
         XElement[] entries = source.Elements().ToArray();
         if (entries.Length != PlainBorderSides.Length || PlainBorderSides.Any(side => entries.Count(entry => entry.Name == W + side) != 1)) return false;
         string? firstStyle = null; int? firstSize = null;
@@ -734,10 +743,20 @@ internal sealed partial class DocxReader
         }
         // The reference rounds some half-border positions beyond the unchanged
         // glyph tolerance when the horizontal defaults are omitted.
-        if (firstSize.GetValueOrDefault() % 2 != 0 || firstSize.GetValueOrDefault() % 4 != 0
-            && table.Rows.SelectMany(row => row).Any(cell => ((cell.Padding?.SourceSides ?? 0) & 10) != 10)) return false;
+        if (firstSize.GetValueOrDefault() % 2 != 0) return false;
+        if (firstSize.GetValueOrDefault() % 4 != 0)
+            foreach (List<TableCell> row in table.Rows)
+                foreach (TableCell cell in row)
+                {
+                    context.CheckCancellation();
+                    if (((cell.Padding?.SourceSides ?? 0) & 10) != 10) return false;
+                }
         double borderWidth = firstSize.GetValueOrDefault() / 8.0;
-        if (table.ColumnWidths.Any(column => column <= borderWidth)) return false;
+        foreach (double column in table.ColumnWidths)
+        {
+            context.CheckCancellation();
+            if (column <= borderWidth) return false;
+        }
         width = borderWidth;
         return true;
     }

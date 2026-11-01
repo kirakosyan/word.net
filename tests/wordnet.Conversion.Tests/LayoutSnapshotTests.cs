@@ -14,6 +14,7 @@ public sealed class LayoutSnapshotTests
 {
     private static readonly string[] BorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
     private static readonly string[] BorderCells = { "M", "N", "P", "Q", "R", "S", "U", "V", "W", "X", "Y", "Z", "B", "C", "D", "E" };
+    private static readonly byte[] BorderSentinel = { 13, 29, 41, 53 };
     private static byte[] Source(string body) => TestDocuments.Docx(TestDocuments.Body(body));
     private static string P(string text) => TestDocuments.TextParagraph(text);
 
@@ -95,10 +96,37 @@ public sealed class LayoutSnapshotTests
     public void LargerAndMultiPageBorderGridsRemainOutsideQualifiedGeometry()
     {
         const string single = "w:val='single' w:sz='8' w:color='000000'";
-        using var larger = new MemoryStream(BorderGridSource(single, 5, 2));
+        byte[] largeSource = BorderGridSource(single, 5, 2);
+        using var larger = new MemoryStream(largeSource);
         var preview = new WordConverter().RenderPages(larger, DocumentFormat.Docx,
             new PreviewOptions { Layout = new LayoutSnapshotOptions { IncludeText = true } },
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        ConversionDiagnostic loss = Assert.Single(preview.Result.Diagnostics, diagnostic => diagnostic.Code == "Table.BorderGeometry");
+        DiagnosticOccurrence occurrence = Assert.Single(loss.Occurrences);
+        Assert.Equal(DiagnosticSeverity.Warning, loss.Severity);
+        Assert.Equal(DiagnosticPhase.Layout, occurrence.Phase);
+        Assert.Equal("word/document.xml", occurrence.Location.Part);
+        using var largerStrict = new MemoryStream(largeSource);
+        var largeError = Assert.Throws<NotSupportedException>(() => new WordConverter().RenderPages(largerStrict, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", largeError.Message, StringComparison.Ordinal);
+        using var wide = new MemoryStream(BorderGridSource(single, 2, 5));
+        largeError = Assert.Throws<NotSupportedException>(() => new WordConverter().RenderPages(wide, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", largeError.Message, StringComparison.Ordinal);
+        using var editableInput = new MemoryStream(largeSource);
+        WordDocument document = WordDocument.Load(editableInput, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        using var clonedOutput = new MemoryStream();
+        clonedOutput.Write(BorderSentinel, 0, BorderSentinel.Length); clonedOutput.Position = 1;
+        largeError = Assert.Throws<NotSupportedException>(() => document.Save(clonedOutput, DocumentFormat.Pdf,
+            new ConversionOptions(), TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", largeError.Message, StringComparison.Ordinal);
+        Assert.Equal(BorderSentinel, clonedOutput.ToArray()); Assert.Equal(1, clonedOutput.Position);
+        using var saved = new MemoryStream(); document.Save(saved, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        saved.Position = 0;
+        largeError = Assert.Throws<NotSupportedException>(() => new WordConverter().RenderPages(saved, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Contains("Table.BorderGeometry", largeError.Message, StringComparison.Ordinal);
         LayoutFragment outside = Assert.Single(preview.Layout!.Fragments, f => f.Text == "M");
         using var bounded = new MemoryStream(BorderGridSource(single, 2, 2));
         var supported = new WordConverter().RenderPages(bounded, DocumentFormat.Docx,

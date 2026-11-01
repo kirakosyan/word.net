@@ -569,6 +569,11 @@ passed at 0.967 against the preceding head. The preceding `5cbf06e` hosted
 [performance record](measurements/roadmap-138-performance-5cb-hosted-success.json)
 passed both push and PR gates; its other hosted jobs and all checks for this newer
 source remain separate.
+The later [oversized-grid diagnostic record](measurements/roadmap-138-grid-diagnostic-reference.json)
+checks seven supported and three oversized independent cases. It retains the prior
+lenient glyph/stroke geometry, verifies the warning's source and layout phase, and
+checks strict output staging before and after cloning and DOCX save/reload. Seventeen
+altered observations are rejected; this does not qualify the larger layout itself.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)

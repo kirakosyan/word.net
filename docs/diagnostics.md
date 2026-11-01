@@ -40,6 +40,9 @@ merged, nested, irregular or individually bordered cells; `Table.BorderRepeat` a
 `Table.BorderSplit` identify fixed-page approximations. `Table.BorderApproximated`
 and `Table.BorderColor` report unsupported border effects or automatic colors.
 `Table.BorderStory` identifies tables outside the qualified body profile.
+For the bounded direct uniform-border profile, `Table.BorderGeometry` reports
+oversized grids and other unqualified page, column or content geometry during fixed
+layout. Strict output rejects the finding before the staged output is copied.
 Malformed duplicate sides fail with `Docx.TableBorders`. Other destinations use
 `Table.Decoration` when they cannot retain the border. Strict mode rejects these
 losses before staged output is copied.

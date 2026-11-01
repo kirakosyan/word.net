@@ -122,6 +122,8 @@ internal sealed class TableBlock : DocumentBlock
     internal CellPadding? PlainDocxTableMargins { get; set; }
     // The independently checked direct, uniform, small-grid border profile.
     internal double? PlainDocxUniformBorderWidth { get; set; }
+    // A matching direct uniform-border table exceeds the qualified grid size.
+    internal bool PlainDocxUnqualifiedBorderGeometry { get; set; }
     internal Dictionary<int, string> RowRevisions { get; } = new Dictionary<int, string>();
     internal Dictionary<int, TemplateControl> RowControls { get; } = new Dictionary<int, TemplateControl>();
     internal Dictionary<int, int> TypedRowControls { get; } = new Dictionary<int, int>();

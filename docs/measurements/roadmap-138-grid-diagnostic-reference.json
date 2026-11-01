@@ -1,0 +1,370 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "28cb6cc297f7c10c1916bf73778a8a0c07c7c887",
+  "scope": "Diagnose a directly owned otherwise qualified uniform-border grid over four rows or columns in managed fixed output, retaining previous lenient geometry and strict staging.",
+  "sourceFilesSha256": {
+    "src/wordnet/Formats/DocxReader.cs": "6f3de7300939df50d133f5df7849ae4c9c4edd22bec3ea59c82f5c76774e4ece",
+    "src/wordnet/Internal/DocumentCloner.cs": "3bfce0ee3ad51610c685d0949faeac0ee2a28fbd3edcf147438d9b48c5a88bcf",
+    "src/wordnet/Layout/FixedLayout.cs": "de951b73b566608b7b88a129b9ed385803d73815be7ac15949e7f3c331d71846",
+    "src/wordnet/Model/DocumentModel.cs": "d3160376f87ca11e8c71283af5f0d0f8e0d2bcd8abe7f665e5d096cbd9ad1601",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "8f21985047406653f6299829e2fae04d0dc66c325b2100a8af787a381f2471b7",
+    "eng/roadmap-138-grid-diagnostic-probe.cs": "9196dc77484e1671202aa67d2ee656b2cc6432305bdd84dac1b391f4a306ae00",
+    "eng/verify-roadmap-138-grid-diagnostic.py": "54c80690f36b9ad92fc87a59efd8450608facb702d77a5206a8c0821f029e914"
+  },
+  "fixtureManifestSha256": "55499ea2f3b289b799600d188c22c64e3dfb20e376b2412517406b88e0164860",
+  "fixtureProvenance": "Independent synthetic OOXML from eng/generate-roadmap-138-larger-grids.py; no wordnet serialization.",
+  "parentSourceCommit": "b5be9754189211c850b433241028348398498112",
+  "parentNet10AssemblySha256": "eeb3e21fa7040b59d65ca399030d34875ed7e82feebbc0ab875c09db08e8bb9c",
+  "candidateAndProbeNet10AssemblySha256": "9111d72dc4bbe449abdc321552646b4bac4f6be8195ffacdc1058ff5629d7302",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "schemaLogSha256": "6a3cae1d58def46a2a32fb7daa3dbc7ee79b35eaacf23d61ef91129c5b9d253f",
+  "verifierLogSha256": "7f0982511dc860dc37c0ef4605b32f821df5f6b66a45a1914a95b41db12c44ad",
+  "focusedLogSha256": "2f414b47ce9b942475fd309d4b98277921a7783541b170df931a18fcc0186ac1",
+  "previousReference": "docs/measurements/roadmap-138-larger-grid-b5be975.json",
+  "previousOutsideComparisons": {
+    "outside-5x1": {
+      "characters": 7,
+      "officeMaximumGlyphOriginDeltaPt": 6.0,
+      "officeGlyphComparisonPassed": false,
+      "normalizedStrokes": 8,
+      "savedGeometryMatches": false
+    },
+    "outside-1x5": {
+      "characters": 7,
+      "officeMaximumGlyphOriginDeltaPt": 6.0,
+      "officeGlyphComparisonPassed": false,
+      "normalizedStrokes": 8,
+      "savedGeometryMatches": false
+    },
+    "outside-5x5": {
+      "characters": 27,
+      "officeMaximumGlyphOriginDeltaPt": 6.0,
+      "officeGlyphComparisonPassed": false,
+      "normalizedStrokes": 12,
+      "savedGeometryMatches": false
+    }
+  },
+  "earlierProbeLogSha256": "7f0982511dc860dc37c0ef4605b32f821df5f6b66a45a1914a95b41db12c44ad",
+  "outputs": {
+    "3x1-nil-implicit": {
+      "sourceDocxSha256": "5fb5876ed6510b91e2d05de6e722caac5b08e2cfff5205487128a1490bd9498c",
+      "parentPdfSha256": "e84673f692d8139f9848cbd00372c856373965c02e040ba697aaa77a7cf79e72",
+      "candidatePdfSha256": "29cbda5cdd783db1eaa1328f4c9f45847e887b31784d5ff5fb62c465e32be4c8",
+      "savedDocxSha256": "29fb5a1804d3eef28cc7eee06b8bbde42a0dd60a9c67bd0b155a6f0dc517f882",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "1x3-8-zero": {
+      "sourceDocxSha256": "982d329d1549224e5e95cd8f969a78e0dc8639b3f1424f711054fc5dfecbeeb0",
+      "parentPdfSha256": "17393ed1a1eb7986e8cfc4fd640583e9680b5a040c32590384bd1a81adba8daf",
+      "candidatePdfSha256": "b59983cf13faecda52099a322bdc144957fa10355a66765c1955f9d8235a955f",
+      "savedDocxSha256": "2d07bc12857a1aebcc4938fe64b8b2d3e71151dbc7ea5e5021f666dd85d1dfbe",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "3x3-16-implicit": {
+      "sourceDocxSha256": "55a4a7976f1decea3212ac33c1b321333dbc56afbea6b3983f56e2a33ed38005",
+      "parentPdfSha256": "0cfa57d31982c7671037d1a0345e602dd2d0400aa68d754767f512a800505ce7",
+      "candidatePdfSha256": "0873670c44aa4c5f5c47e5ac644f9ae860cb6235c10aadf48506e4266ebc8b4c",
+      "savedDocxSha256": "7cc3de4efb8bfabc0370f772186f3dc3735050a4d33384572664828ec67b4179",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "4x4-nil-zero": {
+      "sourceDocxSha256": "9cd064ef1cef64e9dba6a3b745c687c2e188dbc4c54e43221bd274801ecbdce8",
+      "parentPdfSha256": "2a2427312cae87dc7d68a863b2f98d84beb15c960d26ddbb6ae70c9aeefbcb32",
+      "candidatePdfSha256": "c00dbaf56f395dfdb2519df7592e0768a6e1492d28087496f5b262dca0240da6",
+      "savedDocxSha256": "b845c3b89ae7b8f7db8194cceb6e2fa9e1faa02608cc4bc4e3a9abf2a5672088",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "4x4-8-implicit": {
+      "sourceDocxSha256": "df3d947dff6aca44c86861914fc1fb6400780679ae026e55107e15654fb25f4c",
+      "parentPdfSha256": "d9891c6d7daa6a7ce2a9bd6e7d64ac534dc03946e953ea1d60777f774bf1d97a",
+      "candidatePdfSha256": "c86a1450f0e29bcb21985e3c1983b3c796995ea523bdcfa8c354228c4888b168",
+      "savedDocxSha256": "eee10a83fdb12aa90afe5acea7279c4cd6d3f0b9cae974f47b41586ad1f5d1d0",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "4x4-24-zero": {
+      "sourceDocxSha256": "4e22e1d75c1fa257e0d95f66005366eb63ee19c22500545ff0382d70f36a0443",
+      "parentPdfSha256": "bce5f461f7222fe00b87f4236c05804b102624a71c117b055cd1fca4381c023f",
+      "candidatePdfSha256": "000734fa0efbef0b2b52dca286729094c571bf1e83008af65a2b66facae433d6",
+      "savedDocxSha256": "723d45f4ec229e8d84e8fa64a0f45b630eb2b39c71f9a89dfbf5ec4de915388e",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "2x4-8-implicit": {
+      "sourceDocxSha256": "96631722e7b7bc02bcf73042e49123605955946f10d61cf7432016916e548e6d",
+      "parentPdfSha256": "82c0bbae13a5b15c44300f4ccba69609a7cdfca99133b6de2f5d442d74e00552",
+      "candidatePdfSha256": "5a12d97268731ec36e129d87889789736dc6c4cdfafa5238cd596bbcf5b9411b",
+      "savedDocxSha256": "3b18df5bda0f25ab9b93052a01a030b17aaf492b6dd54521ebe8883f67eb2bce",
+      "observationSha256": "a8c08d8a58f14fb9e2117ce9c0bc0bb98fff5726434e9558e0e5322ba5781b71",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [],
+        "strict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": null,
+        "clonedUntouched": false,
+        "savedStrict": {
+          "error": null,
+          "outputUntouched": false,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "outside-5x1": {
+      "sourceDocxSha256": "128f5cf3be219149bd57911a847a9939ba7ab52fc654168f1cf54a12a9c725c3",
+      "parentPdfSha256": "33b1485cd886db2afd6956f2926aec2c7fbb203118a590c535b172d45abe91a0",
+      "candidatePdfSha256": "404dbe20606ae9a0082939f2558d1f244d7812bbbb5f02ac872c8c6d735c9cab",
+      "savedDocxSha256": "bc5bac3ab1f0fe67f694613f40be50b65c035ee89c6bba35a9e876e5380f811a",
+      "observationSha256": "f7d184a122db3faae25c85136908dbc652b8b81d4381ae478ed538a9ca63ca15",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [
+          {
+            "Code": "Table.BorderGeometry",
+            "severity": "Warning",
+            "Count": 1,
+            "LocationsTruncated": false,
+            "locations": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]",
+                "phase": "Layout"
+              }
+            ]
+          }
+        ],
+        "strict": {
+          "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "outputUntouched": true,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+        "clonedUntouched": true,
+        "savedStrict": {
+          "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "outputUntouched": true,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "outside-1x5": {
+      "sourceDocxSha256": "98c88fa00e8a24a0aa3e285ce9e0b7d502ca5a3a527af57c38b4a34cc17aaf60",
+      "parentPdfSha256": "151aaedc77686a3b0c026a03815e6ad9ae6f8dc445819651fa364daaf6e96153",
+      "candidatePdfSha256": "fe9b69d1d65bcee095a97954acb420e33e597d910e1b3cf6d38524f68d4e248b",
+      "savedDocxSha256": "8400ce585d58c2831025fe1d18a99665b5a744157d44c9883a7199926ab74dd0",
+      "observationSha256": "f7d184a122db3faae25c85136908dbc652b8b81d4381ae478ed538a9ca63ca15",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [
+          {
+            "Code": "Table.BorderGeometry",
+            "severity": "Warning",
+            "Count": 1,
+            "LocationsTruncated": false,
+            "locations": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]",
+                "phase": "Layout"
+              }
+            ]
+          }
+        ],
+        "strict": {
+          "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "outputUntouched": true,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+        "clonedUntouched": true,
+        "savedStrict": {
+          "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "outputUntouched": true,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    },
+    "outside-5x5": {
+      "sourceDocxSha256": "5d6e90260427b76a345bcde9f1829aec99ad8abe25330f5563e39ff66b03c434",
+      "parentPdfSha256": "42e33746ea195be374ca1a18d1a97ce9f0b624ec4ed7ea0506d1cbb54ccd3766",
+      "candidatePdfSha256": "bf55bf59bbe03899906c03f8505eb953c05a08cd483ffe3613ee627700d2b73f",
+      "savedDocxSha256": "c9eb214ec357f3e7b21a0d74ec96ff30423a16d56e3cc2397c88b09c15e888bd",
+      "observationSha256": "f7d184a122db3faae25c85136908dbc652b8b81d4381ae478ed538a9ca63ca15",
+      "observations": {
+        "inputOpen": true,
+        "diagnostics": [
+          {
+            "Code": "Table.BorderGeometry",
+            "severity": "Warning",
+            "Count": 1,
+            "LocationsTruncated": false,
+            "locations": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]",
+                "phase": "Layout"
+              }
+            ]
+          }
+        ],
+        "strict": {
+          "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "outputUntouched": true,
+          "inputOpen": true,
+          "outputOpen": true
+        },
+        "clonedError": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+        "clonedUntouched": true,
+        "savedStrict": {
+          "error": "Table.BorderGeometry: The qualified small-grid border geometry does not cover this table.",
+          "outputUntouched": true,
+          "inputOpen": true,
+          "outputOpen": true
+        }
+      }
+    }
+  },
+  "controls": {
+    "supported": 7,
+    "outside": 3,
+    "negativeControls": {
+      "missing diagnostic": "Missing or imprecise diagnostic: outside-5x5",
+      "false positive": "Qualified geometry was rejected: 4x4-8-implicit",
+      "wrong severity": "Missing or imprecise diagnostic: outside-5x5",
+      "wrong count": "Missing or imprecise diagnostic: outside-5x5",
+      "truncated location": "Missing or imprecise diagnostic: outside-5x5",
+      "wrong part": "Missing or imprecise diagnostic: outside-5x5",
+      "wrong path": "Missing or imprecise diagnostic: outside-5x5",
+      "wrong phase": "Missing or imprecise diagnostic: outside-5x5",
+      "strict accepted": "Strict rejection or output atomicity changed: outside-5x5",
+      "strict changed output": "Strict rejection or output atomicity changed: outside-5x5",
+      "stream closed": "Caller stream closed: outside-5x5",
+      "clone accepted": "Strict rejection or output atomicity changed: outside-5x5",
+      "clone changed output": "Strict rejection or output atomicity changed: outside-5x5",
+      "saved accepted": "Strict rejection or output atomicity changed: outside-5x5",
+      "saved changed output": "Strict rejection or output atomicity changed: outside-5x5",
+      "shifted glyph": "Changed lenient glyphs outside-5x5: glyph or origin",
+      "changed stroke": "Changed lenient strokes outside-5x5: stroke geometry or color"
+    },
+    "controlMethod": "Parsed diagnostic, output-atomicity and vector observations changed in memory."
+  },
+  "limits": "The three prior larger-grid reference differences remain; this diagnostic does not qualify larger geometry or unrecognized styles, borders, native typography and other owners."
+}

@@ -44,6 +44,7 @@ The separate [plain fixed-table geometry correction](document-fidelity.md#unrele
 addresses omitted and partially specified margins and trailing spacing in a narrow
 unstyled body profile. A uniform-border subset on grids up to four rows and four
 columns is independently compared; other bordered geometry retains reference differences.
+Matching direct uniform-border grids above that size are diagnosed and reject strict output.
 Conditional theme fills retain bounded editable references and fallback values,
 while independent static rendering differences remain explicit. Selected
 conditional outer edges and their editable style metadata are retained, with

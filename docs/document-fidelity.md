@@ -35,12 +35,18 @@ horizontal sides explicit, it also admits 0.25-point increments. The earlier
 0.375-point stroke differed from the reference stroke width; neither is promoted
 to the corrected profile. Multiple lines or paragraphs, a table crossing a page,
 multi-column sections, and later edits that add protected or non-text owners report
-`Table.BorderGeometry` and reject strict output. Larger grids, mixed edges, styles,
-native typography and other border geometry remain separately unqualified. The
+`Table.BorderGeometry` and reject strict output. A matching direct, uniform-border
+table with more than four rows or columns also reports that diagnostic: strict
+output rejects it, while lenient output retains the previous approximation. This
+finding survives document cloning and a DOCX save/reload. Other larger grids,
+mixed edges, styles, native typography and other border geometry remain separately unqualified. The
 independent [single-cell record](measurements/roadmap-138-border-geometry-reference.json),
 [small-grid record](measurements/roadmap-138-multicell-borders-reference.json) and
 [larger-grid record](measurements/roadmap-138-larger-grid-reference.json) retain the
 failures and pinned-font comparisons; they do not establish Word behavior.
+The [oversized-grid diagnostic record](measurements/roadmap-138-grid-diagnostic-reference.json)
+checks the warning, source position and strict output staging without changing those
+rendering differences.
 
 ## Unreleased source: direct table borders
 
