@@ -104,7 +104,7 @@ public sealed class TemplateInspectionFinding
     /// <summary>Gets whether source occurrence locations were omitted or truncated.</summary>
     public bool LocationsTruncated { get; }
     /// <summary>Gets one-based XML element-child positions within the aliased part when precisely known; otherwise null.</summary>
-    /// <remarks>The first position identifies the root element. Positions apply only to the inspected input bytes.</remarks>
+    /// <remarks>The first position identifies the root element. Positions apply only to the inspected input bytes; for a bounded complex-field refresh flag they identify its begin marker, not the complete field range.</remarks>
     public IReadOnlyList<int>? SourceElementIndices { get; }
     /// <summary>Gets whether the finding represents uninspected or uncertain coverage.</summary>
     public bool Unknown { get; }

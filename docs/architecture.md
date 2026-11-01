@@ -23,8 +23,10 @@ and the same merge-field grammar, compares admitted body paths to an immutable
 declaration, and returns part-level opaque aliases. It does not read caller values,
 write output or claim a reusable environment identity. Uninspected controls, scopes,
 owners and later pipeline stages remain explicit unknowns. Captured direct simple
-field elements can report an explicit refresh flag without treating a missing flag
-as evidence that the cached result is current.
+field elements and bounded same-paragraph complex-field begin markers can report
+an explicit refresh flag without treating a missing flag as evidence that the
+cached result is current. Cross-paragraph, locked, nested and repeat markers remain
+outside this coverage.
 
 Unreleased #142 direct table borders and clear RGB shading stay on the table model
 through cloning and DOCX writing. Managed layout, HTML and ODT compute the

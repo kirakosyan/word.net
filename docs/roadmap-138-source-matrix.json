@@ -1322,10 +1322,24 @@
       ]
     },
     {
+      "id": "template-inspection-complex-field-dirty",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Direct same-paragraph complex-field begin markers expose explicit refresh flags as unknown; nested, locked, repeated and cross-paragraph fields remain outside this check.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "DirtyComplexFieldBeginMarkersAreLocatedWithoutClaimingFreshness" },
+        { "class": "TemplateInspectionTests", "method": "ClearComplexFieldFlagsDoNotEstablishFreshness" },
+        { "class": "TemplateInspectionTests", "method": "InvalidComplexFieldFlagIsUnknownAndDoesNotLeakItsValue" },
+        { "class": "TemplateInspectionTests", "method": "CrossParagraphAndLockedComplexFieldsKeepDirtyCoverageUnknown" },
+        { "class": "TemplateInspectionTests", "method": "NestedFieldResultsDoNotInheritAnOuterComplexDirtyMarker" },
+        { "class": "TemplateInspectionTests", "method": "ComplexDirtyMarkerPositionWorkIsBoundedAndOnlyComputedForFindings" }
+      ]
+    },
+    {
       "id": "template-inspection-unqualified-field-positions",
       "issue": 171,
       "outcome": "rejected",
-      "boundary": "Complex fields retain null element positions and excessive position-indexing work fails instead of publishing partial findings.",
+      "boundary": "Complex field path findings retain null element positions; separately admitted dirty begin markers may be located. Excessive position-indexing work fails instead of publishing partial findings.",
       "tests": [
         { "class": "TemplateInspectionTests", "method": "ComplexFieldFindingsDoNotInventAnElementPosition" },
         { "class": "TemplateInspectionTests", "method": "SourcePositionWorkIsBoundedAndOnlyComputedForFindings" }

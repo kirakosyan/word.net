@@ -451,6 +451,8 @@ internal sealed class TextRun
     internal SourceLocation? SnapshotSource { get; set; }
     internal XElement? SnapshotElement { get; set; }
     internal XElement? TemplateFieldElement { get; set; }
+    // Captured only for a directly bounded complex-field begin marker during inspection.
+    internal XElement? TemplateDirtyFieldElement { get; set; }
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
         double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
     {

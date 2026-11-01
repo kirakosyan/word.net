@@ -351,7 +351,7 @@ internal sealed partial class DocxReader
                 if (marker != null) Emit(runs, marker);
                 continue;
             }
-            if (child.Name == W + "fldChar") { FieldBoundary((string?)child.Attribute(W + "fldCharType"), runs); continue; }
+            if (child.Name == W + "fldChar") { FieldBoundary(child, runs); continue; }
             if (child.Name == W + "instrText")
             {
                 if (fields.Count == 0) context.Report("Field.OrphanInstruction", "An orphan field instruction is omitted.");
@@ -361,13 +361,14 @@ internal sealed partial class DocxReader
             if (child.Name == W + "fldSimple")
             {
                 if (fields.Count >= context.Options.MaximumNestingDepth) throw new InvalidDataException("Limit.NestingDepth: Fields exceed the nesting limit.");
+                if (context.CaptureTemplateSources && fields.Count != 0) fields.Peek().InspectionNested = true;
                 int first = runs.Count;
                 fields.Push(new FieldCapture { Separated = true });
                 ReadInlines(child, runs, inherited, link);
                 FieldCapture field = fields.Pop();
                 if (fields.Count > 0 && !fields.Peek().Separated) CaptureChild(DocxPackage.RequiredAttribute(child, W + "instr"), field);
                 else EmitField(runs, DocxPackage.RequiredAttribute(child, W + "instr"), field.Result, field.NestedInstruction, field.RetainTree ? field.Children : null);
-                if (context.CaptureTemplateSources && child.Parent?.Name == W + "p" && fields.Count == 0
+                if (context.CaptureTemplateSources && !field.InspectionNested && child.Parent?.Name == W + "p" && fields.Count == 0
                     && runs.Count == first + 1 && runs[first].FieldInstruction != null)
                     runs[first].TemplateFieldElement = child;
                 continue;

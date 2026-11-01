@@ -15,7 +15,7 @@ public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
     /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths.
-    /// A single simple field inside an admitted root repeat has known item scope only when the caller declares that item path required and any dotted item parents as required mappings; other repeated contents, controls and owners remain uninspected. Explicit dirty flags on inspected simple fields are reported as uncertain refresh requirements; a missing flag does not establish freshness. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
+    /// A single simple field inside an admitted root repeat has known item scope only when the caller declares that item path required and any dotted item parents as required mappings; other repeated contents, controls and owners remain uninspected. Explicit dirty flags on inspected simple fields and bounded same-paragraph complex-field begin markers are reported as uncertain refresh requirements; a missing flag does not establish freshness. Selected PDF option conflicts are checked statically; other output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
@@ -68,14 +68,17 @@ public sealed partial class WordConverter
         }
         void InspectDirtyFlag(TextRun run, string? part, Func<IReadOnlyList<int>?> location, string? scope = null)
         {
-            // Only a captured direct simple field is in this inspection's source coverage.
+            // Only captured direct simple fields and bounded complex begin markers are in this source coverage.
             // An absent or false flag never proves that the cache is current.
-            XAttribute? dirty = run.TemplateFieldElement?.Attribute(XName.Get("dirty", "http://schemas.openxmlformats.org/wordprocessingml/2006/main"));
+            XElement? field = run.TemplateFieldElement ?? run.TemplateDirtyFieldElement;
+            XAttribute? dirty = field?.Attribute(XName.Get("dirty", "http://schemas.openxmlformats.org/wordprocessingml/2006/main"));
             if (dirty == null) return;
+            IReadOnlyList<int>? DirtyLocation() => run.TemplateFieldElement != null ? location()
+                : part == null ? null : XmlSourceLocation.ChildIndices(field!, Work);
             if (dirty.Value is "true" or "1" or "on")
-                Add("Plan.FieldMarkedDirty", "Remediation.RefreshField", part: part, unknown: true, indices: location(), scope: scope);
+                Add("Plan.FieldMarkedDirty", "Remediation.RefreshField", part: part, unknown: true, indices: DirtyLocation(), scope: scope);
             else if (dirty.Value is not ("false" or "0" or "off"))
-                Add("Plan.FieldDirtyUnknown", "Remediation.ReviewFields", part: part, unknown: true, indices: location(), scope: scope);
+                Add("Plan.FieldDirtyUnknown", "Remediation.ReviewFields", part: part, unknown: true, indices: DirtyLocation(), scope: scope);
         }
         Add("Plan.UninspectedCoverage", "Remediation.ReviewConversion", unknown: true);
         Add("Plan.ReuseUnavailable", "Remediation.Reinspect", unknown: true);

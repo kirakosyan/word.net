@@ -14,6 +14,112 @@ public sealed class TemplateInspectionTests
     [InlineData("true")]
     [InlineData("1")]
     [InlineData("on")]
+    public void DirtyComplexFieldBeginMarkersAreLocatedWithoutClaimingFreshness(string value)
+    {
+        string field = ComplexField(" w:dirty='" + value + "'");
+        using var source = new MemoryStream(Document(field + Table(field)));
+        TemplateInspection report = new WordConverter().InspectTemplate(source,
+            new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding[] findings = report.Findings.Where(item => item.Code == "Plan.FieldMarkedDirty").ToArray();
+        Assert.Equal(2, findings.Length);
+        Assert.Contains(findings, item => string.Join(",", item.SourceElementIndices!) == "1,1,1,1,1");
+        Assert.Contains(findings, item => string.Join(",", item.SourceElementIndices!) == "1,1,2,3,1,2,1,1");
+        Assert.All(findings, item => { Assert.True(item.Unknown); Assert.Equal("Remediation.RefreshField", item.Remediation); });
+        Assert.False(report.IsReusable); Assert.Contains(report.Findings, item => item.Code == "Plan.UninspectedCoverage" && item.Unknown);
+        string json = JsonSerializer.Serialize(report);
+        Assert.DoesNotContain("Name", json, StringComparison.Ordinal); Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" w:dirty='false'")]
+    [InlineData(" w:dirty='0'")]
+    [InlineData(" w:dirty='off'")]
+    public void ClearComplexFieldFlagsDoNotEstablishFreshness(string attributes)
+    {
+        using var source = new MemoryStream(Document(ComplexField(attributes)));
+        TemplateInspection report = new WordConverter().InspectTemplate(source,
+            new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(report.Findings, item => item.Code is "Plan.FieldMarkedDirty" or "Plan.FieldDirtyUnknown");
+        Assert.Contains(report.Findings, item => item.Code == "Plan.UninspectedCoverage" && item.Unknown); Assert.False(report.IsReusable);
+    }
+
+    [Fact]
+    public void InvalidComplexFieldFlagIsUnknownAndDoesNotLeakItsValue()
+    {
+        const string secret = "private-complex-flag";
+        using var source = new MemoryStream(Document(ComplexField(" w:dirty='" + secret + "'")));
+        TemplateInspection report = new WordConverter().InspectTemplate(source,
+            new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding finding = Assert.Single(report.Findings, item => item.Code == "Plan.FieldDirtyUnknown");
+        Assert.True(finding.Unknown); Assert.Equal("Remediation.ReviewFields", finding.Remediation);
+        Assert.Equal("1,1,1,1,1", string.Join(",", finding.SourceElementIndices!));
+        Assert.DoesNotContain(secret, JsonSerializer.Serialize(report), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CrossParagraphAndLockedComplexFieldsKeepDirtyCoverageUnknown()
+    {
+        string cross = ComplexField(" w:dirty='true'").Replace("<w:r><w:fldChar w:fldCharType='end'/></w:r></w:p>",
+            "</w:p><w:p><w:r><w:fldChar w:fldCharType='end'/></w:r></w:p>");
+        string locked = ComplexField(" w:dirty='true' w:fldLock='true'");
+        foreach (string field in new[] { cross, locked })
+        {
+            using var source = new MemoryStream(Document(field));
+            TemplateInspection report = new WordConverter().InspectTemplate(source,
+                new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+                cancellationToken: TestContext.Current.CancellationToken);
+            Assert.DoesNotContain(report.Findings, item => item.Code == "Plan.FieldMarkedDirty");
+            Assert.Contains(report.Findings, item => item.Code == "Plan.UninspectedCoverage" && item.Unknown);
+        }
+    }
+
+    [Fact]
+    public void NestedFieldResultsDoNotInheritAnOuterComplexDirtyMarker()
+    {
+        string outer = ComplexField(" w:dirty='true'");
+        string simple = outer.Replace("<w:r><w:t>cached</w:t></w:r>",
+            "<w:fldSimple w:instr='DATE'><w:r><w:t>cached</w:t></w:r></w:fldSimple>");
+        string nested = outer.Replace("<w:r><w:t>cached</w:t></w:r>", ComplexField("").Replace("<w:p>", "").Replace("</w:p>", ""));
+        const string outerSimple = "<w:p><w:fldSimple w:instr='MERGEFIELD Name' w:dirty='true'>"
+            + "<w:fldSimple w:instr='DATE'><w:r><w:t>cached</w:t></w:r></w:fldSimple></w:fldSimple></w:p>";
+        foreach (string field in new[] { simple, nested, outerSimple })
+        {
+            using var source = new MemoryStream(Document(field));
+            TemplateInspection report = new WordConverter().InspectTemplate(source,
+                new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar)), DocumentFormat.Docx,
+                new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+            Assert.DoesNotContain(report.Findings, item => item.Code == "Plan.FieldMarkedDirty");
+            Assert.Contains(report.Findings, item => item.Code == "Plan.UninspectedCoverage" && item.Unknown);
+        }
+    }
+
+    [Fact]
+    public void ComplexDirtyMarkerPositionWorkIsBoundedAndOnlyComputedForFindings()
+    {
+        string prefix = string.Concat(Enumerable.Repeat("<w:r/>", 50000));
+        string content = ComplexField(" w:dirty='true'").Replace("<w:p>", "").Replace("</w:p>", "");
+        byte[] bytes = Document("<w:p>" + prefix + content + "</w:p>");
+        using var source = new MemoryStream(bytes);
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Name", TemplatePathType.Scalar));
+        InvalidDataException failure = Assert.Throws<InvalidDataException>(() => new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken));
+        Assert.StartsWith("Limit.TemplateInspection:", failure.Message, StringComparison.Ordinal); Assert.True(source.CanRead);
+        string clean = content.Replace(" w:dirty='true'", "");
+        using var withoutFlag = new MemoryStream(Document("<w:p>" + prefix + clean + "</w:p>"));
+        TemplateInspection report = new WordConverter().InspectTemplate(withoutFlag, schema, DocumentFormat.Docx,
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.DoesNotContain(report.Findings, item => item.Code == "Plan.FieldMarkedDirty");
+        Assert.Contains(report.Findings, item => item.Code == "Plan.UninspectedCoverage" && item.Unknown);
+    }
+
+    [Theory]
+    [InlineData("true")]
+    [InlineData("1")]
+    [InlineData("on")]
     public void DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(string value)
     {
         string field = Field("MERGEFIELD Name").Replace("<w:fldSimple ", "<w:fldSimple w:dirty='" + value + "' ");
@@ -982,6 +1088,9 @@ public sealed class TemplateInspectionTests
     private static string RootRepeat(string path, string content) => "<w:sdt><w:sdtPr><w:tag w:val='repeat:" + path + "'/></w:sdtPr><w:sdtContent>" + content + "</w:sdtContent></w:sdt>";
     private static string InlineControl(string tag) => "<w:p><w:sdt><w:sdtPr><w:tag w:val='" + tag + "'/></w:sdtPr><w:sdtContent><w:r><w:t>cached</w:t></w:r></w:sdtContent></w:sdt></w:p>";
     private static string Field(string instruction) => "<w:p><w:fldSimple w:instr='" + instruction + "'><w:r><w:t>cached</w:t></w:r></w:fldSimple></w:p>";
+    private static string ComplexField(string beginAttributes) => "<w:p><w:r><w:fldChar w:fldCharType='begin'" + beginAttributes + "/></w:r>"
+        + "<w:r><w:instrText> MERGEFIELD Name </w:instrText></w:r><w:r><w:fldChar w:fldCharType='separate'/></w:r>"
+        + "<w:r><w:t>cached</w:t></w:r><w:r><w:fldChar w:fldCharType='end'/></w:r></w:p>";
     private static string Table(string content) => "<w:tbl><w:tblPr><w:tblW w:w='3000' w:type='dxa'/><w:tblLayout w:type='fixed'/></w:tblPr>"
         + "<w:tblGrid><w:gridCol w:w='3000'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w='3000' w:type='dxa'/></w:tcPr>" + content + "</w:tc></w:tr></w:tbl>";
 }
