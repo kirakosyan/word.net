@@ -745,6 +745,13 @@ The [created-cell fragment observation](measurements/roadmap-138-cell-compositio
 independently checks authored inputs, schema-valid outputs, source and destination
 atomicity, copied control IDs and static office text. Seventeen altered observations
 are rejected. Exact committed-source and hosted qualification are separate.
+The [exact-source composition receipt](measurements/roadmap-138-cell-composition-daca0a3.json)
+records locked restore, five-target Release rebuild, format and local package/API
+checks, and both complete .NET 8 and .NET 10 conversion and English OCR suites
+(2,426 each without skips). The 121-profile matrix passed 898 cases; independent
+corpora rejected 212 altered observations. The unchanged local single-core PDF
+gate passed at 1.054 against `0e14a7e`; reference rounds ranged from 40.143 to
+40.561 ms. Hosted and actual Framework checks remain separate.
 
 Pending #157 mixed-region tests cover three and five nested body levels, sibling
 order, empty collections, scope lookup, retained control IDs, notes and atomic
