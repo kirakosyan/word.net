@@ -1,0 +1,144 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "52ad9cab3aa6e141b0423db7b08f5cb384a42c91",
+  "sourceTree": "2ba852576457e309adcdbce0e93b67a52001ccb8",
+  "scope": "In-process fixed-DOCX inspection snapshot reuse with source, declaration and bounded environment identities; no portable policy plan or output authorization.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+    "releaseBuild": "All five library targets and the net472 test executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "11ef52a70bd9ee89fc84e4252ea91dd2de27ba9f16298ea7139eae6652b71834",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution for this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2432,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "6968fb2b341a5c527d89ace4f60ec458a8a3d8934217de397ab06048c56a3111"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2432,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "d26aa31d717ebb72bfd504d6c4fedaae778e294f2a85aa09acfa8ed2bdc1b717"
+    },
+    "sourceMatrix": {
+      "profiles": 123,
+      "mappedMethods": 541,
+      "net10CasesPassed": 903,
+      "logSha256": "b90ff54752150513431f0d430680872a93b5ed0a39f47adea9adf567bb7c3550"
+    },
+    "packages": {
+      "wordnet.1.5.0.nupkg": "ddf7a7cf5036714b656c4abde085e92b7a59043e2f401167a45d30380d1a696b",
+      "wordnet.1.5.0.snupkg": "49deffeacd4f29e6e68d1d646848d8f8da40bf00d754ef05ae96814b0ca83184",
+      "wordnet.Fonts.1.5.0.nupkg": "5841024b5789f648906d31bfe1c905d24c288e2b44c39170669a7edd298bf525",
+      "wordnet.Fonts.1.5.0.snupkg": "8aa6f2e096ea4658b5e165114189c3b25c6a38d0d4b68112c4c2cbec9f911414",
+      "wordnet.Ocr.1.5.0.nupkg": "54359059480d19250e2d0166fd46b345bb1c2d6eb7f1c9176bdd63e1223ac831",
+      "wordnet.Ocr.1.5.0.snupkg": "d1ce1097d492a64eff1ca5579b85ef65456f3298d16e4f2a0f6346a2145c9980"
+    },
+    "packageVerification": "Serial local core, fonts and OCR packages passed release package and API verification; none were published.",
+    "packageLogSha256": "92b69acf16224d696674a1daea0594c807a8c576551c09f1f0738b130ecb8fb2",
+    "comparisonAndLedgerControls": {
+      "comparison": 13,
+      "ledger": 6,
+      "comparisonLogSha256": "93e2572d4bbfd41eebae26f1234b58cdc4494dcdeee39f7b4a5ef4b34691dbe1",
+      "ledgerLogSha256": "908608ab31f94da979899e7beb4b7ddf411eef91444c26f79e89668f185f48b6"
+    }
+  },
+  "independent": {
+    "alteredObservationControls": 236,
+    "reports": {
+      "baseline-verification": {
+        "negativeControls": 18,
+        "reportSha256": "c59dba4ee9bd9f42978114afc90a1ad656a9533364e1cb8e294b12e4b8c21ada"
+      },
+      "cell-reference": {
+        "negativeControls": 19,
+        "reportSha256": "800f8f393e67cce7750988929de11cdc6888e5f7411968ac3310746020214012"
+      },
+      "complex-reference": {
+        "negativeControls": 23,
+        "reportSha256": "a18c6332713afcc87e21a69955c80bfb410c0034fe62e4e3fa3888bcf8049a9c"
+      },
+      "compose-reference": {
+        "negativeControls": 17,
+        "reportSha256": "3875728a452a3cca1ce39128423799f4a33b7374c8d36ace467b507eb7d6f33d"
+      },
+      "identity-reference": {
+        "negativeControls": 22,
+        "reportSha256": "c6b50367f8f9f7f392d74c3a0374c6739efa2baa48f442de116b31b6f51f36ed"
+      },
+      "inspection-reference": {
+        "negativeControls": 24,
+        "reportSha256": "67760938d87f3dee806f5f689fdaf35adc4968899fc75f4f4f21e2d61a07c272"
+      },
+      "reference": {
+        "negativeControls": 18,
+        "reportSha256": "db3c417722156d57cb2f7271c2347b0b4d847505b5e726fc943a624c15652f5b"
+      },
+      "regression-data": {
+        "negativeControls": 27,
+        "reportSha256": "011a1bd084cd7a8f0b48fac6d497dc153d5c56534bcab1a57bc30b81aa0e8406"
+      },
+      "regression-lint": {
+        "negativeControls": 24,
+        "reportSha256": "8bf93332c541dc352bac58bfca141d631ca39b3fa424e02341aced1348cde5e7"
+      },
+      "regression-nested": {
+        "negativeControls": 28,
+        "reportSha256": "541268cb9463bb95c454288bc6eb765af0329d544526f0f8bb1782fdf503c9b3"
+      },
+      "workflow-reference": {
+        "negativeControls": 16,
+        "reportSha256": "f2307a98614f64457c142dc6def408ccd378ea157c201b7a07a434fcaa2e2b90"
+      }
+    },
+    "sourceFixtureSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+    "loadedCoreSha256": "44948d47edc162adacc5d1864545d33a13b6ab60651b76305d98829866ed0def",
+    "schemaLogSha256": "d90c279aa1a793d17ccc7d7e7139fc57d64d6e7c29ff19900b3d24ada2d16d12",
+    "validator": "DocumentFormat.OpenXml.Framework 3.5.1.0",
+    "inspectionVerification": {
+      "result": {
+        "independentSchemaValidInputs": 1,
+        "fingerprintsIndependentlyRecomputed": 6,
+        "repositoryFontResourcesMatched": 24,
+        "staleAndBoundedNegativesPassed": true,
+        "limitations": "In-process inspection snapshot only; no portable plan, conversion authorization, loss policy or binary attestation."
+      },
+      "negativeControls": {
+        "fixture": "Independent input identity changed",
+        "schema validation": "Independent source schema validation missing",
+        "input fingerprint": "Input fingerprint changed",
+        "core binary": "Loaded core assembly changed",
+        "declaration fingerprint": "Declaration fingerprint changed",
+        "options fingerprint": "Fixed profile or clock fingerprint changed",
+        "clock": "Fixed profile or clock fingerprint changed",
+        "provider fingerprint": "Provider profile fingerprint changed",
+        "module fingerprint": "Module/runtime descriptor fingerprint changed",
+        "runtime descriptor": "Module/runtime descriptor fingerprint changed",
+        "font fingerprint": "Font identity changed",
+        "font resource bytes": "Loaded font bytes differ from independently hashed repository resources",
+        "font inventory": "Bundled font inventory changed",
+        "coverage": "Inspection coverage or reusable-policy limitation changed",
+        "reusable policy": "Inspection coverage or reusable-policy limitation changed",
+        "requirement": "Declared requirements changed",
+        "privacy": "Serialized snapshot leaked a sensitive alias",
+        "input stale": "Reuse, stale, bounded or cancellation behavior changed",
+        "schema stale": "Reuse, stale, bounded or cancellation behavior changed",
+        "schema consumed": "Reuse, stale, bounded or cancellation behavior changed",
+        "limit": "Reuse, stale, bounded or cancellation behavior changed",
+        "cancellation": "Reuse, stale, bounded or cancellation behavior changed",
+        "stream ownership": "Reuse, stale, bounded or cancellation behavior changed",
+        "snapshot": "Reuse, stale, bounded or cancellation behavior changed"
+      },
+      "controlMethod": "Independent observations were altered in memory."
+    }
+  },
+  "evidencePreparationNote": "Evidence preparation stopped because the archive glob matched only three .nupkg files and omitted the three .snupkg symbols. No test, package, source or performance check failed. The corrected receipt enumerates both extensions.",
+  "performanceRecord": "docs/measurements/roadmap-138-reusable-inspection-performance-52ad9ca.json",
+  "qualification": "Exact source is locally qualified only. Hosted checks and actual Framework execution for this source are separate; portable plans, enforced loss policies and roadmap #138 remain open."
+}

@@ -1,5 +1,21 @@
 # Conversion tests and qualification
 
+## Roadmap #138 fixed-profile inspection reuse
+
+Exact source `52ad9ca` passed the five-target Release rebuild, formatting, local
+package/API verification and both complete .NET 8/.NET 10 conversion and English OCR
+suites (2,432 cases each, no skips). The executable matrix passed 903 cases;
+independent corpora rejected 236 altered observations, including 24 checks of the
+new inspection snapshot. The unchanged local single-core PDF gate passed at
+0.971 versus `b57f10e`. The [source receipt](measurements/roadmap-138-reusable-inspection-52ad9ca.json)
+and [performance samples](measurements/roadmap-138-reusable-inspection-performance-52ad9ca.json)
+record exact identities. Hosted checks and actual Framework execution for this
+source remain separate. This does not implement a portable plan or loss policy.
+
+The preceding `b57f10e` [hosted performance gates](measurements/wordnet-138-performance-b57-hosted-success.json)
+passed at 1.034 for the PR merge against release source and 1.145 for the push
+against `e9de85c`. Other hosted jobs and actual Framework guests have separate results.
+
 Pending #142 direct-border tests inspect editable WordprocessingML, fixed-page and
 HTML/ODT color output, report-row expansion, disabled edges, destination losses,
 conflicts and pagination rejection. A [pinned-font LibreOffice fixture](../tests/wordnet.Conversion.Tests/Fixtures/TableBorders/README.md)
