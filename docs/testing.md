@@ -11,6 +11,45 @@ the pinned design-only requirements in an isolated environment, all seven
 [design checks passed](measurements/wordnet-1.6.0-design-retry.txt). This does
 not qualify runtime behavior or a package.
 
+The 1.6.0 source commit `dfd1062` passed locked restore, the five-target Release
+rebuild and net472 test-executable build, and both full local .NET 8/.NET 10
+conversion and English OCR suites: 2,466 cases each without failures or skips.
+The [local receipt](measurements/wordnet-1.6.0-local-source.json) records the
+936-case executable matrix, six local package hashes and 329 independent
+altered-observation controls. Serial packing validated core API compatibility
+against 1.5.0; [archive inspection](measurements/wordnet-1.6.0-package-inspection.json)
+also checked companion dependencies, symbol targets and README identities. The
+local HTML-disabled README rendering is not a NuGet gallery upload preview. The
+[dependency audit](measurements/wordnet-1.6.0-vulnerability-audit.txt) reported
+no known vulnerable packages from the configured source.
+Using a fresh, source-mapped NuGet cache, the same local archives passed four
+complete [package-consumer runs](measurements/wordnet-1.6.0-package-consumer.json):
+native .NET 8 and .NET 10 assets, plus the explicit .NET Standard asset on each
+runtime. Each run passed 2,466 cases with no skips; cached assemblies match the
+packaged bytes. These Linux runs do not replace hosted or actual Framework checks.
+
+The initial format check passed with a general [workspace warning](measurements/wordnet-1.6.0-format-initial.txt).
+A subsequent [diagnostic run](measurements/wordnet-1.6.0-format-diagnostic.txt)
+loaded the projects and analyzers, reported no warnings and made no changes; the
+first observation remains recorded. An [oracle path note](measurements/wordnet-1.6.0-oracle-path-note.txt)
+explains a scratch-directory naming error and the byte-for-byte retained outputs.
+The unchanged local [single-core PDF gate](measurements/wordnet-1.6.0-final-performance.json)
+passed at 0.996 against `442e018`. Reference round medians were 196.200 and 125.784 ms;
+candidate medians were 191.839 and 155.601 ms. These noisy local timings are not
+a general speed claim. Hosted checks and actual Framework execution for this
+release commit remain separate from the local evidence.
+
+The preceding PR head `36ed20d` also passed actual Framework 4.7.2 x64 legacy-JIT
+[PR source](measurements/wordnet-138-framework-36ed-pr-source-success.json) and
+[push source](measurements/wordnet-138-framework-36ed-push-source-success.json)
+guests, each with 2,466 cases and complete cleanup. Its [PR package guest](measurements/wordnet-138-framework-36ed-pr-package-success.json)
+and [push package guest](measurements/wordnet-138-framework-36ed-push-package-success.json)
+also passed 2,466 cases and cleanup; their [PR](measurements/wordnet-138-framework-36ed-pr-package-identity.json)
+and [push](measurements/wordnet-138-framework-36ed-push-package-identity.json)
+package identities match the separately retained workflow artifacts. Both hosted
+workflows succeeded. These were 1.5.0-versioned
+builds, not qualification of the 1.6.0 release commit or its packages.
+
 ## Roadmap #138 fixed-profile inspection reuse
 
 Exact source `52ad9ca` passed the five-target Release rebuild, formatting, local

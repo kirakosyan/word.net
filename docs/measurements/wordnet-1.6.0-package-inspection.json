@@ -1,0 +1,41 @@
+{
+  "commit": "dfd1062a37c81e6bed694bd09a4a419aa6b138a0",
+  "packages": {
+    "wordnet": {
+      "archiveSha256": "226af75a70ec60bff4fa9a1704ee8badba1ca87754e3cc69834be121acf52490",
+      "readmeSha256": "44b4381a7f35bb138f93d7b31f6a127f51aefd20e894d76e3cd12c8c75b212ee",
+      "internalDependencies": [
+        "1.6.0",
+        "1.6.0",
+        "1.6.0",
+        "1.6.0",
+        "1.6.0"
+      ],
+      "symbolsSha256": "0743d08656ba9708492293de503e955765999af76e915b5984ac984f9369d015"
+    },
+    "wordnet.Fonts": {
+      "archiveSha256": "a179814253c577d78acaf7800111ff2dc8e5c255519a833f2d70c82fc182ba86",
+      "readmeSha256": "44b4381a7f35bb138f93d7b31f6a127f51aefd20e894d76e3cd12c8c75b212ee",
+      "internalDependencies": [],
+      "symbolsSha256": "cf04337bc6297afa3344fc6935d2423fb1c280e33317a6f3dc459c1979cca047"
+    },
+    "wordnet.Ocr": {
+      "archiveSha256": "cb1708fecfd2565a8b4c7838d7d04f5e920d545d7150e111cecc6362da57c03f",
+      "readmeSha256": "44b4381a7f35bb138f93d7b31f6a127f51aefd20e894d76e3cd12c8c75b212ee",
+      "internalDependencies": [
+        "1.6.0",
+        "1.6.0",
+        "1.6.0",
+        "1.6.0",
+        "1.6.0"
+      ],
+      "symbolsSha256": "2f3239296a61c56edd1cc610835738c0b230dc0b9d79fadecdba96b41f6c5277"
+    }
+  },
+  "htmlDisabledReadme": {
+    "images": 5,
+    "links": 120,
+    "headings": 13
+  },
+  "limitation": "Independent local Markdown rendering; this is not the NuGet gallery upload preview."
+}

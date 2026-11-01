@@ -1,0 +1,126 @@
+The dotnet runtime version is '10.0.12'.
+Formatting code files in workspace '/workspace/wordnet-138-nested-baseline/wordnet.sln'.
+Loading workspace.
+Project wordnet(net462) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet(net462) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet/obj/Debug/net462/wordnet.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet(net462) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet(net472) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet(net472) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet/obj/Debug/net472/wordnet.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet(net472) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet(netstandard2.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet(netstandard2.0) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet/obj/Debug/netstandard2.0/wordnet.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet(netstandard2.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet/obj/Debug/net8.0/wordnet.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet(net8.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet/obj/Debug/net10.0/wordnet.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet(net10.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Conversion.Tests(net472) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Conversion.Tests(net472) is using configuration from '/workspace/wordnet-138-nested-baseline/tests/wordnet.Conversion.Tests/obj/Debug/net472/win-x64/wordnet.Conversion.Tests.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Conversion.Tests(net472) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Conversion.Tests(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Conversion.Tests(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/tests/wordnet.Conversion.Tests/obj/Debug/net8.0/wordnet.Conversion.Tests.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Conversion.Tests(net8.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Conversion.Tests(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Conversion.Tests(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/tests/wordnet.Conversion.Tests/obj/Debug/net10.0/wordnet.Conversion.Tests.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Conversion.Tests(net10.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Qualification is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Qualification is using configuration from '/workspace/wordnet-138-nested-baseline/tools/wordnet.Qualification/obj/Debug/net10.0/wordnet.Qualification.GeneratedMSBuildEditorConfig.editorconfig'.
+Found project reference without a matching metadata reference: /workspace/wordnet-138-nested-baseline/src/wordnet.Fonts/wordnet.Fonts.csproj
+Found project reference without a matching metadata reference: /workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/wordnet.Ocr.csproj
+Unresolved metadata reference removed from project: /workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/bin/Debug/net472/wordnet.Ocr.dll
+Project wordnet.Qualification is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Ocr(net462) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Ocr(net462) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/obj/Debug/net462/wordnet.Ocr.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Ocr(net462) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Ocr(net472) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Ocr(net472) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/obj/Debug/net472/wordnet.Ocr.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Ocr(net472) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Ocr(netstandard2.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Ocr(netstandard2.0) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/obj/Debug/netstandard2.0/wordnet.Ocr.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Ocr(netstandard2.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Ocr(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Ocr(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/obj/Debug/net8.0/wordnet.Ocr.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Ocr(net8.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Ocr(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Ocr(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet.Ocr/obj/Debug/net10.0/wordnet.Ocr.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Ocr(net10.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Fonts is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Fonts is using configuration from '/workspace/wordnet-138-nested-baseline/src/wordnet.Fonts/obj/Debug/netstandard2.0/wordnet.Fonts.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Fonts is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.ManagedExport.Probe(net462) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.ManagedExport.Probe(net462) is using configuration from '/workspace/wordnet-138-nested-baseline/tools/wordnet.ManagedExport.Probe/obj/Debug/net462/win-x64/wordnet.ManagedExport.Probe.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.ManagedExport.Probe(net462) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.ManagedExport.Probe(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.ManagedExport.Probe(net8.0) is using configuration from '/workspace/wordnet-138-nested-baseline/tools/wordnet.ManagedExport.Probe/obj/Debug/net8.0/wordnet.ManagedExport.Probe.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.ManagedExport.Probe(net8.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.ManagedExport.Probe(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.ManagedExport.Probe(net10.0) is using configuration from '/workspace/wordnet-138-nested-baseline/tools/wordnet.ManagedExport.Probe/obj/Debug/net10.0/wordnet.ManagedExport.Probe.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.ManagedExport.Probe(net10.0) is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project wordnet.Benchmarks is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project wordnet.Benchmarks is using configuration from '/workspace/wordnet-138-nested-baseline/tools/wordnet.Benchmarks/obj/Debug/net10.0/wordnet.Benchmarks.GeneratedMSBuildEditorConfig.editorconfig'.
+Project wordnet.Benchmarks is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project WordNet.Automation is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project WordNet.Automation is using configuration from '/workspace/wordnet-138-nested-baseline/examples/WordNet.Automation/obj/Debug/net10.0/WordNet.Automation.GeneratedMSBuildEditorConfig.editorconfig'.
+Project WordNet.Automation is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Project WordNet.TemplateLint is using configuration from '/workspace/wordnet-138-nested-baseline/.editorconfig'.
+Project WordNet.TemplateLint is using configuration from '/workspace/wordnet-138-nested-baseline/examples/WordNet.TemplateLint/obj/Debug/net10.0/WordNet.TemplateLint.GeneratedMSBuildEditorConfig.editorconfig'.
+Project WordNet.TemplateLint is using configuration from '/tmp/wordnet-dotnet/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_recommended.globalconfig'.
+Complete in 5573ms.
+Determining formattable files.
+Complete in 2083ms.
+Running formatters.
+Running Code Style analysis.
+Determining diagnostics...
+Running 6 analyzers on wordnet(net462).
+Running 6 analyzers on wordnet(net472).
+Running 6 analyzers on wordnet(netstandard2.0).
+Running 6 analyzers on wordnet(net8.0).
+Running 6 analyzers on wordnet(net10.0).
+Running 6 analyzers on wordnet.Conversion.Tests(net472).
+Running 6 analyzers on wordnet.Conversion.Tests(net8.0).
+Running 6 analyzers on wordnet.Conversion.Tests(net10.0).
+Running 6 analyzers on wordnet.Qualification.
+Running 6 analyzers on wordnet.Ocr(net462).
+Running 6 analyzers on wordnet.Ocr(net472).
+Running 6 analyzers on wordnet.Ocr(netstandard2.0).
+Running 6 analyzers on wordnet.Ocr(net8.0).
+Running 6 analyzers on wordnet.Ocr(net10.0).
+Running 6 analyzers on wordnet.Fonts.
+Running 6 analyzers on wordnet.ManagedExport.Probe(net462).
+Running 6 analyzers on wordnet.ManagedExport.Probe(net8.0).
+Running 6 analyzers on wordnet.ManagedExport.Probe(net10.0).
+Running 6 analyzers on wordnet.Benchmarks.
+Running 6 analyzers on WordNet.Automation.
+Running 6 analyzers on WordNet.TemplateLint.
+Complete in 33001ms.
+Analysis complete in 33001ms.
+Running Analyzer Reference analysis.
+Determining diagnostics...
+Running 152 analyzers on wordnet(net462).
+Running 152 analyzers on wordnet(net472).
+Running 152 analyzers on wordnet(netstandard2.0).
+Running 158 analyzers on wordnet(net8.0).
+Running 158 analyzers on wordnet(net10.0).
+Running 225 analyzers on wordnet.Conversion.Tests(net472).
+Running 231 analyzers on wordnet.Conversion.Tests(net8.0).
+Running 231 analyzers on wordnet.Conversion.Tests(net10.0).
+Running 158 analyzers on wordnet.Qualification.
+Running 152 analyzers on wordnet.Ocr(net462).
+Running 152 analyzers on wordnet.Ocr(net472).
+Running 152 analyzers on wordnet.Ocr(netstandard2.0).
+Running 158 analyzers on wordnet.Ocr(net8.0).
+Running 158 analyzers on wordnet.Ocr(net10.0).
+Running 152 analyzers on wordnet.Fonts.
+Running 152 analyzers on wordnet.ManagedExport.Probe(net462).
+Running 158 analyzers on wordnet.ManagedExport.Probe(net8.0).
+Running 158 analyzers on wordnet.ManagedExport.Probe(net10.0).
+Running 186 analyzers on wordnet.Benchmarks.
+Running 158 analyzers on WordNet.Automation.
+Running 158 analyzers on WordNet.TemplateLint.
+Complete in 27623ms.
+Analysis complete in 27623ms.
+Complete in 65167ms.
+Formatted 0 of 1555 files.
+Format complete in 72824ms.
