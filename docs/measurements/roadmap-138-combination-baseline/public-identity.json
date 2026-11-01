@@ -1,0 +1,16 @@
+{
+  "latestListedStable": "1.5.0",
+  "registration": [
+    {
+      "url": "https://api.nuget.org/v3/registration5-gz-semver2/wordnet/index.json",
+      "path": "registration-0.json.gz",
+      "sha256": "fe6d49e859e496127be61b13930980b298205c5d8d788bcaf00a94295513f37d"
+    }
+  ],
+  "packages": {
+    "wordnet": "5a7c20bb5b4271482d8756c44f756542365fddfb519151444398b071b0e0c1b9",
+    "wordnet.fonts": "11740af88988313ab7d6f0620c9fcdeabbfee94e29d7ee3b9970776652808631"
+  },
+  "project": "/workspace/wordnet-138-baseline-combinations-public/project/wordnet.Benchmarks.csproj",
+  "configuration": "/workspace/wordnet-138-baseline-combinations-public/project/NuGet.Config"
+}

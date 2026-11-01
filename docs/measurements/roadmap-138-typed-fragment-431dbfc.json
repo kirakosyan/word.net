@@ -1,0 +1,42 @@
+{
+  "roadmap": 138,
+  "issue": 147,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "431dbfcd6350ec3522b8d40cbf0023edbb710689",
+  "scope": "Unreleased typed-control fragments at body and simple-cell bookmarks, including independently cloned local XML bindings, explicit synchronization, nested owners, bounded structural wrappers and later typed edits. Mixed control/object, glossary-backed source and other unqualified combinations are not established by this receipt.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed with one MSBuild worker",
+    "format": "solution verification passed",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2042,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "ddbaa358e0eecb7b9e01b5208308607c64e65f8bbc3b65d667630c4592eec5a1"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2042,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "79bfba821629dfde69fd440aaa73b619a55a1d3ad5d9fab1a96e9496a9d8a8a9"
+    },
+    "capabilityMatrix": {"profiles": 52, "testMethods": 291, "net10CasesPassed": 512},
+    "frameworkVerifierControls": "Seven regression tests passed, including additional passing cases and incomplete, skipped or failed suites.",
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API validation and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "68d7aacbb5068bbe282c7c3a133ece507ac1a7f86922277adb99cd4101d0c748",
+      "wordnet.Fonts.1.5.0.nupkg": "d8416543f4e707786a055b6a59244b5a8bd648428c0683529ef66c040455b77b",
+      "wordnet.Ocr.1.5.0.nupkg": "449dded73eb91bd93d7e450dee08d6be4803f9aa42e3502f1f6673f5412acb9c"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-typed-fragment-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "c375a4e49b31caec725bde3cc4191358b078bceb761ebe8ebdf6307d69d9b585",
+    "reproducedDocxSha256": "e7199803e71d5fc1fcb22488a2f841b38116eb9af392746d0f9277bad372776e",
+    "result": "The exact-source and local-package assemblies were identical. The committed probe using that assembly reproduced the independently rendered DOCX byte for byte; Open XML SDK 3.5.1 reported zero errors. The independent checker confirmed distinct XML store identities and values Bea and Ada and their reference text order."
+  },
+  "earlierAttempts": "The initial targeted build failed analyzer CA1850 because a portable SHA-256 implementation was used on modern targets; the implementation now uses the static modern API and the portable API on older frameworks. The final focused suite passed 353 cases.",
+  "qualification": "Actual Windows Framework execution and hosted checks for this exact source remain pending. This increment does not complete #147 or roadmap #138."
+}

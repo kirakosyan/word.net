@@ -14,12 +14,14 @@ internal sealed class ContentControlStore
     internal Dictionary<string, ControlXmlStore> XmlStores { get; } = new Dictionary<string, ControlXmlStore>(StringComparer.OrdinalIgnoreCase);
     internal string? GlossaryPart { get; set; }
     internal XElement? Glossary { get; set; }
+    internal Dictionary<string, ControlGlossaryResource> GlossaryResources { get; } = new Dictionary<string, ControlGlossaryResource>(StringComparer.Ordinal);
     internal Dictionary<string, ParagraphBlock> GlossaryContent { get; } = new Dictionary<string, ParagraphBlock>(StringComparer.Ordinal);
     internal bool HasControls => Items.Count != 0;
     internal ContentControlStore Copy(ConversionContext c)
     {
         var copy = new ContentControlStore { DateMode = DateMode, GlossaryPart = GlossaryPart, Glossary = Glossary == null ? null : new XElement(Glossary) };
         foreach (var entry in GlossaryContent) copy.GlossaryContent.Add(entry.Key, entry.Value);
+        foreach (var entry in GlossaryResources) { c.CheckCancellation(); copy.GlossaryResources.Add(entry.Key, entry.Value.Copy()); }
         foreach (var item in Items) { c.CheckCancellation(); copy.Items.Add(item.Key, item.Value.Copy(c)); }
         foreach (var item in XmlStores) { c.CheckCancellation(); copy.XmlStores.Add(item.Key, item.Value.Copy()); }
         return copy;
@@ -27,8 +29,8 @@ internal sealed class ContentControlStore
     internal long Admit(DocumentModel model, ConversionContext c)
     {
         if (!HasControls) return 0;
-        if (Items.Count > 1024 || XmlStores.Count > 64) throw new InvalidDataException("Limit.Controls: Too many controls or local XML stores.");
-        if (model.Review.HasHistory || model.ObjectCount != 0) throw new NotSupportedException("Control.ProtectedOwner: Retained review/objects cannot be combined with typed controls.");
+        if (Items.Count > 1024 || XmlStores.Count > 64 || GlossaryResources.Count > 4) throw new InvalidDataException("Limit.Controls: Too many controls or local XML resources.");
+        if (model.Review.HasHistory) throw new NotSupportedException("Control.ProtectedOwner: Retained review cannot be combined with typed controls.");
         long chars = 0, nodes = 0; int listItems = 0; var placeholderCopies = new HashSet<ParagraphBlock>();
         foreach (ControlData item in Items.Values)
         {
@@ -43,11 +45,17 @@ internal sealed class ContentControlStore
             }
         }
         if (Glossary != null) Count(Glossary);
+        long glossaryBytes = 0;
+        foreach (ControlGlossaryResource resource in GlossaryResources.Values)
+        {
+            Count(resource.Xml); Count(resource.Relationship); glossaryBytes = checked(glossaryBytes + resource.Bytes.Length);
+            chars = checked(chars + resource.Part.Length + resource.ContentType.Length);
+        }
         foreach (ControlXmlStore store in XmlStores.Values) { Count(store.Xml); Count(store.Properties); nodes += 3; chars += store.Part.Length + store.PropertiesPart.Length + store.Id.Length; }
-        if (nodes > Math.Min(100000L, c.Options.MaximumCharacters) || chars > c.Options.MaximumCharacters || chars * 2 + nodes * 64 > c.Options.MaximumExpandedBytes)
+        if (nodes > Math.Min(100000L, c.Options.MaximumCharacters) || chars > c.Options.MaximumCharacters || chars * 2 + nodes * 64 + glossaryBytes > c.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.Controls: Retained control/XML metadata exceed aggregate resource limits.");
         _ = ControlOwners.Index(model, c);
-        return checked(chars + nodes * 32);
+        return checked(chars + nodes * 32 + glossaryBytes);
 
         void Count(XElement root)
         {
@@ -68,12 +76,26 @@ internal sealed class ContentControlStore
     }
 }
 
+internal sealed class ControlGlossaryResource
+{
+    internal string Part { get; set; } = "";
+    internal string ContentType { get; set; } = "";
+    internal XElement Relationship { get; set; } = null!;
+    internal XElement Xml { get; set; } = null!;
+    internal byte[] Bytes { get; set; } = Array.Empty<byte>();
+    internal ControlGlossaryResource Copy() => new ControlGlossaryResource
+    { Part = Part, ContentType = ContentType, Relationship = new XElement(Relationship), Xml = new XElement(Xml), Bytes = Bytes };
+}
+
+internal enum ControlStructure { None, Row, Cell }
+
 internal sealed class ControlData
 {
     internal int Id { get; set; }
     internal Guid Identity { get; set; } = Guid.NewGuid();
     internal ContentControlKind Kind { get; set; }
     internal bool Inline { get; set; }
+    internal ControlStructure Structure { get; set; }
     internal XElement Properties { get; set; } = new XElement(ControlValues.W + "sdtPr");
     internal XElement? EndProperties { get; set; }
     internal string? Tag => (string?)Properties.Element(ControlValues.W + "tag")?.Attribute(ControlValues.W + "val");
@@ -98,6 +120,7 @@ internal sealed class ControlData
             Identity = Identity,
             Kind = Kind,
             Inline = Inline,
+            Structure = Structure,
             Properties = new XElement(Properties),
             EndProperties = EndProperties == null ? null : new XElement(EndProperties),
             Lock = Lock,

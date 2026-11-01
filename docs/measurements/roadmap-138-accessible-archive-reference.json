@@ -1,0 +1,141 @@
+{
+  "roadmap": 138,
+  "issue": 156,
+  "recordedUtc": "2026-10-31",
+  "scope": "Opt-in PDF/A-2a plus PDF/UA-1 for bounded managed headings, text, tables, links, alpha images, chart/equation alternatives and separately admitted vector/text-box anchors. This working-tree observation does not establish all #156 combinations.",
+  "workingTreeParent": "7e3876e248865926db075d6f5e25b47a4ea87201",
+  "executedWorkingTreeNet10AssemblySha256": "8f644de30b20c32f976dc24ec90fe7dedc6f0f01821451f04f14c8341a2de0ab",
+  "scripts": {
+    "eng/verify-roadmap-138-accessible-archive.py": "18079d4530e44a0a5a39d2eb41aa187627b51b0296d6453fef07abc63b60abac",
+    "eng/roadmap-138-accessible-archive-probe.cs": "9f895de38106d978ea1a517f70e7d4fc00f4b9ea2c07140c7cec469c31fc9bd5",
+    "eng/validate-pdf-accessibility.py": "36a5adea842701530e80373227deb60e67a88a41416044aca24936f9a8a6e7d6",
+    "eng/check-roadmap-138-accessible-vectors.py": "2bcaed38769ad24113fb80cc6d0ee8ee7807e04c6b90023a0f06b305ef56e17d",
+    "eng/check-roadmap-138-vector-reference.py": "dfab225f32005260484da1de86c80f63aa6fd65c6ee01cf49ea014cf9b2c9f6a"
+  },
+  "fixtures": "Five synthetic test-generated PDF specimens plus 19 independently authored python-docx 1.2.0 source/saved documents and output PDFs. Original DOCX fixture provenance and independent geometry are recorded in roadmap-138-accessible-vectors-reference.json.",
+  "testPdfSha256": {
+    "accessible-archive-basic.pdf": "9fe992360eb47cbb5c33fa2f6010c5643ed3fd9574e362c81f320c0e36c1ba49",
+    "accessible-archive-box-decorative.pdf": "ecaa168f7ad5f9b55789896ae9b68eae21280948db8f89380a605bf0218241e1",
+    "accessible-archive-box.pdf": "cbe349b240c373656d276b15f04f7ec402151d21c1da4787e70cb5dffcf08953",
+    "accessible-archive-images.pdf": "6c64098a80f651e2175f409a70727fa0456187bc5afb46634d2edbcc0eac9b10",
+    "accessible-archive-negative.pdf": "73c4e931a3bfdb3f0c554b7df0a72e0bc67af79de199bc93e89a6230b483b589",
+    "accessible-archive-objects.pdf": "4f9e0f9844d838e346f0bc43797d658cd83e0281004316caa6e3a6f7538c69ea"
+  },
+  "independentDocuments": {
+    "box-decorative": {
+      "source": "b05b9b823f311b50bc6645aabbe24b7379eb23a9f6287592a9b6dcf7a104bc5f",
+      "saved": "2941fc0b271c6313a18134fa5e299fd205aeb239e96f5b32a25585a7ed18562e",
+      "pdf": "6823682e85dd83309b0155398248da641ee3d7973150bffdd31b0760333084d5"
+    },
+    "box": {
+      "source": "2f47219e0e016514db607d5116898b0fe0998817839b143c6ed4e72ba7fccb52",
+      "saved": "0fa9b843f997ff0e96466285df5b4223fc4d245e4b04e3d56fd1c7bb6ab10e0f",
+      "pdf": "0ed039db54556c82c8ea10f555cdfbc9ac408bd219aa44309391196afbcde08c"
+    },
+    "decorative": {
+      "source": "423f0b8def2b2930679183211e018e5f5eb34b351189408b0d6d599706a4914f",
+      "saved": "2dd4d34ec7c216c64fc4285ed30cfd0b8cd8da48cb4be192002f1c2318fba344",
+      "pdf": "1ebf2b4ff5ebf5a4830c90ade82c7536867a9fb40484e03571e5d75e08f5c252"
+    },
+    "described": {
+      "source": "afeb3090167471cafd782864216ad9aefe85d5e3dcd6430259db1541edca275c",
+      "saved": "cf93a7730403ff4db01df0e45b98683e7edbc17134ab7339bbc2a0c3dde0c14a",
+      "pdf": "12f82d340e4dce11ba6401baf9a94c5143d3a233f707d0e1893debced4a982f6"
+    },
+    "diamond-decorative": {
+      "source": "551c57ca845a992a7714e9692ba13e928a6467de9b52b5d7e160f5a6c7179e04",
+      "saved": "ba36a4efc719a993bc253be92cd82a1e7ec564159158917767cf7120966ea5d0",
+      "pdf": "45b82a3278185dd07b1480e0ebdf052380c381d7682b72eb4d7d2362d88b1f49"
+    },
+    "diamond-described": {
+      "source": "f223e6e4528f3f2b2f4db0e38769290d84b3c8e8827c2de1ab3a6434d0ac62a7",
+      "saved": "95c064d2d39f7f35e2bdd495f67493d8d203e3f0161f485c7e35a8ca81648af6",
+      "pdf": "e7368f21569247e1dc039dcbb24e823f992082ca050907ec0c93e191cf0a0c36"
+    },
+    "ellipse-decorative": {
+      "source": "dd37e4f651b02934beb8391a3665f531a4c54b1f4bd199ac75b02f4bdbced195",
+      "saved": "441c6591af89ae4bae96848366a1343dac6b47cc89fbdd2212188d9824bdef25",
+      "pdf": "a3d935f062ab9fda086a0b4a06349ca7af8aa10f033737ba041162b1b8bb5f89"
+    },
+    "ellipse-described": {
+      "source": "7e35683a930ff5bb40b8b48e834d6f35679bb7af9bc6d134c75e6e995f32305e",
+      "saved": "d889c94761613a6e001f6796107b8880f0e478995fa7203575e01c8aae3ca1a4",
+      "pdf": "9b094a70a5078295504285cf5d3f258e0793dd4ff45546f6f4edc87018015344"
+    },
+    "line-decorative": {
+      "source": "5afdf5429a96cd522a779494f9005c0ded0d20c230597bfae4d5397deb53ca05",
+      "saved": "372de2b96ab38ba1212b5c322d389413bbd38a421dcb94f5b967a7b02eb4c934",
+      "pdf": "dd29a19d1dfb7899375504f6f336103fa677476baa6bf501fb920b46cbfc578f"
+    },
+    "line-described": {
+      "source": "e0d73c4390b767b34cc1742cc8aed6191a07b8a3c2ebebc5aacf67eff845e95d",
+      "saved": "d9f2fc9738720f488ee45acdabb56abfd37f841e9f45d81219fbb62d7101d3e9",
+      "pdf": "6edea686c20fd0b42c54756dd67b12af8469cf84560b86bec2812a209339e22d"
+    },
+    "rect-decorative": {
+      "source": "10d6deed5ba4eee10152a0af422b08f78d363c8b0e9dea6680ad94737cc6b6ca",
+      "saved": "cda5f5c664b895526208dadd391372b5688c20e0b73eadffda98f0f705343f8c",
+      "pdf": "32323cec5eb1a14fd13a74cfa71cf42b13b96f7b5d02d4f95ed649bf1117780f"
+    },
+    "rect-described": {
+      "source": "0075f66c2a8cc76753ab0f4882cdf3e899006d3cc73172aa0063b7fd0fee9cab",
+      "saved": "eabc3e4e3a39cca30a63a87b7384017e0aee0124b422075e6a2383b96e477680",
+      "pdf": "844e98613a0b4e74f7bb336d4173c3990738bc863e9c486b5f6397f249c5610b"
+    },
+    "roundRect-decorative": {
+      "source": "09fd64378d7b51781857f7e0ae65ddf376fc0420dc51356d7ebeb27c49bed986",
+      "saved": "fd0dba678c182ccc011d49a90d7d78b2edc29edc9dd85939d01f309335f1f4b6",
+      "pdf": "12c9678721219a695c7586267e381b05c1210de1414450dd9d0ccfd94c284ed9"
+    },
+    "roundRect-described": {
+      "source": "9d324beeda8a880d61daf52e2921708d6a3af44ec1360f01ed6d7e55356e69d2",
+      "saved": "77ae33f6230f4f3fff776234e52259cfd58dd22066567e9a29ed797c527294eb",
+      "pdf": "7b456d2bc71642fd82ca26c167bc5ceafaebc50b49e1cf2efbcb2647b3df3c03"
+    },
+    "selection": {
+      "source": "bcb72b465a344680623c9ab95c002a49f56c3d0fbf95f41705784316d3508244",
+      "saved": "5f88812119140fc90f830c392c70b15e3440eb157798b552fb07ca18527a6f2b",
+      "pdf": "43be63ff294459f0a9efabe9fe2cbbe256bbedde4e12dfe547eac9ebd4bbe3f7"
+    },
+    "stroke": {
+      "source": "175941de90580778a5b19c75a26daee474bf47497deb645d5bbdd834e15545e7",
+      "saved": "98b60135a3a71ce36457c4b261a1b974bccae21b840b103609f67943946025a4",
+      "pdf": "f024dcab8030c8e4ee08aa94f3af9027a12ecbcc9bf301ca634fab7e61fedc3a"
+    },
+    "triangle-decorative": {
+      "source": "423f0b8def2b2930679183211e018e5f5eb34b351189408b0d6d599706a4914f",
+      "saved": "2dd4d34ec7c216c64fc4285ed30cfd0b8cd8da48cb4be192002f1c2318fba344",
+      "pdf": "8819c837d3be60a0413d6b958e8db7a736c9b298d07ad11d54461d384f05d31d"
+    },
+    "triangle-described": {
+      "source": "afeb3090167471cafd782864216ad9aefe85d5e3dcd6430259db1541edca275c",
+      "saved": "cf93a7730403ff4db01df0e45b98683e7edbc17134ab7339bbc2a0c3dde0c14a",
+      "pdf": "d043cc66fc368e2a6c1ef1b0cb8059132ac94c607c9ea94adf44ef60fb7f6f6d"
+    },
+    "two": {
+      "source": "16ebc152e2304590bae4911afc1219b65a1021fb22760d1e13d7b70e3b01e3c8",
+      "saved": "cc52a6abc75cf414b28423e14a94a05b3db85aab6237e8b97a943af61710fe05",
+      "pdf": "29a1ebfdea4da1c13f1c77810919b6e9b6fff37ec2240683dd5bff13056e7b1e"
+    }
+  },
+  "validation": {
+    "tool": "Pinned offline veraPDF 1.30.2 image sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb; pypdf 6.10.0; PyMuPDF 1.27.2.2",
+    "testSpecimens": "PDF/A-2a accepted five positives and rejected untagged and missing-metadata controls. PDF/UA-1 accepted five positives and rejected those two controls plus a missing-language control. Independent raw checks verified roles, tagged parents, annotation associations, output intent, XMP identifiers, embedded fonts, image and object alternatives, and rejected a changed chart alternative.",
+    "independentSpecimens": "Both PDF/A-2a and PDF/UA-1 accepted all 19 independently authored described/decorative vector, page-selection, multi-figure, stroke and text-box combinations and rejected an untagged control. Independent pypdf checks verified their ParentTree and source order.",
+    "xmlSha256": {
+      "testPdfa": "9b781f2ff586138f7b07f4d3145afd7f8b3a65955c4d7c0d5e344b5344664dfa",
+      "testUa": "f4b5963a0a764f5b6a3e1cfa7a7a3584a86abe54039ff5127e804d01432f07e8",
+      "independentPdfa": "81eec0c1d4ad917ffd5ddddb440fadbd9ab44937b5c53d377bef7b23fed33199",
+      "independentUa": "f08576dbbe5b21daa7e8fb816aa1efc0983101df06cc0dd0ab2cb8095c5bcbc5"
+    },
+    "controlSha256": {
+      "accessible-archive-language-negative.pdf": "d60a89291a8acbc5e4fa8d8b9d66cc97aab367ebe15d7799b595017ed2f562bd",
+      "accessible-archive-metadata-negative.pdf": "f0ba71c0c580637670480c694a55baabdaaf318a11c392221fac36555da5a688",
+      "accessible-archive-negative.pdf": "73c4e931a3bfdb3f0c554b7df0a72e0bc67af79de199bc93e89a6230b483b589"
+    },
+    "triangleMaximumVertexDifferencePt": 0.2085964717267737,
+    "geometryTolerancePt": 0.5
+  },
+  "retainedEarlierAttempts": "The initial validator batch incorrectly expected PDF/A-2a to reject a deliberately missing catalog language; veraPDF accepted that PDF/A check and rejected the same control under PDF/UA-1. The two validator scopes are now reported separately without changing either verdict. An initial focused compile failed CA1861 for an inline constant array in a test; a static fixture corrected it. A source edit overlapped an earlier test build, so a fresh rebuild was run after editing stopped.",
+  "limitations": "Independent validators do not establish live Word or screen-reader behavior. Native typography, notes, mixed positioned drawings with chart/equation objects, broader owners and placements remain outside the profile. Generated PDFs and control files remain scratch artifacts. Exact-commit, package, hosted runtime and full roadmap qualification are separate."
+}

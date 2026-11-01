@@ -1,0 +1,33 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "5b6eb7eec533dfb7ae648f2bad0fd69a5a477436",
+  "scope": "Opt-in immutable glyph-box and paragraph-location snapshots from the same SVG/PNG preview layout for simple managed body paragraphs. Text is opt-in; unqualified owners have unavailable bounds and detached review mapping rejects.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed with unchanged dependencies.",
+    "releaseBuild": "All five target frameworks and the net472 test project compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2081, "failed": 0, "skipped": 0, "trxSha256": "bda975b736c54019d0bd55a954a8da7475028c3280aee7f09dc7f9cdb5f40f50"},
+    "net10ConversionAndEnglishOcr": {"passed": 2081, "failed": 0, "skipped": 0, "trxSha256": "ed59f668c17050dcfbc753734db3f12c3fdd7065425396e4db940c3445e6c55e"},
+    "capabilityMatrix": {"profiles": 61, "testMethods": 317, "net10CasesPassed": 551},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API validation and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "7fc4cbb43b438c29c5370f262e7471002f68ddb5d18d95df6b41ce637ba6f716",
+      "wordnet.Fonts.1.5.0.nupkg": "966977584b5299534507f303c7c8df0eadb74a13d8aae26df02ad9b5c5ab6af3",
+      "wordnet.Ocr.1.5.0.nupkg": "c0482ed680f425eb917bdafac3a8a11ff2d95e68436b3c5dc612edb0221f626b"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-layout-snapshot-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "c2c833b992f12d726a5fda7d49cb9b857709d393b036505ad8406ac7de57276d",
+    "reproducedSnapshotSha256": "d536005d9fc3de3d05b244ba6f95531a3a33665ac805cc52a435d35f64f514ea",
+    "reproducedSvgSha256": "96519a83df4f6272b097a63a141c1127f9892e2a83244772eb6730b210abe912",
+    "pdfSha256": "db8ffd1085a828d43b1ebcf0b2b8c9d80eb96e4648aabcb942790dc9eadcb575",
+    "pdfBoxesSha256": "e75923cf88c705f03d5f9d11c710a9ce0ba8f2b8e389de16365970d09f8ce5c1",
+    "result": "The exact source and local-package assemblies were identical. The committed probe reproduced the working-tree snapshot and SVG byte for byte, and the independent checker again matched font outlines to SVG paths and snapshot rectangles within SVG rounding while Poppler PDF word boxes enclosed them."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. The earlier a34ef58 push performance failure remains recorded separately. Cell/object/story mapping, arbitrary transforms and the remaining acceptance criteria keep #167 and roadmap #138 open."
+}

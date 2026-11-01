@@ -1,0 +1,12 @@
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+fit-no-trailing-p.docx 2eb3d325980fe582c24e9f7f52c6a1a73bbf82c3817b7a3ecdd4101ba5612f7f errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+fit-trailing-p.docx c55d3fe7ba1877dba543a9cb7f5fd20e7b6a8f8a14f0f52dd0622344e6687e45 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+wide-no-trailing-p.docx 528a6fa20ed42268ce56913f2dddc8e32872e2298589ad41763289a4ae9fe4a7 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+wide-trailing-p.docx 03979dd471ddaec189d7b6951dac60378bc3c012da24e471f3dc900cd1bcde9f errors=0

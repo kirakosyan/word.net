@@ -41,4 +41,10 @@ public enum DocumentFormat
     Rtf = 11,
     /// <summary>Bounded ODF 1.3 text package; DOCX exchange and PDF export.</summary>
     Odt = 12,
+
+    /// <summary>Macro-free Office Open XML Word template (.dotx).</summary>
+    Dotx = 13,
+
+    /// <summary>Bounded ODF 1.3 text template (.ott).</summary>
+    Ott = 14,
 }

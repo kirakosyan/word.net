@@ -1,0 +1,31 @@
+{
+  "roadmap": 138,
+  "issue": 163,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "61ae229e45b494fea3b4e02c24576d9ba0572d98",
+  "scope": "Clustered horizontal bar data and workbook graphs are editable, and ordinary managed vectors are available with a diagnosed plot-area approximation. Stacked, circular and labeled charts and other output profiles remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed; the host reported workspace-load warnings.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2105, "failed": 0, "skipped": 0, "trxSha256": "e8cec770cb09eee177503ab21b64de14eeb8e6c346420c60bc89b2254b5862cd"},
+    "net10ConversionAndEnglishOcr": {"passed": 2105, "failed": 0, "skipped": 0, "trxSha256": "e721cd462cc1695d9599e64bcb85821a8806ec360a7cfd1c69d5c142af8ebbba"},
+    "capabilityMatrix": {"profiles": 69, "testMethods": 343, "net10CasesPassed": 581},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "4330a05b9d6b12bbd62ac031a148910ba5950e1b3be8dface07999defff9600e",
+      "wordnet.Fonts.1.5.0.nupkg": "8a054a356bbad66c2377e68a62f9bcc9526a403e7575d52d07cb272617725dae",
+      "wordnet.Ocr.1.5.0.nupkg": "352c66bfc279a9d6ea42e7801f0b15b21ec6b9e8a01bf27fce4127685c6f445b"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-horizontal-bars-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "f6f5adca61272fb39cab2311c6132f8a937ba57729eb4e94e6f95d759d634097",
+    "reproducedDocxSha256": "8e1d8a49711067262ed24cc703a748eca05f19fb831522db5de90869009302ba",
+    "wordnetPdfSha256": "00aafded068b0781efdf10c492f2d1ea79d5008db880dfd64346739316923274",
+    "result": "The exact source and packaged assemblies were byte-identical. The probe reproduced the independently authored saved DOCX byte for byte, with no Open XML SDK errors; signed lengths, order and default-gap checks passed again. The original 0.5-point absolute geometry checks still fail by 19.722 and 2.289 points, respectively."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. The retained independent geometry failures, other chart families, data labels and output profiles keep #163 and roadmap #138 open."
+}

@@ -1,0 +1,14 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "headCommit": "fbe9a3d1c6914d6a79a3420e00476dbdfc6aa084",
+  "workflowRun": "https://github.com/kirakosyan/word.net/actions/runs/41183241637",
+  "failedJob": "https://github.com/kirakosyan/word.net/actions/runs/41183241637/job/124484795790",
+  "job": "ubuntu-24.04 / .NET 8 and 10",
+  "failedStep": "Verify comparison controls and authored corpus (commercial tools optional)",
+  "observation": "Both complete conversion/OCR suites passed 2,105 cases with no skips. The pinned Apache POI provisioning script then received HTTP 404 while downloading a test dependency. The log does not identify which artifact or establish the root cause. Subsequent missing comparison, qualification and PDF/A artifact upload steps failed because earlier work was skipped.",
+  "jobLogSha256": "80e163e756163677ae1aeee344086284748308908799f20f65c4165fc5d8df4d",
+  "subsequentLocalCheck": "All eight pinned Maven URLs returned HTTP 200 to local HEAD requests. This does not prove why the hosted request failed.",
+  "independentPushCheck": "At the time of this record, the separate push Linux job had passed the same POI and authored-corpus step; its downstream jobs were still running.",
+  "qualification": "This PR Linux job failed; its downstream package and Framework jobs were skipped. A later retry, if performed, must be recorded separately and does not erase this failure."
+}

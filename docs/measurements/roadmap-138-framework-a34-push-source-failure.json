@@ -1,0 +1,51 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "a34a468da0c034a357d23786470d7f741ffef5a6",
+  "run": 41301390660,
+  "job": 124837611275,
+  "asset": "source",
+  "conclusion": "failure",
+  "stage": "Actual Windows Framework 4.7.2 VM execution",
+  "hostError": "Windows VM exited before exporting complete qualification evidence.",
+  "observed": "VM boot and shutdown were logged, but no complete guest qualification report or test results were exported. Test execution and case count are not established; the immediate reason for the exit is unknown.",
+  "cleanup": {
+    "project": "wordnet-472-bd7a9f97b140",
+    "containersRemoved": true,
+    "networkRemoved": true,
+    "stateRemoved": true,
+    "imageRemoved": true
+  },
+  "setup": {
+    "testsSha256": "d565cd35839a11fc45131eb288520f95ce529d4dc267cec8fd6257cef47ed212",
+    "sourceCommit": "a34a468da0c034a357d23786470d7f741ffef5a6",
+    "workflowRun": "41301390660",
+    "testAsset": "source",
+    "requiredCases": 2365,
+    "jitMode": "legacy",
+    "binaries": {
+      "wordnet.dll": "0b0e8ffe22341498b7c4cd93472eacf718b047b28fa66c886ea940fcde8314fc",
+      "wordnet.Fonts.dll": "e88e899070d702f024f0680c9986c71b8339e5456b8c6305fb9db97b9461bfc0",
+      "wordnet.Ocr.dll": "e1708224b91bde46b64247503e877f2f33ffbd7b8ad07287ec19935b04fe371c",
+      "wordnet.Conversion.Tests.exe": "f5add4f232b991e5bb4295b95a4d3ee5b636b5813448541872459c2ea80c8567"
+    },
+    "packageVersion": "",
+    "packages": {}
+  },
+  "artifact": {
+    "id": 13082113775,
+    "sha256": "368ba6317d5d425ad03b790e18f2c3469ee013e82d875ddba7b1a345715c1eb4",
+    "files": {
+      "bundle.json": "b7f9f3cbe6cc8f7e474289446c77eaf09127e57cbcc38c77a756a64d0ebf0a09",
+      "cleanup.json": "7d55f52eebdb84bcc9fdd3b2e785b00576dcf8fd5c0a5bd5d1946449ac0ecfd0",
+      "host-error.txt": "c2e0cbec5bfc2361f568936410933aeda224794be08dbb8dae73101e97e0a3bb",
+      "vm.log": "de450f0ed49dc1d8cb9488ca49587b6bfd43c39bf3ec40cb41ab0b46331ee7b9"
+    }
+  },
+  "links": {
+    "run": "https://github.com/kirakosyan/word.net/actions/runs/41301390660",
+    "job": "https://github.com/kirakosyan/word.net/actions/runs/41301390660/job/124837611275",
+    "artifact": "https://github.com/kirakosyan/word.net/actions/runs/41301390660/artifacts/13082113775"
+  },
+  "qualification": "Failure is retained. Other Framework jobs and later source revisions are separate evidence."
+}

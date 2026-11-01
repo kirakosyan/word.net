@@ -1,0 +1,55 @@
+{
+  "version": "1.6.0",
+  "sourceCommit": "dfd1062a37c81e6bed694bd09a4a419aa6b138a0",
+  "environment": "Linux x64; .NET 8 and .NET 10; fresh isolated NuGet cache with local-package source mapping and English OCR.",
+  "reports": {
+    "net8": {
+      "passed": 2466,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "f45126f5d1802d4910f81f3ab75e495edd9d6b440f911ae1b5b293ca52d26f7e"
+    },
+    "net10": {
+      "passed": 2466,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "87547357784679a98a1f3fa93d0ba3d49c371bc2590ae96b2e37f6afb464c369"
+    },
+    "netstandard-on-net8.0": {
+      "passed": 2466,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "8e9f7dbfd473c18c06919109c6a6f1c924089fb36f9dfdfb1d0563096200609d"
+    },
+    "netstandard-on-net10.0": {
+      "passed": 2466,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "d14dbc51c400fa5b74259e877d964a83d4cbb2e14ca2bd6c434e35be40cabb09"
+    }
+  },
+  "packages": {
+    "wordnet": {
+      "archiveSha256": "226af75a70ec60bff4fa9a1704ee8badba1ca87754e3cc69834be121acf52490",
+      "cachedAssemblySha256": {
+        "net8.0": "7150dd4d9e5d477e8f417b31c7889cd4aaf11a8ef58c646bff4b0a8085ae5ed6",
+        "net10.0": "15656b7a5f01da53904e9c7e8659f2f8dfa8f087b8f9ae46727a5951606bddac",
+        "netstandard2.0": "60ef063feedd5bebdc6f2dc0b7637d1f96962ad70b39cfdd85bffecf568ab7a3"
+      }
+    },
+    "wordnet.Fonts": {
+      "archiveSha256": "a179814253c577d78acaf7800111ff2dc8e5c255519a833f2d70c82fc182ba86",
+      "cachedAssemblySha256": {
+        "netstandard2.0": "c7622e2fed3b5642368ec3f0cdcad4d612259962bd96f7ed5fa879963d654316"
+      }
+    },
+    "wordnet.Ocr": {
+      "archiveSha256": "cb1708fecfd2565a8b4c7838d7d04f5e920d545d7150e111cecc6362da57c03f",
+      "cachedAssemblySha256": {
+        "net8.0": "de203395aa5b4442ed394736656fa0d68b1f2663ff890974409a129e60569e9c",
+        "net10.0": "796f8ecd7838b1ccc0aaae460b817699ce5a3dbf8cb1f2aeba56bbdfc2167553"
+      }
+    }
+  },
+  "qualification": "Four complete package-consumer runs passed; the explicit Standard-asset test verifies the loaded target on each modern runtime. Actual Framework and hosted/final-main package qualification are separate."
+}

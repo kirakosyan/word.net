@@ -126,22 +126,79 @@ public sealed class ContentControlReviewTests
         WordDocument reopened = Load(word); Assert.Equal("Direction", reopened.ContentControls[0].DisplayText); Validate(Save(reopened));
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void WordGeneratedGlossaryStructuresHaveAnExplicitRejection(bool relationships)
+    [Fact]
+    public void DanglingGlossaryRelationshipsStillHaveAnExplicitRejection()
     {
         string control = Control(1, Choices, "Choose", "<w:placeholder><w:docPart w:val='Prompt'/></w:placeholder><w:showingPlcHdr/>", block: true);
         byte[] source = Modify(WithGlossary(control), zip =>
         {
-            if (relationships) AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "glossaryStyles", "styles", "styles.xml");
-            else
-            {
-                XDocument glossary = Xml(zip, "word/glossary/document.xml"); glossary.Descendants(W + "docPartPr").Single().Add(new XElement(W + "category", new XElement(W + "name", new XAttribute(W + "val", "General")), new XElement(W + "gallery", new XAttribute(W + "val", "default")))); Put(zip, "word/glossary/document.xml", glossary.ToString());
-            }
+            AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "glossaryStyles", "styles", "styles.xml");
         });
-        var failure = Assert.Throws<NotSupportedException>(() => Load(source, new ConversionOptions(FidelityMode.Lenient))); Assert.StartsWith("Control.Unsupported:", failure.Message, StringComparison.Ordinal);
+        var failure = Assert.Throws<InvalidDataException>(() => Load(source, new ConversionOptions(FidelityMode.Lenient))); Assert.StartsWith("Binding.Store:", failure.Message, StringComparison.Ordinal);
     }
+
+    [Theory]
+    [InlineData(0, "default")]
+    [InlineData(1, "default")]
+    [InlineData(2, "default")]
+    [InlineData(3, "default")]
+    [InlineData(4, "placeholder")]
+    [InlineData(5, "placeholder")]
+    public void StaticGlossaryCategoriesSurviveTypedEditsAndPlaceholderViews(int kind, string gallery)
+    {
+        string placeholder = kind == 0 ? "-" : "Choose";
+        string metadata = "<w:placeholder><w:docPart w:val='Prompt'/></w:placeholder><w:showingPlcHdr/>";
+        string control = Control(1, Kind(kind), placeholder, metadata, block: true);
+        byte[] source = WithCategory(control, placeholder, new XElement(W + "category",
+            new XElement(W + "name", new XAttribute(W + "val", "General")), new XElement(W + "gallery", new XAttribute(W + "val", gallery))));
+        Validate(source);
+        WordDocument document = Load(source);
+        DocumentContentControl handle = Assert.Single(document.ContentControls);
+        Assert.True(handle.ShowingPlaceholder); Assert.Equal(placeholder, handle.DisplayText); Assert.Equal(placeholder, Pdf(document));
+        switch (kind)
+        {
+            case 0: document.SetControlChecked(handle, true, TestContext.Current.CancellationToken); break;
+            case 1: case 2: document.SetControlSelection(handle, "b", TestContext.Current.CancellationToken); break;
+            case 3: document.SetControlDate(handle, ContentControlDateValue.FromInstant(new DateTimeOffset(2024, 2, 29, 0, 0, 0, TimeSpan.Zero)), TestContext.Current.CancellationToken); break;
+            case 4: document.ReplaceControlParagraphs(handle, handle.Content, TestContext.Current.CancellationToken); break;
+            default: document.SetControlText(handle, "Edited", TestContext.Current.CancellationToken); break;
+        }
+        byte[] saved = Save(document); Validate(saved);
+        XElement category = Assert.Single(Xml(saved, "word/glossary/document.xml").Descendants(W + "category"));
+        Assert.Equal("General", (string?)category.Element(W + "name")!.Attribute(W + "val"));
+        Assert.Equal(gallery, (string?)category.Element(W + "gallery")!.Attribute(W + "val"));
+        WordDocument reopened = Load(saved); Assert.Equal(1, Assert.Single(reopened.ContentControls).Id);
+        reopened.ShowControlPlaceholder(Assert.Single(reopened.ContentControls), TestContext.Current.CancellationToken);
+        Assert.Equal(placeholder, Assert.Single(reopened.ContentControls).DisplayText); Assert.Equal(placeholder, Pdf(reopened));
+        Validate(Save(reopened));
+    }
+
+    [Theory]
+    [InlineData("<w:name w:val='General'/>")]
+    [InlineData("<w:name w:val='General'/><w:name w:val='Other'/><w:gallery w:val='default'/>")]
+    [InlineData("<w:name w:val='General'/><w:gallery w:val='default'/><w:extra/>")]
+    [InlineData("<w:name w:val=''/><w:gallery w:val='default'/>")]
+    public void InvalidGlossaryCategoriesAreRejected(string children)
+    {
+        string control = Control(1, Choices, "Choose", "<w:placeholder><w:docPart w:val='Prompt'/></w:placeholder><w:showingPlcHdr/>", block: true);
+        XElement category = XElement.Parse("<w:category xmlns:w='" + W + "'>" + children + "</w:category>");
+        Assert.Throws<InvalidDataException>(() => Load(WithCategory(control, "Choose", category)));
+    }
+
+    [Fact]
+    public void NonPlaceholderGlossaryGalleriesAreRejected()
+    {
+        string control = Control(1, Choices, "Choose", "<w:placeholder><w:docPart w:val='Prompt'/></w:placeholder><w:showingPlcHdr/>", block: true);
+        var category = new XElement(W + "category", new XElement(W + "name", new XAttribute(W + "val", "General")), new XElement(W + "gallery", new XAttribute(W + "val", "autoTxt")));
+        Assert.Throws<NotSupportedException>(() => Load(WithCategory(control, "Choose", category)));
+    }
+
+    private static byte[] WithCategory(string control, string placeholder, XElement category) => Modify(WithGlossary(control, placeholder), zip =>
+    {
+        XDocument glossary = Xml(zip, "word/glossary/document.xml");
+        glossary.Descendants(W + "docPartPr").Single().Element(W + "types")!.AddBeforeSelf(category);
+        Put(zip, "word/glossary/document.xml", glossary.ToString());
+    });
 
     [Theory]
     [InlineData(false)]

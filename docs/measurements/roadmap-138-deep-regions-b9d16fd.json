@@ -1,0 +1,33 @@
+{
+  "roadmap": 138,
+  "issue": 157,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "b9d16fda73c4b336fdd938a318adde3a4a57dda3",
+  "scope": "Finite distinct-path mixed body repeats retain ordered nested ownership, scope lookup and remapped identities. Each boundary is checked before expansion and work is aggregated; broader owners remain excluded.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2095, "failed": 0, "skipped": 0, "trxSha256": "c82be827b262914524fcd8675416b1ef3e0084037c7db88c199b26b09e881dcd"},
+    "net10ConversionAndEnglishOcr": {"passed": 2095, "failed": 0, "skipped": 0, "trxSha256": "78a2789807418fa3e69eb0b7829141128e72b1ff07de5a15f1ace37e81332491"},
+    "capabilityMatrix": {"profiles": 65, "testMethods": 332, "net10CasesPassed": 568},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "014ecb9a72287e190cfce12f690d0f0044f42bc85fc4ed6f26cd2c3c15df7661",
+      "wordnet.Fonts.1.5.0.nupkg": "03899b61d59a87b61663ca0f1a638da2820d97455511e9951e2ef75c1e900afd",
+      "wordnet.Ocr.1.5.0.nupkg": "47465b290e3aa5edda19cebb483c026a6ca0ceabd45a5ae2253e44b51aef61bf"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-deep-regions-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "99927946614bb6c033c839ee15d0b06ffb398ae9973c4d65a36b416a56feddef",
+    "preservedDocxSha256": "21e9b031a4a3e6b3e83811d20063c2958473b78a2c5972655bacc3af7c9ff139",
+    "expandedDocxSha256": "47df49ef226a362685617def736765b4c9612222fe15a14bc4fc5191ea75ba6a",
+    "wordnetPdfSha256": "66664d97d9f010935d3c370f7c3f532dc4abf0f0bb2fd9d4ac9b5720891a3bc9",
+    "wordnetTextSha256": "340dfd2e788f9aaf86f8caa2b2ac13b44afffb7e4afc72dd236a5724742fb11e",
+    "result": "The exact source and packaged assemblies were byte-identical. The committed probe reproduced both reference DOCX files byte for byte; schema validation reported no errors and the independent checker confirmed the hierarchy, remapped bookmarks and 21 text values in both the exact-source and LibreOffice PDFs."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. Cell repeat owners, unrestricted reference crossings, additional combinations and the remaining acceptance criteria keep #157 and roadmap #138 open."
+}

@@ -1,0 +1,1 @@
+The initial independent policy verifier stopped before validation because the reference virtualenv lacked jsonschema (ModuleNotFoundError). The global Python environment supplies jsonschema 4.26.0, and the pinned RFC 8785 module is supplied from an isolated temporary path. No policy verdict was produced by the initial attempt.

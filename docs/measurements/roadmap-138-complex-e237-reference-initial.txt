@@ -1,0 +1,10 @@
+Prior lint, JSON data and nested repeat-item reference corpora passed.
+Traceback (most recent call last):
+  File "/workspace/wordnet-138-complex-field/eng/verify-roadmap-138-dirty-fields.py", line 127, in <module>
+    main()
+  File "/workspace/wordnet-138-complex-field/eng/verify-roadmap-138-dirty-fields.py", line 86, in main
+    result = check(args.fixtures, observed)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/wordnet-138-complex-field/eng/verify-roadmap-138-dirty-fields.py", line 65, in check
+    raise ValueError('Flag, scope or XML location changed: ' + name)
+ValueError: Flag, scope or XML location changed: complex

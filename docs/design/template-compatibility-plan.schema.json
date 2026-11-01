@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wordnet.example/schemas/template-compatibility-plan-1.json",
+  "title": "Proposed template compatibility plan, version 1",
+  "description": "Design example only; this is not an implemented wordnet API.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "identities", "sourceFormat", "destinationFormat", "stages", "requirements", "semantics", "findings"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input", "options", "dataSchema", "fonts", "providers", "engine"],
+      "properties": {
+        "input": { "$ref": "#/$defs/digest" },
+        "options": { "$ref": "#/$defs/digest" },
+        "dataSchema": { "$ref": "#/$defs/digest" },
+        "fonts": { "$ref": "#/$defs/digest" },
+        "providers": { "$ref": "#/$defs/digest" },
+        "engine": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "sourceFormat": { "enum": ["docx"] },
+    "destinationFormat": { "enum": ["docx", "pdf", "xps"] },
+    "stages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parse", "destination", "layout", "write", "validation"],
+      "properties": {
+        "parse": { "const": "performed" },
+        "destination": { "const": "performed" },
+        "layout": { "enum": ["performed", "not-performed"] },
+        "write": { "const": "not-performed" },
+        "validation": { "const": "not-performed" }
+      }
+    },
+    "requirements": {
+      "type": "array", "maxItems": 4096,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["pathId", "type", "required", "owner", "support"],
+        "properties": {
+          "pathId": { "type": "string", "pattern": "^path-[0-9]{4,8}$" },
+          "type": { "enum": ["string", "boolean", "decimal", "date", "image", "object", "collection", "unknown"] },
+          "required": { "type": "boolean" },
+          "owner": { "enum": ["body", "cell", "header", "footer", "unknown"] },
+          "support": { "enum": ["supported", "unsupported", "unknown"] }
+        }
+      }
+    },
+    "semantics": {
+      "type": "array", "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["code", "assessment"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)+$", "maxLength": 128 },
+          "assessment": { "enum": ["supported", "unsupported", "unknown"] }
+        }
+      }
+    },
+    "findings": {
+      "type": "array", "maxItems": 4096,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["code", "phase", "evidence", "severity", "count", "locationsTruncated", "locations", "remediation"],
+        "properties": {
+          "code": { "$ref": "#/$defs/code" },
+          "phase": { "enum": ["parse", "provider", "destination", "layout"] },
+          "evidence": { "enum": ["observed", "predicted", "unknown"] },
+          "severity": { "enum": ["info", "warning"] },
+          "count": { "type": "integer", "minimum": 1, "maximum": 2147483647 },
+          "locationsTruncated": { "type": "boolean" },
+          "locations": { "type": "array", "maxItems": 128, "items": { "$ref": "#/$defs/location" } },
+          "remediation": { "$ref": "#/$defs/code" }
+        }
+      }
+    },
+    "observedInputBytes": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "estimatedPages": { "type": ["integer", "null"], "minimum": 1, "maximum": 2147483647 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "code": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*(\\.[A-Za-z][A-Za-z0-9]*)+$", "maxLength": 128 },
+    "location": {
+      "type": "object", "additionalProperties": false,
+      "required": ["partId", "childIndexes"],
+      "properties": {
+        "partId": { "type": "string", "pattern": "^part-[0-9]{4,8}$" },
+        "childIndexes": { "type": "array", "maxItems": 64, "items": { "type": "integer", "minimum": 1, "maximum": 2147483647 } }
+      }
+    }
+  }
+}

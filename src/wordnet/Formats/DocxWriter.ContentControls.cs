@@ -74,7 +74,7 @@ internal sealed partial class DocxWriter
             foreach (XElement entry in model.Controls.Glossary.Element(W + "docParts")!.Elements(W + "docPart"))
             {
                 XElement original = entry.Element(W + "docPartPr")!; var props = new XElement(W + "docPartPr");
-                foreach (string name in new[] { "name", "types", "behaviors", "description", "guid" })
+                foreach (string name in new[] { "name", "category", "types", "behaviors", "description", "guid" })
                     if (original.Element(W + name) is XElement p) props.Add(new XElement(p));
                 string key = (string)original.Element(W + "name")!.Attribute(W + "val")!;
                 entries.Add(new XElement(W + "docPart", props, new XElement(W + "docPartBody", Paragraph(model.Controls.GlossaryContent[key]))));
@@ -82,6 +82,18 @@ internal sealed partial class DocxWriter
             relationships.Add(Relationship("rControlGlossary", "glossaryDocument", "/" + part));
             types.Add(new XElement(DocxPackage.ContentTypes + "Override", new XAttribute("PartName", "/" + part), new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml")));
             WritePart(archive, part, root);
+            if (model.Controls.GlossaryResources.Count != 0)
+            {
+                var glossaryRelationships = new XElement(DocxPackage.Relationships + "Relationships");
+                foreach (ControlGlossaryResource resource in model.Controls.GlossaryResources.Values.OrderBy(r => r.Part, StringComparer.Ordinal))
+                {
+                    context.CheckCancellation();
+                    types.Add(new XElement(DocxPackage.ContentTypes + "Override", new XAttribute("PartName", "/" + resource.Part), new XAttribute("ContentType", resource.ContentType)));
+                    PackageArchive.Write(archive, resource.Part, resource.Bytes);
+                    glossaryRelationships.Add(new XElement(resource.Relationship));
+                }
+                WritePart(archive, DocxPackage.RelationshipPartName(part), glossaryRelationships);
+            }
         }
     }
 }

@@ -37,11 +37,11 @@ internal sealed partial class DocxWriter
         }
     }
 
-    private static void ParagraphLayoutProperties(XElement properties, ParagraphLayout layout)
+    private static void ParagraphLayoutProperties(XElement properties, ParagraphLayout layout, bool explicitResolved = false)
     {
-        if (layout.KeepWithNext) properties.Add(new XElement(W + "keepNext"));
-        if (layout.KeepTogether) properties.Add(new XElement(W + "keepLines"));
-        if (layout.PageBreakBefore) properties.Add(new XElement(W + "pageBreakBefore"));
+        if (layout.KeepWithNext || explicitResolved) properties.Add(new XElement(W + "keepNext", layout.KeepWithNext ? null : new XAttribute(W + "val", "0")));
+        if (layout.KeepTogether || explicitResolved) properties.Add(new XElement(W + "keepLines", layout.KeepTogether ? null : new XAttribute(W + "val", "0")));
+        if (layout.PageBreakBefore || explicitResolved) properties.Add(new XElement(W + "pageBreakBefore", layout.PageBreakBefore ? null : new XAttribute(W + "val", "0")));
         if (layout.Tabs.Count > 0) properties.Add(new XElement(W + "tabs", layout.Tabs.Select(t => new XElement(W + "tab",
             new XAttribute(W + "val", t.Alignment), new XAttribute(W + "pos", Twips(t.Position)), new XAttribute(W + "leader", t.Leader)))));
         var spacing = new XElement(W + "spacing");
@@ -53,7 +53,7 @@ internal sealed partial class DocxWriter
                 new XAttribute(W + "lineRule", layout.MultipleLineSpacing ? "auto" : layout.ExactLineSpacing ? "exact" : "atLeast"));
         }
         if (spacing.HasAttributes) properties.Add(spacing);
-        if (layout.Left != 0 || layout.Right != 0 || layout.FirstLine != 0)
+        if (explicitResolved || layout.Left != 0 || layout.Right != 0 || layout.FirstLine != 0)
             properties.Add(new XElement(W + "ind", new XAttribute(W + "left", Twips(layout.Left)), new XAttribute(W + "right", Twips(layout.Right)),
                 new XAttribute(W + (layout.FirstLine < 0 ? "hanging" : "firstLine"), Twips(Math.Abs(layout.FirstLine)))));
     }

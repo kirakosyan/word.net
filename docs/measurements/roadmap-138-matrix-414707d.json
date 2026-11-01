@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "414707dafc8b449d01f255e918cb7952ac1b7f4d",
+  "dateUtc": "2026-10-31",
+  "localPlatform": "Linux x64",
+  "sdk": "10.0.401",
+  "runtimes": ["8.0.33", "10.0.12"],
+  "localValidation": {
+    "lockedRestore": "passed for the unchanged dependency graph before this head",
+    "fiveTargetReleaseBuild": "passed",
+    "format": "passed on identical code before the final documentation-only commit",
+    "net8ConversionAndEnglishOcr": {"passed": 1639, "failed": 0, "skipped": 0},
+    "net10ConversionAndEnglishOcr": {"passed": 1639, "failed": 0, "skipped": 0},
+    "sourceCapabilityMatrix": {"profiles": 14, "mappedMethods": 59, "passedCases": 103},
+    "packageApiAndArchiveVerification": "passed for all three locally packed packages"
+  },
+  "localPackageSha256": {
+    "wordnet.1.5.0.nupkg": "111373034134f5add174616f786a9e49081c5d444fcc0168ce79dddc56ba0b95",
+    "wordnet.Fonts.1.5.0.nupkg": "53b3fe2d7229ff5bec13484851a015abd93c6ac862293fa1d3de0b6e9b524dd3",
+    "wordnet.Ocr.1.5.0.nupkg": "b08c728ddeb5272ea7440b9dfd903aa178ad76da67eba7f6cb4485cee37e20ba"
+  },
+  "hostedObservation": {
+    "pushRun": "https://github.com/kirakosyan/word.net/actions/runs/41146748670",
+    "prRun": "https://github.com/kirakosyan/word.net/actions/runs/41146756063",
+    "windowsX64SourceJob": "passed; .NET 8, .NET 10 and net472 each ran 1639 cases without skips",
+    "overall": "remaining jobs were still running when this observation was recorded",
+    "actualFramework472": "separate exact-runtime qualification was not yet complete"
+  },
+  "matrixEvidence": "Independent OMML construction and Open XML SDK validation, pinned MATH geometry, PDF logical text/vector inspection, XPS/SVG output, composition, malformed inputs and limit controls.",
+  "scope": "This records unreleased source and local packages; it does not establish public package availability, general mathematical layout or untested output combinations."
+}

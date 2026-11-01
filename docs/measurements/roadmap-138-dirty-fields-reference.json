@@ -1,0 +1,87 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "prototypeBuildHead": "a2774216a7b00779540515730955af5e1c2d6469",
+  "identityNote": "The prototype assembly included uncommitted source changes; exact committed-source and package identities require separate checks.",
+  "scope": "Report explicit dirty flags on admitted simple fields as unknown refresh requirements without evaluating fields or claiming freshness.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+    "generatorSha256": "e9f17c88a04b63d809cfc624abf38622d7ed7ff30fb9f73c72ea11ab6381f6cd",
+    "documents": {
+      "marked.docx": "fc39245d2fc037cb4203c5e37334b0f7bcef10aa8760eec2b6241c34da32c671",
+      "clear.docx": "66b963c3ab7dfdb1ea493fc95d5ba6bf5eca0b36785f0f3d3bebba9556c26e46",
+      "absent.docx": "2818d1a70a7a0ad318ffe27ff2a021d41d8ec5a31a7b8b2abc4760a565caa8fe",
+      "invalid.docx": "03021ad3b8eff4c78dddb4203a833d3b16187cbd563c307fb6edd91422336271",
+      "nonmerge.docx": "9d26f788c5b8b406f2be209e8a6a41d0469177db96df2163911b9da31202e882",
+      "locked-repeat.docx": "a4e150b918833cc1594de9925f8eb4ae655d4368174e3005dd3dd6d350f49c50",
+      "complex.docx": "57f3a52cedcfe5be9625806acce733462822d3a21a869c15fed3450c1b96c206",
+      "mixed.docx": "1e6efda23c6a62333d507b82c04fa458a2df375d82af5adb3b1de2a9bd3dc3ad"
+    },
+    "intentionallyInvalidDirtyValues": [
+      "invalid.docx",
+      "mixed.docx"
+    ]
+  },
+  "reference": {
+    "result": {
+      "scenarios": 8,
+      "validFlagValues": 6,
+      "complexAndLockedFieldsRemainUnknown": true,
+      "positionsCheckedAgainstIndependentXml": true,
+      "defaultReportsRemainPrivate": true
+    },
+    "negativeControls": {
+      "finding omitted": "Flag, scope or XML location changed: marked",
+      "finding code changed": "Flag, scope or XML location changed: marked",
+      "remediation changed": "Flag, scope or XML location changed: marked",
+      "unknown made certain": "Flag, scope or XML location changed: marked",
+      "position changed": "Flag, scope or XML location changed: marked",
+      "part changed": "Flag, scope or XML location changed: marked",
+      "repeat scope changed": "Flag, scope or XML location changed: marked",
+      "repeat scope removed": "Flag, scope or XML location changed: marked",
+      "reuse claimed": "Reuse incorrectly claimed: marked",
+      "coverage omitted": "Uninspected coverage omitted: marked",
+      "invalid accepted": "Flag, scope or XML location changed: invalid",
+      "false marked dirty": "Flag, scope or XML location changed: clear",
+      "complex claimed": "Flag, scope or XML location changed: complex",
+      "locked repeat claimed": "Flag, scope or XML location changed: locked-repeat",
+      "default privacy leaked": "Default report exposed synthetic private data: marked",
+      "default finding altered": "Default and resolved findings differ: marked",
+      "input identity changed": "Input fingerprint changed: marked",
+      "nonmerge coverage omitted": "Non-merge field coverage became certain"
+    },
+    "controlMethod": "Synthetic reports were altered in memory and compared with independently parsed OOXML."
+  },
+  "validator": {
+    "assemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+    "validSourceTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nmarked.docx fc39245d2fc037cb4203c5e37334b0f7bcef10aa8760eec2b6241c34da32c671 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nclear.docx 66b963c3ab7dfdb1ea493fc95d5ba6bf5eca0b36785f0f3d3bebba9556c26e46 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nabsent.docx 2818d1a70a7a0ad318ffe27ff2a021d41d8ec5a31a7b8b2abc4760a565caa8fe errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nnonmerge.docx 9d26f788c5b8b406f2be209e8a6a41d0469177db96df2163911b9da31202e882 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nlocked-repeat.docx a4e150b918833cc1594de9925f8eb4ae655d4368174e3005dd3dd6d350f49c50 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ncomplex.docx 57f3a52cedcfe5be9625806acce733462822d3a21a869c15fed3450c1b96c206 errors=0\n",
+    "invalidControlTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ninvalid.docx 03021ad3b8eff4c78dddb4203a833d3b16187cbd563c307fb6edd91422336271 errors=1\nThe attribute 'http://schemas.openxmlformats.org/wordprocessingml/2006/main:dirty' has invalid value 'private-invalid-value'. The Enumeration constraint failed.\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nmixed.docx 1e6efda23c6a62333d507b82c04fa458a2df375d82af5adb3b1de2a9bd3dc3ad errors=1\nThe attribute 'http://schemas.openxmlformats.org/wordprocessingml/2006/main:dirty' has invalid value 'private-invalid-value'. The Enumeration constraint failed.\n"
+  },
+  "prototypeAssemblySha256": "b9e2db47476efa88a0b83fa80cf67bc1e65de9f2e95776f6ee0b273b86ccb84f",
+  "observationsSha256": {
+    "absent/default.json": "a9a395d25c9940e032625da539202c89ed22241f88901f5e3df286a2099f9c08",
+    "absent/result.json": "ebf36197b1c5b8daccee864a96d440763692a393510446a849c078618e9c102b",
+    "clear/default.json": "a3f74d42e6a7d08136511a09dd347510a45a1b18d60d1f7508e43cb83a8025d3",
+    "clear/result.json": "ebf36197b1c5b8daccee864a96d440763692a393510446a849c078618e9c102b",
+    "complex/default.json": "db354a9c829cc187be80536d6c27688fb37351b0c20e4911599705f2a3290181",
+    "complex/result.json": "651a0566c81e9aab29998a8de65ff9a83653f418c00a62d7834c8e0367c59ef1",
+    "invalid/default.json": "05a32f050de92a7361e5c8d49be320379a16f8afa702301968f727c1c207c412",
+    "invalid/result.json": "c9c136b5436c499d273097660fd5d1f1422117f0b13921935b7020054ead51aa",
+    "locked-repeat/default.json": "8c1579a9fccd8928e1da6f79758879102306c10f0e127fc516e0fd4e014c789d",
+    "locked-repeat/result.json": "ebf36197b1c5b8daccee864a96d440763692a393510446a849c078618e9c102b",
+    "marked/default.json": "55db6d4821900b4e8d7280ce76e69bc0ac6b46ff23e42285b0a97b6e4344cccf",
+    "marked/result.json": "f18d2d99233d8e824326e3e8166c5996cc6e813e1868f4c857d7c0424ccfc03f",
+    "mixed/default.json": "6fce19f8f1e51fc9ca8f60612237247df405dc2401019d27b29555a3fd7fd38f",
+    "mixed/result.json": "883f3cfa12f228d0f613bd6eb79b7ee268e431105f9465d750866df2b604d33e",
+    "nonmerge/default.json": "386ceab8d2daae26e9675522a88cf688fc509fde0c58ed5406049b0c819f2aaa",
+    "nonmerge/result.json": "566d2ead54ba81c29e49a7eaa8066ed6c1e2e791584e104fe2376a7ced734b86"
+  },
+  "testEvidence": {
+    "initialFailure": "  wordnet.Fonts -> /workspace/wordnet-138-plan-validation/src/wordnet.Fonts/bin/Release/netstandard2.0/wordnet.Fonts.dll\n  wordnet -> /workspace/wordnet-138-plan-validation/src/wordnet/bin/Release/net10.0/wordnet.dll\n  wordnet.Ocr -> /workspace/wordnet-138-plan-validation/src/wordnet.Ocr/bin/Release/net10.0/wordnet.Ocr.dll\n  wordnet.Conversion.Tests -> /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/bin/Release/net10.0/wordnet.Conversion.Tests.dll\nTest run for /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/bin/Release/net10.0/wordnet.Conversion.Tests.dll (.NETCoreApp,Version=v10.0)\nA total of 1 test files matched the specified pattern.\n[xUnit.net 00:00:01.73]     WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"1\") [FAIL]\n[xUnit.net 00:00:01.74]     WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"true\") [FAIL]\n[xUnit.net 00:00:01.74]     WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"on\") [FAIL]\n  Failed WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"1\") [23 ms]\n  Error Message:\n   Assert.Equal() Failure: Values differ\nExpected: 3\nActual:   2\n  Stack Trace:\n     at WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(String value) in /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs:line 26\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)\n  Failed WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"true\") [1 ms]\n  Error Message:\n   Assert.Equal() Failure: Values differ\nExpected: 3\nActual:   2\n  Stack Trace:\n     at WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(String value) in /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs:line 26\n   at InvokeStub_TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n  Failed WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"on\") [1 ms]\n  Error Message:\n   Assert.Equal() Failure: Values differ\nExpected: 3\nActual:   2\n  Stack Trace:\n     at WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(String value) in /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs:line 26\n   at InvokeStub_TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n\nFailed!  - Failed:     3, Passed:     5, Skipped:     0, Total:     8, Duration: 215 ms - wordnet.Conversion.Tests.dll (net10.0)\n",
+    "diagnosticFailure": "  wordnet.Fonts -> /workspace/wordnet-138-plan-validation/src/wordnet.Fonts/bin/Release/netstandard2.0/wordnet.Fonts.dll\n  wordnet -> /workspace/wordnet-138-plan-validation/src/wordnet/bin/Release/net10.0/wordnet.dll\n  wordnet.Ocr -> /workspace/wordnet-138-plan-validation/src/wordnet.Ocr/bin/Release/net10.0/wordnet.Ocr.dll\n  wordnet.Conversion.Tests -> /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/bin/Release/net10.0/wordnet.Conversion.Tests.dll\nTest run for /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/bin/Release/net10.0/wordnet.Conversion.Tests.dll (.NETCoreApp,Version=v10.0)\nA total of 1 test files matched the specified pattern.\n[xUnit.net 00:00:01.68]     WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"1\") [FAIL]\n[xUnit.net 00:00:01.69]     WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"true\") [FAIL]\n[xUnit.net 00:00:01.69]     WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"on\") [FAIL]\n  Failed WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"1\") [128 ms]\n  Error Message:\n   System.InvalidOperationException : 1,1,1,1/;1,1,2,3,1,2,1/\n  Stack Trace:\n     at WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(String value) in /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs:line 26\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)\n  Failed WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"true\") [1 ms]\n  Error Message:\n   System.InvalidOperationException : 1,1,1,1/;1,1,2,3,1,2,1/\n  Stack Trace:\n     at WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(String value) in /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs:line 26\n   at InvokeStub_TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n  Failed WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(value: \"on\") [1 ms]\n  Error Message:\n   System.InvalidOperationException : 1,1,1,1/;1,1,2,3,1,2,1/\n  Stack Trace:\n     at WordNet.Tests.TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(String value) in /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs:line 26\n   at InvokeStub_TemplateInspectionTests.DirtySimpleFieldsAreLocatedWithoutClaimingTheirCachesAreStale(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n\nFailed!  - Failed:     3, Passed:     0, Skipped:     0, Total:     3, Duration: 157 ms - wordnet.Conversion.Tests.dll (net10.0)\n",
+    "interpretation": "The original expectation covered a dirty repeat field, but the existing conservative repeat admission excluded all extra field attributes. Diagnostic output identified the body and cell positions. The retry admits only the dirty attribute while preserving unknown coverage for other attributes.",
+    "correctedFocusedRetry": "  wordnet.Fonts -> /workspace/wordnet-138-plan-validation/src/wordnet.Fonts/bin/Release/netstandard2.0/wordnet.Fonts.dll\n  wordnet -> /workspace/wordnet-138-plan-validation/src/wordnet/bin/Release/net10.0/wordnet.dll\n  wordnet.Ocr -> /workspace/wordnet-138-plan-validation/src/wordnet.Ocr/bin/Release/net10.0/wordnet.Ocr.dll\n  wordnet.Conversion.Tests -> /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/bin/Release/net10.0/wordnet.Conversion.Tests.dll\nTest run for /workspace/wordnet-138-plan-validation/tests/wordnet.Conversion.Tests/bin/Release/net10.0/wordnet.Conversion.Tests.dll (.NETCoreApp,Version=v10.0)\nA total of 1 test files matched the specified pattern.\n\nPassed!  - Failed:     0, Passed:    10, Skipped:     0, Total:    10, Duration: 250 ms - wordnet.Conversion.Tests.dll (net10.0)\n"
+  },
+  "limits": "A dirty flag is source metadata, not proof of a stale value; an absent or false flag does not prove freshness. Complex fields and other uninspected owners remain unknown. Reusable plans, enforced policies and full roadmap qualification remain open."
+}

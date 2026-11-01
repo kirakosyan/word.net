@@ -3,7 +3,8 @@
 Design-time test specifications for #28–#31, authored 2026-10-17 under the repository
 MIT license. These are **planned cases**, not enabled/skipped tests, generated binary
 fixtures or evidence of runtime support. Follow [the decision index](../later-design-decisions.md)
-for stage boundaries. Current required runtime suite remains 829 cases.
+for the original stage boundaries. At that design checkpoint the required runtime
+suite had 829 cases; [testing](../testing.md) records later build-specific evidence.
 
 ## Provenance and independent tooling
 

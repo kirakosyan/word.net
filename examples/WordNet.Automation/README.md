@@ -5,18 +5,17 @@
 The program also writes `p3-statement.docx` and `p3-statement.pdf`. It repeats
 customer paragraphs and nested line-item paragraph/table regions; caller code sums
 each customer's decimal totals. The independent MIT template and manifest can be
-recreated with `python3 eng/generate-p3-template.py`. This source is pending review
-and is not in public 1.4.0.
+recreated with `python3 eng/generate-p3-template.py`. Its bounded APIs are included
+in 1.5.0.
 
-## P1 recipes under review
+## P1 recipes
 
 The program also runs `P1Recipes.Run`: it groups unsorted revenue, computes decimal
 tax/total and a threshold predicate, expands a body paragraph region, saves DOCX/PDF
 and exchanges the result with ODT. It records a caller-attributed replacement, writes
 reviewed DOCX and accepted/rejected PDFs, and compares matching snapshots.
 Generated files use the `p1-` prefix. Regenerate the independent template and manifest
-with `python3 eng/generate-p1-templates.py`. These APIs are pending review and are
-separate from the published packages.
+with `python3 eng/generate-p1-templates.py`. These APIs are included in 1.5.0.
 
 Generate an invoice and a two-section operations report using the public `WordDocument` API. Each recipe produces editable DOCX and selectable-text PDF, using managed export without Office automation or remote fetching. The combined example references the optional provider for its explicit P2 native paths.
 
@@ -61,7 +60,7 @@ See [editing and templates](../../docs/editing-and-templates.md), [comparison me
 
 ## P2 object and native chapter recipe
 
-Supply explicit local font paths to run the unpublished P2 recipe as well:
+Supply explicit local font paths to run the P2 recipe as well:
 
 ```sh
 dotnet run --project examples/WordNet.Automation -c Release -- artifacts/p2-sample tests/wordnet.Conversion.Tests/Fixtures/P2/STIXTwoMath.ttf tests/wordnet.Conversion.Tests/Fixtures/P2/NotoSansDevanagari-Regular.ttf tests/wordnet.Conversion.Tests/Fixtures/Interoperability/NotoSansArabic-Regular.ttf

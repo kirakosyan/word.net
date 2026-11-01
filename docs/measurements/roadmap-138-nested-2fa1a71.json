@@ -1,0 +1,27 @@
+{
+  "roadmap": 138,
+  "issue": 144,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "2fa1a714e56608c0d4bf11c5203497c89e6470ab",
+  "scope": "Unreleased inline typed child controls within an unbound, non-placeholder block rich-text control in an ordinary body or simple cell, plus a direct-border painting regression fix.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed at this commit",
+    "format": "solution verification passed on identical source before commit",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 1925, "failed": 0, "skipped": 0, "trxSha256": "7691d14811493f8986f8a6be5e304a9d018e9b02dde7e5440b56ec6a43b9d54a" },
+    "net10ConversionAndEnglishOcr": { "passed": 1925, "failed": 0, "skipped": 0, "trxSha256": "a83a2e433befaa144921aee2af921339fd0cfb2a6ba27ae018c43d5e7c06ed45" },
+    "suiteIdentity": "Both full suites ran on identical source before the commit.",
+    "capabilityMatrix": { "profiles": 39, "testMethods": 224, "net10CasesPassed": 394 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "5d4900e81c67d9927287931a48148f85a83d84628e3b6657dc4f125768fc75a1",
+      "wordnet.Fonts.1.5.0.nupkg": "69222cfbcbf0aa2bc7b9c3ca8d2b81c080ce4414c74e4c1e7834c866bea0ca2e",
+      "wordnet.Ocr.1.5.0.nupkg": "4a40f182e71ae09e4cf5cac38ccced03673b48a203243942f2683246b8710d78"
+    }
+  },
+  "earlierAttempts": "Focused fixture builds initially hit CA1861 and CA1826 analyzer errors in the new tests; both were corrected before the passing suites.",
+  "independentEvidence": "A reproducible synthetic nesting of Word-derived control XML and a LibreOffice PDF, rendered with pinned Noto Sans, independently check admitted text order. The source fixture, generator, hashes and limits are documented under tests/wordnet.Conversion.Tests/Fixtures/ContentControls/NestedOwners. This is not a Word-authored nested template or a Word execution result.",
+  "qualification": "Hosted qualification for this commit, deeper nesting, row wrappers, header/footer owners, repeated-row identity, final review, merge and package publication are not established by this receipt."
+}

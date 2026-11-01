@@ -1,0 +1,3 @@
+# Design-example validation only; neither package is a wordnet runtime dependency.
+jsonschema==4.26.0
+rfc8785==0.1.4

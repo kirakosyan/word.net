@@ -6,7 +6,7 @@ this ADR's original per-leaf scheduling gate. Implementation follows the same
 technical dependencies; each leaf keeps independent acceptance evidence. See the
 [current source/API profile](content-controls.md) and
 [acceptance map](content-controls-acceptance.json). Public 1.4.0 excludes these
-additions; no package is published by this task.
+additions; they were subsequently included in 1.5.0.
 
 P1 merged in [PR #133](https://github.com/kirakosyan/word.net/pull/133), commit
 `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to qualified head
@@ -121,7 +121,7 @@ rejected initially. Independent acceptance is needed to widen any of these gates
 The implemented API uses existing `ConversionResult`/`DocumentEditResult` result contracts. See [usage](content-controls.md) for a complete example:
 
 ```csharp
-// Source API in PR #134; absent from public 1.4.0.
+// Source API in PR #134; included in 1.5.0.
 var document = WordDocument.LoadWithControls(input, controlLoadOptions,
     out ConversionResult loaded, conversionOptions, cancellationToken);
 IReadOnlyList<DocumentContentControl> controls = document.ContentControls;

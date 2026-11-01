@@ -1,0 +1,1133 @@
+{
+  "schemaVersion": 1,
+  "references": [
+    {
+      "documentId": "defaults-omitted",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "89f5b5e5cf74c7d5004c96a744b899a3c269ba06ccff218971cf496009e461f4",
+      "pdf": "defaults-omitted.pdf",
+      "sha256": "776391ee9f3ee5c0976dc249b330a1cf3579c6dc20d3f6c35529d97e7c7e9e52",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "defaults-explicit11",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "5b24a3a9259bd579e6ac0e3d5ed19a3ca593ef72835dd74dc03285a0e4b7621f",
+      "pdf": "defaults-explicit11.pdf",
+      "sha256": "0014b867b001b1d33e0334bf4f31454155d167f72b41962c144cbcd0dc53be18",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "defaults-docdefaults11",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "ee0d9a2da4b712f96bce65c688125cec7fc385fbde229d4db1c6b54c92ac2852",
+      "pdf": "defaults-docdefaults11.pdf",
+      "sha256": "86878dffe83d56cd05d82a9631cf307995d5105345c58105fc57948a5d298231",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "defaults-style-chain11",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "277d851ed25f7f8854e9e566adcabee03762d40d00c95d7b04273d8c26cd4ae4",
+      "pdf": "defaults-style-chain11.pdf",
+      "sha256": "5058b2392b23b05daf7a8ed71c357a18f2169bd51b0d5c9fcdb56dff3229eddd",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "spacing-explicit",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "84fa52d9dfc6b547065f2c8d4203e7f099b6cf7fb84148522187e3b8dd38b123",
+      "pdf": "spacing-explicit.pdf",
+      "sha256": "31e41d2f87853f7c23e1935d799d80e0e694b5e2444907edf93161945b7a7ca1",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "spacing-inherited",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "cf2d70955a82e44df4ba099e46d71ea4f79440a372f110c88fb00d140d3b5a44",
+      "pdf": "spacing-inherited.pdf",
+      "sha256": "53a88ec76345abdca97b62c7572fa8005d56c2bbf9c30413f070a3e1f3f8cf6c",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "wrap-explicit11",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "29a154449b5f325997a3dfa5de7e13dfc24d1660e7b94f374d9429ebdb183d05",
+      "pdf": "wrap-explicit11.pdf",
+      "sha256": "d388e45eed563fc8a592e8f2440d645b84b83cd46ed79e1261a928954bfd07bc",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "table-implicit",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "e253d4bc65c618e0fb29b4d56f599c726de98d7233e4d36499493c8bd40d341f",
+      "pdf": "table-implicit.pdf",
+      "sha256": "a3674579d6340a60cf7a6adb66da6aed90f1581e80dd0abe9f68cf93e1886869",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "table-autofit",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "6089c4998cb998b624f2c861d30f25b5e11b62aa63aefc626c7420a12f48ed9e",
+      "pdf": "table-autofit.pdf",
+      "sha256": "822b5e5f53d18693399c1040bfe838a5e6e4586654dbe2d0146533f3882e1850",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "table-fixed",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "422c084650a5022289091cd43bddc27bd14fbe0e9bc24354555cecb5e95a72cd",
+      "pdf": "table-fixed.pdf",
+      "sha256": "85b6c197112e8e6138d8bc7c20c913f29d7e023717add68f0359fc1b67ccc938",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "notes-marked",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "d9c42f7762bae786e08b6a9257ff0533b425ab47c8bc5f2081effc7e32249eff",
+      "pdf": "notes-marked.pdf",
+      "sha256": "f272b4459a3ca270db65c6b47cf7354f59f9f6e82f26fb9fa4dfe934739bfee3",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    },
+    {
+      "documentId": "notes-continuation",
+      "kind": "libreoffice",
+      "version": "LibreOffice 24.2.7.2 420(Build:2)",
+      "artifactMode": "open-source",
+      "inputSha256": "813951ac8e7f35786a3bf35ed2dd9fc4fa628b3f77f431f7857a323418e02136",
+      "pdf": "notes-continuation.pdf",
+      "sha256": "39ed9a336742d79097c6a403edf50a46c41a025fcef6a9105125a6c45a6a7f25",
+      "fonts": [
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+          "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+          "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+          "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+          "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+          "version": "Noto Sans 2.008; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+          "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+          "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+          "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+          "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+          "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+          "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+          "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+          "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+          "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+          "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+          "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        },
+        {
+          "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+          "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "version": "Liberation 2.1.5; SIL OFL 1.1"
+        }
+      ],
+      "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+      "executableSha256": "eef555c71025262c67274dc6e98d00168c2a2ce0fcd16473c38609ff3ce2ace9",
+      "binarySha256": "61a27030687542dd8811e514312e4881760521c1d798b3f8a5df85e12318c14d"
+    }
+  ]
+}

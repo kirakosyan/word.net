@@ -19,24 +19,95 @@ internal static partial class NativeTypography
     private static void PrepareExtended(DocumentModel model, ConversionContext context)
     {
         if (context.Destination == DocumentFormat.Xps) throw new NotSupportedException("Typography.Output: Native typography supports PDF and previews.");
-        if (model.Notes.Count != 0 || model.Review.HasHistory || model.ObjectCount != 0)
-            throw new NotSupportedException("Typography.Structure: Notes, objects and history remain outside extended typography.");
+        if (model.Notes.Count != 0 || model.Review.HasHistory)
+            throw new NotSupportedException("Typography.Structure: Notes and history remain outside extended typography.");
         PageSettings[] sections = model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null).Distinct().Cast<PageSettings>().ToArray();
         if (sections.SelectMany(s => s.Stories.Values).SelectMany(s => s).Any(b => b is not ParagraphBlock))
             throw new NotSupportedException("Typography.Story: Native headers and footers require ordinary paragraphs.");
         if (model.Tables.Any() && (sections.Any(s => s.Columns != 1) || model.Tables.Any(t => t.Control != null || t.RowControls.Count != 0
-            || t.Rows.SelectMany(r => r).Any(c => c.ColumnSpan != 1 || c.Merge != VerticalMerge.None || c.Blocks.Any(b => b is not ParagraphBlock)))))
-            throw new NotSupportedException("Typography.Table: Native tables require one-column pages and simple, unmerged cells without nested tables or controls.");
+            || t.Rows.SelectMany(r => r).Any(c => c.Blocks.Any(b => b is not ParagraphBlock)))))
+            throw new NotSupportedException("Typography.Table: Native tables require one-column pages and paragraph cells without nested tables or controls.");
+        bool mergedCells = model.Tables.Any(t => t.Rows.SelectMany(r => r).Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None));
+        if (mergedCells && (context.Options.Pdf.Accessibility != PdfAccessibility.None || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+            throw new NotSupportedException("Typography.MergedTableConformance: Merged native tables are qualified only for ordinary untagged PDF and previews.");
+        if (mergedCells && (context.Typography.Direction == TextDirection.RightToLeft
+            || model.Tables.Where(t => t.Rows.SelectMany(r => r).Any(cell => cell.ColumnSpan != 1 || cell.Merge != VerticalMerge.None))
+                .SelectMany(t => t.Rows).SelectMany(row => row).SelectMany(cell => cell.Paragraphs)
+                .Any(p => p.RightToLeft == true || p.Runs.Any(run => run.Text.Any(ch => Arabic(ch) || UnicodeBidi.Format(ch))))))
+            throw new NotSupportedException("Typography.MergedTableDirection: Right-to-left or mixed-direction native merged tables require further qualification.");
+        if (mergedCells)
+            context.Loss("Typography.MergedTableSpacing", "Conservative native line metrics can change merged-table row heights compared with the source application.");
         FontSource[] sources = context.Options.Fonts.Sources.ToArray();
         if (sources.Length > 128 || sources.Any(s => s == null) || sources.Sum(s => (long)s.Bytes.Length) > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TypographyFonts: Caller font count/bytes exceed the operation allowance.");
+        // Stable scalar values are evaluated once on this detached layout model.
+        // Page/reference fields need later pagination passes and stay excluded.
+        var fieldValues = new Dictionary<TextRun, string>(); long fieldCharacters = 0; int originalCharacters = -1;
+        foreach (ParagraphBlock paragraph in model.Paragraphs)
+            foreach (TextRun field in paragraph.Runs.Where(r => r.FieldInstruction != null))
+            {
+                context.CheckCancellation();
+                if (!ScalarFields.Candidate(field.FieldInstruction!) || field.FieldChildren != null || field.Image != null || field.Box != null
+                    || field.Object != null || field.Note != null || field.Bookmark != null || field.Control != null || field.TypedControlId.HasValue
+                    || field.ControlDisplay || field.Comment != null || field.Revision != null || field.FormatRevision != null
+                    || field.FieldCache?.Count > 1 || field.FieldCache?.Any(r => r.Image != null || r.Box != null || r.Object != null
+                        || r.Note != null || r.Bookmark != null || r.Control != null || r.FieldInstruction != null) == true)
+                    throw new NotSupportedException("Typography.FieldProfile: Native field display requires a stable scalar field with a plain single-run cache.");
+                using var location = context.At(paragraph.Location);
+                string value = DocumentFields.Render(field, model, 1, 1, 1, context);
+                if (originalCharacters < 0) originalCharacters = model.CharacterCount;
+                fieldCharacters = checked(fieldCharacters + value.Length);
+                if (fieldCharacters > int.MaxValue || 2L * (originalCharacters + fieldCharacters) > context.Options.MaximumExpandedBytes)
+                    throw new InvalidDataException("Limit.TypographyFields: Scalar field display exceeds the expanded resource bound.");
+                context.CheckCharacters(checked(originalCharacters + (int)fieldCharacters));
+                context.ReserveFieldWork(value.Length);
+                fieldValues.Add(field, value);
+            }
+        if (fieldValues.Count != 0 && (context.Options.Pdf.Accessibility != PdfAccessibility.None
+            || context.Options.Pdf.Conformance != PdfConformance.Pdf17))
+            throw new NotSupportedException("Typography.FieldProfile: Native scalar fields are not qualified for tagged or archival output.");
+        if (fieldValues.Count != 0) foreach (ParagraphBlock paragraph in model.Paragraphs.Where(p => p.Runs.Any(fieldValues.ContainsKey)))
+        {
+            using var location = context.At(paragraph.Location);
+            bool directional = context.Typography.Direction == TextDirection.RightToLeft || paragraph.RightToLeft == true
+                || paragraph.Runs.Any(run => (fieldValues.TryGetValue(run, out string? value) ? value : run.Text)
+                    .Any(ch => Arabic(ch) || UnicodeBidi.Format(ch)));
+            if (directional)
+                context.Loss("Typography.FieldDirectionalOrder", "Native directional field text can extract in a different order from the reference output.");
+            context.Loss("Typography.FieldLayoutApproximation", "Native scalar-field baseline geometry differs from independent reference output.");
+        }
         var coverage = new Dictionary<byte[], Func<string, bool>>(); var bundled = Enumerable.Range(0, 4).Select(FixedLayout.FontBytes).ToArray();
+        var bodyOwners = new HashSet<ParagraphBlock>(model.Blocks.OfType<ParagraphBlock>());
+        bool directionalObjects = model.ObjectCount != 0 && (context.Typography.Direction == TextDirection.RightToLeft
+            || model.Paragraphs.Any(p => p.RightToLeft == true || p.Runs.Any(r => r.Object == null
+                && (fieldValues.TryGetValue(r, out string? value) ? value : r.Text).Any(ch => Arabic(ch) || UnicodeBidi.Format(ch)))));
         foreach (ParagraphBlock p in model.Paragraphs)
         {
             context.CheckCancellation();
             if (p.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed)
                 throw new NotSupportedException("Typography.Alignment: Native paragraphs require ordinary horizontal left, center or right alignment.");
-            TextRun[] joined = RunCoalescer.Combine(p.Runs).ToArray();
+            if (p.Runs.Any(r => r.Object != null))
+            {
+                // A standalone equation uses the separately bounded MATH
+                // pipeline. It is never passed through paragraph bidi shaping.
+                TextRun owner = p.Runs.First(r => r.Object != null);
+                if (!bodyOwners.Contains(p) || p.RightToLeft == true || context.Typography.Direction == TextDirection.RightToLeft
+                    || p.Control != null || p.NestedControls.Count != 0 || p.TypedControlId.HasValue
+                    || p.List != null || p.Runs.Count != 1 || p.Runs[0].Object is not DocumentObjectData { Equation: not null }
+                    || owner.Control != null || owner.TypedControlId.HasValue || owner.Link != null || owner.ControlDisplay
+                    || owner.Image != null || owner.Box != null || owner.Note != null || owner.Bookmark != null || owner.FieldInstruction != null
+                    || owner.Revision != null || owner.FormatRevision != null || owner.Comment != null)
+                    throw new NotSupportedException("Typography.ObjectProfile: Native typography permits only a standalone body equation paragraph.");
+                using (context.At(p.Location))
+                {
+                    if (directionalObjects)
+                        context.Loss("Typography.EquationDirectionalOrder", "An independent PDF reader can extract surrounding directional text in a different order from the reference.");
+                    context.Loss("Typography.EquationReferenceApproximation", "Native paragraph spacing and equation geometry differ from the independently rendered reference fixture.");
+                }
+                continue;
+            }
+            TextRun[] joined = RunCoalescer.Combine(p.Runs, forRendering: true).Select(run => fieldValues.TryGetValue(run, out string? value)
+                ? new TextRun(value, run.Bold, run.Italic, run.Code, run.Link, run.FontSize, run.Color, appearance: run.Appearance.Copy()) : run).ToArray();
             if (p.Control != null || p.List != null || joined.Any(r => r.Object != null || r.Control != null || r.Image != null || r.Box != null || r.Note != null || r.FieldInstruction != null || r.Bookmark != null || r.Text.Contains('\t')))
                 throw new NotSupportedException("Typography.Structure: Fields, controls, drawings, notes, bookmarks and tabs require separate qualification.");
             string logical = string.Concat(joined.Select(r => r.Text));
@@ -73,7 +144,7 @@ internal static partial class NativeTypography
                 }
                 offset = end;
             }
-            p.Runs.Clear(); p.Runs.AddRange(RunCoalescer.Combine(prepared));
+            p.Runs.Clear(); p.Runs.AddRange(RunCoalescer.Combine(prepared, forRendering: true));
         }
         model.TypographyPrepared = true;
         bool Has(byte[] bytes, string cluster)

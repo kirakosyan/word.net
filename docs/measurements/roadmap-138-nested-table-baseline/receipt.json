@@ -1,0 +1,293 @@
+{
+  "roadmap": 138,
+  "issue": 139,
+  "recordedUtc": "2026-11-01",
+  "classification": "Partial release-baseline evidence. All original and controlled reference failures remain retained.",
+  "releaseSourceCommit": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+  "publicPackage": "wordnet 1.5.0, independently restored; archive SHA-256 5a7c20bb5b4271482d8756c44f756542365fddfb519151444398b071b0e0c1b9",
+  "generatorSha256": "3e4b9d9b434d5e339142b97bda3d85ab1d0b211243f947c653de48a10b08ab93",
+  "verifierSha256": "3f2c2cf1dd8dccaa5312f848b8930c3c0ddc757eed283483f107bb4b61a0c5d2",
+  "fixtureHelperSha256": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+  "schemaValidatorDllSha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+  "referenceImage": "sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644",
+  "tools": "Open XML SDK 3.5.1; LibreOffice 24.2.7.2; Poppler 24.02.0; Pillow 12.3.0; Apache POI 5.4.1; .NET 10.0.12.",
+  "factorial": "Nested grid width 5,000 or 2,500 twips; terminal paragraph absent or present; original outer grid remains 5,000 twips.",
+  "verification": {
+    "result": {
+      "cases": {
+        "wide-no-trailing-p": {
+          "officeTotal": [
+            72.1,
+            116.991764
+          ],
+          "sourceTotal": [
+            206.603,
+            86.982
+          ],
+          "officeEightyPresent": true,
+          "reference": {
+            "kind": "libreoffice",
+            "version": "LibreOffice 24.2.7.2 420(Build:2)",
+            "pageCountMatches": true,
+            "pageGeometryMatches": false,
+            "textAndOrderMatches": true,
+            "glyphSequenceMatches": true,
+            "maximumGlyphDisplacementPoints": 134.50300000000001,
+            "glyphPlacementPasses": false,
+            "visual": [
+              {
+                "passed": false,
+                "dimensionsMatch": true,
+                "changedPixelFraction": 0.0036045048460066707,
+                "meanChannelError": 0.6625107570656444
+              }
+            ],
+            "status": "compared",
+            "textAndGeometryPassed": false,
+            "visualPassed": false
+          }
+        },
+        "wide-trailing-p": {
+          "officeTotal": [
+            197.1,
+            86.991764
+          ],
+          "sourceTotal": [
+            206.603,
+            86.982
+          ],
+          "officeEightyPresent": false,
+          "reference": {
+            "kind": "libreoffice",
+            "version": "LibreOffice 24.2.7.2 420(Build:2)",
+            "pageCountMatches": true,
+            "pageGeometryMatches": false,
+            "textAndOrderMatches": false,
+            "glyphSequenceMatches": false,
+            "maximumGlyphDisplacementPoints": 0.0,
+            "glyphPlacementPasses": false,
+            "visual": [
+              {
+                "passed": false,
+                "dimensionsMatch": true,
+                "changedPixelFraction": 0.003030296233326081,
+                "meanChannelError": 0.574822447668885
+              }
+            ],
+            "status": "compared",
+            "textAndGeometryPassed": false,
+            "visualPassed": false
+          }
+        },
+        "fit-no-trailing-p": {
+          "officeTotal": [
+            72.1,
+            116.991764
+          ],
+          "sourceTotal": [
+            206.603,
+            86.982
+          ],
+          "officeEightyPresent": true,
+          "reference": {
+            "kind": "libreoffice",
+            "version": "LibreOffice 24.2.7.2 420(Build:2)",
+            "pageCountMatches": true,
+            "pageGeometryMatches": false,
+            "textAndOrderMatches": true,
+            "glyphSequenceMatches": true,
+            "maximumGlyphDisplacementPoints": 134.50300000000001,
+            "glyphPlacementPasses": false,
+            "visual": [
+              {
+                "passed": false,
+                "dimensionsMatch": true,
+                "changedPixelFraction": 0.0034755322083928663,
+                "meanChannelError": 0.639512879693576
+              }
+            ],
+            "status": "compared",
+            "textAndGeometryPassed": false,
+            "visualPassed": false
+          }
+        },
+        "fit-trailing-p": {
+          "officeTotal": [
+            197.1,
+            86.991764
+          ],
+          "sourceTotal": [
+            206.603,
+            86.982
+          ],
+          "officeEightyPresent": true,
+          "reference": {
+            "kind": "libreoffice",
+            "version": "LibreOffice 24.2.7.2 420(Build:2)",
+            "pageCountMatches": true,
+            "pageGeometryMatches": false,
+            "textAndOrderMatches": true,
+            "glyphSequenceMatches": true,
+            "maximumGlyphDisplacementPoints": 9.503000000000014,
+            "glyphPlacementPasses": false,
+            "visual": [
+              {
+                "passed": false,
+                "dimensionsMatch": true,
+                "changedPixelFraction": 0.0031839418972660046,
+                "meanChannelError": 0.594695075039645
+              }
+            ],
+            "status": "compared",
+            "textAndGeometryPassed": false,
+            "visualPassed": false
+          }
+        }
+      },
+      "schemaValidInputs": 4,
+      "sourcePackageSnapshotsMatch": true,
+      "originalBaselineReproduced": true,
+      "licensedWordReference": "not-provisioned",
+      "interpretation": "These controlled changes isolate reference sensitivity to a terminal cell paragraph and nested grid width. They do not establish which renderer matches Word or resolve all remaining fidelity differences."
+    },
+    "negativeControls": {
+      "base identity": "Baseline or case set changed",
+      "generator identity": "Fixture generator identity changed",
+      "source worker": "Release worker identity changed",
+      "public archive": "Public package archive identity changed",
+      "loaded package": "Release or public-package core identity changed",
+      "schema evidence": "Input identity or independent schema evidence changed",
+      "nested width": "Factorial XML structure changed",
+      "terminal paragraph": "Factorial XML structure changed",
+      "reference identity": "Independent office reference identity changed",
+      "reference tool identity": "Independent tool or font identity changed",
+      "retained PDF identity": "Retained PDF or editable output identity changed",
+      "retained editable identity": "Retained PDF or editable output identity changed",
+      "source identity": "Loaded release assembly or source identity changed",
+      "authored content": "Authored text, editable output or diagnostic observation changed",
+      "missing diagnostic": "Unexpected diagnostics appeared",
+      "relaxed threshold": "Release provenance or thresholds changed",
+      "source/package geometry": "Independent source/package PDF geometry diverged",
+      "reference cell position": "Independent outer-cell position changed",
+      "reference missing text": "Reference text extraction observation changed",
+      "page count": "Independent page count changed",
+      "raster evidence": "Retained raster verdict changed",
+      "lost fidelity failure": "Release source and public package observations diverged",
+      "original reproduction": "Original baseline observation did not reproduce"
+    },
+    "controlMethod": "Retained observations were altered in memory."
+  },
+  "filesSha256": {
+    "fixture-generation.txt": "415c8d4184a030e45aa968860089c721b5b757b68dcecce9fd6d932a395951b9",
+    "fixtures/fit-no-trailing-p.docx": "2eb3d325980fe582c24e9f7f52c6a1a73bbf82c3817b7a3ecdd4101ba5612f7f",
+    "fixtures/fit-trailing-p.docx": "c55d3fe7ba1877dba543a9cb7f5fd20e7b6a8f8a14f0f52dd0622344e6687e45",
+    "fixtures/manifest.json": "eff6e22ac303be884932e79ae96d2c5d6c538e2e43f16f3cc91c5f2a1361b017",
+    "fixtures/wide-no-trailing-p.docx": "528a6fa20ed42268ce56913f2dddc8e32872e2298589ad41763289a4ae9fe4a7",
+    "fixtures/wide-trailing-p.docx": "03979dd471ddaec189d7b6951dac60378bc3c012da24e471f3dc900cd1bcde9f",
+    "input-schema.txt": "7a8537d9b89379c47dbe7c36898d271f720dbfbacbfeb4d2fb90ecd965cd8e49",
+    "office/fit-no-trailing-p.pdf": "feab87494321045037d04c29cdaadfd566aaa6027ddf307feb3871ec957f38b6",
+    "office/fit-trailing-p.pdf": "6512b8acb6ce126683c4ba4fb0a30f0a6d6966401393054f3e293dcb0fecab53",
+    "office/references.json": "bec7374e46b5fee4a798dd315e6daf059efe8601617052ab99a743c5c0947182",
+    "office/wide-no-trailing-p.pdf": "b2c7e105f912f5d81af07446a50dfa20e1553c8f272ac400845b2c44020a4451",
+    "office/wide-trailing-p.pdf": "30645e7de9da8aa29b14aec1a98a07fa3eef6487b27a77e6709cd71707f6f1ce",
+    "office-capture.txt": "73e2979212d547b7bffc474a65fa026b713487013a856309717a56debd4daca3",
+    "package/defects.json": "a7d56bad2bb979acc704d8957b4d2f4248ce4cd13baaa160e4558c5e3fd18fa0",
+    "package/fit-no-trailing-p-wordnet-1.png": "6a190a131dda29897184ac46341d383d9d3d5664693cbd6cc85fa5a9f48b469c",
+    "package/fit-no-trailing-p-wordnet-reference-1.png": "a27142d4de91ed64a001e5324ca540064054226be19422ab75078cdaeffce198",
+    "package/fit-no-trailing-p-wordnet-reference.json": "35733f22c94577b46e07eed18d8301addb7eda13f22ddda5571fcbcac20b74d8",
+    "package/fit-no-trailing-p-wordnet.doc": "7c34bd1b64f0d38cca1c76767c5dfb4d8ae7e4aebc6bfc2c27655cf62a2fbddf",
+    "package/fit-no-trailing-p-wordnet.json": "20e8ab744d270c8f4619bacf60471d01b21995a71439798069b7d8dc8ff703da",
+    "package/fit-no-trailing-p-wordnet.pdf": "3c7396707f613a696d8645a62d432c361b00f7f03d9f4aa4a0cacdc8bf574a81",
+    "package/fit-trailing-p-wordnet-1.png": "e333a999353702f5c0d88ed612c20974fdefa1a5f9a3b57b783ad22ba9edb69a",
+    "package/fit-trailing-p-wordnet-reference-1.png": "8baed12bb2dcbbad72ab114dee1815c339085996ea1a62d99524e7ebf9d0da87",
+    "package/fit-trailing-p-wordnet-reference.json": "c6c0cd2edb32de4e0121ee320a6ea027d52fbdaae6cb074331ea9585b693f6dc",
+    "package/fit-trailing-p-wordnet.doc": "94c0e984f611163911d313217fdb452d68d56b9cafc4c302cdd65e82b7110e96",
+    "package/fit-trailing-p-wordnet.json": "2312f6e1f1a6ccbba1423b88c330ddad4ac15eb0ab8c81704446ad485dee7e91",
+    "package/fit-trailing-p-wordnet.pdf": "fab2c7289e4b80f7cad71b08d82b84c8f033a3a31abca242603b09ba913d3d55",
+    "package/results.json": "a339d0e4c3eb0e4e1a6caad08836d8cf16ae8fb2ed43fcedc1af83be8d85c150",
+    "package/wide-no-trailing-p-wordnet-1.png": "6a190a131dda29897184ac46341d383d9d3d5664693cbd6cc85fa5a9f48b469c",
+    "package/wide-no-trailing-p-wordnet-reference-1.png": "9be1d919701d6c6cef138a329c9227b6152a736b5ebc457ede4b6c934e5d9d64",
+    "package/wide-no-trailing-p-wordnet-reference.json": "48a4ad8324466fa5e5345aad4705cfe98bf58a91e8a5e3a1bb3f30d62d583eb4",
+    "package/wide-no-trailing-p-wordnet.doc": "c69f55f8f96e4a4d4da5e2c46ae59a72796e8d4f7c3390ec1145a2c20a6f790f",
+    "package/wide-no-trailing-p-wordnet.json": "70694475ce0576e6bfd33124c3695d9ca1a7aac2a921f96cd0d123479527b590",
+    "package/wide-no-trailing-p-wordnet.pdf": "3c7396707f613a696d8645a62d432c361b00f7f03d9f4aa4a0cacdc8bf574a81",
+    "package/wide-trailing-p-wordnet-1.png": "e333a999353702f5c0d88ed612c20974fdefa1a5f9a3b57b783ad22ba9edb69a",
+    "package/wide-trailing-p-wordnet-reference-1.png": "f817accd2df97549a29bd1654d9feea34e57632e2553f8a7c3853558aa7aadf5",
+    "package/wide-trailing-p-wordnet-reference.json": "baa6baab09c46996957adb5eccbfe8608bdce2bf1ecceceb672a990650651a70",
+    "package/wide-trailing-p-wordnet.doc": "59ed8556f998a2f7d491f42506f975fca0ee7dd133a0fc5a07b6192fb4952d65",
+    "package/wide-trailing-p-wordnet.json": "90d3fd9b14c2a811935e8dc668ef0bed612fddfe15ff45a242b4b36d345ecd5d",
+    "package/wide-trailing-p-wordnet.pdf": "fab2c7289e4b80f7cad71b08d82b84c8f033a3a31abca242603b09ba913d3d55",
+    "package-comparison.txt": "d2fa46a22502ac438703ff9578e4f7ba8c19bfd4e79b81188d6d22c3e60bbcb8",
+    "package-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "poppler/.gitattributes": "b536887c75ab5e5fb0d59480bb30bf12405964123fb6d4141ea295c0c65dd04e",
+    "poppler/office-fit-no-trailing-p-bbox.html": "698bb56d3ead1b73a52337a049639ed66579de4157e223996813437707713103",
+    "poppler/office-fit-no-trailing-p-info.txt": "c22930fd438f43d7a92aaa5e9b70928bc37cfb4195330a6c1ee435fa3bb91008",
+    "poppler/office-fit-no-trailing-p.txt": "8028f0cd0f198f69db504d3b5c99551a3ad591e080e56cab2723678b9220602c",
+    "poppler/office-fit-trailing-p-bbox.html": "666c5602619e935c2bc6d65a97414d99291bdb7a2c23b511b7219f51afab87b9",
+    "poppler/office-fit-trailing-p-info.txt": "f599bc293195d982ffe2079c47b1187095e47afda0ea8ca6cf0aae3c293218a5",
+    "poppler/office-fit-trailing-p.txt": "5add644d8735cf5059b7a0734630e0ec6a1f3537c972c6db81846ad59eadb634",
+    "poppler/office-wide-no-trailing-p-bbox.html": "be470f8ff97a533008ba1010ee01d9339467d3d4b33b02a14b93fa8eda5f02f7",
+    "poppler/office-wide-no-trailing-p-info.txt": "70131656268ca635c8c9cb1150073acd0ab628d17ad033bf34650f8ba92d8ac3",
+    "poppler/office-wide-no-trailing-p.txt": "75cbafdbc4e76ca23444e3ea5b356fee57e00d1aca5be2968648cac4c01dbaf2",
+    "poppler/office-wide-trailing-p-bbox.html": "5fcc0749a596c3b2894218bacc64ae6be66f9af66c6cf8b4686af3c95a66b161",
+    "poppler/office-wide-trailing-p-info.txt": "d8765505c4816ac9b832e329cba186c4b877fa47ebda92e466590a0a6825ffaa",
+    "poppler/office-wide-trailing-p.txt": "e12f57c68421e3dae144d048e797e834bbd6ce9da2d259f25b79b68dbc0b1e99",
+    "poppler/package-fit-no-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/package-fit-no-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/package-fit-no-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/package-fit-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/package-fit-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/package-fit-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/package-wide-no-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/package-wide-no-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/package-wide-no-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/package-wide-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/package-wide-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/package-wide-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/source-fit-no-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/source-fit-no-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/source-fit-no-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/source-fit-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/source-fit-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/source-fit-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/source-wide-no-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/source-wide-no-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/source-wide-no-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler/source-wide-trailing-p-bbox.html": "ac75b94044428d68b52a55c646bbc815c2aabaf7cf22d354f75e935589adc373",
+    "poppler/source-wide-trailing-p-info.txt": "f491d34298b303a80dc0e4b0d27f2133e896614d55a650ae5d14ed43d37250fd",
+    "poppler/source-wide-trailing-p.txt": "e88fffa8478050659c3a2d8af61c03fca1fd4ae593780eacd40b2eaa3ef2987e",
+    "poppler-tools.txt": "665de5016c9cdac65f9b495091068078b1a200f4c32a6e994d076c342da08cd2",
+    "source/defects.json": "a7d56bad2bb979acc704d8957b4d2f4248ce4cd13baaa160e4558c5e3fd18fa0",
+    "source/fit-no-trailing-p-wordnet-1.png": "6a190a131dda29897184ac46341d383d9d3d5664693cbd6cc85fa5a9f48b469c",
+    "source/fit-no-trailing-p-wordnet-reference-1.png": "a27142d4de91ed64a001e5324ca540064054226be19422ab75078cdaeffce198",
+    "source/fit-no-trailing-p-wordnet-reference.json": "35733f22c94577b46e07eed18d8301addb7eda13f22ddda5571fcbcac20b74d8",
+    "source/fit-no-trailing-p-wordnet.doc": "c1d342195e2bae2f35633195614dc20f37fa96a03335b5a5cc8e739de82692fe",
+    "source/fit-no-trailing-p-wordnet.json": "b2ec9f9ae5901b70f2c4c6348607e3915ac3117d415a829698eff92008b4f641",
+    "source/fit-no-trailing-p-wordnet.pdf": "3c7396707f613a696d8645a62d432c361b00f7f03d9f4aa4a0cacdc8bf574a81",
+    "source/fit-trailing-p-wordnet-1.png": "e333a999353702f5c0d88ed612c20974fdefa1a5f9a3b57b783ad22ba9edb69a",
+    "source/fit-trailing-p-wordnet-reference-1.png": "8baed12bb2dcbbad72ab114dee1815c339085996ea1a62d99524e7ebf9d0da87",
+    "source/fit-trailing-p-wordnet-reference.json": "c6c0cd2edb32de4e0121ee320a6ea027d52fbdaae6cb074331ea9585b693f6dc",
+    "source/fit-trailing-p-wordnet.doc": "6464d12d9893dc50ef600551306106d69d934a8776b612afe62c9d21aa2e9124",
+    "source/fit-trailing-p-wordnet.json": "a7fd9bfbad2960d6148bcc8c6e5a24b944acb4d93e5e0dace31e5423838dfd90",
+    "source/fit-trailing-p-wordnet.pdf": "fab2c7289e4b80f7cad71b08d82b84c8f033a3a31abca242603b09ba913d3d55",
+    "source/results.json": "7b9443c1b66fadc711be23f93a6f0cb7add5cee4f84b60de917887ae94ba797d",
+    "source/wide-no-trailing-p-wordnet-1.png": "6a190a131dda29897184ac46341d383d9d3d5664693cbd6cc85fa5a9f48b469c",
+    "source/wide-no-trailing-p-wordnet-reference-1.png": "9be1d919701d6c6cef138a329c9227b6152a736b5ebc457ede4b6c934e5d9d64",
+    "source/wide-no-trailing-p-wordnet-reference.json": "48a4ad8324466fa5e5345aad4705cfe98bf58a91e8a5e3a1bb3f30d62d583eb4",
+    "source/wide-no-trailing-p-wordnet.doc": "9e7f4670820a7a164ea834b3eec4dd45cd854b22ce697cab898907cd4bf5784b",
+    "source/wide-no-trailing-p-wordnet.json": "ba75f5020d3d3ddfe45a04eb16d3a3e0bc2f4282626a0b2fac9e3f14d0a20787",
+    "source/wide-no-trailing-p-wordnet.pdf": "3c7396707f613a696d8645a62d432c361b00f7f03d9f4aa4a0cacdc8bf574a81",
+    "source/wide-trailing-p-wordnet-1.png": "e333a999353702f5c0d88ed612c20974fdefa1a5f9a3b57b783ad22ba9edb69a",
+    "source/wide-trailing-p-wordnet-reference-1.png": "f817accd2df97549a29bd1654d9feea34e57632e2553f8a7c3853558aa7aadf5",
+    "source/wide-trailing-p-wordnet-reference.json": "baa6baab09c46996957adb5eccbfe8608bdce2bf1ecceceb672a990650651a70",
+    "source/wide-trailing-p-wordnet.doc": "6be0d6221c325ca04da8f6f024b3d596e3e175bc2dce220e49c70038c2743442",
+    "source/wide-trailing-p-wordnet.json": "504df31e120473db9590f603390c4f594584746c85d892fe8bb77af124ec7bfa",
+    "source/wide-trailing-p-wordnet.pdf": "fab2c7289e4b80f7cad71b08d82b84c8f033a3a31abca242603b09ba913d3d55",
+    "source-comparison.txt": "5610806be5c5eb95cbc864cf1119caf782ab0194801b8917b7c2250728fcfad1",
+    "source-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "verification-initial.json": "6c669542acf22dcb100dcebb5da31252bc81d04ac25fcb06397a685f7f830b67",
+    "verification.json": "bbb1c5ba94ef8b925d3d8f2da47ab4962fb9a1c6d9f149496ea3bad126bcefd6"
+  },
+  "limits": "The controls demonstrate LibreOffice reference sensitivity, not which renderer matches Microsoft Word. Licensed Word was not provisioned. Both factorial changes affect reference observations; the original defect is not attributed. All four reference comparisons failed under unchanged thresholds. Performance samples were not isolated.",
+  "rawToolOutput": "Original Poppler pdfinfo padding is preserved; the local .gitattributes records that exception."
+}

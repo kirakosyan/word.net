@@ -1,0 +1,26 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "5fc8215cbb84ec9447e15a8ab2c92c361755b35e",
+  "scope": "Unreleased used default table-style definitions and implicit versus explicit references are retained in editable DOCX. Non-DOCX rendering of implicit defaults remains unqualified and diagnosed; unused default definitions and conflicting composition remain outside this increment.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 1858, "failed": 0, "skipped": 0, "note": "Complete retry after recovering temporary disk space; the earlier 444-failure attempt is recorded separately." },
+    "net10ConversionAndEnglishOcr": { "passed": 1858, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 33, "testMethods": 180, "net10CasesPassed": 327 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "36740510f5358d0d70e1be1525932d96e5bb4ae66c1073d3ac0453a8d27d29a0",
+      "wordnet.Fonts.1.5.0.nupkg": "92575534cfbee882317897085453a1083e6ab6e172f1021b3bd4a9db932b339e",
+      "wordnet.Ocr.1.5.0.nupkg": "1a92961f45389df233e85d52d7bad4e7bbd73723f95631cfaaa918de1960946d"
+    }
+  },
+  "priorFailedAttempt": "The initial .NET 8 full run passed 1,414 and failed 444 tests, all reporting no space left on /tmp. All failed test names and messages, and the full original TRX hash, are recorded in roadmap-138-default-5fc8215-disk-failure.json. Two clean task-owned worktrees were removed before the successful full retry.",
+  "independentReference": "LibreOffice 24.2.7.2 and pinned Noto Sans rendered the referenced first-row/column style but not the same implicitly default style. An absent-default control likewise had no fill. Captured input and PDF hashes, source provenance and generator reproduction are in tests/wordnet.Conversion.Tests/Fixtures/TableStyleDefaults. No Word execution was available.",
+  "qualification": "Hosted qualification, remaining style scope, final review, merge and package publication are not established for this intermediate commit."
+}

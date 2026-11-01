@@ -40,9 +40,10 @@ def validate(directory, output, flavour, selected=None):
             reports[Path(job.findtext("item/name")).name] = report.get("isCompliant") == "true"
         expected = {f: not f.endswith("-negative.pdf") for f in files}
         assert reports == expected, reports
-        print("veraPDF 1.30.2 PDF/UA-1: all supported fixtures compliant; untagged negative control rejected." if flavour == "ua1" else f"veraPDF 1.30.2 PDF/A-2b: {sum(expected.values())} positive files compliant; {len(files) - sum(expected.values())} negative controls rejected.")
+        label = "PDF/UA-1" if flavour == "ua1" else f"PDF/A-{flavour}"
+        print(f"veraPDF 1.30.2 {label}: {sum(expected.values())} positive files compliant; {len(files) - sum(expected.values())} negative controls rejected.")
     finally:
         run(["rm", "-f", name], stdout=subprocess.DEVNULL)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__); parser.add_argument("artifacts", type=Path); parser.add_argument("--output", type=Path, default=Path("artifacts/bucket4/ua/qualified.xml")); parser.add_argument("--flavour", choices=("ua1", "2b"), default="ua1"); parser.add_argument("--files", nargs='+'); args = parser.parse_args(); validate(args.artifacts, args.output, args.flavour, args.files)
+    parser = argparse.ArgumentParser(description=__doc__); parser.add_argument("artifacts", type=Path); parser.add_argument("--output", type=Path, default=Path("artifacts/bucket4/ua/qualified.xml")); parser.add_argument("--flavour", choices=("ua1", "2a", "2b"), default="ua1"); parser.add_argument("--files", nargs='+'); args = parser.parse_args(); validate(args.artifacts, args.output, args.flavour, args.files)

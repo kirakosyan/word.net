@@ -1,0 +1,18 @@
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+fragment.docx 844fba8f903913df628d33f88d5b6a99b4a3e419b1204d93b923398bd66332f2 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+accepted.docx e4433bbf5e939977c5874f66af5615185aec687cc2981be55d3ceeb18eae21b8 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+rejected.docx a9abaa7370d9b649fea10dc411d39d6b6d80989bf7d918ed70189e4b9a506017 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+fragment.docx 844fba8f903913df628d33f88d5b6a99b4a3e419b1204d93b923398bd66332f2 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+accepted.docx e4433bbf5e939977c5874f66af5615185aec687cc2981be55d3ceeb18eae21b8 errors=0
+Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17
+Validator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae
+rejected.docx a9abaa7370d9b649fea10dc411d39d6b6d80989bf7d918ed70189e4b9a506017 errors=0

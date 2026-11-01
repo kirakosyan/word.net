@@ -18,6 +18,11 @@ on a disposable `github-hosted` Linux runner, its unused preinstalled SDK/browse
 Android/tool-cache directories are removed to reclaim VM storage. The checkout and
 other CI jobs are separate. The launcher then admits the actual free disk, memory,
 architecture and KVM device; an unsuitable runner fails rather than skipping tests.
+Runner disk layouts vary. The job prefers the checkout's filesystem and, if it has
+less than 60 GiB free, can instead use a separately mounted non-memory `/mnt` disk
+with at least 60 GiB free. The launcher repeats its normal free-space check on the
+selected filesystem. The temporary parent is created solely for this job and is
+removed only when empty; an unsuitable host still fails with its evidence intact.
 
 The launcher verifies the commit/asset, ZIP and binary hashes, creates a fresh
 private work directory and Compose project, and starts the pinned image without
@@ -55,3 +60,11 @@ passed all 829 cases on actual Framework release 461814 with observed legacy JIT
 All four downloaded evidence sets and cleanup receipts were independently verified.
 See the ledger for immutable run/artifact IDs and hashes; final-main publication
 qualification remains separate from these candidate passes.
+
+For the 1.6.0 candidate, [the push source guest failed its host disk preflight](measurements/wordnet-1.6.0-framework-push-source-failure.json)
+on a 72 GiB root filesystem with 37 GiB reported free. It did not start the guest
+or execute tests. The temporary-disk selection above addresses a possible alternate
+runner layout; it is not itself a passing qualification result. Locally, the
+storage-selection and evidence-rejection controls passed all 11 tests, and
+actionlint 1.7.12 accepted the revised workflow. The new layout still requires
+hosted qualification.

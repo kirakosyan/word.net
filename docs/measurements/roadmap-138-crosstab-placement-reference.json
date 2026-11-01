@@ -1,0 +1,23 @@
+{
+  "roadmap": 138,
+  "issue": 158,
+  "recordedUtc": "2026-10-31",
+  "scope": "A synthetic three-record cross-tab replaces a dedicated body bookmark between two paragraphs. This checks one sum/total table and simple geometry, not cell or nested report placement.",
+  "workingTreeParent": "abb4057b2f96b903abdbf5e8da2f0025d1522a81",
+  "executedWorkingTreeNet10AssemblySha256": "3a264e660d1c3462ac9daab71ae0ef2a0e8838abdccf82317e6aeada2d1e0876",
+  "probe": "eng/roadmap-138-crosstab-placement-probe.cs",
+  "probeSha256": "16846fcf824feab8c8c4de6149d99c518f6e4700070128293c77a66459745864",
+  "checker": "eng/check-roadmap-138-crosstab-placement.py",
+  "checkerSha256": "6a641ca9c4b1465297f5f63c19206a39732f5c6786343da8913af43d8fdc0c8c",
+  "outputDocxSha256": "2bff3707715879771767cbe0bc771ac5f34a5b9c9d8c032719805d4063e7cd95",
+  "schema": "Open XML SDK 3.5.1 reported zero errors; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "reference": {
+    "producer": "LibreOffice 24.2.7.2 420(Build:2), Ubuntu 24.04, writer_pdf_Export; image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; repository Noto Sans fonts mounted read-only.",
+    "extractor": "Poppler 24.02.0 pdftotext -layout and -bbox-layout",
+    "pdfSha256": "15f709524c885325e9793765bb73521500b8eb7016fc013a02ff3b600b3423f5",
+    "textSha256": "d6215e4fffb216600d8e8fa23ac2246d1f8a5fff38cd2fbb37fa2b1c23a2b3d2",
+    "bboxSha256": "8e553997df03b9eadc96975d41ad2ac053b7dfe1d570203a67daaf6a93bbb4d2",
+    "result": "OOXML cell values match the hand-calculated totals, retain a header and four grid columns, and lie between Before and After. Reference text and word boxes preserve the row order and ascending column positions."
+  },
+  "limitations": "Generated DOCX/PDF and extracted text/boxes are scratch artifacts. This is a working-tree observation with the executing DLL hash above; exact source and package evidence require separate checks. The fixture does not qualify multi-page reference parity, cells, report-region nesting or live Word execution."
+}

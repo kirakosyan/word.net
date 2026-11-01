@@ -53,6 +53,7 @@ jobs:
           WORDNET_ODT_EVIDENCE: ${{ github.workspace }}/artifacts/p1-odt
           WORDNET_P2_EVIDENCE: ${{ github.workspace }}/artifacts/p2-objects
           WORDNET_ROADMAP_EVIDENCE: ${{ github.workspace }}/artifacts/roadmap-99/new-features
+          WORDNET_INTEROP_ARTIFACTS: ${{ github.workspace }}/artifacts/roadmap-138/accessible-box
         run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net10.0 --no-build --no-restore --logger "trx;LogFileName=net10.trx" --results-directory artifacts/test-results
       - name: Run .NET Framework conversion and robustness tests
         if: runner.os == 'Windows' && runner.arch == 'X64'
@@ -121,6 +122,7 @@ jobs:
           artifacts/p2-venv/bin/pip install -r eng/p2-requirements.txt
           python3 eng/verify-p2-office.py artifacts/p2-objects
           artifacts/p2-venv/bin/python eng/verify-p2.py artifacts/p2-objects --office-edited
+          artifacts/p2-venv/bin/python eng/verify-nary-font.py
           python3 eng/validate-pdf-accessibility.py artifacts/p2-objects --output artifacts/p2-objects/ua-verification.xml --files native-hindi.pdf native-arabic.pdf native-hindi-link.pdf native-hindi-negative.pdf native-arabic-negative.pdf
           dotnet run --project examples/WordNet.Automation -c Release --no-build --no-restore -- artifacts/p2-sample tests/wordnet.Conversion.Tests/Fixtures/P2/STIXTwoMath.ttf tests/wordnet.Conversion.Tests/Fixtures/P2/NotoSansDevanagari-Regular.ttf tests/wordnet.Conversion.Tests/Fixtures/Interoperability/NotoSansArabic-Regular.ttf
       - name: Qualify roadmap table stories and separate object PDF profiles
@@ -129,6 +131,216 @@ jobs:
           artifacts/p2-venv/bin/python eng/verify-roadmap-99.py artifacts/roadmap-99/new-features
           python3 eng/validate-pdf-accessibility.py artifacts/roadmap-99/new-features --output artifacts/roadmap-99/ua-verification.xml --files objects-ua.pdf native-hindi-table.pdf native-arabic-table.pdf native-hindi-table-footer.pdf native-arabic-table-footer.pdf objects-ua-negative.pdf
           python3 eng/validate-pdf-accessibility.py artifacts/roadmap-99/new-features --flavour 2b --output artifacts/roadmap-99/pdfa-verification.xml --files objects-pdfa.pdf objects-pdfa-negative.pdf
+      - name: Independently qualify anchor-ordered accessible text boxes
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          python3 eng/validate-pdf-accessibility.py artifacts/roadmap-138/accessible-box --output artifacts/roadmap-138/accessible-box/verapdf.xml --files accessible-boxes.pdf accessible-boxes-multipage.pdf accessible-boxes-selection.pdf accessible-boxes-two.pdf accessible-boxes-negative.pdf
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-box.py artifacts/roadmap-138/accessible-box/accessible-boxes.pdf
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-box.py artifacts/roadmap-138/accessible-box/accessible-boxes-multipage.pdf --pages 2
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-box.py artifacts/roadmap-138/accessible-box/accessible-boxes-selection.pdf --selected
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-box.py artifacts/roadmap-138/accessible-box/accessible-boxes-two.pdf --two
+          artifacts/p2-venv/bin/python eng/test-roadmap-138-accessible-box-checker.py artifacts/roadmap-138/accessible-box/accessible-boxes.pdf artifacts/roadmap-138/accessible-box/accessible-boxes-negative.pdf artifacts/roadmap-138/accessible-negative-controls
+      - name: Retain accessible text-box qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-accessible-box
+          path: |
+            artifacts/roadmap-138/accessible-box/accessible-boxes*
+            artifacts/roadmap-138/accessible-box/verapdf.*
+            artifacts/roadmap-138/accessible-negative-controls/*.pdf
+          if-no-files-found: error
+      - name: Independently qualify accessible vector figures
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          files=(accessible-vector-described.pdf accessible-vector-decorative.pdf accessible-vector-selection.pdf accessible-vector-two.pdf accessible-vector-stroke.pdf accessible-vector-box.pdf accessible-vector-box-decorative.pdf accessible-vector-negative.pdf)
+          for kind in line ellipse roundRect rect triangle diamond; do
+            for policy in described decorative; do files+=("accessible-vector-${kind}-${policy}.pdf"); done
+          done
+          python3 eng/validate-pdf-accessibility.py artifacts/roadmap-138/accessible-box --output artifacts/roadmap-138/accessible-box/vector-verapdf.xml --files "${files[@]}"
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-described.pdf --mode described
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-decorative.pdf --mode decorative
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-selection.pdf --mode selection
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-two.pdf --mode two
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-stroke.pdf --mode stroke
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-box.pdf --mode box
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py artifacts/roadmap-138/accessible-box/accessible-vector-box-decorative.pdf --mode box-decorative
+          for kind in line ellipse roundRect rect triangle diamond; do
+            for policy in described decorative; do
+              artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py "artifacts/roadmap-138/accessible-box/accessible-vector-${kind}-${policy}.pdf" --mode "$policy"
+            done
+          done
+          artifacts/p2-venv/bin/python eng/test-roadmap-138-accessible-vectors-checker.py artifacts/roadmap-138/accessible-box/accessible-vector-described.pdf artifacts/roadmap-138/accessible-box/accessible-vector-negative.pdf artifacts/roadmap-138/vector-negative-controls
+      - name: Retain accessible vector qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-accessible-vectors
+          path: |
+            artifacts/roadmap-138/accessible-box/accessible-vector-*.pdf
+            artifacts/roadmap-138/accessible-box/vector-verapdf.*
+            artifacts/roadmap-138/vector-negative-controls/*.pdf
+          if-no-files-found: error
+      - name: Independently qualify accessible archival PDF
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          source=artifacts/roadmap-138/accessible-box
+          controls=artifacts/roadmap-138/accessible-archive-controls
+          artifacts/p2-venv/bin/python eng/verify-roadmap-138-accessible-archive.py "$source" "$controls"
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py "$source/accessible-archive-box.pdf" --mode box
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-accessible-vectors.py "$source/accessible-archive-box-decorative.pdf" --mode box-decorative
+          cp "$source"/accessible-archive-*.pdf "$controls/"
+          files=(accessible-archive-basic.pdf accessible-archive-objects.pdf accessible-archive-box.pdf accessible-archive-box-decorative.pdf accessible-archive-images.pdf accessible-archive-negative.pdf accessible-archive-metadata-negative.pdf)
+          python3 eng/validate-pdf-accessibility.py "$controls" --flavour 2a --output "$controls/pdfa.xml" --files "${files[@]}"
+          files+=(accessible-archive-language-negative.pdf)
+          python3 eng/validate-pdf-accessibility.py "$controls" --flavour ua1 --output "$controls/ua.xml" --files "${files[@]}"
+      - name: Retain accessible archival qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-accessible-archive
+          path: |
+            artifacts/roadmap-138/accessible-archive-controls/*.pdf
+            artifacts/roadmap-138/accessible-archive-controls/*.xml
+            artifacts/roadmap-138/accessible-archive-controls/*.stderr
+          if-no-files-found: error
+      - name: Independently qualify local dictionary hyphenation
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          source=artifacts/roadmap-138/accessible-box
+          font=src/wordnet/Resources/Fonts/NotoSans-Regular.ttf
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-hyphenation.py "$source/dictionary-hyphenation-source.docx" "$source/dictionary-hyphenation-saved.docx" "$source/dictionary-hyphenation.pdf" "$font"
+          artifacts/p2-venv/bin/python eng/test-roadmap-138-hyphenation-checker.py "$source/dictionary-hyphenation-source.docx" "$source/dictionary-hyphenation-saved.docx" "$source/dictionary-hyphenation.pdf" "$font" artifacts/roadmap-138/hyphenation-controls
+          reference=artifacts/roadmap-138/hyphenation-reference
+          artifacts/p2-venv/bin/python eng/generate-roadmap-138-hyphenation.py --output "$reference"
+          mkdir -p "$reference/office"
+          libreoffice "-env:UserInstallation=file://$GITHUB_WORKSPACE/$reference/lo-profile" --headless --convert-to pdf --outdir "$reference/office" "$reference/justified-reference.docx"
+          artifacts/p2-venv/bin/python eng/check-roadmap-138-hyphenation-justified.py "$source/dictionary-hyphenation-justified.pdf" "$source/dictionary-hyphenation-left-control.pdf" "$reference/justified-reference.docx" "$reference/office/justified-reference.pdf"
+          artifacts/p2-venv/bin/python eng/test-roadmap-138-hyphenation-justified-checker.py "$source/dictionary-hyphenation-justified.pdf" "$source/dictionary-hyphenation-left-control.pdf" "$reference/justified-reference.docx" "$reference/office/justified-reference.pdf" "$reference/changed-reference.docx"
+      - name: Retain hyphenation qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-hyphenation
+          path: |
+            artifacts/roadmap-138/accessible-box/dictionary-hyphenation*
+            artifacts/roadmap-138/hyphenation-controls/*
+            artifacts/roadmap-138/hyphenation-reference/*.docx
+            artifacts/roadmap-138/hyphenation-reference/office/*.pdf
+          if-no-files-found: error
+      - name: Independently qualify bounded linear gradients
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          source=artifacts/roadmap-138/gradient-source
+          reference=artifacts/roadmap-138/gradient-reference
+          output=artifacts/roadmap-138/gradient-output
+          controls=artifacts/roadmap-138/gradient-controls
+          probe="$RUNNER_TEMP/wordnet-gradient-probe"
+          mkdir -p "$reference" "$output" "$probe"
+          artifacts/p2-venv/bin/python eng/generate-roadmap-138-gradients.py --output "$source"
+          libreoffice "-env:UserInstallation=file://$RUNNER_TEMP/gradient-lo" --headless --convert-to pdf --outdir "$reference" "$source"/*.docx
+          cat > "$probe/Probe.csproj" <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+            <ItemGroup><ProjectReference Include="$GITHUB_WORKSPACE/src/wordnet/wordnet.csproj" /></ItemGroup>
+            <ItemGroup><Compile Include="$GITHUB_WORKSPACE/eng/roadmap-138-gradient-probe.cs" /></ItemGroup>
+          </Project>
+          EOF
+          dotnet restore "$probe/Probe.csproj" -m:1
+          dotnet build "$probe/Probe.csproj" -c Release --no-restore -m:1
+          for doc in "$source"/*.docx; do
+            name=$(basename "$doc" .docx)
+            dotnet "$probe/bin/Release/net10.0/Probe.dll" "$doc" "$output/$name"
+          done
+          artifacts/p2-venv/bin/python eng/verify-roadmap-138-gradients.py "$source" "$output" "$reference" "$controls"
+      - name: Retain linear-gradient qualification evidence
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-gradients
+          path: |
+            artifacts/roadmap-138/gradient-source/*.docx
+            artifacts/roadmap-138/gradient-reference/*.pdf
+            artifacts/roadmap-138/gradient-output/*/*
+            artifacts/roadmap-138/gradient-controls/*
+          if-no-files-found: error
+      - name: Measure independently authored rotated text boxes
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          source=artifacts/roadmap-138/rotation-source
+          reference=artifacts/roadmap-138/rotation-reference
+          output=artifacts/roadmap-138/rotation-output
+          controls=artifacts/roadmap-138/rotation-controls
+          probe="$RUNNER_TEMP/wordnet-rotation-probe"
+          mkdir -p "$reference" "$output" "$probe"
+          artifacts/p2-venv/bin/python eng/generate-roadmap-138-rotation.py --output "$source"
+          libreoffice "-env:UserInstallation=file://$RUNNER_TEMP/rotation-lo" --headless --convert-to pdf --outdir "$reference" "$source"/*.docx
+          cat > "$probe/Probe.csproj" <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+            <ItemGroup><ProjectReference Include="$GITHUB_WORKSPACE/src/wordnet/wordnet.csproj" /></ItemGroup>
+            <ItemGroup><Compile Include="$GITHUB_WORKSPACE/eng/roadmap-138-rotation-probe.cs" /></ItemGroup>
+          </Project>
+          EOF
+          dotnet restore "$probe/Probe.csproj" -m:1
+          dotnet build "$probe/Probe.csproj" -c Release --no-restore -m:1
+          for doc in "$source"/*.docx; do
+            name=$(basename "$doc" .docx)
+            dotnet "$probe/bin/Release/net10.0/Probe.dll" "$doc" "$output/$name"
+          done
+          artifacts/p2-venv/bin/python eng/verify-roadmap-138-rotation.py "$source" "$output" "$reference" "$controls" > "$output/verification.json"
+      - name: Retain rotated text-box measurements and discrepancies
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-rotation
+          path: |
+            artifacts/roadmap-138/rotation-source/*.docx
+            artifacts/roadmap-138/rotation-reference/*.pdf
+            artifacts/roadmap-138/rotation-output/**/*
+            artifacts/roadmap-138/rotation-controls/*
+          if-no-files-found: error
+      - name: Measure independently authored East Asian paragraphs
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          dpkg-query -W fonts-noto-cjk
+          for language in JP SC TC; do fc-match --format '%{file}\n' "Noto Sans CJK $language" | xargs sha256sum; done
+          libreoffice --version
+          source=artifacts/roadmap-138/cjk-source
+          reference=artifacts/roadmap-138/cjk-reference
+          output=artifacts/roadmap-138/cjk-output
+          controls=artifacts/roadmap-138/cjk-controls
+          probe="$RUNNER_TEMP/wordnet-cjk-probe"
+          mkdir -p "$reference" "$output" "$probe"
+          artifacts/p2-venv/bin/python eng/generate-roadmap-138-cjk.py --output "$source"
+          libreoffice "-env:UserInstallation=file://$RUNNER_TEMP/cjk-lo" --headless --convert-to pdf --outdir "$reference" "$source"/*.docx
+          cat > "$probe/Probe.csproj" <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+            <ItemGroup><ProjectReference Include="$GITHUB_WORKSPACE/src/wordnet/wordnet.csproj" /></ItemGroup>
+            <ItemGroup><Compile Include="$GITHUB_WORKSPACE/eng/roadmap-138-cjk-probe.cs" /></ItemGroup>
+          </Project>
+          EOF
+          dotnet restore "$probe/Probe.csproj" -m:1
+          dotnet build "$probe/Probe.csproj" -c Release --no-restore -m:1
+          for spec in japanese-plain:JP japanese:JP simplified:SC traditional:TC; do
+            name=${spec%:*}; language=${spec#*:}
+            dotnet "$probe/bin/Release/net10.0/Probe.dll" "$source/$name.docx" "$language" "tests/wordnet.Conversion.Tests/Fixtures/EastAsian/RoadmapCJK-$language.ttf" "$output/$name"
+          done
+          artifacts/p2-venv/bin/python eng/verify-roadmap-138-cjk.py "$source" "$output" "$reference" "$controls" > "$output/verification.json"
+      - name: Retain East Asian measurements and discrepancies
+        if: always() && matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roadmap-138-cjk
+          path: |
+            artifacts/roadmap-138/cjk-source/*.docx
+            artifacts/roadmap-138/cjk-reference/*.pdf
+            artifacts/roadmap-138/cjk-output/**/*
+            artifacts/roadmap-138/cjk-controls/*
+          if-no-files-found: error
       - name: Retain roadmap independent qualification evidence
         if: always() && matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

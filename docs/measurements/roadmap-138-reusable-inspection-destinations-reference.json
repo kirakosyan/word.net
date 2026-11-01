@@ -1,0 +1,81 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "qualification": "Uncommitted local destination-profile prototype only. Full exact-source, package, performance and hosted runtime gates are separate.",
+  "baseCommit": "52ad9cab3aa6e141b0423db7b08f5cb384a42c91",
+  "sourceFiles": {
+    "src/wordnet/ReusableTemplateInspection.cs": "eb434e8731476ff0187812ad56353e7358d6ab3ba17eca94c75fd88d667c6e25",
+    "tests/wordnet.Conversion.Tests/ReusableTemplateInspectionTests.cs": "326e6e9a90e6d39fd40b48541b946bf1be02828c63414caefe8666bb1b7fd8f2",
+    "eng/roadmap-138-reusable-inspection-probe.cs": "d4044d07fe4590dd77a4061918d3847d442e8cf2efd865bd70f098d0e887b080",
+    "eng/verify-roadmap-138-reusable-inspection.py": "2818e74c03323023ad49f20335a94b24bdf9439f5389788d98a405874341adf4"
+  },
+  "inputSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+  "prototypeCoreSha256": "a6ff45bb8021a1c36f990f3078618eeefe01589bbbf9c9db0132efe5660bff03",
+  "schemaValidation": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nsimple.docx 59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18 errors=0\n",
+  "focusedTests": {
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "af219fdca6519d4bd374cb7d1d16bdaaf1bfcc3f814ceff46c4c9f592069502f"
+  },
+  "profiles": {
+    "docx": {
+      "destination": 2,
+      "optionsSha256": "191fa1900fd261e1200ed7aee788cd2755202779bf346cc9cd1cc99ca34efb5d"
+    },
+    "pdf": {
+      "optionsSha256": "ac2f60941450e3f83a0d094f0587058aa32201f930dbd2ae2bc4ea11024ddb5e",
+      "destination": 3,
+      "uninspected": true,
+      "reused": true
+    },
+    "xps": {
+      "optionsSha256": "72290991eb6feee844be8af13d54a8cf9db8388095664c1c6da40086855b80aa",
+      "destination": 9,
+      "uninspected": true,
+      "reused": true
+    }
+  },
+  "independentCheck": {
+    "result": {
+      "independentSchemaValidInputs": 1,
+      "fingerprintsIndependentlyRecomputed": 6,
+      "repositoryFontResourcesMatched": 24,
+      "staleAndBoundedNegativesPassed": true,
+      "limitations": "In-process inspection snapshot only; no portable plan, conversion authorization, loss policy or binary attestation."
+    },
+    "negativeControls": {
+      "fixture": "Independent input identity changed",
+      "schema validation": "Independent source schema validation missing",
+      "input fingerprint": "Input fingerprint changed",
+      "core binary": "Loaded core assembly changed",
+      "declaration fingerprint": "Declaration fingerprint changed",
+      "options fingerprint": "Fixed profile or clock fingerprint changed",
+      "clock": "Fixed profile or clock fingerprint changed",
+      "PDF destination fingerprint": "Destination fingerprint, coverage or reuse changed",
+      "XPS destination": "Destination fingerprint, coverage or reuse changed",
+      "PDF unknown coverage": "Destination fingerprint, coverage or reuse changed",
+      "XPS snapshot": "Destination fingerprint, coverage or reuse changed",
+      "provider fingerprint": "Provider profile fingerprint changed",
+      "module fingerprint": "Module/runtime descriptor fingerprint changed",
+      "runtime descriptor": "Module/runtime descriptor fingerprint changed",
+      "font fingerprint": "Font identity changed",
+      "font resource bytes": "Loaded font bytes differ from independently hashed repository resources",
+      "font inventory": "Bundled font inventory changed",
+      "coverage": "Inspection coverage or reusable-policy limitation changed",
+      "reusable policy": "Inspection coverage or reusable-policy limitation changed",
+      "requirement": "Declared requirements changed",
+      "privacy": "Serialized snapshot leaked a sensitive alias",
+      "input stale": "Reuse, stale, bounded or cancellation behavior changed",
+      "schema stale": "Reuse, stale, bounded or cancellation behavior changed",
+      "schema consumed": "Reuse, stale, bounded or cancellation behavior changed",
+      "limit": "Reuse, stale, bounded or cancellation behavior changed",
+      "cancellation": "Reuse, stale, bounded or cancellation behavior changed",
+      "stream ownership": "Reuse, stale, bounded or cancellation behavior changed",
+      "snapshot": "Reuse, stale, bounded or cancellation behavior changed"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "limitations": "The profiles reuse only an inspection in the same process; output and independent validation remain unperformed. Module identity is not binary attestation."
+}

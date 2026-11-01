@@ -99,6 +99,30 @@ internal sealed class ParagraphLayout
     }
 }
 
+// A resolved, detached view of the bounded paragraph properties tracked by
+// comparison. Tabs and other paragraph properties remain unchanged.
+internal sealed class ParagraphFormatSnapshot
+{
+    internal ParagraphFormatSnapshot(ParagraphBlock paragraph)
+    { Alignment = paragraph.Alignment; Layout = paragraph.Layout.Copy(); FallbackAfter = paragraph.FallbackAfter; }
+    internal ParagraphFormatSnapshot(ParagraphAlignment alignment, ParagraphLayout layout, double? fallbackAfter)
+    { Alignment = alignment; Layout = layout.Copy(); FallbackAfter = fallbackAfter; }
+    internal ParagraphAlignment Alignment { get; }
+    internal ParagraphLayout Layout { get; }
+    internal double? FallbackAfter { get; }
+    internal ParagraphFormatSnapshot Copy() => new ParagraphFormatSnapshot(Alignment, Layout, FallbackAfter);
+    internal static bool Same(ParagraphBlock first, ParagraphBlock second)
+    {
+        ParagraphLayout a = first.Layout, b = second.Layout;
+        return first.Alignment == second.Alignment && a.Before == b.Before && (a.After ?? first.FallbackAfter) == (b.After ?? second.FallbackAfter)
+            && a.Left == b.Left && a.Right == b.Right && a.FirstLine == b.FirstLine && a.LineSpacing == b.LineSpacing
+            && (!a.LineSpacing.HasValue || a.MultipleLineSpacing == b.MultipleLineSpacing && a.ExactLineSpacing == b.ExactLineSpacing)
+            && a.PageBreakBefore == b.PageBreakBefore && a.KeepTogether == b.KeepTogether && a.KeepWithNext == b.KeepWithNext;
+    }
+    internal void Apply(ParagraphBlock paragraph)
+    { paragraph.Alignment = Alignment; paragraph.Layout = Layout.Copy(); paragraph.FallbackAfter = FallbackAfter; paragraph.ExplicitParagraphFormat = true; }
+}
+
 internal sealed class TabStop
 {
     internal double Position { get; set; }

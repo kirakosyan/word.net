@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordNet.Automation", "examples\WordNet.Automation\WordNet.Automation.csproj", "{551BB05C-0F2E-4F1C-9C72-ACF14B9E78B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordNet.TemplateLint", "examples\WordNet.TemplateLint\WordNet.TemplateLint.csproj", "{914431D9-8BD0-4459-88BB-B6247317880B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,18 @@ Global
 		{551BB05C-0F2E-4F1C-9C72-ACF14B9E78B2}.Release|x64.Build.0 = Release|Any CPU
 		{551BB05C-0F2E-4F1C-9C72-ACF14B9E78B2}.Release|x86.ActiveCfg = Release|Any CPU
 		{551BB05C-0F2E-4F1C-9C72-ACF14B9E78B2}.Release|x86.Build.0 = Release|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Debug|x64.Build.0 = Debug|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Debug|x86.Build.0 = Debug|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Release|x64.ActiveCfg = Release|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Release|x64.Build.0 = Release|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Release|x86.ActiveCfg = Release|Any CPU
+		{914431D9-8BD0-4459-88BB-B6247317880B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,5 +160,6 @@ Global
 		{D6801264-57F5-4B27-AA64-DF0CE642223C} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{0B455A18-FDF6-4191-822F-3B9364A51102} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{551BB05C-0F2E-4F1C-9C72-ACF14B9E78B2} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
+		{914431D9-8BD0-4459-88BB-B6247317880B} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
 	EndGlobalSection
 EndGlobal

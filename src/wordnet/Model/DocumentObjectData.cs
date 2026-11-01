@@ -151,18 +151,24 @@ internal sealed class ObjectBudget
 
 internal static class ObjectSafety
 {
-    internal static void Owners(DocumentModel model)
+    internal static void Owners(DocumentModel model, ConversionContext context)
     {
         if (model.ObjectCount == 0) return;
         var body = new HashSet<ParagraphBlock>(ReviewStore.SupportedParagraphs(model.Blocks)); var identifiers = new HashSet<Guid>();
+        var protectedParagraphs = new HashSet<ParagraphBlock>();
+        if (model.Controls.HasControls)
+            foreach (ControlOwner owner in ControlOwners.Index(model, context).Values)
+                foreach (ParagraphBlock paragraph in owner.Content)
+                { context.ReserveControlWork(1); protectedParagraphs.Add(paragraph); }
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
+            context.CheckCancellation();
             var comments = new HashSet<string>(StringComparer.Ordinal);
             foreach (TextRun run in paragraph.Runs)
             {
                 if (run.Comment != null) { if (run.CommentBoundary == 1) comments.Add(run.Comment); else if (run.CommentBoundary == 2) comments.Remove(run.Comment); }
                 if (run.Object == null) continue;
-                if (!body.Contains(paragraph) || paragraph.Control != null || run.Control != null || run.Revision != null || run.Comment != null
+                if (!body.Contains(paragraph) || protectedParagraphs.Contains(paragraph) || paragraph.Control != null || run.Control != null || run.Revision != null || run.Comment != null
                     || run.FieldInstruction != null || run.Bookmark != null || run.Note != null || run.Box != null || run.Image != null || run.Link != null || comments.Count != 0)
                     throw new NotSupportedException("Object.Owner: Retained objects require ordinary body/cell paragraph owners without controls, fields, history or links.");
                 if (!identifiers.Add(run.Object!.Id)) throw new InvalidDataException("Object.Identity: Object placement identifiers must be unique.");

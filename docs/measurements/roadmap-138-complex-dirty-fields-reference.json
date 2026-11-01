@@ -1,0 +1,111 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "prototypeBuildHead": "e9de85c431fa22d61878997c16fa3137087b7373",
+  "identityNote": "The prototype assembly included uncommitted source changes; exact committed-source and package identities require separate checks.",
+  "scope": "Report explicit dirty flags on bounded same-paragraph complex-field begin markers as unknown refresh requirements.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+    "generatorSha256": "50c121bda1b835da4373092dbeca3ac0b9b9c5bfe7251313f837022fd403c1c3",
+    "documents": {
+      "marked.docx": "fc7ba4c1b5b4a5dc499d322c4be16eab47fd0345308cb4f0be3997bbf28bc347",
+      "clear.docx": "25436d8137868d09b220b9168553e74b66a1aeccd86e0ccf37ba2775053a6500",
+      "absent.docx": "6e73fd3bbb8ed016cad16e3a0efbb8b8583096108b39b9a7ec4ae2833995294b",
+      "invalid.docx": "83db9f8614261194f49e4f212eb08086efcba97f53bf4fd6180367128a5a0f2e",
+      "locked.docx": "dc53a52a9091fa5d850d8fedb56e012cbe1389174522b66e0bf9e112cf435f18",
+      "cross.docx": "04661e51e45272c4854d7bbbfc38d25156793dc632a7c271799e766bf581805d",
+      "nested-simple.docx": "bf871661e7f1ea6e35ee444765e7ab11c6f163d95eb124b57992957588c0d825",
+      "nested-complex.docx": "513f6b395c020002ab5345fc534d0d8b7385106f63878e4d616383b07740bce8",
+      "nested-simple-outer.docx": "3bd02037e65be809075663209d6a9d6d822df4663b0385e3a1ffc6e826175336",
+      "nonmerge.docx": "6c840a0f429b1671af03f29a6534e235996b265c98e00167a677f2e2380c18a5",
+      "repeated.docx": "a5f6e674ba696bf77aed13d6dde3aa909154e80c6d52cd54e798b6ffdb518b83"
+    },
+    "intentionallyInvalidDirtyValues": [
+      "invalid.docx"
+    ]
+  },
+  "reference": {
+    "result": {
+      "scenarios": 11,
+      "positionsCheckedAgainstIndependentXml": true,
+      "crossParagraphLockedNestedAndRepeatRemainUnknown": true,
+      "defaultReportsRemainPrivate": true
+    },
+    "negativeControls": {
+      "finding omitted": "Flag or XML begin-marker location changed: marked",
+      "finding code changed": "Flag or XML begin-marker location changed: marked",
+      "remediation changed": "Flag or XML begin-marker location changed: marked",
+      "unknown made certain": "Flag or XML begin-marker location changed: marked",
+      "body position changed": "Flag or XML begin-marker location changed: marked",
+      "cell position changed": "Flag or XML begin-marker location changed: marked",
+      "part changed": "Flag or XML begin-marker location changed: marked",
+      "scope invented": "Flag or XML begin-marker location changed: marked",
+      "reuse claimed": "Reuse incorrectly claimed: marked",
+      "coverage omitted": "Uninspected coverage omitted: marked",
+      "invalid accepted": "Flag or XML begin-marker location changed: invalid",
+      "false marked dirty": "Flag or XML begin-marker location changed: clear",
+      "absent marked dirty": "Flag or XML begin-marker location changed: absent",
+      "locked claimed": "Flag or XML begin-marker location changed: locked",
+      "cross claimed": "Flag or XML begin-marker location changed: cross",
+      "nested simple claimed": "Flag or XML begin-marker location changed: nested-simple",
+      "nested complex claimed": "Flag or XML begin-marker location changed: nested-complex",
+      "nested outer simple claimed": "Flag or XML begin-marker location changed: nested-simple-outer",
+      "repeat claimed": "Flag or XML begin-marker location changed: repeated",
+      "default privacy leaked": "Default report exposed synthetic private data: marked",
+      "default finding altered": "Default and resolved findings differ: marked",
+      "input identity changed": "Input fingerprint changed: marked",
+      "nonmerge coverage omitted": "Non-merge field coverage became certain"
+    },
+    "controlMethod": "Synthetic reports were altered in memory and compared with independently parsed OOXML."
+  },
+  "validator": {
+    "assemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+    "validSourceTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nmarked.docx fc7ba4c1b5b4a5dc499d322c4be16eab47fd0345308cb4f0be3997bbf28bc347 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nclear.docx 25436d8137868d09b220b9168553e74b66a1aeccd86e0ccf37ba2775053a6500 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nabsent.docx 6e73fd3bbb8ed016cad16e3a0efbb8b8583096108b39b9a7ec4ae2833995294b errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nlocked.docx dc53a52a9091fa5d850d8fedb56e012cbe1389174522b66e0bf9e112cf435f18 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ncross.docx 04661e51e45272c4854d7bbbfc38d25156793dc632a7c271799e766bf581805d errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nnested-simple.docx bf871661e7f1ea6e35ee444765e7ab11c6f163d95eb124b57992957588c0d825 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nnested-complex.docx 513f6b395c020002ab5345fc534d0d8b7385106f63878e4d616383b07740bce8 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nnested-simple-outer.docx 3bd02037e65be809075663209d6a9d6d822df4663b0385e3a1ffc6e826175336 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nnonmerge.docx 6c840a0f429b1671af03f29a6534e235996b265c98e00167a677f2e2380c18a5 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nrepeated.docx a5f6e674ba696bf77aed13d6dde3aa909154e80c6d52cd54e798b6ffdb518b83 errors=0\n",
+    "invalidControlTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ninvalid.docx 83db9f8614261194f49e4f212eb08086efcba97f53bf4fd6180367128a5a0f2e errors=1\nThe attribute 'http://schemas.openxmlformats.org/wordprocessingml/2006/main:dirty' has invalid value 'private-invalid-value'. The Enumeration constraint failed.\n"
+  },
+  "prototypeAssemblySha256": "ab0f19af7724ebe16a8bb85ffbe33eae01d31bcf6a2cceebde82419062e198ca",
+  "observationsSha256": {
+    "absent/default.json": "7b434f906bc8526e3867f164d52a879c14b075eb2f8d6b5a94c6b276011fb981",
+    "absent/result.json": "651a0566c81e9aab29998a8de65ff9a83653f418c00a62d7834c8e0367c59ef1",
+    "clear/default.json": "59f999a038453fbdeef0616118ed67d54817327e69733aab5b1f2474e5ab8f63",
+    "clear/result.json": "847391404e86853d13490fada1d668cbba049eaa29aeb0972dfff4e4a6e27be5",
+    "cross/default.json": "60535cf8c42b3d7f035c255461e49905ad77d393bb0e6a36d6913c0941e6c35a",
+    "cross/result.json": "651a0566c81e9aab29998a8de65ff9a83653f418c00a62d7834c8e0367c59ef1",
+    "invalid/default.json": "c62766fd9bfef324a0ec05db5401b400afbdd434d577e871f5844ae27448dec1",
+    "invalid/result.json": "5f5a1b502609e6462b97ddbdbfb8e399b20ac6d47272266ab6206c4153e72db9",
+    "locked/default.json": "51cc409a1597d7c860f64a966ab92bbfdee10846ba344c7a5e61ebcc2b33efb7",
+    "locked/result.json": "651a0566c81e9aab29998a8de65ff9a83653f418c00a62d7834c8e0367c59ef1",
+    "marked/default.json": "20de7f07c06479dc5f43c6543ac5158fb8d146e397d8d86c44ab10212970e88c",
+    "marked/result.json": "c505d35fe2df1911b6353fc343089c0b67505e7e7844a538974720ce84922cd3",
+    "nested-complex/default.json": "2e2ffbd6b2ecdd3ca97cd50a97b2907f01a1ab8b0bfa33804e3489435a522c15",
+    "nested-complex/result.json": "74f2564052feb834200903282754acd07d78bcd3516c99354e22eafe65e93800",
+    "nested-simple/default.json": "616d9f53017220f1707592f8a798dc4293eaaf38a91b11f09c7e56a4b0debb43",
+    "nested-simple/result.json": "0e22e7a477b05bcc63e0e7a709131a53e69e97f0dcd2b7a4152a75c3fc5a6470",
+    "nested-simple-outer/default.json": "c18f3926962c72b953bd43317b1348ed0f2eb69d45f5188873bb31652c1c262a",
+    "nested-simple-outer/result.json": "0e22e7a477b05bcc63e0e7a709131a53e69e97f0dcd2b7a4152a75c3fc5a6470",
+    "nonmerge/default.json": "e8bdb480f85217f018992d0d0de7c5a611c5f7e47a340148648dc604f0e30a6d",
+    "nonmerge/result.json": "ea71b2421daa7a75b25859810f1202e0931599d5a7248fc133d82a94605c0363",
+    "repeated/default.json": "f21911c9e970fae6977ed0834038f882ff552dd57419672d7529d76989dcdaff",
+    "repeated/result.json": "ebf36197b1c5b8daccee864a96d440763692a393510446a849c078618e9c102b"
+  },
+  "focusedTests": {
+    "initial": {
+      "passed": 10,
+      "sha256": "29f9e8641f2e0fc5a0fb197bc5d2ddb2b9d9a1cf6afb8334da512784e6acd5b3"
+    },
+    "retry": {
+      "passed": 74,
+      "sha256": "195a9873121d7990990a09595064129385961cb25cce0254205c5d1e7078b80b"
+    },
+    "bounds": {
+      "passed": 6,
+      "sha256": "39c69dbe8ebb9403ffdc13f90358ef0788e1fec500585c77c12abcbcbc1365e4"
+    },
+    "nesting": {
+      "passed": 8,
+      "sha256": "27947e29f228a629fd6db679d2928f2f877fce8c18bbee5c5f413efb6b8cdb00"
+    }
+  },
+  "limits": "A marker is source metadata, not proof of a stale value; an absent or false flag does not prove freshness. Cross-paragraph, locked, nested and repeated complex fields remain unknown. Reusable plans, enforced policies and full roadmap qualification remain open."
+}

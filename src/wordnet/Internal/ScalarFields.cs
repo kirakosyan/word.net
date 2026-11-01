@@ -28,6 +28,17 @@ internal static class ScalarFields
         }
     }
 
+    // Table dependencies consume the unformatted decimal, not a rounded or
+    // decorated cached display value. The caller stages every result before commit.
+    internal static (decimal Number, string Display) EvaluateTable(TextRun run, DocumentModel model, ConversionContext context,
+        Func<string, string, decimal> reference)
+    {
+        int nodes = 0; decimal? number = null;
+        object value = Evaluate(run, model, context, new HashSet<TextRun>(), 0, ref nodes, reference, n => number = n);
+        if (!number.HasValue) throw new FormatException();
+        return (number.Value, Display(value));
+    }
+
     private static string Display(object value) => value switch
     {
         string text => text,
@@ -37,15 +48,16 @@ internal static class ScalarFields
         _ => throw new FormatException()
     };
 
-    private static object Evaluate(TextRun run, DocumentModel model, ConversionContext context, HashSet<TextRun> visiting, int depth, ref int nodes)
+    private static object Evaluate(TextRun run, DocumentModel model, ConversionContext context, HashSet<TextRun> visiting, int depth, ref int nodes,
+        Func<string, string, decimal>? reference = null, Action<decimal>? numericResult = null)
     {
         context.CheckCancellation();
         if (depth >= Math.Min(16, context.Options.MaximumNestingDepth) || ++nodes > 256 || !visiting.Add(run)) throw new FormatException();
         var children = new Dictionary<int, object>();
         if (run.FieldChildren != null)
             foreach (var child in run.FieldChildren.OrderBy(p => p.Key))
-                children.Add(child.Key, Evaluate(child.Value, model, context, visiting, depth + 1, ref nodes));
-        var parser = new Parser(run.FieldInstruction!, context, children);
+                children.Add(child.Key, Evaluate(child.Value, model, context, visiting, depth + 1, ref nodes, reference));
+        var parser = new Parser(run.FieldInstruction!, context, children, reference);
         string kind = parser.Take().Value.ToUpperInvariant();
         object result;
         if (kind == "DOCPROPERTY")
@@ -76,7 +88,11 @@ internal static class ScalarFields
             bool condition = comparison switch { "=" => order == 0, "<>" => order != 0, "<" => order < 0, ">" => order > 0, "<=" => order <= 0, ">=" => order >= 0, _ => throw new FormatException() };
             Token chosen = condition ? yes : no; result = chosen.Typed ?? chosen.Value;
         }
-        else if (kind == "=") result = decimal.Parse(parser.Expression(0).ToString("G15", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
+        else if (kind == "=")
+        {
+            decimal number = decimal.Parse(parser.Expression(0).ToString("G15", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
+            numericResult?.Invoke(number); result = number;
+        }
         else throw new FormatException();
         if (parser.Peek is "\\#" or "\\@")
         {
@@ -107,10 +123,12 @@ internal static class ScalarFields
     {
         private readonly List<Token> tokens = new List<Token>();
         private readonly ConversionContext context;
+        private readonly Func<string, string, decimal>? reference;
         private int position;
-        internal Parser(string instruction, ConversionContext context, Dictionary<int, object> children)
+        internal Parser(string instruction, ConversionContext context, Dictionary<int, object> children, Func<string, string, decimal>? reference)
         {
             this.context = context;
+            this.reference = reference;
             if (instruction.Length > 4096) throw new FormatException();
             context.ReserveFieldWork(instruction.Length);
             for (int i = 0; i < instruction.Length;)
@@ -191,6 +209,14 @@ internal static class ScalarFields
             if (token.Typed != null) return token.Typed is decimal numeric ? numeric : throw new FormatException();
             if (token.Quoted) throw new FormatException();
             if (token.Value is "+" or "-") return token.Value == "-" ? checked(-Primary(depth + 1)) : Primary(depth + 1);
+            if (reference != null && token.Value.Equals("SUM", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Take().Value != "(") throw new FormatException();
+                Token argument = Take();
+                if (argument.Quoted || argument.Typed != null || Take().Value != ")") throw new FormatException();
+                return reference("SUM", argument.Value);
+            }
+            if (reference != null && token.Value.Length > 0 && char.IsLetter(token.Value[0])) return reference("CELL", token.Value);
             if (token.Value != "(") return Number(token.Value);
             decimal value = Expression(depth + 1);
             if (Take().Value != ")") throw new FormatException();

@@ -28,7 +28,7 @@ internal sealed partial class DocxReader
                 string orientation = (string?)property.Attribute(W + "orient") ?? "portrait";
                 if (orientation is not "portrait" and not "landscape") throw new InvalidDataException("Docx.PageOrientation: Invalid orientation.");
                 settings.Landscape = orientation == "landscape";
-                if (property.Attributes().Any(a => a.Name != W + "w" && a.Name != W + "h" && a.Name != W + "orient" && a.Name != W + "code"))
+                if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "w" && a.Name != W + "h" && a.Name != W + "orient" && a.Name != W + "code"))
                     context.Loss("Docx.PageLayout", "Unsupported page-size attributes are not retained.");
             }
             else if (property.Name == W + "pgMar")
@@ -81,7 +81,7 @@ internal sealed partial class DocxReader
                 string format = (string?)property.Attribute(W + "fmt") ?? "decimal";
                 if (format is "decimal" or "lowerRoman" or "upperRoman" or "lowerLetter" or "upperLetter") settings.PageNumberFormat = format;
                 else context.Loss("Docx.PageNumberFormat", "An unsupported page-number format uses decimal labels.");
-                if (property.Attributes().Any(a => a.Name != W + "start" && a.Name != W + "fmt")) context.Loss("Docx.PageNumberFormat", "Chapter-based page-number prefixes are not retained.");
+                if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "start" && a.Name != W + "fmt")) context.Loss("Docx.PageNumberFormat", "Chapter-based page-number prefixes are not retained.");
             }
             else if (property.Name == W + "footnotePr" || property.Name == W + "endnotePr")
             {
@@ -133,7 +133,7 @@ internal sealed partial class DocxReader
                 layout.ExactLineSpacing = rule == "exact";
                 layout.LineSpacing = amount / (layout.MultipleLineSpacing ? 240.0 : 20.0);
             }
-            if (property.Attributes().Any(a => a.Name != W + "before" && a.Name != W + "after" && a.Name != W + "line" && a.Name != W + "lineRule"))
+            if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "before" && a.Name != W + "after" && a.Name != W + "line" && a.Name != W + "lineRule"))
                 context.Loss("Docx.ParagraphSpacing", "Automatic and character-unit paragraph spacing is not retained.");
         }
         else if (property.Name == W + "ind")
@@ -142,7 +142,7 @@ internal sealed partial class DocxReader
             if (property.Attribute(W + "right") != null) layout.Right = Integer(property, W + "right", -31680, 31680) / 20.0;
             if (property.Attribute(W + "firstLine") != null) layout.FirstLine = Integer(property, W + "firstLine", 0, 31680) / 20.0;
             if (property.Attribute(W + "hanging") != null) layout.FirstLine = -Integer(property, W + "hanging", 0, 31680) / 20.0;
-            if (property.Attributes().Any(a => a.Name != W + "left" && a.Name != W + "right" && a.Name != W + "firstLine" && a.Name != W + "hanging"))
+            if (property.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "left" && a.Name != W + "right" && a.Name != W + "firstLine" && a.Name != W + "hanging"))
                 context.Loss("Docx.ParagraphIndent", "Character-unit and direction-dependent indentation is not retained.");
         }
         else if (property.Name == W + "tabs")

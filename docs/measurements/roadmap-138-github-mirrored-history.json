@@ -1,0 +1,159 @@
+{
+  "base": "90a77f113f4f10e481bbfa34f87be32bb5b23712",
+  "commits": [
+    {
+      "localCommit": "8baeeaefc9e44b07c6ce9e7fa7f66ab010fa3b09",
+      "tree": "b68e68a4f4048f1126373c03e0dbdd85d5457f44",
+      "remoteCommit": "3994f804c391c0b5b8ba4cc2cb05de903d8748fc"
+    },
+    {
+      "localCommit": "81e1bef83095bfd4c154b872bf8d0531b0a5e2e7",
+      "tree": "1e3acdc9388cdfe2594a4ae679d25f3055ef22d1",
+      "remoteCommit": "4e287baf749257077fa4ce6baeab01a31a9a9f9d"
+    },
+    {
+      "localCommit": "00abb80c57b54f649ff5246f21637f1d164393b3",
+      "tree": "bde0c86d8889f71659a77e1771b11125983a83d3",
+      "remoteCommit": "437789bf46e7e3d9b806ec9ee01d7e469f5ef478"
+    },
+    {
+      "localCommit": "b1a58820e47af08809e8d5f377da2c4c4bb66aa1",
+      "tree": "5bbb775f16f01c9b75d369dc964417586fc5a0cc",
+      "remoteCommit": "f7c8180ca68319def7dde103a10b24fa098aa4ea"
+    },
+    {
+      "localCommit": "ecaa4bb9532b6e173bb3d6889d438cbb6672e291",
+      "tree": "b992cfd539eb9dc58dd6e56bb4b60b5a061040d7",
+      "remoteCommit": "570122d1ec76d9901d46f9470020a7028d3bbd34"
+    },
+    {
+      "localCommit": "822655d7ed1704daf1bb092d3ff24e23d051e6a0",
+      "tree": "fea37c97d9c6c986e921f1490db2619cc30d77f2",
+      "remoteCommit": "a6b30b5fb91b84477af109f6c36706f6a7e68f62"
+    },
+    {
+      "localCommit": "e1d3011b9bda841876c69a64f64a813800d95e0b",
+      "tree": "7efdaef6735a4aea4cbcada7180bf9a65ee827b0",
+      "remoteCommit": "a2774216a7b00779540515730955af5e1c2d6469"
+    },
+    {
+      "localCommit": "27d4f4a7db9c617421e89f5d40ce0a430ad9b67b",
+      "tree": "7433c50fa44560567202ee17aba3623080895f6f",
+      "remoteCommit": "d4dd491e498a3a8a85f888a881aea005cc75ea36"
+    },
+    {
+      "localCommit": "4cbbe2d84f17bb933dc76d64a1e101e492a906dd",
+      "tree": "4567dee11d9e09c29cb36c82d11637ce3275b8c3",
+      "remoteCommit": "52695c971ade3b0cebd28fd8c215b6fd977f14e1"
+    },
+    {
+      "localCommit": "cef395e31fc543dccb4d299a121418ab19686975",
+      "tree": "63437c9a92fb3bc1da7c074967b2cadb566a372c",
+      "remoteCommit": "5b6cd5ca914a806687b8c1edb98c95a0405363ec"
+    },
+    {
+      "localCommit": "e31f7f309d5485818ad233f634188ea0e7225952",
+      "tree": "5f5371434c62d57f81c2042b61957d3e728647e5",
+      "remoteCommit": "e9de85c431fa22d61878997c16fa3137087b7373"
+    },
+    {
+      "localCommit": "c196b4f4d4626a5cf0c629c18374726abc5f5992",
+      "tree": "a90939d945998696ff6c6037cc3f8f05e156ebb9",
+      "remoteCommit": "e237a6fc6cc9f0296f19b92033f3c2a6af5852eb"
+    },
+    {
+      "localCommit": "65ead3abaab787f58613f5e06f675ecd847e9fa2",
+      "tree": "6177486f900b731f616378343bb8cce8276fdd19",
+      "remoteCommit": "e074eb4c485b44d10c807df7c3ec8bb107cd9535"
+    },
+    {
+      "localCommit": "18fd762444dd9b4e9a159ca69bdfc2c424629909",
+      "tree": "fb19a5bbfe58e577c2bc39f7e8a9693a26edb67f",
+      "remoteCommit": "49f4c4132cc10a0c90a010256fa1eec785c3d605"
+    },
+    {
+      "localCommit": "f1761389e8c35a310560df6561d0a52398f0e441",
+      "tree": "35a438b3a9d02632281b5ee6afa2e042c96e7ef2",
+      "remoteCommit": "4becf04a38c7e89c63463115a1e18e8d7d2bd00b"
+    },
+    {
+      "localCommit": "58bd4d8fa943bbc4f8f7b342e57f025c276d2805",
+      "tree": "275f612c39ebcb578be1602ef1ddcdc16f6b8bd2",
+      "remoteCommit": "bef8f36a29c9c6ff118398e62b54819614bd527e"
+    },
+    {
+      "localCommit": "4ee4114a46fc28a35d452c502287d965d996fc89",
+      "tree": "23099a4c53df64de114c9eda014f3eba66df1c59",
+      "remoteCommit": "0e14a7e17e8e08c342dd17dc81deb99ede6c2b26"
+    },
+    {
+      "localCommit": "faacc11dd1a2b70052e2fd72a195d318700116c4",
+      "tree": "0436a552f64a4687666e61b91b79b4c61ecd7a7e",
+      "remoteCommit": "daca0a3a539d2ee51b7b1ac5ca326a873ff64db3"
+    },
+    {
+      "localCommit": "171b7a97f99edf6900252e53b73d506d52e45b69",
+      "tree": "e51f3c52d0e9d7036d186a6383cb06654b657ae3",
+      "remoteCommit": "0e3656155c10df08672e57e9c94ef3360fe65645"
+    },
+    {
+      "localCommit": "4104684c24b0052c9138081078d1f028a0533589",
+      "tree": "82d852b638520876046c6ab606089cfa2bde5943",
+      "remoteCommit": "b57f10e40b8084f7fb98702310097501b0db156c"
+    },
+    {
+      "localCommit": "39993b76fb09bb4b779b763326c2981ba86f8e83",
+      "tree": "2ba852576457e309adcdbce0e93b67a52001ccb8",
+      "remoteCommit": "52ad9cab3aa6e141b0423db7b08f5cb384a42c91"
+    },
+    {
+      "localCommit": "3135cc155d434d23fa145d071ae0c77f6fbf6621",
+      "tree": "4dd06c798f18bfb39506257de65c619c7da1f9a7",
+      "remoteCommit": "734b5d4eb3d808f531b8baf2e0bd20325ff42cfe"
+    },
+    {
+      "localCommit": "8d3966ad5b78764a2c862b54120827aa5fbbd7d5",
+      "tree": "b932baee3911fdaa14fbf42baf11eb05a4237193",
+      "remoteCommit": "9ece0316a9bc367bc5306d0da35e570411f044db"
+    },
+    {
+      "localCommit": "986b0a916690983f933d36a604aa755692677e9c",
+      "tree": "6b6b5926a10b5b54680ac52a8c4ef1f77f813a33",
+      "remoteCommit": "a3f53afbfa9ecfba750c8b2d925ffa45cd30e6b7"
+    },
+    {
+      "localCommit": "41b188cb70c7425c05fc9836d6fadcea5892d849",
+      "tree": "c96872e77d111591373f1b6dd0553175b703c34e",
+      "remoteCommit": "9949d248a48baa1f8cb024c842ab9466608fc09c"
+    },
+    {
+      "localCommit": "cca9b3853881a7eb13ac921cb499b234a4f056ad",
+      "tree": "e34b27edc14fb351d7c54cf3134f842b72e0149a",
+      "remoteCommit": "38427dcbf866cfc31eded177762b015a3fc9f53d"
+    },
+    {
+      "localCommit": "723146a1b49f14d9d3f563311aa9f1edb010afcf",
+      "tree": "254d0c0d0b7895ee891754d64004b59b3dd8e05d",
+      "remoteCommit": "bb56a5f7d73638925813c3c50f91a5c5a14d36f9"
+    },
+    {
+      "localCommit": "46f9a63871cf7a6d8be8ba243830cb67b250697b",
+      "tree": "b74951b9893d2151e9b0d6b3585077d7a5ae13fa",
+      "remoteCommit": "13886f41173a15d4b18e0fb5b63eb5f644fc016d"
+    },
+    {
+      "localCommit": "e89372324081c7b383a62d631d47ef9d78a3f440",
+      "tree": "0b39c3a4213d14c1a29887271dc5ef278ff0b2d4",
+      "remoteCommit": "cf7b6101f5f3cd4caad1685c9b7905bf1bbb966b"
+    },
+    {
+      "localCommit": "c9abb9c4f8d0c12ccd32ed4fd19b143379e20eb9",
+      "tree": "37c269d2f72cf93e73871d83acb306395bc39003",
+      "remoteCommit": "1a5e1098fe4a98195a21cd20dcd432b335b305d4"
+    }
+  ],
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "explanation": "The shell GitHub credential expired. GitHub app Git-data operations created distinct commit IDs with identical Git trees and corresponding parent order; the original local commit chain remains preserved. Original local receipts are not claims that those original IDs were pushed. The app-created source commit was qualified separately.",
+  "appCreatedCommitsChangeBranchOnlyAfterWorkflowGuard": true
+}

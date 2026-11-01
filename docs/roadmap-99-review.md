@@ -60,12 +60,14 @@ qualifies this corrected source. See the PR checks for its exact run and commit.
 ## Pre-release publication decision (historical)
 
 This was the assessment before the owner authorized 1.4.0 preparation and publication.
-The current release work is tracked in [1.4.0](releases/1.4.0.md).
+The subsequent [1.4.0 release](releases/1.4.0.md) and current
+[1.5.0 release](releases/1.5.0.md) have separate qualification records.
 
 **Not ready to publish as-is at review commit `7e51dc2`.** The changes are candidates for a new minor release,
 provisionally **1.4.0**, because they add public APIs and supported conversion profiles.
 All three project versions and their package release notes still identify the already
-published 1.3.0. No version bump, merge, tag or publishing dispatch has been performed.
+published 1.3.0. At that assessment no version bump, merge, tag or publishing dispatch
+had been performed.
 
 Before publication:
 

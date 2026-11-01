@@ -74,6 +74,111 @@ internal sealed class MathLayout
             foreach (EquationExpression child in node.Children) { Box b = Build(child, size, level, display); Put(result, b, x, 0); x += b.Visual.Width; }
             result.Visual.Width = x; return result;
         }
+        if (node.Kind == EquationKind.Matrix)
+        {
+            int rows = node.MatrixRows, columns = node.MatrixColumns;
+            var boxes = new Box[rows, columns]; var widths = new double[columns];
+            var ascents = new double[rows]; var descents = new double[rows];
+            for (int r = 0; r < rows; r++)
+            {
+                // The strut gives empty rows a stable line height without inventing a visible glyph.
+                ascents[r] = size * 0.75; descents[r] = size * 0.25;
+                for (int c = 0; c < columns; c++)
+                {
+                    Box cell = Build(node.Children[r * columns + c], size, level, false); boxes[r, c] = cell;
+                    widths[c] = Math.Max(widths[c], cell.Visual.Width);
+                    ascents[r] = Math.Max(ascents[r], cell.Visual.Ascent); descents[r] = Math.Max(descents[r], cell.Visual.Descent);
+                }
+            }
+            double Factor(EquationMatrixSpacing spacing) => spacing == EquationMatrixSpacing.Standard ? 1 : spacing == EquationMatrixSpacing.OneAndHalf ? 1.5 : 2;
+            double columnGap = size * Factor(node.MatrixColumnSpacing);
+            double rowGap = Math.Max(0, Constant(0, size)) + size * (Factor(node.MatrixRowSpacing) - 1);
+            double height = ascents.Sum() + descents.Sum() + (rows - 1) * rowGap;
+            double top = -Constant(1, size) - height / 2, y = top; var result = new Box();
+            for (int r = 0; r < rows; r++)
+            {
+                y += ascents[r]; double x = 0;
+                for (int c = 0; c < columns; c++)
+                {
+                    Box cell = boxes[r, c]; double extra = widths[c] - cell.Visual.Width;
+                    double offset = node.MatrixColumnAlignments[c] == EquationMatrixAlignment.Left ? 0 : node.MatrixColumnAlignments[c] == EquationMatrixAlignment.Right ? extra : extra / 2;
+                    Put(result, cell, x + offset, y); x += widths[c] + columnGap;
+                }
+                y += descents[r] + rowGap;
+            }
+            result.Visual.Width = widths.Sum() + (columns - 1) * columnGap;
+            result.Visual.Ascent = Math.Max(result.Visual.Ascent, -top); result.Visual.Descent = Math.Max(result.Visual.Descent, top + height);
+            // The outside of a matrix is a box, not its last internal glyph.
+            result.First = result.Last = -1; return result;
+        }
+        if (node.Kind == EquationKind.Nary)
+        {
+            int scalar = node.NaryOperator == EquationNaryOperator.Summation ? 0x2211 : node.NaryOperator == EquationNaryOperator.Product ? 0x220f : 0x222b;
+            int operatorGlyph = glyph(scalar); double axis = Constant(1, size); Box op;
+            if (!display) op = Glyph(operatorGlyph, size);
+            else
+            {
+                double minimum = font.DisplayOperatorMinHeight * size / font.Units;
+                Box ordinary = Glyph(operatorGlyph, size);
+                bool enough = ordinary.Visual.Ascent + ordinary.Visual.Descent >= minimum;
+                bool hasConstruction = font.Vertical.TryGetValue(operatorGlyph, out MathFont.Construction? construction);
+                bool hasSufficient = hasConstruction && (construction!.Variants.Any(v => v.Advance >= font.DisplayOperatorMinHeight)
+                    || construction.Parts.Any(p => p.Extender));
+                if (enough || hasSufficient) op = Stretch(operatorGlyph, size, minimum, axis);
+                else
+                {
+                    context.Loss("Equation.NarySizeFallback", "The selected math font lacks an operator variant meeting its display minimum.");
+                    Box selected = hasConstruction && construction!.Variants.Count != 0 ? Glyph(construction.Variants[construction.Variants.Count - 1].Glyph, size) : ordinary;
+                    op = new Box(); Put(op, selected, 0, (selected.Visual.Ascent - selected.Visual.Descent) / 2 - axis); op.Visual.Width = selected.Visual.Width;
+                }
+            }
+            double scriptSize = Script(size, level);
+            Box? lower = node.NaryHasLowerLimit ? Build(node.Children[1], scriptSize, level + 1, false) : null;
+            Box? upper = node.NaryHasUpperLimit ? Build(node.Children[2], scriptSize, level + 1, false) : null;
+            var decorated = new Box();
+            if (node.NaryLimitPlacement == EquationLimitPlacement.AboveBelow)
+            {
+                double width = Math.Max(op.Visual.Width, Math.Max(lower?.Visual.Width ?? 0, upper?.Visual.Width ?? 0));
+                Put(decorated, op, (width - op.Visual.Width) / 2, 0);
+                if (upper != null)
+                {
+                    double up = op.Visual.Ascent + Math.Max(Constant(15, size), Constant(14, size) + upper.Visual.Descent);
+                    Put(decorated, upper, (width - upper.Visual.Width) / 2, -up);
+                }
+                if (lower != null)
+                {
+                    double down = op.Visual.Descent + Math.Max(Constant(17, size), Constant(16, size) + lower.Visual.Ascent);
+                    Put(decorated, lower, (width - lower.Visual.Width) / 2, down);
+                }
+                decorated.Visual.Width = width;
+            }
+            else
+            {
+                double down = lower == null ? 0 : Math.Max(Constant(4, size), Math.Max(lower.Visual.Ascent - Constant(5, size), op.Visual.Descent + Constant(6, size)));
+                double up = upper == null ? 0 : Math.Max(Constant(7, size), Math.Max(upper.Visual.Descent + Constant(9, size), op.Visual.Ascent - Constant(10, size)));
+                if (lower != null && upper != null)
+                {
+                    double missing = Constant(11, size) - (down + up - lower.Visual.Ascent - upper.Visual.Descent);
+                    if (missing > 0) { double raise = Math.Min(missing, Math.Max(0, Constant(12, size) - (up - upper.Visual.Descent))); up += raise; down += missing - raise; }
+                }
+                Put(decorated, op, 0, 0); double end = op.Visual.Width;
+                if (lower != null)
+                {
+                    double x = Math.Max(0, op.Visual.Width + ScriptKern(op, lower, size, scriptSize, -down, false));
+                    Put(decorated, lower, x, down); end = Math.Max(end, x + lower.Visual.Width);
+                }
+                if (upper != null)
+                {
+                    double italic = op.Last < 0 ? 0 : font.Italic(op.Last) * size / font.Units;
+                    double x = Math.Max(0, op.Visual.Width + italic + ScriptKern(op, upper, size, scriptSize, up, true));
+                    Put(decorated, upper, x, -up); end = Math.Max(end, x + upper.Visual.Width);
+                }
+                decorated.Visual.Width = end + (lower != null || upper != null ? Constant(13, size) : 0);
+            }
+            Box operand = Build(node.Children[0], size, level, false); double operandX = decorated.Visual.Width + size / 6;
+            var result = new Box(); Put(result, decorated, 0, 0); Put(result, operand, operandX, 0);
+            result.Visual.Width = operandX + operand.Visual.Width; return result;
+        }
         if (node.Kind == EquationKind.Fraction)
         {
             double childSize = display ? size : Script(size, level);

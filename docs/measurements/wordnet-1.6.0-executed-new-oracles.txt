@@ -1,0 +1,28 @@
+set -euo pipefail
+prefix=/workspace/wordnet-1.6.0-candidate
+fixture=${prefix}-plain-fixtures
+plain=${prefix}-plain-observations
+staged=${prefix}-staged-observations
+plain_pdf=${prefix}-plain-independent
+staged_pdf=${prefix}-staged-independent
+core=src/wordnet/bin/Release/net10.0/wordnet.dll
+validator=/tmp/wordnet-138-schema-runs/bin/Release/net10.0/SchemaCheck.dll
+for suffix in policy plain-policy staged-policy; do
+  project=/tmp/wordnet-160-final-$suffix-probe/Probe.csproj
+  rtk proxy dotnet restore "$project" --locked-mode --disable-parallel >> ${prefix}-new-probe-restore.log 2>&1
+  rtk proxy dotnet build "$project" -c Release --no-restore --no-dependencies -m:1 -warnaserror >> ${prefix}-new-probe-build.log 2>&1
+done
+rtk proxy python3 eng/generate-roadmap-138-plain-policy.py --output "$fixture" > ${prefix}-plain-manifest.log
+for file in "$fixture"/*.docx; do rtk proxy dotnet "$validator" "$file"; done > ${prefix}-plain-schema.log
+test "$(rtk proxy rg -c 'errors=0' ${prefix}-plain-schema.log)" = 11
+rtk proxy dotnet /tmp/wordnet-160-final-policy-probe/bin/Release/net10.0/wordnet.Conversion.Tests.dll docs/design/template-compatibility-policy.example.json ${prefix}-policy-observation.json docs/design/template-compatibility-plan.example.json > ${prefix}-policy-probe.log
+PYTHONPATH=/tmp/wordnet-138-policy-python rtk proxy python3 eng/verify-roadmap-138-policy.py docs/design/template-compatibility-policy.example.json ${prefix}-policy-observation.json "$core" docs/design > ${prefix}-policy-reference.json
+rtk proxy dotnet /tmp/wordnet-160-final-plain-policy-probe/bin/Release/net10.0/wordnet.Conversion.Tests.dll "$fixture" "$plain" > ${prefix}-plain-probe.log
+rtk proxy dotnet /tmp/wordnet-160-final-staged-policy-probe/bin/Release/net10.0/wordnet.Conversion.Tests.dll "$fixture" "$staged" > ${prefix}-staged-probe.log
+rtk proxy mkdir "$plain_pdf" "$staged_pdf"
+rtk proxy docker -H unix:///var/run/docker.sock run --rm --network none -v "$plain":/plain:ro -v "$staged":/staged:ro -v "$plain_pdf":/plain-output -v "$staged_pdf":/staged-output wordnet-138-reference:temporary sh -c 'set -eu; for kind in plain staged; do for name in short maximum single lowercase mixed; do pdftotext -layout /$kind/$name.pdf /$kind-output/$name.txt; pdfinfo /$kind/$name.pdf > /$kind-output/$name-info.txt; pdffonts /$kind/$name.pdf > /$kind-output/$name-fonts.txt; done; done; pdftotext -v 2>&1 | head -1' > ${prefix}-pdf-independent.log 2>&1
+rtk proxy python3 eng/verify-roadmap-138-plain-policy.py "$fixture" "$plain" "$plain_pdf" "$core" ${prefix}-plain-schema.log > ${prefix}-plain-reference.json
+PYTHONPATH=/tmp/wordnet-138-policy-python rtk proxy python3 eng/verify-roadmap-138-staged-policy.py "$fixture" "$staged" "$staged_pdf" "$core" ${prefix}-plain-schema.log docs/design > ${prefix}-staged-reference.json
+PYTHONPATH=/tmp/wordnet-138-policy-python rtk proxy python3 eng/test-template-plan-design.py > ${prefix}-design-tests.log 2>&1
+rtk proxy python3 -c 'import hashlib,pathlib,zipfile; paths=[pathlib.Path("src/wordnet/bin/Release/net10.0/wordnet.dll")]+[pathlib.Path("/tmp/wordnet-160-final-"+p+"-probe/bin/Release/net10.0/wordnet.dll") for p in ("policy","plain-policy","staged-policy")]; h=[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths]; z=zipfile.ZipFile("/workspace/wordnet-1.6.0-final-packages/wordnet.1.6.0.nupkg"); h.append(hashlib.sha256(z.read("lib/net10.0/wordnet.dll")).hexdigest()); assert len(set(h))==1; print("Matching source, policy probes and packaged core:",h[0])' > ${prefix}-new-assembly-match.log
+printf 'Exact-source policy schemas, independent PDF observations and 61 altered-observation controls passed.\n'

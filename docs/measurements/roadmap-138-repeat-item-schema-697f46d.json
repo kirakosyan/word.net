@@ -1,0 +1,215 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "697f46d1f521710c1ba2e516de31ec4872960061",
+  "sourceTree": "21bd2e99e8497bb547664d6011534a9111f91960",
+  "scope": "Inspect a required declared single-segment item path inside an admitted simple root repeat while retaining fallback, empty-collection and broader coverage unknowns.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "878f2441bde97f4946d8db04090cf98af93fe0fbcfb17eb924d9eb8f506e84d9",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "a4553d9dc0ecccd8a166fe38d7b272360bc6932ecfbdaf484bb8b9b2c784b0c1",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2386,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "45778714d4ac1fab2f8e2521744c119d99d592f511f3f300dd105e3026982086"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2386,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "5ac25d627a5d55e96bd874244cfa4b61eb2331d0afadbaf95e4b4aa553b24f27"
+    },
+    "capabilityMatrix": {
+      "profiles": 116,
+      "testMethods": 510,
+      "net10CasesPassed": 858,
+      "logSha256": "02758343d19405841e2887f302702e9e147d18d8dc44e78100897dd711b6dc38"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "5201b144f661b929158ce007f5b7e43fc24d83cb9f193ae9a17097433fbccc9a",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "a4922a958ccb538d564eead1dd28c9d65e53eec4c093fde0060fff6fde55e0af",
+      "wordnet.Fonts.1.5.0.nupkg": "eeefe6608183afa97949d8570125a048925d2f76a9de3ffee884afa5d849c18b",
+      "wordnet.Ocr.1.5.0.nupkg": "6668a86dc1b2e6a714bfdda3fe027b2b8f2b4c66609cbfb39f56ccedd45a2f3c"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 40.698049999999995,
+      "CandidateMedianMilliseconds": 41.89475,
+      "Ratio": 1.029404357211218,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40139432.0,
+      "PeakSampledManagedBytes": 27492960.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-repeat-item-schema-performance-697f46d.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-repeat-item-schema-reference.json",
+    "sourceProbesAndPackageNet10AssemblySha256": "151d53030159853351005b2f4a8c959786ff2ef9d32d23331fb5051602571882",
+    "sourceAndMergedSchemaLogSha256": "ad2c8dcd4818360ecd8267ae8926ecaab77037f19a9b9c23176511a9eb89aed7",
+    "previousSchemaLogSha256": "d8c6656fed1888fe9481a6ee24fbc7754e7ee6ec011cebf429fbd62a46636338",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "67b03cf546d1a2a1daf58250536293b1d6ba048c296526ffc3499b29473e7b46",
+    "previousVerifierLogSha256": "baebbf6df22d5a9ae034e6c10e468c01a5f0bbea52fc27a081c7dd314f74e464",
+    "officeLogSha256": "f7352bec7e82239d52454f831b367160453b805d0e999b08adbd6fde93e96c0e",
+    "previousOfficeLogSha256": "d07c71c565b9b19e060f1f6c931e4fb9256badd871a663c49f6ee9519de17e7e",
+    "outputs": {
+      "required": {
+        "defaultReportSha256": "cdf9400f4c4fd5d4290ae284226062644998cdca65cac2d1ed73932602ded50e",
+        "observationSha256": "4888cd01fe612ba295a690bf68a744b3cd6bb4ad7a69d08eb7ea5b422ce1f957",
+        "mergedDocxSha256": "64f60bf3b52aaa354e10354b0befb35ab9be7feb0cd56778a5047041a43af54d",
+        "officePdfSha256": "32eb62ed2dd60b06a03436e38a1761bfd98f4509b7e391d56add6731d28cb058"
+      },
+      "optional": {
+        "defaultReportSha256": "9af50b2c30889371864e04ee837b6624c93cf418fb523edfe97d7fd8dd56b763",
+        "observationSha256": "5beae13c7d4eb4186aea052de2e363cd48ec98a382e97ea0e427c1b2c6f918f5",
+        "mergedDocxSha256": "cb3a89dc5f14f5d760fea5644eb92d4a1c6c6a87e9e747d772fadaeb4709a181",
+        "officePdfSha256": "f6cb613b5a7159f955a90de8486a325b7303fcfa80df5e7bc82f801894e79a3d"
+      },
+      "wrong-scope": {
+        "defaultReportSha256": "9af50b2c30889371864e04ee837b6624c93cf418fb523edfe97d7fd8dd56b763",
+        "observationSha256": "5beae13c7d4eb4186aea052de2e363cd48ec98a382e97ea0e427c1b2c6f918f5",
+        "mergedDocxSha256": "cb3a89dc5f14f5d760fea5644eb92d4a1c6c6a87e9e747d772fadaeb4709a181",
+        "officePdfSha256": "525a977b1e08c0bc312dd15a531a54a5a2c2e205397af8f44f84bd9f44fcaeb0"
+      },
+      "two-scopes": {
+        "defaultReportSha256": "9be30e06d2e6689b94c551bf0e79e1fa88b24f80105eaea57caa930b01016a7f",
+        "observationSha256": "5cf2f5aca22ca53d9fc0f46f2ec270aaac86091454a6454da0e5d75791336713",
+        "mergedDocxSha256": "08ead0058f965f00860dd2583380d99beca3aec42b46a08eefa16dbe2c503b65",
+        "officePdfSha256": "87585d3f6a64d824624d637581825fae134bd21346508bbdfd51452c5ee64d20"
+      },
+      "nested": {
+        "defaultReportSha256": "4b10867f5bc5c17c955f35cd9091c393b6c66274f6c85e32ee8a13d51e7a1e3c",
+        "observationSha256": "4617f17b08ab65d18f91b01b65d385e6935191400332839c2282d3e3b8cc7dd8",
+        "mergedDocxSha256": "04849f24e55a5a8f2e50bcd43134cbb1e66941d0fbf940909d16126d1925edea",
+        "officePdfSha256": "e7f7638f3d92e886cbe8f4960bc5554b911717e3a5c91f35af6133ac20071d26"
+      },
+      "number": {
+        "defaultReportSha256": "1c5b8301d98babcec116a24112b83a25eaa36fc9cba5f1f073f4bd0d3e5c6138",
+        "observationSha256": "53ff12dcac65b82a4a0c8f6bd229d9c0cc6e749a3fd210df5f244c7771cb5de4",
+        "mergedDocxSha256": "fc9b7e8984f0ae47d2da05c3728b6da23957c537f7beeb9228f1fcfd324be8c4",
+        "officePdfSha256": "5e79d6c927758fdf8672d6396dfe4f1279504cfe2047704bbf113c67f9ddb7ef"
+      },
+      "mismatch": {
+        "defaultReportSha256": "4f1d9e84b9fc114290373c73327144e32be2917fea069e41b774ea55da44e47b",
+        "observationSha256": "d6e33a9fbdf25fa68d27d06a06f0a78ceb58e128f514ade066accbd9a2ec60f0",
+        "mergedDocxSha256": "6132c0beff1c3ebac466718e468dd61e60c4347fdee35050dd1364a3fc15d0d7",
+        "officePdfSha256": "f4b5056c87abbe127fb2ba57fd51b3f991a4586a1c702e53ac5b2741b783431b"
+      },
+      "mismatch-empty": {
+        "defaultReportSha256": "4f1d9e84b9fc114290373c73327144e32be2917fea069e41b774ea55da44e47b",
+        "observationSha256": "6c3f30a0a0a7bf71c3d85003e84746648861edc55cb4b2b7241ce1e14ce49fdc",
+        "mergedDocxSha256": "a31b9dd5061ae49144f8de795e4dde7e1fba72514914c6ee6977d0b44923666b",
+        "officePdfSha256": "4e250bdfd486c2fd7d57e13e19f1acacfba8fb6a3849f4a2f3c0d499a21b5742"
+      }
+    },
+    "controls": {
+      "result": {
+        "scenarios": 8,
+        "mergedOfficeReads": 8,
+        "scopesSeparated": true,
+        "optionalFallbackUnknown": true,
+        "emptyMismatchUnknown": true
+      },
+      "negativeControls": {
+        "required marked unknown": "Scope certainty, type or count changed: required/Items",
+        "required type changed": "Scope certainty, type or count changed: required/Items",
+        "required presence changed": "Scope certainty, type or count changed: required/Items",
+        "required count changed": "Scope certainty, type or count changed: required/Items",
+        "wrong scope": "Scoped requirement missing: required",
+        "root alias changed": "Root and item requirements were conflated: required",
+        "optional marked certain": "Scope certainty, type or count changed: optional/Items",
+        "optional type guessed": "Scope certainty, type or count changed: optional/Items",
+        "unknown finding missing": "Unknown-scope finding changed: optional/Items",
+        "wrong source position": "Invalid child position",
+        "wrong source part": "Unknown field source position changed: optional",
+        "mismatch marked certain": "Conditional item type mismatch changed: mismatch",
+        "mismatch finding missing": "Conditional item type mismatch changed: mismatch",
+        "empty mismatch lost": "Conditional item type mismatch changed: mismatch-empty",
+        "merge changed": "Merged text or independent office reading changed: required",
+        "failed edit changed": "Failed merge or atomicity changed: mismatch",
+        "private value leaked": "Default report disclosed private names or values: required",
+        "reuse claimed": "Reuse or repeat coverage changed: required",
+        "nested scope guessed": "Scope certainty, type or count changed: nested/Items",
+        "two scopes conflated": "Scoped requirement missing: two-scopes"
+      },
+      "controlMethod": "Parsed requirements, source positions and output observations changed in memory."
+    },
+    "previousCorpusOutputs": {
+      "both": {
+        "defaultReportSha256": "f2918e64cef04d19ab14f99cbdaa7216adaa7d0efeb527184209a2cb8694766f",
+        "observationSha256": "87f8ca192e9d9c3d49d245b4c2c1a18a44ac3776efbb5962a1e2c68eeb528db0",
+        "mergedDocxSha256": "9cf2c0562f50890b254578a4ef02cea43f0d2109ef57d6fab3e8e3bc160154c4",
+        "officePdfSha256": "74c5a60c82a633640ed81a70667447bcb238aa992ef5f49dc273f06b86494768"
+      },
+      "item": {
+        "defaultReportSha256": "be6a58a332fd4e0389cfeab2832774e1f4a7b8979e85a126de686a777d28d325",
+        "observationSha256": "2caa4b6d6de0b118f2a51ab7d5a93310c9274c1823b23945ebeb45b53c485e01",
+        "mergedDocxSha256": "ed25fd8d7d03198eea850188fe39df72d921fd30e25eeabfb06d85f715f9ef01",
+        "officePdfSha256": "c755e70400e83fd0c2863a5cb2311417ae73c2bf05f71c12e345ce43116a2d68"
+      },
+      "empty-invalid": {
+        "defaultReportSha256": "9cfc9248c95a2d39c3779794cc397633be4a2e7d1df47a4f60d31f51d882a490",
+        "observationSha256": "0397e4dd7bedd7bf554c7076db66fdfd90d3e1b341aa56093a6d4bbd4166be41",
+        "mergedDocxSha256": "a31b9dd5061ae49144f8de795e4dde7e1fba72514914c6ee6977d0b44923666b",
+        "officePdfSha256": "124d1f8b664ed1dbaba6d4e868353f2dfcd1dafe9fffd9df96d40c82786f2ff6"
+      },
+      "nonmerge": {
+        "defaultReportSha256": "cc2f3a57df6324cb4b343e9bace9d488efbd9797ad0521ea0569cdf9a2e7772a",
+        "observationSha256": "abec4bd178164c14a28a51e435b6fdf098705457b2b2d947f4988519d5bc9961"
+      },
+      "two-blocks": {
+        "defaultReportSha256": "eadf267a34a42a0fb89a829c7176ed011c74655954d307b9a17685404cd0dbe6",
+        "observationSha256": "df290eaa5178fdb590aefa04615b53693662e1edd52c1c5b7b46e8bbd7f6d044"
+      },
+      "field-extra": {
+        "defaultReportSha256": "558a468ed1384436ca8eb80c9aed2195cf73c1fee699340c537ac904048f807d",
+        "observationSha256": "df290eaa5178fdb590aefa04615b53693662e1edd52c1c5b7b46e8bbd7f6d044"
+      },
+      "wrong-type": {
+        "defaultReportSha256": "f4e942a58d49efe0eb0e6758c0550d069855058f26146d0d626ecacb9c16a0d7",
+        "observationSha256": "84988f54853b9059c9c59a847519133a18f000af96a2ea0a8185bd6762480492",
+        "mergedDocxSha256": "fea3df60a36c36f21d03df7a9c1ebffc964555d4302becec8a2f7bda44bf5513",
+        "officePdfSha256": "815847cbb65a75fb23548e9f24ab643c248fa62fc533ffa2dce0b97f36272158"
+      }
+    },
+    "previousCorpusControls": {
+      "result": {
+        "scenarios": 7,
+        "mergedOfficeReads": 4,
+        "scopeKnownAndUnknownSeparated": true,
+        "unparseableOrUnsupportedContentRemainsUnknown": true
+      },
+      "negativeControls": {
+        "scope certainty": "Unknown-scope requirement missing: both",
+        "guessed type": "Repeated field guessed its type, presence or count: both",
+        "guessed presence": "Repeated field guessed its type, presence or count: both",
+        "wrong count": "Repeated field guessed its type, presence or count: both",
+        "different path alias": "Root and repeated requirements were conflated",
+        "missing finding": "Repeated field finding missing: both",
+        "wrong source position": "Invalid child position",
+        "wrong source part": "Repeated field certainty or alias changed: both",
+        "root type changed": "Root and repeated requirements were conflated",
+        "root scope changed": "Unknown-scope requirement missing: both",
+        "merged output changed": "Merged text or independent office reading changed: both",
+        "failed edit changed": "Repeat rejection or atomicity changed",
+        "private value leaked": "Default report disclosed private names or values: both",
+        "unsupported owner inspected": "Unsupported repeat owner was inspected: two-blocks",
+        "invalid field marked certain": "Unexecuted field was declared invalid or resolved: empty-invalid",
+        "reuse claimed": "Reuse or repeat coverage changed: both"
+      },
+      "controlMethod": "Parsed report, source positions and output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, broader repeat contents, identity-bound reusable plans, enforced loss policies and roadmap #138 remain open."
+}

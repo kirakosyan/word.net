@@ -1,0 +1,8 @@
+  Determining projects to restore...
+  Restored /workspace/wordnet-138-baseline-combinations/tests/wordnet.Conversion.Tests/wordnet.Conversion.Tests.csproj (in 391 ms).
+  Restored /workspace/wordnet-138-baseline-combinations/tools/wordnet.Qualification/wordnet.Qualification.csproj (in 7 ms).
+  Restored /workspace/wordnet-138-baseline-combinations/tools/wordnet.ManagedExport.Probe/wordnet.ManagedExport.Probe.csproj (in 37 ms).
+  Restored /workspace/wordnet-138-baseline-combinations/src/wordnet.Ocr/wordnet.Ocr.csproj (in 56 ms).
+  Restored /workspace/wordnet-138-baseline-combinations/examples/WordNet.TemplateLint/WordNet.TemplateLint.csproj (in 3 ms).
+  Restored /workspace/wordnet-138-baseline-combinations/examples/WordNet.Automation/WordNet.Automation.csproj (in 4 ms).
+  3 of 9 projects are up-to-date for restore.

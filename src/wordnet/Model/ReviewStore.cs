@@ -31,6 +31,24 @@ internal sealed class ReviewStore
             if (block is ParagraphBlock paragraph) yield return paragraph;
             else foreach (ParagraphBlock child in SupportedParagraphs(((TableBlock)block).Rows.SelectMany(r => r).SelectMany(c => c.Blocks))) yield return child;
     }
+    internal static HashSet<ParagraphBlock> ParagraphFormatOwners(DocumentModel model)
+    {
+        var result = new HashSet<ParagraphBlock>();
+        foreach (DocumentBlock block in model.Blocks)
+        {
+            if (block is ParagraphBlock paragraph) result.Add(paragraph);
+            else if (block is TableBlock table && table.Control == null && table.NestedControl == null && !table.TypedControlId.HasValue
+                && table.RowControls.Count == 0 && table.RowRevisions.Count == 0 && table.Rows.All(row => row.All(cell => cell.ColumnSpan == 1
+                    && cell.Merge == VerticalMerge.None && cell.Blocks.All(child => child is ParagraphBlock))))
+                foreach (ParagraphBlock child in table.Rows.SelectMany(row => row).SelectMany(cell => cell.Blocks).OfType<ParagraphBlock>()) result.Add(child);
+        }
+        return result;
+    }
+    internal static bool OrdinaryParagraphFormat(ParagraphBlock paragraph) => paragraph.StructuralRevision == null && paragraph.Control == null
+        && paragraph.NestedControl == null && !paragraph.TypedControlId.HasValue && paragraph.List == null && paragraph.HeadingLevel == 0
+        && !paragraph.IsCodeBlock && !paragraph.RightToLeft.HasValue && paragraph.Layout.Tabs.Count == 0
+        && paragraph.Runs.All(run => run.FieldInstruction == null && run.Control == null && !run.TypedControlId.HasValue && run.Bookmark == null
+            && run.Box == null && run.Note == null && run.Image == null && run.Link == null && run.Object == null && run.Comment == null);
     internal void Validate(DocumentModel model, ConversionContext context)
     {
         if (Revisions.Count + Comments.Count > 10000) throw new InvalidDataException("Review.ItemLimit: Too many review records.");
@@ -45,6 +63,7 @@ internal sealed class ReviewStore
         var revisionOwners = new Dictionary<string, ParagraphBlock>(StringComparer.Ordinal);
         var comments = new Dictionary<string, (ParagraphBlock Paragraph, int Offset, bool Ended, bool Referenced)>(StringComparer.Ordinal);
         var body = new HashSet<ParagraphBlock>(SupportedParagraphs(model.Blocks));
+        HashSet<ParagraphBlock>? paragraphFormatOwners = null;
         var storyParagraphs = new HashSet<ParagraphBlock>();
         foreach (List<DocumentBlock> story in model.Blocks.Select(b => b.Section).Concat(new[] { model.FinalSection }).Where(s => s != null).Distinct()
             .SelectMany(s => s!.Stories.Values).Distinct())
@@ -110,6 +129,15 @@ internal sealed class ReviewStore
         foreach (ParagraphBlock paragraph in model.Paragraphs)
         {
             context.CheckCancellation(); int offset = 0; var closed = new HashSet<string>(StringComparer.Ordinal); string? current = null;
+            if (paragraph.ParagraphFormatRevision is string paragraphFormat)
+            {
+                paragraphFormatOwners ??= ParagraphFormatOwners(model);
+                if (!paragraphFormatOwners.Contains(paragraph) || !OrdinaryParagraphFormat(paragraph) || paragraph.PreviousParagraphFormat == null
+                    || !Revisions.TryGetValue(paragraphFormat, out ReviewRecord? format) || format.Structure != "paragraph-format" || !revisions.Add(paragraphFormat))
+                    throw new NotSupportedException("Review.ParagraphFormat: Invalid or unsupported paragraph-format owner.");
+                text += paragraph.Text.Length;
+            }
+            else if (paragraph.PreviousParagraphFormat != null) throw new InvalidDataException("Review.ParagraphFormat: Previous formatting has no revision owner.");
             foreach (TextRun run in paragraph.Runs)
             {
                 if (run.FormatRevision != null)

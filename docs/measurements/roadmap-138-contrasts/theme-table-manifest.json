@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Independently authored OOXML contrasts, MIT; no document-library serializer or customer content.",
+  "generator": "eng/generate-roadmap-138-controls.py",
+  "generatorSha256": "8ff7097193ee1dda63b21ea1a96f0f89e16f2379527c275a1cb2c10d54ab0661",
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+      "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+      "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+      "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+      "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+      "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+      "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+      "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+      "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    }
+  ],
+  "documents": [
+    {
+      "id": "theme-font",
+      "category": "report",
+      "path": "theme-font.docx",
+      "sha256": "d6e3edc6b128113fc5067fededdb3e0df52822ff679e910875369b3b3c6f0384",
+      "requiredText": [
+        "Independent theme font control."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Theme major Latin family is Liberation Mono; compare the explicit-family control.",
+      "expectationBasis": "authored-source-expectations; warnings and reference verdicts are retained"
+    },
+    {
+      "id": "explicit-font",
+      "category": "report",
+      "path": "explicit-font.docx",
+      "sha256": "b9583bab02f0e5e46cea10e1b228e630f758d936d83fe4e132cd7310853b362a",
+      "requiredText": [
+        "Independent theme font control."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "The same font family is explicitly selected without a theme reference.",
+      "expectationBasis": "authored-source-expectations; warnings and reference verdicts are retained"
+    },
+    {
+      "id": "theme-color",
+      "category": "report",
+      "path": "theme-color.docx",
+      "sha256": "8a541ab6fb72f6cb773e243a6d28fb00f655e1b0f6085c7913b3cff76c65b22c",
+      "requiredText": [
+        "Independent theme color control."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Theme accent1 is 2266CC while the stored RGB fallback is FF0000.",
+      "expectationBasis": "authored-source-expectations; warnings and reference verdicts are retained"
+    },
+    {
+      "id": "explicit-color",
+      "category": "report",
+      "path": "explicit-color.docx",
+      "sha256": "70e8f00af71e534e9d673e456b9c56b889af61eac794a1d10c7a4c304239a6be",
+      "requiredText": [
+        "Independent theme color control."
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Explicit RGB matches the theme accent without a theme reference.",
+      "expectationBasis": "authored-source-expectations; warnings and reference verdicts are retained"
+    },
+    {
+      "id": "table-style",
+      "category": "report",
+      "path": "table-style.docx",
+      "sha256": "64cb41860cf9f313daa5ba6517704c2aeb581fff9ac1a572935e34f3bd58365a",
+      "requiredText": [
+        "Header A",
+        "Header B",
+        "Value A",
+        "Value B"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "First-row conditional style compared with direct first-row cell shading.",
+      "expectationBasis": "authored-source-expectations; warnings and reference verdicts are retained"
+    },
+    {
+      "id": "table-direct",
+      "category": "report",
+      "path": "table-direct.docx",
+      "sha256": "e1b3931f348aacc8613adfae744d846f8a8b3e9169f63d1b25e4aa61c7f85d16",
+      "requiredText": [
+        "Header A",
+        "Header B",
+        "Value A",
+        "Value B"
+      ],
+      "knownLosses": [],
+      "expectedPages": 1,
+      "references": [],
+      "hypothesis": "Explicit cell shading matches the styled-table intent.",
+      "expectationBasis": "authored-source-expectations; warnings and reference verdicts are retained"
+    }
+  ]
+}

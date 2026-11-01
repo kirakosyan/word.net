@@ -1,0 +1,23 @@
+{
+  "workflowRun": 41341245310,
+  "guestArtifactId": 13097734641,
+  "packageArtifactSha256": "335a2a17ea47549ed73c2b44e23e63ea13584065655e61f890986c0b4067efbd",
+  "packages": {
+    "wordnet": {
+      "archiveSha256": "5f9a324bb2f887a1c626e605246c273e803f445f53a22b8b4b8451f9a87bc8ba",
+      "loadedAssemblySha256": "962e9e8ad797791444bdc84928faf70b6f2bb85099b597cd665019e7a1a8cfe1",
+      "assetPath": "lib/net472/wordnet.dll"
+    },
+    "wordnet.Fonts": {
+      "archiveSha256": "1003ae23aa03eae48346024c27e941833b63df7aaf971e81d872897931ddbb57",
+      "loadedAssemblySha256": "bcc86b2feff7d36d9fe5da73d346e077368ffcb3b3a709536517a071689d35b2",
+      "assetPath": "lib/netstandard2.0/wordnet.Fonts.dll"
+    },
+    "wordnet.Ocr": {
+      "archiveSha256": "0c14d464dfdb42c6dfdb25d1c5adcccc94062414ea7fd3d040bcbe6eea0d47a0",
+      "loadedAssemblySha256": "bede81df55940bcfa590ec29bffd5ffff2da8d1f0118de9d087ea427ab7fc2c0",
+      "assetPath": "lib/net472/wordnet.Ocr.dll"
+    }
+  },
+  "qualification": "The actual Framework guest package archives and loaded assemblies match the separately retained workflow package artifact."
+}

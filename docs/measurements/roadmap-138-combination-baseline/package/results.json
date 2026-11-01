@@ -1,0 +1,2436 @@
+{
+  "schemaVersion": 1,
+  "manifestSha256": "d5f0a71b8f0c15e95660aed14f8fbeded590707577ae5ff19f84a184ae86b94f",
+  "sourceRevision": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+  "sourceDirty": false,
+  "python": "3.12.14",
+  "pillow": "12.3.0",
+  "renderer": "pdftoppm version 24.02.0\nCopyright 2005-2024 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC",
+  "rendererSha256": "6c06cc7eb7677a72af0d7dec5667d8621c1cfd588b447d328c04637e9370d82b",
+  "tolerances": {
+    "glyphPoints": 0.25,
+    "significantPixelChannelSum": 96,
+    "changedPixelFraction": 0.002,
+    "meanChannelError": 0.25
+  },
+  "fonts": [
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet/Resources/Fonts/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "version": "Noto Sans 2.008; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Bold.ttf",
+      "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-BoldItalic.ttf",
+      "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Italic.ttf",
+      "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationMono-Regular.ttf",
+      "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Bold.ttf",
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-BoldItalic.ttf",
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Italic.ttf",
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSans-Regular.ttf",
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Bold.ttf",
+      "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-BoldItalic.ttf",
+      "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Italic.ttf",
+      "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    },
+    {
+      "path": "src/wordnet.Fonts/Resources/LiberationSerif-Regular.ttf",
+      "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+      "version": "Liberation 2.1.5; SIL OFL 1.1"
+    }
+  ],
+  "results": [
+    {
+      "documentId": "explicit-direct",
+      "category": "report",
+      "engine": "wordnet",
+      "inputSha256": "0f3090600c90364d3868415a1f86ec9344a88e392e0d60b5aa6acfe80d0bd97a",
+      "knownLosses": [],
+      "workerWallMilliseconds": 1130.5519220004498,
+      "measurement": {
+        "schemaVersion": 1,
+        "engine": "wordnet",
+        "artifactMode": "licensed",
+        "inputSha256": "0f3090600c90364d3868415a1f86ec9344a88e392e0d60b5aa6acfe80d0bd97a",
+        "outputSha256": "ccd481a5189b3176d0b3757a624e4a986b644f27811a2c6398692ea353cae847",
+        "editableSha256": "563090e22f6f62b28c1a80bd8ab81591b580184aad75ff6bd61b29cf7c07cafc",
+        "editableBytes": 7168,
+        "runtime": ".NET 10.0.12",
+        "architecture": "X64",
+        "os": "Debian GNU/Linux 13 (trixie)",
+        "machine": "dbb5679a213a",
+        "logicalProcessors": 4,
+        "processor": "model name\t: AMD EPYC 9V74 80-Core Processor",
+        "affinity": "1F",
+        "assemblies": [
+          {
+            "name": "BenchmarkDotNet",
+            "version": "0.15.8.0",
+            "sha256": "d460626b2e1a9fa2f786e09e6c85cdf4d7b73deca636450a0e23892c8ce6192b"
+          },
+          {
+            "name": "Microsoft.CSharp",
+            "version": "10.0.0.0",
+            "sha256": "97a53bfcb115cc6d1e21113834d3aa19367bc65b38e5e5035f101348693afcf5"
+          },
+          {
+            "name": "Microsoft.Win32.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "5cbfa551ec9f3fe950c5cd56f7e4fe5ece9059b069e5fc8a8c8a4f0f496107ef"
+          },
+          {
+            "name": "OpenMcdf",
+            "version": "3.3.0.0",
+            "sha256": "c55ecaa14a52695d43f1d523309499bf13fb85f558c32b461bb8c36100d0219b"
+          },
+          {
+            "name": "System.Collections",
+            "version": "10.0.0.0",
+            "sha256": "ff0b05dd9578d11089c52e0ab8a35765e9be49dce9bc849b4e0574815f3fac8e"
+          },
+          {
+            "name": "System.Collections.Concurrent",
+            "version": "10.0.0.0",
+            "sha256": "d5b3117fe23618b0b366724c63a9faf558b5f7d1d4e5f8c933f920c4038ed31e"
+          },
+          {
+            "name": "System.Collections.Immutable",
+            "version": "10.0.0.0",
+            "sha256": "8c8ddc0f0de5b22cd4b11ae86b3b5791754d61868f76c64b05e5a3cfdafcd3ce"
+          },
+          {
+            "name": "System.ComponentModel.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "9e5973eaa2671813a50c40e7d99e10e6f4f5bd927ee591d506dc40729c0b2d62"
+          },
+          {
+            "name": "System.Console",
+            "version": "10.0.0.0",
+            "sha256": "30c185a09e4fd99069af832f40dc087bd3569f5497af8baf921aa4dbbba56984"
+          },
+          {
+            "name": "System.Diagnostics.Process",
+            "version": "10.0.0.0",
+            "sha256": "973c1bc1159c04ac215517c95d24e2790ffea186e384cb3ed3d5e0d22979f1b4"
+          },
+          {
+            "name": "System.IO.Compression",
+            "version": "10.0.0.0",
+            "sha256": "00fc0309e170f7fa5b14e6a9be4ffb3dc1d1c2c492bdc7fcf4236e998013c5e4"
+          },
+          {
+            "name": "System.Linq",
+            "version": "10.0.0.0",
+            "sha256": "a0c910f6b9eb2468e9a8dfa07dd59c7fd609b3098e57d96fb8c74e89fe1aeee0"
+          },
+          {
+            "name": "System.Linq.Expressions",
+            "version": "10.0.0.0",
+            "sha256": "d8345995a8f5af5cb11cf39aa318ac98e21ce258d54d2acb6b4bda73693b3c1e"
+          },
+          {
+            "name": "System.Memory",
+            "version": "10.0.0.0",
+            "sha256": "c1ec113101642ec2e3b2421115d14de02897049eac7307490c5c9ab70af0f36a"
+          },
+          {
+            "name": "System.Numerics.Vectors",
+            "version": "10.0.0.0",
+            "sha256": "a530b7505c54e6bd48d8ba6f4d4828ab9821e6748e4728ee09b620e3518a912a"
+          },
+          {
+            "name": "System.Private.CoreLib",
+            "version": "10.0.0.0",
+            "sha256": "26304a2985357b9ee277f273667fcd9c892edae3ee6eba76f739033e95eb39b3"
+          },
+          {
+            "name": "System.Private.Uri",
+            "version": "10.0.0.0",
+            "sha256": "dce56b911dec93cfaeaa759fb069714d397663ead3a8cac855f66bd72098aff1"
+          },
+          {
+            "name": "System.Private.Xml",
+            "version": "10.0.0.0",
+            "sha256": "61702d155227bfd6317170cce55dcdbfea69ba129e9b173ee2cadd1f5b5cde74"
+          },
+          {
+            "name": "System.Private.Xml.Linq",
+            "version": "10.0.0.0",
+            "sha256": "dc9fe6577572f71bad36520652fa7a185f36040dc8b4c3f471711c6a76cbc1a2"
+          },
+          {
+            "name": "System.Runtime",
+            "version": "10.0.0.0",
+            "sha256": "417e7882e2a2689aafbf86bd6256db906357afa775f58e3c86a94a9f119cc3ef"
+          },
+          {
+            "name": "System.Runtime.InteropServices",
+            "version": "10.0.0.0",
+            "sha256": "82286a808b40f176a758a1ad0faeadcf170d92a90043aca046160c90e5d54c74"
+          },
+          {
+            "name": "System.Runtime.Loader",
+            "version": "10.0.0.0",
+            "sha256": "20bb43ccadc7d94801a150a8d5caaf74584f5c4709a02eb0c618a426b04e0f6c"
+          },
+          {
+            "name": "System.Security.Cryptography",
+            "version": "10.0.0.0",
+            "sha256": "49c7a0f1657dc1da331fbe5dcca5fd13700c692514528380eaff4cf15ddc64a1"
+          },
+          {
+            "name": "System.Text.Encoding.CodePages",
+            "version": "10.0.0.0",
+            "sha256": "37d1f9d9bbd47222623e9671dec54093c21b8da3f9307f88fd0c05b0e81ad75a"
+          },
+          {
+            "name": "System.Text.Encoding.Extensions",
+            "version": "10.0.0.0",
+            "sha256": "695cdbbd45618531ba86378263bd9494afa05c61609a2892b2d9f89fb17a5d32"
+          },
+          {
+            "name": "System.Text.RegularExpressions",
+            "version": "10.0.0.0",
+            "sha256": "258c27c22aeace5c0f6ba236c848bde98f891f1ef403f05da0f3f7dfdf9fa4d4"
+          },
+          {
+            "name": "System.Threading",
+            "version": "10.0.0.0",
+            "sha256": "477cd5447cef676bf036307029196287ca58b6ee95dc64e3c759926cdd6f59c3"
+          },
+          {
+            "name": "System.Threading.Thread",
+            "version": "10.0.0.0",
+            "sha256": "62ce305385b7ddf6ad3925780435785c2a05d666d4ad325fa4aaf411a091bf2b"
+          },
+          {
+            "name": "System.Xml.ReaderWriter",
+            "version": "10.0.0.0",
+            "sha256": "6e296482fd53d1e298162b05ae04c9d98b1f4bb39c825790e0784647a5a49ee0"
+          },
+          {
+            "name": "System.Xml.XDocument",
+            "version": "10.0.0.0",
+            "sha256": "4cfeadbc2d6938ce25080b52558003d92d81242e0e9866495d8bd49a12968b71"
+          },
+          {
+            "name": "UglyToad.PdfPig",
+            "version": "0.1.16.0",
+            "sha256": "c47abebdffebb6e48a1d40f4c22ce5f673c57558ecdb3187841b728112dea279"
+          },
+          {
+            "name": "UglyToad.PdfPig.Core",
+            "version": "0.1.16.0",
+            "sha256": "cbdd1809ee0f4ba617900845d182e5e67183377fe5848a8d9d1222b3c395116b"
+          },
+          {
+            "name": "UglyToad.PdfPig.Fonts",
+            "version": "0.1.16.0",
+            "sha256": "30521d2aa02252c0097cd3a9b12832368d5c925e1ccb4bc3a5735671bd3d2e1e"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokenization",
+            "version": "0.1.16.0",
+            "sha256": "539d0ca2c7981b9eaf8541e17434911042f7cc73d3abc24962994bb99472ed3c"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokens",
+            "version": "0.1.16.0",
+            "sha256": "d6fbd73a520bb961ffcc98030ab686f43c88b03f5b059ba11e3781e0f091433d"
+          },
+          {
+            "name": "wordnet",
+            "version": "1.0.0.0",
+            "sha256": "4c4c1d2c83c4466bce2e0b4da5502b3f513b9d78d4babd7774eade136a2e690c"
+          },
+          {
+            "name": "wordnet.Benchmarks",
+            "version": "1.0.0.0",
+            "sha256": "adf2edb0169f015dbf4f3115ae478287ddc6886da610615e56f1d7975ed2fc4a"
+          }
+        ],
+        "fonts": [
+          {
+            "name": "LiberationMono-Bold.ttf",
+            "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb"
+          },
+          {
+            "name": "LiberationMono-BoldItalic.ttf",
+            "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130"
+          },
+          {
+            "name": "LiberationMono-Italic.ttf",
+            "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1"
+          },
+          {
+            "name": "LiberationMono-Regular.ttf",
+            "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1"
+          },
+          {
+            "name": "LiberationSans-Bold.ttf",
+            "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173"
+          },
+          {
+            "name": "LiberationSans-BoldItalic.ttf",
+            "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee"
+          },
+          {
+            "name": "LiberationSans-Italic.ttf",
+            "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0"
+          },
+          {
+            "name": "LiberationSans-Regular.ttf",
+            "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8"
+          },
+          {
+            "name": "LiberationSerif-Bold.ttf",
+            "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce"
+          },
+          {
+            "name": "LiberationSerif-BoldItalic.ttf",
+            "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7"
+          },
+          {
+            "name": "LiberationSerif-Italic.ttf",
+            "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e"
+          },
+          {
+            "name": "LiberationSerif-Regular.ttf",
+            "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74"
+          },
+          {
+            "name": "NotoSans-Bold.ttf",
+            "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a"
+          },
+          {
+            "name": "NotoSans-BoldItalic.ttf",
+            "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466"
+          },
+          {
+            "name": "NotoSans-Italic.ttf",
+            "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b"
+          },
+          {
+            "name": "NotoSans-Regular.ttf",
+            "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5"
+          }
+        ],
+        "samples": [
+          {
+            "kind": "cold-conversion",
+            "milliseconds": 319.7611,
+            "allocatedBytes": 14072048,
+            "rssBytes": 89399296,
+            "processPeakRssBytes": 89399296,
+            "outputBytes": 8918
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 72.7148,
+            "allocatedBytes": 13840144,
+            "rssBytes": 94593024,
+            "processPeakRssBytes": 94593024,
+            "outputBytes": 8918
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 82.0812,
+            "allocatedBytes": 12661088,
+            "rssBytes": 96002048,
+            "processPeakRssBytes": 96002048,
+            "outputBytes": 8918
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 40.132,
+            "allocatedBytes": 12148392,
+            "rssBytes": 91648000,
+            "processPeakRssBytes": 95551488,
+            "outputBytes": 8918
+          }
+        ],
+        "snapshot": {
+          "pageCount": 1,
+          "pages": [
+            {
+              "width": 595.3,
+              "height": 841.9,
+              "text": "Header AHeader BValue AValue B",
+              "glyphs": [
+                {
+                  "text": "H",
+                  "x": 72,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 78.6011,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "a",
+                  "x": 85.2022,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "d",
+                  "x": 91.80330000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 98.40440000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "r",
+                  "x": 105.00550000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": " ",
+                  "x": 111.60660000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "A",
+                  "x": 118.207519531,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "H",
+                  "x": 197,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 203.6011,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "a",
+                  "x": 210.2022,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "d",
+                  "x": 216.8033,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 223.4044,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "r",
+                  "x": 230.0055,
+                  "y": 760.742285156
+                },
+                {
+                  "text": " ",
+                  "x": 236.60660000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "B",
+                  "x": 243.207519531,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "V",
+                  "x": 72,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "a",
+                  "x": 78.6011,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "l",
+                  "x": 85.2022,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "u",
+                  "x": 91.80330000000001,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "e",
+                  "x": 98.40440000000001,
+                  "y": 748.281347656
+                },
+                {
+                  "text": " ",
+                  "x": 105.00550000000001,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "A",
+                  "x": 111.606445312,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "V",
+                  "x": 197,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "a",
+                  "x": 203.6011,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "l",
+                  "x": 210.2022,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "u",
+                  "x": 216.8033,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "e",
+                  "x": 223.4044,
+                  "y": 748.281347656
+                },
+                {
+                  "text": " ",
+                  "x": 230.0055,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "B",
+                  "x": 236.606445312,
+                  "y": 748.281347656
+                }
+              ]
+            }
+          ]
+        },
+        "diagnostics": []
+      },
+      "status": "measured",
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": true,
+        "missing": [],
+        "unexpected": []
+      },
+      "fidelityStatus": "no-detected-losses",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "rasters": [
+        {
+          "path": "explicit-direct-wordnet-1.png",
+          "sha256": "d025c58d24fe425e49b15b52a56575539821babc419f7176ca2d077e723d88b1"
+        }
+      ],
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 0.09999999999999432,
+          "glyphPlacementPasses": true,
+          "visual": [
+            {
+              "passed": true,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0010968281703156576,
+              "meanChannelError": 0.15540417781625773
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": true
+        }
+      ]
+    },
+    {
+      "documentId": "explicit-styled",
+      "category": "report",
+      "engine": "wordnet",
+      "inputSha256": "0f15368f9b006427f7cefde4e96818eb7fdf22f839b48c471bc106c67aa764b9",
+      "knownLosses": [],
+      "workerWallMilliseconds": 1044.2570929990325,
+      "measurement": {
+        "schemaVersion": 1,
+        "engine": "wordnet",
+        "artifactMode": "licensed",
+        "inputSha256": "0f15368f9b006427f7cefde4e96818eb7fdf22f839b48c471bc106c67aa764b9",
+        "outputSha256": "f5be0faa6ae073241c2f1f936c1a430fd6d01b68a01e7005f13de755c2482275",
+        "editableSha256": "c28c88877c9220b309522a09cdb6d3dcea913f64ae5c4e659102a88613c0d80f",
+        "editableBytes": 7168,
+        "runtime": ".NET 10.0.12",
+        "architecture": "X64",
+        "os": "Debian GNU/Linux 13 (trixie)",
+        "machine": "dbb5679a213a",
+        "logicalProcessors": 4,
+        "processor": "model name\t: AMD EPYC 9V74 80-Core Processor",
+        "affinity": "1F",
+        "assemblies": [
+          {
+            "name": "BenchmarkDotNet",
+            "version": "0.15.8.0",
+            "sha256": "d460626b2e1a9fa2f786e09e6c85cdf4d7b73deca636450a0e23892c8ce6192b"
+          },
+          {
+            "name": "Microsoft.CSharp",
+            "version": "10.0.0.0",
+            "sha256": "97a53bfcb115cc6d1e21113834d3aa19367bc65b38e5e5035f101348693afcf5"
+          },
+          {
+            "name": "Microsoft.Win32.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "5cbfa551ec9f3fe950c5cd56f7e4fe5ece9059b069e5fc8a8c8a4f0f496107ef"
+          },
+          {
+            "name": "OpenMcdf",
+            "version": "3.3.0.0",
+            "sha256": "c55ecaa14a52695d43f1d523309499bf13fb85f558c32b461bb8c36100d0219b"
+          },
+          {
+            "name": "System.Collections",
+            "version": "10.0.0.0",
+            "sha256": "ff0b05dd9578d11089c52e0ab8a35765e9be49dce9bc849b4e0574815f3fac8e"
+          },
+          {
+            "name": "System.Collections.Concurrent",
+            "version": "10.0.0.0",
+            "sha256": "d5b3117fe23618b0b366724c63a9faf558b5f7d1d4e5f8c933f920c4038ed31e"
+          },
+          {
+            "name": "System.Collections.Immutable",
+            "version": "10.0.0.0",
+            "sha256": "8c8ddc0f0de5b22cd4b11ae86b3b5791754d61868f76c64b05e5a3cfdafcd3ce"
+          },
+          {
+            "name": "System.ComponentModel.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "9e5973eaa2671813a50c40e7d99e10e6f4f5bd927ee591d506dc40729c0b2d62"
+          },
+          {
+            "name": "System.Console",
+            "version": "10.0.0.0",
+            "sha256": "30c185a09e4fd99069af832f40dc087bd3569f5497af8baf921aa4dbbba56984"
+          },
+          {
+            "name": "System.Diagnostics.Process",
+            "version": "10.0.0.0",
+            "sha256": "973c1bc1159c04ac215517c95d24e2790ffea186e384cb3ed3d5e0d22979f1b4"
+          },
+          {
+            "name": "System.IO.Compression",
+            "version": "10.0.0.0",
+            "sha256": "00fc0309e170f7fa5b14e6a9be4ffb3dc1d1c2c492bdc7fcf4236e998013c5e4"
+          },
+          {
+            "name": "System.Linq",
+            "version": "10.0.0.0",
+            "sha256": "a0c910f6b9eb2468e9a8dfa07dd59c7fd609b3098e57d96fb8c74e89fe1aeee0"
+          },
+          {
+            "name": "System.Linq.Expressions",
+            "version": "10.0.0.0",
+            "sha256": "d8345995a8f5af5cb11cf39aa318ac98e21ce258d54d2acb6b4bda73693b3c1e"
+          },
+          {
+            "name": "System.Memory",
+            "version": "10.0.0.0",
+            "sha256": "c1ec113101642ec2e3b2421115d14de02897049eac7307490c5c9ab70af0f36a"
+          },
+          {
+            "name": "System.Numerics.Vectors",
+            "version": "10.0.0.0",
+            "sha256": "a530b7505c54e6bd48d8ba6f4d4828ab9821e6748e4728ee09b620e3518a912a"
+          },
+          {
+            "name": "System.Private.CoreLib",
+            "version": "10.0.0.0",
+            "sha256": "26304a2985357b9ee277f273667fcd9c892edae3ee6eba76f739033e95eb39b3"
+          },
+          {
+            "name": "System.Private.Uri",
+            "version": "10.0.0.0",
+            "sha256": "dce56b911dec93cfaeaa759fb069714d397663ead3a8cac855f66bd72098aff1"
+          },
+          {
+            "name": "System.Private.Xml",
+            "version": "10.0.0.0",
+            "sha256": "61702d155227bfd6317170cce55dcdbfea69ba129e9b173ee2cadd1f5b5cde74"
+          },
+          {
+            "name": "System.Private.Xml.Linq",
+            "version": "10.0.0.0",
+            "sha256": "dc9fe6577572f71bad36520652fa7a185f36040dc8b4c3f471711c6a76cbc1a2"
+          },
+          {
+            "name": "System.Runtime",
+            "version": "10.0.0.0",
+            "sha256": "417e7882e2a2689aafbf86bd6256db906357afa775f58e3c86a94a9f119cc3ef"
+          },
+          {
+            "name": "System.Runtime.InteropServices",
+            "version": "10.0.0.0",
+            "sha256": "82286a808b40f176a758a1ad0faeadcf170d92a90043aca046160c90e5d54c74"
+          },
+          {
+            "name": "System.Runtime.Loader",
+            "version": "10.0.0.0",
+            "sha256": "20bb43ccadc7d94801a150a8d5caaf74584f5c4709a02eb0c618a426b04e0f6c"
+          },
+          {
+            "name": "System.Security.Cryptography",
+            "version": "10.0.0.0",
+            "sha256": "49c7a0f1657dc1da331fbe5dcca5fd13700c692514528380eaff4cf15ddc64a1"
+          },
+          {
+            "name": "System.Text.Encoding.CodePages",
+            "version": "10.0.0.0",
+            "sha256": "37d1f9d9bbd47222623e9671dec54093c21b8da3f9307f88fd0c05b0e81ad75a"
+          },
+          {
+            "name": "System.Text.Encoding.Extensions",
+            "version": "10.0.0.0",
+            "sha256": "695cdbbd45618531ba86378263bd9494afa05c61609a2892b2d9f89fb17a5d32"
+          },
+          {
+            "name": "System.Text.RegularExpressions",
+            "version": "10.0.0.0",
+            "sha256": "258c27c22aeace5c0f6ba236c848bde98f891f1ef403f05da0f3f7dfdf9fa4d4"
+          },
+          {
+            "name": "System.Threading",
+            "version": "10.0.0.0",
+            "sha256": "477cd5447cef676bf036307029196287ca58b6ee95dc64e3c759926cdd6f59c3"
+          },
+          {
+            "name": "System.Threading.Thread",
+            "version": "10.0.0.0",
+            "sha256": "62ce305385b7ddf6ad3925780435785c2a05d666d4ad325fa4aaf411a091bf2b"
+          },
+          {
+            "name": "System.Xml.ReaderWriter",
+            "version": "10.0.0.0",
+            "sha256": "6e296482fd53d1e298162b05ae04c9d98b1f4bb39c825790e0784647a5a49ee0"
+          },
+          {
+            "name": "System.Xml.XDocument",
+            "version": "10.0.0.0",
+            "sha256": "4cfeadbc2d6938ce25080b52558003d92d81242e0e9866495d8bd49a12968b71"
+          },
+          {
+            "name": "UglyToad.PdfPig",
+            "version": "0.1.16.0",
+            "sha256": "c47abebdffebb6e48a1d40f4c22ce5f673c57558ecdb3187841b728112dea279"
+          },
+          {
+            "name": "UglyToad.PdfPig.Core",
+            "version": "0.1.16.0",
+            "sha256": "cbdd1809ee0f4ba617900845d182e5e67183377fe5848a8d9d1222b3c395116b"
+          },
+          {
+            "name": "UglyToad.PdfPig.Fonts",
+            "version": "0.1.16.0",
+            "sha256": "30521d2aa02252c0097cd3a9b12832368d5c925e1ccb4bc3a5735671bd3d2e1e"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokenization",
+            "version": "0.1.16.0",
+            "sha256": "539d0ca2c7981b9eaf8541e17434911042f7cc73d3abc24962994bb99472ed3c"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokens",
+            "version": "0.1.16.0",
+            "sha256": "d6fbd73a520bb961ffcc98030ab686f43c88b03f5b059ba11e3781e0f091433d"
+          },
+          {
+            "name": "wordnet",
+            "version": "1.0.0.0",
+            "sha256": "4c4c1d2c83c4466bce2e0b4da5502b3f513b9d78d4babd7774eade136a2e690c"
+          },
+          {
+            "name": "wordnet.Benchmarks",
+            "version": "1.0.0.0",
+            "sha256": "adf2edb0169f015dbf4f3115ae478287ddc6886da610615e56f1d7975ed2fc4a"
+          }
+        ],
+        "fonts": [
+          {
+            "name": "LiberationMono-Bold.ttf",
+            "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb"
+          },
+          {
+            "name": "LiberationMono-BoldItalic.ttf",
+            "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130"
+          },
+          {
+            "name": "LiberationMono-Italic.ttf",
+            "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1"
+          },
+          {
+            "name": "LiberationMono-Regular.ttf",
+            "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1"
+          },
+          {
+            "name": "LiberationSans-Bold.ttf",
+            "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173"
+          },
+          {
+            "name": "LiberationSans-BoldItalic.ttf",
+            "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee"
+          },
+          {
+            "name": "LiberationSans-Italic.ttf",
+            "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0"
+          },
+          {
+            "name": "LiberationSans-Regular.ttf",
+            "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8"
+          },
+          {
+            "name": "LiberationSerif-Bold.ttf",
+            "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce"
+          },
+          {
+            "name": "LiberationSerif-BoldItalic.ttf",
+            "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7"
+          },
+          {
+            "name": "LiberationSerif-Italic.ttf",
+            "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e"
+          },
+          {
+            "name": "LiberationSerif-Regular.ttf",
+            "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74"
+          },
+          {
+            "name": "NotoSans-Bold.ttf",
+            "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a"
+          },
+          {
+            "name": "NotoSans-BoldItalic.ttf",
+            "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466"
+          },
+          {
+            "name": "NotoSans-Italic.ttf",
+            "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b"
+          },
+          {
+            "name": "NotoSans-Regular.ttf",
+            "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5"
+          }
+        ],
+        "samples": [
+          {
+            "kind": "cold-conversion",
+            "milliseconds": 335.7667,
+            "allocatedBytes": 14175632,
+            "rssBytes": 86081536,
+            "processPeakRssBytes": 86081536,
+            "outputBytes": 8864
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 62.7163,
+            "allocatedBytes": 13939960,
+            "rssBytes": 88731648,
+            "processPeakRssBytes": 88731648,
+            "outputBytes": 8864
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 73.9399,
+            "allocatedBytes": 12763032,
+            "rssBytes": 93106176,
+            "processPeakRssBytes": 93106176,
+            "outputBytes": 8864
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 60.2445,
+            "allocatedBytes": 12249000,
+            "rssBytes": 93888512,
+            "processPeakRssBytes": 93888512,
+            "outputBytes": 8864
+          }
+        ],
+        "snapshot": {
+          "pageCount": 1,
+          "pages": [
+            {
+              "width": 595.3,
+              "height": 841.9,
+              "text": "Header AHeader BValue AValue B",
+              "glyphs": [
+                {
+                  "text": "H",
+                  "x": 72,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 78.6011,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "a",
+                  "x": 85.2022,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "d",
+                  "x": 91.80330000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 98.40440000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "r",
+                  "x": 105.00550000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": " ",
+                  "x": 111.60660000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "A",
+                  "x": 118.207519531,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "H",
+                  "x": 197,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 203.6011,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "a",
+                  "x": 210.2022,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "d",
+                  "x": 216.8033,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "e",
+                  "x": 223.4044,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "r",
+                  "x": 230.0055,
+                  "y": 760.742285156
+                },
+                {
+                  "text": " ",
+                  "x": 236.60660000000001,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "B",
+                  "x": 243.207519531,
+                  "y": 760.742285156
+                },
+                {
+                  "text": "V",
+                  "x": 72,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "a",
+                  "x": 78.6011,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "l",
+                  "x": 85.2022,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "u",
+                  "x": 91.80330000000001,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "e",
+                  "x": 98.40440000000001,
+                  "y": 748.281347656
+                },
+                {
+                  "text": " ",
+                  "x": 105.00550000000001,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "A",
+                  "x": 111.606445312,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "V",
+                  "x": 197,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "a",
+                  "x": 203.6011,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "l",
+                  "x": 210.2022,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "u",
+                  "x": 216.8033,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "e",
+                  "x": 223.4044,
+                  "y": 748.281347656
+                },
+                {
+                  "text": " ",
+                  "x": 230.0055,
+                  "y": 748.281347656
+                },
+                {
+                  "text": "B",
+                  "x": 236.606445312,
+                  "y": 748.281347656
+                }
+              ]
+            }
+          ]
+        },
+        "diagnostics": [
+          {
+            "code": "Docx.TableFormatting",
+            "count": 1,
+            "severity": "Warning",
+            "occurrences": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]",
+                "phase": "Parse"
+              }
+            ]
+          }
+        ]
+      },
+      "status": "measured",
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": false,
+        "missing": [],
+        "unexpected": [
+          "Docx.TableFormatting"
+        ]
+      },
+      "fidelityStatus": "detected-losses",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "rasters": [
+        {
+          "path": "explicit-styled-wordnet-1.png",
+          "sha256": "29fc902f336fb969689c9f0e1b2ac2dd4921c20231d186bec8ea03a18485e85d"
+        }
+      ],
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 0.09999999999999432,
+          "glyphPlacementPasses": true,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.006505828441718947,
+              "meanChannelError": 0.897002825435348
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      ]
+    },
+    {
+      "documentId": "theme-direct",
+      "category": "report",
+      "engine": "wordnet",
+      "inputSha256": "1da7ef9e622ef2e79d1e658986effea263ab0b9985c3f69c87abf18271ecf026",
+      "knownLosses": [],
+      "workerWallMilliseconds": 1033.2286180018855,
+      "measurement": {
+        "schemaVersion": 1,
+        "engine": "wordnet",
+        "artifactMode": "licensed",
+        "inputSha256": "1da7ef9e622ef2e79d1e658986effea263ab0b9985c3f69c87abf18271ecf026",
+        "outputSha256": "31ebb0beae29534bad58da2951aa5a02369ef4209f63a18c1505b1ef559f1156",
+        "editableSha256": "d7ad94ba1fe92e5c3f2d8bf433b50c8a849ea4ae066d2e2c2dfcb8678eb0a765",
+        "editableBytes": 7168,
+        "runtime": ".NET 10.0.12",
+        "architecture": "X64",
+        "os": "Debian GNU/Linux 13 (trixie)",
+        "machine": "dbb5679a213a",
+        "logicalProcessors": 4,
+        "processor": "model name\t: AMD EPYC 9V74 80-Core Processor",
+        "affinity": "1F",
+        "assemblies": [
+          {
+            "name": "BenchmarkDotNet",
+            "version": "0.15.8.0",
+            "sha256": "d460626b2e1a9fa2f786e09e6c85cdf4d7b73deca636450a0e23892c8ce6192b"
+          },
+          {
+            "name": "Microsoft.CSharp",
+            "version": "10.0.0.0",
+            "sha256": "97a53bfcb115cc6d1e21113834d3aa19367bc65b38e5e5035f101348693afcf5"
+          },
+          {
+            "name": "Microsoft.Win32.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "5cbfa551ec9f3fe950c5cd56f7e4fe5ece9059b069e5fc8a8c8a4f0f496107ef"
+          },
+          {
+            "name": "OpenMcdf",
+            "version": "3.3.0.0",
+            "sha256": "c55ecaa14a52695d43f1d523309499bf13fb85f558c32b461bb8c36100d0219b"
+          },
+          {
+            "name": "System.Collections",
+            "version": "10.0.0.0",
+            "sha256": "ff0b05dd9578d11089c52e0ab8a35765e9be49dce9bc849b4e0574815f3fac8e"
+          },
+          {
+            "name": "System.Collections.Concurrent",
+            "version": "10.0.0.0",
+            "sha256": "d5b3117fe23618b0b366724c63a9faf558b5f7d1d4e5f8c933f920c4038ed31e"
+          },
+          {
+            "name": "System.Collections.Immutable",
+            "version": "10.0.0.0",
+            "sha256": "8c8ddc0f0de5b22cd4b11ae86b3b5791754d61868f76c64b05e5a3cfdafcd3ce"
+          },
+          {
+            "name": "System.ComponentModel.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "9e5973eaa2671813a50c40e7d99e10e6f4f5bd927ee591d506dc40729c0b2d62"
+          },
+          {
+            "name": "System.Console",
+            "version": "10.0.0.0",
+            "sha256": "30c185a09e4fd99069af832f40dc087bd3569f5497af8baf921aa4dbbba56984"
+          },
+          {
+            "name": "System.Diagnostics.Process",
+            "version": "10.0.0.0",
+            "sha256": "973c1bc1159c04ac215517c95d24e2790ffea186e384cb3ed3d5e0d22979f1b4"
+          },
+          {
+            "name": "System.IO.Compression",
+            "version": "10.0.0.0",
+            "sha256": "00fc0309e170f7fa5b14e6a9be4ffb3dc1d1c2c492bdc7fcf4236e998013c5e4"
+          },
+          {
+            "name": "System.Linq",
+            "version": "10.0.0.0",
+            "sha256": "a0c910f6b9eb2468e9a8dfa07dd59c7fd609b3098e57d96fb8c74e89fe1aeee0"
+          },
+          {
+            "name": "System.Linq.Expressions",
+            "version": "10.0.0.0",
+            "sha256": "d8345995a8f5af5cb11cf39aa318ac98e21ce258d54d2acb6b4bda73693b3c1e"
+          },
+          {
+            "name": "System.Memory",
+            "version": "10.0.0.0",
+            "sha256": "c1ec113101642ec2e3b2421115d14de02897049eac7307490c5c9ab70af0f36a"
+          },
+          {
+            "name": "System.Numerics.Vectors",
+            "version": "10.0.0.0",
+            "sha256": "a530b7505c54e6bd48d8ba6f4d4828ab9821e6748e4728ee09b620e3518a912a"
+          },
+          {
+            "name": "System.Private.CoreLib",
+            "version": "10.0.0.0",
+            "sha256": "26304a2985357b9ee277f273667fcd9c892edae3ee6eba76f739033e95eb39b3"
+          },
+          {
+            "name": "System.Private.Uri",
+            "version": "10.0.0.0",
+            "sha256": "dce56b911dec93cfaeaa759fb069714d397663ead3a8cac855f66bd72098aff1"
+          },
+          {
+            "name": "System.Private.Xml",
+            "version": "10.0.0.0",
+            "sha256": "61702d155227bfd6317170cce55dcdbfea69ba129e9b173ee2cadd1f5b5cde74"
+          },
+          {
+            "name": "System.Private.Xml.Linq",
+            "version": "10.0.0.0",
+            "sha256": "dc9fe6577572f71bad36520652fa7a185f36040dc8b4c3f471711c6a76cbc1a2"
+          },
+          {
+            "name": "System.Runtime",
+            "version": "10.0.0.0",
+            "sha256": "417e7882e2a2689aafbf86bd6256db906357afa775f58e3c86a94a9f119cc3ef"
+          },
+          {
+            "name": "System.Runtime.InteropServices",
+            "version": "10.0.0.0",
+            "sha256": "82286a808b40f176a758a1ad0faeadcf170d92a90043aca046160c90e5d54c74"
+          },
+          {
+            "name": "System.Runtime.Loader",
+            "version": "10.0.0.0",
+            "sha256": "20bb43ccadc7d94801a150a8d5caaf74584f5c4709a02eb0c618a426b04e0f6c"
+          },
+          {
+            "name": "System.Security.Cryptography",
+            "version": "10.0.0.0",
+            "sha256": "49c7a0f1657dc1da331fbe5dcca5fd13700c692514528380eaff4cf15ddc64a1"
+          },
+          {
+            "name": "System.Text.Encoding.CodePages",
+            "version": "10.0.0.0",
+            "sha256": "37d1f9d9bbd47222623e9671dec54093c21b8da3f9307f88fd0c05b0e81ad75a"
+          },
+          {
+            "name": "System.Text.Encoding.Extensions",
+            "version": "10.0.0.0",
+            "sha256": "695cdbbd45618531ba86378263bd9494afa05c61609a2892b2d9f89fb17a5d32"
+          },
+          {
+            "name": "System.Text.RegularExpressions",
+            "version": "10.0.0.0",
+            "sha256": "258c27c22aeace5c0f6ba236c848bde98f891f1ef403f05da0f3f7dfdf9fa4d4"
+          },
+          {
+            "name": "System.Threading",
+            "version": "10.0.0.0",
+            "sha256": "477cd5447cef676bf036307029196287ca58b6ee95dc64e3c759926cdd6f59c3"
+          },
+          {
+            "name": "System.Threading.Thread",
+            "version": "10.0.0.0",
+            "sha256": "62ce305385b7ddf6ad3925780435785c2a05d666d4ad325fa4aaf411a091bf2b"
+          },
+          {
+            "name": "System.Xml.ReaderWriter",
+            "version": "10.0.0.0",
+            "sha256": "6e296482fd53d1e298162b05ae04c9d98b1f4bb39c825790e0784647a5a49ee0"
+          },
+          {
+            "name": "System.Xml.XDocument",
+            "version": "10.0.0.0",
+            "sha256": "4cfeadbc2d6938ce25080b52558003d92d81242e0e9866495d8bd49a12968b71"
+          },
+          {
+            "name": "UglyToad.PdfPig",
+            "version": "0.1.16.0",
+            "sha256": "c47abebdffebb6e48a1d40f4c22ce5f673c57558ecdb3187841b728112dea279"
+          },
+          {
+            "name": "UglyToad.PdfPig.Core",
+            "version": "0.1.16.0",
+            "sha256": "cbdd1809ee0f4ba617900845d182e5e67183377fe5848a8d9d1222b3c395116b"
+          },
+          {
+            "name": "UglyToad.PdfPig.Fonts",
+            "version": "0.1.16.0",
+            "sha256": "30521d2aa02252c0097cd3a9b12832368d5c925e1ccb4bc3a5735671bd3d2e1e"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokenization",
+            "version": "0.1.16.0",
+            "sha256": "539d0ca2c7981b9eaf8541e17434911042f7cc73d3abc24962994bb99472ed3c"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokens",
+            "version": "0.1.16.0",
+            "sha256": "d6fbd73a520bb961ffcc98030ab686f43c88b03f5b059ba11e3781e0f091433d"
+          },
+          {
+            "name": "wordnet",
+            "version": "1.0.0.0",
+            "sha256": "4c4c1d2c83c4466bce2e0b4da5502b3f513b9d78d4babd7774eade136a2e690c"
+          },
+          {
+            "name": "wordnet.Benchmarks",
+            "version": "1.0.0.0",
+            "sha256": "adf2edb0169f015dbf4f3115ae478287ddc6886da610615e56f1d7975ed2fc4a"
+          }
+        ],
+        "fonts": [
+          {
+            "name": "LiberationMono-Bold.ttf",
+            "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb"
+          },
+          {
+            "name": "LiberationMono-BoldItalic.ttf",
+            "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130"
+          },
+          {
+            "name": "LiberationMono-Italic.ttf",
+            "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1"
+          },
+          {
+            "name": "LiberationMono-Regular.ttf",
+            "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1"
+          },
+          {
+            "name": "LiberationSans-Bold.ttf",
+            "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173"
+          },
+          {
+            "name": "LiberationSans-BoldItalic.ttf",
+            "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee"
+          },
+          {
+            "name": "LiberationSans-Italic.ttf",
+            "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0"
+          },
+          {
+            "name": "LiberationSans-Regular.ttf",
+            "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8"
+          },
+          {
+            "name": "LiberationSerif-Bold.ttf",
+            "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce"
+          },
+          {
+            "name": "LiberationSerif-BoldItalic.ttf",
+            "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7"
+          },
+          {
+            "name": "LiberationSerif-Italic.ttf",
+            "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e"
+          },
+          {
+            "name": "LiberationSerif-Regular.ttf",
+            "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74"
+          },
+          {
+            "name": "NotoSans-Bold.ttf",
+            "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a"
+          },
+          {
+            "name": "NotoSans-BoldItalic.ttf",
+            "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466"
+          },
+          {
+            "name": "NotoSans-Italic.ttf",
+            "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b"
+          },
+          {
+            "name": "NotoSans-Regular.ttf",
+            "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5"
+          }
+        ],
+        "samples": [
+          {
+            "kind": "cold-conversion",
+            "milliseconds": 319.2999,
+            "allocatedBytes": 22481160,
+            "rssBytes": 88264704,
+            "processPeakRssBytes": 88264704,
+            "outputBytes": 7962
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 96.723,
+            "allocatedBytes": 20181832,
+            "rssBytes": 95911936,
+            "processPeakRssBytes": 95911936,
+            "outputBytes": 7962
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 84.3803,
+            "allocatedBytes": 18081552,
+            "rssBytes": 98058240,
+            "processPeakRssBytes": 98058240,
+            "outputBytes": 7962
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 73.6681,
+            "allocatedBytes": 18078728,
+            "rssBytes": 93679616,
+            "processPeakRssBytes": 97562624,
+            "outputBytes": 7962
+          }
+        ],
+        "snapshot": {
+          "pageCount": 1,
+          "pages": [
+            {
+              "width": 595.3,
+              "height": 841.9,
+              "text": "Header AHeader BValue AValue B",
+              "glyphs": [
+                {
+                  "text": "H",
+                  "x": 72,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 80.151,
+                  "y": 758.141
+                },
+                {
+                  "text": "a",
+                  "x": 86.35499999999999,
+                  "y": 758.141
+                },
+                {
+                  "text": "d",
+                  "x": 92.526,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 99.291,
+                  "y": 758.141
+                },
+                {
+                  "text": "r",
+                  "x": 105.495,
+                  "y": 758.141
+                },
+                {
+                  "text": " ",
+                  "x": 110.03800000000001,
+                  "y": 758.141
+                },
+                {
+                  "text": "A",
+                  "x": 112.898,
+                  "y": 758.141
+                },
+                {
+                  "text": "H",
+                  "x": 197,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 205.151,
+                  "y": 758.141
+                },
+                {
+                  "text": "a",
+                  "x": 211.35500000000002,
+                  "y": 758.141
+                },
+                {
+                  "text": "d",
+                  "x": 217.526,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 224.291,
+                  "y": 758.141
+                },
+                {
+                  "text": "r",
+                  "x": 230.495,
+                  "y": 758.141
+                },
+                {
+                  "text": " ",
+                  "x": 235.038,
+                  "y": 758.141
+                },
+                {
+                  "text": "B",
+                  "x": 237.898,
+                  "y": 758.141
+                },
+                {
+                  "text": "V",
+                  "x": 72,
+                  "y": 743.159
+                },
+                {
+                  "text": "a",
+                  "x": 78.38,
+                  "y": 743.159
+                },
+                {
+                  "text": "l",
+                  "x": 84.551,
+                  "y": 743.159
+                },
+                {
+                  "text": "u",
+                  "x": 87.389,
+                  "y": 743.159
+                },
+                {
+                  "text": "e",
+                  "x": 94.187,
+                  "y": 743.159
+                },
+                {
+                  "text": " ",
+                  "x": 100.39099999999999,
+                  "y": 743.159
+                },
+                {
+                  "text": "A",
+                  "x": 103.251,
+                  "y": 743.159
+                },
+                {
+                  "text": "V",
+                  "x": 197,
+                  "y": 743.159
+                },
+                {
+                  "text": "a",
+                  "x": 203.38,
+                  "y": 743.159
+                },
+                {
+                  "text": "l",
+                  "x": 209.551,
+                  "y": 743.159
+                },
+                {
+                  "text": "u",
+                  "x": 212.38899999999998,
+                  "y": 743.159
+                },
+                {
+                  "text": "e",
+                  "x": 219.18699999999998,
+                  "y": 743.159
+                },
+                {
+                  "text": " ",
+                  "x": 225.391,
+                  "y": 743.159
+                },
+                {
+                  "text": "B",
+                  "x": 228.251,
+                  "y": 743.159
+                }
+              ]
+            }
+          ]
+        },
+        "diagnostics": [
+          {
+            "code": "Docx.AuxiliaryMetadata",
+            "count": 1,
+            "severity": "Info",
+            "occurrences": [
+              {
+                "part": "word/theme/theme1.xml",
+                "path": "/theme[1]",
+                "phase": "Parse"
+              }
+            ]
+          },
+          {
+            "code": "Docx.ThemeFont",
+            "count": 4,
+            "severity": "Warning",
+            "occurrences": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[1]/tc[1]/p[1]/r[1]",
+                "phase": "Parse"
+              },
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[1]/tc[2]/p[1]/r[1]",
+                "phase": "Parse"
+              },
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[2]/tc[1]/p[1]/r[1]",
+                "phase": "Parse"
+              },
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[2]/tc[2]/p[1]/r[1]",
+                "phase": "Parse"
+              }
+            ]
+          }
+        ]
+      },
+      "status": "measured",
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": false,
+        "missing": [],
+        "unexpected": [
+          "Docx.ThemeFont"
+        ]
+      },
+      "fidelityStatus": "detected-losses",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "rasters": [
+        {
+          "path": "theme-direct-wordnet-1.png",
+          "sha256": "7e2f6e076f9c96bd7eed24b817bb1233e9943530f4c10ce58b7185dde57ba6a4"
+        }
+      ],
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 8.448999999999955,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0033274940504361516,
+              "meanChannelError": 0.4582502487863488
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      ]
+    },
+    {
+      "documentId": "theme-styled",
+      "category": "report",
+      "engine": "wordnet",
+      "inputSha256": "c8774ca4e553c2df3c258839f43ecbd8ec8506544c17c21202f95654a48f41b7",
+      "knownLosses": [],
+      "workerWallMilliseconds": 1017.5023000010697,
+      "measurement": {
+        "schemaVersion": 1,
+        "engine": "wordnet",
+        "artifactMode": "licensed",
+        "inputSha256": "c8774ca4e553c2df3c258839f43ecbd8ec8506544c17c21202f95654a48f41b7",
+        "outputSha256": "dd4b7efcc831b4fa4cafe10d7cf71e95bad67f82d13fc36f704e0b18d1a36f47",
+        "editableSha256": "de4fadbbd74a71c202a0c82c51847d1417994d14643368db7dfdcd15fdf807b3",
+        "editableBytes": 7168,
+        "runtime": ".NET 10.0.12",
+        "architecture": "X64",
+        "os": "Debian GNU/Linux 13 (trixie)",
+        "machine": "dbb5679a213a",
+        "logicalProcessors": 4,
+        "processor": "model name\t: AMD EPYC 9V74 80-Core Processor",
+        "affinity": "1F",
+        "assemblies": [
+          {
+            "name": "BenchmarkDotNet",
+            "version": "0.15.8.0",
+            "sha256": "d460626b2e1a9fa2f786e09e6c85cdf4d7b73deca636450a0e23892c8ce6192b"
+          },
+          {
+            "name": "Microsoft.CSharp",
+            "version": "10.0.0.0",
+            "sha256": "97a53bfcb115cc6d1e21113834d3aa19367bc65b38e5e5035f101348693afcf5"
+          },
+          {
+            "name": "Microsoft.Win32.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "5cbfa551ec9f3fe950c5cd56f7e4fe5ece9059b069e5fc8a8c8a4f0f496107ef"
+          },
+          {
+            "name": "OpenMcdf",
+            "version": "3.3.0.0",
+            "sha256": "c55ecaa14a52695d43f1d523309499bf13fb85f558c32b461bb8c36100d0219b"
+          },
+          {
+            "name": "System.Collections",
+            "version": "10.0.0.0",
+            "sha256": "ff0b05dd9578d11089c52e0ab8a35765e9be49dce9bc849b4e0574815f3fac8e"
+          },
+          {
+            "name": "System.Collections.Concurrent",
+            "version": "10.0.0.0",
+            "sha256": "d5b3117fe23618b0b366724c63a9faf558b5f7d1d4e5f8c933f920c4038ed31e"
+          },
+          {
+            "name": "System.Collections.Immutable",
+            "version": "10.0.0.0",
+            "sha256": "8c8ddc0f0de5b22cd4b11ae86b3b5791754d61868f76c64b05e5a3cfdafcd3ce"
+          },
+          {
+            "name": "System.ComponentModel.Primitives",
+            "version": "10.0.0.0",
+            "sha256": "9e5973eaa2671813a50c40e7d99e10e6f4f5bd927ee591d506dc40729c0b2d62"
+          },
+          {
+            "name": "System.Console",
+            "version": "10.0.0.0",
+            "sha256": "30c185a09e4fd99069af832f40dc087bd3569f5497af8baf921aa4dbbba56984"
+          },
+          {
+            "name": "System.Diagnostics.Process",
+            "version": "10.0.0.0",
+            "sha256": "973c1bc1159c04ac215517c95d24e2790ffea186e384cb3ed3d5e0d22979f1b4"
+          },
+          {
+            "name": "System.IO.Compression",
+            "version": "10.0.0.0",
+            "sha256": "00fc0309e170f7fa5b14e6a9be4ffb3dc1d1c2c492bdc7fcf4236e998013c5e4"
+          },
+          {
+            "name": "System.Linq",
+            "version": "10.0.0.0",
+            "sha256": "a0c910f6b9eb2468e9a8dfa07dd59c7fd609b3098e57d96fb8c74e89fe1aeee0"
+          },
+          {
+            "name": "System.Linq.Expressions",
+            "version": "10.0.0.0",
+            "sha256": "d8345995a8f5af5cb11cf39aa318ac98e21ce258d54d2acb6b4bda73693b3c1e"
+          },
+          {
+            "name": "System.Memory",
+            "version": "10.0.0.0",
+            "sha256": "c1ec113101642ec2e3b2421115d14de02897049eac7307490c5c9ab70af0f36a"
+          },
+          {
+            "name": "System.Numerics.Vectors",
+            "version": "10.0.0.0",
+            "sha256": "a530b7505c54e6bd48d8ba6f4d4828ab9821e6748e4728ee09b620e3518a912a"
+          },
+          {
+            "name": "System.Private.CoreLib",
+            "version": "10.0.0.0",
+            "sha256": "26304a2985357b9ee277f273667fcd9c892edae3ee6eba76f739033e95eb39b3"
+          },
+          {
+            "name": "System.Private.Uri",
+            "version": "10.0.0.0",
+            "sha256": "dce56b911dec93cfaeaa759fb069714d397663ead3a8cac855f66bd72098aff1"
+          },
+          {
+            "name": "System.Private.Xml",
+            "version": "10.0.0.0",
+            "sha256": "61702d155227bfd6317170cce55dcdbfea69ba129e9b173ee2cadd1f5b5cde74"
+          },
+          {
+            "name": "System.Private.Xml.Linq",
+            "version": "10.0.0.0",
+            "sha256": "dc9fe6577572f71bad36520652fa7a185f36040dc8b4c3f471711c6a76cbc1a2"
+          },
+          {
+            "name": "System.Runtime",
+            "version": "10.0.0.0",
+            "sha256": "417e7882e2a2689aafbf86bd6256db906357afa775f58e3c86a94a9f119cc3ef"
+          },
+          {
+            "name": "System.Runtime.InteropServices",
+            "version": "10.0.0.0",
+            "sha256": "82286a808b40f176a758a1ad0faeadcf170d92a90043aca046160c90e5d54c74"
+          },
+          {
+            "name": "System.Runtime.Loader",
+            "version": "10.0.0.0",
+            "sha256": "20bb43ccadc7d94801a150a8d5caaf74584f5c4709a02eb0c618a426b04e0f6c"
+          },
+          {
+            "name": "System.Security.Cryptography",
+            "version": "10.0.0.0",
+            "sha256": "49c7a0f1657dc1da331fbe5dcca5fd13700c692514528380eaff4cf15ddc64a1"
+          },
+          {
+            "name": "System.Text.Encoding.CodePages",
+            "version": "10.0.0.0",
+            "sha256": "37d1f9d9bbd47222623e9671dec54093c21b8da3f9307f88fd0c05b0e81ad75a"
+          },
+          {
+            "name": "System.Text.Encoding.Extensions",
+            "version": "10.0.0.0",
+            "sha256": "695cdbbd45618531ba86378263bd9494afa05c61609a2892b2d9f89fb17a5d32"
+          },
+          {
+            "name": "System.Text.RegularExpressions",
+            "version": "10.0.0.0",
+            "sha256": "258c27c22aeace5c0f6ba236c848bde98f891f1ef403f05da0f3f7dfdf9fa4d4"
+          },
+          {
+            "name": "System.Threading",
+            "version": "10.0.0.0",
+            "sha256": "477cd5447cef676bf036307029196287ca58b6ee95dc64e3c759926cdd6f59c3"
+          },
+          {
+            "name": "System.Threading.Thread",
+            "version": "10.0.0.0",
+            "sha256": "62ce305385b7ddf6ad3925780435785c2a05d666d4ad325fa4aaf411a091bf2b"
+          },
+          {
+            "name": "System.Xml.ReaderWriter",
+            "version": "10.0.0.0",
+            "sha256": "6e296482fd53d1e298162b05ae04c9d98b1f4bb39c825790e0784647a5a49ee0"
+          },
+          {
+            "name": "System.Xml.XDocument",
+            "version": "10.0.0.0",
+            "sha256": "4cfeadbc2d6938ce25080b52558003d92d81242e0e9866495d8bd49a12968b71"
+          },
+          {
+            "name": "UglyToad.PdfPig",
+            "version": "0.1.16.0",
+            "sha256": "c47abebdffebb6e48a1d40f4c22ce5f673c57558ecdb3187841b728112dea279"
+          },
+          {
+            "name": "UglyToad.PdfPig.Core",
+            "version": "0.1.16.0",
+            "sha256": "cbdd1809ee0f4ba617900845d182e5e67183377fe5848a8d9d1222b3c395116b"
+          },
+          {
+            "name": "UglyToad.PdfPig.Fonts",
+            "version": "0.1.16.0",
+            "sha256": "30521d2aa02252c0097cd3a9b12832368d5c925e1ccb4bc3a5735671bd3d2e1e"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokenization",
+            "version": "0.1.16.0",
+            "sha256": "539d0ca2c7981b9eaf8541e17434911042f7cc73d3abc24962994bb99472ed3c"
+          },
+          {
+            "name": "UglyToad.PdfPig.Tokens",
+            "version": "0.1.16.0",
+            "sha256": "d6fbd73a520bb961ffcc98030ab686f43c88b03f5b059ba11e3781e0f091433d"
+          },
+          {
+            "name": "wordnet",
+            "version": "1.0.0.0",
+            "sha256": "4c4c1d2c83c4466bce2e0b4da5502b3f513b9d78d4babd7774eade136a2e690c"
+          },
+          {
+            "name": "wordnet.Benchmarks",
+            "version": "1.0.0.0",
+            "sha256": "adf2edb0169f015dbf4f3115ae478287ddc6886da610615e56f1d7975ed2fc4a"
+          }
+        ],
+        "fonts": [
+          {
+            "name": "LiberationMono-Bold.ttf",
+            "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb"
+          },
+          {
+            "name": "LiberationMono-BoldItalic.ttf",
+            "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130"
+          },
+          {
+            "name": "LiberationMono-Italic.ttf",
+            "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1"
+          },
+          {
+            "name": "LiberationMono-Regular.ttf",
+            "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1"
+          },
+          {
+            "name": "LiberationSans-Bold.ttf",
+            "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173"
+          },
+          {
+            "name": "LiberationSans-BoldItalic.ttf",
+            "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee"
+          },
+          {
+            "name": "LiberationSans-Italic.ttf",
+            "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0"
+          },
+          {
+            "name": "LiberationSans-Regular.ttf",
+            "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8"
+          },
+          {
+            "name": "LiberationSerif-Bold.ttf",
+            "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce"
+          },
+          {
+            "name": "LiberationSerif-BoldItalic.ttf",
+            "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7"
+          },
+          {
+            "name": "LiberationSerif-Italic.ttf",
+            "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e"
+          },
+          {
+            "name": "LiberationSerif-Regular.ttf",
+            "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74"
+          },
+          {
+            "name": "NotoSans-Bold.ttf",
+            "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a"
+          },
+          {
+            "name": "NotoSans-BoldItalic.ttf",
+            "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466"
+          },
+          {
+            "name": "NotoSans-Italic.ttf",
+            "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b"
+          },
+          {
+            "name": "NotoSans-Regular.ttf",
+            "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5"
+          }
+        ],
+        "samples": [
+          {
+            "kind": "cold-conversion",
+            "milliseconds": 325.7729,
+            "allocatedBytes": 22579152,
+            "rssBytes": 91815936,
+            "processPeakRssBytes": 91815936,
+            "outputBytes": 7913
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 97.9222,
+            "allocatedBytes": 20255240,
+            "rssBytes": 99991552,
+            "processPeakRssBytes": 99991552,
+            "outputBytes": 7913
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 85.4042,
+            "allocatedBytes": 18171320,
+            "rssBytes": 104902656,
+            "processPeakRssBytes": 104902656,
+            "outputBytes": 7913
+          },
+          {
+            "kind": "warm-conversion",
+            "milliseconds": 70.8173,
+            "allocatedBytes": 18170984,
+            "rssBytes": 110243840,
+            "processPeakRssBytes": 110243840,
+            "outputBytes": 7913
+          }
+        ],
+        "snapshot": {
+          "pageCount": 1,
+          "pages": [
+            {
+              "width": 595.3,
+              "height": 841.9,
+              "text": "Header AHeader BValue AValue B",
+              "glyphs": [
+                {
+                  "text": "H",
+                  "x": 72,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 80.151,
+                  "y": 758.141
+                },
+                {
+                  "text": "a",
+                  "x": 86.35499999999999,
+                  "y": 758.141
+                },
+                {
+                  "text": "d",
+                  "x": 92.526,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 99.291,
+                  "y": 758.141
+                },
+                {
+                  "text": "r",
+                  "x": 105.495,
+                  "y": 758.141
+                },
+                {
+                  "text": " ",
+                  "x": 110.03800000000001,
+                  "y": 758.141
+                },
+                {
+                  "text": "A",
+                  "x": 112.898,
+                  "y": 758.141
+                },
+                {
+                  "text": "H",
+                  "x": 197,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 205.151,
+                  "y": 758.141
+                },
+                {
+                  "text": "a",
+                  "x": 211.35500000000002,
+                  "y": 758.141
+                },
+                {
+                  "text": "d",
+                  "x": 217.526,
+                  "y": 758.141
+                },
+                {
+                  "text": "e",
+                  "x": 224.291,
+                  "y": 758.141
+                },
+                {
+                  "text": "r",
+                  "x": 230.495,
+                  "y": 758.141
+                },
+                {
+                  "text": " ",
+                  "x": 235.038,
+                  "y": 758.141
+                },
+                {
+                  "text": "B",
+                  "x": 237.898,
+                  "y": 758.141
+                },
+                {
+                  "text": "V",
+                  "x": 72,
+                  "y": 743.159
+                },
+                {
+                  "text": "a",
+                  "x": 78.38,
+                  "y": 743.159
+                },
+                {
+                  "text": "l",
+                  "x": 84.551,
+                  "y": 743.159
+                },
+                {
+                  "text": "u",
+                  "x": 87.389,
+                  "y": 743.159
+                },
+                {
+                  "text": "e",
+                  "x": 94.187,
+                  "y": 743.159
+                },
+                {
+                  "text": " ",
+                  "x": 100.39099999999999,
+                  "y": 743.159
+                },
+                {
+                  "text": "A",
+                  "x": 103.251,
+                  "y": 743.159
+                },
+                {
+                  "text": "V",
+                  "x": 197,
+                  "y": 743.159
+                },
+                {
+                  "text": "a",
+                  "x": 203.38,
+                  "y": 743.159
+                },
+                {
+                  "text": "l",
+                  "x": 209.551,
+                  "y": 743.159
+                },
+                {
+                  "text": "u",
+                  "x": 212.38899999999998,
+                  "y": 743.159
+                },
+                {
+                  "text": "e",
+                  "x": 219.18699999999998,
+                  "y": 743.159
+                },
+                {
+                  "text": " ",
+                  "x": 225.391,
+                  "y": 743.159
+                },
+                {
+                  "text": "B",
+                  "x": 228.251,
+                  "y": 743.159
+                }
+              ]
+            }
+          ]
+        },
+        "diagnostics": [
+          {
+            "code": "Docx.AuxiliaryMetadata",
+            "count": 1,
+            "severity": "Info",
+            "occurrences": [
+              {
+                "part": "word/theme/theme1.xml",
+                "path": "/theme[1]",
+                "phase": "Parse"
+              }
+            ]
+          },
+          {
+            "code": "Docx.TableFormatting",
+            "count": 1,
+            "severity": "Warning",
+            "occurrences": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]",
+                "phase": "Parse"
+              }
+            ]
+          },
+          {
+            "code": "Docx.ThemeFont",
+            "count": 4,
+            "severity": "Warning",
+            "occurrences": [
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[1]/tc[1]/p[1]/r[1]",
+                "phase": "Parse"
+              },
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[1]/tc[2]/p[1]/r[1]",
+                "phase": "Parse"
+              },
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[2]/tc[1]/p[1]/r[1]",
+                "phase": "Parse"
+              },
+              {
+                "part": "word/document.xml",
+                "path": "/document[1]/body[1]/tbl[1]/tr[2]/tc[2]/p[1]/r[1]",
+                "phase": "Parse"
+              }
+            ]
+          }
+        ]
+      },
+      "status": "measured",
+      "observedKnownLosses": [],
+      "knownLossChecks": {
+        "passed": false,
+        "missing": [],
+        "unexpected": [
+          "Docx.TableFormatting",
+          "Docx.ThemeFont"
+        ]
+      },
+      "fidelityStatus": "detected-losses",
+      "authoredChecks": {
+        "basis": "authored-source-expectations",
+        "passed": true,
+        "missingOrOutOfOrder": [],
+        "pageCountMatches": true
+      },
+      "editableContent": {
+        "reader": "Apache POI HWPF",
+        "assemblies": [
+          {
+            "name": "SparseBitSet-1.3.jar",
+            "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+          },
+          {
+            "name": "commons-codec-1.18.0.jar",
+            "sha256": "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+          },
+          {
+            "name": "commons-collections4-4.4.jar",
+            "sha256": "1df8b9430b5c8ed143d7815e403e33ef5371b2400aadbe9bda0883762e0846d1"
+          },
+          {
+            "name": "commons-io-2.18.0.jar",
+            "sha256": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+          },
+          {
+            "name": "commons-math3-3.6.1.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+          },
+          {
+            "name": "log4j-api-2.24.3.jar",
+            "sha256": "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f"
+          },
+          {
+            "name": "poi-5.4.1.jar",
+            "sha256": "da5abf42da4604c5a7bca38956af6e9d6f196d9b6d4cb7eabee4f480b580d505"
+          },
+          {
+            "name": "poi-scratchpad-5.4.1.jar",
+            "sha256": "6497ba15c1cba7062aa71661a8d776d321b1f998bb2bfa19b57d7e35606381f1"
+          }
+        ],
+        "passed": true,
+        "missingOrOutOfOrder": []
+      },
+      "rasters": [
+        {
+          "path": "theme-styled-wordnet-1.png",
+          "sha256": "b793dd32ab1bbc89c2edc12e24b8021a7278718bb7fe52d5d46599506f23cd6a"
+        }
+      ],
+      "referenceChecks": [
+        {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 8.448999999999955,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.007204523687226775,
+              "meanChannelError": 0.9954265181200949
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      ]
+    }
+  ]
+}

@@ -73,11 +73,14 @@ def validate_results(results, manifest):
     tree = ET.parse(results / 'net472.trx')
     counters = next(node for node in tree.iter() if node.tag.rsplit('}', 1)[-1] == 'Counters')
     required = manifest['requiredCases']
-    if (int(counters.get('total', 0)) != required or int(counters.get('passed', 0)) != required
-            or any(int(counters.get(field, 0)) for field in ['failed', 'error', 'timeout', 'aborted', 'notExecuted'])):
+    total = int(counters.get('total', 0))
+    if (total < required or int(counters.get('passed', 0)) != total
+            or ('executed' in counters.attrib and int(counters.get('executed', 0)) != total)
+            or any(int(counters.get(field, 0)) for field in ['failed', 'error', 'timeout', 'aborted', 'inconclusive',
+                'passedButRunAborted', 'notRunnable', 'notExecuted', 'disconnected', 'inProgress', 'pending'])):
         raise ValueError('The complete Framework suite did not pass without skips/failures.')
     return {'passed': True, 'frameworkRelease': status['frameworkRelease'],
-            'cases': required, 'commit': manifest['sourceCommit'], 'asset': manifest['testAsset'],
+            'cases': total, 'commit': manifest['sourceCommit'], 'asset': manifest['testAsset'],
             'librarySha256': evidence['librarySha256'], 'testSha256': evidence['testSha256']}
 
 

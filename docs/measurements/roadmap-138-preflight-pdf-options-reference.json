@@ -1,0 +1,75 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "a34a468da0c034a357d23786470d7f741ffef5a6",
+  "scope": "Working-tree evidence for selected static PDF option conflicts in non-reusable template inspection; document-dependent output, writing and validation remain unknown.",
+  "provenance": "A synthetic DOCX was independently authored with MIT fixture helpers, without wordnet serialization; two generations were byte-identical and Open XML SDK 3.5.1 validated the input. Five option conflicts were compared with actual staged export rejections and unchanged output; PyMuPDF 1.27.2.2 independently read the successful PDF. Ten in-memory altered controls were rejected.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-preflight-pdf-options.py": "f6d1b3be48c6a899945a24986f463373432b590bdf1f312614554719f631a346",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-preflight-pdf-options-probe.cs": "ef3b5c20f9743ec3039a8ed156d885139f4c0ff7a9cf9cd0c97cbb99d1cee690",
+    "eng/verify-roadmap-138-preflight-pdf-options.py": "9ca76a42d5bdd5a6ffdc71f02382fdbde83198fb50f9be526e52ef1ee901d5b4",
+    "src/wordnet/TemplateInspection.cs": "529f93dd3a3586f0f4467f41d42b70cb22985929c6411135dc89c01da083b2b5",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "ed86a859b824cc0cd430ee698786bc93418ba630a64f0be3241fba63d90516ea",
+    "src/wordnet/PdfOptions.cs": "c72bb8e0fc93576712bd5f9fe238a453c1630d0057a246c1b3581100395c3cca",
+    "src/wordnet/Formats/PdfFormat.cs": "7ca819c6f35b6be6726acad65b789d9153e0cacae357bf7ab7626f646252c1b3",
+    "src/wordnet/Formats/PdfTags.cs": "cf6ad48ab122aa82bb105283343f2a6896225cfeee4e49f8c02f7ac8809511e0",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "4b0a4f160d1b7b65ca6afcb9a10b52fb1f4b4a345943a5aa4e2592805e19d7d5"
+  },
+  "probeWordnetAssemblySha256": "b0dcfeec9fc09049fb54f953e12adca3769a0a39aee6e88093a77e3b19a6f6d1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "inputDocxSha256": "3c8bdb8ef00077c90461086b625bed95a08d1e06416cb1353aa6a9baeef095d0",
+  "inputSchemaLogSha256": "f7d050b42128a12dc71581c1770617e88cd45e19a99e9a6e3c16cf4a30c7f64a",
+  "verifierLogSha256": "89e5327aa13c3c85a8acfa5de3b42d8b923134540b6c7d24b2d76dfa0045991a",
+  "focusedTestsLogSha256": "f9c5b3608876c4561eed1fba854ff1ce6c315bc75b930a9d4fcea830040f3a63",
+  "specimenHashes": {
+    "valid": {
+      "defaultReportSha256": "a8c1711bb1d98dde34927044fd064443367c32f8710c8eb43ea225a92eeb636b",
+      "observationSha256": "322af15d13232ea2990de26b5db75d365671584e4ca863e0e1414aa093ad2f8a",
+      "outputPdfSha256": "8d6b8f792b8e4938cadc2af97d262854a1b28692e26ebc1e41c7b78dd0f32fac"
+    },
+    "a2a": {
+      "defaultReportSha256": "e8562a67de21151e0c320601a266c4503f4e2b6738b2d46078878f1a39c8fbb0",
+      "observationSha256": "98e4d959adc49f3c81179e30dd50f6c6168e20ac234b67c04d29eb74d0bd8943"
+    },
+    "tagged_a2b": {
+      "defaultReportSha256": "e8562a67de21151e0c320601a266c4503f4e2b6738b2d46078878f1a39c8fbb0",
+      "observationSha256": "84f7702c27a86c1f0feca7b37b9536c4c917a5d475d93b6aedf2fdb34cbedb7c"
+    },
+    "native_archive": {
+      "defaultReportSha256": "f971f5ad729eb3e889751cb36a7cd2d54d40365ab9ab089222b590cadfea8fac",
+      "observationSha256": "a499145885bb018f192ebfa5cd1efb6d915b75cb9ae836c4dfb56e86f2558f4a"
+    },
+    "invalid": {
+      "defaultReportSha256": "009accc3a703005f5fa0ff19304fa0c700377d4dd9c611b0e548f0876ea1bb0d",
+      "observationSha256": "f918b41f5090459bde9236a5384e714607e01c35d67c7fadc0b1735a22ee16b8"
+    },
+    "missing": {
+      "defaultReportSha256": "4eae6649487bbdf140872d9598a97c04b605b6e1a62f687b7c9bddad6ed6d5d8",
+      "observationSha256": "2319e87ab8db0277c1984703b8871fc51928132ecd29f40100cede23a4b1d9d4"
+    }
+  },
+  "result": {
+    "result": {
+      "rejectedProfiles": 5,
+      "failedOutputsUnchanged": true,
+      "validPdfTextMatches": true,
+      "inspectionClockCalls": 0,
+      "laterStagesUnknown": true
+    },
+    "negativeControls": {
+      "wrong conflict": "Missing or misleading static profile finding: a2a",
+      "unknown conflict": "Missing or misleading static profile finding: a2a",
+      "invented phase": "Missing or misleading static profile finding: a2a",
+      "changed error": "Profile rejection or unchanged staged output differs: a2a",
+      "mutated output": "Profile rejection or unchanged staged output differs: a2a",
+      "clock evaluated": "Inspection evaluated the clock or became reusable",
+      "lost uncertainty": "Unperformed stages lost their uncertainty",
+      "leaked source": "Default report disclosed source content or part names",
+      "changed valid PDF": "Independent source and successful PDF text differ",
+      "reusable report": "Inspection evaluated the clock or became reusable"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  }
+}

@@ -39,37 +39,71 @@ public sealed class ComparisonOptions
     public int MaximumTokens { get; set; } = 100000;
     /// <summary>Gets or sets the total visited-cell cap, default 4,000,000.</summary>
     public int MaximumSteps { get; set; } = 4000000;
+    /// <summary>Gets or sets whether admitted ordinary header/footer text is compared. When false the original story text remains.</summary>
+    public bool CompareStoryText { get; set; } = true;
+    /// <summary>Gets or sets whether supported bold, italic, size and color changes are tracked. When false matching text keeps the original formatting.</summary>
+    public bool CompareRunFormatting { get; set; } = true;
+    /// <summary>Gets or sets whether admitted paragraph alignment, spacing, indentation and pagination changes are tracked. When false the original values remain.</summary>
+    public bool CompareParagraphFormatting { get; set; } = true;
 }
 /// <summary>Deterministic bounded text and plain paragraph/row comparison of history-free documents.</summary>
 public static partial class DocumentComparison
 {
-    /// <summary>Creates a reviewed copy without changing either input. Plain paragraph/row insertion and deletion are supported; other structural/property differences and existing history fail.</summary>
+    /// <summary>Creates a reviewed copy without changing either input. Plain paragraph/row changes and bounded paragraph-property history are supported; unsupported combinations and existing history fail.</summary>
     public static WordDocument Compare(WordDocument original, WordDocument revised, ComparisonOptions comparisonOptions,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(original, nameof(original)); Guard.NotNull(revised, nameof(revised)); Guard.NotNull(comparisonOptions, nameof(comparisonOptions));
         int tokens = comparisonOptions.MaximumTokens, steps = comparisonOptions.MaximumSteps;
         ComparisonGranularity granularity = comparisonOptions.Granularity;
+        bool compareStoryText = comparisonOptions.CompareStoryText, compareRunFormatting = comparisonOptions.CompareRunFormatting;
+        bool compareParagraphFormatting = comparisonOptions.CompareParagraphFormatting;
         if (tokens is < 1 or > 100000 || steps is < 1 or > 4000000 || granularity is not ComparisonGranularity.Word and not ComparisonGranularity.Grapheme) throw new ArgumentOutOfRangeException(nameof(comparisonOptions));
         options ??= new ConversionOptions(); var context = new ConversionContext(options, cancellationToken) { Editing = true };
         DocumentModel left = original.ComparisonSnapshot(context), right = revised.ComparisonSnapshot(context);
+        if (!(left.Theme == null && right.Theme == null) && !(left.Theme?.Same(right.Theme) ?? false))
+            throw new NotSupportedException("Comparison.ThemeConflict: Documents with different or missing themes cannot be compared without resolving their document-wide theme.");
+        if (!SameTableStyle(left.DefaultTableStyle, right.DefaultTableStyle, context)
+            || (left.DefaultTableStyle != null || right.DefaultTableStyle != null)
+                && !left.Tables.Select(table => table.UsesDefaultStyle).SequenceEqual(right.Tables.Select(table => table.UsesDefaultStyle)))
+            throw new NotSupportedException("Comparison.TableStyle: Default table-style changes are outside the comparison profile.");
+        TableStyle?[] leftStyles = left.Tables.Select(table => table.Style).ToArray(), rightStyles = right.Tables.Select(table => table.Style).ToArray();
+        if ((leftStyles.Any(style => style != null) || rightStyles.Any(style => style != null))
+            && (leftStyles.Length != rightStyles.Length || leftStyles.Where((style, index) => !SameTableStyle(style, rightStyles[index], context)).Any()))
+            throw new NotSupportedException("Comparison.TableStyle: Table-style changes are outside the comparison profile.");
         foreach (DocumentModel snapshot in new[] { left, right })
             foreach (ParagraphBlock paragraph in snapshot.BodyParagraphs)
             { List<TextRun> combined = RunCoalescer.Combine(paragraph.Runs); paragraph.Runs.Clear(); paragraph.Runs.AddRange(combined); }
         long characters = (long)left.CharacterCount + right.CharacterCount;
         if (characters > options.MaximumCharacters || characters * 4 > options.MaximumExpandedBytes) throw new InvalidDataException("Comparison.ResourceLimit: Combined inputs exceed the comparison allowance.");
         List<(ParagraphBlock Old, ParagraphBlock New)> stories = MatchingStories(left, right, context);
-        byte[] leftStructure = Structure(left), rightStructure = Structure(right);
+        if (!compareStoryText) stories.Clear();
         int tokenCount = 0, work = 0, bodyCount = 0;
+        byte[] leftStructure = Structure(left), rightStructure = Structure(right);
         bool structural = !leftStructure.SequenceEqual(rightStructure) || ReorderedPlainParagraphs(left, right);
-        if (structural) CompareStructure(left, right, comparisonOptions, options, context, out work, out tokenCount);
+        if (structural) CompareStructure(left, right, comparisonOptions, options, context, !compareRunFormatting, compareParagraphFormatting, work, out work, out tokenCount);
         ParagraphBlock[] bodyA = structural ? Array.Empty<ParagraphBlock>() : left.BodyParagraphs.ToArray();
         ParagraphBlock[] bodyB = structural ? Array.Empty<ParagraphBlock>() : right.BodyParagraphs.ToArray();
+        HashSet<ParagraphBlock> formatOwnersA = ReviewStore.ParagraphFormatOwners(left), formatOwnersB = ReviewStore.ParagraphFormatOwners(right);
         bodyCount = bodyA.Length;
         ParagraphBlock[] a = bodyA.Concat(stories.Select(p => p.Old)).ToArray(), b = bodyB.Concat(stories.Select(p => p.New)).ToArray();
         for (int paragraph = 0; paragraph < a.Length; paragraph++)
         {
             context.CheckCancellation(); bool storyMode = paragraph >= bodyCount; string oldText = a[paragraph].Text, newText = b[paragraph].Text;
+            if (!storyMode && !ParagraphFormatSnapshot.Same(a[paragraph], b[paragraph]))
+            {
+                if (!formatOwnersA.Contains(a[paragraph]) || !formatOwnersB.Contains(b[paragraph])
+                    || !ReviewStore.OrdinaryParagraphFormat(a[paragraph]) || !ReviewStore.OrdinaryParagraphFormat(b[paragraph]))
+                    throw new NotSupportedException("Comparison.ParagraphFormat: Paragraph-property changes require ordinary body or simple-cell paragraphs.");
+                if (compareParagraphFormatting)
+                {
+                    string id = Guid.NewGuid().ToString("N"); var previous = new ParagraphFormatSnapshot(a[paragraph]);
+                    new ParagraphFormatSnapshot(b[paragraph]).Apply(a[paragraph]);
+                    a[paragraph].ParagraphFormatRevision = id; a[paragraph].PreviousParagraphFormat = previous;
+                    left.Review.Revisions.Add(id, new ReviewRecord { Id = id, Author = comparisonOptions.Author, Date = comparisonOptions.Timestamp, Structure = "paragraph-format" });
+                }
+                else a[paragraph].ExplicitParagraphFormat = true;
+            }
             if (oldText == newText)
             {
                 if (a[paragraph].Runs.Any(Structured) || b[paragraph].Runs.Any(Structured))
@@ -127,16 +161,25 @@ public static partial class DocumentComparison
         byte[] Structure(DocumentModel model)
         {
             DocumentModel copy = new DocumentCloner(context).Copy(model);
-            NormalizePlainStories(copy, context);
+            NormalizePlainStories(copy, context, !compareRunFormatting, ReserveAdditionalWork);
             var body = new HashSet<ParagraphBlock>(ReviewStore.SupportedParagraphs(copy.Blocks));
+            HashSet<ParagraphBlock> formatOwners = ReviewStore.ParagraphFormatOwners(copy);
             foreach (ParagraphBlock paragraph in copy.Paragraphs)
             {
+                if (formatOwners.Contains(paragraph) && ReviewStore.OrdinaryParagraphFormat(paragraph))
+                { ReserveAdditionalWork(1); NeutralParagraphFormat(paragraph); }
                 if (!body.Contains(paragraph) || paragraph.Control != null || paragraph.Runs.Any(r => r.FieldInstruction != null || r.Control != null
                     || r.Bookmark != null || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null)) continue;
                 var normalized = RunCoalescer.Combine(paragraph.Runs.Select(Neutral).ToList());
                 paragraph.Runs.Clear(); paragraph.Runs.AddRange(normalized.Select(r => r.WithText("")));
             }
             using var stream = new BoundedMemoryStream(options.MaximumOutputBytes); DocxWriter.Write(copy, stream, context); return stream.ToArray();
+        }
+        void ReserveAdditionalWork(int count)
+        {
+            context.CheckCancellation();
+            if (count > steps - work) throw new InvalidDataException("Comparison.WorkLimit: Formatting normalization exceeds its work allowance.");
+            work += count;
         }
         List<TextRun> CompareFormats(List<TextRun> oldRuns, List<TextRun> newRuns, bool storyMode)
         {
@@ -146,8 +189,8 @@ public static partial class DocumentComparison
                 context.CheckCancellation(); if (++work > steps) throw new InvalidDataException("Comparison.WorkLimit: Formatting alignment exceeds its work allowance.");
                 TextRun oldRun = oldRuns[i], newRun = newRuns[j]; int count = Math.Min(oldRun.Text.Length - aOffset, newRun.Text.Length - bOffset);
                 if (count <= 0 || !RunCoalescer.Same(Neutral(oldRun), Neutral(newRun))) throw new NotSupportedException("Comparison.Formatting: Unsupported formatting differences or structured runs.");
-                TextRun current = newRun.WithText(newRun.Text.Substring(bOffset, count));
-                if (oldRun.Bold != newRun.Bold || oldRun.Italic != newRun.Italic || oldRun.FontSize != newRun.FontSize || oldRun.Color != newRun.Color)
+                TextRun current = compareRunFormatting ? newRun.WithText(newRun.Text.Substring(bOffset, count)) : oldRun.WithText(oldRun.Text.Substring(aOffset, count));
+                if (compareRunFormatting && (oldRun.Bold != newRun.Bold || oldRun.Italic != newRun.Italic || oldRun.FontSize != newRun.FontSize || oldRun.Color != newRun.Color))
                 {
                     if (storyMode) throw new NotSupportedException("Comparison.StoryFormatting: Story formatting changes are unsupported.");
                     string id = Guid.NewGuid().ToString("N");
@@ -160,19 +203,6 @@ public static partial class DocumentComparison
             }
             if (i != oldRuns.Count || j != newRuns.Count) throw new NotSupportedException("Comparison.Formatting: Formatting alignment failed.");
             return result;
-        }
-        static TextRun Neutral(TextRun r)
-        {
-            RunAppearance appearance = r.Appearance.Copy();
-            if (appearance.ReviewCompanions != null)
-            {
-                XElement companions = XElement.Parse(appearance.ReviewCompanions);
-                companions.Elements().Where(e => e.Name == W + "bCs" || e.Name == W + "iCs" || e.Name == W + "szCs").Remove();
-                appearance.ReviewCompanions = companions.HasElements ? companions.ToString(SaveOptions.DisableFormatting) : null;
-            }
-            TextRun result = new TextRun(r.Text, code: r.Code, link: r.Link, image: r.Image, appearance: appearance,
-                fieldInstruction: r.FieldInstruction, note: r.Note, box: r.Box, bookmark: r.Bookmark, control: r.Control, retainedObject: r.Object).RetainMetadata(r);
-            result.ExplicitFormat = false; return result;
         }
         static bool Structured(TextRun r) => r.Text.Length == 0 || r.Object != null || r.Image != null || r.Box != null || r.Note != null || r.Bookmark != null
             || r.FieldInstruction != null || r.Control != null || r.Link != null || r.TypedControlId != null;
@@ -206,6 +236,55 @@ public static partial class DocumentComparison
             }
             return false;
         }
+    }
+    internal static bool SameTableStyle(TableStyle? left, TableStyle? right, ConversionContext context)
+    {
+        while (left != null && right != null)
+        {
+            context.CheckCancellation();
+            if (left.Id != right.Id || left.Name != right.Name || left.Background != right.Background
+                || left.RowBandSize != right.RowBandSize || left.ColumnBandSize != right.ColumnBandSize
+                || left.Regions.Count != right.Regions.Count || left.RegionThemes.Count != right.RegionThemes.Count
+                || left.RegionBorders.Count != right.RegionBorders.Count || left.Borders.Count != right.Borders.Count)
+                return false;
+            foreach (var region in left.Regions)
+                if (!right.Regions.TryGetValue(region.Key, out string? color) || region.Value != color) return false;
+            foreach (var region in left.RegionThemes)
+                if (!right.RegionThemes.TryGetValue(region.Key, out TableThemeColor? theme) || !region.Value.Same(theme)) return false;
+            foreach (var region in left.RegionBorders)
+            {
+                if (!right.RegionBorders.TryGetValue(region.Key, out IReadOnlyDictionary<string, CellBorder>? borders) || region.Value.Count != borders.Count) return false;
+                foreach (var edge in region.Value)
+                    if (!borders.TryGetValue(edge.Key, out CellBorder? other) || edge.Value.Style != other.Style
+                        || edge.Value.Color != other.Color || edge.Value.Width != other.Width) return false;
+            }
+            foreach (var border in left.Borders)
+                if (!right.Borders.TryGetValue(border.Key, out CellBorder? other) || border.Value.Style != other.Style
+                    || border.Value.Color != other.Color || border.Value.Width != other.Width) return false;
+            left = left.BasedOn; right = right.BasedOn;
+        }
+        return left == null && right == null;
+    }
+    private static TextRun Neutral(TextRun r)
+    {
+        RunAppearance appearance = r.Appearance.Copy();
+        if (appearance.ReviewCompanions != null)
+        {
+            XElement companions = XElement.Parse(appearance.ReviewCompanions);
+            companions.Elements().Where(e => e.Name == W + "bCs" || e.Name == W + "iCs" || e.Name == W + "szCs").Remove();
+            appearance.ReviewCompanions = companions.HasElements ? companions.ToString(SaveOptions.DisableFormatting) : null;
+        }
+        TextRun result = new TextRun(r.Text, code: r.Code, link: r.Link, image: r.Image, appearance: appearance,
+            fieldInstruction: r.FieldInstruction, note: r.Note, box: r.Box, bookmark: r.Bookmark, control: r.Control, retainedObject: r.Object).RetainMetadata(r);
+        result.ExplicitFormat = false; return result;
+    }
+    private static void NeutralParagraphFormat(ParagraphBlock paragraph)
+    {
+        paragraph.Alignment = ParagraphAlignment.Left; paragraph.FallbackAfter = null; paragraph.ExplicitParagraphFormat = false;
+        ParagraphLayout layout = paragraph.Layout;
+        layout.Before = null; layout.After = null; layout.Left = 0; layout.Right = 0; layout.FirstLine = 0;
+        layout.LineSpacing = null; layout.MultipleLineSpacing = true; layout.ExactLineSpacing = false;
+        layout.PageBreakBefore = false; layout.KeepTogether = false; layout.KeepWithNext = false;
     }
     private static List<TextRun> Slice(ParagraphBlock paragraph, int start, int length, ConversionContext context, ref int work, int maximum)
     {

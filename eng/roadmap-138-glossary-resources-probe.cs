@@ -1,0 +1,22 @@
+using System;
+using System.IO;
+using WordNet;
+
+if (args.Length != 2) throw new ArgumentException("Expected input and new output paths.");
+string path = Path.GetFullPath(args[1]);
+if (File.Exists(path)) throw new IOException("Choose a new output path.");
+var options = new ConversionOptions(FidelityMode.Lenient);
+using var input = File.OpenRead(args[0]);
+WordDocument source = WordDocument.LoadWithControls(input, out _, options);
+var target = WordDocument.Create(options);
+target.AddParagraphs(new[] { "One", "Two" });
+target.AddBookmark("one", 0, 0, 3);
+target.AddBookmark("two", 1, 0, 3);
+target.InsertFragmentAtBookmark("one", source);
+target.InsertFragmentAtBookmark("two", source);
+target.SetControlText(target.ContentControls[0], "Edited");
+target.SetControlText(target.ContentControls[1], "Temporary");
+target.ShowControlPlaceholder(target.ContentControls[1]);
+using var output = File.Create(path);
+target.Save(output, DocumentFormat.Docx);
+Console.WriteLine("Copied four glossary resources and restored one styled placeholder.");

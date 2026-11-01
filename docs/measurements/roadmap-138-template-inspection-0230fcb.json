@@ -1,0 +1,162 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "0230fcbf53f64ecfa86cbcb55a9c04741dfd0e82",
+  "scope": "Non-reusable declared-path inspection for ordinary body merge fields; controls, repeat scopes, output stages and environment identity remain unknown. Full compatibility-plan and loss-policy acceptance remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "2de740336d636f4578daa544f376d4333943a3966fe8095a2612ba4c1a13510e",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2296,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "6bfe2eb597ff86fd2ac1e1b33b2b12dec97812eaa4eb486443b479a979c87eab"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2296,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "97e967ee2b31739a5cd4bbe5074ce3994fb5562c1b8ed0af5586ff1f67546e4e"
+    },
+    "capabilityMatrix": {
+      "profiles": 91,
+      "testMethods": 441,
+      "net10CasesPassed": 768
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive verification against this source; no package was published.",
+    "packageVerificationLogSha256": "bed15b831abc4441075ffd2a6213f0a5bf456ad457b65c14d46ecc8f6d1e62ee",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "a2434c7027f0e361a79371b6f7200e34caab2a381efe23cd3ea8ad40aa8f8703",
+      "wordnet.Fonts.1.5.0.nupkg": "c9cf8f8dc478acba09a4c9846c69f80cc071188de3dd481bfeffe8bce308dfd6",
+      "wordnet.Ocr.1.5.0.nupkg": "202cd1584692da29994b2a6b35aad1ef0a228246e76266e03730d8adf72ff888"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 145.2585,
+      "CandidateMedianMilliseconds": 175.50305,
+      "Ratio": 1.208211911867464,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 41719104.0,
+      "PeakSampledManagedBytes": 27538728.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-template-inspection-performance-0230fcb.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-template-inspection-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "c7d4410b355b901471351cb183cb65935181e57875c9a9ff643303bcdcf85bf9",
+    "checkerLogSha256": "7fe0b73d05804af0e1920e27d0bcf4d9e9e1a4d55578ce2a5bcbad24d00f639a",
+    "schemaLogSha256": "edf7f2767f844743167aa1b90d399e13fdad6aaf7b0d549f7c6e0710a778ab70",
+    "exampleJsonSha256": "c8c402aeb2376063a2d03a06852d942a2700689d1f39a4b00dd207461113bcb8",
+    "openXml": "Four independently authored source DOCX and the exact-source merged DOCX passed Open XML SDK 3.5.1.",
+    "documents": {
+      "valid": {
+        "inputDocxSha256": "8fded7ef47f65963bed7282563155fc8c7fd2cb87861f0dfe3fcf4a097910afe",
+        "reportSha256": "73bae772ce5a4daffb858799a020a8868823688e5067027cab2033bddea8d6bb",
+        "resultSha256": "284d1e8c4918248233df17642bbb940c001e1fa856c18aab86ba6dbe7813eb13",
+        "mergedDocxSha256": "a5eb5e32070d8c1fcda8387350c6281f6dac04ca6ac135ebd5882d95b0923f87"
+      },
+      "missing": {
+        "inputDocxSha256": "f205f7bddc6b206b219a821949f5efd691f69165065159d509c6dd4c933d476d",
+        "reportSha256": "171ddcb68a838129aaa0ec3d4066ebded63e78b7ba1fa770ac2291e1be8a29f8",
+        "resultSha256": "2e4fcc3c34bbd2700d4fe509b969200f75ebb3cf1369d0aa970e267272897cc8",
+        "mergedDocxSha256": null
+      },
+      "type": {
+        "inputDocxSha256": "9b85ae745696c771def51ce1c2fd0dc75c7ccf6d2c65ef0488c856557e15ccae",
+        "reportSha256": "f75cd208874bab380aff70ba80280b58f12b3c0db00d952b7d7fc53f2b6ec7c2",
+        "resultSha256": "7f936ed29c4b7850de2b6dea93a5f17adc025b0fde37320a96e1d373513e3024",
+        "mergedDocxSha256": null
+      },
+      "repeat": {
+        "inputDocxSha256": "44ee232c3a4be2643dec7bade72aa1bb55fc809e5005eddfc1f50f2b6d064324",
+        "reportSha256": "d982f2cede738bbb97c4ba9f66269412f1cf3356f1917bb8d2ebcf3a725342eb",
+        "resultSha256": "6949cc683829cec821cf8bd90841c6ef13e62709bf0ac732d453f7c3cb986e5d",
+        "mergedDocxSha256": null
+      }
+    },
+    "result": {
+      "specimens": {
+        "valid": {
+          "codes": [
+            "Plan.UninspectedCoverage",
+            "Plan.ReuseUnavailable",
+            "Docx.ThemeFont",
+            "Docx.RunFormatting",
+            "Docx.LanguageMetadata",
+            "Docx.AuxiliaryMetadata",
+            "Plan.LocationCoverage",
+            "Docx.Settings",
+            "Docx.PageLayout",
+            "Docx.AdditionalParts"
+          ],
+          "outcome": "passed"
+        },
+        "missing": {
+          "codes": [
+            "Plan.UninspectedCoverage",
+            "Plan.ReuseUnavailable",
+            "Docx.ThemeFont",
+            "Docx.RunFormatting",
+            "Docx.LanguageMetadata",
+            "Docx.AuxiliaryMetadata",
+            "Plan.LocationCoverage",
+            "Docx.Settings",
+            "Docx.PageLayout",
+            "Docx.AdditionalParts",
+            "Plan.MissingPath"
+          ],
+          "outcome": "Template.MissingValue"
+        },
+        "type": {
+          "codes": [
+            "Plan.UninspectedCoverage",
+            "Plan.ReuseUnavailable",
+            "Docx.ThemeFont",
+            "Docx.RunFormatting",
+            "Docx.LanguageMetadata",
+            "Docx.AuxiliaryMetadata",
+            "Plan.LocationCoverage",
+            "Docx.Settings",
+            "Docx.PageLayout",
+            "Docx.AdditionalParts",
+            "Plan.PathType"
+          ],
+          "outcome": "Template.Format"
+        },
+        "repeat": {
+          "codes": [
+            "Plan.UninspectedCoverage",
+            "Plan.ReuseUnavailable",
+            "Docx.ThemeFont",
+            "Docx.RunFormatting",
+            "Docx.LanguageMetadata",
+            "Docx.AuxiliaryMetadata",
+            "Plan.LocationCoverage",
+            "Docx.Settings",
+            "Docx.PageLayout",
+            "Docx.AdditionalParts",
+            "Plan.ControlCoverage",
+            "Plan.RepeatScope",
+            "Plan.OwnerCoverage"
+          ],
+          "outcome": "not-performed"
+        }
+      },
+      "negativeControls": {
+        "removed missing finding": "rejected",
+        "forged reuse": "rejected",
+        "leaked name": "rejected",
+        "incorrect repeat outcome": "rejected"
+      }
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, full #171 acceptance and roadmap #138 remain open."
+}

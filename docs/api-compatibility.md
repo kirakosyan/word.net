@@ -1,5 +1,150 @@
 # API and support policy
 
+<a id="unreleased-roadmap-138-api-work"></a>
+## 1.6.0 roadmap #138 API work
+
+The 1.6.0 #171 profile adds `WordConverter.InspectTemplate`, immutable `TemplateDataSchema`
+and privacy-safe `TemplateInspection` snapshots. Its ordinary-body and bounded
+simple-cell field and inline-control, including beside repeats, and plain root-repeat path scope and
+explicit unknowns are documented in the [inspection profile](editing-and-templates.md#unreleased-source-bounded-template-inspection).
+Selected incompatible PDF option combinations are flagged statically, without
+running conversion or claiming that the remaining destination checks passed.
+The additive `TemplateInspectionFinding.SourceElementIndices` exposes a bounded
+numeric source position where available, without exposing names by default.
+Inspected direct simple fields and bounded same-paragraph complex-field begin
+markers may report an explicit dirty flag as an unknown refresh requirement; no
+public method or constructor changes for it.
+`TemplateSchemaPath.ForRepeatItem` adds an explicit single or dotted per-item
+declaration; dotted parents must be separately declared as required mappings for
+template scope to be known. The
+additive `ScopePathId` on findings and requirements identifies an opaque repeat
+collection alias when known; existing root declarations and constructors remain.
+`TemplateDataSchema.InspectJson` adds a separate immutable, privacy-safe report of
+declared root and repeat-item mismatches in bounded JSON data. Its aliases are
+local to that report, and item indices disclose structure. It checks declarations
+independently of any template and cannot guarantee a merge or output.
+`TemplateDataFinding.Remediation` supplies a stable action identifier without
+disclosing path names or values.
+`TemplateDataSchema.IdentitySha256` and the reports' `DataSchemaSha256` expose
+the same deterministic declaration fingerprint. It can reveal guessed names and
+does not bind a template or execution environment.
+The additive `CompileReusableTemplateInspection` and `ReusableTemplateInspection`
+permit only fixed-profile in-process reuse of the immutable inspection after checking
+input, schema, destination and environment fingerprints. An additive overload selects
+DOCX, PDF or XPS as the inspected destination; the original overload selects DOCX. The underlying report still cannot
+independently authorize reuse of a conversion policy, and no output or loss policy is
+enforced. The module fingerprint is not binary attestation. These APIs are part of the 1.6.0 source
+and are not in published 1.5.0.
+
+The additive `CompileTemplateCompatibilityPlan`, `TemplateCompatibilityPlan`,
+`TemplatePolicyOutcome` and `TemplatePolicyFinding` expose the separate
+[strict plain-DOCX policy profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy).
+It uses the same five target frameworks and has no published-package availability;
+exact runtime and package qualification are recorded separately. Only an empty
+schema and minimal single-run source are accepted. An additive overload explicitly
+selects Strict or BestEffort PDF output; BestEffort admits the documented exact
+theme-font loss only with its location-bound permission. General loss permissions,
+template data and portable execution are not implemented.
+
+The 1.6.0 source for #144 adds the nullable `DocumentContentControl.ParentId`
+snapshot property for admitted nested typed owners. This additive property does
+not change existing constructor or method signatures; handles retain their
+session/version rules. See the [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
+for the ownership and locking limits. It is not in the published 1.5.0 API.
+
+`InsertFragmentAtTableCellBookmark`, the distinct fragment-options methods and
+`FragmentInsertionOptions` add bounded opt-in placement and field policies while
+retaining the original fragment signatures. `CreateReviewDisplay` returns a
+detached `DocumentReviewDisplay` with immutable revision metadata and explicit
+managed PDF/SVG output. `ReviewAnnotationPolicy.NumberedEndNotes` opts into
+numbered comments, format changes and paired move indicators. See the [fragment](editing-and-templates.md) and
+[review](review-workflows.md#unreleased-source-detached-text-revision-display)
+profiles for bounds and exclusions. These signatures are 1.6.0 source work,
+not part of the published 1.5.0 API; exact-framework and package qualification
+are reported separately.
+
+The 1.6.0 #147 profile broadens existing fragment methods to admit the separately documented
+[typed-control](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+and [chart/equation](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+profiles, including mixed fragments with separate owners and bounded local glossary
+copying, without adding signatures.
+Protected-owner and resource failures remain explicit.
+
+The 1.6.0 #158 profile adds `WordDocument.InsertCrossTabAtBookmark` and
+`WordDocument.InsertCrossTabAtCellBookmark` on all target frameworks. They use
+the existing prepared-record and aggregation types; the released append API is
+unchanged. Cell placement requires fixed geometry and explicit physical margins.
+
+The 1.6.0 #163 profile adds `ChartKind.ClusteredBar` without changing existing enum values
+or chart constructors. It uses the existing immutable chart and report-binding
+APIs; its managed rendering approximation and profile restrictions are explicit.
+The later source appends `ChartKind.StackedColumn` and `ChartKind.StackedBar`,
+with independently accumulated positive and negative values and explicit
+reference-layout diagnostics; existing enum values and constructors remain intact.
+The 1.6.0 `ChartDataLabels` enum and immutable `ChartDefinition.WithDataLabels`
+snapshot select bounded centred bar, column and circular-slice labels without changing the existing
+constructor. Prepared-data binding preserves this selection and rejects retained
+appearances it cannot preserve.
+The 1.6.0 `ChartKind.Pie` and `Doughnut` values are appended after the existing
+values; `ChartSlice` and `ChartDefinition.CreateCircular` add immutable explicit
+slice data without changing the original constructor. `SliceColors` exposes an
+immutable snapshot, and prepared-data binding requires a matching slice count.
+
+The 1.6.0 #153 profile admits a bounded standalone-equation/native-paragraph combination
+through the existing options and math-font APIs. It adds diagnostics but no public
+signatures; notes, charts, mixed inline owners and conformance combinations remain open.
+
+The 1.6.0 #154 profile adds `PdfTextBoxReadingOrder` and `PdfOptions.TextBoxReadingOrder`.
+The default rejects or diagnoses text boxes as before; `AnchorOrder` explicitly
+opts into the bounded source-order profile on all target frameworks.
+
+The 1.6.0 #155 profile adds `PdfVectorSemantics` and `PdfOptions.VectorSemantics`. Its
+default is `Reject`; callers can explicitly select described figures or
+decorative vector artifacts in the bounded managed accessible-PDF profile.
+
+The 1.6.0 #156 profile appends `PdfConformance.PdfA2a` without changing existing values or
+defaults. It requires the explicit `PdfAccessibility.PdfUa1` semantic profile.
+
+The 1.6.0 #164 profile adds `HyphenationLexicon`, `HyphenationOptions` and the additive
+`ConversionOptions.Hyphenation` property. A null dictionary preserves default
+layout; the initial one-page managed PDF profile reports its search-geometry loss.
+
+The 1.6.0 #165 profile appends `EastAsianLineBreakLanguage` and
+`TypographyOptions.EastAsianLineBreak`. The default `None` retains the existing
+layout; invalid selections and unqualified native combinations reject explicitly.
+
+The 1.6.0 #161 profile adds three default vector preset geometries using existing conversion
+and session methods, without new public signatures. It also diagnoses loss of
+their authored alternatives and vector titles; existing API shapes remain intact.
+
+The 1.6.0 #160 profile expands the existing text-box conversion paths without adding public
+signatures or runtime dependencies. New independently observed layout differences
+are surfaced through existing fidelity modes and diagnostics.
+
+The 1.6.0 #162 profile extends the existing DOCX and managed conversion paths with bounded
+linear gradient paints. It adds no public signatures or new runtime dependencies;
+other gradient geometries, transparency and conformance combinations stay outside
+the admitted profile.
+
+The 1.6.0 source for #168 API appends `EquationKind.Matrix` and adds immutable
+`EquationExpression.Matrix`, `EquationMatrixAlignment` and `EquationMatrixSpacing`.
+Existing enum values and equation signatures are retained. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
+records the bounds, geometry, unsupported variants and separate qualification status.
+
+The 1.6.0 API for #169 appends `EquationKind.Nary` and adds `EquationExpression.Nary`,
+`EquationNaryOperator` and `EquationLimitPlacement`; existing expression factories
+and enum values remain unchanged. See the [n-ary profile](p2-objects-typography.md#unreleased-source-n-ary-equations).
+
+The 1.6.0 [#159 table-field profile](table-formulas.md) changes bounded field
+evaluation without adding a public API. Its deterministic culture, cached-result
+fallback and per-table limits are part of the documented behavior; it is not yet
+available in the published 1.5.0 packages.
+
+The 1.6.0 #150 profile adds default-enabled `ComparisonOptions.CompareStoryText` and
+`CompareRunFormatting` switches. See the [selection profile](review-workflows.md#unreleased-source-comparison-selection)
+for original-value retention. The same 1.6.0 source adds
+`CompareParagraphFormatting` and bounded [paragraph-format revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -7,6 +152,9 @@ and [qualification record](roadmap-102-p6-qualification.md) describe the P1–P6
 The bounded fields, controls, reports, review and drawing additions ship together;
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
+
+The [template compatibility-plan design](template-compatibility-plan-design.md)
+proposes later APIs but adds no public signatures or package/runtime support.
 
 
 ## P2 controls API — merged source
@@ -18,12 +166,12 @@ Snapshots are cached per committed version; failures/save keep them live and
 successful edits invalidate them. Display views retain Unicode text and defer
 managed glyph/underline preparation until PDF/XPS save.
 Existing Load/ReviewLoadOptions metadata and all five targets remain. No provider
-or XML/SDK type enters the public API. Source review, binary/package validation
-and actual runtime qualification remain separate from public 1.4.0 availability.
+or XML/SDK type enters the public API. The profile is included in 1.5.0; source
+review, package validation and actual runtime qualification remain distinct evidence.
 
 ## Merged roadmap #102 P1 API additions
 
-The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets. Existing signatures and package versions remain unchanged; publication and runtime qualification are separate gates.
+The [P1 profile](roadmap-102-p1.md) adds `DocumentPropertyType`, immutable `DocumentProperty` constructors for string/bool/decimal/DateTimeOffset, and `WordDocument.CustomProperties`, `SetCustomProperty` and `RemoveCustomProperty`. These provider-independent APIs are shared across all five targets and included in 1.5.0. Existing signatures remain compatible; package availability and runtime qualification are separate facts.
 
 
 ## 1.4.0 compatibility
@@ -86,8 +234,8 @@ The mapping follows [Microsoft's Framework version table](https://learn.microsof
 Alternatively, create a portable ZIP from the complete built test output with
 `eng/create-framework-bundle.ps1 -OutputPath artifacts/windows-x64-tests.zip`.
 Extract it on the target PC and run `./run.ps1`. For actual 4.7.2 x64, run
-`./run.ps1 -RequireFramework472 -JitMode legacy`; this compatibility configuration
-passes the current 348-case source and locally packed 1.0.0 suites on actual release
+`./run.ps1 -RequireFramework472 -JitMode legacy`; at that checkpoint this configuration
+passed the 348-case source and locally packed 1.0.0 suites on actual release
 461814. Package/library hashes are recorded with the release evidence. Default-JIT 4.7.2 operation is unsupported for
 1.0. Consumers must select the corresponding documented application setting;
 the library does not change host JIT settings. See the
@@ -98,20 +246,32 @@ remote service, publishing credential or repository checkout is required there.
 
 ## Bucket 4 additive API
 
+The 1.6.0 source for #145 adds the provider-neutral `WordDocument.InsertBlockContentControl`
+for an empty ordinary body paragraph and `InsertBlockContentControlInTableCell` for
+an empty simple-cell paragraph; it keeps the existing inline creation API.
+See the [bounded block profile](content-controls.md#unreleased-source-creating-a-block-control);
+it is not in published 1.5.0 packages.
+
+The 1.6.0 source for #167 adds `PreviewOptions.Layout` and immutable preview-layout
+snapshot types. The additive `LayoutFragment.CellSource`, `ObjectSource` and
+`RunSource` identify bounded DOCX cell, inline-drawing and unambiguous text-run
+owners when available. They expose no provider or model types; text is
+opt-in and unqualified geometry is nullable. See the [snapshot profile](interoperability.md#unreleased-source-preview-layout-snapshots).
+The published 1.5.0 API does not include them.
+
 Published 1.2.0 includes the merged source from PR #37, which appends `Rtf`, adds provider-neutral typography/import/metadata
 options, immutable OCR/preview results, PDF accessibility/language/page selection and
 `WordConverter.RenderPages`. The existing four-argument `TemplateImage` constructor
 is retained; explicit decoration uses a new five-argument overload. Default managed
 Latin/PDF and OCR text behavior remain. See [usage and deployment](interoperability.md).
 
-## Bucket 5 API proposals
+## Historical bucket 5 API proposals
 
-The [design index](later-design-decisions.md) collects unavailable API sketches.
-There is no `DocumentFormat.Odt`, review/comparison API, `DocxProtection` utility or
-chart/equation editor in this change. A future ODT enum addition must also replace
-numeric format-range assumptions and explicitly gate the two proposed DOCX pairs.
-Each selected implementation slice requires separate additive API/package validation
-across all five targets; the designs do not change existing overload metadata.
+The [design index](later-design-decisions.md) records API sketches from before their
+implementation. Published 1.5.0 includes bounded `DocumentFormat.Odt`,
+review/comparison and chart/equation APIs described in the [capability matrix](roadmap-102-capability-matrix.json).
+`DocxProtection` and signature utilities remain cancelled. The historical design did
+not itself change overload metadata or qualify a package or runtime.
 
 ## 1.2.0 compatibility baseline
 

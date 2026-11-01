@@ -1,0 +1,161 @@
+{
+  "result": {
+    "cases": {
+      "wide-no-trailing-p": {
+        "officeTotal": [
+          72.1,
+          116.991764
+        ],
+        "sourceTotal": [
+          206.603,
+          86.982
+        ],
+        "officeEightyPresent": true,
+        "reference": {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 134.50300000000001,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0036045048460066707,
+              "meanChannelError": 0.6625107570656444
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      },
+      "wide-trailing-p": {
+        "officeTotal": [
+          197.1,
+          86.991764
+        ],
+        "sourceTotal": [
+          206.603,
+          86.982
+        ],
+        "officeEightyPresent": false,
+        "reference": {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": false,
+          "glyphSequenceMatches": false,
+          "maximumGlyphDisplacementPoints": 0.0,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.003030296233326081,
+              "meanChannelError": 0.574822447668885
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      },
+      "fit-no-trailing-p": {
+        "officeTotal": [
+          72.1,
+          116.991764
+        ],
+        "sourceTotal": [
+          206.603,
+          86.982
+        ],
+        "officeEightyPresent": true,
+        "reference": {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 134.50300000000001,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0034755322083928663,
+              "meanChannelError": 0.639512879693576
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      },
+      "fit-trailing-p": {
+        "officeTotal": [
+          197.1,
+          86.991764
+        ],
+        "sourceTotal": [
+          206.603,
+          86.982
+        ],
+        "officeEightyPresent": true,
+        "reference": {
+          "kind": "libreoffice",
+          "version": "LibreOffice 24.2.7.2 420(Build:2)",
+          "pageCountMatches": true,
+          "pageGeometryMatches": false,
+          "textAndOrderMatches": true,
+          "glyphSequenceMatches": true,
+          "maximumGlyphDisplacementPoints": 9.503000000000014,
+          "glyphPlacementPasses": false,
+          "visual": [
+            {
+              "passed": false,
+              "dimensionsMatch": true,
+              "changedPixelFraction": 0.0031839418972660046,
+              "meanChannelError": 0.594695075039645
+            }
+          ],
+          "status": "compared",
+          "textAndGeometryPassed": false,
+          "visualPassed": false
+        }
+      }
+    },
+    "schemaValidInputs": 4,
+    "sourcePackageSnapshotsMatch": true,
+    "originalBaselineReproduced": true,
+    "licensedWordReference": "not-provisioned",
+    "interpretation": "These controlled changes isolate reference sensitivity to a terminal cell paragraph and nested grid width. They do not establish which renderer matches Word or resolve all remaining fidelity differences."
+  },
+  "negativeControls": {
+    "base identity": "Baseline or case set changed",
+    "source worker": "Release worker identity changed",
+    "public archive": "Public package archive identity changed",
+    "loaded package": "Release or public-package core identity changed",
+    "schema evidence": "Input identity or independent schema evidence changed",
+    "nested width": "Factorial XML structure changed",
+    "terminal paragraph": "Factorial XML structure changed",
+    "reference identity": "Independent office reference identity changed",
+    "source identity": "Loaded release assembly or source identity changed",
+    "authored content": "Authored text, editable output or diagnostic observation changed",
+    "missing diagnostic": "Unexpected diagnostics appeared",
+    "relaxed threshold": "Release provenance or thresholds changed",
+    "source/package geometry": "Independent source/package PDF geometry diverged",
+    "reference cell position": "Independent outer-cell position changed",
+    "reference missing text": "Reference text extraction observation changed",
+    "page count": "Independent page count changed",
+    "raster evidence": "Retained raster verdict changed",
+    "lost fidelity failure": "Release source and public package observations diverged",
+    "original reproduction": "Original baseline observation did not reproduce"
+  },
+  "controlMethod": "Retained observations were altered in memory."
+}

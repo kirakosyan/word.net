@@ -1,0 +1,1 @@
+12 results; 12 failures retained in /tmp/wordnet-138-stable2/reductions-source/results.json

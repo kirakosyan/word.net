@@ -70,7 +70,7 @@ public static partial class DocumentComparison
         return pairs;
     }
 
-    private static void NormalizePlainStories(DocumentModel document, ConversionContext context)
+    private static void NormalizePlainStories(DocumentModel document, ConversionContext context, bool ignoreRunFormatting, System.Action<int> reserveAdditionalWork)
     {
         if (!HasStories(document)) return;
         foreach (List<DocumentBlock> story in Sections(document, context).Where(s => s != null).SelectMany(s => s!.Stories.Values).Distinct())
@@ -78,8 +78,9 @@ public static partial class DocumentComparison
             context.CheckCancellation(); if (!PlainStory(story)) continue;
             foreach (ParagraphBlock paragraph in story.Cast<ParagraphBlock>())
             {
+                if (ignoreRunFormatting) reserveAdditionalWork(checked(paragraph.Runs.Count + 1));
                 List<TextRun> combined = RunCoalescer.Combine(paragraph.Runs);
-                paragraph.Runs.Clear(); paragraph.Runs.AddRange(combined.Select(r => r.WithText("")));
+                paragraph.Runs.Clear(); paragraph.Runs.AddRange(combined.Select(r => (ignoreRunFormatting ? Neutral(r) : r).WithText("")));
             }
         }
     }

@@ -1,0 +1,199 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "570122d1ec76d9901d46f9470020a7028d3bbd34",
+  "sourceTree": "b992cfd539eb9dc58dd6e56bb4b60b5a061040d7",
+  "scope": "Qualify the app-created exact-tree source containing bounded JSON checks, dotted repeat-item declarations, remediation and local lint input.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "d904d1efe63ea656d81d3b4dd2c37c950c9e13d8b31cc1c8499aae02bde63882",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "52ec98ffc8114494a9a4b17cd67ada63a32b9e962bc58a6e377066deaf71f69e",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2398,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "b99c1df48ff69c67c1a6d7c8c2b2c06723c8f1c9f6ae07dcc3075119daae8181"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2398,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "fc9994f62328386cdba02f4fdf8ecdd333aead6f4ac1229c9d5d6ff6c830899b"
+    },
+    "capabilityMatrix": {
+      "profiles": 117,
+      "testMethods": 518,
+      "net10CasesPassed": 870,
+      "logSha256": "99983e9c2f5d115d75979d404200b0dfc33ff885910e9644077685454c04a4bf"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "15ccb059d9b664305c5cb257436e2344da42727ea70e7f68b57b45f594f8c096",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "9f2530c77ad03471bc39738b0c92512cb7a76d6574746ec1521cf535d50f607c",
+      "wordnet.Fonts.1.5.0.nupkg": "a3e8d8cc45878313c4c2738de4532f92fe66f72177b04c72cdeb6286dbd1cf0d",
+      "wordnet.Ocr.1.5.0.nupkg": "f3d13b3f814eb4b26d37e6005e780907af40ffc110daae333cc54ed557252d01"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 42.9144,
+      "CandidateMedianMilliseconds": 44.75165,
+      "Ratio": 1.0428119698749136,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40138240.0,
+      "PeakSampledManagedBytes": 27213624.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-mirror-performance-570122d.json"
+  },
+  "independentEvidence": {
+    "prototypeReferenceReceipt": "docs/measurements/roadmap-138-data-lint-reference.json",
+    "sourceExampleProbesAndPackageNet10AssemblySha256": "5f8895265bec5515f8d54157779ea74e5dfa3a31ebbf70fe0f574e91f0870eaf",
+    "schemaLogsSha256": {
+      "lint": "9fcc2d9e15bfcb484be4e48cfa780f9efc112a8e12ebdd38a8b7601b74cd3a90",
+      "data-": "9cbeca2a5cd87807886e7cb03c436a2c4b96be76444f2c0478c751ea429c2338",
+      "nested-": "333ebd65b7a92527810368a413b8d1b92a43933879d3116e25c27841ec8dcdfc"
+    },
+    "validatorAssemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+    "lintObservationsSha256": {
+      "bad-docx": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+      "bad-utf8": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+      "bad-xml": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+      "duplicate": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+      "missing-file": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+      "missing": "9d5b81ba62690b37ac6f3c940f2db513e4f3bc41abb36df419dbed73a7576a31",
+      "oversized": "9db1a4adfda46ff00df2c1c2627a1cc53066a7f0ff627b8698a338996386d979",
+      "template-only": "101e1b2928360fc4810d59853ac5e0fb680c1968088306ca26cca7b190cfa428",
+      "undeclared": "7c68b0c5cab4411278a54ccacb8cbeee41464150e358515db91189e335a4e2e9",
+      "valid": "9ec2e6781d72b406f46b967ad387b5d41700435472358a334e3670589d5dbf2d",
+      "wrong-type": "5a60d756514cad7be688a69e67bfaa666211bb419a56316b28f683c155748e60"
+    },
+    "lintControls": {
+      "result": {
+        "scenarios": 11,
+        "templateOnlyOutputPreserved": true,
+        "malformedAndOversizedInputsPublishNoPartialReport": true,
+        "privacySafeDefaults": true
+      },
+      "negativeControls": {
+        "valid exit changed": "Exit status changed: valid",
+        "template-only exit changed": "Exit status changed: template-only",
+        "template-only shape changed": "Template-only output shape changed",
+        "unknown coverage removed": "Unknown template coverage changed: valid",
+        "reuse claimed": "Unknown template coverage changed: valid",
+        "missing data accepted": "Exit status changed: missing",
+        "missing code changed": "Data finding or remediation changed: missing",
+        "missing remediation changed": "Data finding or remediation changed: missing",
+        "missing made unknown": "Data finding or remediation changed: missing",
+        "wrong type accepted": "Exit status changed: wrong-type",
+        "wrong type remediation changed": "Data finding or remediation changed: wrong-type",
+        "wrong type item index changed": "Data finding or remediation changed: wrong-type",
+        "data error summary changed": "Data summary changed: missing",
+        "data unknown summary changed": "Data summary changed: valid",
+        "undeclared path accepted": "Undeclared template path finding changed: undeclared",
+        "private path leaked": "Default JSON exposed a path, part or value: valid",
+        "private value leaked": "Default JSON exposed a path, part or value: valid",
+        "duplicate emitted partial report": "Failed input leaked data or returned a partial report: duplicate",
+        "duplicate error leaked": "Failed input leaked data or returned a partial report: duplicate",
+        "invalid encoding accepted": "Exit status changed: bad-utf8",
+        "oversized input accepted": "Exit status changed: oversized",
+        "missing file path leaked": "Failed input leaked data or returned a partial report: missing-file",
+        "malformed package accepted": "Exit status changed: bad-docx",
+        "malformed XML leaked": "Failed input leaked data or returned a partial report: bad-xml"
+      },
+      "controlMethod": "Observed process exit codes, default JSON and error output changed in memory."
+    },
+    "dataControls": {
+      "result": {
+        "jsonScenarios": 10,
+        "independentOfficeReads": 7,
+        "itemFallbackContrastObserved": true,
+        "failedInspectionsReturnNoPartialReport": true
+      },
+      "negativeControls": {
+        "missing item index": "Declaration finding changed: fallback",
+        "missing item path": "Declaration finding changed: fallback",
+        "missing item scope": "Declaration finding changed: fallback",
+        "missing item code": "Declaration finding changed: fallback",
+        "missing item certainty": "Declaration finding changed: fallback",
+        "missing item omitted": "Declaration finding changed: fallback",
+        "optional fallback rejected": "Declaration finding changed: optional",
+        "unknown scope made definite": "Declaration finding changed: missing-scope",
+        "unknown scope omitted": "Declaration finding changed: missing-scope",
+        "wrong item type admitted": "Declaration finding changed: wrong-type",
+        "root scope type admitted": "Declaration finding changed: scope-type",
+        "repeat scope type admitted": "Declaration finding changed: scope-type",
+        "null image rejected": "Declaration finding changed: typed-non-json",
+        "JSON date string admitted": "Declaration finding changed: typed-non-json",
+        "error summary changed": "Finding summary changed: fallback",
+        "unknown summary changed": "Finding summary changed: missing-scope",
+        "default name leaked": "Default report disclosed a data name or value: fallback",
+        "default alias changed": "Default report disclosed a data name or value: fallback",
+        "malformed error changed": "Inspection failure changed: malformed",
+        "limit error changed": "Inspection failure changed: limit",
+        "partial failure report": "A failed inspection returned a partial report: limit",
+        "failed merge mutated": "Failed merge changed the input: missing-scope",
+        "independent office output changed": "Saved DOCX or independent office text changed: fallback",
+        "saved DOCX output changed": "Saved DOCX or independent office text changed: fallback",
+        "item remediation changed": "Declaration finding changed: fallback",
+        "unknown scope remediation changed": "Declaration finding changed: missing-scope",
+        "scope type remediation changed": "Declaration finding changed: scope-type"
+      },
+      "controlMethod": "Reports, parsed inputs and saved-output observations changed in memory."
+    },
+    "nestedControls": {
+      "result": {
+        "scenarios": 8,
+        "independentOfficeReads": 8,
+        "dottedParentsAreExplicit": true,
+        "rootFallbackAndDataViolationSeparated": true,
+        "emptyRepeatUncertaintyPreserved": true
+      },
+      "negativeControls": {
+        "known item marked unknown": "Item scope, type, presence or count changed: required",
+        "known item type changed": "Item scope, type, presence or count changed: required",
+        "known item presence changed": "Item scope, type, presence or count changed: required",
+        "known count changed": "Item scope, type, presence or count changed: required",
+        "item scope changed": "Item requirement missing: required",
+        "root alias changed": "Root and item scopes were conflated: required",
+        "root type changed": "Root and item scopes were conflated: required",
+        "missing parent omitted": "Parent uncertainty finding count changed: missing-parent",
+        "missing parent made definite": "Parent uncertainty finding changed: missing-parent",
+        "optional parent omitted": "Parent uncertainty finding count changed: optional-parent",
+        "optional parent made definite": "Parent uncertainty finding changed: optional-parent",
+        "wrong parent omitted": "Parent uncertainty finding count changed: wrong-parent",
+        "wrong parent made definite": "Parent uncertainty finding changed: wrong-parent",
+        "optional leaf marked known": "Item scope, type, presence or count changed: optional-leaf",
+        "unknown scope finding omitted": "Unknown item scope finding changed: missing-parent",
+        "parent source part changed": "Nested field source position changed: missing-parent",
+        "parent source position changed": "Invalid child position",
+        "fallback error omitted": "Data declaration finding changed: fallback",
+        "fallback item index changed": "Data declaration finding changed: fallback",
+        "fallback item scope changed": "Data declaration finding changed: fallback",
+        "fallback error summary changed": "Data declaration finding changed: fallback",
+        "null parent accepted as leaf": "Data declaration finding changed: null-parent",
+        "default report leaks name": "Default report disclosed a name or value: required",
+        "default data summary changed": "Default data summary changed: fallback",
+        "saved document text changed": "Merge or independent office output changed: fallback",
+        "independent output changed": "Merge or independent office output changed: fallback",
+        "deep item marked unknown": "Item scope, type, presence or count changed: deep",
+        "reusable plan claimed": "Reuse or broader repeat coverage changed: required"
+      },
+      "controlMethod": "Parsed requirements, source positions, data reports and output observations changed in memory."
+    }
+  },
+  "provisionalOriginalCommit": {
+    "commit": "ecaa4bb9532b6e173bb3d6889d438cbb6672e291",
+    "net8TrxSha256": "a965dfbf26cf6da56ba2768bc1e3dcef8867ee46f38f28a5de6e81b71fb85df1",
+    "net10TrxSha256": "ec04d188c96d69676f90cd3608e5efa7bfddd556e7e2d9182a9f6f2a6530b1b6",
+    "note": "Both suites passed on the original local commit with the same source tree; this is not the app-created commit."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, identity-bound reusable plans, enforced loss policies and roadmap #138 remain open."
+}

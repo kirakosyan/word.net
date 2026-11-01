@@ -1,0 +1,24 @@
+  Determining projects to restore...
+  Restored /tmp/wordnet-138-workflow-source-probe/Probe.csproj (in 182 ms).
+/workspace/wordnet-138-workflow-baseline/eng/roadmap-138-baseline-workflow-probe.cs(66,19): warning CS8714: The type 'string?' cannot be used as type parameter 'TKey' in the generic type or method 'Enumerable.ToDictionary<TSource, TKey, TElement>(IEnumerable<TSource>, Func<TSource, TKey>, Func<TSource, TElement>)'. Nullability of type argument 'string?' doesn't match 'notnull' constraint. [/tmp/wordnet-138-workflow-source-probe/Probe.csproj]
+  Probe -> /tmp/wordnet-138-workflow-source-probe/bin/Release/net10.0/Probe.dll
+
+Build succeeded.
+
+/workspace/wordnet-138-workflow-baseline/eng/roadmap-138-baseline-workflow-probe.cs(66,19): warning CS8714: The type 'string?' cannot be used as type parameter 'TKey' in the generic type or method 'Enumerable.ToDictionary<TSource, TKey, TElement>(IEnumerable<TSource>, Func<TSource, TKey>, Func<TSource, TElement>)'. Nullability of type argument 'string?' doesn't match 'notnull' constraint. [/tmp/wordnet-138-workflow-source-probe/Probe.csproj]
+    1 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.81
+  Determining projects to restore...
+  Restored /tmp/wordnet-138-workflow-package-probe/Probe.csproj (in 333 ms).
+/workspace/wordnet-138-workflow-baseline/eng/roadmap-138-baseline-workflow-probe.cs(66,19): warning CS8714: The type 'string?' cannot be used as type parameter 'TKey' in the generic type or method 'Enumerable.ToDictionary<TSource, TKey, TElement>(IEnumerable<TSource>, Func<TSource, TKey>, Func<TSource, TElement>)'. Nullability of type argument 'string?' doesn't match 'notnull' constraint. [/tmp/wordnet-138-workflow-package-probe/Probe.csproj]
+  Probe -> /tmp/wordnet-138-workflow-package-probe/bin/Release/net10.0/Probe.dll
+
+Build succeeded.
+
+/workspace/wordnet-138-workflow-baseline/eng/roadmap-138-baseline-workflow-probe.cs(66,19): warning CS8714: The type 'string?' cannot be used as type parameter 'TKey' in the generic type or method 'Enumerable.ToDictionary<TSource, TKey, TElement>(IEnumerable<TSource>, Func<TSource, TKey>, Func<TSource, TElement>)'. Nullability of type argument 'string?' doesn't match 'notnull' constraint. [/tmp/wordnet-138-workflow-package-probe/Probe.csproj]
+    1 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.80

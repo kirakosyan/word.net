@@ -1,0 +1,4 @@
+  Determining projects to restore...
+  Restored /tmp/wordnet-138-baseline/src/wordnet.Fonts/wordnet.Fonts.csproj (in 629 ms).
+  Restored /tmp/wordnet-138-baseline/tools/wordnet.Benchmarks/wordnet.Benchmarks.csproj (in 637 ms).
+  Restored /tmp/wordnet-138-baseline/src/wordnet/wordnet.csproj (in 658 ms).

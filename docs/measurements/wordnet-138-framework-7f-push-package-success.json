@@ -1,0 +1,88 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "prHead": "7f476dd9ebddeb55eea1edeee46e79cdd71b3f82",
+  "sourceCommit": "7f476dd9ebddeb55eea1edeee46e79cdd71b3f82",
+  "headAndMergeTree": "ea3bcdea808b81f8af5840c2a106127e70b7fc82",
+  "workflowRun": 41336843671,
+  "jobId": 124948092490,
+  "asset": "package",
+  "artifactId": 13096784818,
+  "artifactSha256": "6e8ea91d068f1718d92080ffcf54ecbd9159d6542bf8b52720543b8b57d67ea3",
+  "trxSha256": "2b5e0ad467736164ba1212274df61065d07cffe6b3d796559823bd51d597a12e",
+  "counters": {
+    "total": "2433",
+    "executed": "2433",
+    "passed": "2433",
+    "failed": "0",
+    "error": "0",
+    "timeout": "0",
+    "aborted": "0",
+    "inconclusive": "0",
+    "passedButRunAborted": "0",
+    "notRunnable": "0",
+    "notExecuted": "0",
+    "disconnected": "0",
+    "warning": "0",
+    "completed": "0",
+    "inProgress": "0",
+    "pending": "0"
+  },
+  "bundle": {
+    "testsSha256": "7b4a8b2556ba4efe11c0e18965bf10512ade220f7a95e919ab8a4c3c19c92f4f",
+    "sourceCommit": "7f476dd9ebddeb55eea1edeee46e79cdd71b3f82",
+    "workflowRun": "41336843671",
+    "testAsset": "package",
+    "requiredCases": 2433,
+    "jitMode": "legacy",
+    "binaries": {
+      "wordnet.dll": "a9c396d0c3d9e1b8a181eb1bb7e15369246a06d3df27197b95c807e3af47caf1",
+      "wordnet.Fonts.dll": "5edfe5103f3a514d3cdf21b3983f13f86d476ea97270ea8db2167ac8126b333c",
+      "wordnet.Ocr.dll": "b76fba0efd1f977ce85c1fdde354c485174940777c30f9e6f64bd7fa18a1b026",
+      "wordnet.Conversion.Tests.exe": "37ac14b8582cf6519110c9fac85e3cb7da2dd0656b0fefdd46181d99bcfd5c27"
+    },
+    "packageVersion": "1.5.0",
+    "packages": {
+      "wordnet": "3a17ad9e22b2318e68319a8bf3502cd3e2d0bf39f4a719252c895ecaa8a05b1f",
+      "wordnet.Fonts": "8a9e638d681c1c70d516d9e283a02083833c068e58d15c210f3b3537d84eee06",
+      "wordnet.Ocr": "883d616b62a5376eaf41e4d23bbfc4a29c87d28c18738cc75d5a0d3d295f72a4"
+    }
+  },
+  "verification": {
+    "passed": true,
+    "frameworkRelease": 461814,
+    "cases": 2433,
+    "commit": "7f476dd9ebddeb55eea1edeee46e79cdd71b3f82",
+    "asset": "package",
+    "librarySha256": "a9c396d0c3d9e1b8a181eb1bb7e15369246a06d3df27197b95c807e3af47caf1",
+    "testSha256": "37ac14b8582cf6519110c9fac85e3cb7da2dd0656b0fefdd46181d99bcfd5c27"
+  },
+  "cleanup": {
+    "project": "wordnet-472-504b5df1f30f",
+    "containersRemoved": true,
+    "networkRemoved": true,
+    "stateRemoved": true,
+    "imageRemoved": true
+  },
+  "environment": {
+    "frameworkRelease": 461814,
+    "exactFramework472": true,
+    "testProcessArchitecture": "x64",
+    "requestedJitMode": "legacy",
+    "runtimeOverrides": {},
+    "childRuntimeOverrides": {
+      "COMPlus_UseLegacyJit": "1"
+    },
+    "loadedJitModules": [
+      {
+        "name": "clrjit.dll",
+        "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+      },
+      {
+        "name": "compatjit.dll",
+        "version": "4.7.3946.0 built by: NET472REL1LAST_B"
+      }
+    ]
+  },
+  "qualification": "Actual Windows Framework 4.7.2 x64 legacy-JIT local-package guest passed 2,433 cases with complete cleanup. Newer source and package revisions require separate evidence."
+}

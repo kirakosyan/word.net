@@ -1,6 +1,18 @@
 # Minimum-runtime qualification on AK-PC
 
-## Current 1.2.0 release gate
+## Current 1.5.0 release evidence
+
+The [1.5.0 release record](releases/1.5.0.md) identifies the final source and
+package qualification, including actual Framework 4.7.2 x64 with the documented
+legacy JIT. The core retains `net462;net472;netstandard2.0;net8.0;net10.0`;
+building the net462 asset does not qualify actual Framework 4.6.2 execution.
+Android and macOS release support remain deferred. Each new source or package
+candidate needs its own exact-runtime evidence. The AK-PC and 1.2.0 records below
+are historical, not instructions to use an old branch or old test count.
+
+<a id="current-120-release-gate"></a>
+
+## Historical 1.2.0 release gate
 
 Published 1.2.0 has **829/829** source and exact-main-CI-package passes on actual
 Framework 4.7.2 x64 (release 461814) with observed legacy JIT. Reports identify
@@ -38,16 +50,15 @@ See [the enterprise audit](enterprise-audit.md) for exact package hashes and CI 
 
 The default-JIT defect and the legacy-JIT requirement below remain applicable.
 
-This runbook preserves `net472;netstandard2.0;net8.0;net10.0` and the `WordNet` API.
-macOS remains deferred. Minimum-runtime qualification covers **actual Framework 4.7.2**
-and **Android API 21 ARM64** execution of every shared test. The earlier 301-case
-Framework baseline passes with the explicit legacy x64 JIT configuration below;
-the current review fixes require fresh minimum-runtime execution. Default JIT remains unqualified. Android
-remains unresolved and further investigation is deferred at the user's request.
+At that earlier checkpoint the runbook targeted `net472;netstandard2.0;net8.0;net10.0`
+and discussed both **actual Framework 4.7.2** and **Android API 21 ARM64**. Android
+release qualification remains deferred at the user's request. The earlier 301-case
+Framework baseline used the explicit legacy x64 JIT configuration below; each later
+source and package candidate requires its own execution. Default JIT remains unqualified.
 A VM/emulator starting is not a passing qualification report.
 
-AK-PC's installed Framework is **4.8.1** (release `533509`). All 348 cases pass
-directly on this PC, including English OCR. Framework 4.x releases replace earlier
+At that checkpoint, AK-PC's installed Framework was **4.8.1** (release `533509`),
+and all 348 cases passed directly on that PC, including English OCR. Framework 4.x releases replace earlier
 versions in place, so targeting `net472` here does not execute 4.7.2 itself. See
 [Microsoft's runtime rules](https://learn.microsoft.com/en-us/dotnet/framework/install/versions-and-dependencies#remarks-for-version-45-and-later).
 Use the direct run below for this PC; the isolated VM instructions are only for
@@ -55,12 +66,11 @@ investigating the declared older minimum without replacing the host runtime.
 
 ## 1. Get the branch
 
-On AK-PC, open PowerShell in the repository and run:
+On the test PC, open PowerShell in the checkout being qualified and record its state:
 
 ```powershell
-git fetch origin
-git switch codex/production-readiness
-git pull --ff-only
+git status --short --branch
+git rev-parse HEAD
 ```
 
 Keep any local work; do not reset or clean the checkout to run these instructions.

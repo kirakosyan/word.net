@@ -1,0 +1,656 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "d85247ce0e461e9c279295966382ebc623bd6e6f",
+  "scope": "Observe one directly owned simple merge field in an admitted root repeat, without resolving item versus fallback scope or claiming reusable plans.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+    "generatorSha256": "deca5437f1ddf1dedd47ea3df2b7acadeb8734ab2e9c18aa5ad4db0542896343",
+    "documents": {
+      "both.docx": "cf75a990f1c44c3632bf385e7bf5af46186da1a73b6354da534274aba2ec58b5",
+      "item.docx": "8720118e448feec63d4025e96f1d797c174e0598fbe2e0df5520a7260edb9207",
+      "empty-invalid.docx": "770e99fdd7f46d7de084f6e75367f916a8e18e90c61fdeda8a60cdd3cb3f5c2c",
+      "nonmerge.docx": "3ddec3904c2e3def673d8e2b102d270fee7ce02f70c2be33a7ca400de55b2b97",
+      "two-blocks.docx": "ca32b37262ee6acbf8b9793aeb0902bb525cac4528d1d557ed518657b863e9fb",
+      "field-extra.docx": "2e6271e183c9e41f20f534f4737431c2499d8f87ad9297057eccd9163e8c86b3",
+      "wrong-type.docx": "8018c27b9169ee643e452f2f0b29b32bf8842e65a83e09c7c83683e31b0a2554"
+    }
+  },
+  "twoIndependentGenerationsIdentical": true,
+  "sourceFilesSha256": {
+    "eng/generate-roadmap-138-preflight-repeat-fields.py": "deca5437f1ddf1dedd47ea3df2b7acadeb8734ab2e9c18aa5ad4db0542896343",
+    "eng/roadmap-138-preflight-repeat-fields-probe.cs": "33694959390ec98bd7c0e64d205e2a35675cd98c55bd294981fba2e1bf2c0f1f",
+    "eng/verify-roadmap-138-preflight-repeat-fields.py": "b4cd3db99f99cb6fefd8b4fa80097315d7a618b37b000f9f4062da2e3c9a28ec",
+    "src/wordnet/Formats/DocxReader.Templates.cs": "7c0084cab658acef64c40a4309c241f17f5934debdac8406ee949e102d5c4b94",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "54593289cdae9ce738968784981b448ab84c35634ade0db13367f26bc89a4c41",
+    "src/wordnet/TemplateInspection.cs": "b0f6313dcbfbf0ec075a8d85186384087f2603b866b7bee20236a1d7bb13dfa6",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "9e2707cc955611f93dcd178c41f61b3449e301b7a3f15a2ee21094afb327711e"
+  },
+  "candidateAndProbeNet10AssemblySha256": "bca0038f02be5826bf251ef2b02387437d309be8a709f32c09d5106b8383ffd4",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceSchemaLogSha256": "223f280296a15efd896f0608a6f53491952b5edbfa0962886292b3bc58585e20",
+  "mergedSchemaLogSha256": "d8e4f8902ba6aab03e84ab84308f9ab4eeb0ab2f11b7a5daa7bf244c1b340344",
+  "officeReference": "LibreOffice 24.2.7.2 in network-disabled wordnet-138-reference:temporary image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; text order only.",
+  "officeLogSha256": "d07c71c565b9b19e060f1f6c931e4fb9256badd871a663c49f6ee9519de17e7e",
+  "verifierSha256": "baebbf6df22d5a9ae034e6c10e468c01a5f0bbea52fc27a081c7dd314f74e464",
+  "initialFocusedFailure": {
+    "reason": "An older assertion expected one requirement after the new repeat requirement and root collection were exposed.",
+    "logSha256": "1df45dc72a07538c52fb803333989df98019a68ff1a62bf5b9d844cacbe30088",
+    "retry": "35 focused cases passed with scope-specific assertions.",
+    "retryLogSha256": "d2e09c74d21dae0629fc3046ec8717228b42df1a6d2bf3602b57f6b6e826481e"
+  },
+  "outputs": {
+    "both": {
+      "sourceDocxSha256": "cf75a990f1c44c3632bf385e7bf5af46186da1a73b6354da534274aba2ec58b5",
+      "defaultReportSha256": "ac2e690e1ed5a7a623b9a64c2daf4d8f9ac3272c9a5e23a388913cbe9c00f41d",
+      "observationSha256": "87f8ca192e9d9c3d49d245b4c2c1a18a44ac3776efbb5962a1e2c68eeb528db0",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatFieldScopeUnknown",
+            "Unknown": true,
+            "PartId": "part-0001",
+            "part": "word/document.xml",
+            "path": "Name",
+            "indices": [
+              1,
+              1,
+              2,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [
+          {
+            "path": "Items",
+            "PathId": "path-0001",
+            "DeclaredType": 5,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          },
+          {
+            "path": "Name",
+            "PathId": "path-0002",
+            "DeclaredType": 0,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          },
+          {
+            "path": "Name",
+            "PathId": "path-0002",
+            "DeclaredType": null,
+            "Required": null,
+            "ScopeUnknown": true,
+            "Count": 1
+          }
+        ],
+        "error": null,
+        "before": [
+          "cached",
+          "cached"
+        ],
+        "after": [
+          "root",
+          "child",
+          "root"
+        ]
+      },
+      "mergedDocxSha256": "9cf2c0562f50890b254578a4ef02cea43f0d2109ef57d6fab3e8e3bc160154c4",
+      "officePdfSha256": "9d84c122f6ccba2ab72c00903f43b451d2b3a576e654463b42493408c3d538e0"
+    },
+    "item": {
+      "sourceDocxSha256": "8720118e448feec63d4025e96f1d797c174e0598fbe2e0df5520a7260edb9207",
+      "defaultReportSha256": "099b3c1ac594afdcd7d5e1a4434bec74618566532818239ee0032d3d74b92fbf",
+      "observationSha256": "2caa4b6d6de0b118f2a51ab7d5a93310c9274c1823b23945ebeb45b53c485e01",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatFieldScopeUnknown",
+            "Unknown": true,
+            "PartId": "part-0001",
+            "part": "word/document.xml",
+            "path": "Code",
+            "indices": [
+              1,
+              1,
+              1,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [
+          {
+            "path": "Code",
+            "PathId": "path-0001",
+            "DeclaredType": null,
+            "Required": null,
+            "ScopeUnknown": true,
+            "Count": 1
+          },
+          {
+            "path": "Items",
+            "PathId": "path-0002",
+            "DeclaredType": 5,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          },
+          {
+            "path": "Name",
+            "PathId": "path-0003",
+            "DeclaredType": 0,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          }
+        ],
+        "error": null,
+        "before": [
+          "cached",
+          "cached"
+        ],
+        "after": [
+          "child",
+          "root"
+        ]
+      },
+      "mergedDocxSha256": "ed25fd8d7d03198eea850188fe39df72d921fd30e25eeabfb06d85f715f9ef01",
+      "officePdfSha256": "bccb0e6b3e41641ea79733da7e58ec72b569fcb6fd68908c80a0c5f3ece446d9"
+    },
+    "empty-invalid": {
+      "sourceDocxSha256": "770e99fdd7f46d7de084f6e75367f916a8e18e90c61fdeda8a60cdd3cb3f5c2c",
+      "defaultReportSha256": "a5a449de17a5172f9cf1eb336401bb7bc119c52b06224e840d05b5c45ee1ff18",
+      "observationSha256": "0397e4dd7bedd7bf554c7076db66fdfd90d3e1b341aa56093a6d4bbd4166be41",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.FieldCoverage",
+            "Unknown": true,
+            "PartId": "part-0001",
+            "part": "word/document.xml",
+            "path": null,
+            "indices": [
+              1,
+              1,
+              1,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [
+          {
+            "path": "Items",
+            "PathId": "path-0001",
+            "DeclaredType": 5,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          }
+        ],
+        "error": null,
+        "before": [
+          "cached",
+          "end"
+        ],
+        "after": [
+          "end"
+        ]
+      },
+      "mergedDocxSha256": "a31b9dd5061ae49144f8de795e4dde7e1fba72514914c6ee6977d0b44923666b",
+      "officePdfSha256": "f30e7b89576800fb777b540b4fb04285d2718c383ea20fa300733b30e7f535e3"
+    },
+    "nonmerge": {
+      "sourceDocxSha256": "3ddec3904c2e3def673d8e2b102d270fee7ce02f70c2be33a7ca400de55b2b97",
+      "defaultReportSha256": "21dec21ce4c21a0561de7305bbc1077748f20b1a311a9fbf495512a2b2f4441e",
+      "observationSha256": "abec4bd178164c14a28a51e435b6fdf098705457b2b2d947f4988519d5bc9961",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.FieldCoverage",
+            "Unknown": true,
+            "PartId": "part-0001",
+            "part": "word/document.xml",
+            "path": null,
+            "indices": [
+              1,
+              1,
+              1,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [
+          {
+            "path": "Items",
+            "PathId": "path-0001",
+            "DeclaredType": 5,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          }
+        ],
+        "error": null,
+        "before": null,
+        "after": null
+      }
+    },
+    "two-blocks": {
+      "sourceDocxSha256": "ca32b37262ee6acbf8b9793aeb0902bb525cac4528d1d557ed518657b863e9fb",
+      "defaultReportSha256": "d6a2d8904b7df2679727cdb344b0d152acad7b0eaf9d125881de179bf19745ce",
+      "observationSha256": "df290eaa5178fdb590aefa04615b53693662e1edd52c1c5b7b46e8bbd7f6d044",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [],
+        "error": null,
+        "before": null,
+        "after": null
+      }
+    },
+    "field-extra": {
+      "sourceDocxSha256": "2e6271e183c9e41f20f534f4737431c2499d8f87ad9297057eccd9163e8c86b3",
+      "defaultReportSha256": "111ebb87d750143b91dccce420e8d6dbfc4d03b07700efdb469839340f89b771",
+      "observationSha256": "df290eaa5178fdb590aefa04615b53693662e1edd52c1c5b7b46e8bbd7f6d044",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [],
+        "error": null,
+        "before": null,
+        "after": null
+      }
+    },
+    "wrong-type": {
+      "sourceDocxSha256": "8018c27b9169ee643e452f2f0b29b32bf8842e65a83e09c7c83683e31b0a2554",
+      "defaultReportSha256": "340459c439b2386f72965485ab9c802f10583b70a67b78594eafd3e7eb783b5f",
+      "observationSha256": "84988f54853b9059c9c59a847519133a18f000af96a2ea0a8185bd6762480492",
+      "observation": {
+        "IsReusable": false,
+        "findings": [
+          {
+            "Code": "Plan.UninspectedCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ReuseUnavailable",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.ControlCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.RepeatScope",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          },
+          {
+            "Code": "Plan.PathType",
+            "Unknown": false,
+            "PartId": "part-0001",
+            "part": "word/document.xml",
+            "path": "Items",
+            "indices": [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "Code": "Plan.RepeatFieldScopeUnknown",
+            "Unknown": true,
+            "PartId": "part-0001",
+            "part": "word/document.xml",
+            "path": "Name",
+            "indices": [
+              1,
+              1,
+              1,
+              2,
+              1,
+              1
+            ]
+          },
+          {
+            "Code": "Plan.OwnerCoverage",
+            "Unknown": true,
+            "PartId": null,
+            "part": null,
+            "path": null,
+            "indices": null
+          }
+        ],
+        "requirements": [
+          {
+            "path": "Items",
+            "PathId": "path-0001",
+            "DeclaredType": 0,
+            "Required": true,
+            "ScopeUnknown": false,
+            "Count": 1
+          },
+          {
+            "path": "Name",
+            "PathId": "path-0002",
+            "DeclaredType": null,
+            "Required": null,
+            "ScopeUnknown": true,
+            "Count": 1
+          }
+        ],
+        "error": "Template.Collection",
+        "before": [
+          "cached",
+          "end"
+        ],
+        "after": [
+          "cached",
+          "end"
+        ]
+      },
+      "mergedDocxSha256": "fea3df60a36c36f21d03df7a9c1ebffc964555d4302becec8a2f7bda44bf5513",
+      "officePdfSha256": "e843d0b69cddc0ce8154d2c915c7608d6889a88b48182fcb1ba801b6295516c1"
+    }
+  },
+  "controls": {
+    "result": {
+      "scenarios": 7,
+      "mergedOfficeReads": 4,
+      "scopeKnownAndUnknownSeparated": true,
+      "unparseableOrUnsupportedContentRemainsUnknown": true
+    },
+    "negativeControls": {
+      "scope certainty": "Unknown-scope requirement missing: both",
+      "guessed type": "Repeated field guessed its type, presence or count: both",
+      "guessed presence": "Repeated field guessed its type, presence or count: both",
+      "wrong count": "Repeated field guessed its type, presence or count: both",
+      "different path alias": "Root and repeated requirements were conflated",
+      "missing finding": "Repeated field finding missing: both",
+      "wrong source position": "Invalid child position",
+      "wrong source part": "Repeated field certainty or alias changed: both",
+      "root type changed": "Root and repeated requirements were conflated",
+      "root scope changed": "Unknown-scope requirement missing: both",
+      "merged output changed": "Merged text or independent office reading changed: both",
+      "failed edit changed": "Repeat rejection or atomicity changed",
+      "private value leaked": "Default report disclosed private names or values: both",
+      "unsupported owner inspected": "Unsupported repeat owner was inspected: two-blocks",
+      "invalid field marked certain": "Unexecuted field was declared invalid or resolved: empty-invalid",
+      "reuse claimed": "Reuse or repeat coverage changed: both"
+    },
+    "controlMethod": "Parsed report, source positions and output observations changed in memory."
+  },
+  "limits": "Names in observations are synthetic. Other repeated owners, data scope resolution, font/provider identity, reusable plans and loss-policy enforcement remain open."
+}

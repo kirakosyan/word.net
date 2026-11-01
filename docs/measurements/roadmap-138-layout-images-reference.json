@@ -1,0 +1,137 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "07552502f67e3613626f961f5ea93d5814d18b7d",
+  "scope": "Working-tree evidence for a single untransformed inline DOCX image in a direct body paragraph. Broader object identities and cross-editor placement remain open.",
+  "provenance": "Synthetic OOXML and a 4-by-4 RGB PNG authored independently without wordnet serialization using the MIT fixture helper and Pillow 12.3.0. Two generations were byte-identical. Open XML SDK 3.5.1 validated the three documents; PyMuPDF 1.27.2.2 and Pillow independently read PDF frames, SVG frames and decoded image pixels. LibreOffice ran offline from the task-owned Docker reference image.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-layout-images.py": "a90a3583ebb9e23ca41143d05f132a17c6c2195a285269f83dca1b025e7246d9",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-layout-images-probe.cs": "8c531c53eb3d055d253faaedad630f90afbd0e613ccb3cfc55443f7ae365c8a6",
+    "eng/verify-roadmap-138-layout-images.py": "586e4b551b3ae8a0a0ec6de475c596e314abb1e9b2689dee7b6108f97e59a2fe",
+    "src/wordnet/DocumentLayoutSnapshot.cs": "963cf255bf7bfb6b68f903ef3e290e93e6f7ba741c739143b84f3ceba8fc1e2b",
+    "src/wordnet/Formats/DocxReader.Fidelity.cs": "e145449d53030549df0ccfdd527611333dc63bbfa64b7c7c7c2957a7bdc89c72",
+    "src/wordnet/Formats/DocxReader.cs": "594ff61e033539824ceae141cf8583d2531c067503893954912425dec21cb0cc",
+    "src/wordnet/Internal/ConversionContext.cs": "42139c38ffe20759168bc9213c528b11ca7294548aaae1fb3758da2f363a418e",
+    "src/wordnet/Model/DocumentImage.cs": "3deab063609345f1ca635ed98a804f94f6b12b727b0d98c3c64c957a94d91f9b",
+    "src/wordnet/WordConverter.LayoutSnapshot.cs": "a6d842b204723ff1f00d262b685945816f8ec9ddde89a577c144091d63b22cd8",
+    "src/wordnet/WordConverter.Previews.cs": "72e4f488fe388f681658397da2dbc668e957a0da8cb90fa9a0a6fac00fe8a9d8",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "7248b02adf8b057adafc516548ca00cefcde80390b37e631ec5f73609d7ccf22"
+  },
+  "probeWordnetAssemblySha256": "86a18fd4285a769e7c11f1eed2c80d3f2b2380d9e2ea91bea18082017b86ef1a",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "validatorLogSha256": "9dd9f6f4128e5fc09ad55518c193ea2303a2ceceb39116c5dd012af3db8888ca",
+  "independentVerifierLogSha256": "4801f6807ba47004d3028e436e1b9625280ff2afff96a7e9a3d4804b6915038d",
+  "referenceImage": "wordnet-138-reference:temporary sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; LibreOffice 24.2.7.2, --network none",
+  "specimenHashes": {
+    "inline": {
+      "inputDocxSha256": "39cf2d9dd3bbcf74902bb8465e539b72aa469c88f528095737acdf9cf1f1964f",
+      "pdfSha256": "45fd88eef88020afcc8dcc97173d1bce593a784584e734ca8f204492f7c479a1",
+      "svgSha256": "b0602a8539a9799881ac8b5d52bebf29cee3740f4b260eadc269fa2e46dcecb1",
+      "snapshotSha256": "158394b120d9d7bd7cc15420325e662b4f72cc502974130270953eeaee7d98cb",
+      "officePdfSha256": "1ce39d31f7d20cd6354bf88f9160854aad5acb6d12341bc46f1e7a89e0e96c55"
+    },
+    "inline-zero-dist": {
+      "inputDocxSha256": "622329ca0d9b72aaba79b1c6880423a988c78f9787b1b7da3ff17e994caebbb2",
+      "pdfSha256": "45fd88eef88020afcc8dcc97173d1bce593a784584e734ca8f204492f7c479a1",
+      "svgSha256": "b0602a8539a9799881ac8b5d52bebf29cee3740f4b260eadc269fa2e46dcecb1",
+      "snapshotSha256": "158394b120d9d7bd7cc15420325e662b4f72cc502974130270953eeaee7d98cb",
+      "officePdfSha256": "a81694df4c0e94a823ceb341eab481f15807d13b92a4930e58e58daf7553d3c4"
+    },
+    "cropped": {
+      "inputDocxSha256": "e8670b71bf5e8ce756aa7ba66d75ee6eec83e1496fe9f5df6521a99454805619",
+      "pdfSha256": "4201ad763cec340defe8c9f9ea871f042605236e4d9a327c7535b7859a5086e1",
+      "svgSha256": "d28d38edc9ad340ed3315216e6499a49dd2fe51d5ef97517b80265e66f08f037",
+      "snapshotSha256": "0822fd5a51d06e4d7c4ff84b7c719547bb664402944b654f40b32599267bf3ab",
+      "officePdfSha256": "61cc669048726b98b7fce55f78e1df8deda6f77902a953cc171442736615e321"
+    }
+  },
+  "result": {
+    "specimens": {
+      "inline": {
+        "qualified": true,
+        "boundsPt": [
+          72,
+          72,
+          192,
+          132
+        ],
+        "maximumFrameDeltaPt": 0.0,
+        "pixels": [
+          4,
+          4
+        ]
+      },
+      "inline-zero-dist": {
+        "qualified": true,
+        "boundsPt": [
+          72,
+          72,
+          192,
+          132
+        ],
+        "maximumFrameDeltaPt": 0.0,
+        "pixels": [
+          4,
+          4
+        ]
+      },
+      "cropped": {
+        "qualified": false,
+        "reason": "UnqualifiedOwner"
+      }
+    },
+    "negativeControls": {
+      "wrong source path": "Inline drawing identity or status changed",
+      "shifted bounds": "Snapshot, PDF and SVG image frames differ",
+      "moved SVG frame": "Snapshot, PDF and SVG image frames differ",
+      "moved PDF frame": "Snapshot, PDF and SVG image frames differ",
+      "changed source extent": "Image frame differs from the source extent",
+      "changed image pixels": "Decoded image pixels differ",
+      "mapped cropped image": "Cropped image was assigned qualified geometry"
+    },
+    "controlMethod": "Parsed source/output measurements changed in memory.",
+    "officeComparison": {
+      "inline": {
+        "actualBoundsPt": [
+          72.0,
+          72.0,
+          192.0,
+          132.0
+        ],
+        "referenceBoundsPt": [
+          81.05000305175781,
+          71.95074462890625,
+          201.0500030517578,
+          131.95074462890625
+        ],
+        "maximumFrameDeltaPt": 9.050003051757812,
+        "geometryTolerancePt": 0.5,
+        "frameComparisonPassed": false
+      },
+      "inline-zero-dist": {
+        "actualBoundsPt": [
+          72.0,
+          72.0,
+          192.0,
+          132.0
+        ],
+        "referenceBoundsPt": [
+          72.0,
+          71.95074462890625,
+          192.0,
+          131.95074462890625
+        ],
+        "maximumFrameDeltaPt": 0.04925537109375,
+        "geometryTolerancePt": 0.5,
+        "frameComparisonPassed": true
+      }
+    }
+  },
+  "qualificationNotes": [
+    "The original office comparison fails the unchanged 0.5-point geometry tolerance; the explicit-zero-distance contrast passes. No inference is made about Microsoft Word or other image placements.",
+    "The first three-document schema validation printed zero errors but exited 1 because the reused two-document harness required exactly two inputs. A separately rebuilt harness requiring three inputs printed the same zero-error result and exited 0. The failed harness log SHA256 is 9dd9f6f4128e5fc09ad55518c193ea2303a2ceceb39116c5dd012af3db8888ca.",
+    "The verification script reports independent reference comparisons without promoting a failing observation to a passing tolerance gate; all seven in-memory mutation controls are rejected."
+  ]
+}

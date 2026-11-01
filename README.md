@@ -8,7 +8,7 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
-The pending [P4/P5 source profile](https://github.com/kirakosyan/word.net/blob/codex/roadmap-102-p4-p5/docs/roadmap-102-p4-p5.md) extends review workflows and bounded drawing support. It is not included in the published 1.4.0 packages.
+This source and package target 1.6.0. The [release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.0.md) and [tested source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) describe the admitted feature profiles and their limits. The NuGet badge and [releases](https://github.com/kirakosyan/word.net/releases) show published availability. [Roadmap #138](https://github.com/kirakosyan/word.net/issues/138) remains open for broader combinations and qualification.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.
@@ -45,7 +45,17 @@ dotnet add package wordnet.Ocr
 This provider also supplies PNG previews and optional native typography. English OCR additionally requires a local Tesseract 5 library and `eng.traineddata`.
 See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md) and [deployment requirements](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md).
 
-## New in 1.5.0
+## New in 1.6.0
+
+- Bounded DOCX theme/table handling, typed-control ownership and creation, and selected fragment composition.
+- Explicit review displays and comparison options, deeper bounded reports, cross-tab placement and conservative table formulas.
+- Selected chart, vector, text-box and equation extensions with diagnostics for known reference differences.
+- Bounded typography, accessible and tagged archival output profiles, DOTX/OTT identities and preview-layout inspection.
+- Template inspection and a narrow in-process DOCX-to-PDF policy plan; general policy enforcement remains open.
+
+These are bounded profiles, not blanket support for arbitrary combinations. See the [1.6.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.0.md), [source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) and linked feature profiles before adopting them. Use matching versions of all three packages.
+
+## Previous: 1.5.0
 
 - Improved DOCX defaults, paragraph marks, managed table sizing and footnote layout.
 - Typed custom-property fields, deterministic numeric/date pictures, bounded nested IF fields and STYLEREF running headers.
@@ -54,7 +64,7 @@ See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/
 - Bounded formatting revisions, whole-paragraph moves, matching-section comparison and header/footer text revisions.
 - Quarter-turn and shrink-to-fit text boxes, linked box chains and editable line, ellipse and rounded-rectangle shapes.
 
-See the [1.5.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json) for migration guidance and supported combinations. Drawing extensions require ordinary managed fixed output; tagged/archive PDF and native typography combinations remain outside that profile. Use matching versions of all three packages.
+See the [1.5.0 release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.5.0.md) and [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-102-capability-matrix.json) for migration guidance and supported combinations. The 1.5.0 drawing extensions require ordinary managed fixed output; tagged/archive PDF and native typography combinations remain outside that earlier profile. Use matching versions of all three packages.
 
 ## Quick start
 
@@ -252,9 +262,9 @@ Linux requires Tesseract, fontconfig and the documented fonts. Run Framework tes
 | [Diagnostics](https://github.com/kirakosyan/word.net/blob/main/docs/diagnostics.md) | Fidelity reports and preflight remediation |
 | [Testing](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md) | Build/test setup, independent validation and platform evidence |
 | [Comparison harness](https://github.com/kirakosyan/word.net/blob/main/docs/comparison.md) | Reproducible corpus and optional licensed reference comparisons |
-| [Current fidelity baseline](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-103-baseline.md) | Merged source/public-package evidence, retained failures and reduced reproductions |
+| [Initial 1.5.0 fidelity measurements](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-138-initial.md) | Released-source/public-package measurements, retained failures and outstanding controls |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Delivered work and remaining scope |
-| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.4.0.md) | Published packages and exact-artifact evidence |
+| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.0.md) | Version scope, qualification and publication gates |
 | [Release procedure](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) | Package qualification and manual publishing |
 | [Contributing](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md) | Engineering and validation requirements |
 

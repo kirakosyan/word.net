@@ -1,0 +1,90 @@
+{
+  "roadmap": 138,
+  "issue": 172,
+  "recordedUtc": "2026-11-01",
+  "qualification": "Uncommitted public-wrapper prototype only. Exact-source, package and hosted qualification are separate.",
+  "baseCommit": "9949d248a48baa1f8cb024c842ab9466608fc09c",
+  "prototypeSourceFiles": {
+    "src/wordnet/Internal/CompatibilityPolicyData.cs": "d3928bc1b77812fb462b47e72b01903cb60625f0213a3283e3675a1847151bdb",
+    "src/wordnet/Internal/CompatibilityPlanData.cs": "505f6fee20a89503062a1ae9b15c648ce65ae4a123a09bfc34c5eac4f0b2fb42",
+    "src/wordnet/Internal/PlainDocxPolicyProfile.cs": "3d4d18afaf2801d642f8a8ae7e0ee418dd337ccce1ba310a28a25c3a2f8a9a38",
+    "src/wordnet/Internal/PlainDocxPolicyPlan.cs": "e39fdaac1f78341330771124e9277a19695000a22f9beb3b881cc48495a27f8f",
+    "src/wordnet/TemplateCompatibilityPlan.cs": "cac3b0e52b00f3516c0ae15eaf1b06b4bc3094b5851d13e0e3c9bfa1346bb252",
+    "tests/wordnet.Conversion.Tests/TemplateCompatibilityPolicyLossTests.cs": "4eb581bc167ca6890eaf1326d8b143f0498de6af083701faef6c0a6f036bd4c5",
+    "eng/generate-roadmap-138-policy-loss.py": "061edc112bbc239c1f148c74afe53691f62661f0e36a0c90052410901971b0ce",
+    "eng/roadmap-138-policy-loss-probe.cs": "8e97e9208d983f79fbf96fe6d2a93013fb4e9dd220ff5a22e80cc350f5a4e695",
+    "eng/verify-roadmap-138-policy-loss.py": "9982d562356dfadf63fa3611ac4ead13a39c48ba854485df5e537715c4b639aa",
+    "docs/design/template-compatibility-plan.schema.json": "c622a894b73bf27a2002275b54edf2dac55682d1de028b4ccf5081edddeb05f9",
+    "docs/design/template-compatibility-policy.schema.json": "7ec896b49e878b084d1f87d2170bc34b54cf9b8465a7308fec6c196fa1c4a800"
+  },
+  "loadedCoreSha256": "0124a5953ea7b2875ffc1665b3a54ee47afdd9558f56d0710b8c62c7b672d717",
+  "inputManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serializer.",
+    "generatorSha256": "061edc112bbc239c1f148c74afe53691f62661f0e36a0c90052410901971b0ce",
+    "documents": {
+      "theme.docx": "c8b63edcdd1bd59bed03f924d5f0a423044d36d46e9d13f3292d67db00b1c5f6",
+      "theme-second.docx": "0d88e265ef85f194ccb5c8546ba670a3cbd4e8aaaa1c562547b6721b8631d56a",
+      "missing-link.docx": "89addbe089fbb76b42a7a3b810eddeb40007a53c9ca95ede3433e91ddfcf7fda",
+      "plain.docx": "e7cdf3bd2d0f65a8a90fef5567ff27eb5e5d948b4de55bed85bd75b556d49cd3"
+    },
+    "expectedText": {
+      "theme": "Alpha123",
+      "theme-second": "Bravo456",
+      "missing-link": "Linked123",
+      "plain": "Plain123"
+    }
+  },
+  "schemaLogSha256": "2d4487e235a169dda5a12935d971ecc65748a262612ab010364f5c1f8671315c",
+  "focusedTests": {
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "182988069e9e65e302236e907591ea14e5c5c4f1fd68d30962d6a30388b497b1"
+  },
+  "independentTools": "Open XML SDK 3.5.1; Python jsonschema and rfc8785 0.1.4; Poppler 24.02.0 in the pinned reference container; fixed field clock 2026-11-01T12:00:00Z.",
+  "independentCheck": {
+    "result": {
+      "schemaValidInputs": 4,
+      "allowedLossCases": 2,
+      "cleanBestEffortCases": 1,
+      "actualUnexpectedWriteFindings": 1,
+      "independentPdfTextAndPageCountMatch": true,
+      "canonicalPlanAndPolicySchemasMatch": true,
+      "limitations": "Only the exact local theme-font fallback and one missing internal link profile are checked; output is not independently validated during execution."
+    },
+    "negativeControls": {
+      "fixture hash": "Independent fixture manifest changed",
+      "core identity": "Loaded core, scenario or output set changed",
+      "schema evidence": "Independent input schema validation missing",
+      "plan bytes": "Plan or policy violates its design schema",
+      "plan digest": "Canonical plan or policy binding changed",
+      "source hash": "Source identity changed",
+      "options hash": "Output options identity changed",
+      "output hash": "Admitted outcome or output identity changed",
+      "missing pdf": "Loaded core, scenario or output set changed",
+      "output text": "Independent PDF text or page count changed",
+      "output page": "Independent PDF text or page count changed",
+      "output font": "Independent PDF font observation changed",
+      "independent validation": "Policy, independent-validation or stream contract changed",
+      "stream ownership": "Policy, independent-validation or stream contract changed",
+      "loss code": "Observed diagnostic summary changed",
+      "loss count": "Observed diagnostic summary changed",
+      "loss phase": "Observed diagnostic summary changed",
+      "missing loss permission": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "wrong loss location": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "strict downgrade": "Missing/wrong permission or Strict unexpectedly admitted loss",
+      "write not unexpected": "Unexpected write finding was not observed and contained",
+      "write leaked output": "Unexpected write finding was not observed and contained",
+      "write phase": "Unexpected write finding was not observed and contained",
+      "write code": "Unexpected write finding was not observed and contained"
+    },
+    "controlMethod": "Independent observations were altered in memory."
+  },
+  "observedOutputsSha256": {
+    "plain.pdf": "53258e1e97ba779b4e3e577e9471277f41c74553e331da7526ecbfb713bcba5f",
+    "theme-second.pdf": "214fc6c0129330a422872b112f176f9ace7e627490c8e7ef71ac1f2958d14725",
+    "theme.pdf": "9cb9fa83b3db638bd43662a11bbf8f4ff42df0f2d38e60353e2198a9430167c1"
+  },
+  "initialAnalyzerFailure": "docs/measurements/roadmap-138-allowed-loss-tests-initial.txt",
+  "limitations": "Only the exact minimal missing-theme font fallback and a missing internal link are admitted for BestEffort. Two documents produced allowed-loss outcomes; missing or mismatched permissions rejected without reading input. The independently authored link produced an unexpected write-stage Pdf.OmittedDestination and output stayed untouched. Template data, general loss permissions and independent validation during execution remain unimplemented."
+}

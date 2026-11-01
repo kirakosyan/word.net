@@ -1,0 +1,34 @@
+{
+  "result": {
+    "documents": 4,
+    "sourceAndPublicVerdictsEqual": true,
+    "sourceAndPublicSnapshotsEqual": true,
+    "independentReferencePixelsEqual": true,
+    "allReferenceFailuresRetainedPerMode": 4,
+    "combinedWarningCodes": [
+      "Docx.TableFormatting",
+      "Docx.ThemeFont"
+    ],
+    "pageGeometryRoundingObserved": true
+  },
+  "negativeControls": {
+    "source loss hidden": "Loss verdict changed: source/theme-direct",
+    "package loss hidden": "Loss verdict changed: package/explicit-styled",
+    "combination loss hidden": "Loss verdict changed: source/theme-styled",
+    "raster failure hidden": "Ranked findings must retain every failed document/engine verdict exactly once.",
+    "glyph failure hidden": "Ranked findings must retain every failed document/engine verdict exactly once.",
+    "geometry failure hidden": "Ranked findings must retain every failed document/engine verdict exactly once.",
+    "content loss invented": "Ranked findings must retain every failed document/engine verdict exactly once.",
+    "source library changed": "Unexpected loaded core library: source",
+    "package library changed": "Unexpected loaded core library: package",
+    "release identity changed": "Release source or comparison tolerances changed: source",
+    "dirty source claimed": "Release source or comparison tolerances changed: source",
+    "case omitted": "Ranked findings must retain every failed document/engine verdict exactly once.",
+    "threshold changed": "Release source or comparison tolerances changed: source",
+    "reference comparison omitted": "Ranked findings must retain every failed document/engine verdict exactly once.",
+    "source/package snapshot changed": "Source/package glyph snapshots differ: theme-styled",
+    "styled blue pixels invented": "Release blue-shading contrast changed: theme-styled",
+    "reference pixels changed": "The independent factorial controls do not have identical reference pixels"
+  },
+  "controlMethod": "Retained comparison results and loaded-binary identities changed in memory."
+}

@@ -1,0 +1,71 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "8d02e783d0c0b7f2f566dfc9e82038a21e0a066e",
+  "scope": "Working-tree evidence for non-reusable inspection of body and bounded direct simple-cell merge fields. All table coverage, other owners, destination behavior and plan reuse remain explicitly unknown.",
+  "provenance": "Three synthetic DOCX inputs were independently authored using the MIT fixture helper without wordnet serialization. Two generations were byte-identical. Open XML SDK 3.5.1 validated all three inputs and the actual merged output. Python independently read source and output XML and compared predictions with failed and successful merge outcomes; names in explicit probe observations are synthetic and absent from default report JSON.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-preflight-cells.py": "198bc6f24df90a16bfd7ad25d83ab4ab28c5694a5526837a1f1d115695bb94b9",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-preflight-cells-probe.cs": "68d0fa432f33e8ab2e947ecb95643d9e909b4091a734d6fb26eccf89df92228d",
+    "eng/verify-roadmap-138-preflight-cells.py": "bc6db12b54cd5a3af96627f42d485362b180464fc8683148a700e0b84b212458",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "f756bafd482ffe4c7a79746a36187692ddd0eda62e6704de0538f61868ce39fe",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "4cb2d975f85b7ef0829e95ed368de24ae9518bc795d4454fd5ec710f7e0dd57a"
+  },
+  "probeWordnetAssemblySha256": "3b7b4c5fbcfb438e06c89b9476911e9dda548b6d38b95e4d111178c3fe3901c3",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceValidatorLogSha256": "7ebc3353f9a52bf7559f8be49249875fd11e438de042fd0505915f21a2158ee8",
+  "outputValidatorLogSha256": "c98ed98bb7c42d2598da370356a96542192d6109cc81b08347ebd44f1f05ed57",
+  "verifierLogSha256": "89c1f229f263950a60e609b20847e1744a35ca532c03b2baa0acc1fbc3b6b6f7",
+  "specimenHashes": {
+    "simple": {
+      "inputDocxSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+      "defaultReportSha256": "00c407cb858c446c0bc5bb862d9695a793d9b62afa0f3ab4803d9b9815e5ec33",
+      "observationSha256": "674e347f0198ce688752a3301ad40b7702086935580f861f872dadc1ce1e2dc3",
+      "mergedDocxSha256": "6921483e7804746e1f4ad37f0c2eb93853f7c03d737ce9b6b83db77c19e7a335"
+    },
+    "merged": {
+      "inputDocxSha256": "3e945ee30913ef5b5fe3155ef76717e4597034bdd26c21fae7d14437493b902b",
+      "defaultReportSha256": "aa9da7975e8bcbaab3220cea4ab1d69b3f698c8ef7391c7a00bf7740784bffde",
+      "observationSha256": "c9bd388ab2d0082ae4382a9dcf48f5af1df04ef710a4135957ade90722ee3777"
+    },
+    "nested": {
+      "inputDocxSha256": "6347fddc5b6b5783785eed44a6933d1690bbd8b1fe0527b166cf56ede2278ee1",
+      "defaultReportSha256": "e9fce6a72292cebc272d58b99a76adcd47cef61872863dda5c43423c99fdeb32",
+      "observationSha256": "c9bd388ab2d0082ae4382a9dcf48f5af1df04ef710a4135957ade90722ee3777"
+    }
+  },
+  "result": {
+    "result": {
+      "simpleRequirements": 2,
+      "missingCellPaths": 1,
+      "successfulMergeChanges": 2,
+      "failedMergeUnchanged": true,
+      "unsupportedOwnersUnknown": [
+        "merged",
+        "nested"
+      ],
+      "defaultNamesDisclosed": false
+    },
+    "negativeControls": {
+      "changed source field": "Simple source field or owner structure changed",
+      "missing requirement": "Inspected body and cell requirements differ from source XML",
+      "wrong prediction": "Missing cell-path prediction differs from the source",
+      "reused inspection": "Inspection reuse or observed merge outcome changed",
+      "failed merge mutated": "Failed merge changed the document",
+      "wrong saved cell text": "Successful merge did not produce the expected independent XML text",
+      "leaked default path": "Default output disclosed a path or claimed reuse",
+      "fabricated merged requirement": "An unsupported table owner was treated as inspected",
+      "lost unknown coverage": "Uninspected coverage was not retained"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  },
+  "retainedFailures": [
+    {
+      "stage": "preliminary focused test build",
+      "logSha256": "4b98d0e8848213c8f1f7bcabacca3b67593caa829fd149ddc30b2020314b239a",
+      "result": "Failed analyzer CA1861 for a constant array in a test assertion. The test was rewritten using collection assertions, and the focused suite passed without suppressions."
+    }
+  ]
+}

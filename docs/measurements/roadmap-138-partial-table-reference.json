@@ -1,0 +1,309 @@
+{
+  "roadmap": 138,
+  "issues": [
+    142,
+    167
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "27ae60925b5d00433f03c67718ea8a01d570cecd",
+  "scope": "Partial, empty and mixed table/cell margin overrides within the admitted unstyled direct fixed-grid DOCX body profile; managed fixed output.",
+  "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+    "generatorSha256": "79b9bba5685e0e85e8d901849b9c08e1de678588d78db1b5f464bb129154826b",
+    "documents": {
+      "implicit.docx": "c0865fb66e8e2aa0fbe086f74de2c1572d0d919dcab113c886d2248d9405ef5c",
+      "two-columns.docx": "b0ea55cdb61720ead65c998a0577775df5f3a90e0844e5adb6f29950580093d4",
+      "two-rows.docx": "0870eaf5be266a23a01ae1a9ff763105741a28a1b3b5601351b0d2011fc2850b",
+      "explicit-115.docx": "10aa29a1f4045c18f5b94f6db690f2331cba39b4fb3b84c835c3af93f62dd030",
+      "explicit-108.docx": "34003382f05782ca9189b9a7afde9a0458e745ff915860c4ff8f0cfd16b14bf2",
+      "explicit-zero.docx": "c4124dcbf284a63447e94e0cb8a2f77f7594be09a21bc61e7faeea9b86479e85",
+      "cell-zero.docx": "61ab0495d1afe9a2f3ae2dabe741bf5f6f3f50b13dd86f70a89061aadcc9fb48",
+      "only-top.docx": "0958355ea85821158759a0d77f9b85001f228f712d01bd73d32841776914e4ca",
+      "partial-mixed.docx": "9d74956127aa806e76809ce505d9d2d71edc0de6dfc6d16e18a4a79d070b29b7",
+      "empty-table.docx": "bbb76d9da0beac68e8cb727848350f07d933fa6268b849be53ef9292f5461d65",
+      "empty-cell.docx": "85ec8a605bb5fd6042dc1ac8d1bfc02d39621d643c9070acfa6bd80cfce4a6a5",
+      "left-only.docx": "40704af7cb59b03418c983c68c1a2bbb0a9d4f847ab682e0be8e845ef36dfb6b",
+      "border.docx": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7",
+      "invalid-metadata.docx": "45671e86066a48569d752f2d0fe5c6146d6ddd44f1d52fddc12877bb68383161"
+    },
+    "negativeCases": "invalid-metadata deliberately adds an unsupported margin attribute and must fail schema validation."
+  },
+  "twoIndependentGenerationsIdentical": true,
+  "sourceFilesSha256": {
+    "eng/generate-roadmap-138-plain-tables.py": "79b9bba5685e0e85e8d901849b9c08e1de678588d78db1b5f464bb129154826b",
+    "eng/verify-roadmap-138-plain-tables.py": "c94eede7505a8ee6c16b3fa664a8f834b6e856d41b8af4d8b73277041f3cf687",
+    "eng/roadmap-138-plain-tables-save-probe.cs": "997835d08c7c062de1317fa95ff70f9b1d37f419f0a034e490ce7e924f2801c9",
+    "src/wordnet/Formats/DocxReader.cs": "261916ade9cc61741614f38612ab85f6c3321f0e6d5329d0b0b4e64333287965",
+    "src/wordnet/Formats/DocxWriter.cs": "b11945e5cdeb51f5f8c6907cdbec59c488e168c555b6366f531614f4bd29b74c",
+    "src/wordnet/Internal/DocumentCloner.cs": "5fa7da08e4f0cb0334cdbc488c559fa552ab0d337ba9d22617187df637f2c9c7",
+    "src/wordnet/Layout/FixedLayout.cs": "42ff3a17ea8095178c726024241c3928aad8ab8a0422ec954de95526f0df8347",
+    "src/wordnet/Model/DocumentModel.cs": "35243f1c87c32e72455b842ec78f9f83e4f03a5b10af6bc6583e171caf2a4202",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "64f6c0c520f2a232e7dc6680b52b6dae0509bdfa06f4ba266de60b4cc03ff7a1"
+  },
+  "candidateAndProbeNet10AssemblySha256": "cc3c35e606c81671b8db75ca40ef9d5f7d8d71477db0e8a0725325f9cec6cbcf",
+  "parentProbeNet10AssemblySha256": "591ee1058198dd369700cc267ba062a2d4848f02a17d8e7c2f855e97005907b2",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceSchemaLogSha256": "70131117680f0e6d5f4903691af2675d976f620062945e8e3c35070794aac8c3",
+  "invalidSchemaLogSha256": "57c93adbfa99cab6da4175026c83675825dd8a84891510071cadedcd1f18245b",
+  "savedSchemaLogSha256": "c2d839e9391b33f9864e6a0552971ebb5e19e9c6adb4f8494ad176f0cb2f67ca",
+  "officeReference": "LibreOffice 24.2.7.2 in network-disabled wordnet-138-reference:temporary image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; embedded Noto Sans mounted read-only; fc-match verified.",
+  "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "referenceLogSha256": "77d5b9954495ee5f57383027cae5c7790fd67bdc2b6be197747e47fff9964f02",
+  "fixtures": {
+    "implicit": {
+      "sourceDocxSha256": "c0865fb66e8e2aa0fbe086f74de2c1572d0d919dcab113c886d2248d9405ef5c",
+      "parentPdfSha256": "5bda8df3273c484329053a3f6900ca96f3f8a19d7dad19638f04dc12dc7e60da",
+      "candidatePdfSha256": "885e50e6a5cf533ea9a25e59fa08da1508ba9e18e18b27134d8ebbc9abd87ec7",
+      "officePdfSha256": "f843e1a99b049c445e4bd0b03ab2a75e0f610f556f78e9842e26f6c3c099ddca",
+      "savedDocxSha256": "7b906dbfd1184d63961819538a62c5058b5c607533c48b1de140c4f8df22be9f",
+      "savedPdfSha256": "df5be83b579e5f1bae8746a87305d60cc4f4e0ab103ba90a0b2bb47383f55ad9"
+    },
+    "two-columns": {
+      "sourceDocxSha256": "b0ea55cdb61720ead65c998a0577775df5f3a90e0844e5adb6f29950580093d4",
+      "parentPdfSha256": "92459bf0b066af1204086b7973838d6acacb9f62e533e73d2b4689ef1c2aa605",
+      "candidatePdfSha256": "92459bf0b066af1204086b7973838d6acacb9f62e533e73d2b4689ef1c2aa605",
+      "officePdfSha256": "872afc3884ec47beb4a8fd3f8190ba047faf0e7ea429859a0876ee813ec3726b",
+      "savedDocxSha256": "3a3769cab8f8c1507f2ddc4263ba9292a2a643eb8e7ccc5736146235aa54cb3d",
+      "savedPdfSha256": "0815b7f25bcc0cf6577ef507037716d9205551e729cb6a26bb610bff93fc57f9"
+    },
+    "two-rows": {
+      "sourceDocxSha256": "0870eaf5be266a23a01ae1a9ff763105741a28a1b3b5601351b0d2011fc2850b",
+      "parentPdfSha256": "45793696bda4f803e4fbed32795679dd2346f539b7ea0ca6d69cc3113b8f9134",
+      "candidatePdfSha256": "45793696bda4f803e4fbed32795679dd2346f539b7ea0ca6d69cc3113b8f9134",
+      "officePdfSha256": "b6c0e262515781e7821235a44580f622cbf9b7690b49c27f2c882f9781a92b6e",
+      "savedDocxSha256": "0cb940b37bae426c59db56010d9757b08d45d9cebdce189860530c3027056d9d",
+      "savedPdfSha256": "e5258fb64b0bcc3c5905be2aa384295ae1414a659f259a0c5c3c92ed73aaac15"
+    },
+    "explicit-115": {
+      "sourceDocxSha256": "10aa29a1f4045c18f5b94f6db690f2331cba39b4fb3b84c835c3af93f62dd030",
+      "parentPdfSha256": "50aec0e3316f2730d8cd346ede473664426b814705218282729975fab84be97a",
+      "candidatePdfSha256": "50aec0e3316f2730d8cd346ede473664426b814705218282729975fab84be97a",
+      "officePdfSha256": "f965f9bec72e219fd77012cd82ca1b0a5f11c1210d1690f341f2e69f3cccdaeb",
+      "savedDocxSha256": "b4c489032a780af44edc1fca863171d9c177a975a4dd5cedeb1bec9307ba20e3",
+      "savedPdfSha256": "4e217ab7fde30aa0154e0a97b4679171ac86cbdae99415f697d17d1d47e940ba"
+    },
+    "explicit-108": {
+      "sourceDocxSha256": "34003382f05782ca9189b9a7afde9a0458e745ff915860c4ff8f0cfd16b14bf2",
+      "parentPdfSha256": "a201f74d5d7f70347a6762b35d0867565e3d848685a84a6bddd4f45ebc4aa9ba",
+      "candidatePdfSha256": "a201f74d5d7f70347a6762b35d0867565e3d848685a84a6bddd4f45ebc4aa9ba",
+      "officePdfSha256": "c4be23125390d01547b88cf19ea7bda94e92b84901c8001080da86929c91227b",
+      "savedDocxSha256": "999f40caf6718f4b377ab186e93fda3ebdc16772d4e0f7e26f41c705b48a2021",
+      "savedPdfSha256": "762a8cfac223b9dcea07daa1ca04eff95aafc50e76212787354ded29eb64d5c0"
+    },
+    "explicit-zero": {
+      "sourceDocxSha256": "c4124dcbf284a63447e94e0cb8a2f77f7594be09a21bc61e7faeea9b86479e85",
+      "parentPdfSha256": "47e3aa6be99aeebba99db138acd9289587c75457597a80fd41288511d2fc738d",
+      "candidatePdfSha256": "47e3aa6be99aeebba99db138acd9289587c75457597a80fd41288511d2fc738d",
+      "officePdfSha256": "6f2a58b7cf0ed4d56b4a2579cd83b129eb1ab613acbca88b6e022f49557813d4",
+      "savedDocxSha256": "a9f4c29f9058cc2de52451d87a1686e4e271ce57aea90e888486c68a0bd119f0",
+      "savedPdfSha256": "38dcd573938137ca8f7f531a8c02ac6ca7f49094c897de6e396956631f2d490e"
+    },
+    "cell-zero": {
+      "sourceDocxSha256": "61ab0495d1afe9a2f3ae2dabe741bf5f6f3f50b13dd86f70a89061aadcc9fb48",
+      "parentPdfSha256": "85877508e7af5f2fc22dab69b983e2674f318d35d6406121723ada0049c34709",
+      "candidatePdfSha256": "0eed5372960d7ba2a72188519abf047209b1b358bdf65566f29b63f2c2884c79",
+      "officePdfSha256": "f8488a69197bb56890c8ce8c9701e62209b7822feced6d004637a5fada3f988a",
+      "savedDocxSha256": "2af8a30ab7aeb5dc0d16d3efb97331eb09589ad6a7d325d0276e122c6ae12cc8",
+      "savedPdfSha256": "303fc3048b47cf447731fd5a8e0a4189f9cd2af6e0ebce670d12687ce5dfbdd4"
+    },
+    "only-top": {
+      "sourceDocxSha256": "0958355ea85821158759a0d77f9b85001f228f712d01bd73d32841776914e4ca",
+      "parentPdfSha256": "1444abeb2bb2e9eceff529a45daf25c7cdb56f4984eecf1185cd4e9444f96ac0",
+      "candidatePdfSha256": "81ffa4d4cfc88f71c4a10f287f713b4aeee9bb5836b7b430a3d6b316e3eaf3c8",
+      "officePdfSha256": "60cd7f324cd33b196c973b9634e270584e82982bfde25b2a90ea133e07409466",
+      "savedDocxSha256": "3523f71b7fc98640666939be5bd96215b411237f7503df3396246a1dc129c560",
+      "savedPdfSha256": "60e396947a18d40b545f3e6beaf3484934917a20888fef19e6243a4018251f25"
+    },
+    "partial-mixed": {
+      "sourceDocxSha256": "9d74956127aa806e76809ce505d9d2d71edc0de6dfc6d16e18a4a79d070b29b7",
+      "parentPdfSha256": "3cbee7fcb41e68fc4d104ec4f3972368dedece6a86c613dea80e3480d3a12daa",
+      "candidatePdfSha256": "266769a405cca01a7e433b885ed2c3d92b33336a874207bd78ecbbf2fc7c3721",
+      "officePdfSha256": "8d5cf5eab5042fd07ebd3243ae5fcf025e274b185a1fa717fb71fbe03aecd310",
+      "savedDocxSha256": "ddeccafafc6583e86f34c6423ead90ad444f229f7de3c74ba90b7caea2ed2474",
+      "savedPdfSha256": "53c3208212e55aa066cb69fa5ca0dd236a9f3b8ddba5e0c6d2f4f8f69b4927a8"
+    },
+    "empty-table": {
+      "sourceDocxSha256": "bbb76d9da0beac68e8cb727848350f07d933fa6268b849be53ef9292f5461d65",
+      "parentPdfSha256": "3a5dac58a666409e6e4405208f9db3428a0732bfb744761d7b7da17c10772d99",
+      "candidatePdfSha256": "a2b72bf0b61af8a6f42ec33cc681d2548a8b0fc954e8c2838a802aacfef1779c",
+      "officePdfSha256": "545051f6a872c22a99f75a0ee55d5d8834a972acd0554ecc5d7da3c2c45a20c8",
+      "savedDocxSha256": "17d125a362f98ff3953d383f5774af4db798a10c8bd9dde0400b06d055b5bc96",
+      "savedPdfSha256": "99cb86443064bf40e750ee45d387da517752f36ab98ea6a1d6ee3f2eac4b16de"
+    },
+    "empty-cell": {
+      "sourceDocxSha256": "85ec8a605bb5fd6042dc1ac8d1bfc02d39621d643c9070acfa6bd80cfce4a6a5",
+      "parentPdfSha256": "f85b4c3b522bf2ac5920c7f83e2fc0e65f5bb6823f91d24ab52346e6e60b41b7",
+      "candidatePdfSha256": "5c2f4fc5661a4b50c6567095c11a1998d1089e9ecccaa55cc6398e8e51f2e9c7",
+      "officePdfSha256": "b7bc385d372be10aa34dfdfaeb944d6d44309471b6c9f56bf65bffb2bd723726",
+      "savedDocxSha256": "c703d15208149a33447cafc342ca20e2e263b9907e95977e8ae6a1f1a55a29b1",
+      "savedPdfSha256": "99cb86443064bf40e750ee45d387da517752f36ab98ea6a1d6ee3f2eac4b16de"
+    },
+    "left-only": {
+      "sourceDocxSha256": "40704af7cb59b03418c983c68c1a2bbb0a9d4f847ab682e0be8e845ef36dfb6b",
+      "parentPdfSha256": "7b1f895eda4fa7acc405b3f4df70ab8954237f4a2986d5d77f6f0be8eadf362e",
+      "candidatePdfSha256": "bc439b85750a491fe8838724b4a3c1609f78644940efb29bd026125a07477ac4",
+      "officePdfSha256": "7dbc1b62b85ebb3d6d0443a6ff5ac4b1950688e6b0abc5cd6bf90e6b68bb26a3",
+      "savedDocxSha256": "10280a82bf999d268c2e5a028588dca2b264eba263edf5116509d2912ded2e54",
+      "savedPdfSha256": "e038c4c69a36810a26987ee38b16f2d1f2aa3b5dda96b39e38fe68a9a5c99166"
+    },
+    "border": {
+      "sourceDocxSha256": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7",
+      "parentPdfSha256": "315274b7cf80e3dc615693b733fd3f0886bf391dfc87f9f28c37569229eb8f0a",
+      "candidatePdfSha256": "1125b04eadb843f2b0fd82fdfeebd3dee070c0ea3b1b761e88e4e0b12428b783",
+      "officePdfSha256": "5ad4b6b7cec048e9e000cf856caa22998640b93f5f16bf4b42704e31a1493507"
+    },
+    "invalid-metadata": {
+      "sourceDocxSha256": "45671e86066a48569d752f2d0fe5c6146d6ddd44f1d52fddc12877bb68383161",
+      "parentPdfSha256": "ebf6c2a71c59dddd0a4f6b38496f867a18657ba83c91bcf09f8e1af503c7a0b7",
+      "candidatePdfSha256": "a5a2bfe01464fbbbf092dd18a6a8484a4285410960855145fa5e535bf9e8741a",
+      "officePdfSha256": "0e52875b247bde390591cb5839eb39f020f2ae07aa267c2a8965a6c62a5e1fad"
+    }
+  },
+  "verification": {
+    "glyphOriginTolerancePt": 0.25,
+    "cases": {
+      "implicit": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "two-columns": {
+        "characters": 16,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "two-rows": {
+        "characters": 16,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "explicit-115": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "explicit-108": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "explicit-zero": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "cell-zero": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "only-top": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "partial-mixed": {
+        "characters": 16,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "empty-table": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "empty-cell": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "left-only": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "border": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 6.0,
+        "officeGlyphComparisonPassed": false,
+        "savedGeometryMatches": null
+      },
+      "invalid-metadata": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+        "officeGlyphComparisonPassed": false,
+        "savedGeometryMatches": null
+      }
+    },
+    "negativeControls": {
+      "wrong text": "Saved output changes glyphs or geometry: only-top",
+      "wrong font": "Saved output changes glyphs or geometry: only-top",
+      "shifted cell": "Saved output changes glyphs or geometry: only-top",
+      "shifted following text": "Saved output changes glyphs or geometry: only-top",
+      "changed plain body": "Saved output changes glyphs or geometry: only-top",
+      "changed explicit margin": "Saved output changes glyphs or geometry: explicit-zero",
+      "changed border": "Unexpected source-bounded geometry change: border",
+      "changed partial margin": "Saved output changes glyphs or geometry: partial-mixed",
+      "shifted office reference": "Office glyph-origin tolerance exceeded: only-top",
+      "wrong source role": "Unexpected source-bounded geometry change: only-top",
+      "missing character": "Source and output character counts differ: only-top",
+      "changed saved glyph": "Saved output changes glyphs or geometry: only-top",
+      "introduced default margin": "Saved margin omission or explicit values differ: only-top",
+      "changed saved margin": "Saved margin omission or explicit values differ: explicit-zero",
+      "changed override owner": "Saved margin omission or explicit values differ: partial-mixed",
+      "changed invalid metadata case": "Unexpected source-bounded geometry change: invalid-metadata"
+    },
+    "controlMethod": "Parsed glyph observations changed in memory."
+  },
+  "verificationLogSha256": "10ddd26c75ae4808dbd95b95867a16ee593a7f07656297ebe18a5502e44d2b98",
+  "retainedFailures": [
+    {
+      "stage": "earlier partial-margin comparison",
+      "record": "docs/measurements/roadmap-138-plain-table-reference.json",
+      "result": "The only-top control differed by 5.9723 points under the unchanged 0.25-point tolerance before this follow-up."
+    },
+    {
+      "stage": "initial focused build",
+      "logSha256": "b138fcbbe8c5bd6b1a51dba42c36613d6d8464b29560f1459d53b3ec51e07c46",
+      "result": "Three selected tests passed but the build logged file-copy retries with no space left on the workspace volume. Two clean, task-owned ancestor worktrees were removed; the focused retry and four-test final run passed without those warnings."
+    },
+    {
+      "stage": "malformed metadata schema control",
+      "logSha256": "57c93adbfa99cab6da4175026c83675825dd8a84891510071cadedcd1f18245b",
+      "result": "The deliberately unrecognized margin attribute failed schema validation and was excluded from the corrected profile."
+    },
+    {
+      "stage": "remaining bordered control",
+      "result": "The bordered table still differs by 6 points under the unchanged 0.25-point tolerance and is outside this correction."
+    }
+  ],
+  "qualification": "Working-tree independent observations only. Exact-source runtime and package checks, native typography, table styles and bordered geometry remain separate."
+}

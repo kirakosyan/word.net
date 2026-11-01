@@ -1,0 +1,53 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "pullRequestHead": "d99122c1a5336d4fe07b102fc937d0f352e3541f",
+  "scope": "Retrospective inspection of the actual Windows Framework 4.7.2 legacy-JIT package guests in the two completed hosted workflows. Their original hosted conclusions remain failures.",
+  "cause": "Each guest ran 2,003 tests with no failures or skips, but the original host verifier required the total to equal the bundle's 1,925-case minimum. It therefore rejected both otherwise complete guest reports. The corrected verifier accepts at least the minimum only when every observed test passed and execution is complete; it independently accepted both retained reports. This does not change the hosted conclusions or qualify later source.",
+  "framework": "Windows Framework 4.7.2 release 461814; x64; requested legacy JIT and compatjit.dll observed",
+  "reports": [
+    {
+      "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41170714031",
+      "job": "https://github.com/kirakosyan/word.net/actions/runs/41170714031/job/124453867934",
+      "testedMergeCommit": "0b043a7dd69f82311add4b509197d9848022567e",
+      "asset": "package",
+      "originalHostedConclusion": "failure",
+      "guestPassed": 2003,
+      "guestFailed": 0,
+      "guestNotExecuted": 0,
+      "minimum": 1925,
+      "artifactId": 13032146853,
+      "artifactSha256": "4c6d98b7fb8fe4fcd8b5be1c0276aa1222bfb40dbda2aec3c7b92829f434fba9",
+      "trxSha256": "61cfba72e7ed74af7ef45f4d2af3cc6597367d7dd0f3255547c78ba857ba2559",
+      "librarySha256": "542cdae05797831ddc7fa350199d686306822f50d379ac91b751d346b6066400",
+      "testBinarySha256": "dea501e4a11c62745bf28f975413cbb27e12f6fd31c9d083b8022a101001d977",
+      "packageSha256": {
+        "wordnet": "a5f051e0c76201428de6643c69b42e25e8ddfaa9fd4d6c10a2417bf65b48bc21",
+        "wordnet.Fonts": "bac4bd05039074e725818e4757514821d8d1e19614b199666a3e6ce3006a31a5",
+        "wordnet.Ocr": "345e9b3130ca7a7fddafa1ccedcce6c5b5c7f70b15aa66649e3f91ec0cff2cbc"
+      }
+    },
+    {
+      "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41170710168",
+      "job": "https://github.com/kirakosyan/word.net/actions/runs/41170710168/job/124453688097",
+      "testedCommit": "d99122c1a5336d4fe07b102fc937d0f352e3541f",
+      "asset": "package",
+      "originalHostedConclusion": "failure",
+      "guestPassed": 2003,
+      "guestFailed": 0,
+      "guestNotExecuted": 0,
+      "minimum": 1925,
+      "artifactId": 13032002428,
+      "artifactSha256": "f6fe530fe0c8048d7789a50577993c69bf859429dfa644a0b9ade72b2d0426ea",
+      "trxSha256": "edad69d24d00480689849e9110220a105153f2ef99cab31e3b9379608607d121",
+      "librarySha256": "5a088b199b63664d0da4491c019cedd8daad37671b26e7e444b0d5ff519c76c5",
+      "testBinarySha256": "633cf419ed3070e22b90e92056cced0da728305797d514c56dfcf904841ab08a",
+      "packageSha256": {
+        "wordnet": "28fafbac90a333041d7dd9fff28cefd9f7db812635372ba4fa8459adbf1d0742",
+        "wordnet.Fonts": "ac4eaa70db581341a128c18e430aad514111866466eb0ec8a52414184af69c0b",
+        "wordnet.Ocr": "6a53ca5207255a46e535db67e6b1b11b77a68f931637494255c75181314ef448"
+      }
+    }
+  ],
+  "relatedSourceGuest": "docs/measurements/roadmap-138-framework-41170714031.json"
+}

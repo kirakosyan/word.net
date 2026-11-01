@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wordnet.example/schemas/template-compatibility-policy-1.json",
+  "title": "Proposed template compatibility policy, version 1",
+  "description": "Design example only; this is not an implemented wordnet API.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "planDigest", "requiredSemantics", "allowedLosses"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "planDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "requiredSemantics": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)+$", "maxLength": 128 }
+    },
+    "allowedLosses": {
+      "type": "array", "maxItems": 4096,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["code", "location"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*(\\.[A-Za-z][A-Za-z0-9]*)+$", "maxLength": 128 },
+          "location": {
+            "type": "object", "additionalProperties": false,
+            "required": ["partId", "childIndexes"],
+            "properties": {
+              "partId": { "type": "string", "pattern": "^part-[0-9]{4,8}$" },
+              "childIndexes": { "type": "array", "maxItems": 64, "items": { "type": "integer", "minimum": 1, "maximum": 2147483647 } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

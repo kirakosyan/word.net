@@ -1,0 +1,38 @@
+{
+  "roadmap": 138,
+  "issue": 154,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "42524ca806be4fbb29acf2f2d2ed8932831d1400",
+  "scope": "Explicit anchor order for ordinary managed tagged/UA body text boxes in dedicated paragraphs with top-and-bottom wrapping, including supported links, multiple boxes and selected pages. Notes, alternate-description semantics, other owners and unqualified placement remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed; the host reported workspace-load warnings.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2130, "failed": 0, "skipped": 0, "trxSha256": "06ca96b8501160f463ea8a60aaa864e1e08895627b405c16076c685a53c466d3"},
+    "net10ConversionAndEnglishOcr": {"passed": 2130, "failed": 0, "skipped": 0, "trxSha256": "1bc8bc2ebf96696370397fd6388f5ee92deb42c6cacdb0c2e9161bfc5020dd92"},
+    "capabilityMatrix": {"profiles": 73, "testMethods": 358, "net10CasesPassed": 606},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageVerificationLogSha256": "c8d3ff72af8cb14b4daa425bf7fd6550ec040ab7437590bdc664dfcd0c97b158",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "da84b36340c685c8c4e61beb2e689bd9066371d473d4e3cc232b84d586191f2e",
+      "wordnet.Fonts.1.5.0.nupkg": "b6518f5fa106511d9acb731d289da9161cc6a006a8a708436aa0522a5692c255",
+      "wordnet.Ocr.1.5.0.nupkg": "df0d497138e699d7d36de1dd939fffc5f9ea38151e412ea2f23524179eafb4c8"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-accessible-box-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "6918506721a1db0053e19de8fd8eb2e4318030a12f7cdd04a59546b64ef63a11",
+    "reproducedSourceDocxSha256": "12083c4e69fd42da28f05a5d8a842e8a650e969335dafc1b342bfe8e3770291e",
+    "reproducedSavedDocxSha256": "e5f774902ba8484da200a27a95d5cd2ddbbc2e80eacc79fec7dabf689537b378",
+    "onePagePdfSha256": "e7626c99a68a1dd8048da22845d314aeed6b26bb6b18a48ffc656fa6943b2fe1",
+    "twoPagePdfSha256": "c1e8bd86e6decc32ec1c853dc65893cfbc437a90b5d4d92df4f568585f662e90",
+    "selectedPagePdfSha256": "a40f31b384132225f9c23ed38dca0b3ae1da3c3d0b5783e9f9914e76618d7670",
+    "twoBoxesPdfSha256": "7bd710c179d1ed2613d2c3ab52a1acf1e0e7fef90ba0191885c1e25b0cd21e6e",
+    "untaggedNegativePdfSha256": "cfdc5538d5bdfe46c0199ea70067cf11af8d5438875d6ce080d7cbf9a2372639",
+    "veraPdfXmlSha256": "180fe7a10510646d13e63d65bb62d1e1200731412369811855a7cecfc4816f94",
+    "result": "The exact source and packaged assemblies matched. Both DOCX specimens reproduced byte for byte and had zero Open XML SDK errors. Offline veraPDF accepted the four UA-1 specimens and rejected the untagged control; pypdf checked source order, links and ParentTree ownership and rejected four independently corrupted controls. The complete pinned test-only requirements also installed into a clean environment and reproduced the multipage and negative checks."
+  },
+  "qualification": "The new Linux workflow and actual Windows Framework execution for this exact source remain pending. Other #154 combinations, live Word and screen-reader behavior remain unqualified; issue #154 and roadmap #138 stay open."
+}

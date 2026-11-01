@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "method": "Exact RGB pixel comparison of one rendered page; this is a contrast, not a replacement for unchanged fidelity thresholds.",
+  "observations": [
+    {
+      "pair": [
+        "theme-font",
+        "explicit-font"
+      ],
+      "rendering": "libreoffice-reference",
+      "imageSha256": [
+        "cf37759ed05ec2be51ce61eb611a2a43063b3c4c61bb4aa567cab38dd93ab0a9",
+        "cf37759ed05ec2be51ce61eb611a2a43063b3c4c61bb4aa567cab38dd93ab0a9"
+      ],
+      "pixels": 891662,
+      "differentPixels": 0,
+      "firstExactColors": {
+        "red": 0,
+        "accentBlue": 0
+      },
+      "secondExactColors": {
+        "red": 0,
+        "accentBlue": 0
+      }
+    },
+    {
+      "pair": [
+        "theme-font",
+        "explicit-font"
+      ],
+      "rendering": "release-source",
+      "imageSha256": [
+        "2ce87f5209cd451b8635f7c3acb885e92fbe71278d4b8fa2eea3d1c0ea7ca0a8",
+        "7a7202548ecb976c361d80aa0483d0119bfa31a93eb83e82c93ae991489264f2"
+      ],
+      "pixels": 891662,
+      "differentPixels": 2039,
+      "firstExactColors": {
+        "red": 0,
+        "accentBlue": 0
+      },
+      "secondExactColors": {
+        "red": 0,
+        "accentBlue": 0
+      }
+    },
+    {
+      "pair": [
+        "theme-color",
+        "explicit-color"
+      ],
+      "rendering": "libreoffice-reference",
+      "imageSha256": [
+        "6f543b37e7301a9c61f63368ef9396c7bc675c9903e93ba8912059e9008474a9",
+        "c4c283e380026d44b830d366a5f23e364ab372d98ae13211fd18267ce14a57a7"
+      ],
+      "pixels": 891662,
+      "differentPixels": 1251,
+      "firstExactColors": {
+        "red": 85,
+        "accentBlue": 0
+      },
+      "secondExactColors": {
+        "red": 0,
+        "accentBlue": 85
+      }
+    },
+    {
+      "pair": [
+        "theme-color",
+        "explicit-color"
+      ],
+      "rendering": "release-source",
+      "imageSha256": [
+        "7f51441b7ca58ee2ed24f548db1ef4fb2d33a9f110a2c0af0d38bd26f51447be",
+        "49ae79ed978c52a6e4f5fc5dce8f640675df4d46879d824460364944453596de"
+      ],
+      "pixels": 891662,
+      "differentPixels": 1233,
+      "firstExactColors": {
+        "red": 105,
+        "accentBlue": 0
+      },
+      "secondExactColors": {
+        "red": 0,
+        "accentBlue": 105
+      }
+    },
+    {
+      "pair": [
+        "table-style",
+        "table-direct"
+      ],
+      "rendering": "libreoffice-reference",
+      "imageSha256": [
+        "c43739dc06f478430194d8aa299b77ba78cee798f9587b6133e6b4cd691fc7a2",
+        "74150ca43b649f527ae40cd2e2c209358b6b5e1c1dee5f9c57938493acdd523a"
+      ],
+      "pixels": 891662,
+      "differentPixels": 467,
+      "firstExactColors": {
+        "red": 0,
+        "accentBlue": 5934
+      },
+      "secondExactColors": {
+        "red": 0,
+        "accentBlue": 5934
+      }
+    },
+    {
+      "pair": [
+        "table-style",
+        "table-direct"
+      ],
+      "rendering": "release-source",
+      "imageSha256": [
+        "b793dd32ab1bbc89c2edc12e24b8021a7278718bb7fe52d5d46599506f23cd6a",
+        "7e2f6e076f9c96bd7eed24b817bb1233e9943530f4c10ce58b7185dde57ba6a4"
+      ],
+      "pixels": 891662,
+      "differentPixels": 6595,
+      "firstExactColors": {
+        "red": 0,
+        "accentBlue": 0
+      },
+      "secondExactColors": {
+        "red": 0,
+        "accentBlue": 5923
+      }
+    }
+  ]
+}

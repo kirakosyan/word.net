@@ -43,8 +43,12 @@ Mutations stage complete graphs/expressions and resource admission before commit
 stale/foreign handles and cancellation leave the session unchanged. Chart editing
 rebuilds both caches and real XLSX cells. Equation editing emits genuine OMML.
 Ordinary operations that cannot safely retain/remap object owners reject explicitly.
+The 1.6.0 [object-fragment profile](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+adds bounded body and simple-cell insertion while preserving editable placement identity.
 Object PDF/XPS/SVG export reports editable-object loss; PDF/A and tagged/UA object output and
 native-typography/object combinations remain outside this profile.
+The 1.6.0 [standalone-equation increment](#unreleased-source-native-paragraphs-and-equations)
+is a separately diagnosed ordinary-output subset and does not change that released profile.
 
 Native typography remains opt-in and provider-based. Its qualified ordinary
 paragraph extensions preserve logical Unicode separately from glyph order, keep
@@ -63,6 +67,7 @@ and its workbook graph. Removing a newly added object also removes its dedicated
 empty paragraph; imported paragraph/cell structure is retained. Ordinary paragraph/table appends and metadata edits retain
 objects; replacing an object owner, executing templates around it, restyling
 composition, review ranges and matching-structure comparison reject until aware.
+The 1.6.0 object-fragment insertion above is a separate bounded composition path.
 
 A `ChartDefinition` copies category and series lists, finite nullable values,
 explicit RGB colours, title, legend choice and category/value axis titles.
@@ -79,6 +84,160 @@ that loss. Native typography and tagged/UA/PDF-A destinations also reject unsupp
 objects before omission, preserving their separate combination boundaries. Malformed input, resource limits and unsafe relationships remain hard
 errors in every mode; admitted objects with unsupported visible appearance still
 reject static rendering. Word inline anchor/edit identifiers are harmless metadata.
+
+<a id="unreleased-source-clustered-horizontal-bars"></a>
+### 1.6.0 profile: clustered horizontal bars
+
+The 1.6.0 #163 profile adds `ChartKind.ClusteredBar` to the existing immutable chart,
+Add/Update and prepared-data binding APIs. Editable DOCX uses a clustered
+`c:barChart` with `barDir="bar"`, one linear category/value axis pair and the
+existing local workbook/cache agreement checks. Null values are gaps; zero values
+lie on the zero axis; finite negative and positive values extend to opposite sides.
+Categories run bottom to top, series and legend order follow the admitted source
+profile, and the default 150-percent gap is measured in one bar's thickness.
+Custom gaps/overlap, unqualified data labels, reversed or custom axes and other unqualified
+appearances may remain editable when admitted but reject static rendering.
+
+Ordinary managed PDF/XPS/SVG output is available only in BestEffort or Lenient
+with `Chart.BarLayoutApproximation`; Strict export already rejects the editable
+object loss. Native typography and tagged/UA or archival PDF combinations reject
+with `Chart.BarProfile`. The independently authored [reference case](measurements/roadmap-138-horizontal-bars-reference.json)
+confirms signed relative lengths, order and default-gap geometry, but its plot
+zero origin differs by 19.722 points and its category-label gap by 2.289 points.
+Both fail the existing 0.5-point absolute geometry tolerance; that threshold is
+unchanged and the failures remain open. This is not published 1.5.0 support or a
+claim of general Word/LibreOffice plot parity. Broader chart and data-label forms
+remain open in #163.
+
+<a id="unreleased-source-stacked-bars-and-columns"></a>
+### 1.6.0 profile: stacked bars and columns
+
+The 1.6.0 #163 profile adds `ChartKind.StackedColumn` and `ChartKind.StackedBar` to the
+existing immutable chart, Add/Update and prepared-data binding APIs. Editable
+DOCX uses `c:barChart` with `grouping="stacked"`, explicit `overlap="100"`,
+a linear category/value axis pair and the existing local workbook/cache checks.
+At each category, positive and negative finite values accumulate independently
+from zero; null values are gaps and zero values remain zero-size points. The default
+150-percent gap is measured against one stack's thickness. The legend uses a
+deterministic orientation-specific order that matches the two-series office specimens.
+An all-null chart rejects with `Chart.EmptyData`; an all-zero chart uses the
+existing symmetric -1 to 1 value range.
+Percent-stacked charts,
+custom overlap, effects, unqualified data labels and appearances are excluded or
+remain editable without static rendering. Nonfinite sums and resource overflows
+reject explicitly.
+
+Ordinary managed PDF/XPS/SVG output uses `Chart.StackedLayoutApproximation` in
+BestEffort or Lenient; Strict rejects the editable-object loss or this measured
+layout difference. Native typography and tagged/UA or archival PDF combinations
+remain rejected by `Chart.BarProfile`. The independent XlsxWriter-authored
+[reference cases](measurements/roadmap-138-stacked-reference.json) preserve chart
+and workbook bytes, signed-stack proportions and cross-format vector geometry.
+At the unchanged 0.5-point tolerance their maximum rectangle deviations from
+LibreOffice are 26.12 points for bars and 36.10 points for columns; reference axis
+origins differ by 20.67 and 17.08 points respectively. These failures remain open
+and are not evidence of Microsoft Word behavior. This profile is 1.6.0 source,
+not public 1.5.0 support or full #163 acceptance.
+
+<a id="unreleased-source-chart-point-labels"></a>
+### 1.6.0 profile: chart point labels
+
+The 1.6.0 #163 profile adds `ChartDefinition.WithDataLabels(ChartDataLabels.Value)`,
+`Category`, or `CategoryAndValue` to create a new immutable chart snapshot;
+`None` is the existing default. Add/Update and prepared-data binding retain this
+selection, category/series data and local workbook. Labels apply to clustered and
+stacked bars and columns and the circular profile below. A null value is a gap with no label. Values use
+invariant round-trip formatting; combined labels use a comma and space. Each label
+is centred inside its bar or sector, with contrasting black or white text, and its measured
+width and height must fit. Zero-size points in an otherwise renderable chart reject
+a requested label with `Chart.DataLabelFit` rather than omitting it; an all-empty
+circular chart retains `Chart.EmptyData`. Total repeated text and layout work
+share the existing operation bounds and cancellation.
+Point labels require printable ASCII and the embedded Noto Sans regular face;
+other text or replacement fonts reject with `Chart.DataLabelText` or
+`Chart.DataLabelFont`. This bounded profile lets the independently checked ink
+fit within the label padding. Chart text is measured using the unkerned advances
+actually emitted by the managed PDF, XPS and SVG writers.
+
+Editable DOCX uses explicit centre positioning and show/hide flags. Imported
+chart-wide labels or uniform series labels are admitted only for this exact
+plain-value/category profile; implicit flags, custom formatting, per-point or
+nonuniform series labels and other appearances remain non-renderable. Binding
+rejects an appearance it cannot preserve. Line labels are outside this increment.
+Native, tagged and archival rendering is unqualified and rejects.
+
+BestEffort/Lenient output reports `Chart.DataLabelApproximation`; Strict rejects
+the measured difference. The independent XlsxWriter and LibreOffice
+[reference observation](measurements/roadmap-138-chart-labels-reference.json)
+finds consistent label text and PDF/SVG/XPS vector origins, but label origins
+differ by up to 17.40 points for bars and 14.67 points for columns from the office
+reference, above the unchanged 0.5-point tolerance. The reference column also
+places one label outside its bar. These remain open reference differences, not
+evidence about Microsoft Word, a public 1.5.0 feature or full #163 acceptance.
+
+<a id="unreleased-source-circular-charts"></a>
+### 1.6.0 profile: circular charts
+
+The 1.6.0 #163 profile adds `ChartDefinition.CreateCircular(ChartKind.Pie, slices)` and
+`ChartKind.Doughnut` using one to 64 immutable `ChartSlice` values. Each slice
+copies a category, finite non-negative nullable value and explicit RGB colour;
+the original constructor and enum values remain intact. Null and zero slices
+have no vector area. Rendering requires a positive slice; values normalize against
+the largest value before summation so finite large totals do not overflow.
+Positive sectors below `0.000001` radians reject with `Chart.SliceSpacing`.
+The first sector starts at twelve o'clock and proceeds clockwise; the doughnut's
+unfilled centre is 50 percent of its diameter. Legends list the categories in
+source order, including missing and zero entries. Add, Update and prepared-data
+binding preserve editable local workbook data and slice colours; binding requires
+the same slice count so colours cannot silently shift.
+
+Only explicit per-slice solid-RGB colours, no-outline flags and a zero start are renderable;
+doughnuts also require the 50-percent hole. Negative values, multiple series, axes, custom angles/holes, exploded
+slices, unqualified data labels, nonuniform effects or formatting, implicit slice colours and
+other unqualified appearances reject or remain editable without static output.
+Native typography and tagged or archival output remain unqualified. Ordinary
+managed PDF/XPS/SVG uses `Chart.CircularLayoutApproximation` in BestEffort or
+Lenient; Strict rejects this measured layout difference or editable-object loss.
+
+Independently authored XlsxWriter pie and doughnut documents preserve chart and
+workbook bytes, 6:3:1 proportions, legend order and the doughnut hole across the
+tested outputs. Their [reference observation](measurements/roadmap-138-circular-reference.json)
+records a 23.5-point maximum raster-bound difference from LibreOffice at the
+unchanged 0.5-point geometry tolerance. This remains open, is not a Microsoft Word
+result and does not qualify public 1.5.0 packages or all of #163.
+
+<a id="unreleased-source-labels-on-circular-slices"></a>
+### 1.6.0 profile: labels on circular slices
+
+The 1.6.0 point-label profile also admits `Value`, `Category` and
+`CategoryAndValue` on the circular charts above. Each label is placed horizontally
+at 72 percent of the radius along its sector's angular midpoint. Its padded text
+bounds must fit inside the outer circle and the sector, outside the doughnut hole,
+and without touching another label or sector edge. If any point does not fit,
+`Chart.DataLabelFit` rejects the output instead of clipping or omitting text. Null
+values remain gaps; zero-size slices reject requested labels when positive slices
+otherwise render. Aggregate text and pairwise fit work are bounded. Reading order
+is chart title, labels in source order, then the category legend in source order.
+An additional 0.5-point clearance covers the bounded cubic arc; a numerical
+control samples the admitted range through the maximum 720-point radius.
+FontTools independently checks that the admitted glyph ink stays within the fit
+padding. Line charts, custom label
+positions, per-point styles and protected output profiles remain unqualified.
+
+Two independently authored, schema-validated XlsxWriter fixtures and their
+saved/API-authored DOCX round trips preserve the labels and the equal slice
+proportions. The [reference observation](measurements/roadmap-138-circular-labels-reference.json)
+records title/label reading-order differences and label-origin differences of
+48.76 points for pie and 13.05 points for doughnut, with 27.5-point frame
+differences, all against the unchanged 0.5-point geometry tolerance. Managed
+PDF/SVG/XPS origins agree within 0.1 point and both labels fit in the tested
+sectors. The [exact-source receipt](measurements/roadmap-138-circular-labels-a8e9b96.json)
+also records the kerning-heavy advance check and its XPS limitations.
+BestEffort/Lenient reports both `Chart.DataLabelApproximation` and
+`Chart.CircularLayoutApproximation`; Strict rejects the measured loss. These are
+not Microsoft Word results, public 1.5.0 support or full #163 acceptance.
+
+### Equation authoring
 
 Equations use the closed immutable `EquationExpression` factories. Size is in
 points. Public trees must also fit serialized OMML nesting, so very deep semantic
@@ -101,7 +260,151 @@ doc.AddEquation(EquationExpression.Fraction(
 // Save DOCX for editable semantics; PDF/XPS export diagnoses their loss.
 ```
 
+<a id="unreleased-source-bounded-matrix-equations"></a>
+## 1.6.0 profile: bounded matrix equations
+
+The 1.6.0 source work for #168 adds rectangular `EquationExpression.Matrix` trees with
+at most 64 rows, 64 columns and 1,024 cells. Rows and alignment arrays are copied;
+`Children` is row-major and a null cell becomes an empty text node. At least one
+cell must be nonempty. Matrices have no implicit brackets; use `Delimiter` for
+those. Column alignments can be left, center or right; row and column spacing
+can be standard, one-and-a-half or twice the standard value. The existing tree,
+serialized OMML, cancellation and aggregate resource limits still apply.
+
+The managed layout centers the complete grid on the font's MATH axis. Each column
+has the width of its widest cell and standard column spacing is one em. Each row
+uses the largest cell extents and a one-em minimum strut; the gap is the font's
+nonnegative MATH leading plus zero, half an em or one em for the selected row
+spacing. Empty cells draw no placeholder. These deterministic rules do not claim
+pixel equivalence with every Office renderer. Layout requires the same explicitly
+selected MATH font as existing equations and never silently uses ordinary font metrics.
+
+The admitted OMML matrix has rectangular rows, a centered baseline, hidden empty
+placeholders, supported column alignment groups and standard relative spacing.
+Its mathematical runs retain the existing uniform-size and supported plain/italic
+appearance limits; other retained appearances are not silently rendered.
+Visible placeholders, top/bottom baselines, custom spacing, minimum column widths
+and unknown matrix properties remain unsupported with `Equation.Matrix*` errors.
+Existing `Object.UnsupportedLoss` behavior governs ordinary lenient conversion of
+valid unsupported objects; strict/session and other profile boundaries remain unchanged.
+Public editing, DOCX composition and ordinary managed PDF/XPS/SVG have focused
+source tests; this work is not in published 1.5.0 and does not add native, tagged or
+archival qualification.
+
+```csharp
+var grid = EquationExpression.Matrix(new[] {
+    new EquationExpression?[] { EquationExpression.Text("a"), EquationExpression.Text("b") },
+    new EquationExpression?[] { null, EquationExpression.Fraction(EquationExpression.Text("x"), EquationExpression.Text("2")) }
+}, new[] { EquationMatrixAlignment.Left, EquationMatrixAlignment.Right },
+   EquationMatrixSpacing.Standard, EquationMatrixSpacing.OneAndHalf);
+doc.AddEquation(EquationExpression.Delimiter(grid, "[", "]"));
+```
+
+<a id="unreleased-source-n-ary-equations"></a>
+## 1.6.0 profile: n-ary equations
+
+The 1.6.0 source work for #169 adds `EquationExpression.Nary` with a closed summation,
+product or integral operator, one required nonempty operand and optional nonempty
+lower and upper limits. A null limit is absent and hidden in emitted OMML; visible
+empty placeholders are not invented. `Children` contains operand, lower and upper
+in that order, with empty text nodes for absent limits and explicit presence flags.
+`EquationLimitPlacement.Side` places limits as scripts; `AboveBelow` centers them
+over and under the operator. A matrix or another supported expression may be an
+operand or limit. Existing node, text, XML nesting, resource and cancellation
+limits apply to the complete tree.
+
+Inline layout uses the selected font's operator glyph. Display layout selects a
+MATH variant or assembly meeting the font's `DisplayOperatorMinHeight`. If the font
+has no sufficient construction, Lenient/BestEffort uses its largest available
+variant and reports `Equation.NarySizeFallback`; Strict rejects that fallback.
+Missing glyphs and invalid font constructions fail explicitly. Above/below limits
+use the font's upper/lower gap and baseline constants; side limits use its script
+metrics. The operand follows the decorated operator with a one-sixth-em gap.
+These deterministic rules do not imply pixel parity with every office renderer.
+
+The admitted OMML subset requires an explicit `limLoc` because omitted placement
+can depend on document math settings. Operand-height growth, other operator glyphs,
+hidden nonempty limits and visible empty placeholders are unsupported; valid
+out-of-profile objects retain the existing explicit loss or strict rejection policy.
+Common run-size/appearance and managed-output boundaries remain those of the
+existing equation profile. This is 1.6.0 source work, not published 1.5.0 or a
+claim about native, tagged or archival combinations.
+
+```csharp
+var sum = EquationExpression.Nary(EquationNaryOperator.Summation,
+    EquationExpression.Text("x"), EquationExpression.Text("i=1"),
+    EquationExpression.Text("n"), EquationLimitPlacement.AboveBelow);
+doc.AddEquation(sum);
+```
+
 ## Native text and accessible output
+
+<a id="unreleased-source-hindi-merged-tables"></a>
+### 1.6.0 profile: Hindi merged tables
+
+The 1.6.0 source for #151 admits horizontal and vertical merges in one-column,
+non-nested native tables with Hindi and Latin text, subject to the existing font,
+cluster, owner and resource checks. This is separate from the published 1.5.0
+profile and is not yet complete #151 qualification. BestEffort and Lenient output
+report `Typography.MergedTableSpacing`: the native conservative line metrics can
+make rows taller than the source application's rows. Strict output rejects that
+known difference. Oversized vertically merged groups fail rather than splitting;
+tagged or archival output and right-to-left or mixed-direction merged tables also
+reject explicitly. Other native-table restrictions remain in force.
+
+An [independent reference observation](measurements/roadmap-138-native-merged-reference.json)
+records matching logical Hindi text and cell ownership but a 30.699-point difference
+at the final row of one four-row specimen. A separate Arabic specimen exposed
+alignment and text-extraction differences and is not admitted. These are bounded
+observations, not a claim of general rendering parity.
+
+<a id="unreleased-source-native-scalar-fields"></a>
+### 1.6.0 profile: native scalar fields
+
+The 1.6.0 #152 profile snapshots stable scalar `DOCPROPERTY`, `IF` and arithmetic field
+results before extended native shaping. The existing bounded scalar grammar,
+invariant pictures and cached-result diagnostics still apply. An editable DOCX
+session keeps its field owner and can refresh it again after a property edit;
+the detached fixed-output layout uses the refreshed text. Cross-boundary joined
+Arabic words and grapheme/conjunct splits reject. Aggregate field text and work
+are bounded before the layout model is changed.
+
+This profile is **BestEffort/Lenient only**. It reports
+`Typography.FieldLayoutApproximation`; directional paragraphs additionally report
+`Typography.FieldDirectionalOrder`. Strict output rejects the respective loss.
+The independently authored [reference cases](measurements/roadmap-138-native-fields-reference.json)
+retain a 2.847-point Hindi vertical difference against the original 0.5-point
+tolerance, and a different Poppler Arabic extraction order. Page/reference fields,
+structured or differently formatted caches, nested field instructions, lists,
+controls, tabs, tagged/archive combinations and other #152 owners remain outside
+this increment. Unresolved scalar results retain their existing explicit
+cached-result diagnostic.
+
+<a id="unreleased-source-native-paragraphs-and-equations"></a>
+### 1.6.0 profile: native paragraphs and equations
+
+The 1.6.0 #153 profile admits a standalone equation as the only run in its own top-level
+body paragraph, with extended native bidi enabled and a caller-selected MATH font.
+Native Hindi/Latin or Arabic paragraphs use their existing shaping pipeline; the
+equation uses the separately bounded equation pipeline and is not shaped as
+ordinary paragraph text. Both display and inline OMML are admitted only in a
+dedicated equation paragraph. Ordinary PDF and page previews use this subset in
+BestEffort or Lenient mode; saving DOCX with native typography disabled retains
+the original equation. PDF
+reports the existing editable-object loss. Strict conversion rejects the loss.
+
+The [independent reference](measurements/roadmap-138-native-equation-reference.json)
+retains a fraction-rule width and position outside the unchanged 0.5-point geometry
+tolerance and a different Arabic Poppler extraction order. The reference renderer
+selected DejaVu Serif for math while the native output used STIX Two Math, so this
+comparison does not establish same-font parity. `Typography.EquationReferenceApproximation`
+reports the geometry difference and `Typography.EquationDirectionalOrder` reports
+directional paragraphs. These diagnostics contain no document text. Notes,
+charts, mixed inline equation/text, equation cells and stories, right-to-left
+equation owners, tagged or archival output and complete #153 qualification remain
+outside this increment. No live Word or public-package claim is made.
+
+### Extended native typography
 
 Set `Typography.Enabled` and `Typography.ExtendedBidi` explicitly. The old enabled
 Arabic profile and managed default remain separate and retain their earlier tests.

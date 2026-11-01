@@ -1,0 +1,13 @@
+F............
+======================================================================
+FAIL: test_actual_pdf_negative_controls (__main__.ComparisonTests.test_actual_pdf_negative_controls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/wordnet-138-baseline-combinations/eng/test-comparison.py", line 171, in test_actual_pdf_negative_controls
+    self.assertTrue(dotnet and renderer and worker.is_file(), 'Build the benchmark project; install dotnet and Poppler.')
+AssertionError: False is not true : Build the benchmark project; install dotnet and Poppler.
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.032s
+
+FAILED (failures=1)

@@ -40,7 +40,7 @@ internal sealed partial class DocxReader
                 if (!noteIds.Add(kind + ":" + label)) throw new InvalidDataException("Docx.Notes: Duplicate note identifier.");
 
                 var reader = new DocxReader(context, package.ReadRelationships(path))
-                { package = package, mainPart = path, knownParts = knownParts, defaultAlignment = defaultAlignment, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle };
+                { package = package, mainPart = path, knownParts = knownParts, defaultAlignment = defaultAlignment, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle, defaultTableStyle = defaultTableStyle, theme = theme };
                 foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
                 foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);
                 foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);

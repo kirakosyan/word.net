@@ -1,0 +1,9 @@
+{
+  "source": "Synthetic story placement of a licensed OfficeWordVariants rich-inline control and an independently authored plain-text control",
+  "renderer": "LibreOffice 24.2.7.2 420(Build:2), Ubuntu 24.04, writer_pdf_Export",
+  "font": "Noto Sans Regular, b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "files": {
+    "stories.docx": "8c31d3ec2f8f50844d655df9c896eb4203a74a98780d6cd5e5a7121188d59ceb",
+    "stories.pdf": "6ba9234829209082b5fbf48f03eabb49362ee4eb7d0112951b4f88a5ce02e2e2"
+  }
+}

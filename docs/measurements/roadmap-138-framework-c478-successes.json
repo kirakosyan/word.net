@@ -1,0 +1,122 @@
+{
+  "roadmap": 138,
+  "headCommit": "c4783937394155c0bb5dbdf8c11a5ac56df01d7e",
+  "prMergeCommit": "95b49ca4ee1dd75562205e86afc13d1d176e7465",
+  "sharedTree": "94064dcd26a8f2d2252008653676a0f71264bc8c",
+  "recordedUtc": "2026-10-31",
+  "results": {
+    "push-source": {
+      "run": 41199889261,
+      "artifactId": 13043351280,
+      "artifactZipSha256": "b78137480fcc6cf1bc3c315884bd28aa489b78768d1f5709b25302cbd61a77cc",
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2296,
+        "commit": "c4783937394155c0bb5dbdf8c11a5ac56df01d7e",
+        "asset": "source",
+        "librarySha256": "d7369723495159ffeb84b856010592ea75129f63d552bf05a0f93ac3e3dd7c14",
+        "testSha256": "23b2f34fff04dd68ce9e8a76c0cc31df1d19d5784b3055521ebb152ab8350574"
+      },
+      "cleanup": {
+        "project": "wordnet-472-0ed91e2e57c9",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "environment": {
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "jitMode": "legacy",
+        "architecture": "x64"
+      },
+      "jobId": 124538131595
+    },
+    "push-package": {
+      "run": 41199889261,
+      "artifactId": 13043288197,
+      "artifactZipSha256": "b3a98c4a30e0cd87c0e3a6ab1fc1f3c3f2edd03c1939ea9ecaab1297223fb390",
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2296,
+        "commit": "c4783937394155c0bb5dbdf8c11a5ac56df01d7e",
+        "asset": "package",
+        "librarySha256": "9ce7c4eb1a5e00cdbbb969015a9981f3a62a30eb3d81a606de92f4b868439106",
+        "testSha256": "5debcbfbfb348e61724a2af0361981f1faff46dc8f471843108ed991e4048eaf"
+      },
+      "cleanup": {
+        "project": "wordnet-472-32ff8e409b93",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "environment": {
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "jitMode": "legacy",
+        "architecture": "x64"
+      },
+      "jobId": 124540473121
+    },
+    "pr-source": {
+      "run": 41199893527,
+      "artifactId": 13042667338,
+      "artifactZipSha256": "d424e75c0296fec954c8a3c90788ec0faf9ddf884193b0009ce35d880b0f0f46",
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2296,
+        "commit": "95b49ca4ee1dd75562205e86afc13d1d176e7465",
+        "asset": "source",
+        "librarySha256": "a89d9cb09e2a8419be905dc72b08f9a193caac4fbe0b93d9fb1c8e584b0b47d2",
+        "testSha256": "c048e5460bb3d88b163b86c364145bd7d6d26f6a494b73507a55ffee5277ffce"
+      },
+      "cleanup": {
+        "project": "wordnet-472-1c1d19f1d8ea",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "environment": {
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "jitMode": "legacy",
+        "architecture": "x64"
+      },
+      "jobId": 124537594232
+    },
+    "pr-package": {
+      "run": 41199893527,
+      "artifactId": 13043148555,
+      "artifactZipSha256": "05295291b63249608368c9e0f213fa526134ecfa656b238ab27eaf8b0b770183",
+      "verification": {
+        "passed": true,
+        "frameworkRelease": 461814,
+        "cases": 2296,
+        "commit": "95b49ca4ee1dd75562205e86afc13d1d176e7465",
+        "asset": "package",
+        "librarySha256": "1493aba040acfced9d295d54011b93617bb0b580fb2404da6638b3bb4fb921fd",
+        "testSha256": "9bbc849d8f5bdee5dbde943a61defbe960b8e26f7db8f735f3e655c7c434cbb6"
+      },
+      "cleanup": {
+        "project": "wordnet-472-8b94afd61ace",
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "environment": {
+        "frameworkRelease": 461814,
+        "exactFramework472": true,
+        "jitMode": "legacy",
+        "architecture": "x64"
+      },
+      "jobId": 124539558854
+    }
+  },
+  "qualification": "These guests and successful workflows qualify the previous head tree, not later changes."
+}

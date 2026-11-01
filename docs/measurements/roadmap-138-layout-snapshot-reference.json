@@ -1,0 +1,23 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-10-31",
+  "scope": "Two independently authored ordinary body paragraphs in one page. The observation checks preview-snapshot source paths and glyph geometry, not cell/object/story mapping, reading order, native shaping or cross-edit identity.",
+  "workingTreeParent": "a91b49d1ead893449061f46241c5f9fa4f5f5df8",
+  "executedWorkingTreeNet10AssemblySha256": "aabdc26438bb7f1257a6c48e80c981779776299f62936a1bb8ab10542749b200",
+  "generator": "eng/generate-roadmap-138-layout-snapshot.py",
+  "generatorSha256": "ac34e2112add7c8347679e655106c359a92eff54647c0f4cc2ce3229b7b0b42b",
+  "probe": "eng/roadmap-138-layout-snapshot-probe.cs",
+  "probeSha256": "acd2c97262877ecba266f7d88b12b2ac283bc0a5befb37f2fa0d372815e85f86",
+  "checker": "eng/check-roadmap-138-layout-snapshot.py",
+  "checkerSha256": "e336c2daf946270a5f4681419e587f06311e0fb2f1a192baee090c8b49674f09",
+  "inputDocxSha256": "c9459d095812ddb2ac5e5776b63bb49703d23d8a9e118cdd6c9cc8292d78d1fe",
+  "snapshotSha256": "d536005d9fc3de3d05b244ba6f95531a3a33665ac805cc52a435d35f64f514ea",
+  "previewSvgSha256": "96519a83df4f6272b097a63a141c1127f9892e2a83244772eb6730b210abe912",
+  "pdfSha256": "e7815bed946ea4e793a65db23e786fb388e401f247b50c3bfeba87fc8caded8e",
+  "pdfBoxesSha256": "b2f0e83772e2886c701ec5a14a021f8b57f5e7e3c1f686040d45a6950a65a825",
+  "referenceTools": "fontTools 4.61.1 with NotoSans-Regular.ttf sha256:b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5; Poppler 24.02.0 pdftotext -bbox-layout in image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; Open XML SDK 3.5.1 validator DLL sha256:4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "observation": "Open XML validation found zero errors. The checker matched the two source paragraph paths, independently parsed each SVG glyph path and compared its font-unit bounds with fontTools' TrueType glyph bounds. It applied the SVG transforms and matched the snapshot glyph-box unions within 0.002 points, allowing the SVG's three-decimal coordinate rounding. Poppler's larger PDF word boxes enclosed the same glyph unions. Alpha snapshot bounds were [72,75.399,100.710,86.399]; Beta bounds were [73.067,90.887,94.605,98.851], in upper-left page coordinates. The SVG and snapshot bytes were reproduced in a second working-tree run.",
+  "earlierAttempts": "The first focused compile failed because the measured-letter API used an obsolete property and an analyzer requested a concrete list type; both were corrected. An initial unsupported-owner test expected bookmark markers in the positioned-item list, but layout consumes them, so the corrected test checks the emitted paragraph's unavailable owner. A diagnostic-mapping test initially expected one item, while layout split the word into two positioned items; it now checks every fragment associated with that source location.",
+  "limitations": "The DOCX, SVG, PDF and extraction files are scratch artifacts. Exact final-commit source/runtime/package and hosted qualification require separate checks. No public package is qualified by this working-tree observation."
+}

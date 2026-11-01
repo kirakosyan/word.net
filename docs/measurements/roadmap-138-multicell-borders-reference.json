@@ -1,0 +1,1077 @@
+{
+  "roadmap": 138,
+  "issues": [
+    142,
+    167
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "25147e093ae40fd46dc66adf6ef4d6ff87f78ff0",
+  "scope": "Ordinary managed one-line, one-page, single-column fixed-grid DOCX body tables of up to two rows and two columns with uniform six-side black single or disabled borders within documented width and margin bounds.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+    "generatorSha256": "385f9c6c30710274e2cef5e017b154c74d75f8180218684e47023d2ab87cd2bc",
+    "documents": {
+      "nil-single-implicit.docx": "449e4f36777b0b2fb7366fc71ce4f12e5fdad76134bb735d7b3ca66e4c721efb",
+      "nil-single-zero.docx": "64c0c3c723d98bd5d32db29f5a1313c844899fb70be4ff6c53f1df7a87c5c63e",
+      "implicit-4-single.docx": "b5062efa0b42b4b23a41cbcffee06b127f995666b0ced142691a39c4f26e8e8f",
+      "implicit-8-single.docx": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7",
+      "implicit-12-single.docx": "b5b9e7949db89d480e8be88e9b47a9f7918e7cdfad7bd67e64cac2ad2e97cf89",
+      "implicit-16-single.docx": "f866011ddb4f25366b00f1f7434bfc21a41c21504055e022cf6882a03209ee6a",
+      "implicit-20-single.docx": "aeb7590ed593ee6db2eb42b0258c5756a42075504fa75727ef0309ac58d18c32",
+      "implicit-24-single.docx": "07f4d7f3badc9368b5cd466baa078c93ad1d9fc80b7be6dd9fd8c197851327d4",
+      "zero-2-single.docx": "eb4631524b4da0d5884fbc8dacf4190035a94f097944ce86d3f1a83a79a40e7c",
+      "zero-6-single.docx": "8e4b1e0d26756e862d5bc578cb6110eed3c28147249b4b30a17192e5c8fec298",
+      "zero-8-single.docx": "272af467b7b66b0d11dc02c8e08daa98830ab13859b4942f83df9d964eb68d55",
+      "zero-24-single.docx": "b1ef9ef3631cbdcb7302db517cb4c86b74196f38d53c9bbd0c4da6333d7c9acd",
+      "nil-rows-implicit.docx": "1e9d7ce96b85509fb161be640c4bdae457800704285a780aab53eb8268340bf9",
+      "nil-rows-zero.docx": "a2c397056a292b541756d995b3e267bc86b52fca4553a0329e7adef2e43bbaf6",
+      "implicit-4-rows.docx": "629b0f94353c3cfce89532899c62476c2422d5dea3738db3614354bdececefb3",
+      "implicit-8-rows.docx": "eee051da868946b2505269eaac7848b5ddb7c1198bf2698ef624b1440892cc67",
+      "implicit-12-rows.docx": "a50562c781f52a794b808427ed6e56ec95ef0c9de7610034811aa81883ed20a5",
+      "implicit-16-rows.docx": "0d1abb65d665f5e41342b19bea7e9094690637c5e08b0d760e034965eb1f57fd",
+      "implicit-20-rows.docx": "47c8a57da573882a15a737f4b07a06b2fe67ad6af5601bf5632b87ec2abeb4c1",
+      "implicit-24-rows.docx": "5ef42720b8fd87b9d20ed2827ba9a9090e9c567b259a87907af8dce7a4664bc1",
+      "zero-2-rows.docx": "e14e738b32c412f3c2cc75462fda0a790ed9d6cbbddce58e3b24796c0c140c3f",
+      "zero-6-rows.docx": "81e2cedd806dcb3a6d5c1189a423b2bee160d38d5f17a70b36cc6285f32e50c0",
+      "zero-8-rows.docx": "104068e3d8a34f879d4dbf632282c8f2a6c73faa52950a5041c37c55831e4aa6",
+      "zero-24-rows.docx": "feb6dae1e0d171ec06cf44d4d4b5ad808679c8a4883e9ba5eaf213c195ae15a7",
+      "nil-columns-implicit.docx": "b45c7b287e51675e92329c799e2b25ae8e42f3882b6a9775a33d29a6cfb85c58",
+      "nil-columns-zero.docx": "2c065e9d4d2dc993a875db399451d39dcda791661ae4ae4cb10ae2ee76626748",
+      "implicit-4-columns.docx": "01ac19ffd9c1a5f6eb86a37acacda5982433942a3e350804caece2e765a9e783",
+      "implicit-8-columns.docx": "edae461f2bf1c9883cdbcac3fa4606630cb0c0b6b8a23fd1289fb164e9621361",
+      "implicit-12-columns.docx": "b7afa9693f4423c76fb5f948b6229ab4563538511d5557015efe05fa29244e78",
+      "implicit-16-columns.docx": "dfa70704a5cd278132eddebb0ae164391d2e54ee4b4cb93dbf462706a17822b5",
+      "implicit-20-columns.docx": "efc8fb259898614cf3f65886940a0a4ce74f7ccd24bff27e852e8f4766ed5a36",
+      "implicit-24-columns.docx": "3c6aa612694368959dac4470a605330bd16982e5e7b63b55ab536d2faae4ad02",
+      "zero-2-columns.docx": "7b0da38c2bc00a47191836c8b7bef77dc885f1250f52aa60e8277772a8784797",
+      "zero-6-columns.docx": "5bd0d51adffb58f4942667c5da8e6d9ff79c351227cb6bcc202ef6c7b9a83a06",
+      "zero-8-columns.docx": "e2a579e07d88b253bd01dc9783bffd4d0cadca0e4a39ee5ac877f42fb33cec86",
+      "zero-24-columns.docx": "80e066d563c3f18043507bbfd9cab1d752036e3648dd42656aa9fd7abc937f14",
+      "nil-grid-implicit.docx": "6d625bcc0be44705e8d0bee8101bf37e4bde6db538d5533ec47d3170029cd6d7",
+      "nil-grid-zero.docx": "fbe6f321e82f123ae3703f1940bb6ff9c963067dfd4e4a353230c4f8cf084f9e",
+      "implicit-4-grid.docx": "65c37b6d473980bf155331654a189d9aa498492b4dd2ead76ec8ad3aef034b41",
+      "implicit-8-grid.docx": "d7a66b301d76212750c5a2d89b799978a5ed837a7d11a6158b5d39bd497265cd",
+      "implicit-12-grid.docx": "39a5a34d5b2d335216e01e338133a07790252640e6a42e5d55a13c93ee99524a",
+      "implicit-16-grid.docx": "bab7fd1fbec48b2d68d5c84942873ea8e946bbd7f27157ddff2df2cc29f606fd",
+      "implicit-20-grid.docx": "7839eced1babe142e44d56a3b9dd67736204df43bf3b76807d1d7b942544c0e9",
+      "implicit-24-grid.docx": "709cf58ced6785f7cbbd15c51a5bdf5679aa73ddb3665ec849e6726c1dad7502",
+      "zero-2-grid.docx": "fa7f7ad68f1670fa1a5d3a8e59d76e4dfb7894a4a18bd196525ec0d81726abed",
+      "zero-6-grid.docx": "02f4a920871304f7d0b92336a5a2e809a43f20e93ccc3d0a063379a6a4cdb4c9",
+      "zero-8-grid.docx": "0601dff8596648562b9c921fb755e840b71e4edff0d7d5730fae30cd574ebf74",
+      "zero-24-grid.docx": "671bbce110d0af1ff8efdf137fa235c6c12135d564a112c8a5861590cb07160f",
+      "grid-top.docx": "138edf0785b417f6ad63c49a2b614168a4665999eedeb9ce2e9749064a4ef6ec",
+      "grid-override.docx": "22eb749cf032e60c85ea8fb607ac451e18ef6cab7a1a03ecf326ba478dbf3064",
+      "implicit-2-rows.docx": "e7158ddb037c3a35ee9f5401c252e218f357e1e6daa3ddcacb3d85b3b2d36bbc",
+      "zero-3-rows.docx": "012cfdf11831d2adaf09f3ecf55ae9c3ba73be23c5428a83195510b15033c51e",
+      "three-rows.docx": "e4d4813ecb5ab0521f30dec1c0dedacb61fde5be1b7c55a44f2699d00b08bb80",
+      "three-columns.docx": "8396ec1a4a23d51b0f6094b0c82e33e27dfff78e0c1a2601950cdc2cc8738acd",
+      "mixed-borders.docx": "67625f6e67c5ebb50f3dbe0905b4f8398cd81e55b4f530317e1b707f99fbbd03",
+      "horizontal-only.docx": "b4de158628c7c936d620ad123bf01c47cdc124147dbdf5e1a83b51ddcd1730b2",
+      "long-wrap.docx": "7723c7a820912be94626b58ee742d0ebd869b1bfa33b2f5123d3d3717ecc90b8",
+      "multiple-pages.docx": "00ed39c21304b1ebb483c3ee23ca0f3c1cd9c8f6ad39c35fcce73fe334ecef70",
+      "section-columns.docx": "e87da92c30e00294568c23e22818f2180cbab5594665755a94dcc4441645e5a8"
+    }
+  },
+  "twoIndependentGenerationsIdentical": true,
+  "sourceFilesSha256": {
+    "eng/generate-roadmap-138-multicell-borders.py": "385f9c6c30710274e2cef5e017b154c74d75f8180218684e47023d2ab87cd2bc",
+    "eng/verify-roadmap-138-multicell-borders.py": "b68171067a377fd60ef7ff975377cec52cc4c61b674e1a8ad0592baac30414e1",
+    "src/wordnet/Formats/DocxReader.cs": "524a7caffb7b3cbbac21337b461ec7b80f21fe9811c3ff87c158246bfaa47141",
+    "src/wordnet/Layout/FixedLayout.cs": "1a180bd87645424d32dba0931560921f30b72f17d5d1a4c73f8a3bd89f96caa3",
+    "src/wordnet/Model/DocumentModel.cs": "f24340a45faa20cc80fb89bab2d42472d10ded60b65fe88970b6645e79a948e0",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "c0d7ce0edfee9559381af57e6819bcd26415d95a636a8e4cca00451279acfd93"
+  },
+  "parentProbeNet10AssemblySha256": "336cd3b39f72506b2e41f968c01a3d8b0903b38269ae1243fae04b229536762a",
+  "candidateAndProbeNet10AssemblySha256": "7de3319d7332ad9b225cc9bb0ebe67ba31b54e7134c68bb167e9a6250b979345",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceSchemaLogSha256": "626f519e4b635d7b8e84f0c394ac3f83db4422e1f14c2544b2e7c16056f9ede8",
+  "savedSchemaLogSha256": "42c91a7f15993467cde36fb3137bc580f1bb25885bbd3e029172b9511899e62f",
+  "officeReference": "LibreOffice 24.2.7.2 in network-disabled wordnet-138-reference:temporary image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; Noto Sans pinned by fontconfig.",
+  "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "officeLogSha256": "85470d9e2aad28b89c1c0bde4bd7f4eb563a8a5081aa23760ae9729e126c0918",
+  "verifierSha256": "fdecbacf4ad6e1035a74021a06b9c906c2ad9b7970b2c7e615890377673f63c9",
+  "strictRejections": {
+    "long-wrap": {
+      "diagnostic": "Table.BorderGeometry",
+      "processExit": 134,
+      "logSha256": "2279e5e210582caa91ff479189f05ef884474c9592fc9ad66ea7563f3f0c12ce"
+    },
+    "multiple-pages": {
+      "diagnostic": "Table.BorderGeometry",
+      "processExit": 134,
+      "logSha256": "a5cdd753146fc4e530ee77e29da6db5e4ff74574f391374e873c45769a0c0abd"
+    },
+    "section-columns": {
+      "diagnostic": "Table.BorderGeometry",
+      "processExit": 134,
+      "logSha256": "3a4f35f95a344d61d76669f8407d25135ebed4195c6f8c6a8fd8c23b16b85bb8"
+    }
+  },
+  "preliminaryEvidence": {
+    "initialStudyCaseCount": 32,
+    "initialStudyObservationSha256": "9ccf3ef7dee356cf201ddb51b00417eb067bfbc829dcdbdb5ca23374a45cf883",
+    "initialStudySummarySha256": "7faacc08f7d57bc4cfd6f230edd62e0b1e18eb0b0dd65ec7c5790d9028411bf6",
+    "initialFocusedBuildFailure": "CS1628 for capturing an out parameter in a lambda; fixed by using a local variable.",
+    "initialBuildLogSha256": "984e37ac9e269959e17eb839e125b91972bd81275d37088ba0f1ee44aff0fa8c",
+    "focusedRetryCasesPassed": 4,
+    "focusedRetryLogSha256": "e95a8eab0f66225a9e292ba59ce7a9fe2472e577b1c4495c129226a1c42a85e6"
+  },
+  "outputs": {
+    "nil-single-implicit": {
+      "sourceDocxSha256": "449e4f36777b0b2fb7366fc71ce4f12e5fdad76134bb735d7b3ca66e4c721efb",
+      "parentPdfSha256": "e281a7cefd97d32b409f8f00b7b6c600da29a9efbeeddec0d3252fad5b61e450",
+      "candidatePdfSha256": "e281a7cefd97d32b409f8f00b7b6c600da29a9efbeeddec0d3252fad5b61e450",
+      "candidateSnapshotSha256": "c37da931cd16c19503c5b2e680567b8e7a3db5e7fd719399801465689a4da4cb",
+      "officePdfSha256": "e189537ff8da2d4f8f3b4c182370acebacdec64440699eece2ff68e7e70379ba",
+      "savedDocxSha256": "9bf07ec454a6178a7194c01be6dc1e6207147013aa69f74c7e8bfa96a118850c",
+      "savedPdfSha256": "761e512b4bfadd3c958e75925f3e454ca121cbd85ee8c7cb168950808f543e1f"
+    },
+    "nil-single-zero": {
+      "sourceDocxSha256": "64c0c3c723d98bd5d32db29f5a1313c844899fb70be4ff6c53f1df7a87c5c63e",
+      "parentPdfSha256": "8eec58efd06a89fe2f9d228a545def1713c1a49d4ad146a144f595ace948892d",
+      "candidatePdfSha256": "4789df701c1d568f837f74525bb0020527b3ecfa5328aebbfaf6447ffddd7fca",
+      "candidateSnapshotSha256": "f12fa5298a83aad7b883913989f41624c3195f0fc37fccf6fc6809f66adc3fa7",
+      "officePdfSha256": "7804ed0492a4cbb05418f90ccdd6774801c09d9499f562ebebe716e88681992a",
+      "savedDocxSha256": "8456ad373593b6d3c07370589cfbc56a515c6b8d0d51012cc7a50ec495aea200",
+      "savedPdfSha256": "d02b66f4693b51c70a4945e366c4af1fd1150e3c3ac4231dcd59c5dbdcba212d"
+    },
+    "nil-rows-implicit": {
+      "sourceDocxSha256": "1e9d7ce96b85509fb161be640c4bdae457800704285a780aab53eb8268340bf9",
+      "parentPdfSha256": "78bb4caa842ca5e67a6fda7e5ef8e09984a6655db239354f48258d205e95b8b8",
+      "candidatePdfSha256": "8cc1e25e34024ea38326f3d3c0774023c467c878020149aa142f9196192998af",
+      "candidateSnapshotSha256": "9018c36e46e067773a21b2d5dc78aeea1af7e7e76216bf77cd04e06ae0c84781",
+      "officePdfSha256": "633b48be29e466dbca5bc51b28e0c053b71e42c9c01fc643b71c767acffe5a9c",
+      "savedDocxSha256": "136fa945987121073691463a34292a879e3832b817c6f4c13ae79ae924abf430",
+      "savedPdfSha256": "8cc1e25e34024ea38326f3d3c0774023c467c878020149aa142f9196192998af"
+    },
+    "nil-rows-zero": {
+      "sourceDocxSha256": "a2c397056a292b541756d995b3e267bc86b52fca4553a0329e7adef2e43bbaf6",
+      "parentPdfSha256": "68ba33a3c0b0ed26c99ba1c8af7335127410946ef56f2a170d313c1ee9b27603",
+      "candidatePdfSha256": "863e0e3b1bbc9bea4bab0baeb28c06402fd8068c2e428c9039e0ce65fb1265a6",
+      "candidateSnapshotSha256": "d7686c01db8ff6da920ac194b271d8f42cc6dacd5335149e87680115e3be08c1",
+      "officePdfSha256": "488e7b6db5a5b5254da2b0796b539d1f8c9419a7d70de742ada96928e11b8272",
+      "savedDocxSha256": "479d3ad1dba87b381a786d5f051267ee6f4ff452c66510f5b632a0391c785725",
+      "savedPdfSha256": "5dfc66b51678ca8949faafddddb231fd7cfdef1bebce60ce004cdbe8f3a13bef"
+    },
+    "nil-columns-implicit": {
+      "sourceDocxSha256": "b45c7b287e51675e92329c799e2b25ae8e42f3882b6a9775a33d29a6cfb85c58",
+      "parentPdfSha256": "a2e748bfbb1a43834d3c5457f66b577a2ce6b9ce29c27a7a9e8c387535b9228b",
+      "candidatePdfSha256": "91606a10895ea5c4fb01d0d373697593801999afbf3afa1a3ef6dbedc8a8d6d9",
+      "candidateSnapshotSha256": "cbcd97473e5459af676c0c18328faa329d5827ff0aa0ef095abc90066c23b6b9",
+      "officePdfSha256": "490c81cdd0a5e0e8a840fd4dac7ae339b5c5589d5ece214eca8ce8dbe14bf32f",
+      "savedDocxSha256": "9da55f2ff79db34838dec06109d1c016d07a95abaab8eb3c0c47c3f91cd6e7c2",
+      "savedPdfSha256": "91606a10895ea5c4fb01d0d373697593801999afbf3afa1a3ef6dbedc8a8d6d9"
+    },
+    "nil-columns-zero": {
+      "sourceDocxSha256": "2c065e9d4d2dc993a875db399451d39dcda791661ae4ae4cb10ae2ee76626748",
+      "parentPdfSha256": "a2e748bfbb1a43834d3c5457f66b577a2ce6b9ce29c27a7a9e8c387535b9228b",
+      "candidatePdfSha256": "6cbe1def225dd3efd10464e362e8ab6ac937d4b3d05ac2f87e9bbefea277e52a",
+      "candidateSnapshotSha256": "c3864902abe0d89f127b5e5c7b8eb1f5d45c2b1167b2d8fcfd2031882de3adbc",
+      "officePdfSha256": "edfb05523789b85ee902c761838952bcb52d7e1d8db868993fbb811aa8eb797c",
+      "savedDocxSha256": "31c5b0f71a7aed7604bda4264f6365dc3e8c24c898a9869b4a49cb4d46725644",
+      "savedPdfSha256": "6cbe1def225dd3efd10464e362e8ab6ac937d4b3d05ac2f87e9bbefea277e52a"
+    },
+    "nil-grid-implicit": {
+      "sourceDocxSha256": "6d625bcc0be44705e8d0bee8101bf37e4bde6db538d5533ec47d3170029cd6d7",
+      "parentPdfSha256": "40b17c958fd0f6b9a625cab9c93f596a4c49c6a9eb719e698f9f13a27393146c",
+      "candidatePdfSha256": "fb0e616bfd4c0a482397eb0acb6f4fd0726c115ae7e1a4bc5daa7a302985d846",
+      "candidateSnapshotSha256": "36d42f6d452d18547adcf3b7669ca9d1837fa9676cec49c94072dd99a4027d3a",
+      "officePdfSha256": "4888abbd1252a312e9aa8733d3cdd1a78e093a959cff76fb4984074793f4895d",
+      "savedDocxSha256": "f3a22d75a57702febc7a9f772b044eaadd25c7b52cc4880191f4c7f2b52fdb7c",
+      "savedPdfSha256": "ad838e2ee9ace9d99764c9036ab61760e347e45fa6a30f66119d73c58bb1e10b"
+    },
+    "nil-grid-zero": {
+      "sourceDocxSha256": "fbe6f321e82f123ae3703f1940bb6ff9c963067dfd4e4a353230c4f8cf084f9e",
+      "parentPdfSha256": "d5a1e87b943d2f2c6b94d975a662ec5edb584a412602764b382d2437a2fe4b81",
+      "candidatePdfSha256": "903b0ca8c3cb32f3b3fe99dd855094d3a14acf77929e3ba3533086d679e341a5",
+      "candidateSnapshotSha256": "b7bea2d8b6598223c7d708c153640c1b28b43a003432ab10f52547291682e2b9",
+      "officePdfSha256": "ab979e83d36eb2fd7488355368839c25ee841b63b8d20b772674dea02c12c886",
+      "savedDocxSha256": "b001cc6105212b9f4a250a638acbcc3285020b351bf055c65be41df3366c0c34",
+      "savedPdfSha256": "2920f43baa781cb10856db89eafaa65087f1aa400327c645adff9d0d09c3dad3"
+    },
+    "implicit-4-single": {
+      "sourceDocxSha256": "b5062efa0b42b4b23a41cbcffee06b127f995666b0ced142691a39c4f26e8e8f",
+      "parentPdfSha256": "8830c167f0603780489183f661e8cae997d280006922437f60673b1e1aad702e",
+      "candidatePdfSha256": "f2882d7249a8b5572e3858313b503486d777a4bd7ba6a30df659dd3d2dff30ac",
+      "candidateSnapshotSha256": "eac39a36541ace3408997483771d1cd7f36fd1793c11e1832e0d4a28b693ee24",
+      "officePdfSha256": "596ac8a12eb3ba2c8879f2c6ccbd6dcac73c9433fecbe9d90a918d3edd3d196d",
+      "savedDocxSha256": "bd9e7e85613e3cb075e32fe78c20f64d558a95c67b79dda8d024f90adbd897b6",
+      "savedPdfSha256": "81a4be4b0303c763d0c44e169e3e911f6cad507f24b4ff883aa238d662607ee2"
+    },
+    "implicit-8-single": {
+      "sourceDocxSha256": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7",
+      "parentPdfSha256": "912fa9e133c4fc0b13d35e934f2ce162732b5a972c69e6dd0e9f5374c0bb0732",
+      "candidatePdfSha256": "912fa9e133c4fc0b13d35e934f2ce162732b5a972c69e6dd0e9f5374c0bb0732",
+      "candidateSnapshotSha256": "19ddb8b2df18d5f396bc7a08e0232f768e14143453d6ca13967cf66a00b5901d",
+      "officePdfSha256": "56e63935b8f245a9e4ab64a64cee6678d2d681a99c6d641a1cf073f0847570b2",
+      "savedDocxSha256": "aee673ddf0f6c8d144ec4d4597d83b691648b6544477e0824615264540509214",
+      "savedPdfSha256": "ce1629cd490c7a80c81b0b1fe5733c9a8878b0f0ab1194ca85b55ee1ffd7adcf"
+    },
+    "implicit-12-single": {
+      "sourceDocxSha256": "b5b9e7949db89d480e8be88e9b47a9f7918e7cdfad7bd67e64cac2ad2e97cf89",
+      "parentPdfSha256": "cfeb6dfb3720522071637fba1b6b2aa3449a9fd5bbc43b1d973061c5c125e352",
+      "candidatePdfSha256": "cfeb6dfb3720522071637fba1b6b2aa3449a9fd5bbc43b1d973061c5c125e352",
+      "candidateSnapshotSha256": "0e48769b8a881d0cb92fe7d1943797fb1e0c2040c21cd510cfdd29008ebcc470",
+      "officePdfSha256": "9f0bf9be61461d647bdd99ef02520c55789448ae986bb90d5f6bffdb7fbfc295",
+      "savedDocxSha256": "b5740ceed94db744e4992fd125355a98ee0b972c402f6a22d06966701502f802",
+      "savedPdfSha256": "cfeb6dfb3720522071637fba1b6b2aa3449a9fd5bbc43b1d973061c5c125e352"
+    },
+    "implicit-16-single": {
+      "sourceDocxSha256": "f866011ddb4f25366b00f1f7434bfc21a41c21504055e022cf6882a03209ee6a",
+      "parentPdfSha256": "3fdb364c5c1c16d69ae8d4d1ed4aa210d6754daecc56c007bc5c736408193721",
+      "candidatePdfSha256": "3fdb364c5c1c16d69ae8d4d1ed4aa210d6754daecc56c007bc5c736408193721",
+      "candidateSnapshotSha256": "1970da4b94e707ca2bd160712744a47a3dc246063ddcff2caf7e0acddf5aef13",
+      "officePdfSha256": "aa83683ee9ededa9c78ac1f575354e923cf345b23ea71250562a6f88fbf102a5",
+      "savedDocxSha256": "cfc3008b913010ce048613e7e1db4d7237804b35306e1a57fbca47a4e5831562",
+      "savedPdfSha256": "d33adb27ed34ecba9686db83950aaa95ecddb072ec4231e4e3ac64268cd289c0"
+    },
+    "implicit-20-single": {
+      "sourceDocxSha256": "aeb7590ed593ee6db2eb42b0258c5756a42075504fa75727ef0309ac58d18c32",
+      "parentPdfSha256": "54d9dc123a61029d4a39a2047a760984eeed43e3fceb440eedd1a020dd9cc5dd",
+      "candidatePdfSha256": "54d9dc123a61029d4a39a2047a760984eeed43e3fceb440eedd1a020dd9cc5dd",
+      "candidateSnapshotSha256": "01a4a8958af2830876d7a7cd4cdaa1f25104da9981b360a15617449d1b452639",
+      "officePdfSha256": "1195a27e344503a965592ce7a1c97e5c22943026d4bb1f964aa621be3597c7fd",
+      "savedDocxSha256": "d65e2829ddc7dd161579349f376e6091327dcf899ff781bc3099d07392aff9b2",
+      "savedPdfSha256": "f4163ff165611c70a5107e92957ccb9f8d627e275c7fc177646f654bcd350d57"
+    },
+    "implicit-24-single": {
+      "sourceDocxSha256": "07f4d7f3badc9368b5cd466baa078c93ad1d9fc80b7be6dd9fd8c197851327d4",
+      "parentPdfSha256": "f1ade8827d579a8abbb9e956fd340875ed1c9655ae7d6548eeaee35545385add",
+      "candidatePdfSha256": "f1ade8827d579a8abbb9e956fd340875ed1c9655ae7d6548eeaee35545385add",
+      "candidateSnapshotSha256": "707c54082acc8b585407486787dae919fb9201b06859f2ac108a0588e186a147",
+      "officePdfSha256": "444a1500ffbd2d00b52873ba21feb390d6dbfd7ba74b3c56903c5a9c329867fe",
+      "savedDocxSha256": "acca706db6945ccb1da83767675624b87df7bd333cbb1cc01b20f1e247292047",
+      "savedPdfSha256": "10bc39f360b2f482e1229a790b2ed9d6b47ca781be910e5fdacadeca18cd9a48"
+    },
+    "implicit-4-rows": {
+      "sourceDocxSha256": "629b0f94353c3cfce89532899c62476c2422d5dea3738db3614354bdececefb3",
+      "parentPdfSha256": "54994a31240570bd904464fb73776295a8f79581554e0cda1bfae986d9e7c040",
+      "candidatePdfSha256": "1267984c13b735b9bca81f288ca4ffe4c2caebba0e789a6ce86f73621ebd032b",
+      "candidateSnapshotSha256": "91443cf47ef8dc88e5a191ecb938375e936614fcfef6f0d3dfe800c8c8b378fd",
+      "officePdfSha256": "ec2743a50b380b4636e141a532f1a26add671a28b3748841e0b7a2d099401313",
+      "savedDocxSha256": "3be67322612baeeb5a1b346559ba216097800e8ea996cce62aa349ef9566ff34",
+      "savedPdfSha256": "fcdd8220c6e0c6b7754278188deb2a94be19abdef171e10d30c27d8f87d9f615"
+    },
+    "implicit-8-rows": {
+      "sourceDocxSha256": "eee051da868946b2505269eaac7848b5ddb7c1198bf2698ef624b1440892cc67",
+      "parentPdfSha256": "d0e3874a7432f1cfa6dae1d4358efe806be7b2a77080485a65913853605d43c6",
+      "candidatePdfSha256": "993ef3b03cc166535dee91152a0d9edeb69d3d39648dbc03c1e3eaec34a44031",
+      "candidateSnapshotSha256": "5cd21397f2e2003aa1bffb273e8ddc7eb3eb643d62a6b297ae3e6c4cf84a0ba3",
+      "officePdfSha256": "fc6117b1fcdd76fab5ffaf92fee2cfa34d917c81cc376268724058426f0624cc",
+      "savedDocxSha256": "8553eefa19f6ed2079223fd30a7ec9936d3bd467b19ce9a7792ea9bf07740255",
+      "savedPdfSha256": "e9c32df2162e5de6c9ea38cc7f2bc73f333f70e80d99c625cbe5dd8a1f35df62"
+    },
+    "implicit-12-rows": {
+      "sourceDocxSha256": "a50562c781f52a794b808427ed6e56ec95ef0c9de7610034811aa81883ed20a5",
+      "parentPdfSha256": "998bff11ad8e17c2df528ab10fe5b117d2cd877d8e3223e73f552e43bb9605e0",
+      "candidatePdfSha256": "e68e4813f0e049733db45882109f4c9293dce6aed9455e99ae97a96a6b3500e6",
+      "candidateSnapshotSha256": "b803ee6477aab32a93874f1a4ea3d6b0c90c4c96d93c035b5687a586a4382b0b",
+      "officePdfSha256": "e99032a898dd7de65bee8a5088505850ce3cb0ceaf5d310778f728f87cf17573",
+      "savedDocxSha256": "b4a4feb20c509abaa8e56f1656bffbbeae0c341785c6f0c7e4b763850a94a42f",
+      "savedPdfSha256": "e68e4813f0e049733db45882109f4c9293dce6aed9455e99ae97a96a6b3500e6"
+    },
+    "implicit-16-rows": {
+      "sourceDocxSha256": "0d1abb65d665f5e41342b19bea7e9094690637c5e08b0d760e034965eb1f57fd",
+      "parentPdfSha256": "09ea1cd3e645c413bd0369d3194720edbfc1f03e3c7bca9dd3175e60f4b2e500",
+      "candidatePdfSha256": "3dd7df7c9929e1f81f4ca0117f3dea3a370017dc426727a2391592f235771cab",
+      "candidateSnapshotSha256": "af2653846a3b2ea6552b30f20232f0a1ebe83dce1fe05b4b25d20ad4c75f07ce",
+      "officePdfSha256": "f3702e4aa7c6c5a23ea25e94a6558c5c3a02639a53e0e9ccd538a75a82c3852a",
+      "savedDocxSha256": "6dd3fe8ed9cb1e24f4ef28e8bd1fa98ff7750c322732a954d11d5ddbe9b9c3a3",
+      "savedPdfSha256": "a86838bb0a523765916d629b1aa8fdfdcbd376b94361bd1f7601871893a84e0c"
+    },
+    "implicit-20-rows": {
+      "sourceDocxSha256": "47c8a57da573882a15a737f4b07a06b2fe67ad6af5601bf5632b87ec2abeb4c1",
+      "parentPdfSha256": "742c773555c6339ca5f3f884cc1ca4ec5aefed706549e73b95a96b7d6b886de4",
+      "candidatePdfSha256": "38fb850d39181cd9c700396fd2cbd44de769ee5b9a2fb7867cf24da683212552",
+      "candidateSnapshotSha256": "b875ffc11c939c500f89698f5f25023f9392907d600a2dab96e6d4ec8b6d3fb3",
+      "officePdfSha256": "afdb1198ef6ed772b48eb3b57c0aef8b9f2eb540d44ebb05a13588001b4e5b2f",
+      "savedDocxSha256": "2dc3c4b88de0b8ff0b564ff2204df21cf0ad5e2454f0bee1b0541e464cdbafc4",
+      "savedPdfSha256": "38fb850d39181cd9c700396fd2cbd44de769ee5b9a2fb7867cf24da683212552"
+    },
+    "implicit-24-rows": {
+      "sourceDocxSha256": "5ef42720b8fd87b9d20ed2827ba9a9090e9c567b259a87907af8dce7a4664bc1",
+      "parentPdfSha256": "6b648d7c86ab4309e45cef31f8125169926c2a2dfab8e6dca87a90096528ad37",
+      "candidatePdfSha256": "f20a08a4e76310ad166687ee99f7ef785dfa1bee4c2eac28785459abf9c3f5c3",
+      "candidateSnapshotSha256": "15c4288be898dbf0cb3de9f7c03162497e987018909f7b16d0515ee8c64e5e34",
+      "officePdfSha256": "661da81e689d88a5cbe12d0bb4a275105e4ff9559105e325d1a10f12bb0e737a",
+      "savedDocxSha256": "298bd017bde64936962910c25cebeaf999818b15907415b4204b94c93c7f9882",
+      "savedPdfSha256": "89250a020e19a39a191b688d82aacbb9a66ec35ef619a1905052d216df37e471"
+    },
+    "implicit-4-columns": {
+      "sourceDocxSha256": "01ac19ffd9c1a5f6eb86a37acacda5982433942a3e350804caece2e765a9e783",
+      "parentPdfSha256": "13ffbd17c3ec45fb6d04a63fd7497e4fd5488791641a12087c25a50aeef5e849",
+      "candidatePdfSha256": "783d7b470acc118fda4c1f9e919979655841c4ae6640e629a9e610c0fdc298e5",
+      "candidateSnapshotSha256": "0224ec647856778d8870332f56951351006fdc7058e5f6dc14ee03a4b7df74b6",
+      "officePdfSha256": "7eecf967f885cf321409d592a66e5ae8ca177bf636c233ab3156e1ae072ad380",
+      "savedDocxSha256": "4b69e9973e9925feb1e0f57ec8910a761e81b500ccde7fe44277cc1d3023726e",
+      "savedPdfSha256": "ccfe3bd2436840a0b05385ddb5ab709e60985fdba607995a93a7c4f984fb5bae"
+    },
+    "implicit-8-columns": {
+      "sourceDocxSha256": "edae461f2bf1c9883cdbcac3fa4606630cb0c0b6b8a23fd1289fb164e9621361",
+      "parentPdfSha256": "fc6e8ca5f28d372d67f64ca81aa51b400d913d5f6242c9815277f4b5f2ffac02",
+      "candidatePdfSha256": "2d5b1ea18bd5ed70b291cb2cb3177ac451e6bc15917edb8b4980e76938b9405b",
+      "candidateSnapshotSha256": "a308c9fce3664929172e268dd917f3c9068b61b73330c0b8920c436d30c19e66",
+      "officePdfSha256": "57b0b204f364f438f3baf48092d0ed163dde185502a64256ae28c74f49e096fa",
+      "savedDocxSha256": "96b40e2206c4d6485ecd1965db106f5db197be3c564a167115097061a170670b",
+      "savedPdfSha256": "09673b81ea5912ba726b6b201f9f066103712740556ff9336f662a59b794455a"
+    },
+    "implicit-12-columns": {
+      "sourceDocxSha256": "b7afa9693f4423c76fb5f948b6229ab4563538511d5557015efe05fa29244e78",
+      "parentPdfSha256": "61550fa3d50e539993b8fa41ee18ec749486cb204e83ccf7654c88445381e167",
+      "candidatePdfSha256": "057f404a61ad4183a762f550b4b5c4a77ece43d4342f0a215b75a32aea6fc73e",
+      "candidateSnapshotSha256": "2679a6249b7aa006377d8a1ea2a85cbd19068bbfa0346191b166d51587f00af5",
+      "officePdfSha256": "f8744fbd8f8c0b1b9c385a734ef3c914c66232d3c4a5ddea77251ae6cd0ee481",
+      "savedDocxSha256": "d69b5a84e892ad7f7952fde58ef64ee82645cbdc4ebe3b6a1cce4ef711877248",
+      "savedPdfSha256": "c01ac5cd5696a05e7e66954188f571e63c69fa229ba8ad9e266632bf0f4a93a3"
+    },
+    "implicit-16-columns": {
+      "sourceDocxSha256": "dfa70704a5cd278132eddebb0ae164391d2e54ee4b4cb93dbf462706a17822b5",
+      "parentPdfSha256": "6ecd2ddf929074d268750ec8a2928e01a363b0d877899ca67109850a6b08a61e",
+      "candidatePdfSha256": "6a666d9fd0dcda1dd9b04d1b2a4299a9325750c0bbe1f7eccf2d9f2eca0e29e6",
+      "candidateSnapshotSha256": "e35ecaaf7bb2da2b17502987b22a4e96b21d832f62a32bd742ec1ff578c4eede",
+      "officePdfSha256": "9139384a7bf2181efbffa1e96886f3a05dee281fbea1b1cdbc8cd6eef224d712",
+      "savedDocxSha256": "03c4e5dea6ff79eba326867634662797eed1e91996fdc726cadc247c8e4da60d",
+      "savedPdfSha256": "6a666d9fd0dcda1dd9b04d1b2a4299a9325750c0bbe1f7eccf2d9f2eca0e29e6"
+    },
+    "implicit-20-columns": {
+      "sourceDocxSha256": "efc8fb259898614cf3f65886940a0a4ce74f7ccd24bff27e852e8f4766ed5a36",
+      "parentPdfSha256": "8ea7586eb97f49f83fb3342f4cd1b30c425e0750fbfe8742ed7e0fc0fc4ba234",
+      "candidatePdfSha256": "002673cca753c7c112a631e6a0fa243aefaefb4058f2f814dc661403f5bc8f52",
+      "candidateSnapshotSha256": "cdc83301a9ed6bd3bbe59952b85d8a951192638e824ae97b339d4fe586aa60ce",
+      "officePdfSha256": "cd1034caec0876fd026b9ca18edbbf02e5af85cef287fc36542ba7d357c5455f",
+      "savedDocxSha256": "88d2cb8cd551808811da21a43bcd931726d3c44825b46b08b519cc80305d86fd",
+      "savedPdfSha256": "002673cca753c7c112a631e6a0fa243aefaefb4058f2f814dc661403f5bc8f52"
+    },
+    "implicit-24-columns": {
+      "sourceDocxSha256": "3c6aa612694368959dac4470a605330bd16982e5e7b63b55ab536d2faae4ad02",
+      "parentPdfSha256": "8d040e8a039244294c0536aacb53fe4d5a08119674c3ba80d0aee8dbda62c969",
+      "candidatePdfSha256": "3d010aa2bf4d9bf1755efdbe50173f09a6c2b368a927b1574ded73cb5789e2b6",
+      "candidateSnapshotSha256": "500ac6a848225d75a6bb4f8399429b2bc358c307b05fa991096e154039167265",
+      "officePdfSha256": "657444f8587b8a65fbaa8cb4bf0776d6b9fa5ff9b36c44fde3e60aae430933aa",
+      "savedDocxSha256": "139a2dae248ae64673f2fbd8f5e5625850f3c824d2bb4018d36d5302a280553c",
+      "savedPdfSha256": "235bff6da828ec37583af197b875cc38925d3b368034735862da08a494512277"
+    },
+    "implicit-4-grid": {
+      "sourceDocxSha256": "65c37b6d473980bf155331654a189d9aa498492b4dd2ead76ec8ad3aef034b41",
+      "parentPdfSha256": "431f624e6388ac2dd88f6fcc85ba745e7a2137b8dacc5c23d44b008829ecc5cf",
+      "candidatePdfSha256": "9de046073d9a665ad3b9befb4621b2bf3109c1d8333bc223cff6ec732d660ed0",
+      "candidateSnapshotSha256": "b61de7f024d11fb3135c6093764f4d1ae480cb2f5ce80eff57b01f492d6301d6",
+      "officePdfSha256": "acceccb1ae5cb818722ba73347196264fa8516fc18944912962622a5e6bd3db0",
+      "savedDocxSha256": "d2c966c3e55225318b5264dc5357fd70410969ce1981dde77866fd725c098838",
+      "savedPdfSha256": "ca0aa0a39a55aafac83bc24fd566885d1b086bfb5be9739eee65056b0a644b53"
+    },
+    "implicit-8-grid": {
+      "sourceDocxSha256": "d7a66b301d76212750c5a2d89b799978a5ed837a7d11a6158b5d39bd497265cd",
+      "parentPdfSha256": "f6a9e9faafedde3f780d9363cb6fecfac4033ff98d4b06143bc928b3d38f0321",
+      "candidatePdfSha256": "9ac801f35c9cb7f7d3f88dcbb4030422e5a47de5e4801aadd7d56d0bf65ae696",
+      "candidateSnapshotSha256": "cdd3fa55248fe93b7dbc66de9d9e707477637a39888dd39e07691a215cdac991",
+      "officePdfSha256": "098177279894348618980afcc342b7ea4346c43a07eb10073469c93586cf3560",
+      "savedDocxSha256": "9e0dc26cfa3d7246717b48372374445ec8451aea0014961428b949c46fff4e37",
+      "savedPdfSha256": "6a8fa8741d80d6a40fb5c7780315beeffe0a897bd96f5f11c8f78cec34a7711e"
+    },
+    "implicit-12-grid": {
+      "sourceDocxSha256": "39a5a34d5b2d335216e01e338133a07790252640e6a42e5d55a13c93ee99524a",
+      "parentPdfSha256": "9f25a004fbbaf712b91a77cda4399473c5614eac45a569bfaced1c520604a2b8",
+      "candidatePdfSha256": "2332ae0a6d1d3d8fdc131067e30d19accfa214677b69e88d45c207f3d387e001",
+      "candidateSnapshotSha256": "7dc29b5f1117459fa54858107d85e4c838b958b08c7a21f706853e52b1fb15a0",
+      "officePdfSha256": "0db4753308d46dc83a60cb65cbe48b91efcdb98f991671018f5d468c893ee248",
+      "savedDocxSha256": "36b04c68dee5904749e5504354d2b449ff29f82098756710f5495ff8de7b4ea8",
+      "savedPdfSha256": "2332ae0a6d1d3d8fdc131067e30d19accfa214677b69e88d45c207f3d387e001"
+    },
+    "implicit-16-grid": {
+      "sourceDocxSha256": "bab7fd1fbec48b2d68d5c84942873ea8e946bbd7f27157ddff2df2cc29f606fd",
+      "parentPdfSha256": "7e7f77cbc9a205d0748f33beb7ff63af1282f8a345a239f158a1c8096db3c069",
+      "candidatePdfSha256": "83c08daa1dd45920699c8163685f1ec9b791bc47fc807b00075713498831a697",
+      "candidateSnapshotSha256": "c048ae4b32f498d51a967f47c18165db3de31746f87e4e502c1a921ef6e0c78b",
+      "officePdfSha256": "d2486185d4b42a103a7c4d400e8ce23c2b9e260e279148ba68c00b7492800a9f",
+      "savedDocxSha256": "8b8ff3eabe8803cd1330c3e6d88a0413a87ff6d8eaf5637d34f730cd938f194b",
+      "savedPdfSha256": "83c08daa1dd45920699c8163685f1ec9b791bc47fc807b00075713498831a697"
+    },
+    "implicit-20-grid": {
+      "sourceDocxSha256": "7839eced1babe142e44d56a3b9dd67736204df43bf3b76807d1d7b942544c0e9",
+      "parentPdfSha256": "f0cfe6fe931c4128a668cc6bae8f6ea2cbd88289e6a8b4f78f6156453fcbf27c",
+      "candidatePdfSha256": "735a146ca8ac78b78f5a53dbab030297c5dfb07771690c18ab18ff1e9227f80c",
+      "candidateSnapshotSha256": "e22d06827d498b80ecdff854d8291f52f5216f38ff4326a85e4ea8c059d50998",
+      "officePdfSha256": "8353e405f3969a391f42cd1c46db98090318b2ee9c51e36ce6d1b0765d6bf9e1",
+      "savedDocxSha256": "16ad3efc0fdf23ca9c4a8a83cec6f21129b8423f15be4f88c99b0210313ad531",
+      "savedPdfSha256": "735a146ca8ac78b78f5a53dbab030297c5dfb07771690c18ab18ff1e9227f80c"
+    },
+    "implicit-24-grid": {
+      "sourceDocxSha256": "709cf58ced6785f7cbbd15c51a5bdf5679aa73ddb3665ec849e6726c1dad7502",
+      "parentPdfSha256": "6fb1d037ded13876c2a090f789129b5f6fc29894a9d24a9543a7935520d8e559",
+      "candidatePdfSha256": "fdf00769688c0ab0079fb46ce98c01db535749d50d9ca09e1082ae2ec0d9de8c",
+      "candidateSnapshotSha256": "3cd6228f311e9b0e1e59eeeaf30b1a03e209671cd57e5e51760eac34a01e80c1",
+      "officePdfSha256": "dfacc30e624c71229101e004601039d5279da7002f2d0107a8f811dd1607df57",
+      "savedDocxSha256": "1ba796bff355a0fb7b0341ceb5576a45d0ab8d1e66fda8ce4e2b05c7c274af7e",
+      "savedPdfSha256": "fdf00769688c0ab0079fb46ce98c01db535749d50d9ca09e1082ae2ec0d9de8c"
+    },
+    "zero-2-single": {
+      "sourceDocxSha256": "eb4631524b4da0d5884fbc8dacf4190035a94f097944ce86d3f1a83a79a40e7c",
+      "parentPdfSha256": "30c9c6a4384cb3546a4712d610bd8cea3adb7a45b7a05fec81afcf6321b72ff4",
+      "candidatePdfSha256": "30c9c6a4384cb3546a4712d610bd8cea3adb7a45b7a05fec81afcf6321b72ff4",
+      "candidateSnapshotSha256": "1a1ccf5de7f5c78e29ad6dc4adfa61d65e535271259c29baf41a2888c43cc8e9",
+      "officePdfSha256": "c883453d96c0392823c7d6de2dcaf5b15ecb80a3990a9ecd52d643bd12c8e3d1",
+      "savedDocxSha256": "2137ef49fef5eea15c3fa2174c5ca4eac26101af377b4318d9c947aa62747f85",
+      "savedPdfSha256": "30c9c6a4384cb3546a4712d610bd8cea3adb7a45b7a05fec81afcf6321b72ff4"
+    },
+    "zero-6-single": {
+      "sourceDocxSha256": "8e4b1e0d26756e862d5bc578cb6110eed3c28147249b4b30a17192e5c8fec298",
+      "parentPdfSha256": "8cfef07b77c30883612aaefdb8eb93ab3ebb9150588dc0907933f692164ca6b2",
+      "candidatePdfSha256": "0ff9750332fe878faae0b8011da008cb608c12580d90104831182ad117c6fae0",
+      "candidateSnapshotSha256": "4718f6b0a4281c816320c07e8006e52e5792bfb0657bdb2e4311608ac65b17e8",
+      "officePdfSha256": "54706f455e0e482348854a0c109a8eac536678692cceb421c8c41a9f342f110b",
+      "savedDocxSha256": "369bf9cc8b9cc060fb4a18b871565c02997e0ef460eaa78d83a73cd89443d121",
+      "savedPdfSha256": "0ff9750332fe878faae0b8011da008cb608c12580d90104831182ad117c6fae0"
+    },
+    "zero-8-single": {
+      "sourceDocxSha256": "272af467b7b66b0d11dc02c8e08daa98830ab13859b4942f83df9d964eb68d55",
+      "parentPdfSha256": "184367ddc71939e86f1e54bf4fbff03054e8c4906b2e9d8990a6d8a45d2407a7",
+      "candidatePdfSha256": "184367ddc71939e86f1e54bf4fbff03054e8c4906b2e9d8990a6d8a45d2407a7",
+      "candidateSnapshotSha256": "9c3019f2ad40f83b89ad01f6759a48b0ffd384a50d5261310f6a55bed4c8eaae",
+      "officePdfSha256": "cfa0e22a542ba3349b278fd82bb1899a2940da14108c7c8b25ade82f3a6e0996",
+      "savedDocxSha256": "05a0f25ec2b2f37307b2812938261e73194185b7199f951d9f069b2e035eb190",
+      "savedPdfSha256": "9e66f81edf80292355e9ec1f185c72d2d94d3985a26432569b1051d6495335fb"
+    },
+    "zero-24-single": {
+      "sourceDocxSha256": "b1ef9ef3631cbdcb7302db517cb4c86b74196f38d53c9bbd0c4da6333d7c9acd",
+      "parentPdfSha256": "a8eecb82b17204846b3e06b9184e153d4a619703cfb9eafe74cfd8a86888147e",
+      "candidatePdfSha256": "b9818120066204b65fda82de5aec3ad12b9082573168920eb7c443a77c0f8bd6",
+      "candidateSnapshotSha256": "160607ca406c6dd1a6a28030da4fab084e97b282e904f0fee8ecd283775d8881",
+      "officePdfSha256": "0da789aeafc8b978d24369c5c85f43806189ea03e7be9f5718743179d4a81268",
+      "savedDocxSha256": "e02764f60cf791b66f53f62203ce9dbff6672ed044e805e9c00877556871bcd1",
+      "savedPdfSha256": "b9818120066204b65fda82de5aec3ad12b9082573168920eb7c443a77c0f8bd6"
+    },
+    "zero-2-rows": {
+      "sourceDocxSha256": "e14e738b32c412f3c2cc75462fda0a790ed9d6cbbddce58e3b24796c0c140c3f",
+      "parentPdfSha256": "a29c1492fd520d489d83d01acb725d61d24c6ca040ac72884f45a1aec0a17e3e",
+      "candidatePdfSha256": "b7d357ffcac57d04cf2ed122938fa9287b6f6d48a320b3b10a01ff9339ac6e25",
+      "candidateSnapshotSha256": "5559b6260a3f1f01f02f8086179b945abdc9503bdd83ef56644d0ee10e7fed15",
+      "officePdfSha256": "a887288fffc140e5f93c45aedb95b67d5c53d4d4d1cef8ad104ed1fdd28b2804",
+      "savedDocxSha256": "7e07f47e88f3d756e97da3927f752de28e212a681b4953314e1aba8ab234bafc",
+      "savedPdfSha256": "1acda233e0c436233da4dc67ab57fe55c1d1e6722a4fed7fe814d5004e0e2a3d"
+    },
+    "zero-6-rows": {
+      "sourceDocxSha256": "81e2cedd806dcb3a6d5c1189a423b2bee160d38d5f17a70b36cc6285f32e50c0",
+      "parentPdfSha256": "3446b60652fd7b749609564ab8fa52ea351b2a6469e806d6786ad52d064a7312",
+      "candidatePdfSha256": "187178f00999b19c4de119a335fa5b1c590c6b93ca80811d5667743a85c95213",
+      "candidateSnapshotSha256": "30c396a936065939d8355b9bb9ab43cd5ca87911d1e7d312959fc654ffa68a2e",
+      "officePdfSha256": "00778b4a2073d445991476b9ec7a558719c463f01f4631599eca0900bac01265",
+      "savedDocxSha256": "36b4a10cbaa83537c9538376472bc416158d94e106e45cf6bc94a1ad5c1e7171",
+      "savedPdfSha256": "187178f00999b19c4de119a335fa5b1c590c6b93ca80811d5667743a85c95213"
+    },
+    "zero-8-rows": {
+      "sourceDocxSha256": "104068e3d8a34f879d4dbf632282c8f2a6c73faa52950a5041c37c55831e4aa6",
+      "parentPdfSha256": "225c0855c6c595d8ca96fb703efe8d07050673e50f1dd5f09d1d7a2b8016cf1b",
+      "candidatePdfSha256": "1c5d2028922eb5d6e37a460163fb134ab8bbe6c83465c8b176db4a3a1622e963",
+      "candidateSnapshotSha256": "27650169cae20f381746fa9448bff2a234d210a370efea3c6207d09e08ac4318",
+      "officePdfSha256": "52fcbbaf9f487dd2f2db13f0ef59b604df076ee2a94dfbe0110c53dfa9f4d30d",
+      "savedDocxSha256": "83108985d806da4f349290f45f520a65fbeb46f3c79fc12f9ab20718a2ab8773",
+      "savedPdfSha256": "1c5d2028922eb5d6e37a460163fb134ab8bbe6c83465c8b176db4a3a1622e963"
+    },
+    "zero-24-rows": {
+      "sourceDocxSha256": "feb6dae1e0d171ec06cf44d4d4b5ad808679c8a4883e9ba5eaf213c195ae15a7",
+      "parentPdfSha256": "5a5f806e87cd4be1fc3e4f1296381fc21a431982cc756b77eaf2f36c92a9e6db",
+      "candidatePdfSha256": "c27c63532dbba0c467f7ee6c52beebd84ccb6d16529b1c7fc069d88c27ca8f85",
+      "candidateSnapshotSha256": "b74ebb9bf513ff42f45ecd7cd15a67c843acb8c542aac938e6289ea7880f4c88",
+      "officePdfSha256": "056a70644e7f26cc46c523e1fa4c9413274b6ceee83a226931d16142883fde6e",
+      "savedDocxSha256": "cbf0600f7d48c5024b55f878d1d11d32a6f8072c9bc9cd3cd6942a69fafc0a91",
+      "savedPdfSha256": "c27c63532dbba0c467f7ee6c52beebd84ccb6d16529b1c7fc069d88c27ca8f85"
+    },
+    "zero-2-columns": {
+      "sourceDocxSha256": "7b0da38c2bc00a47191836c8b7bef77dc885f1250f52aa60e8277772a8784797",
+      "parentPdfSha256": "883a0ac0d2f324521577a1319507481f611ff866bb1d9b72c388e88f004add67",
+      "candidatePdfSha256": "bb716291456eb0c27de4dce5b3102a477555d420e7cd0e8d8a7bdfde82d691b3",
+      "candidateSnapshotSha256": "c0ad2bc84e4c5757764bc52701834a0bda264874226a182e3c171ef9b1331182",
+      "officePdfSha256": "080ef3a23021794939847e1827e56d59f35bcffdc55e9488784a3794f3c42766",
+      "savedDocxSha256": "c392a2407ff4410970da1246fcd0aeb1f64d6f36015c8f6d67ad83fb62ea0364",
+      "savedPdfSha256": "bb716291456eb0c27de4dce5b3102a477555d420e7cd0e8d8a7bdfde82d691b3"
+    },
+    "zero-6-columns": {
+      "sourceDocxSha256": "5bd0d51adffb58f4942667c5da8e6d9ff79c351227cb6bcc202ef6c7b9a83a06",
+      "parentPdfSha256": "72ef641c46e87dab1c7119bdb35551c32aafa7fb272ebf4eade0bfa942e03024",
+      "candidatePdfSha256": "f412f0f65ddbee00e0d3b6598bea7bb800708515e9408d64cb2d1250680857f5",
+      "candidateSnapshotSha256": "8bc74ccf13adeb17027f959304b848114db12e084910de821de7a7da9c35d86e",
+      "officePdfSha256": "009fe925a482aa41528cdc0d93b0408f68814e8d365ed9d80ac4239c63100aaf",
+      "savedDocxSha256": "75df2ebf7587587e5017bf86c6c71b79bc3815f8ff8766bf68be784ea378f3a7",
+      "savedPdfSha256": "f412f0f65ddbee00e0d3b6598bea7bb800708515e9408d64cb2d1250680857f5"
+    },
+    "zero-8-columns": {
+      "sourceDocxSha256": "e2a579e07d88b253bd01dc9783bffd4d0cadca0e4a39ee5ac877f42fb33cec86",
+      "parentPdfSha256": "7d074c1e9d4e52a842ce6827e24fdcad5c2dc38ab5a459f7e72a661262834d3f",
+      "candidatePdfSha256": "e7103074b7bc519f9fdc02dddaf258588a27a65d01c4cb5cece6384ae89f84f1",
+      "candidateSnapshotSha256": "a11ef11d6d5786a8bc646041016aaed078688ed256fd18d683efe0581b6d7133",
+      "officePdfSha256": "998be5ba5022bde769909011d544aae5a2cf69c7840d0bbec4007feb30507c5e",
+      "savedDocxSha256": "288cf59e278ce944392cfbdfcac49d8c014336351d074f6ea95c67933d18c71c",
+      "savedPdfSha256": "e7103074b7bc519f9fdc02dddaf258588a27a65d01c4cb5cece6384ae89f84f1"
+    },
+    "zero-24-columns": {
+      "sourceDocxSha256": "80e066d563c3f18043507bbfd9cab1d752036e3648dd42656aa9fd7abc937f14",
+      "parentPdfSha256": "d78ab9b2e049ea4400d5238d06e3b8ead9496d1cc32b6f3a2581c98798874ba0",
+      "candidatePdfSha256": "693f9f67e567965a1084b8c1d85e5f3cfa122dbdeeffbdb24daefa723cefbdc2",
+      "candidateSnapshotSha256": "ac54061256baab0568fac83e4c34535ba70723fbdabe1374097ba597cfef4457",
+      "officePdfSha256": "7e6c65b61941aa7490591b30a1493d5a5df38c7340c7d4e2148990c8ed46502b",
+      "savedDocxSha256": "4c05dce675f930664dbf4c41deee53fb16a06440edf6448d3c971d149dadd1d3",
+      "savedPdfSha256": "693f9f67e567965a1084b8c1d85e5f3cfa122dbdeeffbdb24daefa723cefbdc2"
+    },
+    "zero-2-grid": {
+      "sourceDocxSha256": "fa7f7ad68f1670fa1a5d3a8e59d76e4dfb7894a4a18bd196525ec0d81726abed",
+      "parentPdfSha256": "36dc160d754b238d52eb3e0ce2df730ae52d9042ed717b763949eaf020164a68",
+      "candidatePdfSha256": "2022c8b95d5103b4c560484c7f8d559f531cb56bef8d9cfac778c3f961580f9a",
+      "candidateSnapshotSha256": "0c362d825420622d6ca8f5ddb53f2a1d0576372dd130e52fef37a728b2da2f79",
+      "officePdfSha256": "2b9d7083d894a3114c9d4ac43e96e0bebaec46f24541f69879a1feee3773640a",
+      "savedDocxSha256": "23469bf4a3de9c48d7a7403cd87ad290faf40a660dcc3bf0c3124aa5fe0622ca",
+      "savedPdfSha256": "ea75a82639b21ba82471c31ae20ebabb4989a0c8cadeb0cf03c74b7ff0e22ea5"
+    },
+    "zero-6-grid": {
+      "sourceDocxSha256": "02f4a920871304f7d0b92336a5a2e809a43f20e93ccc3d0a063379a6a4cdb4c9",
+      "parentPdfSha256": "c799eec585ce889be9417b79e5b1eef00ca36631035c2c6ce2657328fd2fac7a",
+      "candidatePdfSha256": "5ea02be904b253397e9437b8eebeff2010e1df65b4f96b6d1cc47a24cf32424a",
+      "candidateSnapshotSha256": "75604b68c0c2b1c5ff118f89c7d5a1452bb796fd092785df1b0622161df3d96a",
+      "officePdfSha256": "b8e12a3643192c40674d152d622c68c70a7dce18ec4580c7ac83d4ef69b3c622",
+      "savedDocxSha256": "8a1fcf37c7d7ceeb17ab69ad6946acc2ee4dbc902a0104df3701df67df195d95",
+      "savedPdfSha256": "ac25439326bcecbac9f41a719385d50f1611f16c5a276101c098228a8f538387"
+    },
+    "zero-8-grid": {
+      "sourceDocxSha256": "0601dff8596648562b9c921fb755e840b71e4edff0d7d5730fae30cd574ebf74",
+      "parentPdfSha256": "a3f3b0a61fbf20641a33a59e6c5ef22c12095863fdb1f546c020592383f3bce8",
+      "candidatePdfSha256": "ef5c7214f5de972306f7504945562f2135e98c629e3c317e33db8e7f92701729",
+      "candidateSnapshotSha256": "1c77a9b4ed65d6037968f7819a1eb59ed176557bd6ef48fd0e8e3a48d42804a7",
+      "officePdfSha256": "a5e80d0ae42a83eb9b0564f7128245547ff9e87bc0154fc385ede006f3ebd9e7",
+      "savedDocxSha256": "e508d9459c2750df0442754c64deeca31ab69b3ceafc5bb8b9d89383ae698348",
+      "savedPdfSha256": "ef5c7214f5de972306f7504945562f2135e98c629e3c317e33db8e7f92701729"
+    },
+    "zero-24-grid": {
+      "sourceDocxSha256": "671bbce110d0af1ff8efdf137fa235c6c12135d564a112c8a5861590cb07160f",
+      "parentPdfSha256": "16b97ccf4ad2278389643e9358810d306a292af70b1594495f0c5175d0401bbc",
+      "candidatePdfSha256": "a60aca47275cf8d5ddbd07637c2ff2b7a881e54a2195a3c181e860489539b561",
+      "candidateSnapshotSha256": "7ebcbbdcd23fe68b2e1e3ae5e132f86105df0effe93ef8efbe70a673b1be0063",
+      "officePdfSha256": "745b2101b575b7e8df92f7b058f7ce053e65885fef685b201cc1af7fb035af7f",
+      "savedDocxSha256": "7e796b2971a800083f1e27cce7ced909aea5a1dc60995a4e46308bb1184d897e",
+      "savedPdfSha256": "a60aca47275cf8d5ddbd07637c2ff2b7a881e54a2195a3c181e860489539b561"
+    },
+    "grid-top": {
+      "sourceDocxSha256": "138edf0785b417f6ad63c49a2b614168a4665999eedeb9ce2e9749064a4ef6ec",
+      "parentPdfSha256": "4c8480c83ad931ab2a7b61fe2229d1dd86d4995b6f96607bd8b2d84f77105922",
+      "candidatePdfSha256": "4b5d142a39f9a148624cfa6c65af62a9d234e11b10e489a066d466de4466eef1",
+      "candidateSnapshotSha256": "f069d40ddf9a192e72b7caeccfbf18ae7056e69ed0038db105ebfa019237e822",
+      "officePdfSha256": "7843f7d79bbdf85b679ab66b9caffa24aadd5d8119b0647d815b7f9f1f81912f",
+      "savedDocxSha256": "c470e205c5063f22574f53554df36741e3eccae899e88fb0c6f463afefd7a6a7",
+      "savedPdfSha256": "4b5d142a39f9a148624cfa6c65af62a9d234e11b10e489a066d466de4466eef1"
+    },
+    "grid-override": {
+      "sourceDocxSha256": "22eb749cf032e60c85ea8fb607ac451e18ef6cab7a1a03ecf326ba478dbf3064",
+      "parentPdfSha256": "1eec5ec534e0f351a2a077fc0e525f047628c5fdd53997fc8ce1910a91982e12",
+      "candidatePdfSha256": "80d401094de7775b25939efcab955a2d7a44bec7b3e6b5279f09adf927452c40",
+      "candidateSnapshotSha256": "3bf2f86b7eb8f76ab9e6db5d8fa9e93fb97237d58712f468699f7d439f73e3ac",
+      "officePdfSha256": "469f3e3648370fdcabca5a8fece995f64fb6528e6d037fcd353ab287f4ce22b5",
+      "savedDocxSha256": "c166ad0cc7641c0d68ff44b6a4a81bc4f660e12a08fb3b12deaab07fb879b778",
+      "savedPdfSha256": "80d401094de7775b25939efcab955a2d7a44bec7b3e6b5279f09adf927452c40"
+    },
+    "implicit-2-rows": {
+      "sourceDocxSha256": "e7158ddb037c3a35ee9f5401c252e218f357e1e6daa3ddcacb3d85b3b2d36bbc",
+      "parentPdfSha256": "3a6b78e77c4fd76024267a5e25dadd752448bdf3b7d3fb52db5669f920ea5f17",
+      "candidatePdfSha256": "3a6b78e77c4fd76024267a5e25dadd752448bdf3b7d3fb52db5669f920ea5f17",
+      "candidateSnapshotSha256": "3eb605a93c3e4a04e7a0e4e58440ed588f77be7276aa3dc0e751d6c3f719b83c",
+      "officePdfSha256": "0ebb87eb41c30bf331ff83bb48b66d8301526fa0e9c711f0e45958473ba01665"
+    },
+    "zero-3-rows": {
+      "sourceDocxSha256": "012cfdf11831d2adaf09f3ecf55ae9c3ba73be23c5428a83195510b15033c51e",
+      "parentPdfSha256": "2356fe78b3b09ddfb157c8caa69c179e9fed5e7a30dd34d75cf7d926aeaf63a1",
+      "candidatePdfSha256": "2356fe78b3b09ddfb157c8caa69c179e9fed5e7a30dd34d75cf7d926aeaf63a1",
+      "candidateSnapshotSha256": "3eb605a93c3e4a04e7a0e4e58440ed588f77be7276aa3dc0e751d6c3f719b83c",
+      "officePdfSha256": "0a1861837948798bf98c841e52ee8d33349ad7b148d11aeff5fe74751467bce4"
+    },
+    "three-rows": {
+      "sourceDocxSha256": "e4d4813ecb5ab0521f30dec1c0dedacb61fde5be1b7c55a44f2699d00b08bb80",
+      "parentPdfSha256": "6e6944d22e73c5d313af7cc352447897fd6defefd2369cc7335b143276ba7a25",
+      "candidatePdfSha256": "335614f9bc6a257bfb1a4200e38a5e44330290001d225220348ce7c480e764a0",
+      "candidateSnapshotSha256": "e16f8b411aa225b908975c922968ed3d4cd8997d8e4a3924dee3be4d19e898ed",
+      "officePdfSha256": "281e5a88fa34661b6140b2d8cf3017391dc2e4a57dac27128730e8a1b0185548"
+    },
+    "three-columns": {
+      "sourceDocxSha256": "8396ec1a4a23d51b0f6094b0c82e33e27dfff78e0c1a2601950cdc2cc8738acd",
+      "parentPdfSha256": "081ba0f931fa61877d0019ae9f64af3bdc79762879e0fed6cb1d632672a0eafc",
+      "candidatePdfSha256": "081ba0f931fa61877d0019ae9f64af3bdc79762879e0fed6cb1d632672a0eafc",
+      "candidateSnapshotSha256": "f6449b9ce130adc893a9a6595ab067571d877869b332d8e166a6604a50e72feb",
+      "officePdfSha256": "76e3c4f611fed6e46b253624ade30d11d69dabce3db8958fe131b5d4100477b1"
+    },
+    "mixed-borders": {
+      "sourceDocxSha256": "67625f6e67c5ebb50f3dbe0905b4f8398cd81e55b4f530317e1b707f99fbbd03",
+      "parentPdfSha256": "8ba0055219a7fdd77d8c4e345de43445e5ca7a0c20cba16fbc3788c1c4d312e7",
+      "candidatePdfSha256": "7d0e9cdab9a7a3d4e998430b5d0dece8bacfc7b8ef8bcb760a03bba9cdf55725",
+      "candidateSnapshotSha256": "f234d0220dd4f19aac829c7eb23f4b0062c7ef6cff21d49bb39817e935f23ef7",
+      "officePdfSha256": "8fa01b5307836aaf11323756342495a05d242798bd1fdd5d52a05702a7979ff8"
+    },
+    "horizontal-only": {
+      "sourceDocxSha256": "b4de158628c7c936d620ad123bf01c47cdc124147dbdf5e1a83b51ddcd1730b2",
+      "parentPdfSha256": "62f7da93707f3181dd92837cd7048052a4bf9e97d65b74b9569c8166fd117c60",
+      "candidatePdfSha256": "62f7da93707f3181dd92837cd7048052a4bf9e97d65b74b9569c8166fd117c60",
+      "candidateSnapshotSha256": "f234d0220dd4f19aac829c7eb23f4b0062c7ef6cff21d49bb39817e935f23ef7",
+      "officePdfSha256": "db505d6f1ad6f6ab91c693e631f46ca35732b2a0a8a07635f1445da9e120eda0"
+    },
+    "long-wrap": {
+      "sourceDocxSha256": "7723c7a820912be94626b58ee742d0ebd869b1bfa33b2f5123d3d3717ecc90b8",
+      "parentPdfSha256": "8ea23f11c48ed3fcdba8a665f8a6af3dc36adddc88e56d2891ab91e6dcc882c0",
+      "candidatePdfSha256": "7015865bbc0e7d3c464f693087ddc082ac821cd18aca885bc5d352016bf87fcb",
+      "candidateSnapshotSha256": "ce0e4c163730ae0f5137e8f21f317e3c6d9a6b202d8217c40dec6957f10a7bf6",
+      "officePdfSha256": "a32d0d415fa8596c6c1b8d00ede24e42e351d24f89906d3adfad4daa0d1039c7"
+    },
+    "multiple-pages": {
+      "sourceDocxSha256": "00ed39c21304b1ebb483c3ee23ca0f3c1cd9c8f6ad39c35fcce73fe334ecef70",
+      "parentPdfSha256": "b7320b40a24a33933d49bc0419caab8b677fbdb148378415e1cb330b7606a363",
+      "candidatePdfSha256": "e0866c7c99b7541cc7c0ce74ab8bcb4d3047e0db9902a357dca1e719320d5e15",
+      "candidateSnapshotSha256": "4db77c07166541332be3ca8e8e9a5d61f66713906ee3111faf16aa2ae7969664",
+      "officePdfSha256": "ea651f1cb6f7d5b325008e01582e24cfa3d4759e791b0b67165a916ddfc8bd29"
+    },
+    "section-columns": {
+      "sourceDocxSha256": "e87da92c30e00294568c23e22818f2180cbab5594665755a94dcc4441645e5a8",
+      "parentPdfSha256": "1057625e6073606828a8179de4edf9d61bf66b1f8fd9812698882781d65abed8",
+      "candidatePdfSha256": "b0c081193337253ab9150efdc93b67918523b8b713fd9e7fad1109ec8a1582bc",
+      "candidateSnapshotSha256": "acce144220beea436426fa19d86e3236cf650e4e4832473d48c41afdd58acf57",
+      "officePdfSha256": "cc5d6f2418c81b061217bee02ff22dbd0ce6c2e97957bd4a50ca70300d3535af"
+    }
+  },
+  "contrasts": {
+    "glyphAndStrokeTolerancePt": 0.25,
+    "cases": {
+      "nil-single-implicit": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-single-zero": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-rows-implicit": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-rows-zero": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-columns-implicit": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-columns-zero": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-grid-implicit": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "nil-grid-zero": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 0,
+        "savedGeometryMatches": true
+      },
+      "implicit-4-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "implicit-8-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "implicit-12-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "implicit-16-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "implicit-20-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "implicit-24-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "implicit-4-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-8-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-12-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-16-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-20-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-24-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-4-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-8-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-12-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-16-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-20-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-24-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "implicit-4-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "implicit-8-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "implicit-12-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "implicit-16-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "implicit-20-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "implicit-24-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "zero-2-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "zero-6-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "zero-8-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "zero-24-single": {
+        "characters": 12,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 4,
+        "savedGeometryMatches": true
+      },
+      "zero-2-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-6-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-8-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-24-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-2-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-6-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-8-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-24-columns": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": true
+      },
+      "zero-2-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "zero-6-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "zero-8-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "zero-24-grid": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "grid-top": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "grid-override": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 0.100006103515625,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": true
+      },
+      "implicit-2-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 5.599998474121094,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": false
+      },
+      "zero-3-rows": {
+        "characters": 16,
+        "officeMaximumGlyphOriginDeltaPt": 4.90423583984375,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": false
+      },
+      "three-rows": {
+        "characters": 20,
+        "officeMaximumGlyphOriginDeltaPt": 6.0,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": false
+      },
+      "three-columns": {
+        "characters": 20,
+        "officeMaximumGlyphOriginDeltaPt": 6.000007629394531,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": false
+      },
+      "mixed-borders": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 6.0,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": false
+      },
+      "horizontal-only": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 5.5,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 2,
+        "savedGeometryMatches": false
+      },
+      "long-wrap": {
+        "characters": 44,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "normalizedStrokes": 5,
+        "savedGeometryMatches": false
+      },
+      "multiple-pages": {
+        "characters": 200,
+        "officeMaximumGlyphOriginDeltaPt": 0.8017578125,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 9,
+        "savedGeometryMatches": false
+      },
+      "section-columns": {
+        "characters": 24,
+        "officeMaximumGlyphOriginDeltaPt": 2.9542236328125,
+        "officeGlyphComparisonPassed": false,
+        "normalizedStrokes": 6,
+        "savedGeometryMatches": false
+      }
+    },
+    "negativeControls": {
+      "wrong character": "Source text, reading order or pinned font differs: implicit-8-grid",
+      "wrong font": "Source text, reading order or pinned font differs: implicit-8-grid",
+      "shifted first cell": "Office comparison implicit-8-grid: glyph or origin",
+      "shifted second row": "Office comparison implicit-8-grid: glyph or origin",
+      "shifted following text": "Office comparison implicit-8-grid: glyph or origin",
+      "shifted office": "Office comparison implicit-8-grid: glyph or origin",
+      "changed outer stroke": "Office comparison implicit-8-grid: stroke geometry or color",
+      "changed shared horizontal": "Office comparison implicit-8-grid: stroke geometry or color",
+      "missing shared vertical": "Office comparison implicit-8-grid: stroke count",
+      "changed stroke width": "Office comparison implicit-8-grid: stroke geometry or color",
+      "changed stroke color": "Office comparison implicit-8-grid: stroke geometry or color",
+      "changed saved glyph": "Saved output implicit-8-grid: glyph or origin",
+      "changed saved stroke": "Saved output implicit-8-grid: stroke geometry or color",
+      "changed border": "Saved border or margin ownership changed: implicit-8-grid",
+      "changed margin owner": "Saved border or margin ownership changed: grid-override",
+      "changed single cell": "Saved output implicit-8-single: glyph or origin",
+      "changed unqualified case": "Unqualified case changed three-rows: glyph or origin",
+      "missing multiline diagnostic": "Unqualified multiline or multipage geometry was not diagnosed: long-wrap",
+      "missing page diagnostic": "Unqualified multiline or multipage geometry was not diagnosed: multiple-pages",
+      "missing column diagnostic": "Unqualified multiline or multipage geometry was not diagnosed: section-columns"
+    },
+    "controlMethod": "Parsed glyphs, normalized stroke segments and OOXML observations changed in memory."
+  },
+  "limits": "No licensed Word comparison or native, styled, larger-grid, multiline, multipage or multicolumn qualification. Three cases are diagnosed and strict-rejected; six other controls retain their previous differences."
+}

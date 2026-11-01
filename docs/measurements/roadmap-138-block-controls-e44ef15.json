@@ -1,0 +1,30 @@
+{
+  "roadmap": 138,
+  "issue": 145,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "e44ef15d0f50523f1c1ba727bf92133e82ff2957",
+  "scope": "Six typed block controls may be created in empty ordinary top-level body paragraphs, with explicit initial values, existing local bindings, locks and protected-owner checks. Broader owners and the remaining leaf criteria are not claimed.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2091, "failed": 0, "skipped": 0, "trxSha256": "bd5e020a13c90b656ca43a25fb470261e97cc3526e3c297ac12ccab6bd767d5c"},
+    "net10ConversionAndEnglishOcr": {"passed": 2091, "failed": 0, "skipped": 0, "trxSha256": "5a9c135a85d0e30db7e9a0c12bc0aeabede6ba22c7736395c6b7b834ea8161f4"},
+    "capabilityMatrix": {"profiles": 63, "testMethods": 325, "net10CasesPassed": 561},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "6ae093c9ddccc1d98661907a5a7969cf7ea369138066d22eac16cbfb3c7205da",
+      "wordnet.Fonts.1.5.0.nupkg": "1013be210a2c08bb5f8cdfe884bd7ce45fb0fcbe25af1fc6e50a18cf24ca4d33",
+      "wordnet.Ocr.1.5.0.nupkg": "8b535643d8d48c704d927fc1ade9a5c910ff1e1c054b57ef39e1ef681a3ae0d9"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-block-controls-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "e0875e19aa76fa644043a55c2203f5db33e7b87c5eba4f6b958d524d730fc48b",
+    "reproducedDocxSha256": "ae20eba494133573f184f13ad47dbc13a857921527fa79fa5aecf94e3391515e",
+    "result": "The exact source and packaged assemblies were byte-identical. The committed probe reproduced the reference DOCX byte for byte; the Open XML SDK reported no errors and the independent checker confirmed all six control types, identities and LibreOffice-extracted values."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. Cell/story block creation, wider combinations and the remaining acceptance criteria keep #145 and roadmap #138 open."
+}

@@ -9,3 +9,8 @@ hashes and execute all 766 grapheme and 1,944 word cases.
 emits compact managed tables. No runtime Unicode classifications or StringInfo are
 used. Default boundaries preserve UTF-16 source offsets without normalization, case
 folding or language-specific dictionary tailoring. This adds no typography claim.
+
+The unmodified `LineBreakTest.txt`, pinned property inputs and `linebreak-manifest.json`
+are likewise Unicode 17.0.0 under the same license. The line-break test executes
+all 19,338 default UAX #14 cases. `eng/generate-unicode-linebreak.py` regenerates
+the managed property tables only after verifying the recorded input hashes.

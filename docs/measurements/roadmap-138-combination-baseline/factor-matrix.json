@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "measuredUtc": "2026-11-01",
+  "sourceCommit": "bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7",
+  "publicPackageVersion": "1.5.0",
+  "scope": "Synthetic release-baseline controls only; no new source, package or platform support claim.",
+  "entries": [
+    {
+      "id": "explicit-direct",
+      "themeFont": false,
+      "conditionalTableStyle": false,
+      "sourceAndPublicPackageAgree": true,
+      "warningCodes": [],
+      "authoredTextAndOrder": true,
+      "independentEditableTextAndOrder": true,
+      "referencePageCount": true,
+      "referenceTextAndOrder": true,
+      "referenceGlyphPlacement": true,
+      "maximumGlyphDisplacementPoints": 0.09999999999999432,
+      "referenceRaster": true,
+      "referencePageGeometry": false,
+      "pageGeometryClassification": "reference-policy-difference: A4 height unit rounding exceeds the unchanged 0.01-point tolerance",
+      "contentClassification": "observed-bounded-reference-match",
+      "rankedFailures": [
+        "source/defects.json",
+        "package/defects.json"
+      ]
+    },
+    {
+      "id": "explicit-styled",
+      "themeFont": false,
+      "conditionalTableStyle": true,
+      "sourceAndPublicPackageAgree": true,
+      "warningCodes": [
+        "Docx.TableFormatting"
+      ],
+      "authoredTextAndOrder": true,
+      "independentEditableTextAndOrder": true,
+      "referencePageCount": true,
+      "referenceTextAndOrder": true,
+      "referenceGlyphPlacement": true,
+      "maximumGlyphDisplacementPoints": 0.09999999999999432,
+      "referenceRaster": false,
+      "referencePageGeometry": false,
+      "pageGeometryClassification": "reference-policy-difference: A4 height unit rounding exceeds the unchanged 0.01-point tolerance",
+      "contentClassification": "reproduced-documented-unsupported-feature-difference",
+      "rankedFailures": [
+        "source/defects.json",
+        "package/defects.json"
+      ]
+    },
+    {
+      "id": "theme-direct",
+      "themeFont": true,
+      "conditionalTableStyle": false,
+      "sourceAndPublicPackageAgree": true,
+      "warningCodes": [
+        "Docx.ThemeFont"
+      ],
+      "authoredTextAndOrder": true,
+      "independentEditableTextAndOrder": true,
+      "referencePageCount": true,
+      "referenceTextAndOrder": true,
+      "referenceGlyphPlacement": false,
+      "maximumGlyphDisplacementPoints": 8.448999999999955,
+      "referenceRaster": false,
+      "referencePageGeometry": false,
+      "pageGeometryClassification": "reference-policy-difference: A4 height unit rounding exceeds the unchanged 0.01-point tolerance",
+      "contentClassification": "reproduced-documented-unsupported-feature-difference",
+      "rankedFailures": [
+        "source/defects.json",
+        "package/defects.json"
+      ]
+    },
+    {
+      "id": "theme-styled",
+      "themeFont": true,
+      "conditionalTableStyle": true,
+      "sourceAndPublicPackageAgree": true,
+      "warningCodes": [
+        "Docx.TableFormatting",
+        "Docx.ThemeFont"
+      ],
+      "authoredTextAndOrder": true,
+      "independentEditableTextAndOrder": true,
+      "referencePageCount": true,
+      "referenceTextAndOrder": true,
+      "referenceGlyphPlacement": false,
+      "maximumGlyphDisplacementPoints": 8.448999999999955,
+      "referenceRaster": false,
+      "referencePageGeometry": false,
+      "pageGeometryClassification": "reference-policy-difference: A4 height unit rounding exceeds the unchanged 0.01-point tolerance",
+      "contentClassification": "reproduced-documented-unsupported-feature-difference",
+      "rankedFailures": [
+        "source/defects.json",
+        "package/defects.json"
+      ]
+    }
+  ]
+}

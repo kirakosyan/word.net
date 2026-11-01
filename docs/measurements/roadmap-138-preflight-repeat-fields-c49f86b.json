@@ -1,0 +1,131 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "c49f86b5a27045787d5643bd837cff928ef0bbbd",
+  "sourceTree": "a6c3ad2274a5d61650a260b7e3f8481a787fb192",
+  "scope": "Observe a single direct simple repeated field without resolving item or fallback scope, and preserve independent root requirements.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "d546b2c7dd26f1ebf9b8f694856a6cd750268951909da0f8ac63d0c4e16b1c61",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "165771ddb528b606c513108377e00b9f167f4b8a2d706dadc0c40c65effd56fd",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2379,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "8ad1c90e4045b19908052c8d1d2b94c91e0b9d88117d7dd1875efb3de761375b"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2379,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "f26647f72acd91a6e2cb5575fb5c254a0c4ce4c50f8db7460a6f1f371822fd61"
+    },
+    "capabilityMatrix": {
+      "profiles": 116,
+      "testMethods": 503,
+      "net10CasesPassed": 851,
+      "logSha256": "e058a106c5c81cd2526fc0457e76774c90d43801bc98bc7191939b7f4d8b037e"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "683ca57c5dd3b21599960cd324ab618f2cad6b897d3afecf90e707f1c2e844ca",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "a08f7a7ac21c3e5667d4e02d15b27fe87a91d95dbcac11ff0fcbacd745d103e7",
+      "wordnet.Fonts.1.5.0.nupkg": "9f050c59294345e93d9b8384f3b955f761aaa786c226df85fa7f172256308e96",
+      "wordnet.Ocr.1.5.0.nupkg": "5c573765d82908b6f0d22dd12b9e7b229b87c1300fc1099915ddf90bf7bc3f56"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 42.02345,
+      "CandidateMedianMilliseconds": 41.120149999999995,
+      "Ratio": 0.9785048585968072,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40141720.0,
+      "PeakSampledManagedBytes": 25638144.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-preflight-repeat-fields-performance-c49f86b.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preflight-repeat-fields-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "336cd3b39f72506b2e41f968c01a3d8b0903b38269ae1243fae04b229536762a",
+    "sourceSchemaLogSha256": "223f280296a15efd896f0608a6f53491952b5edbfa0962886292b3bc58585e20",
+    "mergedSchemaLogSha256": "d8e4f8902ba6aab03e84ab84308f9ab4eeb0ab2f11b7a5daa7bf244c1b340344",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "baebbf6df22d5a9ae034e6c10e468c01a5f0bbea52fc27a081c7dd314f74e464",
+    "officeLogSha256": "d07c71c565b9b19e060f1f6c931e4fb9256badd871a663c49f6ee9519de17e7e",
+    "outputs": {
+      "both": {
+        "defaultReportSha256": "ac2e690e1ed5a7a623b9a64c2daf4d8f9ac3272c9a5e23a388913cbe9c00f41d",
+        "observationSha256": "87f8ca192e9d9c3d49d245b4c2c1a18a44ac3776efbb5962a1e2c68eeb528db0",
+        "mergedDocxSha256": "9cf2c0562f50890b254578a4ef02cea43f0d2109ef57d6fab3e8e3bc160154c4",
+        "officePdfSha256": "89d3da7f7fc676ed0bdce8875bd55aa64d9ba5a19e9715e960526345b006d7c5"
+      },
+      "item": {
+        "defaultReportSha256": "099b3c1ac594afdcd7d5e1a4434bec74618566532818239ee0032d3d74b92fbf",
+        "observationSha256": "2caa4b6d6de0b118f2a51ab7d5a93310c9274c1823b23945ebeb45b53c485e01",
+        "mergedDocxSha256": "ed25fd8d7d03198eea850188fe39df72d921fd30e25eeabfb06d85f715f9ef01",
+        "officePdfSha256": "6d4e46ac0756b4ccde43908e2a79eacb8ae9edfa41bca0c41a4b01543a025148"
+      },
+      "empty-invalid": {
+        "defaultReportSha256": "a5a449de17a5172f9cf1eb336401bb7bc119c52b06224e840d05b5c45ee1ff18",
+        "observationSha256": "0397e4dd7bedd7bf554c7076db66fdfd90d3e1b341aa56093a6d4bbd4166be41",
+        "mergedDocxSha256": "a31b9dd5061ae49144f8de795e4dde7e1fba72514914c6ee6977d0b44923666b",
+        "officePdfSha256": "b36e9c5a1a8e52164ab36b48c27b27b040fad76026be7b49bf5bdd89a9a63b18"
+      },
+      "nonmerge": {
+        "defaultReportSha256": "21dec21ce4c21a0561de7305bbc1077748f20b1a311a9fbf495512a2b2f4441e",
+        "observationSha256": "abec4bd178164c14a28a51e435b6fdf098705457b2b2d947f4988519d5bc9961"
+      },
+      "two-blocks": {
+        "defaultReportSha256": "d6a2d8904b7df2679727cdb344b0d152acad7b0eaf9d125881de179bf19745ce",
+        "observationSha256": "df290eaa5178fdb590aefa04615b53693662e1edd52c1c5b7b46e8bbd7f6d044"
+      },
+      "field-extra": {
+        "defaultReportSha256": "111ebb87d750143b91dccce420e8d6dbfc4d03b07700efdb469839340f89b771",
+        "observationSha256": "df290eaa5178fdb590aefa04615b53693662e1edd52c1c5b7b46e8bbd7f6d044"
+      },
+      "wrong-type": {
+        "defaultReportSha256": "340459c439b2386f72965485ab9c802f10583b70a67b78594eafd3e7eb783b5f",
+        "observationSha256": "84988f54853b9059c9c59a847519133a18f000af96a2ea0a8185bd6762480492",
+        "mergedDocxSha256": "fea3df60a36c36f21d03df7a9c1ebffc964555d4302becec8a2f7bda44bf5513",
+        "officePdfSha256": "64c1daf275ec95c4831bd9aae2df3f4e5b0a080bf8e2cd0f9e0fce8717925fb0"
+      }
+    },
+    "controls": {
+      "result": {
+        "scenarios": 7,
+        "mergedOfficeReads": 4,
+        "scopeKnownAndUnknownSeparated": true,
+        "unparseableOrUnsupportedContentRemainsUnknown": true
+      },
+      "negativeControls": {
+        "scope certainty": "Unknown-scope requirement missing: both",
+        "guessed type": "Repeated field guessed its type, presence or count: both",
+        "guessed presence": "Repeated field guessed its type, presence or count: both",
+        "wrong count": "Repeated field guessed its type, presence or count: both",
+        "different path alias": "Root and repeated requirements were conflated",
+        "missing finding": "Repeated field finding missing: both",
+        "wrong source position": "Invalid child position",
+        "wrong source part": "Repeated field certainty or alias changed: both",
+        "root type changed": "Root and repeated requirements were conflated",
+        "root scope changed": "Unknown-scope requirement missing: both",
+        "merged output changed": "Merged text or independent office reading changed: both",
+        "failed edit changed": "Repeat rejection or atomicity changed",
+        "private value leaked": "Default report disclosed private names or values: both",
+        "unsupported owner inspected": "Unsupported repeat owner was inspected: two-blocks",
+        "invalid field marked certain": "Unexecuted field was declared invalid or resolved: empty-invalid",
+        "reuse claimed": "Reuse or repeat coverage changed: both"
+      },
+      "controlMethod": "Parsed report, source positions and output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this source, broader repeated contents, identity-bound reusable plans, enforced loss policy and roadmap #138 remain open."
+}

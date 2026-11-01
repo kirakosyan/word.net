@@ -1,0 +1,32 @@
+{
+  "roadmap": 138,
+  "issue": 161,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "6b4b3a827685b47d54fdcd81bbeb12df8aa4628c",
+  "scope": "Unrotated default rectangle, triangle and diamond vector presets with editable DOCX metadata and explicit alternative-text loss on fixed outputs. Arrows, groups, adjustments and tagged/archive/native profiles remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed without dependency changes.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed; the host reported workspace-load warnings.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2161, "failed": 0, "skipped": 0, "trxSha256": "afb4e7790c79ced8874faaf4750c3d8ae24cc08c2b39d8bb0f171837cb7cdb83"},
+    "net10ConversionAndEnglishOcr": {"passed": 2161, "failed": 0, "skipped": 0, "trxSha256": "c7124d5a396fc510b4fe1b801c3db099b6844547ca278160736ba0878cfb4e1d"},
+    "capabilityMatrix": {"profiles": 77, "testMethods": 368, "net10CasesPassed": 637},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API and archive verification against this exact commit; no package was published.",
+    "packageVerificationLogSha256": "3a6447bc9150a6e1d19dbabc26dabfd70264922e5f1af98f91f5ae4389f09de5",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "733eba94328398ea42ea2e95f26a5cdf9cd04d754807bd36ae0fb55943631b98",
+      "wordnet.Fonts.1.5.0.nupkg": "8f14ecfedea2c4ffb7d0756ffc527f8495bc4140dc58e459f0019810a7ccfbdc",
+      "wordnet.Ocr.1.5.0.nupkg": "eb10d57449146873a898bf7b25ce139ec91d087c0ff4e1b4a4daff595b6b3527"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preset-shapes-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "f6cd1899438afa21b29f3d54a514db5b54e58660c05358944ce6315c4924d21c",
+    "savedDocxSha256": {"rect": "9d5f4c1737e1c603755f37bfe2121964c9b7ba804aa1b38aa1b6649cacf08269", "triangle": "0f62b1392a6f43c4a7d1f53c67d5252fb58824cff271b934bc754942ab7b0588", "diamond": "e63abf4482bf499936d18dbaa72aabc86a6d62b6ee1db7bf7ceffbb0d5282d86"},
+    "pdfSha256": {"rect": "41a961d9eed1ea61664671356a13dfc7ee5eaf7be4d36cb134a2e95b3de8ce38", "triangle": "65843d219738061d81674b75b135d3d518a35984c8e82803156feedc8b0f7b1a", "diamond": "57ac879ae76698e008304c123bf0e5e6a3e523f14e90b9d0d707bc9707d3044d"},
+    "result": "The exact source, probe and packaged assemblies matched. Independently authored and saved DOCX specimens reproduced byte for byte with zero Open XML SDK errors. PDF, XPS and SVG vertices met the unchanged 0.5-point bound; the checker rejected changed-preset and substituted-reference controls. SVG and XPS artifacts reproduced the hashes in the reference receipt."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. The remaining #161 scope and roadmap #138 stay open."
+}

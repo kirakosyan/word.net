@@ -46,6 +46,8 @@ public sealed class PreviewOptions
     public int Dpi { get; set; } = 96;
     /// <summary>Gets or sets the maximum aggregate raster pixels, default 16,777,216.</summary>
     public long MaximumPixels { get; set; } = 16 * 1024 * 1024;
+    /// <summary>Gets or sets optional source-to-page inspection for the same preview layout.</summary>
+    public LayoutSnapshotOptions? Layout { get; set; }
 }
 
 /// <summary>One immutable preview with original physical identity and displayed label.</summary>
@@ -75,11 +77,13 @@ public sealed class PagePreview
 /// <summary>Completed previews and their ordinary conversion diagnostics.</summary>
 public sealed class DocumentPreview
 {
-    internal DocumentPreview(int total, IEnumerable<PagePreview> pages, ConversionResult result) { SourcePageCount = total; Pages = new ReadOnlyCollection<PagePreview>(pages.ToList()); Result = result; }
+    internal DocumentPreview(int total, IEnumerable<PagePreview> pages, ConversionResult result, DocumentLayoutSnapshot? layout = null) { SourcePageCount = total; Pages = new ReadOnlyCollection<PagePreview>(pages.ToList()); Result = result; Layout = layout; }
     /// <summary>Gets the total number of physical pages before selection.</summary>
     public int SourcePageCount { get; }
     /// <summary>Gets encoded previews in ascending physical source order.</summary>
     public IReadOnlyList<PagePreview> Pages { get; }
     /// <summary>Gets diagnostics and aggregate encoded output measurements.</summary>
     public ConversionResult Result { get; }
+    /// <summary>Gets the optional bounded snapshot of the selected pages from this same layout.</summary>
+    public DocumentLayoutSnapshot? Layout { get; }
 }

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec docker -H unix:///var/run/docker.sock run --rm --network none --user "$(id -u):$(id -g)" \
+  -v /workspace:/workspace wordnet-138-reference:temporary pdftoppm "$@"

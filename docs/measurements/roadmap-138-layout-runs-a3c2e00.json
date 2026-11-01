@@ -1,0 +1,188 @@
+{
+  "roadmap": 138,
+  "issue": 167,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "a3c2e00bc00fcd840df4ee5164422818bc96e1fb",
+  "sourceTree": "be72c0535dc7fdf4807f2b8302d0471fef6682c8",
+  "scope": "Direct, unambiguous DOCX body and simple-cell text runs can expose source identities for emitted glyph fragments; coalesced, wrapped and namespace-ambiguous sources remain unmapped.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked solution restore passed.",
+    "restoreLogSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "a7e2229495538d3ed38c3aee5866a4e6ecb5d40d184d616240c102933c9e4403",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2350,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "66fbdfab9f98221bfcdcbd62a5397d6f309b7912a5f7c4cb3e667e50ff6ee610"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2350,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "8b46fac7abd043d99d8150c39994aadcb12cd6f9672f0369925a939a42113550"
+    },
+    "capabilityMatrix": {
+      "profiles": 102,
+      "testMethods": 477,
+      "net10CasesPassed": 822,
+      "logSha256": "8635e426f882b6258a4887dd331f5f0404475e8f9a42fe1caf635134d529cb8d"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "a32ed314681c43ebcf607bab75e9b63a71b318b11f4cb64fcd5cfff8e825fe98",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "5c1b793b15995f4df26531286eb459efe66ff0abf058c75c594654dbbc7e7b3c",
+      "wordnet.Fonts.1.5.0.nupkg": "1c61b0d42370ae6e281c4d0086f924d8f98b42d47e7cc98b10d8219e142c20ee",
+      "wordnet.Ocr.1.5.0.nupkg": "22f0bd5db2e7bc6dd9bd9a36d99b7875ed73b35b0291452ae4c278bb4191ae54"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 40.74465,
+      "CandidateMedianMilliseconds": 39.419,
+      "Ratio": 0.9674644401166779,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40133608.0,
+      "PeakSampledManagedBytes": 26939480.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-layout-runs-performance-a3c2e00.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-layout-runs-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "a6158592c9147790250b4cb0b15211b631580142459ee19223f5c9c12aaa2a9d",
+    "schemaLogSha256": "877f5afb4ef2fe16c6c8e868a33762870781f87fa0048800bdf3aa0440adb3a7",
+    "namespaceSchemaRejectionLogSha256": {
+      "namespace-run": "43ef5e5d99c6882eb38f745c10e6120699c68e4a445fd315fe4ff9d258443a5a",
+      "namespace-paragraph": "e47b170856984a2d11d4a893b914199a7704776c21a4bd54886797dd81a1b470"
+    },
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "4bff86a3a577bdc4d213b88cf0d987eaf596d3293a604c341c4f5176bbc5f054",
+    "documents": {
+      "runs": {
+        "inputDocxSha256": "ee618813ad83e2a071414388f9babac76009c6b4fc1cbea2ea3ab2d6fccc4dcb",
+        "snapshotSha256": "c4cef51e5069469cb4bf95f1fd22a19bfa9218090e80f205c6dc1c18ce35fa31",
+        "pdfSha256": "204ab42cce0ab339b52d68d5f588bca62c53a92e465be55d8ee297572df6b858",
+        "svgSha256": "ed37f0a05c4a2a622e80277b9e8646c94aa27f5d64c1db7c2947c42c0b3fb30c",
+        "diagnosticsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "officePdfSha256": "760f3f0927b05887bab25eb5970eed7ec45470b154d2cb127568aa1e03d4cdad"
+      },
+      "namespace-run": {
+        "inputDocxSha256": "d343248a47a42b924cbeb7e830188e914571f5f5fd3837b3dccef664cb0aa096",
+        "snapshotSha256": "429af0019e87a786c6a38905c58e74ab48c2561df53008154aa31e104f445713",
+        "pdfSha256": "41672e9771e65976de5933266e713310b34e1f6962cd134879734fd0d60b6410",
+        "svgSha256": "7ed1fffe7a7eb26a804609dfc9d4060a1dea9e4b95d83b5025f336b221d42cc7",
+        "diagnosticsSha256": "e7768365490c34fa089fcb5d7b837a1371c3dde1560d8c51e056b4a967a76a6a"
+      },
+      "namespace-paragraph": {
+        "inputDocxSha256": "ec30e9ce5a658371ded540042bdcc69ab4e8181428dc6387ef472e24b493e07c",
+        "snapshotSha256": "429af0019e87a786c6a38905c58e74ab48c2561df53008154aa31e104f445713",
+        "pdfSha256": "c3ad4219385ff05cf4ff801c0dc985d3d8d58fd13ed64aa6a7d976e4ee1f9312",
+        "svgSha256": "7ed1fffe7a7eb26a804609dfc9d4060a1dea9e4b95d83b5025f336b221d42cc7",
+        "diagnosticsSha256": "d8f9ee61fcc5827d572e17b21470956c1e06847a6f702f1aa4c7169aae846556"
+      }
+    },
+    "result": {
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "specimen": {
+        "pages": 1,
+        "fragments": 8,
+        "mappedRuns": 3,
+        "unmappedFragments": 5,
+        "maximumFontSvgBoundsDeltaPt": 8.526512829121202e-14
+      },
+      "namespaceNegatives": {
+        "namespace-run": {
+          "runSource": null,
+          "diagnostic": "Docx.Inline",
+          "visibleTextPreserved": true
+        },
+        "namespace-paragraph": {
+          "runSource": null,
+          "diagnostic": "Docx.Block",
+          "visibleTextPreserved": true
+        }
+      },
+      "negativeControls": {
+        "wrong run path": "Source run identity is missing or ambiguous",
+        "mapped coalesced run": "Source run identity is missing or ambiguous",
+        "mapped wrapped run": "Source run identity is missing or ambiguous",
+        "changed source text": "Source paragraph, order or text changed",
+        "shifted bounds": "Snapshot and independent SVG/font bounds differ",
+        "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
+        "changed PDF character": "PDF/SVG glyph text differs from source",
+        "wrong cell path": "Cell identity differs from source XML",
+        "mapped namespace-run": "Ambiguous namespace path was assigned a run owner",
+        "mapped namespace-paragraph": "Ambiguous namespace path was assigned a run owner"
+      },
+      "controlMethod": "Parsed source/output measurements changed in memory.",
+      "officeComparison": {
+        "wholePage": {
+          "actualPages": 1,
+          "referencePages": 1,
+          "glyphOriginTolerancePt": 0.25,
+          "glyphComparisonPassed": false,
+          "pages": [
+            {
+              "page": 1,
+              "actualCharacters": 24,
+              "referenceCharacters": 24,
+              "actualFonts": [
+                "NotoSans-Regular"
+              ],
+              "referenceFonts": [
+                "NotoSans-Regular"
+              ],
+              "textOrderAgrees": true,
+              "fontNamesAgree": true,
+              "maximumGlyphOriginDeltaPt": 5.9542236328125,
+              "glyphComparisonPassed": false
+            }
+          ]
+        },
+        "segments": {
+          "textOrderAgrees": true,
+          "glyphOriginTolerancePt": 0.25,
+          "segments": [
+            {
+              "name": "first direct run",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.09999847412109375,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "second direct run",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.092010498046875,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "coalesced runs",
+              "characters": 8,
+              "maximumGlyphOriginDeltaPt": 0.100006103515625,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "table cell",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 5.5,
+              "glyphComparisonPassed": false
+            },
+            {
+              "name": "wrapped hyperlink",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 5.9542236328125,
+              "glyphComparisonPassed": false
+            }
+          ]
+        }
+      }
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, broader source mapping, cross-editor geometry and roadmap #138 remain open."
+}

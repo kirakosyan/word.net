@@ -1,0 +1,154 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "8baeeaefc9e44b07c6ce9e7fa7f66ab010fa3b09",
+  "sourceTree": "b68e68a4f4048f1126373c03e0dbdd85d5457f44",
+  "scope": "Check bounded JSON against root and repeat-item declarations without claiming template execution or output validation.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "a86d88cb4eecdfd7b1ba427d7952c1b67033376744377d533de30d38625b2c3f",
+    "releaseBuild": "All five targets and the net472 executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "2932f6e2ae645f429213531656f51acc2502f7f627715f4e5f8b2a16de70c9c9",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2390,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "6092187fc47ee4021c3ec34eae6fb254503f8859853a3bd36f732301e5ceec66"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2390,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "6134edd6914241bd8e1a66ada60ea39842201a5b2cb4574c982fff7defff8e16"
+    },
+    "capabilityMatrix": {
+      "profiles": 117,
+      "testMethods": 514,
+      "net10CasesPassed": 862,
+      "logSha256": "3606d85d1304038788a8b2b45d5d59d43421ce076b35fb3bf888b8b2cbbb64a3"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification; no publication.",
+    "packageVerificationLogSha256": "597aacc928fa78ab3af17c65c02866554474d82175205e2b9543848e3072542e",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "012b1994c37a837fe3c5685ce3c09445ac9c1747c39fda96e9b8f676bd678e4e",
+      "wordnet.Fonts.1.5.0.nupkg": "d5f25232f3ee8d28708c1b23a5aed8a88d3eb01c974921839deb4c03cc9cbfa2",
+      "wordnet.Ocr.1.5.0.nupkg": "5797684d3fdfcf960f3ca3db314a62dc20d9379228462bb14248ad780478590f"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 43.64745,
+      "CandidateMedianMilliseconds": 39.675200000000004,
+      "Ratio": 0.9089923924536257,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40138216.0,
+      "PeakSampledManagedBytes": 26982184.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-schema-data-performance-8baeeae.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-schema-data-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "6555449a60ef55591c63c6ba336803e7777fde74a6b388ae0ce88a08bc77e164",
+    "sourceAndMergedSchemaLogSha256": "9cbeca2a5cd87807886e7cb03c436a2c4b96be76444f2c0478c751ea429c2338",
+    "validatorAssemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+    "verifierLogSha256": "b05168edf6c3629edfe3f0a78ee061f776be3aad173be1fe874fbf2d8c1cec7a",
+    "officeLogSha256": "31ab3eca5e2377ebb8b0a35411ae5dbba62d23c662fedfc2627fb8a8d8160068",
+    "outputs": {
+      "empty": {
+        "observationSha256": "1a276396920950f025a5818853864ef09f684268600496fd7d7385d0a084a586",
+        "defaultReportSha256": "80f21098d5e83b2ac0aa0994073876c038b9f7064e5e8bbb514c0992e23050b7",
+        "mergedDocxSha256": "ab154d701f1bfb4e111de49ec28d901aaa6d6a077362739a2f531db20b1b17f5",
+        "officePdfSha256": "2b28edb99e87d083d28ce8293a98339e7de87b31309d2447c2618f771ede9bd7"
+      },
+      "fallback": {
+        "observationSha256": "3d5a5a7eee563ed7b066c730e58e26471fcc3e3e7ab062287c20388ec70dc129",
+        "defaultReportSha256": "5662aa1835cc46b1607e26639d88f7c50452a2bc7270af830cedf61ffd428a26",
+        "mergedDocxSha256": "cb3a89dc5f14f5d760fea5644eb92d4a1c6c6a87e9e747d772fadaeb4709a181",
+        "officePdfSha256": "933d7d96d6916983f7e28751c939879b10ebc6b77285016a585769ae57d04270"
+      },
+      "limit": {
+        "observationSha256": "bdb31436c32d5ccf9297cd3eac84c62f701c4663f55706c1bff4aca8437933de"
+      },
+      "malformed": {
+        "observationSha256": "5dc7c1c1fd204eb99fc97f09a9624a4de6f922613f5b0f14a6e2b95d01e110c5"
+      },
+      "missing-scope": {
+        "observationSha256": "7a4549ae69dd27a6ca4926c50f27d4782687a176f404b3f25fcc71146832f76e",
+        "defaultReportSha256": "1ac1f2d47906bd5d44adb3d3c0098b84756feb31293a05f07ac09d89f60c983a",
+        "mergedDocxSha256": "301f4b775977ee557de8b4760784ce5946dd9261e1bcdca0e248331b20f03c7d",
+        "officePdfSha256": "bf57c5e959a47100f6edbe6a8d50e0f2a17fa0999571ba12fa0d13ce72263c03"
+      },
+      "optional": {
+        "observationSha256": "5cfcd2ae896d14ff248476a8d9409ee6cfcd8672d5f0c1dc1f7d8be4a68b4741",
+        "defaultReportSha256": "80f21098d5e83b2ac0aa0994073876c038b9f7064e5e8bbb514c0992e23050b7",
+        "mergedDocxSha256": "cb3a89dc5f14f5d760fea5644eb92d4a1c6c6a87e9e747d772fadaeb4709a181",
+        "officePdfSha256": "2633b0bc751ff2d1ef90bffbf71c4158d5dc6c133419bdc08acde1a888384ba2"
+      },
+      "scope-type": {
+        "observationSha256": "91b08d1415a0692a4051477bf1e782a56c0851c4cb1db19420658d6d3fb83eee",
+        "defaultReportSha256": "249e29e64dc8262ca13d29a3e2f3c31dd898654cb43b3becb6650fd6454e1bcf",
+        "mergedDocxSha256": "301f4b775977ee557de8b4760784ce5946dd9261e1bcdca0e248331b20f03c7d",
+        "officePdfSha256": "9e88d2f0e54e0d371fd2a621548bee1865cb11f19683cf1e6524211cef285d71"
+      },
+      "typed-non-json": {
+        "observationSha256": "4ed778461bb43df7456ddef6c8e8be1808b169bdecf99b17ef6af3b145738f6d",
+        "defaultReportSha256": "66edfbd918d8ac5f3861bccc04599d0089d8173412ccf232a0deb73783253839"
+      },
+      "valid": {
+        "observationSha256": "0f2e189fc925828a8ed0df26b4d3f35503d4cfb0e40643d08478f39ec90d1a2e",
+        "defaultReportSha256": "80f21098d5e83b2ac0aa0994073876c038b9f7064e5e8bbb514c0992e23050b7",
+        "mergedDocxSha256": "64f60bf3b52aaa354e10354b0befb35ab9be7feb0cd56778a5047041a43af54d",
+        "officePdfSha256": "f589ffc8987ebad5e46ba44c4ac56917e654a5a17276ea5b53e4e8331e3f9ee4"
+      },
+      "wrong-type": {
+        "observationSha256": "8c2ca0357374a99d2990ba336f5e86fe357beac548fb9c8f126cb14d9b0b6ef4",
+        "defaultReportSha256": "bcd19b67c835e27c6066d8144d1cd27292205cbac2eaecdbee30ff546831158a",
+        "mergedDocxSha256": "1d6e742933cd6b09b9ddc7c901a1bc56606107f5a2c42d1e7b75c6a1774c214c",
+        "officePdfSha256": "dce719e4172c96cefb2f66fff0ad76c10ee571774fe9b9941c105c527663d6ac"
+      }
+    },
+    "controls": {
+      "result": {
+        "jsonScenarios": 10,
+        "independentOfficeReads": 7,
+        "itemFallbackContrastObserved": true,
+        "failedInspectionsReturnNoPartialReport": true
+      },
+      "negativeControls": {
+        "missing item index": "Declaration finding changed: fallback",
+        "missing item path": "Declaration finding changed: fallback",
+        "missing item scope": "Declaration finding changed: fallback",
+        "missing item code": "Declaration finding changed: fallback",
+        "missing item certainty": "Declaration finding changed: fallback",
+        "missing item omitted": "Declaration finding changed: fallback",
+        "optional fallback rejected": "Declaration finding changed: optional",
+        "unknown scope made definite": "Declaration finding changed: missing-scope",
+        "unknown scope omitted": "Declaration finding changed: missing-scope",
+        "wrong item type admitted": "Declaration finding changed: wrong-type",
+        "root scope type admitted": "Declaration finding changed: scope-type",
+        "repeat scope type admitted": "Declaration finding changed: scope-type",
+        "null image rejected": "Declaration finding changed: typed-non-json",
+        "JSON date string admitted": "Declaration finding changed: typed-non-json",
+        "error summary changed": "Finding summary changed: fallback",
+        "unknown summary changed": "Finding summary changed: missing-scope",
+        "default name leaked": "Default report disclosed a data name or value: fallback",
+        "default alias changed": "Default report disclosed a data name or value: fallback",
+        "malformed error changed": "Inspection failure changed: malformed",
+        "limit error changed": "Inspection failure changed: limit",
+        "partial failure report": "A failed inspection returned a partial report: limit",
+        "failed merge mutated": "Failed merge changed the input: missing-scope",
+        "independent office output changed": "Saved DOCX or independent office text changed: fallback",
+        "saved DOCX output changed": "Saved DOCX or independent office text changed: fallback"
+      },
+      "controlMethod": "Reports, parsed inputs and saved-output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, identity-bound reusable plans, enforced loss policies and roadmap #138 remain open."
+}

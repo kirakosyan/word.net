@@ -22,8 +22,14 @@ public sealed partial class WordDocument
     /// <summary>Loads typed DOCX controls and local binding metadata without executing tags or synchronizing XML. Options are captured once.</summary>
     public static WordDocument LoadWithControls(Stream source, ContentControlLoadOptions controlOptions, out ConversionResult result,
         ConversionOptions? options = null, CancellationToken cancellationToken = default)
+        => LoadWithControls(source, DocumentFormat.Docx, controlOptions, out result, options, cancellationToken);
+
+    /// <summary>Loads typed controls from a macro-free DOCX or DOTX package without executing tags or synchronizing XML.</summary>
+    public static WordDocument LoadWithControls(Stream source, DocumentFormat format, ContentControlLoadOptions controlOptions, out ConversionResult result,
+        ConversionOptions? options = null, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(source, nameof(source)); Guard.NotNull(controlOptions, nameof(controlOptions));
+        if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx) throw new NotSupportedException("Control.InputFormat: Typed controls require DOCX or DOTX.");
         if (!source.CanRead) throw new ArgumentException("The source must be readable.", nameof(source));
         ContentControlDateMode mode = controlOptions.DateMode;
         if (mode is not ContentControlDateMode.UtcInstant and not ContentControlDateMode.DateOnly) throw new ArgumentOutOfRangeException(nameof(controlOptions));
@@ -31,7 +37,7 @@ public sealed partial class WordDocument
         var c = new ConversionContext(options, cancellationToken) { Editing = true, PreserveControls = true, ControlDateMode = mode, Destination = DocumentFormat.Docx };
         c.CheckCancellation();
         using var input = new BoundedMemoryStream(options.MaximumInputBytes); Transfer(source, input, c, options.MaximumInputBytes); input.Position = 0;
-        DocumentModel loaded = DocxReader.Read(input, c); Admit(loaded, c); result = c.Result(0);
+        DocumentModel loaded = DocxReader.Read(input, c, format == DocumentFormat.Dotx); Admit(loaded, c); result = c.Result(0);
         return new WordDocument(loaded, options) { diagnostics = result.Diagnostics };
     }
     /// <summary>Gets detached typed-control snapshots in source order, cached until a successful edit invalidates their mutation handles.</summary>
@@ -44,7 +50,7 @@ public sealed partial class WordDocument
                 if (controlSnapshots != null && controlSnapshotsVersion == version) return controlSnapshots;
                 if (!model.Controls.HasControls) return Array.Empty<DocumentContentControl>();
                 var c = new ConversionContext(options, CancellationToken.None); var owners = ControlOwners.Index(model, c);
-                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, ControlContent(owners[d.Id], c))).ToList());
+                controlSnapshots = new ReadOnlyCollection<DocumentContentControl>(model.Controls.Items.Values.Select(d => new DocumentContentControl(sessionId, version, d, owners[d.Id].ParentId, owners[d.Id].Story, owners[d.Id].Structure, ControlContent(owners[d.Id], c))).ToList());
                 controlSnapshotsVersion = version;
                 return controlSnapshots;
             }
@@ -89,10 +95,13 @@ public sealed partial class WordDocument
         Guard.NotNull(handle, nameof(handle));
         return Edit((m, c) =>
         {
-            ControlData data = ControlHandle(m, handle); ControlOwner owner = ControlOwners.Index(m, c)[data.Id];
+            ControlData data = ControlHandle(m, handle); var owners = ControlOwners.Index(m, c); ControlOwner owner = owners[data.Id];
+            CheckNestedControlEdit(m, owner);
             using var location = c.At(owner.Content.First().Location);
-            change(m, data, owner, c); ControlOwners.Normalize(m); return 1;
-        }, token, controlAware: true);
+            change(m, data, owner, c);
+            if (owner.ParentId is int parent) ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
+            ControlOwners.Normalize(m); return 1;
+        }, token, objectAware: true, controlAware: true);
     }
     /// <summary>Atomically sets a checkbox value and clears placeholder display. Content locks and stale handles reject.</summary>
     public DocumentEditResult SetControlChecked(DocumentContentControl handle, bool value, CancellationToken cancellationToken = default) =>
@@ -109,6 +118,46 @@ public sealed partial class WordDocument
     /// <summary>Sets literal plain text. LF soft breaks require the source multiLine setting; markup is never interpreted.</summary>
     public DocumentEditResult SetControlText(DocumentContentControl handle, string text, CancellationToken cancellationToken = default)
     { Guard.NotNull(text, nameof(text)); return ChangeControl(handle, (_, d, owner, c) => ControlValues.SetPlain(d, owner, text, c), cancellationToken); }
+
+    /// <summary>Atomically removes a typed wrapper, retaining its current text content by default. When content is deleted, a block owner retains an empty paragraph shell.</summary>
+    /// <remarks>Wrapper locks always reject removal; a content lock also rejects deleting content. Nested parents with children, dirty bindings and removal of the last control while local XML/glossary resources remain are rejected.</remarks>
+    public DocumentEditResult RemoveControl(DocumentContentControl handle, bool preserveContent = true, CancellationToken cancellationToken = default)
+    {
+        Guard.NotNull(handle, nameof(handle));
+        return Edit((m, c) =>
+        {
+            if (handle.Session != sessionId || handle.Version != version || !m.Controls.Items.TryGetValue(handle.Id, out ControlData? data) || data.Identity != handle.Identity)
+                throw new ArgumentException("Control.StaleHandle: Reacquire a live control handle from its originating session.", nameof(handle));
+            if (data.Lock is ContentControlLock.ControlLocked or ContentControlLock.ControlAndContentLocked
+                || !preserveContent && data.Lock == ContentControlLock.ContentLocked)
+                throw new InvalidOperationException("Control.Locked: The editing lock rejects this removal.");
+            if (data.BindingState == ContentControlBindingState.Dirty)
+                throw new InvalidOperationException("Control.BindingDirty: Explicitly apply, write back or detach an edited binding before removing its wrapper.");
+            if (m.Controls.Items.Count == 1 && (m.Controls.XmlStores.Count != 0 || m.Controls.Glossary != null
+                || m.Controls.GlossaryResources.Count != 0 || m.Controls.GlossaryContent.Count != 0))
+                throw new NotSupportedException("Control.Resources: The last control cannot be removed while retained local XML or glossary resources remain.");
+            var owners = ControlOwners.Index(m, c); ControlOwner owner = owners[data.Id];
+            owner.Refresh(data.Id, c); CheckNestedControlEdit(m, owner);
+            if (owner.Paragraph != null)
+            {
+                if (preserveContent) foreach (TextRun run in owner.Runs) run.TypedControlId = null;
+                else owner.Paragraph.Runs.RemoveRange(owner.Start, owner.Count);
+            }
+            else if (preserveContent)
+            {
+                foreach (ParagraphBlock paragraph in owner.Content) paragraph.TypedControlId = null;
+            }
+            else
+            {
+                DocumentBlock first = owner.Blocks[owner.Start];
+                var shell = new ParagraphBlock { Section = first.Section, Location = first.Location, FallbackFontSize = 11, FallbackAfter = 0 };
+                owner.Blocks.RemoveRange(owner.Start, owner.Count); owner.Blocks.Insert(owner.Start, shell);
+            }
+            m.Controls.Items.Remove(data.Id);
+            if (owner.ParentId is int parent) ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
+            ControlOwners.Normalize(m); return 1;
+        }, cancellationToken, objectAware: true, controlAware: true);
+    }
     /// <summary>Replaces inline rich content with copied formatted text. Images, fields, boundaries and structural breaks are rejected.</summary>
     public DocumentEditResult ReplaceControlContent(DocumentContentControl handle, IEnumerable<DocumentText> runs, CancellationToken cancellationToken = default)
     {
@@ -204,11 +253,21 @@ public sealed partial class WordDocument
                 selected.Add(data);
             }
             var owners = ControlOwners.Index(m, c);
+            foreach (ControlData data in selected) CheckNestedControlEdit(m, owners[data.Id]);
             if (direction == 0) foreach (ControlData data in selected) ControlBindings.Apply(data, owners[data.Id], m.Controls, c);
             else if (direction == 1) ControlBindings.WriteBack(m, selected, owners, c);
             else foreach (ControlData data in selected) { data.Binding = null; data.BindingState = ContentControlBindingState.None; data.Properties.Elements(ControlValues.W + "dataBinding").Remove(); }
+            foreach (int parent in selected.Select(data => owners[data.Id].ParentId).Where(id => id.HasValue).Select(id => id!.Value).Distinct())
+                ControlValues.Infer(m.Controls.Items[parent], owners[parent], c);
             ControlOwners.Normalize(m); return selected.Count;
-        }, token, controlAware: true);
+        }, token, objectAware: true, controlAware: true);
+    }
+    private static void CheckNestedControlEdit(DocumentModel model, ControlOwner owner)
+    {
+        if (owner.Structure != ControlStructure.None) throw new NotSupportedException("Control.ProtectedOwner: Structural wrappers cannot be edited or removed through paragraph operations.");
+        if (owner.HasChildren) throw new NotSupportedException("Control.ProtectedOwner: A parent containing typed children cannot be replaced or rebound.");
+        if (owner.ParentId is int parent && model.Controls.Items[parent].Lock is ContentControlLock.ContentLocked or ContentControlLock.ControlAndContentLocked)
+            throw new InvalidOperationException("Control.Locked: The parent content lock rejects this child mutation.");
     }
     private sealed class ControlInputBudget
     {

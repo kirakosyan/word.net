@@ -31,21 +31,43 @@ internal static class ChartObjectFormat
         }
         XElement Ref(string name, string range, IEnumerable<string> strings) => new XElement(C + name, new XElement(C + "strRef", new XElement(C + "f", "Data!" + range), Strings(strings)));
         int end = definition.Categories.Count + 1;
-        XElement data = new XElement(C + (definition.Kind == ChartKind.Line ? "lineChart" : "barChart"),
-            definition.Kind == ChartKind.ClusteredColumn ? V("barDir", "col") : null,
-            V("grouping", definition.Kind == ChartKind.Line ? "standard" : "clustered"));
+        bool horizontal = definition.Kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
+        bool stacked = definition.Kind is ChartKind.StackedColumn or ChartKind.StackedBar;
+        bool circular = definition.Kind is ChartKind.Pie or ChartKind.Doughnut;
+        XElement data = circular
+            ? new XElement(C + (definition.Kind == ChartKind.Pie ? "pieChart" : "doughnutChart"), V("varyColors", 1))
+            : new XElement(C + (definition.Kind == ChartKind.Line ? "lineChart" : "barChart"),
+                definition.Kind == ChartKind.Line ? null : V("barDir", horizontal ? "bar" : "col"),
+                V("grouping", definition.Kind == ChartKind.Line ? "standard" : stacked ? "stacked" : "clustered"));
         for (int i = 0; i < definition.Series.Count; i++)
         {
             context.CheckCancellation(); ChartSeries series = definition.Series[i]; string column = ObjectWorkbook.Column(i + 2);
             var fill = new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", series.Color)));
             data.Add(new XElement(C + "ser", V("idx", i), V("order", i), Ref("tx", "$" + column + "$1", new[] { series.Name }),
                 new XElement(C + "spPr", definition.Kind == ChartKind.Line ? new XElement(A + "ln", new XAttribute("w", 12700), fill) : fill),
+                circular ? definition.SliceColors.Select((color, point) => new XElement(C + "dPt", V("idx", point),
+                    new XElement(C + "spPr", new XElement(A + "solidFill", new XElement(A + "srgbClr", new XAttribute("val", color))),
+                        new XElement(A + "ln", new XElement(A + "noFill"))))) : null,
                 Ref("cat", "$A$2:$A$" + end.ToString(CultureInfo.InvariantCulture), definition.Categories),
                 new XElement(C + "val", new XElement(C + "numRef", new XElement(C + "f", "Data!$" + column + "$2:$" + column + "$" + end.ToString(CultureInfo.InvariantCulture)),
                     new XElement(C + "numCache", new XElement(C + "formatCode", "General"), V("ptCount", series.Values.Count),
                         series.Values.Select((v, p) => v.HasValue ? new XElement(C + "pt", new XAttribute("idx", p), new XElement(C + "v", v.Value.ToString("R", CultureInfo.InvariantCulture))) : null))))));
         }
-        data.Add(V("axId", 1), V("axId", 2));
+        if (definition.DataLabels != ChartDataLabels.None)
+        {
+            bool value = definition.DataLabels is ChartDataLabels.Value or ChartDataLabels.CategoryAndValue;
+            bool category = definition.DataLabels is ChartDataLabels.Category or ChartDataLabels.CategoryAndValue;
+            data.Add(new XElement(C + "dLbls", V("dLblPos", "ctr"), V("showLegendKey", 0), V("showVal", value ? 1 : 0), V("showCatName", category ? 1 : 0),
+                V("showSerName", 0), V("showPercent", 0), V("showBubbleSize", 0),
+                value && category ? new XElement(C + "separator", ", ") : null));
+        }
+        if (stacked) data.Add(V("overlap", 100));
+        if (circular)
+        {
+            data.Add(V("firstSliceAng", 0));
+            if (definition.Kind == ChartKind.Doughnut) data.Add(V("holeSize", 50));
+        }
+        else data.Add(V("axId", 1), V("axId", 2));
         XElement Axis(string kind, int id, int cross, string position) => new XElement(C + kind, V("axId", id),
             new XElement(C + "scaling", V("orientation", "minMax")), V("axPos", position),
             kind == "valAx" ? new XElement(C + "majorGridlines") : null,
@@ -55,7 +77,8 @@ internal static class ChartObjectFormat
             kind == "catAx" ? new object[] { V("auto", 1), V("lblAlgn", "ctr"), V("lblOffset", 100) } : new object[] { V("crossBetween", "between") });
         XElement chart = new XElement(C + "chart",
             definition.Title.Length == 0 ? null : Title(definition.Title),
-            new XElement(C + "plotArea", new XElement(C + "layout"), data, Axis("catAx", 1, 2, "b"), Axis("valAx", 2, 1, "l")),
+            new XElement(C + "plotArea", new XElement(C + "layout"), data,
+                circular ? null : Axis("catAx", 1, 2, horizontal ? "l" : "b"), circular ? null : Axis("valAx", 2, 1, horizontal ? "b" : "l")),
             definition.ShowLegend ? new XElement(C + "legend", V("legendPos", "r"), new XElement(C + "layout")) : null, V("plotVisOnly", 1), V("dispBlanksAs", "gap"));
         XElement root = new XElement(C + "chartSpace", new XAttribute(XNamespace.Xmlns + "c", C), new XAttribute(XNamespace.Xmlns + "a", A), new XAttribute(XNamespace.Xmlns + "r", R),
             chart, new XElement(C + "externalData", new XAttribute(R + "id", "data"), V("autoUpdate", 0)));
@@ -178,10 +201,27 @@ internal static class ChartObjectFormat
     {
         XElement chart = root.Element(C + "chart") ?? throw Invalid("Chart"); XElement plot = chart.Element(C + "plotArea") ?? throw Invalid("PlotArea");
         XElement[] kinds = plot.Elements().Where(e => e.Name.Namespace == C && e.Name.LocalName.EndsWith("Chart", StringComparison.Ordinal)).ToArray();
-        if (kinds.Length != 1 || kinds[0].Name != C + "barChart" && kinds[0].Name != C + "lineChart") throw new NotSupportedException("Chart.Type: Only clustered columns and ordinary non-stacked lines are admitted.");
-        XElement data = kinds[0]; ChartKind kind = data.Name == C + "barChart" ? ChartKind.ClusteredColumn : ChartKind.Line;
-        string grouping = (string?)data.Element(C + "grouping")?.Attribute("val") ?? (kind == ChartKind.Line ? "standard" : "clustered");
-        if (grouping != (kind == ChartKind.Line ? "standard" : "clustered") || kind == ChartKind.ClusteredColumn && (string?)data.Element(C + "barDir")?.Attribute("val") != "col") throw new NotSupportedException("Chart.Type: Stacked and horizontal charts are outside the profile.");
+        if (kinds.Length != 1) throw new NotSupportedException("Chart.Type: Exactly one supported two-dimensional chart is required.");
+        if (kinds[0].Name == C + "pieChart" || kinds[0].Name == C + "doughnutChart") return ParseCircular(root, chart, plot, kinds[0], workbook, context);
+        if (kinds[0].Name != C + "barChart" && kinds[0].Name != C + "lineChart") throw new NotSupportedException("Chart.Type: The chart type is outside the supported profile.");
+        XElement data = kinds[0]; string? direction = (string?)data.Element(C + "barDir")?.Attribute("val");
+        if (data.Name == C + "barChart" && data.Elements(C + "barDir").Count() != 1) throw Invalid("Direction");
+        bool isLine = data.Name == C + "lineChart";
+        string grouping = (string?)data.Element(C + "grouping")?.Attribute("val") ?? (isLine ? "standard" : "clustered");
+        if (data.Elements(C + "grouping").Count() > 1 || isLine && grouping != "standard" || !isLine && grouping is not ("clustered" or "stacked"))
+            throw new NotSupportedException("Chart.Type: Only ordinary lines and clustered or stacked bars and columns are admitted.");
+        bool stacked = grouping == "stacked";
+        if (stacked && (data.Elements(C + "overlap").Count() != 1 || (string?)data.Element(C + "overlap")?.Attribute("val") != "100"))
+            throw new NotSupportedException("Chart.Overlap: Stacked bars require explicit full overlap.");
+        ChartKind kind = isLine ? ChartKind.Line : (direction, stacked) switch
+        {
+            ("col", false) => ChartKind.ClusteredColumn,
+            ("bar", false) => ChartKind.ClusteredBar,
+            ("col", true) => ChartKind.StackedColumn,
+            ("bar", true) => ChartKind.StackedBar,
+            _ => throw new NotSupportedException("Chart.Type: A bar or column requires an explicit direction."),
+        };
+        bool horizontal = kind is ChartKind.ClusteredBar or ChartKind.StackedBar;
         XElement[] categories = plot.Elements(C + "catAx").ToArray(), values = plot.Elements(C + "valAx").ToArray();
         if (categories.Length != 1 || values.Length != 1 || plot.Elements().Count(e => e.Name.LocalName.EndsWith("Ax", StringComparison.Ordinal)) != 2
             || plot.Descendants(C + "logBase").Any() || data.Elements(C + "axId").Count() != 2) throw new NotSupportedException("Chart.Axes: One linear category/value axis pair is required.");
@@ -193,15 +233,23 @@ internal static class ChartObjectFormat
         XElement One(IEnumerable<XElement> elements) { XElement[] found = elements.Take(2).ToArray(); return found.Length == 1 ? found[0] : throw Invalid("Cardinality"); }
         long pointCount = series.Sum(s => (long)Count(One(s.Element(C + "val")?.Descendants(C + "ptCount") ?? Enumerable.Empty<XElement>())));
         if (pointCount > 10000) throw Invalid("PointLimit");
-        bool renderable = !root.Descendants(C + "dLbls").Any() && !root.Descendants(C + "trendline").Any() && !root.Descendants(C + "errBars").Any()
+        ChartDataLabels dataLabels = ParseDataLabels(root, data, isLine, out bool labelAppearance);
+        bool renderable = labelAppearance && !root.Descendants(C + "trendline").Any() && !root.Descendants(C + "errBars").Any()
             && !root.Descendants(C + "smooth").Any(e => (string?)e.Attribute("val") is not "0" and not "false")
             && !plot.Descendants(C + "scaling").Elements().Any(e => e.Name == C + "min" || e.Name == C + "max")
             && ((string?)chart.Element(C + "dispBlanksAs")?.Attribute("val") is null or "gap")
             && ((string?)chart.Element(C + "legend")?.Element(C + "legendPos")?.Attribute("val") is null or "r");
+        if (horizontal || stacked)
+            renderable &= ((string?)data.Element(C + "gapWidth")?.Attribute("val") is null or "150")
+                && (stacked ? (string?)data.Element(C + "overlap")?.Attribute("val") == "100" : (string?)data.Element(C + "overlap")?.Attribute("val") is null or "0")
+                && data.Elements(C + "gapWidth").Count() <= 1 && data.Elements(C + "overlap").Count() <= 1
+                && data.Elements(C + "grouping").Count() <= 1 && categories[0].Elements(C + "axPos").Count() <= 1
+                && values[0].Elements(C + "axPos").Count() <= 1;
         renderable &= !plot.Descendants(C + "orientation").Any(e => (string?)e.Attribute("val") is not null and not "minMax")
             && !plot.Descendants(C + "crossesAt").Any() && !plot.Descendants(C + "delete").Any(e => (string?)e.Attribute("val") is "1" or "true")
             && !plot.Descendants(C + "tickLblPos").Any(e => (string?)e.Attribute("val") is not null and not "nextTo")
-            && ((string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "b") && ((string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "l")
+            && (horizontal ? (string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "l" : (string?)categories[0].Element(C + "axPos")?.Attribute("val") is null or "b")
+            && (horizontal ? (string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "b" : (string?)values[0].Element(C + "axPos")?.Attribute("val") is null or "l")
             && !root.Descendants(C + "dTable").Any() && !root.Descendants(C + "dPt").Any() && !root.Descendants(C + "extLst").Any()
             && !root.Descendants(C + "symbol").Any(e => (string?)e.Attribute("val") is not null and not "none")
             && !root.Descendants(A + "gradFill").Any() && !root.Descendants(A + "blipFill").Any() && !root.Descendants(A + "effectLst").Any()
@@ -214,7 +262,7 @@ internal static class ChartObjectFormat
             && !root.Descendants(A + "prstDash").Any(e => (string?)e.Attribute("val") != "solid") && !root.Descendants(A + "custDash").Any()
             && !root.Descendants(A + "ln").Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name.LocalName != "w")
             && !root.Descendants(C + "style").Any() && !root.Descendants(C + "manualLayout").Any() && !root.Descendants(A + "blip").Any()
-            && (kind != ChartKind.ClusteredColumn || !series.Any(s => s.Element(C + "spPr")?.Element(A + "ln") is XElement line && (line.Element(A + "noFill") == null || line.Elements().Count() != 1)));
+            && (kind == ChartKind.Line || !series.Any(s => s.Element(C + "spPr")?.Element(A + "ln") is XElement line && (line.Element(A + "noFill") == null || line.Elements().Count() != 1)));
         var admitted = new List<ChartSeries>(); string[]? labels = null; var identifiers = new HashSet<string>(StringComparer.Ordinal);
         foreach (XElement item in series)
         {
@@ -238,7 +286,142 @@ internal static class ChartObjectFormat
         string title = string.Concat(chart.Element(C + "title")?.Descendants(A + "t").Select(t => t.Value) ?? Enumerable.Empty<string>());
         ObjectText.Check(title, "title", 1024);
         string AxisTitle(XElement axis) => string.Concat(axis.Element(C + "title")?.Descendants(A + "t").Select(t => t.Value) ?? Enumerable.Empty<string>());
-        return (new ChartDefinition(kind, labels!, admitted, title, chart.Element(C + "legend") != null, AxisTitle(categories[0]), AxisTitle(values[0])), renderable);
+        return (new ChartDefinition(kind, labels!, admitted, title, chart.Element(C + "legend") != null, AxisTitle(categories[0]), AxisTitle(values[0])).WithDataLabels(dataLabels), renderable);
+    }
+    private static (ChartDefinition Definition, bool Renderable) ParseCircular(XElement root, XElement chart, XElement plot, XElement data, ObjectWorkbook? workbook, ConversionContext context)
+    {
+        if (plot.Elements().Any(e => e.Name.LocalName.EndsWith("Ax", StringComparison.Ordinal)) || data.Elements(C + "axId").Any())
+            throw new NotSupportedException("Chart.Axes: Circular charts cannot contain axes.");
+        XElement[] series = data.Elements(C + "ser").ToArray();
+        if (series.Length != 1) throw new NotSupportedException("Chart.Slices: Circular charts require exactly one series.");
+        XElement item = series[0];
+        if (!uint.TryParse((string?)item.Element(C + "idx")?.Attribute("val"), NumberStyles.None, CultureInfo.InvariantCulture, out _)) throw Invalid("SeriesId");
+        string[] categories = Strings(item.Element(C + "cat") ?? throw Invalid("CategoryCache"), workbook);
+        double?[] values = Numbers(item.Element(C + "val") ?? throw Invalid("ValueCache"), workbook);
+        if (categories.Length != values.Length) throw Invalid("CacheCount");
+        if (categories.Length > 64) throw new NotSupportedException("Chart.Slices: Circular charts admit at most 64 slices.");
+        if (values.Any(v => v < 0)) throw new NotSupportedException("Chart.SliceValue: Circular values must be non-negative.");
+        string seriesName = ""; XElement? tx = item.Element(C + "tx");
+        if (tx?.Element(C + "v") is XElement text) seriesName = text.Value;
+        else if (tx?.Element(C + "strRef") != null) { string[] names = Strings(tx, workbook); if (names.Length != 1) throw Invalid("SeriesName"); seriesName = names[0]; }
+        ObjectText.Check(seriesName, "series", 1024);
+        ChartKind kind = data.Name == C + "pieChart" ? ChartKind.Pie : ChartKind.Doughnut;
+        ChartDataLabels labels = ParseDataLabels(root, data, false, out bool labelAppearance);
+        bool SafeLegendText(XElement properties)
+        {
+            string[] names = { "bodyPr", "lstStyle", "p", "pPr", "defRPr", "endParaRPr" };
+            return properties.Parent == chart.Element(C + "legend") && !properties.Attributes().Any(a => !a.IsNamespaceDeclaration)
+                && properties.Descendants().All(e => e.Name.Namespace == A && names.Contains(e.Name.LocalName, StringComparer.Ordinal)
+                    && !e.Nodes().OfType<XText>().Any(t => !string.IsNullOrWhiteSpace(t.Value))
+                    && e.Attributes().All(a => a.IsNamespaceDeclaration || e.Name == A + "pPr" && a.Name == "rtl" && a.Value is "0" or "false"
+                        || e.Name == A + "endParaRPr" && a.Name == "lang"));
+        }
+        bool renderable = labelAppearance && (string?)data.Element(C + "firstSliceAng")?.Attribute("val") == "0" && data.Elements(C + "firstSliceAng").Count() == 1
+            && (kind == ChartKind.Pie ? !data.Elements(C + "holeSize").Any() : data.Elements(C + "holeSize").Count() == 1 && (string?)data.Element(C + "holeSize")?.Attribute("val") == "50")
+            && root.Elements().All(e => e.Name == C + "lang" || e.Name == C + "chart" || e.Name == C + "externalData" || e.Name == C + "printSettings")
+            && chart.Elements().All(e => e.Name == C + "title" || e.Name == C + "plotArea" || e.Name == C + "legend" || e.Name == C + "plotVisOnly" || e.Name == C + "dispBlanksAs")
+            && plot.Elements().All(e => e.Name == C + "layout" || e == data)
+            && ((string?)chart.Element(C + "plotVisOnly")?.Attribute("val") is null or "1" or "true")
+            && data.Elements().All(e => e.Name == C + "varyColors" || e.Name == C + "ser" || e.Name == C + "dLbls" || e.Name == C + "firstSliceAng" || e.Name == C + "holeSize")
+            && data.Elements(C + "varyColors").Count() <= 1 && ((string?)data.Element(C + "varyColors")?.Attribute("val") is null or "0" or "1" or "false" or "true")
+            && item.Elements().All(e => e.Name == C + "idx" || e.Name == C + "order" || e.Name == C + "tx" || e.Name == C + "spPr" || e.Name == C + "dPt" || e.Name == C + "dLbls" || e.Name == C + "cat" || e.Name == C + "val")
+            && item.Elements(C + "idx").Count() == 1 && item.Elements(C + "cat").Count() == 1 && item.Elements(C + "val").Count() == 1 && item.Elements(C + "tx").Count() <= 1
+            && item.Elements(C + "order").Count() == 1 && (string?)item.Element(C + "order")?.Attribute("val") == "0"
+            && item.Elements(C + "spPr").Count() <= 1 && item.Elements(C + "spPr").All(p => !p.Attributes().Any(a => !a.IsNamespaceDeclaration)
+                && p.Elements().Count() <= 1 && p.Elements().All(e => e.Name == A + "solidFill" && !e.Attributes().Any(a => !a.IsNamespaceDeclaration)
+                    && e.Elements().Count() == 1 && e.Element(A + "srgbClr") != null))
+            && chart.Elements(C + "title").Count() <= 1 && chart.Elements(C + "legend").Count() <= 1
+            && !root.Descendants(C + "extLst").Any() && !root.Descendants(C + "style").Any()
+            && !root.Descendants(C + "manualLayout").Any() && !root.Descendants(C + "dTable").Any() && !root.Descendants(C + "explosion").Any()
+            && !root.Descendants(C + "legendEntry").Any() && root.Descendants(C + "txPr").All(SafeLegendText)
+            && !root.Descendants(C + "overlay").Any(e => (string?)e.Attribute("val") is not "0" and not "false")
+            && root.Descendants(C + "spPr").All(e => e.Parent == item || e.Parent?.Name == C + "dPt" && e.Parent.Parent == item)
+            && !root.Descendants(A + "gradFill").Any() && !root.Descendants(A + "blipFill").Any() && !root.Descendants(A + "effectLst").Any()
+            && !root.Descendants(A + "srgbClr").Any(e => e.HasElements)
+            && !root.Descendants(A + "srgbClr").Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "val")
+            && !root.Descendants(A + "bodyPr").Any(e => e.HasElements || e.Attributes().Any(a => !a.IsNamespaceDeclaration))
+            && !root.Descendants(A + "pPr").Attributes().Any(a => !a.IsNamespaceDeclaration && (a.Name != "rtl" || a.Value is not ("0" or "false")))
+            && !root.Descendants(A + "rPr").Concat(root.Descendants(A + "defRPr")).Concat(root.Descendants(A + "endParaRPr")).Any(e => e.HasElements)
+            && !root.Descendants(A + "rPr").Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name.LocalName != "lang")
+            && !root.Descendants(A + "defRPr").Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name.LocalName != "lang")
+            && !root.Descendants(A + "endParaRPr").Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name.LocalName != "lang")
+            && ((string?)chart.Element(C + "legend")?.Element(C + "legendPos")?.Attribute("val") is null or "r")
+            && ((string?)chart.Element(C + "legend")?.Element(C + "overlay")?.Attribute("val") is null or "0" or "false")
+            && ((string?)chart.Element(C + "dispBlanksAs")?.Attribute("val") is null or "gap")
+            && plot.Element(C + "spPr") == null && chart.Element(C + "legend")?.Element(C + "spPr") == null
+            && root.Element(C + "spPr") == null && root.Element(C + "txPr") == null
+            && !root.Descendants(A + "blip").Any();
+        string[] colors = Enumerable.Repeat("000000", values.Length).ToArray(); var seen = new HashSet<int>();
+        foreach (XElement point in root.Descendants(C + "dPt"))
+        {
+            context.CheckCancellation();
+            if (point.Parent != item) { renderable = false; continue; }
+            if (!int.TryParse((string?)point.Element(C + "idx")?.Attribute("val"), NumberStyles.None, CultureInfo.InvariantCulture, out int index)
+                || index < 0 || index >= values.Length || !seen.Add(index)) throw Invalid("SliceIndex");
+            XElement? paint = point.Element(C + "spPr"), solid = paint?.Element(A + "solidFill");
+            string? color = (string?)solid?.Element(A + "srgbClr")?.Attribute("val");
+            if (color == null) { renderable = false; continue; }
+            if (color.Length != 6 || color.Any(c => !Uri.IsHexDigit(c))) throw Invalid("Color");
+            colors[index] = color.ToUpperInvariant();
+            renderable &= point.Elements().All(e => e.Name == C + "idx" || e.Name == C + "spPr")
+                && point.Elements(C + "idx").Count() == 1 && point.Elements(C + "spPr").Count() == 1
+                && !point.Attributes().Any(a => !a.IsNamespaceDeclaration) && !paint!.Attributes().Any(a => !a.IsNamespaceDeclaration)
+                && paint!.Elements().All(e => e.Name == A + "solidFill" || e.Name == A + "ln") && paint.Elements(A + "solidFill").Count() == 1
+                && solid!.Elements().Count() == 1 && solid.Element(A + "srgbClr") != null
+                && !solid.Attributes().Any(a => !a.IsNamespaceDeclaration)
+                && paint.Elements(A + "ln").Count() == 1 && paint.Elements(A + "ln").All(line => !line.Attributes().Any(a => !a.IsNamespaceDeclaration)
+                    && line.Elements().Count() == 1 && line.Element(A + "noFill") is XElement noFill && !noFill.HasElements && !noFill.Attributes().Any(a => !a.IsNamespaceDeclaration));
+        }
+        if (seen.Count != values.Length) renderable = false;
+        var slices = new List<ChartSlice>();
+        for (int i = 0; i < values.Length; i++) { context.CheckCancellation(); slices.Add(new ChartSlice(categories[i], values[i], colors[i])); }
+        string title = string.Concat(chart.Element(C + "title")?.Descendants(A + "t").Select(t => t.Value) ?? Enumerable.Empty<string>());
+        return (ChartDefinition.CreateCircular(kind, slices, seriesName, title, chart.Element(C + "legend") != null).WithDataLabels(labels), renderable);
+    }
+    private static ChartDataLabels ParseDataLabels(XElement root, XElement data, bool line, out bool renderable)
+    {
+        XElement[] all = root.Descendants(C + "dLbls").ToArray();
+        renderable = all.Length == 0;
+        if (all.Length == 0) return ChartDataLabels.None;
+        XElement[] series = data.Elements(C + "ser").ToArray();
+        bool chartLabels = all.Length == 1 && all[0].Parent == data;
+        bool seriesLabels = all.Length == series.Length && series.All(s => s.Elements(C + "dLbls").Count() == 1)
+            && all.All(label => label.Parent != null && series.Contains(label.Parent));
+        if (line || !chartLabels && !seriesLabels) return ChartDataLabels.None;
+        ChartDataLabels? result = null;
+        foreach (XElement labels in all)
+        {
+            if (!TryParseDataLabels(labels, out ChartDataLabels current) || result.HasValue && result.Value != current) return ChartDataLabels.None;
+            result = current;
+        }
+        renderable = true;
+        return result ?? ChartDataLabels.None;
+    }
+    private static bool TryParseDataLabels(XElement labels, out ChartDataLabels result)
+    {
+        result = ChartDataLabels.None;
+        if (labels.Attributes().Any(a => !a.IsNamespaceDeclaration)) return false;
+        string[] allowed = { "dLblPos", "showVal", "showCatName", "showLegendKey", "showSerName", "showPercent", "showBubbleSize", "separator" };
+        if (labels.Elements().Any(e => e.Name.Namespace != C || !allowed.Contains(e.Name.LocalName, StringComparer.Ordinal))
+            || labels.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)) return false;
+        bool? ReadFlag(string name)
+        {
+            XElement? element = labels.Element(C + name);
+            if (element == null) return null;
+            if (element.HasElements || element.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "val") || element.Value.Length != 0) return null;
+            return (string?)element.Attribute("val") switch { "1" or "true" => true, "0" or "false" => false, _ => null };
+        }
+        XElement? position = labels.Element(C + "dLblPos");
+        if (position == null || position.HasElements || position.Value.Length != 0 || (string?)position.Attribute("val") != "ctr"
+            || position.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != "val")) return false;
+        bool? value = ReadFlag("showVal"), category = ReadFlag("showCatName"), legend = ReadFlag("showLegendKey"), series = ReadFlag("showSerName"),
+            percent = ReadFlag("showPercent"), bubble = ReadFlag("showBubbleSize");
+        if (!value.HasValue || !category.HasValue || legend != false || series != false || percent != false || bubble != false) return false;
+        XElement? separator = labels.Element(C + "separator");
+        if (separator != null && (separator.HasElements || separator.Attributes().Any(a => !a.IsNamespaceDeclaration) || separator.Value != ", ")) return false;
+        if (value.Value && category.Value && separator == null) return false;
+        result = value.Value ? category.Value ? ChartDataLabels.CategoryAndValue : ChartDataLabels.Value : category.Value ? ChartDataLabels.Category : ChartDataLabels.None;
+        return true;
     }
     private static int Count(XElement count)
     { if (!int.TryParse((string?)count.Attribute("val"), NumberStyles.None, CultureInfo.InvariantCulture, out int value) || value is < 1 or > 10000) throw Invalid("PointLimit"); return value; }

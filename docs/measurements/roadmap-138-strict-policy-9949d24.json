@@ -1,0 +1,222 @@
+{
+  "roadmap": 138,
+  "issues": [
+    171,
+    172
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "9949d248a48baa1f8cb024c842ab9466608fc09c",
+  "sourceTree": "c96872e77d111591373f1b6dd0553175b703c34e",
+  "scope": "In-process strict policy plan and staged PDF execution for a minimal single-run alphanumeric DOCX, an empty schema and no allowed losses.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked serial restore passed.",
+    "restoreLogSha256": "40d104602671164ab3958225da3e1c8cabd55f0251d6df6bc911d9d5a24f44ce",
+    "releaseBuild": "All five library targets and the net472 test executable rebuilt in Release with one MSBuild worker.",
+    "buildLogSha256": "e30724dd7702ce46a201235ebd2f90b47e61812c14454c3d530363c5417d4442",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution for this exact source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2458,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "2d4e8fc742bb29182c675038933162468b4a9a6792da6a591915ab2681dc1950"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2458,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "959b9b81616c968fbf4d0397df9c90124595c2ecf2203ba6a581151fe94fe3af"
+    },
+    "sourceMatrix": {
+      "profiles": 127,
+      "mappedMethods": 564,
+      "net10CasesPassed": 928,
+      "logSha256": "fb9df647e573a8871265b33f05cf9ee3efad15cbd7dd0e7ac96a424838f82596"
+    },
+    "packages": {
+      "wordnet.1.5.0.nupkg": "117ea7b0e9e5183e4905b3ce391feb60b90849d9fc476380bdcedaf8ab0236cc",
+      "wordnet.1.5.0.snupkg": "cd23ae4386af77b3f662ce029cb1a925056c54dfb748b15a7f19bdcff256d29d",
+      "wordnet.Fonts.1.5.0.nupkg": "9ca4d551ceec3f74008ab44f121fe465f487f783e8c59884cc9b8999c7a29848",
+      "wordnet.Fonts.1.5.0.snupkg": "9ecb5f6de6554b5102afe48b0ca9157f8701fa1f11e2a5f4e150760144c45e1b",
+      "wordnet.Ocr.1.5.0.nupkg": "7a48cff714d74c8c90d1048c5c57a3ae44c4ead7e9e2913cb1238c2081e8abf4",
+      "wordnet.Ocr.1.5.0.snupkg": "821558f62afb24a88a021ab2e409ed8cac50dde36c17d53db1ef2183ad74b0e8"
+    },
+    "packageVerification": "Serial local core, fonts and OCR packages passed release package and API verification; none were published.",
+    "packageLogSha256": "0ceb5b08b99488d4a9e0f99f9907dfb54648c0b734f907d5a33f9b969d867477",
+    "comparisonAndLedgerControls": {
+      "comparison": 13,
+      "ledger": 6,
+      "comparisonLogSha256": "c4809cabece87571006480bba0f97a3a7363c3bdc8073cfcbb2cfc93fae60278",
+      "ledgerLogSha256": "a7c0420578577a4fd69487feec175c956260f9c7770be13bbcbd8cdf261730c4"
+    },
+    "designTestLogSha256": "fd49aba5f35c938be43436424bc3c2f9f2397a091da4f7e2a3cf10e5b4ba5abf"
+  },
+  "independent": {
+    "alteredObservationControls": 301,
+    "reports": {
+      "baseline-verification": {
+        "negativeControls": 18,
+        "reportSha256": "c59dba4ee9bd9f42978114afc90a1ad656a9533364e1cb8e294b12e4b8c21ada"
+      },
+      "cell-reference": {
+        "negativeControls": 19,
+        "reportSha256": "800f8f393e67cce7750988929de11cdc6888e5f7411968ac3310746020214012"
+      },
+      "complex-reference": {
+        "negativeControls": 23,
+        "reportSha256": "a18c6332713afcc87e21a69955c80bfb410c0034fe62e4e3fa3888bcf8049a9c"
+      },
+      "compose-reference": {
+        "negativeControls": 17,
+        "reportSha256": "3875728a452a3cca1ce39128423799f4a33b7374c8d36ace467b507eb7d6f33d"
+      },
+      "identity-reference": {
+        "negativeControls": 22,
+        "reportSha256": "c6b50367f8f9f7f392d74c3a0374c6739efa2baa48f442de116b31b6f51f36ed"
+      },
+      "inspection-reference": {
+        "negativeControls": 28,
+        "reportSha256": "a185322d9438ddaa15735d1f04ea0ef9cdb293130412eca956f04c7bf0a9a497"
+      },
+      "reference": {
+        "negativeControls": 18,
+        "reportSha256": "db3c417722156d57cb2f7271c2347b0b4d847505b5e726fc943a624c15652f5b"
+      },
+      "regression-data": {
+        "negativeControls": 27,
+        "reportSha256": "011a1bd084cd7a8f0b48fac6d497dc153d5c56534bcab1a57bc30b81aa0e8406"
+      },
+      "regression-lint": {
+        "negativeControls": 24,
+        "reportSha256": "8bf93332c541dc352bac58bfca141d631ca39b3fa424e02341aced1348cde5e7"
+      },
+      "regression-nested": {
+        "negativeControls": 28,
+        "reportSha256": "541268cb9463bb95c454288bc6eb765af0329d544526f0f8bb1782fdf503c9b3"
+      },
+      "workflow-reference": {
+        "negativeControls": 16,
+        "reportSha256": "f2307a98614f64457c142dc6def408ccd378ea157c201b7a07a434fcaa2e2b90"
+      },
+      "policy-reference": {
+        "negativeControls": 24,
+        "reportSha256": "45071532a765305245faa59ae786b084685da2f992fa043115f500016160e119"
+      },
+      "plain-reference": {
+        "negativeControls": 15,
+        "reportSha256": "d353291adb455ed380f51a88b65b8beb694801f0594021c336d4c644e1e0e343"
+      },
+      "staged-reference": {
+        "negativeControls": 22,
+        "reportSha256": "2a6b69546ad22895d5bea5777c5939bc3d15931be6b09ddb63f3551410ae8bb1"
+      }
+    },
+    "loadedCoreSha256": "f21de2d78297a36ba34d9ff244e7f17bc47c5fac934680309f5cb08bb341df6f",
+    "schemaLogSha256": "aaa274b14d98db6ac2cfe561fd5d51ccece06adec9dc5f6fb947dc7526cab698",
+    "validator": "DocumentFormat.OpenXml.Framework 3.5.1.0",
+    "policySchemaVerification": {
+      "result": {
+        "independentlyValidatedSchemas": 2,
+        "rfc8785CanonicalBytesMatch": true,
+        "locationOrderingChecked": true,
+        "planDigestMatchesIndependentExample": true,
+        "policyRuntimeNegatives": 5,
+        "admissionRuntimeNegatives": 5,
+        "limitations": "Internal design-example admission only; no live source binding, conversion or loss enforcement is implemented."
+      },
+      "negativeControls": {
+        "policy input": "Input or loaded assembly changed",
+        "loaded core": "Input or loaded assembly changed",
+        "plan identity": "Policy no longer binds the independent example plan",
+        "plan contents": "Policy no longer binds the independent example plan",
+        "plan source identity": "Canonical plan bytes or identity changed",
+        "plan canonical bytes": "Canonical plan bytes or identity changed",
+        "plan canonical hash": "Canonical plan bytes or identity changed",
+        "strict loss accepted": "Fail-closed admission observations changed",
+        "stale plan accepted": "Fail-closed admission observations changed",
+        "unknown semantic accepted": "Fail-closed admission observations changed",
+        "truncated location accepted": "Fail-closed admission observations changed",
+        "mismatched loss accepted": "Fail-closed admission observations changed",
+        "schema validation": "Design schema or example changed",
+        "canonical bytes": "Canonical RFC 8785 policy bytes or hash changed",
+        "canonical hash": "Canonical RFC 8785 policy bytes or hash changed",
+        "sorted policy": "Canonical policy ordering or numeric normalization changed",
+        "sorted hash": "Canonical policy ordering or numeric normalization changed",
+        "unsorted input": "Unsorted policy no longer meets the design schema",
+        "required semantic": "Policy permissions changed",
+        "allowed code": "Policy permissions changed",
+        "part identity": "Policy permissions changed",
+        "child position": "Policy permissions changed",
+        "unknown loss accepted": "Malformed or unregistered input was not rejected",
+        "duplicate key accepted": "Malformed or unregistered input was not rejected"
+      },
+      "controlMethod": "Independent observations were altered in memory."
+    },
+    "plainProfileVerification": {
+      "result": {
+        "schemaValidInputs": 11,
+        "acceptedPlainInputs": 5,
+        "rejectedStructuredInputs": 6,
+        "independentPdfTextAndPageCountMatch": true,
+        "limitations": "Uncommitted source-profile prototype only; these PDFs do not establish policy execution or general template support."
+      },
+      "negativeControls": {
+        "manifest": "Independent input manifest changed",
+        "source identity": "Source identity or stream ownership changed",
+        "core assembly": "Loaded core or scenario set changed",
+        "schema validation": "Independent input schema validation missing",
+        "stream ownership": "Source identity or stream ownership changed",
+        "field admitted": "Out-of-profile source was admitted",
+        "format admitted": "Out-of-profile source was admitted",
+        "style admitted": "Out-of-profile source was admitted",
+        "extra output": "Unexpected output set",
+        "missing output": "Unexpected output set",
+        "output hash": "Accepted conversion result changed",
+        "diagnostic": "Accepted conversion result changed",
+        "pdf text": "Independent PDF text or page count changed",
+        "page count": "Independent PDF text or page count changed",
+        "font": "Independent PDF font observation changed"
+      },
+      "controlMethod": "Independent observations were altered in memory."
+    },
+    "stagedExecutionVerification": {
+      "result": {
+        "schemaValidInputs": 11,
+        "stagedPdfCases": 5,
+        "canonicalPlanAndPolicySchemasMatch": true,
+        "independentPdfTextAndPageCountMatch": true,
+        "failClosedRuntimeNegatives": 4,
+        "limitations": "Prototype public wrapper covers only single-run alphanumeric DOCX to strict PDF without loss or template data; live independent validation is not performed."
+      },
+      "negativeControls": {
+        "fixture manifest": "Independent source manifest changed",
+        "loaded core": "Loaded assembly or output set changed",
+        "schema evidence": "Independent source schema validation missing",
+        "plan bytes": "Plan or policy violates its design schema",
+        "plan digest": "Canonical plan or policy binding changed",
+        "source hash": "Input fingerprint or length changed",
+        "source length": "Input fingerprint or length changed",
+        "options hash": "Data declaration or fixed PDF options identity changed",
+        "output hash": "Output identity changed",
+        "output missing": "Loaded assembly or output set changed",
+        "execution state": "Staged execution result or stream ownership changed",
+        "independent validation overstated": "Staged execution result or stream ownership changed",
+        "destination changed early": "Staged execution result or stream ownership changed",
+        "stream closed": "Staged execution result or stream ownership changed",
+        "source leaked": "Canonical plan or policy binding changed",
+        "pdf text": "Independent PDF text or page count changed",
+        "pdf pages": "Independent PDF text or page count changed",
+        "pdf font": "Independent PDF font observation changed",
+        "changed source accepted": "Changed source did not fail before output",
+        "stale policy consumed input": "Stale policy did not fail before input or output",
+        "unmatched loss accepted": "Unmatched loss did not fail before input or output",
+        "unknown semantic accepted": "Unknown semantic did not fail before input or output"
+      },
+      "controlMethod": "Independent observations were altered in memory."
+    }
+  },
+  "performanceRecord": "docs/measurements/roadmap-138-strict-policy-performance-9949d24.json",
+  "qualification": "Exact source is locally qualified only. Hosted checks and actual Framework execution for this source are separate; template data, allowed-loss enforcement, complete unexpected-write reporting and roadmap #138 remain open."
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "identities": {
+    "input": "1111111111111111111111111111111111111111111111111111111111111111",
+    "options": "2222222222222222222222222222222222222222222222222222222222222222",
+    "dataSchema": "3333333333333333333333333333333333333333333333333333333333333333",
+    "fonts": "4444444444444444444444444444444444444444444444444444444444444444",
+    "providers": "5555555555555555555555555555555555555555555555555555555555555555",
+    "engine": "6666666666666666666666666666666666666666666666666666666666666666"
+  },
+  "sourceFormat": "docx",
+  "destinationFormat": "pdf",
+  "stages": {
+    "parse": "performed",
+    "destination": "performed",
+    "layout": "not-performed",
+    "write": "not-performed",
+    "validation": "not-performed"
+  },
+  "requirements": [
+    { "pathId": "path-0001", "type": "string", "required": true, "owner": "body", "support": "supported" }
+  ],
+  "semantics": [{ "code": "content.text", "assessment": "supported" }],
+  "findings": [
+    {
+      "code": "Docx.ThemeFont",
+      "phase": "parse",
+      "evidence": "observed",
+      "severity": "warning",
+      "count": 1,
+      "locationsTruncated": false,
+      "locations": [{ "partId": "part-0001", "childIndexes": [1, 2, 1] }],
+      "remediation": "Remediation.SetExplicitFont"
+    }
+  ],
+  "observedInputBytes": 1024,
+  "estimatedPages": null
+}

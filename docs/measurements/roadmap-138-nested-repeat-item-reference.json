@@ -1,0 +1,229 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "81e1bef83095bfd4c154b872bf8d0531b0a5e2e7",
+  "scope": "Resolve required dotted repeat-item fields only when every dotted parent is a required mapping; preserve fallback and empty-repeat uncertainty.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML and JSON independently authored with MIT fixture helpers; no wordnet serialization or caller data.",
+    "generatorSha256": "de89bfa6154ad692395fd2d55a06e9acd3a5e6989460ad19f7d4cfe8b2978af0",
+    "cases": {
+      "required": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "b72ce950e28b5b3823d653475c3ba033e1dde86773acbba07792a99e6690cf0d"
+      },
+      "fallback": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "1d413d770fb49b0ae9dc6e188306c1c541526f4356ef2530ebdf0ffe14bfc34d"
+      },
+      "missing-parent": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "b72ce950e28b5b3823d653475c3ba033e1dde86773acbba07792a99e6690cf0d"
+      },
+      "optional-parent": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "6d64aed6f5db377e83ba89f22889b9994aeb361fc2d87e38e42a16baa708be13"
+      },
+      "wrong-parent": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "6d64aed6f5db377e83ba89f22889b9994aeb361fc2d87e38e42a16baa708be13"
+      },
+      "optional-leaf": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "1d413d770fb49b0ae9dc6e188306c1c541526f4356ef2530ebdf0ffe14bfc34d"
+      },
+      "null-parent": {
+        "docxSha256": "9f03aad9b4533173060e453fe83110fd42c2ac45e4c0c6ea442f9722a26d0ebd",
+        "jsonSha256": "c3571e6a47466a48ea5f31affd1a61d1aee193725f8deed726bb581e90237188"
+      },
+      "deep": {
+        "docxSha256": "433b8516fb4671e2b101d2b0845ed3748f8ff89bd622fc28544cd966a76d6113",
+        "jsonSha256": "039ce55cd6860df7262c9261302ada78def270637d43264f0b1a8e8e297095d4"
+      }
+    }
+  },
+  "twoIndependentGenerationsAndFileHashesIdentical": true,
+  "sourceFilesSha256": {
+    "src/wordnet/TemplateInspection.cs": "ff5e0d246ca483b3821335f49eb529785053625b9b0b2be120f1d78a428d5b02",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "d933164d85952d23662257381675c0b24e0d3e2592347b370b0c14637b035729",
+    "src/wordnet/TemplateDataInspection.cs": "c4e8635bf7ca3b8433e1d0ff90509255e6775a7443dd197433bfe1eb93e0e6b4",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "9e929ec9a807b96eea6d6e859c81948bfd33195d4a59088fc60f2e2ceea45c9d",
+    "eng/generate-roadmap-138-nested-repeat-item.py": "de89bfa6154ad692395fd2d55a06e9acd3a5e6989460ad19f7d4cfe8b2978af0",
+    "eng/roadmap-138-nested-repeat-item-probe.cs": "791150a37ee19f6b293b2a64c921438f7874094e6cff7123f0b5cb414fdf6620",
+    "eng/verify-roadmap-138-nested-repeat-item.py": "33aa67f1f47fb84da0a048aa423c8f093688419d09c117adf6c8bf6ee17b18d5"
+  },
+  "candidateAndThreeProbeNet10AssemblySha256": "9df380f14858e5904982dd0ed747be2ed658461c29f14be157ab7bf654cebd94",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+  "schemaLogsSha256": {
+    "nested-item": "333ebd65b7a92527810368a413b8d1b92a43933879d3116e25c27841ec8dcdfc",
+    "nested-old-item": "ad2c8dcd4818360ecd8267ae8926ecaab77037f19a9b9c23176511a9eb89aed7",
+    "nested-old-data": "9cbeca2a5cd87807886e7cb03c436a2c4b96be76444f2c0478c751ea429c2338"
+  },
+  "officeReference": "LibreOffice 24.2.7.2 in network-disabled wordnet-138-reference:temporary image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; Noto Sans pinned by fontconfig.",
+  "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "officeLogsSha256": {
+    "nested-item": "9ff9beb5758a2297ba9670141472deb35470290b3779f93b04074b8a4aaa3354",
+    "nested-old-item": "f7352bec7e82239d52454f831b367160453b805d0e999b08adbd6fde93e96c0e",
+    "nested-old-data": "31ab3eca5e2377ebb8b0a35411ae5dbba62d23c662fedfc2627fb8a8d8160068"
+  },
+  "focusedLogSha256": "a267cad89d68ba7f83a536383b48ce3cf8493d40d9bc75d64d9e76ed80baf95d",
+  "outputs": {
+    "deep": {
+      "defaultReportSha256": "3848ebd38af3c6e751b6b1a0bc900176c76472ff9661449c07e1ca75fe95f2a2",
+      "observationSha256": "c4a6788cfc96b9cfff9eb7356cc71957310ee5c921e2e0af3f17fb378771b200",
+      "mergedDocxSha256": "04849f24e55a5a8f2e50bcd43134cbb1e66941d0fbf940909d16126d1925edea",
+      "officePdfSha256": "9b70806957846551fd7f5bc9dac799d7c54a5ab86ce5c68ea69b3b41e5e7b617"
+    },
+    "fallback": {
+      "defaultReportSha256": "8224986500169962e62c863d00a3847d2f99ff6b86b3c61236f1b0128e15a92d",
+      "observationSha256": "9b7a3f3edc73643318f011d8639315d9e1aed2b05d46f2731d5556ccd2bc0ca5",
+      "mergedDocxSha256": "cb3a89dc5f14f5d760fea5644eb92d4a1c6c6a87e9e747d772fadaeb4709a181",
+      "officePdfSha256": "d6ca0f36bd3e1a9384c3ea0084730b8790c2f69342283921ad823eca5468b2da"
+    },
+    "missing-parent": {
+      "defaultReportSha256": "d05ce47c96a0c2a636b1c45955f43394588bbfbf9a01932c6e2e06b272798f99",
+      "observationSha256": "168cef21d4efe66595628ced76b28db9c424a952979d1c30211e3d28047001f6",
+      "mergedDocxSha256": "64f60bf3b52aaa354e10354b0befb35ab9be7feb0cd56778a5047041a43af54d",
+      "officePdfSha256": "bd936681a99830669231f57a19c9ea0a02715e5fe2a34528e823b0f51b708e19"
+    },
+    "null-parent": {
+      "defaultReportSha256": "3b2b9ce2ea6d1ffcb84c5ae68208b9f75f5e69c78ef47499578b076976052514",
+      "observationSha256": "26f719c612ee744825d7d2f8f2527aa7a40ae2c8d3296624dd7d71f131633b49",
+      "mergedDocxSha256": "24dc7b459d315f9f6357419dfaf2c87b232a6465fee0e63c0984cd7742cb88e0",
+      "officePdfSha256": "1e4e023f1c47bcd7d84933d81cd42d47dfefce1b3b88b2629794f5f3da75ea0c"
+    },
+    "optional-leaf": {
+      "defaultReportSha256": "15e86f959f02c768a65a02fce864de280ac8875d4bee93b0196b9c9b6474f8c5",
+      "observationSha256": "05c01461367f1d9c301d64d0f1b25c4219323dc9ffddfa81ece50b71485bcafe",
+      "mergedDocxSha256": "cb3a89dc5f14f5d760fea5644eb92d4a1c6c6a87e9e747d772fadaeb4709a181",
+      "officePdfSha256": "33e0770042c548cbeee165fb9a769d805e092d7567f07eaa335630dece72ba9c"
+    },
+    "optional-parent": {
+      "defaultReportSha256": "884fd305df15c15a63529f1275833429abc8b11d6eb2d4ce4b40e2566bbd40e9",
+      "observationSha256": "27f85c21d768976bc0cf18e7900b64b46222962ce456a743bc921a1bdd63568a",
+      "mergedDocxSha256": "ab154d701f1bfb4e111de49ec28d901aaa6d6a077362739a2f531db20b1b17f5",
+      "officePdfSha256": "7795dd5306521586c681ba91ea0d50c4912954eb5660a452c993f414304bb355"
+    },
+    "required": {
+      "defaultReportSha256": "211b0123683561f3ed822995ffc665c517934c8c46e11b4cdea8bade42771cb0",
+      "observationSha256": "b9db3d6df53c5143602d81a652bfa3960d0e31164873b368ce935e9c3f686d38",
+      "mergedDocxSha256": "64f60bf3b52aaa354e10354b0befb35ab9be7feb0cd56778a5047041a43af54d",
+      "officePdfSha256": "22d137dca59332703ce8847ee2e3d3c33031cc68e38008f706c139045033b1c3"
+    },
+    "wrong-parent": {
+      "defaultReportSha256": "47fe9b01cb24e9e70db86d84cf304e3d9812eaad0ebbd7c282fb0b1b38ec4db4",
+      "observationSha256": "769ba43c4311f2557b340b0ce1d2ddeaf7593ae8c458425191fc0be2a1f3e0a8",
+      "mergedDocxSha256": "ab154d701f1bfb4e111de49ec28d901aaa6d6a077362739a2f531db20b1b17f5",
+      "officePdfSha256": "25499484a90363192bf3459b11b80c3e663d23dee6905f1b63b676c8cf48790a"
+    }
+  },
+  "controls": {
+    "result": {
+      "scenarios": 8,
+      "independentOfficeReads": 8,
+      "dottedParentsAreExplicit": true,
+      "rootFallbackAndDataViolationSeparated": true,
+      "emptyRepeatUncertaintyPreserved": true
+    },
+    "negativeControls": {
+      "known item marked unknown": "Item scope, type, presence or count changed: required",
+      "known item type changed": "Item scope, type, presence or count changed: required",
+      "known item presence changed": "Item scope, type, presence or count changed: required",
+      "known count changed": "Item scope, type, presence or count changed: required",
+      "item scope changed": "Item requirement missing: required",
+      "root alias changed": "Root and item scopes were conflated: required",
+      "root type changed": "Root and item scopes were conflated: required",
+      "missing parent omitted": "Parent uncertainty finding count changed: missing-parent",
+      "missing parent made definite": "Parent uncertainty finding changed: missing-parent",
+      "optional parent omitted": "Parent uncertainty finding count changed: optional-parent",
+      "optional parent made definite": "Parent uncertainty finding changed: optional-parent",
+      "wrong parent omitted": "Parent uncertainty finding count changed: wrong-parent",
+      "wrong parent made definite": "Parent uncertainty finding changed: wrong-parent",
+      "optional leaf marked known": "Item scope, type, presence or count changed: optional-leaf",
+      "unknown scope finding omitted": "Unknown item scope finding changed: missing-parent",
+      "parent source part changed": "Nested field source position changed: missing-parent",
+      "parent source position changed": "Invalid child position",
+      "fallback error omitted": "Data declaration finding changed: fallback",
+      "fallback item index changed": "Data declaration finding changed: fallback",
+      "fallback item scope changed": "Data declaration finding changed: fallback",
+      "fallback error summary changed": "Data declaration finding changed: fallback",
+      "null parent accepted as leaf": "Data declaration finding changed: null-parent",
+      "default report leaks name": "Default report disclosed a name or value: required",
+      "default data summary changed": "Default data summary changed: fallback",
+      "saved document text changed": "Merge or independent office output changed: fallback",
+      "independent output changed": "Merge or independent office output changed: fallback",
+      "deep item marked unknown": "Item scope, type, presence or count changed: deep",
+      "reusable plan claimed": "Reuse or broader repeat coverage changed: required"
+    },
+    "controlMethod": "Parsed requirements, source positions, data reports and output observations changed in memory."
+  },
+  "previousRepeatItemControls": {
+    "result": {
+      "scenarios": 8,
+      "mergedOfficeReads": 8,
+      "scopesSeparated": true,
+      "optionalFallbackUnknown": true,
+      "emptyMismatchUnknown": true
+    },
+    "negativeControls": {
+      "required marked unknown": "Scope certainty, type or count changed: required/Items",
+      "required type changed": "Scope certainty, type or count changed: required/Items",
+      "required presence changed": "Scope certainty, type or count changed: required/Items",
+      "required count changed": "Scope certainty, type or count changed: required/Items",
+      "wrong scope": "Scoped requirement missing: required",
+      "root alias changed": "Root and item requirements were conflated: required",
+      "optional marked certain": "Scope certainty, type or count changed: optional/Items",
+      "optional type guessed": "Scope certainty, type or count changed: optional/Items",
+      "unknown finding missing": "Unknown-scope finding changed: optional/Items",
+      "wrong source position": "Invalid child position",
+      "wrong source part": "Unknown field source position changed: optional",
+      "mismatch marked certain": "Conditional item type mismatch changed: mismatch",
+      "mismatch finding missing": "Conditional item type mismatch changed: mismatch",
+      "empty mismatch lost": "Conditional item type mismatch changed: mismatch-empty",
+      "merge changed": "Merged text or independent office reading changed: required",
+      "failed edit changed": "Failed merge or atomicity changed: mismatch",
+      "private value leaked": "Default report disclosed private names or values: required",
+      "reuse claimed": "Reuse or repeat coverage changed: required",
+      "nested scope guessed": "Scope certainty, type or count changed: nested/Items",
+      "two scopes conflated": "Scoped requirement missing: two-scopes"
+    },
+    "controlMethod": "Parsed requirements, source positions and output observations changed in memory."
+  },
+  "previousJsonDataControls": {
+    "result": {
+      "jsonScenarios": 10,
+      "independentOfficeReads": 7,
+      "itemFallbackContrastObserved": true,
+      "failedInspectionsReturnNoPartialReport": true
+    },
+    "negativeControls": {
+      "missing item index": "Declaration finding changed: fallback",
+      "missing item path": "Declaration finding changed: fallback",
+      "missing item scope": "Declaration finding changed: fallback",
+      "missing item code": "Declaration finding changed: fallback",
+      "missing item certainty": "Declaration finding changed: fallback",
+      "missing item omitted": "Declaration finding changed: fallback",
+      "optional fallback rejected": "Declaration finding changed: optional",
+      "unknown scope made definite": "Declaration finding changed: missing-scope",
+      "unknown scope omitted": "Declaration finding changed: missing-scope",
+      "wrong item type admitted": "Declaration finding changed: wrong-type",
+      "root scope type admitted": "Declaration finding changed: scope-type",
+      "repeat scope type admitted": "Declaration finding changed: scope-type",
+      "null image rejected": "Declaration finding changed: typed-non-json",
+      "JSON date string admitted": "Declaration finding changed: typed-non-json",
+      "error summary changed": "Finding summary changed: fallback",
+      "unknown summary changed": "Finding summary changed: missing-scope",
+      "default name leaked": "Default report disclosed a data name or value: fallback",
+      "default alias changed": "Default report disclosed a data name or value: fallback",
+      "malformed error changed": "Inspection failure changed: malformed",
+      "limit error changed": "Inspection failure changed: limit",
+      "partial failure report": "A failed inspection returned a partial report: limit",
+      "failed merge mutated": "Failed merge changed the input: missing-scope",
+      "independent office output changed": "Saved DOCX or independent office text changed: fallback",
+      "saved DOCX output changed": "Saved DOCX or independent office text changed: fallback"
+    },
+    "controlMethod": "Reports, parsed inputs and saved-output observations changed in memory."
+  },
+  "limits": "Declarations remain caller promises. Broader repeated content, identity-bound reusable plans, enforced loss policies and independent output guarantees remain open."
+}

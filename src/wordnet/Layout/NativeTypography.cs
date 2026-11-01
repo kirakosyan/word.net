@@ -62,7 +62,7 @@ internal static partial class NativeTypography
             context.CheckCancellation();
             if (paragraph.Alignment is ParagraphAlignment.Justified or ParagraphAlignment.Distributed) throw new NotSupportedException("Typography.Alignment: Native typography supports left, center and right alignment.");
             var prepared = new List<TextRun>();
-            TextRun[] joined = RunCoalescer.Combine(paragraph.Runs).ToArray();
+            TextRun[] joined = RunCoalescer.Combine(paragraph.Runs, forRendering: true).ToArray();
             for (int r = 0; r < joined.Length; r++)
             {
                 TextRun run = joined[r];

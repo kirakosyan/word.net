@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Independently authored minimal OOXML, MIT; no document-library serializer or customer content.",
+  "generator": "eng/generate-roadmap-138-workflows.py",
+  "generatorSha256": "0d3b0ca9b4f06ae92cf0406fcc88698be50c286ca21b3be2a0fe83bf70b65f83",
+  "dependencySha256": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+  "documents": [
+    {
+      "id": "fragment-body-target",
+      "path": "fragment-body-target.docx",
+      "sha256": "74cdff78dfafd1f06c31153854175ad320816f4ebfe9f9e0ded83fcfc13ea063"
+    },
+    {
+      "id": "fragment-cell-target",
+      "path": "fragment-cell-target.docx",
+      "sha256": "18bb4ea0217b0eab7ef64d87da0f3cc87b464e0c79a86a83f321c7e4f37a5b16"
+    },
+    {
+      "id": "fragment-field-source",
+      "path": "fragment-field-source.docx",
+      "sha256": "43501aa226d8e9d948ed20daaa436515db90431f88970cb3ad48587e4b61ad07"
+    },
+    {
+      "id": "fragment-plain-source",
+      "path": "fragment-plain-source.docx",
+      "sha256": "84d7acc45bbb7506eb3c80f241d50960c8e403a3b34bbd65aeb3f9a8e8384f12"
+    },
+    {
+      "id": "review-source",
+      "path": "review-source.docx",
+      "sha256": "c94c82a798f870350811510636405f39db2c739e60a76cc3760d580becf7aa46"
+    }
+  ]
+}

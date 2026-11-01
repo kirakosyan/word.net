@@ -1,0 +1,28 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "workflowRun": "https://github.com/kirakosyan/word.net/actions/runs/41170714031",
+  "job": "https://github.com/kirakosyan/word.net/actions/runs/41170714031/job/124452002497",
+  "pullRequestHead": "d99122c1a5336d4fe07b102fc937d0f352e3541f",
+  "testedMergeCommit": "0b043a7dd69f82311add4b509197d9848022567e",
+  "asset": "source",
+  "originalHostedConclusion": "failure",
+  "failure": "The host verifier required the observed total to equal the bundle's 1,925-case minimum. The guest executed more tests, so the verifier rejected its report despite all 2,003 cases passing.",
+  "guest": {
+    "frameworkRelease": 461814,
+    "framework": "Windows Framework 4.7.2, x64, legacy JIT; compatjit.dll observed",
+    "total": 2003,
+    "passed": 2003,
+    "failed": 0,
+    "skippedOrNotExecuted": 0,
+    "trxSha256": "a93ad58b7183e7fb90aee15727364e880fba25c7a516025f3ea6f6e45091aa4d",
+    "librarySha256": "a3e9b3ba4e28c27d568faa2fd61b1b6205006603849a6781a131f60f29355c99",
+    "testBinarySha256": "e0a64497f515e654c333c76e295cbdb09b84880c79f03e7cf989183d0c7dae1b"
+  },
+  "artifact": {
+    "name": "minimum-framework472-source",
+    "id": 13031906732,
+    "zipSha256": "9928142c2503f3024ecf66f820277b03c16876c10664285bef45f0f6f60d8007"
+  },
+  "correction": "The verifier now treats requiredCases as the minimum used by the other CI and guest gates, requires every observed case to pass, rejects incomplete execution and non-passing counters, and reports the actual count. The minimum is raised to 2,029 based on the complete local 23c5069 suites. Seven verifier controls passed, and the corrected verifier accepted the retained 2,003-case guest evidence. This retrospective check does not change the original hosted failure or qualify later source."
+}

@@ -1,11 +1,201 @@
 # wordnet implementation and delivery status
 
-## Roadmap #102 P6 — preliminary qualification
+## Roadmap #138 — 1.6.0 milestone and remaining combinations
 
-The owner requested the next bucket. The [P6 qualification record](roadmap-102-p6-qualification.md)
-adds combination checks on the P4/P5 review head. Issue #130 remains open until
-the leaf work is accepted, exact final-source and local-package gates pass, and
-issues and roadmaps are reconciled. No publication is authorized by this work.
+The [roadmap](https://github.com/kirakosyan/word.net/issues/138) tracks the next
+35 scoped issues, beginning with a fresh 1.5.0 fidelity baseline and release wording.
+They remain open until their individual acceptance and reconciliation gates are met.
+Their broader acceptance does not change the historical [1.5.0 capability matrix](roadmap-102-capability-matrix.json).
+The [1.6.0 milestone](releases/1.6.0.md) packages selected bounded profiles while
+leaving the remaining roadmap work open. Source implementation, exact-runtime
+qualification and public package availability remain separate facts.
+
+The proposed [compatibility-plan and loss-policy contract](template-compatibility-plan-design.md)
+is a design and executable schema example for #170. General #171 compilation and
+#172 enforcement and independent outcome evidence remain open.
+The 1.6.0 #171 profile adds a [non-reusable template inspection](editing-and-templates.md#unreleased-source-bounded-template-inspection)
+for declared ordinary body and bounded simple-cell merge fields and inline controls,
+including beside repeats, plain root-repeat paths and selected repeated fields with
+declared single or dotted item paths or unknown fallback scope, with optional numeric positions and selected static PDF option conflicts.
+It also checks root and repeat-item declarations against bounded JSON data,
+independently of a particular template or output, with remediation identifiers
+and an optional JSON input for the local lint example. A deterministic schema
+fingerprint binds the declaration set to both reports but does not bind execution
+options, fonts, providers or engine identity. Inspected direct simple fields and
+bounded same-paragraph complex-field begin markers also report an explicit dirty
+flag as an unknown refresh requirement; other fields and absent flags cannot
+establish freshness.
+A separate fixed-profile in-process snapshot binds the source, declaration, DOCX/PDF/XPS
+destination, defaults, font resources, provider profile and module/runtime descriptor for reusing only the
+inspection. It retains every unknown, does not attest binaries, and does not execute
+conversion or enforce policies. A separate [strict plain-DOCX policy profile](editing-and-templates.md#unreleased-source-strict-plain-docx-policy)
+compiles and executes a bound minimal single-run source. An explicit BestEffort
+subset allows one precisely located theme-font fallback, rejects a required unsupported
+link semantic, and rejects an unexpected missing-link finding observed during PDF writing. Uninspected scopes, portable plans,
+general loss permissions, output validation and full #172 enforcement remain open.
+The [initial 1.5.0 measurements](fidelity-138-initial.md) preserve source/package
+comparison failures and a [combination matrix](roadmap-138-initial-matrix.json);
+the [failure ledger](measurements/roadmap-138-failure-ledger.json) indexes the
+recorded verdicts and distinguishes unknowns from the bounded documented cases.
+Four additional release-baseline theme-font/table-style combinations retain their
+[separate matrix and evidence](measurements/roadmap-138-combination-baseline/factor-matrix.json).
+[Nested-table controls](fidelity-138-initial.md#nested-table-structure-controls--2026-11-01)
+retain four additional source/package and open-reference comparisons, including
+their unchanged failures and the limits of attributing the original difference.
+[Additional fragment and review controls](fidelity-138-initial.md#additional-fragment-and-review-controls--2026-11-01)
+check output schemas and source/package text, geometry and raster equality.
+#139 remains incomplete until its additional feature controls and requested
+combination evidence are delivered.
+The #140 documentation reconciliation distinguishes the historical 1.5.0 support
+from historical design and test claims. Its [audit receipt](measurements/roadmap-138-documentation-audit.json)
+records the checked public versions, release provenance and local link review; the
+issue remains open until the merged result is reconciled.
+The 1.6.0 work for #141 resolves a bounded subset of local theme text appearance and
+retains selected editable text references in a reconstructed theme, with loss
+diagnostics for the remaining theme semantics. The
+[fidelity profile](document-fidelity.md#unreleased-source-bounded-theme-appearance)
+records its remaining script, drawing and style-precedence work.
+The 1.6.0 source for #142 retains bounded [direct and inherited whole-table borders and clear shading](document-fidelity.md#unreleased-source-direct-table-borders),
+with editable DOCX style chains and bounded row, column, corner and single-width
+band shading, plus editable bounded band sizes and explicit losses for
+unqualified rendering, conflicts and pagination. Used implicit defaults remain
+editable, with their unresolved static rendering difference reported. Non-unit rendered bands,
+conditional interior and competing borders, full style precedence and independent qualification remain
+open; the table-level shading reference failure is retained.
+The separate [plain fixed-table geometry correction](document-fidelity.md#unreleased-source-plain-fixed-table-geometry)
+addresses omitted and partially specified margins and trailing spacing in a narrow
+unstyled body profile. A uniform-border subset on grids up to four rows and four
+columns is independently compared; other bordered geometry retains reference differences.
+Matching direct uniform-border grids above that size are diagnosed and reject strict output.
+Conditional theme fills retain bounded editable references and fallback values,
+while independent static rendering differences remain explicit. Selected
+conditional outer edges and their editable style metadata are retained, with
+unqualified inheritance and border conflicts reported.
+The 1.6.0 source work on #143 preserves bounded glossary categories and selected inert
+local resource relationships, including `notTrueType` font metadata and additional
+Word-authored rich-text, plain-text and date control derivatives. A bounded main
+character-style chain can be materialized in non-strict mode with an explicit loss;
+its editable style identity remains unqualified.
+The [profile](content-controls.md#unreleased-source-bounded-glossary-metadata)
+records its subset, diagnostics and the broader control and resource evidence still
+required before the leaf can be accepted.
+The 1.6.0 source for #144 admits a bounded inline child within an ordinary block
+rich-text control, including simple body-table cells, with parent/child lock,
+identity and binding checks. The [owner profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
+and [plain story profile](content-controls.md#unreleased-source-plain-header-and-footer-owners)
+record bounded header/footer owners. A [structural profile](content-controls.md#unreleased-source-single-row-and-cell-wrappers)
+also preserves a read-only single row or cell wrapper. Remaining nesting,
+structural editing and repeated-row work keep #144 open.
+The 1.6.0 source for #145 adds bounded inline control creation and explicit wrapper
+removal, with initial values, existing local bindings and lock/resource rules.
+It also creates typed blocks in [empty ordinary body and simple-cell paragraphs](content-controls.md#unreleased-source-creating-a-block-control),
+with collision-safe IDs across typed and retained template controls. Story block
+creation, broader composition and qualification remain open; see the [inline profile](content-controls.md#unreleased-source-creating-an-inline-control)
+and [removal profile](content-controls.md#unreleased-source-removing-an-admitted-control).
+The 1.6.0 work for #146 adds an explicit simple body-table-cell destination and an
+opt-in subset of field-bearing fragments. The remaining field scope, acceptance
+and independent qualification criteria stay open.
+The 1.6.0 #147 profile adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
+and [typed-control fragments](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
+with independent identities and subsequent editing in body and simple-cell destinations.
+Created cell blocks inside a table also have a checked body-fragment composition;
+the corresponding table-bearing cell destination remains rejected.
+Mixed control/object fragments require separate paragraph owners. Admitted local
+glossary resources can be copied when their kinds do not conflict; broader resource
+merging and combination evidence remain open.
+The 1.6.0 #158 profile adds bounded [body and fixed-grid cell bookmark placement](editing-and-templates.md#unreleased-source-cross-tab-placement).
+Other cell geometry, nested header repetition, repeat-region placement and full
+acceptance remain open.
+The 1.6.0 #157 profile adds [bounded deeper mixed body regions](editing-and-templates.md#unreleased-source-deeper-mixed-report-regions)
+with aggregate work and per-boundary reference checks. Other owners, broader
+combinations and exact-runtime/integrated qualification remain open.
+The 1.6.0 work for #148 adds a detached managed PDF/SVG display of bounded body and
+cell text revisions; its [profile](review-workflows.md#unreleased-source-detached-text-revision-display)
+and remaining acceptance/runtime qualification are separate from published 1.5.0.
+The 1.6.0 work for #149 adds an explicit numbered annotation policy for supported
+classic comments, format changes and paired paragraph moves. The issue remains
+open pending complete independent and exact-runtime qualification.
+The 1.6.0 #150 profile adds [comparison selection](review-workflows.md#unreleased-source-comparison-selection)
+for admitted story text and run-format changes, plus [bounded paragraph-property
+revisions](review-workflows.md#unreleased-source-paragraph-format-revisions).
+Structural combinations and broader story/format categories remain open.
+The 1.6.0 source for #151 admits a diagnosed [Hindi/Latin merged-table subset](p2-objects-typography.md#unreleased-source-hindi-merged-tables)
+only in BestEffort and Lenient native output. Right-to-left merged tables, strict
+row-spacing parity and tagged/archive combinations remain open.
+The 1.6.0 [native scalar-field display](p2-objects-typography.md#unreleased-source-native-scalar-fields)
+refreshes bounded values before shaping in BestEffort/Lenient, with diagnosed
+vertical and directional differences. Lists, tabs, controls, reference fields,
+strict parity and conformance combinations remain open.
+The 1.6.0 #153 profile admits [standalone equations beside native paragraphs](p2-objects-typography.md#unreleased-source-native-paragraphs-and-equations)
+with diagnosed reference differences. Notes, charts, mixed owners and full
+independent geometry and directional parity remain open.
+The 1.6.0 #154 profile adds explicitly [anchor-ordered accessible text boxes](interoperability.md#unreleased-source-anchor-ordered-text-boxes)
+for a narrow ordinary-body profile. Notes, alternate text semantics, other owners,
+placement, native typography and complete independent qualification remain open.
+The 1.6.0 #155 profile adds explicitly [described or decorative vector semantics](interoperability.md#unreleased-source-accessible-vector-figures)
+for a bounded managed body-anchor profile. Arbitrary drawings, native and broader archival
+combinations, screen-reader behavior and full acceptance remain open.
+The 1.6.0 #156 profile combines [tagged PDF/A-2a and PDF/UA-1](interoperability.md#unreleased-source-tagged-archival-pdf)
+for independently checked managed body, box, vector and object cases. Notes,
+mixed positioned drawings and chart/equation objects, native output and full
+cross-feature/runtime acceptance remain open.
+The 1.6.0 #159 profile adds a conservative [table formula profile](table-formulas.md) with
+dependency-ordered, table-atomic cache refresh and literal percentage pictures.
+Blank, text, merged and other unsupported cell combinations retain their caches;
+broader compatibility and exact-runtime/package qualification remain open.
+The 1.6.0 #160 profile retains [general-angle editable text boxes](interoperability.md#unreleased-source-general-angle-text-boxes)
+with managed vector output, bounded inline images and links. Independent office text
+and link placement differ, so Strict rejects the newly admitted cases and non-strict
+output reports the loss. Flips, upright text and other combinations remain open.
+The 1.6.0 #161 profile adds [default rectangle, triangle and diamond presets](roadmap-102-p4-p5.md#unreleased-source-basic-preset-shapes)
+with independently checked managed vectors. Arrows, group membership, transforms,
+and broader non-DOCX alternative semantics remain open.
+The 1.6.0 #162 profile preserves [cardinal opaque linear gradients](interoperability.md#unreleased-source-linear-gradients)
+on admitted managed vector shapes. Other angles, alpha, groups, effects and
+tagged/archive/native output remain open; the remapped-theme reference color
+difference is diagnosed and exact hosted qualification is separate.
+The 1.6.0 #163 profile adds [diagnosed clustered horizontal bars](p2-objects-typography.md#unreleased-source-clustered-horizontal-bars).
+The later [stacked-bar and column profile](p2-objects-typography.md#unreleased-source-stacked-bars-and-columns)
+retains separate signed totals but diagnoses independent reference-position differences.
+The later [point-label profile](p2-objects-typography.md#unreleased-source-chart-point-labels)
+adds bounded value/category labels on bars, columns and circular sectors with
+explicit fit and reference diagnostics.
+The [circular-chart profile](p2-objects-typography.md#unreleased-source-circular-charts)
+adds diagnosed single-series pie and doughnut vectors. Reference plot and label
+failures, other circular and label forms and
+native/tagged/archive qualification remain open.
+The 1.6.0 #164 profile adds [bounded local dictionary hyphenation](interoperability.md#unreleased-source-local-dictionary-hyphenation)
+in BestEffort/Lenient one-page managed PDF, including diagnosed justified lines.
+The measured search-highlight and justified-reference differences, soft hyphens,
+native/accessible text, other owners and full acceptance remain open.
+The 1.6.0 #165 profile adds [bounded East Asian line breaking](interoperability.md#unreleased-source-east-asian-line-breaking)
+with Unicode 17 conformance data, explicit language selection and caller font coverage.
+Japanese punctuation and mixed Latin-number reference differences are diagnosed;
+additional scripts, owners, fallback behavior and output combinations remain open.
+The 1.6.0 work for #166 adds bounded DOTX/OTT identities and byte-based format
+inspection. The [template-format profile](template-formats.md) records its
+directions, stream contract, unsupported active/protected input and qualification
+limits; it does not change published 1.5.0 support.
+The 1.6.0 source for #167 attaches a bounded [layout snapshot](interoperability.md#unreleased-source-preview-layout-snapshots)
+to the same preview render for simple managed body paragraphs, bounded direct
+DOCX table-cell text and simple inline images, with bounded direct run identities.
+Some table reference differences, other run/cell/object/story mapping, reading-order semantics, native glyphs and cross-edit
+identities remain open.
+The 1.6.0 work for #168 adds bounded matrix expressions, OMML and ordinary managed
+layout. The [matrix profile](p2-objects-typography.md#unreleased-source-bounded-matrix-equations)
+records its geometry and unsupported variants; full exact-platform and integrated
+qualification remain separate from implementation and publication.
+The 1.6.0 #169 profile adds bounded n-ary operator authoring and managed layout; the
+[operator profile](p2-objects-typography.md#unreleased-source-n-ary-equations)
+records supported OMML, font diagnostics and remaining qualification.
+The [1.6.0 source matrix](roadmap-138-source-matrix.json) maps supported and
+rejected combinations to executable tests; it does not alter the dated baseline.
+
+## Roadmap #102 P6 — historical preliminary qualification
+
+The [P6 qualification record](roadmap-102-p6-qualification.md) preserves preliminary
+combination checks on the P4/P5 review head. Those checks predate final acceptance;
+the 1.5.0 release record below identifies the final source and publication evidence.
 
 ## Roadmap #102 P4–P6 and release 1.5.0
 
@@ -18,7 +208,7 @@ unnumbered planning proposal in #99 remains open and is outside this release.
 
 ## Roadmap #102 P3 — merged source in PR #135
 
-[PR #135](https://github.com/kirakosyan/word.net/pull/135) merged as `6695e5eb399f3d9800332cb47a63e493db383e47`, with tree equality to reviewed head `0d130e3f0b9e4b2266dc469c49575df7f4fe7925`. All 15 review threads are resolved; #118–#121 are reconciled and closed. Both final-head workflows and Android compilation passed; actual Framework 4.7.2 source/package checks passed. Local Linux x64 .NET 8/10 suites each passed 1,435 cases including English OCR with no skips; restore, five-target build, format and pack passed. The PR performance gate failed twice (1.259 and 1.321) before passing at 1.072; a separate local exact-runtime comparison passed at 0.999 over 93 samples per revision. No package was published. The owner authorized P4 #122–#125 and P5 #126–#129; their bounded source implementation is under review.
+[PR #135](https://github.com/kirakosyan/word.net/pull/135) merged as `6695e5eb399f3d9800332cb47a63e493db383e47`, with tree equality to reviewed head `0d130e3f0b9e4b2266dc469c49575df7f4fe7925`. All 15 review threads are resolved; #118–#121 are reconciled and closed. Both final-head workflows and Android compilation passed; actual Framework 4.7.2 source/package checks passed. Local Linux x64 .NET 8/10 suites each passed 1,435 cases including English OCR with no skips; restore, five-target build, format and pack passed. The PR performance gate failed twice (1.259 and 1.321) before passing at 1.072; a separate local exact-runtime comparison passed at 0.999 over 93 samples per revision. No package was published by that PR; P3 and the subsequent P4–P6 work are included in 1.5.0.
 
 ## Roadmap #102 P2 — merged source in PR #134
 
@@ -31,12 +221,11 @@ Android jobs establish compilation only. Local Linux x64 .NET 8/10 suites each p
 1,390 cases with English OCR and no skips. The [profile](content-controls.md),
 [acceptance map](content-controls-acceptance.json) and [review receipt](measurements/roadmap-102-p2-review.json)
 retain exact bounds, source/test identities and dated historical evidence. This merged
-source is absent from public 1.4.0; no package was published. The owner's next bucket
-request starts P3 at #118, following the roadmap's issue-by-issue ordering.
+source was absent from public 1.4.0 and was subsequently included in 1.5.0.
 
 ## Roadmap #102 P1 — merged source, PR #133
 
-The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; published packages remain 1.4.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed. P2 #112–#117 subsequently merged in PR #134.
+The owner authorized all eight P1 issues #104–#111 and one PR. The [source profile](roadmap-102-p1.md) records implementation, exact subset limits and validation; these additions are included in 1.5.0. Layout/mark defaults, implicit managed sizing and note separator corrections precede typed properties, field pictures, nested IF trees and managed STYLEREF headers. At the owner’s request, all 15 review findings were fixed and PR #133 merged as `2a944ac9101598bc3be2d856e5bad116123998a3`, with tree equality to reviewed head `db1fa3c69a34dbb1fd0ec102f039a0a0fb20d562` and all 24 final-head checks successful. Issues #104–#111 and roadmaps #102/#32 are reconciled with acceptance evidence and residual limits. See the [final review receipt](measurements/roadmap-102-p1-review.json). No release or publication was performed by that PR. P2 #112–#117 subsequently merged in PR #134.
 
 ## Roadmap #102 / issue #103 - merged baseline findings
 
@@ -50,8 +239,7 @@ unproven inheritance/implicit-sizing defects, source omissions and the existing 
 reservation policy. No converter behavior, package version or support scope changes.
 Issue #103 is accepted and reconciled in roadmap #102 and historical roadmap #32.
 At that historical point the evidence-only delivery left subsequent tasks unimplemented.
-The later owner-authorized P1 and P2 work is recorded above, and P3 has since started
-with #118. Publication is not authorized by those implementation requests.
+The later owner-authorized P1–P6 work is recorded above and included in 1.5.0.
 The CI follow-up makes fixture-content verification portable across ZIP encodings,
 with archive hashes and the original measured receipt preserved.
 Review corrections protect measured fixtures from generation, isolate the public
@@ -114,7 +302,7 @@ The existing corpus now has 24 independently authored fixtures, including twelve
 
 The invoice/report recipes use the existing public API, caller images and repeat/if controls. Application code rounds line amounts before summing; logs explicitly describe cumulative diagnostics. Staging/cancellation/cleanup and real replacement are independently tested. The required conversion/OCR suite is **855**, including fourteen recipe cases; thirteen Python tests cover comparison/capture contracts. [Testing evidence](testing.md) identifies the exact source/package/runtime checks and their limits.
 
-This is merged source, separate from published packages. No new engine API, dependency version, target framework, platform claim, release tag or NuGet publication is added. The older presentation-patch and release descriptions below retain their dated evidence; the concise README delivered in #83 supersedes their earlier header layout.
+At that checkpoint this was merged source, separate from published packages; the later 1.3.0 release included it. PR #83 added no new engine API, dependency version, target framework, platform claim, release tag or NuGet publication. The older presentation-patch and release descriptions below retain their dated evidence; the concise README delivered in #83 supersedes their earlier header layout.
 
 The 1.2.1 presentation patch replaces the README's HTML-sized OS icons with six
 consistent Markdown badges, including readable Windows/Linux x64/ARM64 labels.
@@ -125,7 +313,7 @@ the converter profile remains the same. PR #43 merged as
 All four source/package actual-4.7.2 reports passed 829/829 with verified cleanup;
 all 24 job logs are free of the Node.js 20 warning. The documentation-only follow-up
 corrects NuGet's stripped relative file links and records this reconciliation.
-Publication remains pending final reconciled-main qualification. Use the live
+At the preparation checkpoint, publication was pending final reconciled-main qualification. Use the live
 [roadmap record](https://github.com/kirakosyan/word.net/issues/32) for its exact
 SHA/run/artifact selection; see [patch release notes](releases/1.2.1.md).
 
@@ -145,7 +333,9 @@ The 1.2.0 publishing workflow succeeded at release commit `3202a1f`; all three p
 packages' 11 DLLs match its qualified artifact. A fresh public-only restore/build
 passes; see the [ledger](release-1.2.0-readiness.md).
 
-## Current delivery
+<a id="current-delivery"></a>
+
+## Historical bucket delivery — 2026-10-18
 
 | Work | Delivery and evidence |
 | --- | --- |
@@ -154,13 +344,14 @@ passes; see the [ledger](release-1.2.0-readiness.md).
 | Bucket 2: business-document rendering and fidelity | PR [#34](https://github.com/kirakosyan/word.net/pull/34) merged as `1c44d97`; #7, #8, #9, #10, #16, #18 and #19 closed. #17's composition-collision acceptance landed in #35; all eight issues are closed. |
 | Bucket 3: document editing and templates | PR [#35](https://github.com/kirakosyan/word.net/pull/35) merged as `0b2af843`; #11–#15 and #17 are closed with verified acceptance evidence. The merged source adds `WordDocument`, replacement/bookmarks, composition, scalar merge, repeating rows, conditions and image placeholders. See the [design](editing-template-design.md), [usage](editing-and-templates.md) and `examples/WordNet.Automation`. |
 | Bucket 4: interoperability, typography, accessibility and import | PR [#37](https://github.com/kirakosyan/word.net/pull/37) merged as `44c9e362`; #20–#23 and #25–#27 closed with verified acceptance. All 15 review findings resolved, all 20 checks passed on `2af6a43`, and the merge tree matches that head. 828 required cases, including 33 review regressions; independent readers/validators and exact packed fallback runs pass. See [profiles/usage](interoperability.md). |
-| Bucket 5: later design decisions | [Four design deliverables](later-design-decisions.md) for #28–#31 merged in PR #39, with API/provider decisions, profiles, safety/resource limits, fixture provenance and staged acceptance plans. Runtime implementation remains deferred; design acceptance does not claim support. |
+| Bucket 5: later design decisions | [Four design deliverables](later-design-decisions.md) for #28–#31 merged in PR #39, with API/provider decisions, profiles, safety/resource limits, fixture provenance and staged acceptance plans. Runtime implementation was deferred at that checkpoint; design acceptance did not claim support. |
 
 PR #38 merged documentation reconciliation and a native font-buffer lifetime fix
 as `2f16d47ac007bf1a5affb41bc0b7653f5198c9f8`. Its tree matches head `e09c17c7ef43e38bcdf9717e535caa02b31d7812`,
 which passed all 20 checks. At that reconciliation the required suite was **829**; the 828-case
 PR #37 qualification remains dated historical evidence. See [testing](testing.md).
-No package was published. Bucket 5 is merged design work; runtime implementation is deferred.
+No package was published by that PR. Bucket 5 was merged design work at that checkpoint;
+later releases supply only their separately documented bounded runtime profiles.
 
 Bucket 2's [supported profile](document-fidelity.md) and
 [design decisions](business-fidelity-design.md) cover nested/decorated tables,
@@ -177,8 +368,9 @@ head `383ea15f1bb21d96f38a61a2eaee42980cae0124` before its expected-head squash 
 The merged source tree is identical to that head. Both complete local Linux x64
 .NET 8/10 suites passed without skips; package/API checks and the public sample pass.
 See [testing](testing.md) for exact runs, independent readers, historical release
-evidence and qualification limits. The source remains unreleased; this evidence
-does not establish Word/Aspose parity or exact-main-package release qualification.
+evidence and qualification limits. At that checkpoint the source was unreleased;
+later releases included it. This evidence does not establish Word/Aspose parity or
+exact-main-package release qualification.
 
 ## Preserved contracts
 
@@ -198,8 +390,12 @@ does not establish Word/Aspose parity or exact-main-package release qualificatio
 
 ## Remaining work
 
-1. Preserve historical release evidence, including the published [1.4.0 profile](roadmap-99-implementation.md).
-   Roadmap #102 P1 (#104–#111) is merged source beyond that release. P2 #112–#117 is merged and reconciled. P3 #118–#121 is merged and reconciled; P4 and P5 source is under review; P6 qualification is preliminary and #99’s unnumbered proposal remains planning. Bucket 5
+1. Implement and independently qualify the open leaves of
+   [roadmap #138](https://github.com/kirakosyan/word.net/issues/138), retaining its
+   dependency and combination gates. The unnumbered proposal in #99 remains open;
+   #138's E0–E2 track addresses part of it without implying acceptance. Preserve
+   historical evidence, including the [1.4.0 profile](roadmap-99-implementation.md)
+   and the 1.5.0 [release record](releases/1.5.0.md). Bucket 5
    [design records](later-design-decisions.md) retain their separate policy gates.
 
 2. Broaden independent rich-DOC/KF8/EPUB and scan corpora, viewer checks, malformed

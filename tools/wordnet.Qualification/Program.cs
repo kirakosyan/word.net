@@ -232,12 +232,25 @@ internal static class Program
         inputs[DocumentFormat.Html] = Encoding.UTF8.GetBytes("<p>Wordnet conversion test</p><p>English printed text 12345.</p>");
         inputs[DocumentFormat.Rtf] = Encoding.ASCII.GetBytes(@"{\rtf1\ansi Wordnet conversion test\par English printed text 12345.\par}");
         inputs[DocumentFormat.Odt] = Convert(inputs[DocumentFormat.Docx], DocumentFormat.Docx, DocumentFormat.Odt);
+        inputs[DocumentFormat.Dotx] = Convert(inputs[DocumentFormat.Docx], DocumentFormat.Docx, DocumentFormat.Dotx);
+        inputs[DocumentFormat.Ott] = Convert(inputs[DocumentFormat.Odt], DocumentFormat.Odt, DocumentFormat.Ott);
         var pairs = (from source in inputs.Keys from target in Enum.GetValues<DocumentFormat>() where converter.CanConvert(source, target) select (Source: source, Target: target)).ToArray();
-        if (pairs.Length != 40 || pairs.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt) != 28
-            || pairs.Count(p => p.Source is DocumentFormat.Html or DocumentFormat.Rtf) != 5
-            || pairs.Count(p => p.Target is DocumentFormat.Html or DocumentFormat.Rtf) != 4
-            || pairs.Count(p => p.Source == DocumentFormat.Odt || p.Target == DocumentFormat.Odt) != 3)
+        var legacy = pairs.Where(p => p.Source is not (DocumentFormat.Dotx or DocumentFormat.Ott) && p.Target is not (DocumentFormat.Dotx or DocumentFormat.Ott)).ToArray();
+        var template = new HashSet<(DocumentFormat Source, DocumentFormat Target)>
+        {
+            (DocumentFormat.Dotx, DocumentFormat.Docx), (DocumentFormat.Dotx, DocumentFormat.Odt), (DocumentFormat.Dotx, DocumentFormat.Ott),
+            (DocumentFormat.Dotx, DocumentFormat.Pdf), (DocumentFormat.Dotx, DocumentFormat.Xps),
+            (DocumentFormat.Docx, DocumentFormat.Dotx), (DocumentFormat.Odt, DocumentFormat.Dotx), (DocumentFormat.Ott, DocumentFormat.Dotx),
+            (DocumentFormat.Ott, DocumentFormat.Odt), (DocumentFormat.Ott, DocumentFormat.Docx), (DocumentFormat.Ott, DocumentFormat.Pdf),
+            (DocumentFormat.Odt, DocumentFormat.Ott), (DocumentFormat.Docx, DocumentFormat.Ott),
+        };
+        if (legacy.Length != 40 || legacy.Count(p => p.Source is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt && p.Target is not DocumentFormat.Html and not DocumentFormat.Rtf and not DocumentFormat.Odt) != 28
+            || legacy.Count(p => p.Source is DocumentFormat.Html or DocumentFormat.Rtf) != 5
+            || legacy.Count(p => p.Target is DocumentFormat.Html or DocumentFormat.Rtf) != 4
+            || legacy.Count(p => p.Source == DocumentFormat.Odt || p.Target == DocumentFormat.Odt) != 3)
             throw new InvalidOperationException("Expected the original 28 directions, eight HTML/RTF exchanges with Word, two DOCX/ODT exchanges and direct HTML/ODT PDF output.");
+        if (pairs.Length != 53 || !template.SetEquals(pairs.Where(p => p.Source is DocumentFormat.Dotx or DocumentFormat.Ott || p.Target is DocumentFormat.Dotx or DocumentFormat.Ott)))
+            throw new InvalidOperationException("Expected exactly the thirteen documented DOTX/OTT template directions.");
         var measurements = new System.Collections.Concurrent.ConcurrentBag<Measurement>();
         Parallel.For(0, iterations, new ParallelOptions { MaxDegreeOfParallelism = 4 }, iteration =>
         {
@@ -279,6 +292,7 @@ internal static class Program
             directions = pairs.Length,
             iterations,
             concurrency = 4,
+            inputSha256 = inputs.OrderBy(p => p.Key).ToDictionary(p => p.Key.ToString(), p => Hash(p.Value)),
             largeRoundTripMilliseconds = largeClock.Elapsed.TotalMilliseconds,
             measurements = measurements.OrderBy(m => m.Source, StringComparer.Ordinal).ThenBy(m => m.Target, StringComparer.Ordinal).ThenBy(m => m.Iteration)
         }));

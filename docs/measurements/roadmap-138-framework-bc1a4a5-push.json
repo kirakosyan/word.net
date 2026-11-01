@@ -1,0 +1,33 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "workflow": "https://github.com/kirakosyan/word.net/actions/runs/41189368419",
+  "attempt": 1,
+  "result": "success",
+  "sourceHead": "bc1a4a5fb770fe5d636dee558bfc846a4537ed27",
+  "tree": "73a3495d4c09a5c90b9ca299ff9404bd5af7370b",
+  "jobs": "All 11 jobs passed: four source/modern-runtime platforms, performance, four package platforms and actual Framework 4.7.2 source/package guests.",
+  "frameworkSource": {
+    "job": 124506797692,
+    "frameworkRelease": 461814,
+    "cases": 2161,
+    "librarySha256": "9428e7d4b44679f3b4847eb94708f670ab94640d0bf53904ea5eda6c3637e97d",
+    "testSha256": "b4ded0cf867ccc10b6624d55b87ae5d7b2bc7b945fb55aac8e662658e0743851",
+    "inputArtifactId": 13038756342,
+    "inputArtifactSha256": "b6e5c04b65987d32fbf81165b3cbdd80e822eac80f9624482e2a334f533a8be1",
+    "resultArtifactId": 13039250808,
+    "resultArtifactSha256": "26149d2fc6c61d217d20dc73d9744d33ff75f2bf7a8c297a2eaf507cb8db680b"
+  },
+  "frameworkPackage": {
+    "job": 124508965718,
+    "frameworkRelease": 461814,
+    "cases": 2161,
+    "librarySha256": "e83137d1523b41eb5d178eeec6552fe94d45cc01240e0e903be2c6541557ed93",
+    "testSha256": "287d4c20e440f9acb87653f8e6c2bae18a82562f3da0ed639237aec8bcec53fe",
+    "inputArtifactId": 13038708898,
+    "inputArtifactSha256": "0002fbbc501bf88560467daaa4dfd9dc156fdec2682675ffa554e44857af4af4",
+    "resultArtifactId": 13039371301,
+    "resultArtifactSha256": "a5ee04688292f0790b72c6604fc3fa6cba951116cb33b26916641baa423f0d67"
+  },
+  "scope": "These hosted results apply to this tree and do not qualify subsequent commits. No package was published."
+}

@@ -1,0 +1,39 @@
+{
+  "roadmap": 138,
+  "issue": 151,
+  "recordedUtc": "2026-10-31",
+  "scope": "Independently authored small multilingual tables with horizontal and vertical merges. These are static observations, not live Word execution, general PDF fidelity or full #151 qualification.",
+  "workingTreeParent": "c0c31aa15a3a14850703b47a0c6a76bf23de1e31",
+  "executedHindiWorkingTreeNet10AssemblySha256": "35bc72975bab5f4b9756d37cec4992d9eff486945f36b114e9755562cdb861ad",
+  "generator": "eng/generate-roadmap-138-native-merged.py",
+  "generatorSha256": "4160924496fa46d753bc059e1c14e20836c922588b80a2386da1024afe003b89",
+  "probe": "eng/roadmap-138-native-merged-probe.cs",
+  "probeSha256": "e93da98fba9483090e213dd4c6d943570f3bfcb3f87ba5e26dafc5f6121fa741",
+  "checker": "eng/check-roadmap-138-native-merged.py",
+  "checkerSha256": "0df1826ad948ba5afa5f8b5794dd3b1e2b90405d6507831df5633b94af9f7bb0",
+  "fontsSha256": {
+    "NotoSans-Regular.ttf": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+    "NotoSansArabic-Regular.ttf": "504d7407d86875acf7d04dfaa0fd7524d0b8797723bc4aa18022f29db25b0b6e",
+    "NotoSansDevanagari-Regular.ttf": "385e78e6359a9d88a0f243d53b1209d7548361ba2194e2b9ec779bcaa7e8949d"
+  },
+  "referenceTools": "LibreOffice 24.2.7.2 in image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 with the repository fonts mounted read-only; Poppler 24.02.0 pdftotext -layout and -bbox-layout; Open XML SDK 3.5.1 validator DLL sha256:4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "hindi": {
+    "inputSha256": "16f5ef3f5b721f45091185deb6a911ae253fc47f22f0cf29c10affaa8e5576e2",
+    "referencePdfSha256": "9dace65dd8e9260eeefa40f44c59080a7162322c5c58181aec3cf06eb2cf28be",
+    "referenceTextSha256": "75468802821d8e3c71e4fc51086ade182b8843405d582efd3f5967aa067d77fe",
+    "referenceBoxesSha256": "3f9f00076c70a69dd437640bea2cda9e5ad177142278f1c0f092a11d0d0d5ef8",
+    "nativePdfSha256": "c3c84cb148ab921641465acd5c7887c843ff65e3dca9f1690e569b10b60a910e",
+    "nativeTextSha256": "3d381359cce5cc4ea61c7f12cc3acdf78f1f4e8571800803815db949d76903e8",
+    "nativeBoxesSha256": "2e69ab852656fb010075873f9755ec1822358756fc73041bf3bbccc97dea9c58",
+    "observation": "The generator reproduced the input byte for byte and Open XML validation found zero errors. Both text extractions contain the same Hindi clusters, Latin labels and decimal values; the independent checker confirmed their row and column ownership. Reference and native top coordinates for Total were 116.992 and 147.691 points: native rows were taller by 30.699 points at that location. The BestEffort probe observed Typography.MergedTableSpacing; strict output rejects this known difference."
+  },
+  "arabicExploration": {
+    "inputSha256": "c0a24dc5d20330dc1409b2e0a1cc31ff758986aa6becd4a39dc5360d372b03a9",
+    "referencePdfSha256": "a12a8fc164167fe5b706b941b09a859ae121690ad9dbbc4eb7752b3898781331",
+    "exploratoryNativePdfSha256": "ec90b36decc6e861d3584bb028b699f01185e6528a9ac3558eb03dca30cf7d78",
+    "referenceTextSha256": "778518470460e87f32640000528036ee6e437e734c7cbc42b46bca6139a3cd89",
+    "exploratoryNativeTextSha256": "4f43e9d79b05b5511730e7ada425acd5f3b65bf5f465a141659a762e9c843930",
+    "observation": "A preliminary working-tree build admitted the mixed Arabic/Hindi specimen. Poppler -layout extracted Arabic logical text differently and its first Arabic word box began at x=72.000 points, compared with x=100.050 in LibreOffice. Right-to-left and mixed-direction merged tables are now rejected; this difference is not counted as a pass."
+  },
+  "earlierAttempts": "The first independent fixture placed bidi after spacing in paragraph properties; Open XML validation reported one error. The corrected input had zero errors. An initial standalone probe omitted the native provider and failed before rendering; a later parallel scratch restore had an MSBuild worker failure. A scratch probe then built with a Skia version warning; explicitly matching the repository's 4.153.1 bindings removed the warning and supplied the provider. An earlier focused test expected a new diagnostic for PDF/A but the existing Typography.Conformance rejection occurs first; the corrected expectation passed."
+}

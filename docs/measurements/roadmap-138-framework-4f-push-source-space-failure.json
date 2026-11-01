@@ -1,0 +1,38 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "4f02e804ffd234e1c45751110116f0d880f4646c",
+  "workflowRun": 41294732609,
+  "jobId": 124817160225,
+  "asset": "source",
+  "status": "failed before guest start",
+  "jobUrl": "https://github.com/kirakosyan/word.net/actions/runs/41294732609/job/124817160225",
+  "artifactId": 13078989928,
+  "artifactSha256": "f907e16572828027740a4d3e9d2c6aa645714c57f4afece8b5933954aa2a22ef",
+  "hostError": "The VM requires at least 60 GiB free for its disk, ISO and setup.",
+  "jobLogDiskObservation": "After the runner cleanup step, df reported a 72 GiB cow-root filesystem with 37 GiB available; the unchanged VM preflight requires 60 GiB free.",
+  "bundle": {
+    "testsSha256": "ea0a3c24952340f84dcbb9a83e20de21e1ca228380a27e3de1e0b7f3308b44e2",
+    "sourceCommit": "4f02e804ffd234e1c45751110116f0d880f4646c",
+    "workflowRun": "41294732609",
+    "testAsset": "source",
+    "requiredCases": 2347,
+    "jitMode": "legacy",
+    "binaries": {
+      "wordnet.dll": "bc81cf226c180d0f242701f41ff6b153c92a62867ff6d4dc49911e33a8899674",
+      "wordnet.Fonts.dll": "028ef891e34781b2688cd3bbfaa90f45e369c96b399e8e9f7e53244d8c1349cd",
+      "wordnet.Ocr.dll": "11698a38502b2a71b7f808e66b53145e918f40721800331751f2487347f07c9b",
+      "wordnet.Conversion.Tests.exe": "41a13d007e53ac21d63939744df0bafa2c829f48831656c0e8fc305923acae53"
+    },
+    "packageVersion": "",
+    "packages": {}
+  },
+  "cleanup": {
+    "project": "wordnet-472-396eb239afc5",
+    "containersRemoved": true,
+    "networkRemoved": true,
+    "stateRemoved": true,
+    "imageRemoved": true
+  },
+  "qualification": "No Windows guest or tests ran. This capacity failure is not a Framework pass and remains recorded even if a later retry succeeds."
+}

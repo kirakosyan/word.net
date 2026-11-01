@@ -1,0 +1,118 @@
+{
+  "roadmap": 138,
+  "issues": [
+    145,
+    147,
+    173
+  ],
+  "recordedUtc": "2026-11-01",
+  "scope": "Prototype composition of created typed block controls in a simple-cell table into an independently authored body bookmark, with a protected cell-destination negative.",
+  "prototypeBuildHead": "0e14a7e17e8e08c342dd17dc81deb99ede6c2b26",
+  "identityNote": "The executed core was built at this parent; the test, verifier and synthetic fixtures were uncommitted. Exact committed-source and hosted checks are separate.",
+  "generatorSha256": "751cab163aea62317724917d2a1cb32396c237fa8254b82175676ba87604b3c6",
+  "generatorHelperSha256": "eaa10596116903e4fd811be2cc88e9eef5d7a0f462643ee913d53a206e9b254e",
+  "probeSha256": "bf995541bb9398f170696cb44fa4097d8723660becdcd2f7ef37a962b1223750",
+  "checkerSha256": "3db84b8d1f4c1dc24bc593a191c7899630d228f506ffb7c227c86d341cc279f4",
+  "prototypeAssemblySha256": "41ef9f5db220ec8ed0523849dbbfb696f4f90af4ba864a998d32912904d5054a",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with MIT fixture helpers; no wordnet serialization.",
+    "generatorSha256": "751cab163aea62317724917d2a1cb32396c237fa8254b82175676ba87604b3c6",
+    "documents": {
+      "source.docx": "fde38cfa5d8deb6ae016142b7628ade5c91e72ad02cfe2056298f43d09536c23",
+      "body-target.docx": "3d8c0ebb70c24cf5db8bdf87dc27ce922aaba69b49a2025e1c9ea68379378e6e",
+      "cell-target.docx": "10e5b92c7ae061e4b5698a63f476a9c13de8c4b80179edb9410ea6c371734499"
+    }
+  },
+  "probe": {
+    "inputHashes": {
+      "body-target.docx": "3d8c0ebb70c24cf5db8bdf87dc27ce922aaba69b49a2025e1c9ea68379378e6e",
+      "cell-target.docx": "10e5b92c7ae061e4b5698a63f476a9c13de8c4b80179edb9410ea6c371734499",
+      "source.docx": "fde38cfa5d8deb6ae016142b7628ade5c91e72ad02cfe2056298f43d09536c23"
+    },
+    "assemblySha256": "41ef9f5db220ec8ed0523849dbbfb696f4f90af4ba864a998d32912904d5054a",
+    "beforeEdit": [
+      {
+        "Id": 1,
+        "Tag": "host",
+        "Owner": "inline body/cell paragraph",
+        "DisplayText": "Host"
+      },
+      {
+        "Id": 2,
+        "Tag": "plain-cell",
+        "Owner": "block body/cell paragraphs",
+        "DisplayText": "Alpha"
+      },
+      {
+        "Id": 3,
+        "Tag": "rich-cell",
+        "Owner": "block body/cell paragraphs",
+        "DisplayText": "Bravo"
+      }
+    ],
+    "sourceUnchanged": true,
+    "exception": "NotSupportedException",
+    "code": "Fragment.ControlOwner",
+    "rejectedTargetUnchanged": true,
+    "outputs": {
+      "source": "f32e4c5160a7dde00993187b8b49e37c585cb06ef4f6693ad151351dbeb2e29b",
+      "docx": "9b639dad4b8926dd884e25bbe5e6080e78d2ef1c37f4d72dcfcc819c196311a5",
+      "pdf": "958423f159aa3d582209a76820804a896c992ff730824f9a38e9e7773aeb89ed"
+    },
+    "docxDiagnostics": [],
+    "pdfDiagnostics": [
+      "Control.StaticDisplay:Info"
+    ]
+  },
+  "independentReference": {
+    "result": {
+      "inputs": 3,
+      "schemaValidInputs": 3,
+      "schemaValidOutputs": 2,
+      "createdControlsComposeWithUniqueIds": true,
+      "sourceAndRejectedDestinationUnchanged": true,
+      "independentAndGeneratedPdfTextMatch": true,
+      "limitations": "The protected cell destination rejects table-bearing control fragments; arbitrary owners and interactive Word editing remain unqualified."
+    },
+    "negativeControls": {
+      "fixture changed": "Input identities changed",
+      "assembly changed": "Loaded core identity changed",
+      "input schema omitted": "Input schema evidence missing: cell-target.docx",
+      "output schema omitted": "Output schema evidence missing: source.docx",
+      "output changed": "Output identities changed",
+      "source changed": "Source or rejected target changed",
+      "destination changed": "Source or rejected target changed",
+      "protected owner accepted": "Protected cell destination no longer rejects",
+      "diagnostic omitted": "Output diagnostics changed",
+      "id collision": "Control identity, value or ordering changed",
+      "wrong control kind": "Control identity, value or ordering changed",
+      "value changed": "Control identity, value or ordering changed",
+      "cell owner changed": "Cell ownership changed",
+      "source order changed": "DOCX content or order changed",
+      "office order changed": "Independent or generated PDF content/order changed",
+      "generated pdf changed": "Independent or generated PDF content/order changed",
+      "control handle changed": "Inserted control handles or owners changed"
+    },
+    "controlMethod": "Independently parsed observations were altered in memory."
+  },
+  "validator": {
+    "assemblySha256": "2aa5063e92a5fd7ff82b67634665978afe5b9bb1ac6d7883994edb0e4769a37b",
+    "inputTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nbody-target.docx 3d8c0ebb70c24cf5db8bdf87dc27ce922aaba69b49a2025e1c9ea68379378e6e errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ncell-target.docx 10e5b92c7ae061e4b5698a63f476a9c13de8c4b80179edb9410ea6c371734499 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nsource.docx fde38cfa5d8deb6ae016142b7628ade5c91e72ad02cfe2056298f43d09536c23 errors=0\n",
+    "outputTranscript": "Validator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\ncomposed.docx 9b639dad4b8926dd884e25bbe5e6080e78d2ef1c37f4d72dcfcc819c196311a5 errors=0\nValidator assembly: DocumentFormat.OpenXml.Framework, Version=3.5.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17\nValidator SHA256: ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae\nsource.docx f32e4c5160a7dde00993187b8b49e37c585cb06ef4f6693ad151351dbeb2e29b errors=0\n"
+  },
+  "office": {
+    "producer": "LibreOffice 24.2.7.2, Poppler 24.02.0, image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; Noto Sans mounted read-only.",
+    "log": "NotoSans-Regular.ttf: \"Noto Sans\" \"Regular\"\nWarning: failed to launch javaldx - java may not function correctly\nconvert /input/composed.docx as a Writer document -> /output/composed.pdf using filter : writer_pdf_Export\n",
+    "officePdfSha256": "dc4a390df3c9c5813c3806852a9b6c89e04b179e0e9e3d0e32da307d92af9006",
+    "extractedTextSha256": {
+      "office.txt": "df5dab78d92d6e46377f3a2fab80439389237891cf8faa1074570bebeccf2a7e",
+      "wordnet.txt": "df5dab78d92d6e46377f3a2fab80439389237891cf8faa1074570bebeccf2a7e"
+    }
+  },
+  "focusedTest": {
+    "passed": 1,
+    "noSkips": true,
+    "logSha256": "5225d9d1babd4fd193f92e3d3c6f25c8e6af454986dd27220d9bfde2be36d0be"
+  },
+  "limitations": "This checks one body composition and rejects the corresponding table-bearing cell destination. It does not establish arbitrary owners, interactive Word editing, or integrated roadmap acceptance."
+}

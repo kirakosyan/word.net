@@ -10,7 +10,7 @@ namespace WordNet.Tests;
 public sealed class ObjectPdfProfileTests
 {
     private static readonly string[] Categories = { "North", "South" };
-    private static WordDocument Document(ConversionOptions options, bool description = true)
+    internal static WordDocument Document(ConversionOptions options, bool description = true)
     {
         options.Fonts.MathFamily = "STIX Two Math";
         options.Fonts.Sources.Add(FontSource.FromFile("STIX Two Math", Path.Combine(TestDocuments.FixtureDirectory, "P2", "STIXTwoMath.ttf")));

@@ -1,0 +1,31 @@
+{
+  "roadmap": 138,
+  "issue": 147,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "fb2955516cf9ca72798af048816f34f8e3a6103b",
+  "scope": "Unreleased mixed typed controls and retained chart/equation fragments in separate protected paragraph owners, with subsequent independent control and object edits at body or simple-cell destinations. Shared owners, glossary-backed source fragments and unqualified output profiles remain outside this increment.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed with one MSBuild worker",
+    "format": "solution verification passed",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": {"passed": 2049, "failed": 0, "skipped": 0, "trxSha256": "4be5e540574d83bc3c7b7ffe18b3594ee838d3466e1534a63b2495bc9fe03423"},
+    "net10ConversionAndEnglishOcr": {"passed": 2049, "failed": 0, "skipped": 0, "trxSha256": "5be4c5851d6d4161476f7c3749670da4181e8c431184099fe28d1171387094ee"},
+    "capabilityMatrix": {"profiles": 54, "testMethods": 296, "net10CasesPassed": 519},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API validation and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "7dd70170bc21a999f63b3785122ae31fbcdc3d75211f6d064c10e9eb040aea56",
+      "wordnet.Fonts.1.5.0.nupkg": "7b68721eb061e8dffcb246fc7ea7a16118a6c36fce599746f614e2305b01a0f0",
+      "wordnet.Ocr.1.5.0.nupkg": "ac0a80084e26052f53d8bae98470866dd7d6540f0ca87e78d1bb034d617c09b8"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-mixed-fragment-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "6e0998da8393a2a38c225d5aa36f6739e6c76b046d581200d7436e97fe49943a",
+    "reproducedDocxSha256": "969fbefc04f7a281ca25d61eae2e5d860420086109bc775d454d24b9fb2eca3a",
+    "result": "The exact-source and local-package assemblies were identical. The committed probe using that assembly reproduced the independently rendered DOCX byte for byte; Open XML SDK 3.5.1 reported zero errors. The reference receipt records control and binding values, chart caches/workbook, OMML, reference geometry, layout-ordered text and the different default extraction order."
+  },
+  "earlierAttempts": "The first new focused build failed CA1826/CA1861 in test code and was corrected. A later broad run passed 482 cases and failed one earlier regression that still required separate object/control owners to reject; the test now verifies independent owners while retaining review rejection, and the corrected broad run passed 483 cases.",
+  "qualification": "Actual Windows Framework execution and hosted checks for this exact source remain pending. The prior a34ef58 push performance failure is retained separately and is not resolved by this receipt. This increment does not complete #147 or roadmap #138."
+}

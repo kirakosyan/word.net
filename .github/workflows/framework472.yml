@@ -36,17 +36,53 @@ jobs:
           df -h .
           sudo chown "$(id -u):$(id -g)" /dev/kvm
           sudo chmod 600 /dev/kvm
+      - name: Select VM storage on the disposable runner
+        id: vm-storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test "$RUNNER_OS" = Linux
+          [[ "$GITHUB_RUN_ID" =~ ^[0-9]+$ && "$GITHUB_RUN_ATTEMPT" =~ ^[0-9]+$ ]]
+          mkdir -p artifacts
+          df -hT .
+          if [[ -d /mnt ]]; then df -hT /mnt; fi
+          storage=$(python3 eng/minimum-runtimes/select-linux-vm-storage.py --workspace artifacts)
+          printf 'Selected VM storage: %s\n' "$storage"
+          if [[ "$storage" == temporary ]]; then
+            parent="/mnt/wordnet-framework-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            # mkdir refuses existing paths; only this job's new empty directory is owned.
+            sudo mkdir -m 700 -- "$parent"
+            printf 'parent=%s\nwork=%s/state\n' "$parent" "$parent" >> "$GITHUB_OUTPUT"
+            sudo chown "$(id -u):$(id -g)" -- "$parent"
+          elif [[ "$storage" == workspace ]]; then
+            printf 'work=artifacts/framework-vm-state\n' >> "$GITHUB_OUTPUT"
+          else
+            exit 1
+          fi
       - name: Run actual Windows 2019 Framework 4.7.2 and clean up its VM
         env:
           VM_ASSET: ${{ inputs.asset }}
+          VM_WORK: ${{ steps.vm-storage.outputs.work }}
         run: >-
           python3 eng/minimum-runtimes/run-linux-vm.py
           --setup artifacts/framework-setup
-          --work artifacts/framework-vm-state
+          --work "$VM_WORK"
           --results artifacts/framework-evidence
           --commit "$GITHUB_SHA"
           --asset "$VM_ASSET"
           --timeout-seconds 3600
+      - name: Remove this job's empty temporary VM directory
+        if: always() && steps.vm-storage.outputs.parent != ''
+        env:
+          VM_TEMP_PARENT: ${{ steps.vm-storage.outputs.parent }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test "$VM_TEMP_PARENT" = "/mnt/wordnet-framework-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          sudo rmdir -- "$VM_TEMP_PARENT"
       - name: Upload actual minimum-runtime reports and cleanup receipt
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

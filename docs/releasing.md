@@ -9,9 +9,9 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
-The active release line is [1.4.0](releases/1.4.0.md), covering the bounded roadmap #99
-profile on top of [published 1.3.0](releases/1.3.0.md). All three project versions
-advance together. Select successful CI from the exact final-main commit for the new
+The [1.6.0 notes](releases/1.6.0.md) describe a bounded milestone from roadmap #138
+on top of [1.5.0](releases/1.5.0.md); the remaining roadmap stays open. All three
+project versions advance together. Select successful CI from the exact final-main commit for the new
 version; verify public indexes before dispatch and never republish an existing version.
 Historical receipts remain unchanged. Publication is a separate explicit action after
 all source, immutable-package and actual-minimum-runtime gates pass.

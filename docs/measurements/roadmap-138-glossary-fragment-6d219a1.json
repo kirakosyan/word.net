@@ -1,0 +1,40 @@
+{
+  "roadmap": 138,
+  "issue": 147,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "6d219a11e39ea86bf0be3b804d82a1a097fd74eb",
+  "scope": "Repeated fragments containing admitted glossary-backed typed controls, including compatible local styles, settings, font table and web settings. Conflicting resource graphs, source load losses and unsupported combinations remain explicit failures.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed at the parent code commit; the successor changes only test whitespace and no dependencies.",
+    "releaseBuild": "All five target frameworks passed on this source with one MSBuild worker.",
+    "format": "Solution verification passed on this source.",
+    "net472": "Test project compiled; Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {"passed": 2061, "failed": 0, "skipped": 0, "trxSha256": "5266365cc0d319849fb13abffe8fa982889e88c9b3bc74b2a35024baac78317d"},
+    "net10ConversionAndEnglishOcr": {"passed": 2061, "failed": 0, "skipped": 0, "trxSha256": "c5e59c9a07955bd4cfa046de065b5781876cd142cd02a906b87439bb89a7ad25"},
+    "capabilityMatrix": {"profiles": 55, "testMethods": 302, "net10CasesPassed": 531},
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed package/API validation and archive verification against this exact commit; no package was published.",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "fa2de25a6f185834bc188d269bc8a464a23b4f886659afe2d5eff768bfa10b94",
+      "wordnet.Fonts.1.5.0.nupkg": "60d3cfc80c87d3fb894045baba97d4291430c05a7a3cebf07b019ed51c62438c",
+      "wordnet.Ocr.1.5.0.nupkg": "a066c39685bf66a416918910fd0e3eb3ffa95464c927a9af425e0df369340bdb"
+    }
+  },
+  "independentEvidence": {
+    "basicReferenceReceipt": "docs/measurements/roadmap-138-glossary-fragment-reference.json",
+    "exactSourceAndPackageNet10AssemblySha256": "fa04fed02eab2a9949d078aafee376d9de7e479830e874060165a8cd801c8289",
+    "basicOutputReproducedSha256": "aa082f32bfac3b0196512f028644ec67adec1eabbefc9c45f0b9dc73f093dcb9",
+    "resourceGenerator": "eng/generate-roadmap-138-glossary-resources.py",
+    "resourceGeneratorSha256": "584605b6edb5bfaf0512ea1efbd904742087ff4b66ad1d3b60a929732de05867",
+    "resourceProbe": "eng/roadmap-138-glossary-resources-probe.cs",
+    "resourceProbeSha256": "32c35a558fb17cfdd5179a6208eb78ba7f4b7270c23f2359dcc6c70cbbaec069",
+    "resourceChecker": "eng/check-roadmap-138-glossary-resources.py",
+    "resourceCheckerSha256": "26c12c7d54db88407b415ee9b772257b2b52f1a9354e024ba074673cc09313c1",
+    "resourceInputDocxSha256": "54c3005b34d8dd43b774f26c729c504d91b73fc4dcd91a92b3df659f7c888f8e",
+    "resourceOutputDocxSha256": "4a0b7e3939db7d93f3a977fc5d59f786bde43849161001dae0d272c3ec4f805e",
+    "result": "The generator reproduced the input byte for byte. The exact assembly inserted it twice, independently edited one control and restored the other placeholder. The checker found four byte-identical local resources, two distinct names and GUIDs, and resolved gray character styling in both entries and the restored placeholder. Open XML SDK 3.5.1 reported zero errors for input and output.",
+    "reference": "LibreOffice 24.2.7.2 in image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644 with repository Noto Sans fonts produced PDF sha256:2470e80b9d2884195ae9330d927a3f2ea66cc6e6c9c970a36d3587b531522fd1; Poppler 24.02.0 pdftotext -layout extracted Name: Edited then Name: Choose (text sha256:963bb1a820c9de6de5ba77df724e933b21592e46b8b614c3a818f1da7bc498b4). This is static output, not live Word execution."
+  },
+  "earlierAttempts": "The parent abb4057 passed both complete 2061-test suites but failed format verification on one test switch arm. Only test whitespace was corrected in this successor before its complete checks. A 361-case focused working-tree control suite had already passed. A later verifier-discovery command selected no tests; the intended minimum-runtime verifier then passed all seven tests.",
+  "qualification": "Actual Windows Framework execution and hosted checks for this exact source remain pending. The earlier a34ef58 push performance failure is retained separately and is not resolved by this receipt. This increment does not complete #147 or roadmap #138."
+}

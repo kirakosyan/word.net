@@ -1,0 +1,24 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "771760aa63dd722beec70f75b8bfa6a15aee8942",
+  "scope": "Unreleased bounded whole-table style inheritance for explicit borders and clear RGB shading. Conditional regions, implicit default styles and broader precedence remain open at this commit.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net8ConversionAndEnglishOcr": { "passed": 1782, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1782, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 28, "testMethods": 144, "net10CasesPassed": 251 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "cd8c60086ffa78bf1ffe78fb009dcf708e289dad137609fa32b95bcde3f99fdf",
+      "wordnet.Fonts.1.5.0.nupkg": "bc45d47a30eab40b04292759fadbf0552db4c953259a053411fb7b0a4bd62599",
+      "wordnet.Ocr.1.5.0.nupkg": "9fa9b4de3e321fc2ddb28dfbe557fbaf15521781f6ec95e67c195760d0aad3cd"
+    }
+  },
+  "independentReference": "Synthetic basedOn fixtures validated against LibreOffice 24.2.7.2 confirm the six inherited colors and a child nil border reset. Measured horizontal and vertical placement differences remain; the separate table-level shading reference failure remains unresolved.",
+  "qualification": "Hosted qualification, remaining style and shading scope, final review, merge and package publication are not established for this commit by this local record."
+}

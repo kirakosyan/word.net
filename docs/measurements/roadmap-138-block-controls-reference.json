@@ -1,0 +1,23 @@
+{
+  "roadmap": 138,
+  "issue": 145,
+  "recordedUtc": "2026-10-31",
+  "scope": "A programmatically created six-kind form uses one empty body paragraph per typed block control. Static reference inspection does not establish live Word editing, cell/story creation or all #145 acceptance criteria.",
+  "workingTreeParent": "5b6eb7eec533dfb7ae648f2bad0fd69a5a477436",
+  "executedWorkingTreeNet10AssemblySha256": "727d8be46d6ce58da07557cdb95cc4c0b4936b9c5284c841b3266e5618571658",
+  "probe": "eng/roadmap-138-block-control-probe.cs",
+  "probeSha256": "672d98015300a9fc707a6f5fbb35eb5fcab0bea7dee17e9cf77493e306530a0c",
+  "checker": "eng/check-roadmap-138-block-controls.py",
+  "checkerSha256": "3dcc54b49324b79ec41a77ba2de973db6d80db893897f7f600decb257f51a0a9",
+  "outputDocxSha256": "ae20eba494133573f184f13ad47dbc13a857921527fa79fa5aecf94e3391515e",
+  "schema": "Open XML SDK 3.5.1 reported zero errors; validator DLL SHA-256 4126071233c70310683c0fa0b65648bbd34839afa7b0a2309fba13c22501ddec.",
+  "reference": {
+    "producer": "LibreOffice 24.2.7.2 420(Build:2), Ubuntu 24.04, writer_pdf_Export; image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; repository Noto Sans fonts mounted read-only.",
+    "extractor": "Poppler 24.02.0 pdftotext -layout",
+    "pdfSha256": "bf0614e8cd7ee9d882cdbadaf95063e6428b8ef82a4c29eadd41409d6ce701b1",
+    "textSha256": "de3b1cd5f5780c916ae4be63fd50309f2ac7cc6d0b31592da09ca715df33723e",
+    "result": "The checker found six direct body wrappers, distinct IDs, the six expected control types and their one-paragraph content. Reference text retained Ada, X, Beta, Manual, 2026-10-31 and Approved in order. The working-tree assembly reproduced the DOCX byte for byte after the empty-style and aggregate control-limit checks were strengthened."
+  },
+  "earlierAttempts": "The first focused test compile failed CA1861 for test arrays and was corrected. The first block editing test used the inline rich-text replacement API; the existing block API was then used. A binding write-back test initially selected only one of two controls sharing a target and correctly failed Binding.Conflict; it now retains that negative and synchronizes both owners.",
+  "limitations": "Generated DOCX/PDF and extracted text are scratch artifacts. This is a working-tree observation; final exact-commit source, package and hosted qualification require separate checks."
+}

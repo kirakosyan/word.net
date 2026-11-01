@@ -92,6 +92,11 @@ public sealed class P1FieldTests
     [InlineData("= -2.345 \\# \"0.00\"", "-2.35")]
     [InlineData("= 2.3 \\# \"0.###\"", "2.3")]
     [InlineData("= 2 \\# \"'USD '0.00\" \\* MERGEFORMAT", "USD 2.00")]
+    [InlineData("= 0.15 \\# \"0.00%\"", "0.15%")]
+    [InlineData("= 0.15 * 100 \\# \"0.00%\"", "15.00%")]
+    [InlineData("= -2.345 \\# \"0.00%\"", "-2.35%")]
+    [InlineData("= 0 \\# \"0%\"", "0%")]
+    [InlineData("= 2.3 \\# \"0.##%\"", "2.3%")]
     public void NumericPicturesFollowTheSpecifiedRoundingAndLiteralRules(string instruction, string expected)
     { Assert.Equal(expected, Pdf(Load("<w:p>" + Field(instruction) + "</w:p>"))); }
 

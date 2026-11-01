@@ -1,0 +1,23 @@
+{
+  "roadmap": 138,
+  "issue": 150,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "dbdeeb8addb2c7d9dc7816db4f0c14eb6cbdb8af",
+  "scope": "Unreleased selection of admitted header/footer text and supported run-format changes; paragraph-property revisions are not included in this measured commit.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed",
+    "net8ConversionAndEnglishOcr": { "passed": 1709, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1709, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 20, "testMethods": 93, "net10CasesPassed": 178 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed API and archive validation against this commit",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "914ac595ca68bf7da2549cac1cc35d735291c7521b521ac64f231a2834434c03",
+      "wordnet.Fonts.1.5.0.nupkg": "e51ec3931946a024bfb8f70c36833c65b671f9aa5f3508e82a1cd2b198e6a17d",
+      "wordnet.Ocr.1.5.0.nupkg": "c25f9e8909d6fb0b05aaf0c2f3fe900d33f0e755f363544bfac410e731bf4f17"
+    }
+  },
+  "qualification": "Hosted qualification, remaining comparison categories, final review, merge and package publication are not established for this commit by this local record."
+}

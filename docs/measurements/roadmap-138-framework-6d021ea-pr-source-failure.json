@@ -1,0 +1,21 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "pullRequest": 174,
+  "pullRequestHead": "6d021ea7e85ca28c689aaf821f0e4356cc2a075c",
+  "testedMergeCommit": "3e05d5f437724b625c10f660b87abf790a48da27",
+  "testedTree": "419ce08687184cefb57fbe45d34390d108be5a75",
+  "workflowRun": 41195330728,
+  "job": 124524638347,
+  "testAsset": "source",
+  "outcome": "Failed during guest setup before any Framework tests ran. The OCR prerequisite download failed with 'Unable to connect to the remote server' after Microsoft C++ runtime signature validation and installation. This is not a test-suite failure or successful qualification.",
+  "frameworkRelease": 461814,
+  "exactFramework472": true,
+  "testBundleSha256": "ff337d433943cab560e751f5fdbd0ad0528b78ada7a6af911da525bdc1c6f5f2",
+  "vcRuntimeSha256": "cc0ff0eb1dc3f5188ae6300faef32bf5beeba4bdd6e8e445a9184072096b713b",
+  "failureArtifact": 13040853153,
+  "failureArtifactSha256": "02a85be4912a5bde0f27b01d78c415b4946dfc206b09a585a8a96c8c54d2c004",
+  "statusJsonSha256": "e394f3114a4f02c31959b60c3e4f6a10e30b987aff9ae80004f63a1be63d94aa",
+  "setupLogSha256": "4aec0de7598e86eb25ed78f6638878a4609d00da558c8a6ebedb08d923dcf0d6",
+  "qualification": "Retain this failed attempt separately from any subsequent retry. A different push-side guest passed its source suite; that result does not replace this PR-merge guest attempt."
+}

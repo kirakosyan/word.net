@@ -1,9 +1,13 @@
 # ADR B5-OBJECTS: charts and equations in three stages
 
+Historical design checkpoint: published 1.5.0 includes the subsequently implemented
+bounded preservation, rendering and editing profiles described in [P2 objects](../p2-objects-typography.md)
+and the [capability matrix](../roadmap-102-capability-matrix.json).
+
 Design proposal for [#31](https://github.com/kirakosyan/word.net/issues/31),
-2026-10-17. The editing foundation (#11) is merged; editable charts/equations remain
-deferred. This design adds no model node, adapter, renderer, dependency or public API.
-Implementation must first change the explicit deferred-scope policy in
+2026-10-17. The editing foundation (#11) was merged; editable charts/equations were
+then deferred. This design added no model node, adapter, renderer, dependency or public API.
+Implementation first required a change to the deferred-scope policy in
 [AGENTS.md](../../AGENTS.md) for the selected stage only.
 
 ## Decision and supported first subsets

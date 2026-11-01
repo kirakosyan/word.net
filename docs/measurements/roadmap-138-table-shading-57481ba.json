@@ -1,0 +1,24 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "57481ba8b491d971ad26f8c36d37c96735e8da33",
+  "scope": "Unreleased direct clear RGB table shading for simple body tables, with explicit losses for unqualified conflicts, owners and pagination. Conditional styles and broader shading precedence remain open.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed",
+    "net8ConversionAndEnglishOcr": { "passed": 1767, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1767, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 26, "testMethods": 135, "net10CasesPassed": 236 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed API and archive validation against this commit",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "7929141e1f3b8dd8cc6fcb9ad390b9cfe0f2681a6c6f64cf8e5d8e42db235b65",
+      "wordnet.Fonts.1.5.0.nupkg": "4a4051a5c13d4069607f72a1a81880cc1f638fe1b531baa77f94912e382532ed",
+      "wordnet.Ocr.1.5.0.nupkg": "68f7b823c05d7aa3392c6d4fd8949bfd4701bb101307587371a4bce61ec101fa"
+    }
+  },
+  "independentReference": "The matching-source working-tree ODT probe passed pinned ODF 1.3 schemas and reopened in LibreOffice with the expected color and reading order. LibreOffice did not render the original DOCX table-level fill; the direct-cell control painted the color but does not qualify table-shading parity.",
+  "qualification": "Hosted qualification, remaining style and shading scope, final review, merge and package publication are not established for this commit by this local record."
+}

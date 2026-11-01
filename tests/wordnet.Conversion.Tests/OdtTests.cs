@@ -16,7 +16,7 @@ public sealed partial class OdtTests
     private static byte[] Fixture(string name) => File.ReadAllBytes(Path.Combine(TestDocuments.FixtureDirectory, "Odt", name + ".odt"));
     private static ConversionContext Context() => new ConversionContext(new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
     [Fact]
-    public void PublicOdtGateAddsDocxExchangeAndPdfExportAndKeepsSessionEditingExplicit()
+    public void PublicOdtGateAddsDocxExchangePdfExportAndSessionEditing()
     {
         var converter = new WordConverter();
         for (int value = 0; value <= 12; value++)
@@ -27,10 +27,12 @@ public sealed partial class OdtTests
         }
         Assert.False(converter.CanConvert((DocumentFormat)999, DocumentFormat.Docx));
         using var source = new MemoryStream(Fixture("text"));
-        Assert.Throws<NotSupportedException>(() => WordDocument.Load(source, DocumentFormat.Odt, out _, cancellationToken: TestContext.Current.CancellationToken));
-        WordDocument document = WordDocument.Create(); using var output = new MemoryStream();
-        Assert.Throws<ArgumentOutOfRangeException>(() => document.Save(output, DocumentFormat.Odt, cancellationToken: TestContext.Current.CancellationToken));
-        Assert.Equal(0, output.Length);
+        WordDocument document = WordDocument.Load(source, DocumentFormat.Odt, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        using var output = new MemoryStream(); document.Save(output, DocumentFormat.Odt, cancellationToken: TestContext.Current.CancellationToken);
+        output.Position = 0;
+        WordDocument restored = WordDocument.Load(output, DocumentFormat.Odt, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Equal(document.Paragraphs.Select(p => p.Text), restored.Paragraphs.Select(p => p.Text));
+        Assert.True(source.CanRead); Assert.True(output.CanWrite);
     }
     [Fact]
     public void StrictPlainTextExchangeUsesBothPublicDirectionsWithoutInventedLosses()

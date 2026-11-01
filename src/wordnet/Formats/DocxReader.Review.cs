@@ -158,6 +158,52 @@ internal sealed partial class DocxReader
     private static bool IsReviewCompanion(XElement element) => element.Name == W + "bCs" || element.Name == W + "iCs"
         || element.Name == W + "szCs" || element.Name == W + "lang" || element.Name == W + "noProof";
 
+    private void ReadParagraphFormatRevision(XElement source, XElement? properties, ParagraphBlock paragraph, TextStyle inherited)
+    {
+        if (!context.PreserveReview) return;
+        XElement[] changes = properties?.Elements(W + "pPrChange").ToArray() ?? Array.Empty<XElement>();
+        if (changes.Length == 0) return;
+        bool body = source.Parent?.Name == W + "body";
+        bool cell = source.Parent?.Name == W + "tc" && source.Parent.Parent?.Name == W + "tr"
+            && source.Parent.Parent.Parent?.Name == W + "tbl" && source.Parent.Parent.Parent.Parent?.Name == W + "body";
+        if (changes.Length != 1 || !body && !cell || paragraph.StructuralRevision != null || paragraph.Control != null
+            || paragraph.List != null || paragraph.HeadingLevel != 0 || paragraph.IsCodeBlock || paragraph.RightToLeft.HasValue || paragraph.Layout.Tabs.Count != 0
+            || paragraph.Runs.Any(r => r.FieldInstruction != null || r.Control != null || r.TypedControlId.HasValue || r.Bookmark != null
+                || r.Box != null || r.Note != null || r.Image != null || r.Link != null || r.Object != null || r.Comment != null))
+            throw new NotSupportedException("Review.ParagraphFormat: Paragraph-property history requires an ordinary body or simple-cell paragraph.");
+        XElement change = changes[0]; XElement? old = change.Element(W + "pPr");
+        if (old == null || change.Elements().Count() != 1 || properties!.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
+            || old.Elements().GroupBy(e => e.Name).Any(g => g.Count() != 1)
+            || change.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "id" && a.Name != W + "author" && a.Name != W + "date")
+            || old.Attributes().Any(a => !a.IsNamespaceDeclaration))
+            throw new InvalidDataException("Review.ParagraphFormat: Invalid paragraph-property history.");
+        bool Common(XElement e) => e.Name == W + "pStyle" || e.Name == W + "keepNext" || e.Name == W + "keepLines" || e.Name == W + "pageBreakBefore"
+            || e.Name == W + "spacing" || e.Name == W + "ind" || e.Name == W + "jc";
+        if (properties.Elements().Any(e => !Common(e) && e.Name != W + "rPr" && e.Name != W + "pPrChange" && e.Name != W + "sectPr") || old.Elements().Any(e => !Common(e)))
+            throw new NotSupportedException("Review.ParagraphFormat: Only alignment, indentation, spacing and pagination controls are supported.");
+        if ((string?)properties.Element(W + "pStyle")?.Attribute(W + "val") != (string?)old.Element(W + "pStyle")?.Attribute(W + "val"))
+            throw new NotSupportedException("Review.ParagraphFormat: Paragraph style must be unchanged.");
+        foreach (XElement element in properties.Elements().Concat(old.Elements()).Where(e => e.Name != W + "rPr" && e.Name != W + "pPrChange" && e.Name != W + "sectPr"))
+        {
+            if (element.Name == W + "pStyle" && string.IsNullOrEmpty((string?)element.Attribute(W + "val")))
+                throw new InvalidDataException("Review.ParagraphFormat: A paragraph style identifier is required.");
+            if (element.Name == W + "ind" && element.Attribute(W + "firstLine") != null && element.Attribute(W + "hanging") != null)
+                throw new InvalidDataException("Review.ParagraphFormat: First-line and hanging indents cannot both be set.");
+            if (element.HasElements || element.Attributes().Any(a => !a.IsNamespaceDeclaration && (a.Name.Namespace != W
+                || (element.Name == W + "spacing" ? a.Name.LocalName is not ("before" or "after" or "line" or "lineRule")
+                    : element.Name == W + "ind" ? a.Name.LocalName is not ("left" or "right" or "firstLine" or "hanging") : a.Name.LocalName != "val"))))
+                throw new NotSupportedException("Review.ParagraphFormat: Unsupported paragraph-property metadata.");
+        }
+        TextStyle previous = inherited.Copy(); ReadParagraphProperties(old, previous);
+        if (previous.RightToLeft.HasValue || previous.Layout.Tabs.Count != 0 || previous.ListId != 0 || previous.Heading != 0 || previous.CodeBlock)
+            throw new NotSupportedException("Review.ParagraphFormat: Previous formatting contains unsupported paragraph structure.");
+        ReviewRecord record = ReviewMetadata(change); record.Structure = "paragraph-format";
+        if (review.Revisions.ContainsKey(record.Id)) throw new InvalidDataException("Review.Id: Duplicate paragraph revision identifier.");
+        paragraph.ParagraphFormatRevision = record.Id;
+        paragraph.PreviousParagraphFormat = new ParagraphFormatSnapshot(previous.Alignment, previous.Layout, paragraph.FallbackAfter);
+        paragraph.ExplicitParagraphFormat = true; review.Revisions.Add(record.Id, record);
+    }
+
     private static string? ReadReviewCompanions(XElement? properties)
     {
         XElement[] companions = properties?.Elements().Where(IsReviewCompanion).ToArray() ?? Array.Empty<XElement>();
@@ -213,7 +259,7 @@ internal sealed partial class DocxReader
         ValidateMoveRanges(root);
         if (root.Descendants(W + "delText").Any(e => !e.Ancestors(W + "del").Any())) throw new InvalidDataException("Review.DeletedText: Deleted text has no deletion owner.");
         foreach (XElement element in root.Descendants())
-            if (element.Name.Namespace == W && (element.Name.LocalName.EndsWith("Change", StringComparison.Ordinal) && element.Name != W + "rPrChange"
+            if (element.Name.Namespace == W && (element.Name.LocalName.EndsWith("Change", StringComparison.Ordinal) && element.Name != W + "rPrChange" && element.Name != W + "pPrChange"
                 || element.Name.LocalName.StartsWith("move", StringComparison.Ordinal) && element.Name != W + "moveFrom" && element.Name != W + "moveTo"
                     && element.Name != W + "moveFromRangeStart" && element.Name != W + "moveFromRangeEnd" && element.Name != W + "moveToRangeStart" && element.Name != W + "moveToRangeEnd"
                 || element.Name.LocalName.StartsWith("customXml", StringComparison.Ordinal) && element.Name.LocalName.Contains("Range")))
@@ -221,6 +267,9 @@ internal sealed partial class DocxReader
         foreach (XElement change in root.Descendants(W + "rPrChange"))
             if (change.Parent?.Name != W + "rPr" || change.Parent.Parent?.Name != W + "r")
                 throw new NotSupportedException("Review.Format: Run property history requires an ordinary run owner.");
+        foreach (XElement change in root.Descendants(W + "pPrChange"))
+            if (change.Parent?.Name != W + "pPr" || change.Parent.Parent?.Name != W + "p")
+                throw new NotSupportedException("Review.ParagraphFormat: Paragraph-property history requires a paragraph owner.");
         foreach (XElement marker in root.Descendants(W + "ins").Concat(root.Descendants(W + "del")))
         {
             bool paragraphMark = marker.Parent?.Name == W + "rPr" && marker.Parent.Parent?.Name == W + "pPr" && marker.Parent.Parent.Parent?.Parent?.Name == W + "body";

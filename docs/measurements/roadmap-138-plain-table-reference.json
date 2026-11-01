@@ -1,0 +1,393 @@
+{
+  "roadmap": 138,
+  "issues": [
+    142,
+    167
+  ],
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "e0a08fb5d629beb631fa7e722f2005aa981dc8e3",
+  "scope": "Unstyled direct fixed-grid DOCX body tables with simple text and omitted or fully specified horizontal margins; managed fixed output only.",
+  "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+  "fixtureManifest": {
+    "provenance": "Synthetic OOXML independently authored with the MIT fixture helper; no wordnet serialization.",
+    "generatorSha256": "8d9858b79853ccc4ca428fadca305065529d7c3633c4f8ed44c7888e03343e2b",
+    "documents": {
+      "implicit.docx": "c0865fb66e8e2aa0fbe086f74de2c1572d0d919dcab113c886d2248d9405ef5c",
+      "two-columns.docx": "b0ea55cdb61720ead65c998a0577775df5f3a90e0844e5adb6f29950580093d4",
+      "two-rows.docx": "0870eaf5be266a23a01ae1a9ff763105741a28a1b3b5601351b0d2011fc2850b",
+      "explicit-115.docx": "10aa29a1f4045c18f5b94f6db690f2331cba39b4fb3b84c835c3af93f62dd030",
+      "explicit-108.docx": "34003382f05782ca9189b9a7afde9a0458e745ff915860c4ff8f0cfd16b14bf2",
+      "explicit-zero.docx": "c4124dcbf284a63447e94e0cb8a2f77f7594be09a21bc61e7faeea9b86479e85",
+      "cell-zero.docx": "61ab0495d1afe9a2f3ae2dabe741bf5f6f3f50b13dd86f70a89061aadcc9fb48",
+      "only-top.docx": "0958355ea85821158759a0d77f9b85001f228f712d01bd73d32841776914e4ca",
+      "border.docx": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7"
+    }
+  },
+  "twoIndependentGenerationsIdentical": true,
+  "sourceFilesSha256": {
+    "eng/generate-roadmap-138-plain-tables.py": "8d9858b79853ccc4ca428fadca305065529d7c3633c4f8ed44c7888e03343e2b",
+    "eng/verify-roadmap-138-plain-tables.py": "2637b37abb7747696c0a694674e462e5c50efb0888b8b4aa7c9727404fa933ee",
+    "eng/roadmap-138-plain-tables-save-probe.cs": "997835d08c7c062de1317fa95ff70f9b1d37f419f0a034e490ce7e924f2801c9",
+    "eng/roadmap-138-layout-runs-probe.cs": "a7b88254ea47da8d67e60e557fb51907683d5bcc0105585ebe35963ac18dc431",
+    "src/wordnet/Formats/DocxReader.cs": "5e62d9171aec3d9269b7f7f312c86c83e570737d4b96d11bc185b4b1662753c6",
+    "src/wordnet/Internal/DocumentCloner.cs": "5a878f748745707229d92518c9aaad4055af846b2fe340e6313689648cd91c74",
+    "src/wordnet/Layout/FixedLayout.cs": "8128b6811efaae99303bd6c152827094b5b66964cee597bad31b8b4de1570e5f",
+    "src/wordnet/Model/DocumentModel.cs": "e9fc4ed4ed4594f7c24ac03016c37403a2d3397eb98d64e3e28798c72547c5a9",
+    "tests/wordnet.Conversion.Tests/LayoutSnapshotTests.cs": "0a904875a2aee34061ae3b32766e717d8244a1b8cef1a679498a4fea1016ff40"
+  },
+  "candidateAndProbeNet10AssemblySha256": "243a7826bc67f56cd174095d91b5f69d60db59ccf18591c955f71038bd9c89ae",
+  "baselineProbeNet10AssemblySha256": "c73a332bf92ce97145a78c761c80abe1b002959d32c9f30343be7f8c13a3e17f",
+  "validator": "Open XML SDK 3.5.1",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "sourceSchemaLogSha256": "29657de148cc2620412d03e213d738979d3b2b39b029e9555df2ee4e3c2398ff",
+  "savedSchemaLogSha256": "34ffe27b5f5ec57e63755e6210979e66808c4bb90f8544a6edcea076bb18cf86",
+  "officeReference": "LibreOffice 24.2.7.2 in network-disabled wordnet-138-reference:temporary image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; embedded Noto Sans mounted read-only; fc-match verified.",
+  "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "referenceLogSha256": "bbb2995ba1a4773e1911e9df7db332ea333a6368ad969ea144e63a2a6c585f53",
+  "fixtures": {
+    "implicit": {
+      "sourceDocxSha256": "c0865fb66e8e2aa0fbe086f74de2c1572d0d919dcab113c886d2248d9405ef5c",
+      "baselinePdfSha256": "c3f9bb11fc95b6168a04d8fb6fe0e12ded6e9abbb1c8fc89a4191e07375dcb1a",
+      "candidatePdfSha256": "e118716118b0d3566fbc43d767b6e8b39e3323d1f947438aa2ba472d82d2b6db",
+      "officePdfSha256": "3bfde80949ec8380567b04b7b30e0440ffa1f3edd87ac60096fd6dd5b5d509a2",
+      "savedDocxSha256": "7b906dbfd1184d63961819538a62c5058b5c607533c48b1de140c4f8df22be9f",
+      "savedPdfSha256": "dca76596ec09e65f209e9624893ad77c040696f177fb7838d481244bbae78e85"
+    },
+    "two-columns": {
+      "sourceDocxSha256": "b0ea55cdb61720ead65c998a0577775df5f3a90e0844e5adb6f29950580093d4",
+      "baselinePdfSha256": "a8dbad7535abf8d431d1c95969aef768fb5ce65e595ebd12b2131d76e7a083af",
+      "candidatePdfSha256": "9bd5b11471407fc9402585c4dccf6ecba33888a8c8034b8770fc4f8340302584",
+      "officePdfSha256": "8f652baf78c802c5f28dcdabc5150da89a559d2b85bf0bbc0fccee8c0f7d2f44",
+      "savedDocxSha256": "3a3769cab8f8c1507f2ddc4263ba9292a2a643eb8e7ccc5736146235aa54cb3d",
+      "savedPdfSha256": "bb1eab6b4c819f9a461f2c598ed17e7998b87365175975ae6e634efc23d3c563"
+    },
+    "two-rows": {
+      "sourceDocxSha256": "0870eaf5be266a23a01ae1a9ff763105741a28a1b3b5601351b0d2011fc2850b",
+      "baselinePdfSha256": "8233d9e4f42f78f34f24b4138dfd74b972b6192a481f2c7182f0d60257bbc44e",
+      "candidatePdfSha256": "0f61400e7eb195ec0b4ceab17601bc1c7a684afaa512cd4b134bde141ce0f788",
+      "officePdfSha256": "aa4717fce91602c945dd924d2926843bd98b355c685672470b44b08eba5cbba5",
+      "savedDocxSha256": "0cb940b37bae426c59db56010d9757b08d45d9cebdce189860530c3027056d9d",
+      "savedPdfSha256": "540a33e98c65c150d25034cf52b983b65c869a45b437aeed0e66603be92daafe"
+    },
+    "explicit-115": {
+      "sourceDocxSha256": "10aa29a1f4045c18f5b94f6db690f2331cba39b4fb3b84c835c3af93f62dd030",
+      "baselinePdfSha256": "65ca8c7e15117d5ed910404418907194d1c54c2a9dc59e2b7d80bffae909ab2f",
+      "candidatePdfSha256": "e8432e86857b8373ac05dc27bd1cd12d27dd106ba3f6aae161b68358e86487ad",
+      "officePdfSha256": "4f7ae3fb60ee218b453eedf28d962fb5e14a082d6956aea17284d0a5f1b133b8",
+      "savedDocxSha256": "2ff1d9671b3a1d4bc800d0f4ba5ae4a3089d21caaadf30c5a6874261f53d4e5d",
+      "savedPdfSha256": "63de6706897fa0e742f57586bf4b494c4ccf3e924665f925b5e58de1d63c36b5"
+    },
+    "explicit-108": {
+      "sourceDocxSha256": "34003382f05782ca9189b9a7afde9a0458e745ff915860c4ff8f0cfd16b14bf2",
+      "baselinePdfSha256": "21df4b9189c3554f6eb39a22ee94a50b98209a37b74494956a985df03060888e",
+      "candidatePdfSha256": "da72ad75273d5d94f1f55ea656a9576e8695ac6c30c86ae5c4011974bf459ad8",
+      "officePdfSha256": "5e23efdfe0f7d0365fb677219ae2aa9c73a40f6404000261a9832bd67b16c247",
+      "savedDocxSha256": "335910acc67b3cd59e86b5b8803e566e9c628c0761b110a36eedd4c70fdf811a",
+      "savedPdfSha256": "de8abac1b9eef8a8c23985a87fa8be40273abfefb7a60e6df82ae0db96baecc3"
+    },
+    "explicit-zero": {
+      "sourceDocxSha256": "c4124dcbf284a63447e94e0cb8a2f77f7594be09a21bc61e7faeea9b86479e85",
+      "baselinePdfSha256": "5a2936926b5f6d119518bc7c5e5faa45daa13177cb6e257e837088ae7c37e330",
+      "candidatePdfSha256": "5037f5f4bd73b6de9846618123c7b0af84783aeae74868404e636561f8f49590",
+      "officePdfSha256": "4fb2b478d9bf795251dded30a6a17e3c8dfab2774bd384f92df268bcf27c2bbc",
+      "savedDocxSha256": "b62f5c90d9fd14827ff8126c3d2d7e9b896e5de4ea2e009cf0f3f2ef04778b6c",
+      "savedPdfSha256": "edd948193616ef5180a5e1d4d2429beecea90e7de7c56f19fa6e2efb57b08fd4"
+    },
+    "cell-zero": {
+      "sourceDocxSha256": "61ab0495d1afe9a2f3ae2dabe741bf5f6f3f50b13dd86f70a89061aadcc9fb48",
+      "baselinePdfSha256": "a1c12b4782a02880d400bc167cddb0f44154ed9b6ff8fa5d8a9dc527e73d3382",
+      "candidatePdfSha256": "9eaac5049a16cda66775e2c704cae51b13297917f580263a8323f672ff8c65c5",
+      "officePdfSha256": "605cafda12bc5be09558628a8bdf227786b5cc7ca481424f92cb412b60590464",
+      "savedDocxSha256": "b62f5c90d9fd14827ff8126c3d2d7e9b896e5de4ea2e009cf0f3f2ef04778b6c",
+      "savedPdfSha256": "edd948193616ef5180a5e1d4d2429beecea90e7de7c56f19fa6e2efb57b08fd4"
+    },
+    "only-top": {
+      "sourceDocxSha256": "0958355ea85821158759a0d77f9b85001f228f712d01bd73d32841776914e4ca",
+      "baselinePdfSha256": "869ae367ba73a4beec8e5934b6bc537c0a4e3e6487f9697979c55c4a0514446c",
+      "candidatePdfSha256": "be305249e6d3354b0b322e87a254a6437336a533dffbd2eba493054a448bca78",
+      "officePdfSha256": "d2de6823b658a707666f2b4a4660856b5b8a69aa4db3f5fcb992e3a4072480a1"
+    },
+    "border": {
+      "sourceDocxSha256": "dd3523443e60405e92c8d382c8862bd35ea9c30518c1947924520d8b904b12e7",
+      "baselinePdfSha256": "529629a86f19861eb98779a6de99e6a92fa8fb41bb9e42891f20e927294940ba",
+      "candidatePdfSha256": "19fa9effdb90b92d12d1ac94adecf0fa3b702d38a20d717f6d3d20b860418d06",
+      "officePdfSha256": "43fb51a872d24a7897d7a26bd000bc7b6d33ef61c014021d317d3253391d3906"
+    }
+  },
+  "verification": {
+    "glyphOriginTolerancePt": 0.25,
+    "cases": {
+      "implicit": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "two-columns": {
+        "characters": 16,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "two-rows": {
+        "characters": 16,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.25,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "explicit-115": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "explicit-108": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "explicit-zero": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "cell-zero": {
+        "characters": 12,
+        "maximumChangePt": 6.0,
+        "officeMaximumGlyphOriginDeltaPt": 0.09999847412109375,
+        "officeGlyphComparisonPassed": true,
+        "savedGeometryMatches": true
+      },
+      "only-top": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+        "officeGlyphComparisonPassed": false,
+        "savedGeometryMatches": null
+      },
+      "border": {
+        "characters": 12,
+        "maximumChangePt": 0,
+        "officeMaximumGlyphOriginDeltaPt": 6.0,
+        "officeGlyphComparisonPassed": false,
+        "savedGeometryMatches": null
+      }
+    },
+    "negativeControls": {
+      "wrong text": "Saved output changes glyphs or geometry: implicit",
+      "wrong font": "Saved output changes glyphs or geometry: implicit",
+      "shifted cell": "Saved output changes glyphs or geometry: implicit",
+      "shifted following text": "Saved output changes glyphs or geometry: implicit",
+      "changed plain body": "Saved output changes glyphs or geometry: implicit",
+      "changed explicit margin": "Saved output changes glyphs or geometry: explicit-zero",
+      "changed border": "Unexpected source-bounded geometry change: border",
+      "changed partial margin": "Unexpected source-bounded geometry change: only-top",
+      "shifted office reference": "Office glyph-origin tolerance exceeded: implicit",
+      "wrong source role": "Unexpected source-bounded geometry change: implicit",
+      "missing character": "Source and output character counts differ: implicit",
+      "changed saved glyph": "Saved output changes glyphs or geometry: implicit",
+      "introduced default margin": "Saved margin omission or explicit values differ: implicit",
+      "changed saved margin": "Saved margin omission or explicit values differ: explicit-zero"
+    },
+    "controlMethod": "Parsed glyph observations changed in memory."
+  },
+  "verificationLogSha256": "e16a32676a011a6f7bc875f7e842677a2192ec2e8bb2ef5501546db46a202bd7",
+  "previousRunFixture": {
+    "inputSha256": "ee618813ad83e2a071414388f9babac76009c6b4fc1cbea2ea3ab2d6fccc4dcb",
+    "officePdfSha256": "760f3f0927b05887bab25eb5970eed7ec45470b154d2cb127568aa1e03d4cdad",
+    "candidatePdfSha256": "f64d4305e72b455da7e477bb081412f31b3deb5f0a14e467f09c70a9ff7df98a",
+    "verificationLogSha256": "299a40b44d9b101c663fc8f70a01042fc78afe7d8c161ddfee0925a6a4bfaee1",
+    "result": {
+      "fontSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "specimen": {
+        "pages": 1,
+        "fragments": 8,
+        "mappedRuns": 3,
+        "unmappedFragments": 5,
+        "maximumFontSvgBoundsDeltaPt": 8.526512829121202e-14
+      },
+      "namespaceNegatives": {
+        "namespace-run": {
+          "runSource": null,
+          "diagnostic": "Docx.Inline",
+          "visibleTextPreserved": true
+        },
+        "namespace-paragraph": {
+          "runSource": null,
+          "diagnostic": "Docx.Block",
+          "visibleTextPreserved": true
+        }
+      },
+      "negativeControls": {
+        "wrong run path": "Source run identity is missing or ambiguous",
+        "mapped coalesced run": "Source run identity is missing or ambiguous",
+        "mapped wrapped run": "Source run identity is missing or ambiguous",
+        "changed source text": "Source paragraph, order or text changed",
+        "shifted bounds": "Snapshot and independent SVG/font bounds differ",
+        "moved SVG glyph": "Snapshot and independent SVG/font bounds differ",
+        "changed PDF character": "PDF/SVG glyph text differs from source",
+        "wrong cell path": "Cell identity differs from source XML",
+        "mapped namespace-run": "Ambiguous namespace path was assigned a run owner",
+        "mapped namespace-paragraph": "Ambiguous namespace path was assigned a run owner"
+      },
+      "controlMethod": "Parsed source/output measurements changed in memory.",
+      "officeComparison": {
+        "wholePage": {
+          "actualPages": 1,
+          "referencePages": 1,
+          "glyphOriginTolerancePt": 0.25,
+          "glyphComparisonPassed": true,
+          "pages": [
+            {
+              "page": 1,
+              "actualCharacters": 24,
+              "referenceCharacters": 24,
+              "actualFonts": [
+                "NotoSans-Regular"
+              ],
+              "referenceFonts": [
+                "NotoSans-Regular"
+              ],
+              "textOrderAgrees": true,
+              "fontNamesAgree": true,
+              "maximumGlyphOriginDeltaPt": 0.25,
+              "glyphComparisonPassed": true
+            }
+          ]
+        },
+        "segments": {
+          "textOrderAgrees": true,
+          "glyphOriginTolerancePt": 0.25,
+          "segments": [
+            {
+              "name": "first direct run",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.09999847412109375,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "second direct run",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.092010498046875,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "coalesced runs",
+              "characters": 8,
+              "maximumGlyphOriginDeltaPt": 0.100006103515625,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "table cell",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.25,
+              "glyphComparisonPassed": true
+            },
+            {
+              "name": "wrapped hyperlink",
+              "characters": 4,
+              "maximumGlyphOriginDeltaPt": 0.09999847412109375,
+              "glyphComparisonPassed": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "interpretation": "OOXML specifies 115 twips as the unstyled leading and trailing defaults. LibreOffice used the same placement for an omitted margin and explicit 108 twips in these samples; the candidate follows the 115-twip standard rule and its absolute origin is at the unchanged 0.25-point comparison limit. No Word or proprietary reader was executed.",
+  "retainedFailures": [
+    {
+      "stage": "historical direct-run reference",
+      "record": "docs/measurements/roadmap-138-layout-runs-reference.json",
+      "result": "The earlier table-cell and following-link deltas were 5.5 and 5.9543 points at a 0.25-point limit."
+    },
+    {
+      "stage": "initial focused regression test",
+      "logSha256": "cad0242624983097bb646792b2a727522a318ca533990fee30d7327e28dcb186",
+      "result": "A test helper assumed unique text fragments and failed on repeated glyphs; the helper was corrected and the focused suite passed."
+    },
+    {
+      "stage": "initial namespace probe",
+      "logSha256": "0163e36a41c26777ae0744084c1fe77bd09618ad28b42ad7a965a6baf79810ae",
+      "result": "The selected fixture directory lacked the two intended namespace-control documents; the probe was repeated using the independently generated complete fixture set."
+    },
+    {
+      "stage": "initial bordered fixture schema",
+      "logSha256": "e86329f9db11b93e38a371a5d9bc13930a2c4a4837c471535fc3ac1652e7fb42",
+      "result": "Three synthetic bordered inputs failed schema validation due to element ordering; corrected fixtures passed."
+    },
+    {
+      "stage": "initial margin contrast before explicit-gap extension",
+      "logSha256": "e828e4efccbd03a1def3a4a7da37a7e8c56ebf55d1adb1146d14d48f74298a90",
+      "result": {
+        "implicit": {
+          "characters": 12,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true
+        },
+        "two-columns": {
+          "characters": 16,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true
+        },
+        "two-rows": {
+          "characters": 16,
+          "maximumChangePt": 6.0,
+          "officeMaximumGlyphOriginDeltaPt": 0.25,
+          "officeGlyphComparisonPassed": true
+        },
+        "explicit-115": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false
+        },
+        "explicit-108": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false
+        },
+        "explicit-zero": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false
+        },
+        "cell-zero": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false
+        },
+        "only-top": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 5.97222900390625,
+          "officeGlyphComparisonPassed": false
+        },
+        "border": {
+          "characters": 12,
+          "maximumChangePt": 0,
+          "officeMaximumGlyphOriginDeltaPt": 6.0,
+          "officeGlyphComparisonPassed": false
+        }
+      }
+    },
+    {
+      "stage": "remaining reference differences",
+      "result": "Partially specified horizontal margins and bordered tables continue to differ by 5.9723 and 6.0 points, respectively; neither is included in the corrected profile."
+    }
+  ],
+  "qualification": "Working-tree independent observations only. Exact source, runtime and local package checks are separate; unrelated table styles, native typography and broader geometry remain open."
+}

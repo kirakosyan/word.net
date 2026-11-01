@@ -1,0 +1,37 @@
+{
+  "roadmap": 138,
+  "issue": 164,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "00bf1f884fc35ec03146ae2f52f57b35d4615f6e",
+  "scope": "Explicit caller-provided bounded English dictionary breaks in plain managed single-page PDF paragraphs. The library does not fetch or bundle a dictionary. Search highlights and justified geometry retain documented limitations; tagged, archival and native profiles are excluded.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": { "passed": 2227, "failed": 0, "skipped": 0, "trxSha256": "7cbfd538ff18ed4bd6737036764dee1fc917c8b121d9240ae02c467bbc553660" },
+    "net10ConversionAndEnglishOcr": { "passed": 2227, "failed": 0, "skipped": 0, "trxSha256": "a9965cf23d4532084621ecc6d10fa208ec7de87fd7410d0afccb9a87c75a3f5b" },
+    "capabilityMatrix": { "profiles": 83, "testMethods": 397, "net10CasesPassed": 698 },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification against this source commit; no package was published.",
+    "packageVerificationLogSha256": "d38001697cf633f09eca316729207100b184c257182904c4498b1f9a86488988",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "027ebd56a49ab18996f416e1c261e05d541a7962f0bd725bea5b42dbf3b3e19e",
+      "wordnet.Fonts.1.5.0.nupkg": "1459fc42fa5a70a0b329f2c879c69f897cb301d1ece9c0641ca997b88feebb65",
+      "wordnet.Ocr.1.5.0.nupkg": "448dd4eb51618cca78f1481f2c5c46215e377abeca936da7e1bc55e5ca6bbccc"
+    },
+    "performanceEvidence": "docs/measurements/roadmap-138-hyphenation-performance-00bf1f8.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-hyphenation-reference.json",
+    "exactSourceProbeAndPackageNet10AssemblySha256": "8acd976cc184a5b6bd68f612f436aede2f0adc7622f05d51acfba08f2ede184a",
+    "independentSourceDocxSha256": "aa2059feeaaad2e27a4723e775d2ba9fb0009c04985751a473cbbbcd335f8588",
+    "independentSavedDocxSha256": "ab51e6b3774a29d5d4e35f10e5c456fd1a493e41f0f41fb951be98c4ee9237cc",
+    "independentPdfSha256": "66fe1e0cf429b79f4500bfc47df8d04531d180a40741666e8c9db6bd41d98845",
+    "justifiedTestPdfSha256": "57980f16663f9f661ad56637d40413356b0c240a8f1239cd4fc065518f163470",
+    "openXml": "Open XML SDK 3.5.1 reported zero schema errors for the independent saved DOCX and three exact-source test DOCX specimens. The validator apphost initially lacked DOTNET_ROOT; running the same validator DLL through the installed dotnet host succeeded.",
+    "readers": "Pinned Poppler, pypdf and PyMuPDF recover the logical word without an artificial hyphen. The selected break matches the independently licensed test-only US English dictionary, the visible hyphen outline matches the selected font within 0.05 pt, and changed DOCX/blank PDF controls are rejected.",
+    "knownFailures": "Search highlighting covers only the first line. The independent LibreOffice justified reference differed by 0.580002 pt at the word origin and 2.258973 pt at the following-line top against the unchanged 0.5-pt bound; a left-aligned substitute and changed source were rejected by controls. Both limitations are diagnosed; Strict rejects the search-geometry loss."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. Complete #164 and roadmap #138 acceptance remain open."
+}

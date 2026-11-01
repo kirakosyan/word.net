@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "444bf2e25f002c91c97aa8dee14466c878593596",
+  "date": "2026-10-31",
+  "platform": "Linux x64",
+  "sdk": "10.0.401",
+  "runtimes": ["8.0.33", "10.0.12"],
+  "validation": {
+    "lockedRestore": "passed",
+    "fiveTargetReleaseBuild": "passed",
+    "formatVerification": "passed before commit on identical code",
+    "net8ConversionAndEnglishOcr": { "passed": 1609, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1609, "failed": 0, "skipped": 0 },
+    "localCoreFontsOcrPackageApiAndArchive": "passed",
+    "hostedWindowsFrameworkSource": "failed seven template tests caused by runtime-specific test fixture construction",
+    "hostedLinuxResourceBenchmark": "failed because its qualification guard still expected 40 directions",
+    "hostedQualification": "not established; corrections require a fresh run"
+  },
+  "localPackages": {
+    "wordnet.1.5.0.nupkg": "2c15b9c8b45d573b9b54f4b892cb04c8239c1766f82d4b6f49bb6aefcf6ceeb9",
+    "wordnet.Fonts.1.5.0.nupkg": "2c2db8e3c08a846b6f6eaf4107cffcf6665d9d11fdd6091cd95531fba9602527",
+    "wordnet.Ocr.1.5.0.nupkg": "73fcbe4ca7a9a9dc3affb775441ee2c5966dd4fc400918a12365edc04f0af45b"
+  },
+  "independentTemplateCheck": {
+    "fixture": "tests/wordnet.Conversion.Tests/Fixtures/Odt/text.odt",
+    "fixtureSha256": "50f1feca909fa19bbb38aee93f5649f8451becc8a6d792b1b432bd832b133b09",
+    "coreNet10Sha256": "0e2206063766b6b8c66b3b08b1de6e05f94a6973463224fbfd76d2f47a210b24",
+    "ottSha256": "524c8b29551c6cf53c096251616e1092c31daf117b2c0baf6e42976fc936756b",
+    "dotxSha256": "6da0fac20113968f07532dcf42660cdece47a60ebde228ea14a66b29c4dae43b",
+    "inputDiagnostic": "Odt.StyleIdentityFlattened",
+    "reader": "LibreOffice 24.2.7.2 420(Build:2)",
+    "readerImageSha256": "a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644",
+    "expectedSyntheticText": "passed in both independently converted outputs",
+    "odf13Schemas": "passed; pins are in eng/test-assets/odf13-schemas.json",
+    "probe": "eng/roadmap-138-template-probe.cs",
+    "verification": "eng/verify-template-identity.py"
+  },
+  "scope": "This local source and local-package observation does not establish public package availability, general document validity, or support beyond the documented bounded profiles."
+}

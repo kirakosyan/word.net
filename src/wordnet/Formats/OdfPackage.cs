@@ -13,6 +13,7 @@ namespace WordNet.Formats;
 internal sealed class OdfPackage : IDisposable
 {
     internal const string MediaType = "application/vnd.oasis.opendocument.text";
+    internal const string TemplateMediaType = "application/vnd.oasis.opendocument.text-template";
     internal static readonly XNamespace Manifest = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
     private readonly ZipArchive archive;
     private readonly Dictionary<string, ZipArchiveEntry> entries = new Dictionary<string, ZipArchiveEntry>(StringComparer.Ordinal);
@@ -22,9 +23,10 @@ internal sealed class OdfPackage : IDisposable
     private long expanded, xmlCharacters, xmlNodes;
     internal IEnumerable<string> Names => entries.Keys;
     internal bool Contains(string name) => entries.ContainsKey(name);
-    internal OdfPackage(Stream input, ConversionContext context)
+    internal OdfPackage(Stream input, ConversionContext context, bool template = false)
     {
         this.context = context; context.CheckCancellation();
+        string mediaType = template ? TemplateMediaType : MediaType;
         // Validate the actual first local header, independently of central-directory ordering.
         long origin = input.Position;
         using (var reader = new BinaryReader(input, Encoding.UTF8, true))
@@ -34,17 +36,18 @@ internal sealed class OdfPackage : IDisposable
             input.Position += 16; ushort nameLength = reader.ReadUInt16(), extraLength = reader.ReadUInt16();
             if ((flags & 9) != 0 || method != 0 || nameLength != 8 || extraLength != 0
                 || Encoding.ASCII.GetString(reader.ReadBytes(8)) != "mimetype") throw Invalid("Mimetype");
-            byte[] mime = reader.ReadBytes(MediaType.Length);
-            if (Encoding.ASCII.GetString(mime) != MediaType) throw Invalid("Mimetype");
+            byte[] mime = reader.ReadBytes(mediaType.Length);
+            if (Encoding.ASCII.GetString(mime) != mediaType) throw Invalid("Mimetype");
         }
         input.Position = origin;
         archive = new ZipArchive(input, ZipArchiveMode.Read, true);
         try
         {
-            if (archive.Entries.Count > context.Options.MaximumArchiveEntries) throw Invalid("EntryLimit");
+            var archiveEntries = PackageArchive.ReadEntries(archive);
+            if (archiveEntries.Count > context.Options.MaximumArchiveEntries) throw Invalid("EntryLimit");
             var insensitive = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             long declared = 0;
-            foreach (ZipArchiveEntry entry in archive.Entries)
+            foreach (ZipArchiveEntry entry in archiveEntries)
             {
                 context.CheckCancellation(); declared = checked(declared + entry.Length);
                 if (declared > context.Options.MaximumExpandedBytes) throw Invalid("ExpansionLimit");
@@ -54,7 +57,7 @@ internal sealed class OdfPackage : IDisposable
                     || ContainsText(name, "signature") || name.StartsWith("Object", StringComparison.OrdinalIgnoreCase)) throw Invalid("ActiveContent");
                 entries.Add(name, entry);
             }
-            if (archive.Entries.Count == 0 || archive.Entries[0].FullName != "mimetype" || Read("mimetype").Length != MediaType.Length) throw Invalid("Mimetype");
+            if (archiveEntries.Count == 0 || archiveEntries[0].FullName != "mimetype" || Read("mimetype").Length != mediaType.Length) throw Invalid("Mimetype");
             XDocument manifest = Xml("META-INF/manifest.xml");
             if (manifest.Root?.Name != Manifest + "manifest" || (string?)manifest.Root.Attribute(Manifest + "version") != "1.3") throw Invalid("Manifest");
             foreach (XElement entry in manifest.Root.Elements())
@@ -67,7 +70,7 @@ internal sealed class OdfPackage : IDisposable
                 if (types.ContainsKey(path) || ContainsText(type, "script") || ContainsText(type, "ole")) throw Invalid("Manifest");
                 types.Add(path, type);
             }
-            if (!types.TryGetValue("/", out string? rootType) || rootType != MediaType) throw Invalid("Manifest");
+            if (!types.TryGetValue("/", out string? rootType) || rootType != mediaType) throw Invalid("Manifest");
             foreach (var entry in types.Where(e => e.Key != "/")) if (!entries.ContainsKey(entry.Key)) throw Invalid("Manifest");
             foreach (string name in entries.Keys)
                 if (name != "mimetype" && name != "META-INF/manifest.xml" && name[name.Length - 1] != '/' && !types.ContainsKey(name)) throw Invalid("Manifest");

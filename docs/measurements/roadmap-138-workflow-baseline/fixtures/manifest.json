@@ -1,0 +1,10 @@
+{
+  "provenance": "Synthetic OOXML authored independently with MIT fixture helpers; no wordnet serialization.",
+  "generatorSha256": "5f4d0412ff257cce762a2c6d9a373275eb4f6eaec2ed5c1faca4c56a407a053e",
+  "documents": {
+    "target.docx": "a678db25754b7a7f47921e6934b3166983451e003e345022dc33fa0a27f51f43",
+    "plain-fragment.docx": "5b286820d02ed41f137dc517e60b9888aadc4211856a905226a150aa2fbdfbcc",
+    "field-fragment.docx": "9682a10d7dd72652da1919295e83b84af12e7b32f45ba63a4e90d8270e29a639",
+    "review.docx": "733fa1866c2f6964cef67b4a3555510b9b2420a22d6540941acea89605a6c8bd"
+  }
+}

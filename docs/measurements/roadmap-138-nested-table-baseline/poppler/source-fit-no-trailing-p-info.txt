@@ -1,0 +1,19 @@
+Title:           
+Author:          
+Producer:        wordnet 1.5.0
+CreationDate:    Thu Oct 15 12:00:00 2026 UTC
+ModDate:         Thu Oct 15 12:00:00 2026 UTC
+Custom Metadata: no
+Metadata Stream: no
+Tagged:          no
+UserProperties:  no
+Suspects:        no
+Form:            none
+JavaScript:      no
+Pages:           1
+Encrypted:       no
+Page size:       595.3 x 841.9 pts (A4)
+Page rot:        0
+File size:       10253 bytes
+Optimized:       no
+PDF version:     1.7

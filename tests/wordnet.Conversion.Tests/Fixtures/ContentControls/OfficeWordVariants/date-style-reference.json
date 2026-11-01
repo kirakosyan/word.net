@@ -1,0 +1,14 @@
+{
+  "input": "Synthetic minimal DOCX assembled from the Word-derived date placeholder and two main-document character styles, with explicit Noto Sans 11-point defaults.",
+  "generator": "eng/generate-roadmap-138-control-style.py",
+  "generatorSha256": "e07be843e8c1c473eb56a8eaf616dc416a61261d4c87c4deed1bf2dd5433e6b8",
+  "packageHelperSha256": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+  "inputSha256": "be12c7bdf6a29400abd5e1dacc3934864f11c34cf4da3f435e8699c016aa6cc0",
+  "producer": "LibreOffice 24.2.7.2 420(Build:2), Ubuntu 24.04, writer_pdf_Export",
+  "pdfSha256": "13adebc213861f0458b114f1d18849e604f559008f7fecf87d87cc315369b18d",
+  "extractor": "Poppler pdftotext and pdftohtml 25.03.0",
+  "font": "Noto Sans Regular, b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "text": "Click here to enter a date.",
+  "color": "808080",
+  "limitations": "Static text and color only; not a Word-authored complete template, live Word execution, editable style identity or pixel-identical layout."
+}

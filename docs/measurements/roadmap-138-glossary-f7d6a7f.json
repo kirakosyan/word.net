@@ -1,0 +1,26 @@
+{
+  "roadmap": 138,
+  "issue": 143,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "f7d6a7fe4f67503345312fd74513946378d95870",
+  "scope": "Unreleased inert notTrueType font-catalog metadata in bounded local control glossaries, with additional Word-authored rich-text, plain-text and date derivatives and explicit missing-resource/character-style negatives.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 1873, "failed": 0, "skipped": 0 },
+    "net10ConversionAndEnglishOcr": { "passed": 1873, "failed": 0, "skipped": 0 },
+    "capabilityMatrix": { "profiles": 33, "testMethods": 185, "net10CasesPassed": 342 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "4efd4d82c416099f2b92c01218b21bccfe1fa2b21a41dba6d9154aa6f8189c09",
+      "wordnet.Fonts.1.5.0.nupkg": "036ce516f72c141777481fe98f4bc80a4a4338e576fb37f573b7b7a5569f82a0",
+      "wordnet.Ocr.1.5.0.nupkg": "5bed0504487e53854086fafc9258690a5567581295d9e4f24eb8d08d34c029a1"
+    }
+  },
+  "earlierAttempts": "The initial nine-case new-fixture run failed six cases because the previous validator rejected the Word-authored notTrueType flag before control inspection. A later focused .NET 8 build failed to copy dependencies because the task-owned /tmp filesystem was full; after removing two clean task-owned worktrees, the 15-case focused suite passed on both runtimes. The first package-verifier invocation supplied an abbreviated commit and was rejected before inspection; the full 40-character commit retry passed.",
+  "independentEvidence": "Selected control subtrees and local glossary resources derive from a publicly licensed Microsoft Word-authored Open XML SDK fixture. Source and saved packages pass Open XML SDK 3.5.1 validation; resource bytes, values, identity, placeholder display and explicit negative cases are inspected. Provenance and extracted hashes are in tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants. No Word execution or complete Office-authored control-family qualification is claimed.",
+  "qualification": "Hosted qualification, remaining control/resource scope, final review, merge and package publication are not established for this intermediate commit."
+}

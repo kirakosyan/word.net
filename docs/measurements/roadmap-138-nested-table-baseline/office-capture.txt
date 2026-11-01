@@ -1,0 +1,3 @@
+Reference image sha256:a3aaef646226d406fc2b511462beb0359f4cd8859d775f404bd8f137dfd5f644; network disabled.
+Ran eng/capture-office-comparison.py with the generated manifest, private pinned fontconfig, /usr/bin/libreoffice, /usr/bin/pdftoppm and cohort all.
+4 office references captured in the retained office directory.

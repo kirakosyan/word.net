@@ -1,0 +1,115 @@
+{
+  "roadmap": 138,
+  "recordedUtc": "2026-10-31",
+  "pullRequest": 174,
+  "head": "6d021ea7e85ca28c689aaf821f0e4356cc2a075c",
+  "prMergeCommit": "3e05d5f437724b625c10f660b87abf790a48da27",
+  "testedTree": "419ce08687184cefb57fbe45d34390d108be5a75",
+  "observation": "Push source and package, and PR-merge package, completed on actual Framework 4.7.2 with legacy JIT. The first PR source guest failed during setup; its separate failure record is preserved. A source retry is pending and is not included here.",
+  "runs": [
+    {
+      "workflowRun": 41195326663,
+      "job": 124525272392,
+      "commit": "6d021ea7e85ca28c689aaf821f0e4356cc2a075c",
+      "asset": "package",
+      "passed": 2253,
+      "failed": 0,
+      "skipped": 0,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "librarySha256": "628075d3d8349d52330204b606f978bf7fdd6212ca3b02965499fee8dbf5e1cd",
+      "testSha256": "a27c02d776c8fb3ab5747caf0e5c518cd6e8249db0c9b7aa6d5924c98e390773",
+      "setupArtifact": 13040953651,
+      "setupArtifactSha256": "4ecd75e4adb472568af5e39c11fbe8674a81ef8c722d926382e1dfc02f015437",
+      "resultArtifact": 13040698554,
+      "resultArtifactSha256": "85673aceaf6ffac6947b1a848661a75b7a7b44c79d06056726a3a6a01bf830c0",
+      "memberSha256": {
+        "bundle.json": "c1a3481f24cda1f6806ebc512a3b947809c1d4b0bb7ff3fb89daa56712e20352",
+        "status.json": "ac4f178e0cfc4eb3f2b2c810caf9cc928d0474a402894844c285436ec258394a",
+        "environment.json": "70fc33da52444de5099f31d984dbf1c4a4d439c18ef015994507c33d5fa0ab2e",
+        "cleanup.json": "c5484ce185b38ca4ef6c8d4c3591c4079722a145b2a01f692483b36af18ac0fe",
+        "verification.json": "6d8b71a8254c76d7fbc33bdac9b85561385144d045d6c706ae2152137919f3db",
+        "net472.trx": "a2175c1a0c10bb44b323384088e35ef8fa8a0ae87ca0e4e370251681d54a706e"
+      },
+      "cleanup": {
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "packages": {
+        "wordnet": "3ad4a3b0f196b832dd82e9bea793a362975ecc0add198ac503228fe57bd09580",
+        "wordnet.Fonts": "c7589a409bb61d7aa4595adce8e2181e02036ab8f0f8396cdd30928fefde9702",
+        "wordnet.Ocr": "7ff6e6d3dd4e0c888e3cfde9479ad38ef84d3b944370a5ff7bced1207899691f"
+      }
+    },
+    {
+      "workflowRun": 41195326663,
+      "job": 124523369773,
+      "commit": "6d021ea7e85ca28c689aaf821f0e4356cc2a075c",
+      "asset": "source",
+      "passed": 2253,
+      "failed": 0,
+      "skipped": 0,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "librarySha256": "f63c980df90ae4d1c598e9737b78c0e6f90a042e8ca8591d73094c25995c5284",
+      "testSha256": "1785b4e0254218f09fa825c0670516d650c953f249ef05be45b420c234b68b37",
+      "setupArtifact": 13040751757,
+      "setupArtifactSha256": "d0e233432f90f7fa61503245899a54458176b5793d341a26f9cc181e2c946f42",
+      "resultArtifact": 13040652949,
+      "resultArtifactSha256": "4d49152a00ef736b1fc921ed275b6a2226a2e482f808ef3fd2fb8dd78d230d6f",
+      "memberSha256": {
+        "bundle.json": "6648e2afaa155fef95328c93bd1f852e7fb9cb8a5613911bf7c67c11f7da3190",
+        "status.json": "50000192f07016ac5a22fec9292c5e1fef184f9d903901efac005533f839f38b",
+        "environment.json": "e4ba883ba5085017dbd52cbc83af8b38c384f4946120a0ae3c57422db799eb29",
+        "cleanup.json": "2779d36bb74a476ef3ae87c5be4696620a9ea6b9673329d9ff87a75fe01a7569",
+        "verification.json": "efa05d008c429bab36d1da3178146beb82a36d6761bbf5b1814b37e9d607784c",
+        "net472.trx": "d82b196247970b002b65c38db7dcff7d29de2ba94fde4c5c72e18a90917b87a6"
+      },
+      "cleanup": {
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "packages": {}
+    },
+    {
+      "workflowRun": 41195330728,
+      "job": 124526952854,
+      "commit": "3e05d5f437724b625c10f660b87abf790a48da27",
+      "asset": "package",
+      "passed": 2253,
+      "failed": 0,
+      "skipped": 0,
+      "frameworkRelease": 461814,
+      "jitMode": "legacy",
+      "librarySha256": "1e4a3dc5c85726fc30a7a1a8c248e2e8443a8bc2726de826ed7eb2e21316573f",
+      "testSha256": "b07655b41256a9b614da2739d9c6d3334e10621fed1f3c03c72b3a13e6aa167a",
+      "setupArtifact": 13040869978,
+      "setupArtifactSha256": "f659af60e1f505156ebe5bfa710bc3b9be6d1b7008836b84b2a9d1a183386e60",
+      "resultArtifact": 13040484805,
+      "resultArtifactSha256": "49a2dec53b04352847bfad6735714f33e458cb35dfb00a7757eac1aad0810b2e",
+      "memberSha256": {
+        "bundle.json": "67c82d327f95e55eda5d368d306fbf7a679817f8840b699ea57a5721339ac62e",
+        "status.json": "6d33f7f0a2977f7d6d3718c752964efeada573fffc4294e11cdd75cbd8a0d513",
+        "environment.json": "cc68521cc91993c82f72e09036c49c00df0ed23a765066f4edecc0e7aeed0f49",
+        "cleanup.json": "8a7197c0316b3a04d43224379f018955a83e270d5582309bc89e2a7907b083a9",
+        "verification.json": "6eec81907d2b44d7967b6b05e1f81664786a88f904fa480214805b2b3108bf00",
+        "net472.trx": "329174f06ed874ab1971b90511226679a614555ed1494f3b7e5056aefd08a1c3"
+      },
+      "cleanup": {
+        "containersRemoved": true,
+        "networkRemoved": true,
+        "stateRemoved": true,
+        "imageRemoved": true
+      },
+      "packages": {
+        "wordnet": "ba1fa467a96a9d5644937c630474ced97ad6b31c930220acd2caab56fa8d4f55",
+        "wordnet.Fonts": "a9dda71289d6e6b0a7ae8ef45518492606fe795439071931010bb0d40fbc5e26",
+        "wordnet.Ocr": "33af668c30af2fe919c69c9dd0d1ea20f87b3ebe56684d885c95aa5c5529b1d3"
+      }
+    }
+  ]
+}

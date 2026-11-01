@@ -1,0 +1,23 @@
+{
+  "provenance": "Independently authored minimal OOXML row and cell rich-text wrappers, MIT; no document-library serializer or customer data.",
+  "generator": "eng/generate-roadmap-138-structural-controls.py",
+  "generatorSha256": "4ea1a893f4f8e0cf65f69685bc3823cd508822e6fb2c136ba8357647403171f1",
+  "packageHelperSha256": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+  "renderer": "LibreOffice 24.2.7.2 420(Build:2), Ubuntu 24.04, writer_pdf_Export",
+  "extractor": "Poppler pdftotext 25.03.0; top-left origin, points",
+  "font": "Noto Sans Regular, b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "schemaValidator": "Open XML SDK 3.5.1, both inputs passed with zero errors",
+  "schemaValidatorSha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "documents": {
+    "row": { "inputSha256": "e3a5f9036cbaa2a0af0b43eae449cc23b630ef5ef11dff3ced7b613fd75dd82e", "pdfSha256": "91301651698e7494749d8b9999f493a3d61c71a38bf38b838f376288015a6e09" },
+    "cell": { "inputSha256": "d268e39c6fb806801522cb692c3ef572f36cbd20f2632a814506f6e182900ad1", "pdfSha256": "6a51c89273a645338f72a9a663197a8f778b2301f1db3a95ba515eccd775eeb4" }
+  },
+  "layoutText": "A B\nC D",
+  "words": {
+    "A": { "left": 72.1, "top": 71.991764 },
+    "B": { "left": 192.1, "top": 71.991764 },
+    "C": { "left": 72.1, "top": 86.991764 },
+    "D": { "left": 192.1, "top": 86.991764 }
+  },
+  "limitations": "Static text and relative positions only; no live Word execution, nested typed wrappers, report expansion, editable structural mutation or pixel-identical geometry. Reference PDFs are not committed."
+}

@@ -1,0 +1,12 @@
+Verified latest listed public version and pinned core/fonts archives.
+  Determining projects to restore...
+  Restored /workspace/wordnet-138-baseline-combinations-public/project/wordnet.Benchmarks.csproj (in 5.45 sec).
+  Determining projects to restore...
+  Restored /workspace/wordnet-138-baseline-combinations-public/project/wordnet.Benchmarks.csproj (in 258 ms).
+  wordnet.Benchmarks -> /workspace/wordnet-138-baseline-combinations-public/project/bin/Release/net10.0/wordnet.Benchmarks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.09

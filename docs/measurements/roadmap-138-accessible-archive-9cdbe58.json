@@ -1,0 +1,80 @@
+{
+  "roadmap": 138,
+  "issue": 156,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "9cdbe58f579e3596393eb0ef1c5d156bfaf160d8",
+  "scope": "Explicit PDF/A-2a plus PDF/UA-1 for bounded managed text, tables, links, alpha images, chart/equation alternatives and separately admitted positioned boxes/vectors. Notes, mixed object/drawing owners and native typography remain outside this source profile.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "Locked solution restore passed.",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "format": "Solution verification passed.",
+    "net472": "Actual Framework execution was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2210,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "95b1c759eae5adfd1c53856e1189320a76dcf38121bb1d08e92bf6edd8daabb7"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2210,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "7f75b19e6b2eacc8b0f6189209fa2fbf18c0cd9b473d6c28ab50d84d4fedc376"
+    },
+    "capabilityMatrix": {
+      "profiles": 81,
+      "testMethods": 385,
+      "net10CasesPassed": 681
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed framework API and archive verification against this source commit; no package was published.",
+    "packageVerificationLogSha256": "db71707dc298a45f779b51b507fc169d891067080e0617536647f1bc6aa75ace",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "20ab1c56951b0fc0be4d06a28c523309115055410b5b10cca206b183938a82cd",
+      "wordnet.Fonts.1.5.0.nupkg": "93699037cf9c939e92cdca7456f5928765071ff92756b61c00ab06691778ac91",
+      "wordnet.Ocr.1.5.0.nupkg": "3461e2dbaaf3c29db0a30c460a6ab6f5d60a3096b5fcb33ce028e468fe132602"
+    }
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-accessible-archive-reference.json",
+    "exactSourceProbeAndPackageNet10AssemblySha256": "2faa40cb7324fc2c8cbca05023bca75c6242bf157eb964460459adeb4aa2a6ce",
+    "testPdfSha256": {
+      "accessible-archive-basic.pdf": "9fe992360eb47cbb5c33fa2f6010c5643ed3fd9574e362c81f320c0e36c1ba49",
+      "accessible-archive-box-decorative.pdf": "ecaa168f7ad5f9b55789896ae9b68eae21280948db8f89380a605bf0218241e1",
+      "accessible-archive-box.pdf": "cbe349b240c373656d276b15f04f7ec402151d21c1da4787e70cb5dffcf08953",
+      "accessible-archive-images.pdf": "6c64098a80f651e2175f409a70727fa0456187bc5afb46634d2edbcc0eac9b10",
+      "accessible-archive-negative.pdf": "c3ffd26ebdca27fbdd7e9cbaa1059ee52dfdc614e694ee33251e240052c1af17",
+      "accessible-archive-objects.pdf": "4f9e0f9844d838e346f0bc43797d658cd83e0281004316caa6e3a6f7538c69ea"
+    },
+    "independentPdfSha256": {
+      "accessible-vector-box-decorative.pdf": "c2d0a38d25a1eccc1ecb623ae430aa237b9ba8661783bee92c6e5117dca54b09",
+      "accessible-vector-box.pdf": "d8e41ecf51adbb590f83337ee940e693ef108cb7a474c44e34722441d0274213",
+      "accessible-vector-decorative.pdf": "d652b5e8a416e2557319ed05e30eea79e9d2f6354881885ae6658742348866fc",
+      "accessible-vector-described.pdf": "fec58bf4aa94b29cb850f25cb5694225195baac1c9cd388b5b446845f8f1c2c8",
+      "accessible-vector-diamond-decorative.pdf": "e959d4a2b64636637e04a0ded2a7e4a675eadb0cec4b4a78d2d3be57b35b1051",
+      "accessible-vector-diamond-described.pdf": "4868df4c4d358cfa17b20dea1af3cb1e69a8f2726b71cb2a2bfd953251775ebe",
+      "accessible-vector-ellipse-decorative.pdf": "f93760bdace9a3b7eda9c7a9931b0ab86e104b48049ee6b92765598358667007",
+      "accessible-vector-ellipse-described.pdf": "f600066717f9e2ee01867789af4b768ffd9690c7888c571206ded2d9c08aa545",
+      "accessible-vector-line-decorative.pdf": "edf43e74d0b14e5043a2aea52203f3f59adbb90f3ee2ef48c74704ffb752b185",
+      "accessible-vector-line-described.pdf": "3498b02fe5646dba2eb4e1fa0122aa466cfdd9074f3a2f51073dda8a2e5ffd33",
+      "accessible-vector-negative.pdf": "3a094ba821d22a0b51c0ffb5d00d2bc30fe479e6df7a926793e7df731e7548ff",
+      "accessible-vector-rect-decorative.pdf": "46bd99de18e776b438398808aea6d001b50f1b83fd4282e381961c303c945e2d",
+      "accessible-vector-rect-described.pdf": "aee7833d3109656d07d948a99f08d95d151cabfa0450bf64bbb0c8a299130c0b",
+      "accessible-vector-roundRect-decorative.pdf": "695016c0ce2c41b44295a1ab694dfbb443948d31d2ca706b309e250de9a33d03",
+      "accessible-vector-roundRect-described.pdf": "12ade00c8cd00ceec21549997d2f58a302cd6edd932aebe1f76d9f1bbcead7d6",
+      "accessible-vector-selection.pdf": "71d8205f50bb7fa817e2fe2298c9d21c1844cdd1dfec7b5073262030db096cfe",
+      "accessible-vector-stroke.pdf": "6875b623abb47f9ddd2f11c4eb91807fd2d7054d1927500248bbf203a0e616ca",
+      "accessible-vector-triangle-decorative.pdf": "06ca94f7abcef134643db0838dfe61bce2c4c9f85e2a38ad30bf3eb5c15075e5",
+      "accessible-vector-triangle-described.pdf": "5109c533ad963b123c290d3aa2b4011d2d374a7799218dd03dc56150ec8ab41f",
+      "accessible-vector-two.pdf": "e83e8e38354c2fde50f1c8ab61bef8d5002026f6adfa75a2e520d3a9e7c5846e"
+    },
+    "validatorXmlSha256": {
+      "testPdfa": "bfa79059d4515fc0acc17e4dc456de660852c6f0bf8d0163becc00814e63be2b",
+      "testUa": "0dbf8f3df4b47fc5ba0f7d26d26b027cb6e53087a069f49d638758095e1d9bb7",
+      "independentPdfa": "bb80fdf6ad95afc097b50e88918bfbfbdb97879d9a9d40893f18ba49dfd54b36",
+      "independentUa": "67eeb0d40ad95fe8f259c0c3b36a14e107e24c86b6520b86335da4ac03a8c823"
+    },
+    "result": "Both independent validators accepted five exact-source semantic specimens and all 19 independently authored vector/text-box specimens. PDF/A rejected untagged and missing-metadata controls; UA additionally rejected the missing-language control, which PDF/A alone had accepted in the retained earlier observation. pypdf and PyMuPDF checked structure, annotation/ParentTree ownership, embedded fonts, alternatives and changed-alternative rejection. All 19 saved independent DOCX files passed Open XML SDK validation; their triangle geometry remained within 0.208597 pt of the independent LibreOffice reference at the unchanged 0.5-pt bound."
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source remain pending. Complete #156 and roadmap #138 acceptance remain open."
+}

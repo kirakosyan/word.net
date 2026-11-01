@@ -1,0 +1,26 @@
+{
+  "roadmap": 138,
+  "issue": 142,
+  "recordedUtc": "2026-10-31",
+  "sourceCommit": "0567bf82af831971529df3a2a404480c32466937",
+  "scope": "Unreleased editable conditional table-style borders, with a bounded independently checked outside-edge rendering profile and explicit unsupported conflicts.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12",
+    "restore": "locked solution restore passed with unchanged dependencies",
+    "releaseBuild": "all five target frameworks passed",
+    "format": "solution verification passed on identical source before commit",
+    "net472": "test project compiled; Framework execution was not performed on Linux",
+    "net8ConversionAndEnglishOcr": { "passed": 1905, "failed": 0, "skipped": 0, "trxSha256": "c55c612d18136bf62412ba4a5d2b8d5d3a59ced66b80b5b2a935d787c051fd6b" },
+    "net10ConversionAndEnglishOcr": { "passed": 1905, "failed": 0, "skipped": 0, "trxSha256": "f2ec58f6e43600994c24ab2e48fa5430f68233c63daf9744f6563c4562c88ce2" },
+    "capabilityMatrix": { "profiles": 37, "testMethods": 207, "net10CasesPassed": 374 },
+    "packageVerification": "core, fonts and OCR local 1.5.0 packages passed archive validation against this commit and pack's framework compatibility checks",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "747d36cebd47c35857300ae0518b3a15de54ad3d05ce5b02193d62258920aaab",
+      "wordnet.Fonts.1.5.0.nupkg": "2616ff7fdb6567e5ffdf8733ef1f8e7566cc32e9f25387cca8cdd413460d046c",
+      "wordnet.Ocr.1.5.0.nupkg": "b04c41a445688187cf3aad3269c64659bd3ce3ef183fbfb5b79f14c9624276f4"
+    }
+  },
+  "earlierAttempts": "Initial focused builds exposed a return-type analyzer error and a missing comparer qualification; both were corrected. A later focused run passed 154 and failed two assertions: one test requested an unsupported DOCX-to-DOCX conversion pair and one expected the new border diagnostic where the existing direct-cell diagnostic is raised first. Corrected tests verify the supported conversion pair, existing strict rejection and the new best-effort diagnostic; the complete focused suite then passed.",
+  "independentEvidence": "Eight independently generated DOCX controls and LibreOffice 24.2.7.2 PDFs use pinned Noto Sans. They establish tested outer-edge colors and positions relative to text, disabled look flags, selected corners and combined fill/border; the inherited conditional edge was omitted by LibreOffice and interior or competing precedence remains unqualified. All input/output hashes and regenerated DOCX parts were checked. Provenance and observations are in tests/wordnet.Conversion.Tests/Fixtures/TableStyleBorders. Word execution and pixel-identical geometry were not established.",
+  "qualification": "Hosted qualification, remaining table-style scope, final review, merge and package publication are not established for this intermediate commit."
+}

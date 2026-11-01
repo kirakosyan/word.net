@@ -1,0 +1,112 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceCommit": "ac2885030d8ba0fd9ffb4a1adc2c5981cbae11e5",
+  "sourceTree": "1109a5810cd33f109c6f3ab08ed98a8fcb357cc0",
+  "scope": "Immutable one-based element-child positions for admitted direct simple DOCX field findings; complex and otherwise unlocated findings remain null. Inspection remains non-reusable and reports unknown coverage.",
+  "local": {
+    "environment": "Linux x64; .NET SDK 10.0.401; runtimes 8.0.33 and 10.0.12; PowerShell 7.6.9.",
+    "restore": "Locked solution restore passed.",
+    "restoreLogSha256": "6e69d1328e4f3123c51009a89af332427b2998effc35c6b1dcc8635e8c6f7058",
+    "releaseBuild": "All five targets and the net472 test executable compiled in Release with one MSBuild worker.",
+    "buildLogSha256": "fedb763d5cd88c74ca5e88058f492008cfc0ae16f580ddeff532894e18690bb1",
+    "format": "Solution verification passed with workspace-loading warnings.",
+    "formatLogSha256": "239c224f01960886368326d9ef5ebdcce071dcd0996d157bef6a963fc1eaa49c",
+    "net472": "Actual Framework execution of this source was not performed on Linux.",
+    "net8ConversionAndEnglishOcr": {
+      "passed": 2355,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "913ddf279d5d453ed39bb081733be40dcea65f59df0cb5854725396d896b7462"
+    },
+    "net10ConversionAndEnglishOcr": {
+      "passed": 2355,
+      "failed": 0,
+      "skipped": 0,
+      "trxSha256": "0c06889f5a8cca36e21d64b89fdb5444e8f7d6454a6313ba037a6c60d75d7c0a"
+    },
+    "capabilityMatrix": {
+      "profiles": 106,
+      "testMethods": 482,
+      "net10CasesPassed": 827,
+      "logSha256": "7c6ae09479a7c6cf735985077dd06fd0deb4940639e47160006bdc3ec4101d13"
+    },
+    "packageVerification": "Serial local core, fonts and OCR 1.5.0 packs passed SDK framework API and archive checks against this source; no package was published.",
+    "packageVerificationLogSha256": "c2d0ffd10e078c8c64abdd729d148b5b416346b9746d80985abf3952bada02ce",
+    "packageSha256": {
+      "wordnet.1.5.0.nupkg": "5b4d25c355eee40dbcc096e59515d5845707c6e7b5d4e51c0b84549519326310",
+      "wordnet.Fonts.1.5.0.nupkg": "25edd0455ec22261f9b6b97cf03e91abe5db2b587a78f9b729b919bee5d04591",
+      "wordnet.Ocr.1.5.0.nupkg": "d321cd17824d99a939adf66a3e97d7bee7496bbc02b239ac71eb119eb9feb8a2"
+    },
+    "performance": {
+      "Passed": true,
+      "ReferenceMedianMilliseconds": 39.778949999999995,
+      "CandidateMedianMilliseconds": 38.4969,
+      "Ratio": 0.9677706425131886,
+      "ReferenceSamples": 62,
+      "CandidateSamples": 62,
+      "MaximumManagedUpperBoundBytes": 40115144.0,
+      "PeakSampledManagedBytes": 26866848.0,
+      "FixtureSha256": "258aa1dccf93e95b3442b3a642cd3f32e15ec32cb971cc6cccb38b01188e0c11",
+      "Affinity": "0000000000000001"
+    },
+    "performanceRecord": "docs/measurements/roadmap-138-preflight-locations-performance-ac28850.json"
+  },
+  "independentEvidence": {
+    "referenceReceipt": "docs/measurements/roadmap-138-preflight-locations-reference.json",
+    "sourceProbeAndPackageNet10AssemblySha256": "30d0b0b7e5c8189cf331a68e28ddb07e5c4d10c38bd3d5d90b0ea54f2f6c2481",
+    "sourceSchemaLogSha256": "b7698a1a71954c8badd3cb0db4ac4ee0377ac24ee79c877d2f28b2e139658dab",
+    "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+    "verifierLogSha256": "84be8815bb097468aeae342a34809065e8e5264a83ba766a3a72379df246a1af",
+    "documents": {
+      "simple": {
+        "inputDocxSha256": "59f3f4cd3d5ddb12e0b391183252ec9da23fe2e4884c59b6c4c58206d1a89c18",
+        "defaultReportSha256": "d61e80d365550fe8a6534d6c84ea47cb0b42e46788e0f6253ec773ac6eddce16",
+        "observationSha256": "e09e2c9c53435ae0e794da0b42c0274a9c7e6677e932e1811423d10754593efd"
+      },
+      "complex": {
+        "inputDocxSha256": "b8954abbc57b20c8e5c6ae21a7d49605df0f4941d63c7aa1a28a111150a3e0b7",
+        "defaultReportSha256": "56d474a99bf7624e66a7289be689e77e20ac2fe28332e0a95b2aab76a1ceb9ac",
+        "observationSha256": "89a2a67ca36e395e76632738a003606b3c34b4a04155ad4d9f4c5f8065ccfc93"
+      }
+    },
+    "result": {
+      "result": {
+        "simpleFieldPositions": 2,
+        "complexPositionUnavailable": true,
+        "defaultNamesDisclosed": false,
+        "positions": {
+          "Customer.Name": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "Customer.Code": [
+            1,
+            1,
+            2,
+            3,
+            1,
+            2,
+            1
+          ]
+        }
+      },
+      "negativeControls": {
+        "changed source field": "Unexpected simple source fields",
+        "wrong body index": "Numeric source position does not identify the field",
+        "wrong cell index": "Numeric source position does not identify the field",
+        "missing simple position": "Numeric source position does not identify the field",
+        "invented complex position": "Complex field was omitted or assigned invented precision",
+        "leaked field name": "Default report disclosed source names or element names",
+        "leaked part name": "Default report disclosed source names or element names",
+        "lost unknown coverage": "Uninspected coverage or reuse boundary changed",
+        "changed default position": "Default report positions differ from the inspected findings"
+      },
+      "controlMethod": "Parsed source/output observations changed in memory."
+    }
+  },
+  "qualification": "Actual Windows Framework and hosted checks for this exact source, broader owner coverage, identity-bound reusable plans, loss policy and roadmap #138 remain open."
+}
