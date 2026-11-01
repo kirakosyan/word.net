@@ -12,6 +12,7 @@ namespace WordNet.Tests;
 public sealed class ContentControlFragmentTests
 {
     private static readonly string[] DefinitionLabels = { "Plain: ", "Check: ", "List: ", "Combo: ", "Date: ", "Rich: " };
+    private static readonly string[][] EmptyCells = { new[] { "", "" } };
     private static string Bookmark(string name, int id) => "<w:p><w:bookmarkStart w:id='" + id + "' w:name='" + name + "'/>" + Run("Insert") + "<w:bookmarkEnd w:id='" + id + "'/></w:p>";
     private static string TargetBody(bool cell)
     {
@@ -25,6 +26,40 @@ public sealed class ContentControlFragmentTests
         string child = Control(3, "<w:text/>", "child", "<w:tag w:val='child'/>");
         string parent = Control(2, "<w:richText/>", "", "<w:tag w:val='parent'/>", block: true, content: Run("Before ") + child + Run(" after"));
         return Load(WithStore("<w:p>" + bound + "</w:p>" + parent), new ConversionOptions(FidelityMode.Lenient));
+    }
+
+    [Fact]
+    public void CreatedCellBlocksComposeIntoBodyWithIndependentIdentities()
+    {
+        WordDocument source = WordDocument.Create(new ConversionOptions(FidelityMode.Lenient));
+        source.AddTable(EmptyCells, cancellationToken: TestContext.Current.CancellationToken);
+        _ = source.InsertBlockContentControlInTableCell(0,
+            new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Source", tag: "plain-cell"), TestContext.Current.CancellationToken);
+        _ = source.InsertBlockContentControlInTableCell(1,
+            new ContentControlDefinition(ContentControlKind.RichText, initialText: "Note", tag: "rich-cell"), TestContext.Current.CancellationToken);
+        byte[] sourceBefore = Save(source); Validate(sourceBefore);
+
+        WordDocument target = Load(WithStore(TargetBody(false)), new ConversionOptions(FidelityMode.Lenient));
+        target.InsertFragmentAtBookmark("one", source, TestContext.Current.CancellationToken);
+        Assert.Equal(3, target.ContentControls.Count);
+        Assert.Equal(3, target.ContentControls.Select(control => control.Id).Distinct().Count());
+        Assert.Equal("host", target.ContentControls.Single(control => control.Tag == "host").DisplayText);
+        DocumentContentControl copied = target.ContentControls.Single(control => control.Tag == "plain-cell");
+        Assert.Equal("block body/cell paragraphs", copied.Owner);
+        target.SetControlText(copied, "Copy", TestContext.Current.CancellationToken);
+        Assert.Equal("Source", source.ContentControls.Single(control => control.Tag == "plain-cell").DisplayText);
+        byte[] saved = Save(target); Validate(saved);
+        WordDocument reopened = Load(saved, new ConversionOptions(FidelityMode.Lenient));
+        Assert.Equal("Copy", reopened.ContentControls.Single(control => control.Tag == "plain-cell").DisplayText);
+        Assert.Equal("Note", reopened.ContentControls.Single(control => control.Tag == "rich-cell").DisplayText);
+        Assert.Contains("Copy", Pdf(reopened), StringComparison.Ordinal);
+        Assert.Equal(sourceBefore, Save(source));
+
+        WordDocument cellTarget = Load(WithStore(TargetBody(true)), new ConversionOptions(FidelityMode.Lenient));
+        byte[] before = Save(cellTarget);
+        var error = Assert.Throws<NotSupportedException>(() => cellTarget.InsertFragmentAtTableCellBookmark("one", source, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Fragment.ControlOwner:", error.Message, StringComparison.Ordinal);
+        Assert.Equal(before, Save(cellTarget)); Assert.Equal(sourceBefore, Save(source));
     }
 
     [Theory]

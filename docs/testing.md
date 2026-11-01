@@ -741,6 +741,10 @@ independent corpora passed 195 altered-observation controls. The unchanged local
 single-core PDF gate passed at 1.048 against `4becf04`; candidate round medians
 ranged from 40.423 to 49.567 ms. Actual Framework and hosted checks for this
 source remain separate.
+The [created-cell fragment observation](measurements/roadmap-138-cell-composition-reference.json)
+independently checks authored inputs, schema-valid outputs, source and destination
+atomicity, copied control IDs and static office text. Seventeen altered observations
+are rejected. Exact committed-source and hosted qualification are separate.
 
 Pending #157 mixed-region tests cover three and five nested body levels, sibling
 order, empty collections, scope lookup, retained control IDs, notes and atomic

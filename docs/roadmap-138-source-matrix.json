@@ -578,9 +578,10 @@
       "id": "typed-control-fragment-body-cell",
       "issue": 147,
       "outcome": "supported-bounded",
-      "boundary": "Admitted typed controls retain nested ownership and isolated local XML bindings through repeated body or simple-cell insertion; created control kinds remain editable.",
+      "boundary": "Admitted typed controls retain nested ownership and isolated local XML bindings through repeated body or simple-cell insertion; created control kinds and created blocks in a copied simple-cell table remain editable.",
       "tests": [
         { "class": "ContentControlFragmentTests", "method": "TypedFragmentsCopyNestedOwnersAndIsolateLocalBindingStores" },
+        { "class": "ContentControlFragmentTests", "method": "CreatedCellBlocksComposeIntoBodyWithIndependentIdentities" },
         { "class": "ContentControlFragmentTests", "method": "ProgrammaticallyCreatedKindsRemainEditableAfterFragmentInsertion" },
         { "class": "ContentControlFragmentTests", "method": "WordDerivedNestedFragmentPreservesItsChildrenAndStaticText" },
         { "class": "ContentControlFragmentTests", "method": "StructuralFragmentsKeepWrapperInBodyButRejectNestedCellInsertion" },

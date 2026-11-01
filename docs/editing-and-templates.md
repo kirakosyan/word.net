@@ -397,6 +397,13 @@ typed-control restyling. The source and combined destination are admitted agains
 the destination's captured resource and work limits before committing. Broader
 resource-graph merging remains open in #147.
 
+The [created-cell composition observation](measurements/roadmap-138-cell-composition-reference.json)
+checks a table containing created plain and rich block controls copied into a body
+bookmark. Copied IDs and values remain independent of the source and an existing
+host control; attempting to insert that table-bearing fragment into a cell rejects
+without changing either document. This is a bounded source observation, not a claim
+about interactive Word editing or every composition owner.
+
 The pending source permits admitted typed controls and retained chart/equation
 objects in the same document or fragment when their paragraph owners are
 separate. Objects cannot share a paragraph with an inline, block or structural

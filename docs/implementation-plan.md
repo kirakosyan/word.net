@@ -88,6 +88,8 @@ and independent qualification criteria stay open.
 Pending #147 adds [retained chart and equation fragments](editing-and-templates.md#unreleased-source-retained-objects-in-fragments)
 and [typed-control fragments](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
 with independent identities and subsequent editing in body and simple-cell destinations.
+Created cell blocks inside a table also have a checked body-fragment composition;
+the corresponding table-bearing cell destination remains rejected.
 Mixed control/object fragments require separate paragraph owners. Admitted local
 glossary resources can be copied when their kinds do not conflict; broader resource
 merging and combination evidence remain open.
