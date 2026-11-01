@@ -24,7 +24,13 @@ these snapshots do not validate output or enforce loss policies.
 
 The preceding `b57f10e` [hosted performance gates](measurements/wordnet-138-performance-b57-hosted-success.json)
 passed at 1.034 for the PR merge against release source and 1.145 for the push
-against `e9de85c`. Other hosted jobs and actual Framework guests have separate results.
+against `e9de85c`. Both complete hosted workflows succeeded. Actual Framework 4.7.2
+legacy-JIT [PR source](measurements/wordnet-138-framework-b57-pr-source-success.json),
+[PR package](measurements/wordnet-138-framework-b57-pr-package-success.json),
+[push source](measurements/wordnet-138-framework-b57-push-source-success.json) and
+[push package](measurements/wordnet-138-framework-b57-push-package-success.json)
+guests each passed 2,426 cases and verified cleanup. Those results qualify the
+preceding head; later source and packages need separate evidence.
 
 Pending #142 direct-border tests inspect editable WordprocessingML, fixed-page and
 HTML/ODT color output, report-row expansion, disabled edges, destination losses,
