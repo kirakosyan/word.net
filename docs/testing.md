@@ -550,8 +550,10 @@ passed at 0.894 against the preceding head. Hosted and actual Framework checks f
 this newer source remain separate. The preceding `d85247c` source passed both the
 [push](measurements/roadmap-138-framework-d852-push-source-success.json) and
 [PR](measurements/roadmap-138-framework-d852-pr-source-success.json) actual Framework
-4.7.2 source guests with 2,377 cases and complete cleanup; these do not qualify the
-newer source or either package guest.
+4.7.2 source guests with 2,377 cases and complete cleanup. The
+[push package guest](measurements/roadmap-138-framework-d852-push-package-success.json)
+also passed all 2,377 cases and cleaned up. These do not qualify the newer source or
+the separate PR package guest.
 The earlier [run-mapping exact-source receipt](measurements/roadmap-138-layout-runs-a3c2e00.json)
 records both complete suites, the 822-case matrix, local packages and the independent
 controls. The unchanged [performance gate](measurements/roadmap-138-layout-runs-performance-a3c2e00.json)
