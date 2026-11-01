@@ -37,8 +37,11 @@ internal sealed partial class DocxReader
         // template inspection can examine without binding data.
         if (context.CaptureTemplateSources)
         {
-            bool inline = element.Parent?.Name == W + "p" && element.Parent.Parent?.Name == W + "body"
-                && element.Parent.Parent.Parent?.Name == W + "document";
+            XElement? paragraph = element.Parent; XElement? owner = paragraph?.Parent;
+            bool body = owner?.Name == W + "body" && owner.Parent?.Name == W + "document";
+            bool cell = owner?.Name == W + "tc" && owner.Parent?.Name == W + "tr" && owner.Parent.Parent?.Name == W + "tbl"
+                && owner.Parent.Parent.Parent?.Name == W + "body" && owner.Parent.Parent.Parent.Parent?.Name == W + "document";
+            bool inline = paragraph?.Name == W + "p" && (body || cell);
             bool repeat = tag.StartsWith("repeat:", StringComparison.Ordinal) && element.Parent?.Name == W + "body"
                 && element.Parent.Parent?.Name == W + "document";
             if (inline || repeat)
@@ -50,17 +53,17 @@ internal sealed partial class DocxReader
                     XElement[] contents = pieces[1].Elements().Take(2).ToArray();
                     if (properties.All(p => p.Name == W + "tag" || p.Name == W + "id" || p.Name == W + "alias") && contents.Length == 1)
                     {
-                        XElement? owner = contents[0];
+                        XElement? content = contents[0];
                         if (repeat)
                         {
-                            XElement[] blocks = owner.Name == W + "p" ? owner.Elements().Take(2).ToArray() : Array.Empty<XElement>();
-                            owner = blocks.Length == 1 ? blocks[0] : null;
+                            XElement[] blocks = content.Name == W + "p" ? content.Elements().Take(2).ToArray() : Array.Empty<XElement>();
+                            content = blocks.Length == 1 ? blocks[0] : null;
                         }
-                        if (owner?.Name == W + "r")
+                        if (content?.Name == W + "r")
                         {
-                            XElement[] run = owner.Elements().Take(2).ToArray();
+                            XElement[] run = content.Elements().Take(2).ToArray();
                             if (run.Length == 1 && run[0].Name == W + "t" && !run[0].HasElements)
-                            { control.InspectionElement = element; control.InspectionRootRepeat = repeat; }
+                            { control.InspectionElement = element; control.InspectionPart = mainPart; control.InspectionRootRepeat = repeat; }
                         }
                     }
                 }

@@ -1,0 +1,69 @@
+{
+  "roadmap": 138,
+  "issue": 171,
+  "recordedUtc": "2026-11-01",
+  "sourceBaseCommit": "abde1ad9d9a21185f70afe3bf61d78998fad716d",
+  "scope": "Working-tree evidence for bounded simple-cell inline control requirements and precise invalid-control locations; broader table and control coverage remain unknown.",
+  "provenance": "Three synthetic DOCX inputs were independently authored with MIT fixture helpers, without wordnet serialization; two generations were byte-identical. Open XML SDK 3.5.1 validated all inputs and the successful merged output. Python independently parsed XML positions and merged text, compared predictions with actual merge outcomes and rejected ten in-memory altered controls.",
+  "toolsAndSourceSha256": {
+    "eng/generate-roadmap-138-preflight-cell-controls.py": "84bcfaacf29b771fee826372ba9e17f84fb7e96b520d4b7b810ceb4c30eefe51",
+    "eng/generate-roadmap-138-preflight-cells.py": "198bc6f24df90a16bfd7ad25d83ab4ab28c5694a5526837a1f1d115695bb94b9",
+    "eng/generate-fidelity-reductions.py": "8e4f56c6eab12aa0286a3fe0bd3015289b149523278567cea938d4b2a8189155",
+    "eng/roadmap-138-preflight-cell-controls-probe.cs": "48fb4ee835b25e40e545d7e080c6c0f38c9f252af8a2b211f7f32a4be6356fba",
+    "eng/verify-roadmap-138-preflight-cell-controls.py": "8d1c829ee64ce60da172f37e0aa49adc45f0cc357ca1b3468d1f78d5030a4ab6",
+    "src/wordnet/TemplateInspection.cs": "904873dd6656d23e208ebda26b54c67c829ea5822f4b6e26d580e0861b38b671",
+    "src/wordnet/WordConverter.TemplateInspection.cs": "6cfa276ccf5308b3a321beacc836c961e55a314c65b43f50f217281db1266e97",
+    "src/wordnet/Formats/DocxReader.Templates.cs": "e20c60d4ce279870fe5f2506b4123dafb42ed761d3b6d8e0f839d066e0120350",
+    "src/wordnet/Internal/XmlSourceLocation.cs": "03cc23fbee7718ab41f6342a78b0082637e5595020242c2e5121687813decd35",
+    "src/wordnet/Model/DocumentModel.cs": "0028b6aae3be991ac087b751251b1770ca864d82286cb6ae5ac4aa8e27c39d86",
+    "tests/wordnet.Conversion.Tests/TemplateInspectionTests.cs": "54ca7acae08ce0eef8319cc71df667a90f29ac7efdbfaab0f154a365cdcbab7d"
+  },
+  "probeWordnetAssemblySha256": "d49b9c266f45d50fb6390dbd7eea10e345af92871cbe751777844cb28c7cde77",
+  "validatorAssemblySha256": "ff3ed8318388d84fa5bbc5736df6144ecfa3165c0b95f6b45b5330f463edf7ae",
+  "inputSchemaLogSha256": "bc7a167b974a4994d3bff4cf5d2b22d33d29e56c851fe7ae6830568113883726",
+  "outputSchemaLogSha256": "c98ed98bb7c42d2598da370356a96542192d6109cc81b08347ebd44f1f05ed57",
+  "verifierLogSha256": "4c99007e70cfbadc2ed12e902b07e6187b44ec6948c2cca867a7614e431ba5a4",
+  "focusedTestsLogSha256": "ad51bcedb92c0e2048da197094ec1bbf31ad9e30134796bfd612625463c00bed",
+  "specimenHashes": {
+    "simple": {
+      "inputDocxSha256": "c5ef0d2bb315b8bea6dde235a1c4c510cf4a39c82c98f0d5018e27aaa47e1761",
+      "defaultReportSha256": "17fadaf7b26e55d00c26891ea0f4e99d2537c95797aec7d6c094f7038ad865c5",
+      "observationSha256": "983cb576088fb81ea8ce065b9c5a4c5eb78e90725d363d2b121e7dfe5aa7a191",
+      "mergedDocxSha256": "6921483e7804746e1f4ad37f0c2eb93853f7c03d737ce9b6b83db77c19e7a335"
+    },
+    "merged": {
+      "inputDocxSha256": "4899ab44dc7c27698a5c627b4a179246bb33343182779683c956d9082701a920",
+      "defaultReportSha256": "a4b98ab7dc0833146ab68b0411fedd0c6954dccb36acc13644ab016d12e7444f",
+      "observationSha256": "131e7cd4f0abf5231f75b1d4f87a0b8e33d475b12f780bc54280e6b7c9460acc"
+    },
+    "invalid": {
+      "inputDocxSha256": "542b80729947db389c1d17eba179d477256d1af9203dee7a4efc3ccec9e6313d",
+      "defaultReportSha256": "61501f73aaa38a113721953be30bf631651bca54c35f57d3f0a28e9b2c43adbb",
+      "observationSha256": "717e065d0ae15f3b79a0d4b2ea53c32734150e3e13c590ddd8b8ec9dff236132"
+    }
+  },
+  "result": {
+    "result": {
+      "cellControlLocated": true,
+      "failedMergesUnchanged": true,
+      "successfulControls": 2,
+      "invalidControlsLocated": 2,
+      "mergedOwnerUnknown": true,
+      "defaultNamesDisclosed": false
+    },
+    "negativeControls": {
+      "wrong cell position": "Cell control path or source location differs from XML",
+      "wrong path": "Cell control path or source location differs from XML",
+      "changed failed merge": "Missing cell path does not match unchanged failed merge",
+      "changed output": "Successful output differs from independent package read",
+      "merged requirement": "Merged table was incorrectly treated as inspected",
+      "wrong invalid position": "Invalid control source locations differ from XML",
+      "invalid path disclosure": "Default report disclosed a source or path name",
+      "leaked part": "Default report disclosed a source or path name",
+      "lost owner uncertainty": "Merged owner coverage is not explicitly unknown",
+      "lost control uncertainty": "Control coverage or reuse boundary changed"
+    },
+    "controlMethod": "Parsed source/output observations changed in memory."
+  },
+  "preliminaryIdentityObservation": "The initial probe assembly 5716a472978728d152b3d6a8d8d9848e364998a11b0ceb8c1cc89461098be1c5 preceded a source documentation edit; the probe was rebuilt and the source and probe then matched as recorded above."
+}

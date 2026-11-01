@@ -501,6 +501,7 @@ internal sealed class TemplateControl
     internal string Tag { get; }
     internal bool Executable { get; set; } = true;
     internal XElement? InspectionElement { get; set; }
+    internal string? InspectionPart { get; set; }
     internal bool InspectionRootRepeat { get; set; }
 }
 

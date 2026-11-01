@@ -13,7 +13,7 @@ namespace WordNet;
 public sealed partial class WordConverter
 {
     /// <summary>Inspects a bounded DOCX template and a declaration of data paths without binding values or writing output.</summary>
-    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields, simple inline body controls and simple root-repeat paths. Other controls, repeated contents, other owners,
+    /// <remarks>This inspection covers ordinary body and bounded direct-table-cell merge fields and simple inline controls, and simple root-repeat paths. Other controls, repeated contents, other owners,
     /// output checks, layout and validation remain explicitly unknown. The returned report cannot be reused as a policy plan.
     /// Source is consumed from its current position and left open. Schema names are never included in default findings.</remarks>
     public TemplateInspection InspectTemplate(Stream source, TemplateDataSchema schema, DocumentFormat destination,
@@ -85,10 +85,21 @@ public sealed partial class WordConverter
         foreach (TemplateControl control in controls)
         {
             Work();
+            IReadOnlyList<int>? indices = null; bool located = false;
+            void ControlProblem(string code)
+            {
+                if (!located)
+                {
+                    located = true;
+                    if (control.InspectionPart != null && control.InspectionElement != null)
+                        indices = XmlSourceLocation.ChildIndices(control.InspectionElement, Work);
+                }
+                Add(code, "Remediation.FixControl", part: control.InspectionPart, indices: indices);
+            }
             try { _ = WordDocument.Tag(control.Tag); }
-            catch (InvalidDataException) { Add("Plan.InvalidControlPath", "Remediation.FixControl"); }
-            catch (NotSupportedException) { Add("Plan.InvalidControl", "Remediation.FixControl"); }
-            if (!control.Executable) Add("Plan.InvalidControlStructure", "Remediation.FixControl");
+            catch (InvalidDataException) { ControlProblem("Plan.InvalidControlPath"); }
+            catch (NotSupportedException) { ControlProblem("Plan.InvalidControl"); }
+            if (!control.Executable) ControlProblem("Plan.InvalidControlStructure");
         }
         void InspectPath(string path, string? part, string kind, string? formatSwitch, Func<IReadOnlyList<int>?> location, bool rootScope = false)
         {
@@ -166,7 +177,8 @@ public sealed partial class WordConverter
                         foreach (TextRun run in item.Runs)
                         {
                             Work();
-                            if (run.Control != null || run.TypedControlId.HasValue || run.Note != null || run.Box != null || run.Object != null || run.Link != null
+                            if (run.Control != null && (run.Control.InspectionElement == null || run.Control.InspectionRootRepeat)
+                                || run.TypedControlId.HasValue || run.Note != null || run.Box != null || run.Object != null || run.Link != null
                                 || run.Image != null || run.Bookmark != null || run.Revision != null || run.FormatRevision != null || run.Comment != null)
                             { simple = false; break; }
                             if (run.FieldCache == null) continue;

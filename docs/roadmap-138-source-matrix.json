@@ -1329,7 +1329,7 @@
       "boundary": "Formatted and other complex controls are not treated as inspected; repeat scopes retain explicit unknown coverage.",
       "tests": [
         { "class": "TemplateInspectionTests", "method": "InlineConditionsUseTheDeclaredPathButComplexControlsStayUnknown" },
-        { "class": "TemplateInspectionTests", "method": "NestedAndCellInlineControlsRemainUninspected" },
+        { "class": "TemplateInspectionTests", "method": "NestedAndMergedCellInlineControlsRemainUninspected" },
         { "class": "TemplateInspectionTests", "method": "RepeatsAndUninspectedOwnersStayUnknown" }
       ]
     },
@@ -1349,6 +1349,24 @@
       "boundary": "Mixed-scope observations and multi-paragraph repeat owners remain unknown; a wrong root collection type is reported and fails merge.",
       "tests": [
         { "class": "TemplateInspectionTests", "method": "RootRepeatTypeMismatchMatchesMergeAndMixedScopesStayUnknown" }
+      ]
+    },
+    {
+      "id": "template-inspection-simple-cell-controls",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Non-reusable inspection checks simple inline controls in admitted body-table cells while retaining unknown table and control coverage.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "SimpleCellControlRequirementsMatchActualMerge" }
+      ]
+    },
+    {
+      "id": "template-inspection-invalid-control-positions",
+      "issue": 171,
+      "outcome": "supported-bounded",
+      "boundary": "Invalid paths in direct plain controls have opaque part aliases and immutable numeric source positions without exposing the tag text by default.",
+      "tests": [
+        { "class": "TemplateInspectionTests", "method": "InvalidSimpleControlPathsIdentifyTheirSourceWithoutExposingNames" }
       ]
     },
     {

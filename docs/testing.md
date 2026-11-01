@@ -358,6 +358,10 @@ The [exact-source receipt](measurements/roadmap-138-preflight-repeats-a0e7213.js
 records both 2,363-case suites, the 835-case matrix, local packages and independent
 checks; the unchanged [performance gate](measurements/roadmap-138-preflight-repeats-performance-a0e7213.json)
 is local evidence. Hosted exact-head checks and actual Framework execution remain separate.
+The subsequent cell-control increment compares simple cell findings and invalid
+control positions with actual merges. Its [independent observation](measurements/roadmap-138-preflight-cell-controls-reference.json)
+uses three schema-valid templates, a schema-valid output and ten altered controls;
+merged and nested owners retain unknown coverage.
 The [independent observation](measurements/roadmap-138-template-inspection-reference.json)
 checks four synthetic templates against actual merges, an independent DOCX reader,
 Open XML schema validation and deliberately corrupted reports; it also preserves

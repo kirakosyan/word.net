@@ -93,7 +93,7 @@ public sealed class TemplateInspectionFinding
     public bool Unknown { get; }
 }
 
-/// <summary>A bounded body field or control path observed without evaluating its value.</summary>
+/// <summary>A bounded field or control path observed without evaluating its value.</summary>
 public sealed class TemplateInspectionRequirement
 {
     internal TemplateInspectionRequirement(string path, TemplatePathType? type, bool? required, bool scopeUnknown, int count)

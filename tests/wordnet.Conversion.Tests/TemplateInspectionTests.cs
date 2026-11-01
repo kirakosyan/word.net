@@ -11,6 +11,45 @@ namespace WordNet.Tests;
 public sealed class TemplateInspectionTests
 {
     [Fact]
+    public void SimpleCellControlRequirementsMatchActualMerge()
+    {
+        byte[] bytes = Document(InlineControl("merge:Customer.Name") + Table(InlineControl("merge:Customer.Code")));
+        var schema = new TemplateDataSchema(new TemplateSchemaPath("Customer", TemplatePathType.Mapping),
+            new TemplateSchemaPath("Customer.Name", TemplatePathType.Scalar));
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, schema, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding missing = Assert.Single(report.Findings, f => f.Code == "Plan.MissingPath");
+        Assert.Equal("Customer.Code", report.GetSensitivePathAliases()[missing.PathId!]); Assert.Equal("1,1,2,3,1,2,1", string.Join(",", missing.SourceElementIndices!));
+        Assert.Contains(report.Findings, f => f.Code == "Plan.ControlCoverage" && f.Unknown);
+        Assert.Contains(report.Findings, f => f.Code == "Plan.OwnerCoverage" && f.Unknown);
+        source.Position = 0;
+        var document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Throws<InvalidDataException>(() => document.MergeJson("{\"Customer\":{\"Name\":\"Ada\"}}", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.All(document.Paragraphs, paragraph => Assert.Equal("cached", paragraph.Text));
+        Assert.Equal(2, document.MergeJson("{\"Customer\":{\"Name\":\"Ada\",\"Code\":\"Q42\"}}", cancellationToken: TestContext.Current.CancellationToken).Changes);
+        Assert.Collection(document.Paragraphs, paragraph => Assert.Equal("Ada", paragraph.Text), paragraph => Assert.Equal("Q42", paragraph.Text));
+    }
+
+    [Fact]
+    public void InvalidSimpleControlPathsIdentifyTheirSourceWithoutExposingNames()
+    {
+        string repeat = RootRepeat("Bad-Name", "<w:p><w:r><w:t>cached</w:t></w:r></w:p>");
+        byte[] bytes = Document(InlineControl("merge:Bad-Name") + repeat);
+        using var source = new MemoryStream(bytes);
+        TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken);
+        TemplateInspectionFinding[] findings = report.Findings.Where(f => f.Code == "Plan.InvalidControlPath").ToArray();
+        Assert.Equal(2, findings.Length);
+        Assert.Contains(findings, f => string.Join(",", f.SourceElementIndices!) == "1,1,1,1");
+        Assert.Contains(findings, f => string.Join(",", f.SourceElementIndices!) == "1,1,2");
+        Assert.All(findings, f => { Assert.Null(f.PathId); Assert.Equal("word/document.xml", report.GetSensitivePartAliases()[f.PartId!]); });
+        string json = JsonSerializer.Serialize(report); Assert.DoesNotContain("Bad-Name", json, StringComparison.Ordinal); Assert.DoesNotContain("word/document.xml", json, StringComparison.Ordinal);
+        source.Position = 0;
+        var document = WordDocument.Load(source, DocumentFormat.Docx, out _, new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
+        Assert.Throws<InvalidDataException>(() => document.MergeJson("{}", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.All(document.Paragraphs, paragraph => Assert.Equal("cached", paragraph.Text));
+    }
+
+    [Fact]
     public void SimpleRootRepeatChecksCollectionPathWithoutInspectingItsContents()
     {
         byte[] bytes = Document(RootRepeat("Items", "<w:p><w:r><w:t>cached</w:t></w:r></w:p>"));
@@ -140,11 +179,13 @@ public sealed class TemplateInspectionTests
     }
 
     [Fact]
-    public void NestedAndCellInlineControlsRemainUninspected()
+    public void NestedAndMergedCellInlineControlsRemainUninspected()
     {
         string nested = "<w:p><w:sdt><w:sdtPr><w:tag w:val='if:Outer'/></w:sdtPr><w:sdtContent>"
             + InlineControl("merge:Inner").Replace("<w:p>", "").Replace("</w:p>", "") + "</w:sdtContent></w:sdt></w:p>";
-        using var source = new MemoryStream(Document(nested + Table(InlineControl("merge:Cell"))));
+        string merged = "<w:tbl><w:tblGrid><w:gridCol w:w='1500'/><w:gridCol w:w='1500'/></w:tblGrid><w:tr><w:tc><w:tcPr><w:gridSpan w:val='2'/></w:tcPr>"
+            + InlineControl("merge:Cell") + "</w:tc></w:tr></w:tbl>";
+        using var source = new MemoryStream(Document(nested + merged));
         TemplateInspection report = new WordConverter().InspectTemplate(source, new TemplateDataSchema(), DocumentFormat.Docx,
             new ConversionOptions(FidelityMode.Lenient), TestContext.Current.CancellationToken);
         Assert.Empty(report.Requirements); Assert.DoesNotContain(report.Findings, f => f.Code == "Plan.MissingPath");
