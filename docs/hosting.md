@@ -1,6 +1,6 @@
 # Hosting untrusted document conversions
 
-The library's byte, character, page, nesting and pixel settings are admission checks.
+The library's byte, character, page, nesting, block, image-placement and pixel settings are admission checks.
 They do not cap total process memory or native decoder CPU time. Use a separate worker
 process or container for untrusted documents. A cancellation token is cooperative, and
 cannot replace an external deadline.
@@ -64,3 +64,53 @@ time, sampled peak working set and conversion timings. Memory sampling is every 
 it may miss short-lived peaks and is not an OS-enforced sandbox. Run in a restricted host
 for security qualification. Hosted native x64 CI runs all three campaigns; configuration
 alone does not establish a pass. No customer data is sent anywhere by the harness.
+
+## Pending source fixes for #175–#181
+
+These changes are proposed together and are not a new published release. Existing
+constructor signatures and all five library targets remain unchanged.
+
+- `ConversionOptions.MaximumBlocks` defaults to 32,768 and is snapshotted per call.
+  It counts imported paragraphs (including empty and synthetic paragraphs), tables
+  and note records across body, cells, stories and ebook chapters. A parse that
+  exceeds the bound fails with `Limit.Blocks` before creating the next model block.
+  It does not constrain blocks created later through the editing API, which has
+  its own admission checks. Plain text is split incrementally, without first
+  allocating an array for every newline.
+- `MaximumImagePlacements` defaults to 10,000. Repeated DOCX/EPUB image parts and DOC
+  picture offsets share admitted encoded bytes; placement geometry remains separate.
+  Unique encoded resources are charged against `MaximumExpandedBytes`, and existing
+  per-placement pixel accounting remains. HTML also budgets base64 output before
+  allocating its XML tree's image attributes.
+- `MaximumExpandedBytes` now also bounds aggregate PDF filter-decoding work before
+  provider expansion. Flate and LZW streams are counted before full materialization;
+  RunLength streams are counted before decoding. Filter-chain stages and repeated
+  decodes are charged separately, as are predictor scanline buffers and LZW dictionary
+  sequences. Native image filters have a declared-dimension admission check; these
+  checks are still not a process-memory guarantee. Full LZW dictionaries must clear
+  before further additions, matching the bounded provider profile. Unfiltered bytes
+  remain subject to the input-byte limit.
+- DOC property applications, including cached indirect references, share a
+  `MaximumExpandedBytes` work budget. Nested indirect properties are rejected;
+  one-level references are parsed once per Data-stream offset. DOCX style results
+  are cached separately for paragraph and character styles, copied before direct
+  overrides, and backed by a property-work limit. Note readers share immutable
+  definitions and parse relationships once per note part. Bookmark names use a set.
+  Cached style/resource diagnostics are emitted on first resolution; placement-specific
+  checks and diagnostics still run for each placement.
+- RTF font names are limited to 256 characters and materialized once per font
+  record. KF8 uses direct array copies on all targets, checks cancellation for every
+  skeleton, rejects overlapping/out-of-order skeleton ranges (including fragment
+  bytes), and bounds cumulative fragment-shifting work by `MaximumExpandedBytes`.
+
+All admission failures apply in every fidelity mode and leave staged caller output
+untouched. Configure the two new positive limits before sharing options across calls.
+Hosts can increase them deliberately for larger trusted documents.
+
+`eng/test-import-resources.ps1` runs the adversarial regression class in a separate
+process under a 60-second, sampled 512-MiB working-set guard and verifies a fresh,
+complete xUnit report. Use `-Framework net8.0` or `net10.0`; `net472` requires Windows.
+The corpus includes the 1-GiB Flate content stream, repeated 16-MiB DOCX image,
+exponential/linear DOC property shapes, large styles/notes, RTF fonts, late KF8
+skeletons and a newline-only input at the default character limit. The guard samples
+process peaks every 50 ms and is a regression check, not an OS-enforced sandbox.

@@ -83,7 +83,7 @@ internal static partial class DocFormat
             Properties paragraphProperties = style.Clone();
             properties.Apply(paragraphProperties, papx?.Data ?? Array.Empty<byte>(), style);
             properties.Apply(paragraphProperties, markPiece.Properties, style);
-            var paragraph = new ParagraphBlock { HeadingLevel = paragraphProperties.Heading, Alignment = paragraphProperties.Alignment, Layout = paragraphProperties.Layout.Copy(), Section = section };
+            var paragraph = new ParagraphBlock(context) { HeadingLevel = paragraphProperties.Heading, Alignment = paragraphProperties.Alignment, Layout = paragraphProperties.Layout.Copy(), Section = section };
             if (paragraphProperties.ListId != 0)
             {
                 if (!lists.TryGetValue(paragraphProperties.ListId, out ListItem[]? levels) || paragraphProperties.ListLevel >= levels.Length)
@@ -94,7 +94,7 @@ internal static partial class DocFormat
             char terminator = end < text.Length ? text[end] : '\r';
             if (paragraphProperties.InTable)
             {
-                if (currentTable == null) { currentTable = new TableBlock { Section = section }; model.Blocks.Add(currentTable); }
+                if (currentTable == null) { currentTable = new TableBlock(context) { Section = section }; model.Blocks.Add(currentTable); }
                 if (paragraphProperties.RowEnd)
                 {
                     if (terminator != '\u0007' || paragraph.Text.Length != 0 || pendingCell != null || row.Count == 0)

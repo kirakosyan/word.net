@@ -20,7 +20,13 @@ internal static class KindleFormat
         if ((html.LongLength + 4095) / 4096 + (kf8 ? 7 : 4) > ushort.MaxValue)
             throw new InvalidDataException("Kindle.RecordCount: Ebook exceeds the Palm database record count limit.");
         var records = new List<byte[]> { Array.Empty<byte>() };
-        for (int offset = 0; offset < html.Length; offset += 4096) records.Add(html.Skip(offset).Take(Math.Min(4096, html.Length - offset)).ToArray());
+        for (int offset = 0; offset < html.Length; offset += 4096)
+        {
+            context.CheckCancellation();
+            byte[] record = new byte[Math.Min(4096, html.Length - offset)];
+            Buffer.BlockCopy(html, offset, record, 0, record.Length);
+            records.Add(record);
+        }
         int textRecords = records.Count - 1;
         int skeleton = -1, fdst = -1;
         if (kf8)
@@ -111,12 +117,17 @@ internal static class KindleFormat
         var fragments = fragment < 0 ? new List<IndexEntry>() : ReadIndex(records, fragment, context);
         var output = new List<byte[]>();
         long outputLength = 0;
-        int frag = 0;
+        int frag = 0, previousEnd = 0;
+        long copyWork = 0;
         foreach (IndexEntry item in skeletons)
         {
+            context.CheckCancellation();
             int fragmentCount = Value(item, 1, 0), start = Value(item, 6, 0), length = Value(item, 6, 1);
             Bounds(raw, start, length);
-            var assembled = raw.Skip(start).Take(length).ToList();
+            if (start < previousEnd || fragmentCount < 0) throw new InvalidDataException("Kindle.Skeleton: Overlapping or out-of-order skeleton ranges.");
+            byte[] skeletonBytes = new byte[length];
+            Buffer.BlockCopy(raw, start, skeletonBytes, 0, length);
+            var assembled = new List<byte>(skeletonBytes);
             int fragmentStart = checked(start + length);
             for (int i = 0; i < fragmentCount; i++)
             {
@@ -128,8 +139,15 @@ internal static class KindleFormat
                 int pieceLength = Value(piece, 6, 1);
                 Bounds(raw, fragmentStart, pieceLength);
                 if (insertion < 0 || insertion > assembled.Count || (long)assembled.Count + pieceLength > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Kindle.Fragment: Invalid fragment bounds.");
-                assembled.InsertRange(insertion, raw.Skip(fragmentStart).Take(pieceLength)); fragmentStart += pieceLength;
+                // ICollection insertion shifts the tail once on every supported runtime.
+                copyWork = checked(copyWork + assembled.Count - insertion + pieceLength);
+                if (copyWork > context.Options.MaximumExpandedBytes)
+                    throw new InvalidDataException("Limit.KindleWork: KF8 fragment copying exceeds MaximumExpandedBytes.");
+                byte[] fragmentBytes = new byte[pieceLength];
+                Buffer.BlockCopy(raw, fragmentStart, fragmentBytes, 0, pieceLength);
+                assembled.InsertRange(insertion, fragmentBytes); fragmentStart += pieceLength;
             }
+            previousEnd = fragmentStart;
             byte[] chapter = assembled.ToArray(); outputLength += chapter.Length;
             if (outputLength > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Reassembled KF8 exceeds the byte limit.");
             output.Add(chapter);

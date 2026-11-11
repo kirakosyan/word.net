@@ -386,6 +386,16 @@ reports image loss and replacement of existing digital text separately from reco
 
 ## Fidelity and resources
 
+The pending #175–#181 fixes add conversion-local import block/image budgets and
+resource caches. Readers charge paragraphs and tables at construction, including
+nested/story content. Admitted images share encoded bytes while each placement
+retains independent geometry. DOC indirect properties cache by Data-stream offset
+and charge every application; DOCX notes share immutable definitions and style
+results are copied before direct overrides. PDF installs bounded filter wrappers
+before `PdfDocument.Open`, covering compressed cross-reference/object/font/form
+streams as well as page content. The provider cannot bypass Flate admission by
+catching its own decoder errors. See [exact limits](hosting.md#pending-source-fixes-for-175181).
+
 Strict mode rejects detected losses before copying output. Best effort retains supported
 content with warnings. DOC import always reports formatting loss; PDF always reports
 reconstruction loss. This is not a guarantee of lossless interpretation of arbitrary files.

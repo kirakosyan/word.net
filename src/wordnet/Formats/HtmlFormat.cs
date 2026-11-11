@@ -17,6 +17,22 @@ internal sealed class HtmlFormat
     private readonly HtmlOptions options;
     private readonly ListCounter counter = new ListCounter();
     private readonly DocumentModel model;
+    private readonly Dictionary<byte[], string> imageData = new Dictionary<byte[], string>();
+    private long imageOutputBytes;
+
+    private string ImageData(DocumentImage image)
+    {
+        // Charge placements before building the XML tree or allocating base64 strings.
+        imageOutputBytes = checked(imageOutputBytes + ((long)image.Bytes.Length + 2) / 3 * 4 + image.MediaType.Length + 13);
+        if (imageOutputBytes > context.Options.MaximumOutputBytes)
+            throw new InvalidDataException("Limit.Bytes: Embedded HTML images exceed MaximumOutputBytes.");
+        if (!imageData.TryGetValue(image.Bytes, out string? value))
+        {
+            value = "data:" + image.MediaType + ";base64," + Convert.ToBase64String(image.Bytes);
+            imageData.Add(image.Bytes, value);
+        }
+        return value;
+    }
 
     private HtmlFormat(DocumentModel model, ConversionContext context)
     {
@@ -160,7 +176,7 @@ internal sealed class HtmlFormat
                     context.Loss("Html.ImageOmitted", "Image embedding is disabled; alternative text is retained.");
                     span = new XElement("span", image.AlternativeText);
                 }
-                else span = new XElement("img", new XAttribute("src", "data:" + image.MediaType + ";base64," + Convert.ToBase64String(image.Bytes)),
+                else span = new XElement("img", new XAttribute("src", ImageData(image)),
                     new XAttribute("alt", image.AlternativeText), new XAttribute("width", Number(image.Width * 96 / 72)),
                     new XAttribute("height", Number(image.Height * 96 / 72)),
                     new XAttribute("style", "display:inline-block;width:" + Pt(image.Width) + ";height:" + Pt(image.Height) + ";border:0;"));

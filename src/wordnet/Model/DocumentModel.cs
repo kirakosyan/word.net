@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using WordNet.Internal;
 
 namespace WordNet.Model;
 
@@ -83,6 +84,8 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal ParagraphBlock() { }
+    internal ParagraphBlock(ConversionContext context) => context.ReserveBlocks();
     internal double? FallbackFontSize { get; set; }
     internal double? FallbackAfter { get; set; }
     internal string? StyleId { get; set; }
@@ -109,6 +112,8 @@ internal sealed class ParagraphBlock : DocumentBlock
 
 internal sealed class TableBlock : DocumentBlock
 {
+    internal TableBlock() { }
+    internal TableBlock(ConversionContext context) => context.ReserveBlocks();
     internal int HeaderRowCount { get; set; }
     internal bool HasHeaderRow { get => HeaderRowCount > 0; set => HeaderRowCount = value ? System.Math.Max(1, HeaderRowCount) : 0; }
     internal double? Width { get; set; }

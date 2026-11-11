@@ -227,7 +227,7 @@ internal static partial class OdtFormat
                     {
                         if (!masters.TryGetValue(master, out PageSettings? page)) throw Invalid("Master"); active = page;
                     }
-                    var paragraph = new ParagraphBlock { Section = active, List = item?.Copy() };
+                    var paragraph = new ParagraphBlock(context) { Section = active, List = item?.Copy() };
                     if (element.Name == T + "h") paragraph.HeadingLevel = Math.Min(6, Count(element, T + "outline-level"));
                     foreach (var property in appearance)
                     {
@@ -315,8 +315,9 @@ internal static partial class OdtFormat
                         byte[] bytes = package.Read(path); admitted = DocumentImage.Read(bytes, width, height, child.Element(V + "desc")?.Value ?? "", context);
                         if (admitted.Extension is not "png" and not "jpg") throw Invalid("Image"); package.RequireType(path, admitted.MediaType); images.Add(path, admitted);
                     }
+                    else admitted = admitted.Place(width, height, child.Element(V + "desc")?.Value ?? "", context);
                     FlushSpace(); space.Visible = true;
-                    output.Add(new TextRun("", image: DocumentImage.Read(admitted.Bytes, width, height, child.Element(V + "desc")?.Value ?? "", context, admitted.PixelsWide, admitted.PixelsHigh)));
+                    output.Add(new TextRun("", image: admitted));
                 }
                 else if (child.Name == T + "soft-page-break") { }
                 else if (child.Name == O + "annotation" || child.Name == O + "annotation-end") Loss("AnnotationLoss");
@@ -424,7 +425,7 @@ internal static partial class OdtFormat
         }
         private TableBlock Table(XElement element, int depth)
         {
-            var table = new TableBlock { Section = active };
+            var table = new TableBlock(context) { Section = active };
             var tableProperties = Style(element, "table");
             if (depth == 0 && tableProperties.TryGetValue(S + "master-page-name", out string? masterName))
             { if (!masters.TryGetValue(masterName, out PageSettings? page)) throw Invalid("Master"); active = page; table.Section = page; }
@@ -473,7 +474,7 @@ internal static partial class OdtFormat
                             if (spans.TryGetValue(column, out var above))
                             {
                                 if (cell.Name != B + "covered-table-cell") throw Invalid("CoveredCell");
-                                var continued = new TableCell(new ParagraphBlock()) { ColumnSpan = above.Width, Merge = VerticalMerge.Continue };
+                                var continued = new TableCell(new ParagraphBlock(context)) { ColumnSpan = above.Width, Merge = VerticalMerge.Continue };
                                 output.Add(continued); if (above.Remaining > 1) expected[column] = (above.Remaining - 1, above.Width);
                                 column++; continue;
                             }
@@ -511,7 +512,7 @@ internal static partial class OdtFormat
                             Blocks(cell, target.Content, depth + 1); target.Paragraphs.AddRange(DocumentModel.CellParagraphs(target.Content));
                             if (target.Paragraphs.Count == 0)
                             {
-                                var p = new ParagraphBlock();
+                                var p = new ParagraphBlock(context);
                                 string? cached = (string?)cell.Attribute(O + "string-value") ?? (string?)cell.Attribute(O + "value") ?? (string?)cell.Attribute(O + "boolean-value") ?? (string?)cell.Attribute(O + "date-value");
                                 if (cached != null) { Loss("FieldLoss"); Admit(text: cached.Length); p.Runs.Add(new TextRun(cached)); }
                                 target.Content.Add(p); target.Paragraphs.Add(p);

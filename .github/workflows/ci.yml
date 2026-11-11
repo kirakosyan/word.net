@@ -58,6 +58,20 @@ jobs:
       - name: Run .NET Framework conversion and robustness tests
         if: runner.os == 'Windows' && runner.arch == 'X64'
         run: dotnet test tests/wordnet.Conversion.Tests --configuration Release --framework net472 --no-build --no-restore --logger "trx;LogFileName=net472.trx" --results-directory artifacts/test-results
+      - name: Bound import regressions by time and process memory
+        if: runner.arch == 'X64'
+        shell: pwsh
+        run: |
+          ./eng/test-import-resources.ps1 -Framework net8.0
+          ./eng/test-import-resources.ps1 -Framework net10.0
+          if ($IsWindows) { ./eng/test-import-resources.ps1 -Framework net472 }
+      - name: Retain import resource regression evidence
+        if: always() && runner.arch == 'X64'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: import-resources-${{ matrix.os }}
+          path: artifacts/import-resources/*
+          if-no-files-found: error
       - name: Verify Framework runner deadlines and stale-report rejection
         if: runner.os == 'Windows' && runner.arch == 'X64'
         shell: pwsh

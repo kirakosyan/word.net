@@ -43,7 +43,7 @@ internal static class MarkdownFormat
                     blocks.Add(ReadParagraph(paragraph, context));
                     break;
                 case CodeBlock code:
-                    var codeParagraph = new ModelParagraph { IsCodeBlock = true };
+                    var codeParagraph = new ModelParagraph(context) { IsCodeBlock = true };
                     codeParagraph.Runs.Add(new TextRun(code.Lines.ToString()));
                     blocks.Add(codeParagraph);
                     if (code is FencedCodeBlock fenced && !string.IsNullOrEmpty(fenced.Info))
@@ -80,7 +80,7 @@ internal static class MarkdownFormat
                     break;
                 case LeafBlock leaf:
                     context.Loss("Markdown.UnsupportedBlock", "Unsupported Markdown block syntax is retained as literal text.");
-                    var literal = new ModelParagraph();
+                    var literal = new ModelParagraph(context);
                     literal.Runs.Add(new TextRun(leaf.Lines.ToString()));
                     blocks.Add(literal);
                     break;
@@ -93,7 +93,7 @@ internal static class MarkdownFormat
 
     private static ModelParagraph ReadParagraph(LeafBlock source, ConversionContext context, int heading = 0)
     {
-        var paragraph = new ModelParagraph { HeadingLevel = heading };
+        var paragraph = new ModelParagraph(context) { HeadingLevel = heading };
         if (source.Inline != null)
         {
             ReadInlines(source.Inline, paragraph.Runs, context);
@@ -161,7 +161,7 @@ internal static class MarkdownFormat
 
     private static TableBlock ReadTable(MarkdownTable source, ConversionContext context)
     {
-        var table = new TableBlock();
+        var table = new TableBlock(context);
         foreach (MarkdownRow row in source.Cast<MarkdownRow>())
         {
             table.HasHeaderRow |= row.IsHeader;
@@ -171,7 +171,7 @@ internal static class MarkdownFormat
                 if (cell.Count != 1 || !(cell[0] is LeafBlock leaf))
                 {
                     context.Loss("Markdown.TableCell", "Complex Markdown table cells are not supported.");
-                    cells.Add(new TableCell(new ModelParagraph()));
+                    cells.Add(new TableCell(new ModelParagraph(context)));
                     continue;
                 }
 

@@ -1,5 +1,21 @@
 # Conversion tests and qualification
 
+## Pending import resource regression suite — #175–#181
+
+`ImportResourceTests` contains independently constructed hostile DOC, DOCX, EPUB,
+RTF, KF8 and PDF inputs, plus paragraph-flood cases. Assertions check diagnostic
+prefixes, unchanged destinations, retained content/style/placement semantics and
+sharing of admitted image/font resources. Fixtures are generated in memory from
+published format layouts; the existing authored `color-grid.png` supplies PNG pixels.
+
+Run `eng/test-import-resources.ps1 -Framework net10.0` after a Release build to run
+this class in an isolated process with a 60-second/512-MiB sampled guard and fresh
+xUnit/XML and JSON evidence. Repeat for `net8.0` and, on Windows, `net472`. The latter
+exercises the runtime-specific KF8 regression; a Linux build of the Framework asset
+is not Framework execution. The normal full conversion/OCR suites remain required.
+Results for this proposed source change are recorded in the PR; historical release
+receipts below do not qualify it.
+
 The [1.6.0 release notes](releases/1.6.0.md) define the current bounded milestone
 and its publication gates. The dated records below retain the source, package and
 runtime identities observed when they were written; labels such as "pending" or
@@ -1208,7 +1224,6 @@ retains the test report and identity/cleanup records. The later fragment head
 required 1,559 cases; the subsequent text-display head required 1,567. The then-current
 suite required 1,592. Exact-head Framework execution remains a separate gate for later changes.
 
-
 ## P4/P5 review and drawing profile — historical checkpoints
 
 The [P4/P5 profile](roadmap-102-p4-p5.md) has independently authored OOXML
@@ -1292,7 +1307,6 @@ availability remains separate from this revised local source verification.
 ## Merged roadmap #102 P1 qualification
 
 The [P1 evidence/profile](roadmap-102-p1.md#evidence-and-remaining-qualification) adds independent OOXML/property schema, pinned-font/default/mark coordinates, demanding autofit/row splitting, conventional note continuation, typed pictures under two cultures, nested-field safety and running-header page/section/variant checks. Existing historical raster/coordinate inputs receive explicit legacy settings in detached copies; their committed originals and tolerances stay unchanged. The final reviewed head passes 1,222/1,222 locally on both Linux x64 modern runtimes and all 24 hosted checks, including desktop source/package/Standard and actual Framework 4.7.2 source/package gates. [Merge qualification](roadmap-102-p1.md#final-review-and-merge-qualification--2026-10-26) and the [exact receipt](measurements/roadmap-102-p1-review.json) distinguish those results and raw-hosted-report inspection limits from dated release evidence below. No new package was published.
-
 
 ## Issue #103 fidelity refresh - merged evidence
 
@@ -1443,7 +1457,6 @@ Locked restore, five-target Release build, formatting, six package/symbol archiv
 
 Both final CI runs archive genuine pinned-office PDFs, references, snapshots, rasters and complete ranked findings in `business-comparison`. The final push [artifact 12205600534](https://github.com/kirakosyan/word.net/actions/runs/39287792368/artifacts/12205600534) has SHA-256 `3544f29574eb58ab5ef4165c87900549d85fe9502bd1163a49c182a88bdf7ac2`. Twelve full office comparisons remain failures under the locked text/glyph/page/raster policy. The corrected one-to-two-column fixture measures 18.239 pt locally, and the A4 height mismatch is explicitly attributed to LibreOffice unit conversion. CI writer/core versions are pinned to `4:24.2.7-0ubuntu0.24.04.7`; local Debian 25.2.3.2 captures remain separate. See [the comparison report](comparison-p0.md). No Word/Aspose parity or unavailable commercial-reader execution is claimed.
 
-
 ## PR #83 review corrections — 2026-10-19
 
 The review follow-up addresses all fifteen inline notes. It adds four recipe cases (sub-cent invoice rounding, cumulative diagnostics, cancellation after staging and cleanup-error preservation), so the required suite is **855**. The focused corpus/recipe run passes **38/38** and the Python comparison/capture suite passes **13/13**. All-target Release compilation passes with zero warnings/errors. Full source/package/runtime results must be read from the final PR head and retained CI artifacts; the initial 851-case evidence below remains historical.
@@ -1451,7 +1464,6 @@ The review follow-up addresses all fifteen inline notes. It adds four recipe cas
 The corrected continuous-section input is one column before and two after the break. All 24 authored/POI corpus checks pass; twelve recaptured Debian LibreOffice references retain twelve strict-policy failures. The changed case now measures 18.239 pt, replacing the initial two-to-two-column fixture's 243.750 pt observation. Reference page-size unit rounding is identified separately from converter defects. The refreshed hashes and producer identity are in `Comparison/p0-baseline.json`.
 
 CI pins Ubuntu writer/core packages to `4:24.2.7-0ubuntu0.24.04.7`, and capture explicitly requires Linux fontconfig. Shared font/cohort/renderer helpers prevent drift. Both exit status and ranked findings use one failure predicate; the required CI retention gate checks complete per-engine findings and all failed verdicts, including diagnostic expectations and editable-content loss. Template hashes and declared sample page counts are exercised by Python and xUnit respectively. No core API, target framework or runtime dependency changed.
-
 
 ## Initial P0 candidate `948863b` — local evidence, 2026-10-19
 
@@ -1465,7 +1477,6 @@ This working tree, based on `7a09ef6b5d7dfcec8ee9507741b2b78016f14761`, implemen
 - Formatting verification, generator byte/hash reproducibility, JSON schemas, README/NuGet links, package README equality, actionlint 1.7.12 and diff checks pass. `dotnet format` reports workspace-load warnings for this host but exits successfully with no formatting changes required. RTK was unavailable; the prescribed .NET commands ran directly.
 
 Actual Framework execution, Windows/ARM64 and packed/Standard runtime suites are not local results on this Linux x64 host; they remain the applicable CI lanes. Android/macOS remain deferred and no workload was installed. No package publication, release tag or credentials change is part of this work. Historical sections retain their original counts and exact-artifact boundaries.
-
 
 ## NuGet README rendering patch — 1.2.1 preparation
 
@@ -1818,7 +1829,6 @@ wordnet package dependency. Reports and reviewed samples are retained locally in
 ignored `artifacts/business-fidelity/`. This run does not qualify Windows,
 Framework execution, ARM64, desktop Word/Aspose parity or arbitrary template layout.
 
-
 ## Comparison corpus and preflight
 
 The additive preflight API and twelve-document comparison corpus are described in
@@ -1837,7 +1847,6 @@ PDFs and stale-raster rejection. The historical performance harness also builds
 against the earlier core API. Raw reports are under ignored `artifacts/comparison*`.
 Word/Aspose reference execution and Windows/ARM64/Framework runtime qualification
 were not performed here.
-
 
 ## PR #33 review corrections
 

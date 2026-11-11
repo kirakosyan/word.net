@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using WordNet.Internal;
+using WordNet.Model;
 
 namespace WordNet.Formats;
 
@@ -106,6 +107,16 @@ internal sealed class DocxPackage : IDisposable
     internal IEnumerable<string> PartNames => entries.Keys;
 
     internal bool Contains(string name) => entries.ContainsKey(name);
+
+    private readonly Dictionary<string, DocumentImage> images = new Dictionary<string, DocumentImage>(StringComparer.Ordinal);
+
+    internal DocumentImage ReadImage(string name, double? width, double? height, string alt)
+    {
+        if (images.TryGetValue(name, out DocumentImage? image)) return image.Place(width, height, alt, context);
+        image = DocumentImage.Read(ReadBytes(name), width, height, alt, context);
+        images.Add(name, image);
+        return image;
+    }
 
     internal byte[] ReadBytes(string name)
     {

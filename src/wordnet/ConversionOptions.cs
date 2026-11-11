@@ -18,6 +18,13 @@ public enum FidelityMode
 /// <summary>Conversion policy and immutable resource bounds. Configure export settings before concurrent use.</summary>
 public sealed class ConversionOptions
 {
+    /// <summary>Gets or sets the aggregate imported paragraph, table and note budget. Defaults to 32,768.
+    /// Configure before concurrent use; each conversion snapshots this positive limit.</summary>
+    public int MaximumBlocks { get; set; } = 32768;
+
+    /// <summary>Gets or sets the aggregate image placement budget, including repeated resources. Defaults to 10,000.</summary>
+    public int MaximumImagePlacements { get; set; } = 10000;
+
     /// <summary>Gets or sets opt-in balancing of final multicolumn pages containing ordinary managed body paragraphs.
     /// Tables, notes, keeps, explicit breaks, fields, links, lists, controls, tagged/native output and shared continuous-section pages are rejected.</summary>
     public bool BalanceFinalColumns { get; set; }
@@ -51,7 +58,7 @@ public sealed class ConversionOptions
     /// <param name="fidelityMode">Whether detected losses fail or become diagnostics.</param>
     /// <param name="maximumInputBytes">Maximum buffered input bytes; one extra byte may be read to detect overflow.</param>
     /// <param name="maximumOutputBytes">Maximum staged output bytes.</param>
-    /// <param name="maximumExpandedBytes">Maximum aggregate ZIP expansion, decoded ebook bytes, or individual DOC stream bytes.</param>
+    /// <param name="maximumExpandedBytes">Maximum aggregate ZIP expansion, decoded ebook/PDF stream work, unique encoded image bytes, applied DOC property bytes, or individual DOC stream bytes.</param>
     /// <param name="maximumArchiveEntries">Maximum entries in a ZIP container.</param>
     /// <param name="maximumCharacters">Maximum input text or XML characters.</param>
     /// <param name="maximumNestingDepth">Maximum XML, HTML or Markdown nesting depth.</param>
@@ -100,7 +107,7 @@ public sealed class ConversionOptions
     /// <summary>Gets the staged output byte limit.</summary>
     public int MaximumOutputBytes { get; }
 
-    /// <summary>Gets the container expansion or individual DOC stream limit.</summary>
+    /// <summary>Gets the container/decoded-stream expansion, encoded-image, DOC property-work or individual DOC stream limit.</summary>
     public int MaximumExpandedBytes { get; }
 
     /// <summary>Gets the ZIP entry-count limit.</summary>

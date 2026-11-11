@@ -102,7 +102,7 @@ internal static partial class EbookContent
             context.CheckCancellation();
             if (node is IText text)
             {
-                if (!string.IsNullOrWhiteSpace(text.Data)) { var p = new ParagraphBlock { Alignment = parent is IElement element ? Alignment(element, context) : ParagraphAlignment.Left }; p.Runs.Add(new TextRun(Collapse(text.Data))); model.Blocks.Add(p); }
+                if (!string.IsNullOrWhiteSpace(text.Data)) { var p = new ParagraphBlock(context) { Alignment = parent is IElement element ? Alignment(element, context) : ParagraphAlignment.Left }; p.Runs.Add(new TextRun(Collapse(text.Data))); model.Blocks.Add(p); }
                 continue;
             }
             if (node is not IElement e) continue;
@@ -112,7 +112,7 @@ internal static partial class EbookContent
             if (tag == "table")
             {
                 Attributes(e, context);
-                var table = new TableBlock();
+                var table = new TableBlock(context);
                 table.Width = CssLength(e, "width", context);
                 if (context.HtmlImport) table.WidthPercent = HtmlInput.Percent(e);
                 foreach (IElement col in e.QuerySelectorAll("colgroup > col").Where(c => c.ParentElement?.ParentElement == e))
@@ -162,10 +162,10 @@ internal static partial class EbookContent
                         }
                         else
                         {
-                            var p = new ParagraphBlock { Alignment = Alignment(cell, context) };
+                            var p = new ParagraphBlock(context) { Alignment = Alignment(cell, context) };
                             Inline(cell, p, context, false, false, false, null, false, imageReader); Trim(p); target.Paragraphs.Add(p);
                         }
-                        if (target.Paragraphs.Count == 0) target.Paragraphs.Add(new ParagraphBlock());
+                        if (target.Paragraphs.Count == 0) target.Paragraphs.Add(new ParagraphBlock(context));
                         cells.Add(target);
                         if (rowSpan > 1) spans.Add(column, (rowSpan - 1, columnSpan));
                         column += columnSpan;
@@ -175,13 +175,13 @@ internal static partial class EbookContent
                     {
                         int next = spans.Keys.Where(c => c > column).Min();
                         context.Loss("Ebook.MergedCells", "Missing cells before a row span are represented by empty cells.");
-                        cells.Add(new TableCell(new ParagraphBlock()) { ColumnSpan = next - column, Padding = new CellPadding() });
+                        cells.Add(new TableCell(new ParagraphBlock(context)) { ColumnSpan = next - column, Padding = new CellPadding() });
                         column = next; ContinueSpans();
                     }
                     if (cells.Count == 0)
                     {
                         context.Loss("Ebook.EmptyTable", "An empty table row is represented by an empty cell.");
-                        cells.Add(new TableCell(new ParagraphBlock()));
+                        cells.Add(new TableCell(new ParagraphBlock(context)));
                     }
                     bool header = row.ParentElement?.LocalName == "thead" || (sourceCells.Length > 0 && sourceCells.All(c => c.LocalName == "th"
                         && !string.Equals(c.GetAttribute("scope"), "row", StringComparison.OrdinalIgnoreCase)
@@ -194,7 +194,7 @@ internal static partial class EbookContent
                     {
                         while (spans.TryGetValue(column, out var span))
                         {
-                            cells.Add(new TableCell(new ParagraphBlock()) { ColumnSpan = span.Columns, Merge = VerticalMerge.Continue });
+                            cells.Add(new TableCell(new ParagraphBlock(context)) { ColumnSpan = span.Columns, Merge = VerticalMerge.Continue });
                             if (span.Remaining == 1) spans.Remove(column); else spans[column] = (span.Remaining - 1, span.Columns);
                             column += span.Columns;
                         }
@@ -216,7 +216,7 @@ internal static partial class EbookContent
             }
             if (tag == "blockquote") context.Loss("Ebook.Quote", "Block quote indentation is flattened.");
             Attributes(e, context);
-            var paragraph = new ParagraphBlock { RightToLeft = Direction(e), IsCodeBlock = tag == "pre", HeadingLevel = tag.Length == 2 && tag[0] == 'h' && tag[1] >= '1' && tag[1] <= '6' ? tag[1] - '0' : 0 };
+            var paragraph = new ParagraphBlock(context) { RightToLeft = Direction(e), IsCodeBlock = tag == "pre", HeadingLevel = tag.Length == 2 && tag[0] == 'h' && tag[1] >= '1' && tag[1] <= '6' ? tag[1] - '0' : 0 };
             paragraph.Alignment = Alignment(e, context);
             paragraph.List = tag == "li" ? list?.Copy() : null;
             if (tag == "li" && e.HasAttribute("value")) context.Loss("Ebook.ListValue", "Per-item numbering overrides are not retained.");

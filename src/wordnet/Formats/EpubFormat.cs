@@ -42,6 +42,7 @@ internal static class EpubFormat
                 resources.Add(resolved, item);
             }
         }
+        var images = new Dictionary<string, DocumentImage>(StringComparer.Ordinal);
         var model = new DocumentModel();
         int characters = 0;
         var seen = new HashSet<string>(StringComparer.Ordinal);
@@ -63,7 +64,12 @@ internal static class EpubFormat
                 if (!resources.TryGetValue(resource, out XElement? asset)) throw new InvalidDataException("Epub.ImageManifest: Image is missing from the manifest.");
                 if ((string?)asset.Attribute("media-type") is not "image/png" and not "image/jpeg")
                 { context.Loss("Image.Format", "Only PNG and JPEG ebook images are supported."); return null; }
-                return DocumentImage.Read(archive.Read(resource), EbookContent.ImageDimension(image, "width", context), EbookContent.ImageDimension(image, "height", context), image.GetAttribute("alt") ?? "", context);
+                double? width = EbookContent.ImageDimension(image, "width", context), height = EbookContent.ImageDimension(image, "height", context);
+                string alt = image.GetAttribute("alt") ?? "";
+                if (images.TryGetValue(resource, out DocumentImage? admitted)) return admitted.Place(width, height, alt, context);
+                admitted = DocumentImage.Read(archive.Read(resource), width, height, alt, context);
+                images.Add(resource, admitted);
+                return admitted;
             });
             characters = checked(characters + chapter.Blocks.OfType<ParagraphBlock>().Sum(p => p.Text.Length));
             if (characters > context.Options.MaximumCharacters) throw new InvalidDataException("Limit.Characters: EPUB text exceeds the limit.");

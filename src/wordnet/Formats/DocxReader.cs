@@ -15,9 +15,10 @@ internal sealed partial class DocxReader
     private static readonly string[] PlainBorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
     private readonly ConversionContext context;
     private readonly Dictionary<string, XElement> relationships;
-    private readonly Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
+    private Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
     private readonly Dictionary<string, TableStyle> tableStyles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
     private long tableStyleBytes;
+    private Dictionary<(string Id, bool Character), TextStyle> resolvedStyles = new Dictionary<(string, bool), TextStyle>();
     private string? defaultStyle;
     private string? defaultTableStyle;
     private ParagraphAlignment defaultAlignment;
@@ -26,6 +27,7 @@ internal sealed partial class DocxReader
     private string title = "";
     private string author = "";
     private bool evenAndOdd;
+    private readonly HashSet<string> bookmarkNames = new HashSet<string>(StringComparer.Ordinal);
     private readonly Dictionary<int, string> bookmarks = new Dictionary<int, string>();
 
     private DocxReader(ConversionContext context, Dictionary<string, XElement> relationships)
@@ -289,7 +291,7 @@ internal sealed partial class DocxReader
         }
         if (pendingBookmarks.Count > 0)
         {
-            if (!DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any()) blocks.Add(new ParagraphBlock());
+            if (!DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any()) blocks.Add(new ParagraphBlock(context));
             AttachBookmarks(pendingBookmarks, blocks, false);
         }
     }
@@ -320,7 +322,7 @@ internal sealed partial class DocxReader
         ReadRunProperties(markProperties, mark);
         string? retainedStyle = styleId ?? defaultStyle;
         if (retainedStyle != null && (!styles.TryGetValue(retainedStyle, out XElement? retainedDefinition) || (string?)retainedDefinition.Attribute(W + "type") != "paragraph")) retainedStyle = null;
-        var paragraph = new ParagraphBlock { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        var paragraph = new ParagraphBlock(context) { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
         ReadParagraphFormatRevision(element, properties, paragraph, inheritedParagraph);
@@ -491,7 +493,7 @@ internal sealed partial class DocxReader
     private TableBlock ReadTable(XElement element)
     {
         using var location = context.At(XmlSourceLocation.Create(element, mainPart));
-        var table = new TableBlock { Location = context.Location };
+        var table = new TableBlock(context) { Location = context.Location };
         var pendingTableBookmarks = new List<TextRun>();
         ReadTableGeometry(element, table);
         bool reportedShadingConflict = false;
@@ -589,7 +591,7 @@ internal sealed partial class DocxReader
                     ParagraphBlock paragraph = ReadParagraph(content); cell.Paragraphs.Add(paragraph); cell.Content.Add(paragraph);
                     AttachBookmarks(pendingBookmarks, new[] { paragraph }, true);
                 }
-                if (cell.Paragraphs.Count == 0) { var empty = new ParagraphBlock(); cell.Paragraphs.Add(empty); cell.Content.Add(empty); }
+                if (cell.Paragraphs.Count == 0) { var empty = new ParagraphBlock(context); cell.Paragraphs.Add(empty); cell.Content.Add(empty); }
                 AttachBookmarks(pendingBookmarks, cell.Content, false);
                 AttachBookmarks(pendingTableBookmarks, cell.Blocks, true);
                 cells.Add(cell);
@@ -606,7 +608,7 @@ internal sealed partial class DocxReader
                 int count = Integer(omitted, W + "val", 0, 1024);
                 if (count == 0) return;
                 context.Loss("Docx.TableGrid", "Omitted grid columns are represented by empty cells.");
-                var gap = new TableCell(new ParagraphBlock()) { ColumnSpan = count, Padding = new CellPadding() };
+                var gap = new TableCell(new ParagraphBlock(context)) { ColumnSpan = count, Padding = new CellPadding() };
                 if (before) cells.Insert(0, gap); else cells.Add(gap);
             }
         }
@@ -823,6 +825,9 @@ internal sealed partial class DocxReader
             TextStyle initial = characterStyle ? new TextStyle() : defaultRun.Copy(); initial.Alignment = defaultAlignment; initial.Layout = defaultLayout.Copy(); return initial;
         }
 
+        context.CheckCancellation();
+        bool root = visiting.Count == 0;
+        if (root && resolvedStyles.TryGetValue((id, characterStyle), out TextStyle? cached)) return cached.Copy();
         if (!visiting.Add(id) || visiting.Count > context.Options.MaximumNestingDepth)
         {
             throw new InvalidDataException("Docx.StyleCycle: Styles contain a cycle or exceed the nesting limit.");
@@ -839,6 +844,8 @@ internal sealed partial class DocxReader
         style.CodeBlock |= id == "WordnetCodeBlock";
         ReadParagraphProperties(element.Element(W + "pPr"), style);
         ReadRunProperties(element.Element(W + "rPr"), style, knownCodeStyle: style.Code || style.CodeBlock, visiting: visiting);
+        visiting.Remove(id);
+        if (root) resolvedStyles.Add((id, characterStyle), style.Copy());
         return style;
     }
 
@@ -851,6 +858,7 @@ internal sealed partial class DocxReader
 
         foreach (XElement property in properties.Elements())
         {
+            context.ReserveImportWork();
             if (property.Name == W + "outlineLvl")
             {
                 if (!int.TryParse((string?)property.Attribute(W + "val"), NumberStyles.None, CultureInfo.InvariantCulture, out int level)
@@ -927,6 +935,7 @@ internal sealed partial class DocxReader
 
         foreach (XElement property in properties.Elements().OrderBy(p => p.Name == W + "rStyle" ? 0 : 1))
         {
+            context.ReserveImportWork();
             if (property.Name == W + "rPrChange")
             {
                 if (!context.PreserveReview) context.Loss("Revisions.Accepted", "Run formatting history is omitted in the accepted-state conversion profile.");

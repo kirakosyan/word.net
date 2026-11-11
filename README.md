@@ -232,7 +232,7 @@ Caller streams remain open. Reading and writing begin at their current positions
 
 Output is staged inside the converter. Parsing, fidelity and admission-limit failures leave caller output untouched; cancellation or I/O errors during final copying can leave partial output. Opening a destination with `File.Create` already truncates it, which is why the quick start stages in memory first.
 
-Defaults bound input to 16 MiB, output to 32 MiB, container expansion to 64 MiB, ZIP entries to 1,024, characters to four million, nesting to 64 and pages to 1,000. These are admission checks, not hard CPU/RSS limits. Async methods use async stream I/O; parsers, renderers and most native calls execute synchronously.
+Defaults bound input to 16 MiB, output to 32 MiB, expansion to 64 MiB, ZIP entries to 1,024, characters to four million, nesting to 64 and pages to 1,000. The pending source fixes for #175–#181 also bound imported paragraphs/tables/notes to 32,768 and image placements to 10,000, and apply expansion budgets to PDF decoding, encoded image resources and repeated DOC property work. These fixes are not yet part of a published package. These are admission checks, not hard CPU/RSS limits. Async methods use async stream I/O; parsers, renderers and most native calls execute synchronously.
 
 XML entities and DTDs are prohibited. Conversion does not execute scripts/macros or fetch remote resources. For untrusted workloads and hard deadlines, use [isolated hosting](https://github.com/kirakosyan/word.net/blob/main/docs/hosting.md).
 

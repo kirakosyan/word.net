@@ -45,6 +45,8 @@ internal sealed class DocumentImage
     internal static DocumentImage Read(byte[] bytes, double? width, double? height, string alt, ConversionContext context, int reservedWidth = 0, int reservedHeight = 0)
     {
         context.CheckCancellation();
+        context.ReserveImagePlacement();
+        context.ReserveImageBytes(bytes.Length);
         var info = ManagedRaster.Identify(bytes);
         string extension = info.Extension;
         if (reservedWidth == 0) context.ReserveImagePixels(info.Width, info.Height);
@@ -55,18 +57,33 @@ internal sealed class DocumentImage
             bytes = extension == "gif" ? LegacyRaster.Gif(bytes, info.Width, info.Height) : LegacyRaster.Bmp(bytes, info.Width, info.Height);
             context.Report("Image.Reencoded", "A GIF/BMP raster is re-encoded as PNG; GIF output uses the first frame.");
             extension = "png";
+            context.ReserveImageBytes(bytes.Length);
         }
         // Admission happens before provider allocation; decode completely with managed providers.
         ManagedRaster.Validate(bytes, extension, context);
-        double w = width ?? (height.HasValue ? height.Value * info.Width / info.Height : info.Width * 0.75);
-        double h = height ?? w * info.Height / info.Width;
+        return PlaceCore(bytes, extension, info.Width, info.Height, width, height, alt, context);
+    }
+
+    // Share only the validated encoded resource; every placement owns its mutable geometry.
+    internal DocumentImage Place(double? width, double? height, string alt, ConversionContext context)
+    {
+        context.ReserveImagePlacement();
+        context.ReserveImagePixels(PixelsWide, PixelsHigh);
+        return PlaceCore(Bytes, Extension, PixelsWide, PixelsHigh, width, height, alt, context);
+    }
+
+    private static DocumentImage PlaceCore(byte[] bytes, string extension, int pixelsWide, int pixelsHigh,
+        double? width, double? height, string alt, ConversionContext context)
+    {
+        double w = width ?? (height.HasValue ? height.Value * pixelsWide / pixelsHigh : pixelsWide * 0.75);
+        double h = height ?? w * pixelsHigh / pixelsWide;
         if (!ValidDimension(w) || !ValidDimension(h)) throw new InvalidDataException("Image.Dimensions: Image dimensions must be positive finite points.");
         if (Math.Max(w, h) > 1584)
         {
             context.Loss("Image.Scaled", "Image dimensions exceed the 1584-point profile and are scaled proportionally; encoded pixels are retained.");
             double scale = 1584 / Math.Max(w, h); w = Math.Min(1584, w * scale); h = Math.Min(1584, h * scale);
         }
-        return new DocumentImage(bytes, extension, info.Width, info.Height, w, h, alt);
+        return new DocumentImage(bytes, extension, pixelsWide, pixelsHigh, w, h, alt);
     }
 
     private static bool ValidDimension(double value) => value > 0 && !double.IsInfinity(value) && !double.IsNaN(value);

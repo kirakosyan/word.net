@@ -14,7 +14,7 @@ internal sealed partial class DocxReader
         if (element.Name == W + "bookmarkStart")
         {
             string name = DocxPackage.RequiredAttribute(element, W + "name");
-            if (name.Length > 256 || bookmarks.ContainsKey(id) || bookmarks.ContainsValue(name)) throw new InvalidDataException("Docx.Bookmark: Duplicate or oversized bookmark.");
+            if (name.Length > 256 || bookmarks.ContainsKey(id) || !bookmarkNames.Add(name)) throw new InvalidDataException("Docx.Bookmark: Duplicate or oversized bookmark.");
             bookmarks.Add(id, name);
             return new TextRun("", bookmark: name);
         }

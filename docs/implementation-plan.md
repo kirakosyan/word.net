@@ -1,5 +1,17 @@
 # wordnet implementation and delivery status
 
+## Pending import resource fixes — #175–#181
+
+One proposed PR addresses the seven resource-exhaustion reports together: bounded
+DOC property applications, shared image resources and early HTML base64 admission,
+RTF font-name caching/limits, DOCX style/note/bookmark lookup costs, runtime-independent
+KF8 copying/cancellation, bounded PDF filter decoding and aggregate imported blocks.
+The changes preserve existing constructor signatures, targets and format boundaries.
+They are pending source work, not merged or published package behavior. Regression
+cases and the isolated memory/deadline guard are described in [hosting](hosting.md#pending-source-fixes-for-175181).
+After merge, reconcile #175–#181 and roadmap #32 with the final commit and CI evidence;
+package publication remains a separate operation.
+
 ## Roadmap #138 — 1.6.0 milestone and remaining combinations
 
 The [roadmap](https://github.com/kirakosyan/word.net/issues/138) tracks the next

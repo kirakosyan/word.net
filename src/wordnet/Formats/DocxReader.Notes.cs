@@ -26,8 +26,11 @@ internal sealed partial class DocxReader
             using var partLocation = context.At(XmlSourceLocation.Create(root, path));
             if (root.Name != W + kind) throw new InvalidDataException("Docx.Notes: Invalid note root.");
             string singular = kind.Substring(0, kind.Length - 1);
+            Dictionary<string, XElement> noteRelationships = package.ReadRelationships(path);
             foreach (XElement note in root.Elements(W + singular))
             {
+                context.CheckCancellation();
+                context.ReserveBlocks();
                 using var noteLocation = context.At(XmlSourceLocation.Create(note, path));
                 int id = Integer(note, W + "id", int.MinValue, int.MaxValue);
                 if (id < 0 || (string?)note.Attribute(W + "type") is "separator" or "continuationSeparator")
@@ -39,11 +42,10 @@ internal sealed partial class DocxReader
                 string label = id.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (!noteIds.Add(kind + ":" + label)) throw new InvalidDataException("Docx.Notes: Duplicate note identifier.");
 
-                var reader = new DocxReader(context, package.ReadRelationships(path))
+                var reader = new DocxReader(context, noteRelationships)
                 { package = package, mainPart = path, knownParts = knownParts, defaultAlignment = defaultAlignment, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle, defaultTableStyle = defaultTableStyle, theme = theme };
-                foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
-                foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);
-                foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);
+                // Definitions are immutable after the main part's setup. Keep note-local state isolated.
+                reader.styles = styles; reader.numbers = numbers; reader.abstracts = abstracts; reader.resolvedStyles = resolvedStyles;
                 var blocks = new List<DocumentBlock>(); reader.ReadBlocks(note, blocks);
                 sawLinkedTextBox |= reader.sawLinkedTextBox;
                 if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed note field.");

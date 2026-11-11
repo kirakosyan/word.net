@@ -117,6 +117,33 @@ internal sealed class ConversionContext
         string key = requested + "\0" + resolved;
         if (!fontUsage.ContainsKey(key)) fontUsage.Add(key, new FontUsage(requested, resolved));
     }
+    private readonly int maximumBlocks;
+    private readonly int maximumImagePlacements;
+    private int blocks, imagePlacements;
+    private long imageBytes, importWork;
+    internal void ReserveBlocks()
+    {
+        CheckCancellation();
+        if (blocks >= maximumBlocks) throw new InvalidDataException("Limit.Blocks: Imported paragraphs, tables and notes exceed MaximumBlocks.");
+        blocks++;
+    }
+    internal void ReserveImagePlacement()
+    {
+        CheckCancellation();
+        if (imagePlacements >= maximumImagePlacements) throw new InvalidDataException("Limit.ImagePlacements: Image placements exceed MaximumImagePlacements.");
+        imagePlacements++;
+    }
+    internal void ReserveImageBytes(int count)
+    {
+        imageBytes = checked(imageBytes + count);
+        if (imageBytes > Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ImageBytes: Unique encoded image resources exceed MaximumExpandedBytes.");
+    }
+    internal void ReserveImportWork()
+    {
+        CheckCancellation();
+        if (++importWork > Math.Max(4096, Options.MaximumExpandedBytes / 8))
+            throw new InvalidDataException("Limit.ImportWork: Import property work exceeds its expansion budget.");
+    }
     private long imagePixels;
     private int listId;
     private long ocrConfidenceSum;
@@ -133,6 +160,10 @@ internal sealed class ConversionContext
     internal ConversionContext(ConversionOptions options, CancellationToken cancellationToken)
     {
         Options = options;
+        maximumBlocks = options.MaximumBlocks;
+        maximumImagePlacements = options.MaximumImagePlacements;
+        if (maximumBlocks <= 0) throw new ArgumentOutOfRangeException(nameof(options), "MaximumBlocks must be positive.");
+        if (maximumImagePlacements <= 0) throw new ArgumentOutOfRangeException(nameof(options), "MaximumImagePlacements must be positive.");
         Typography = (options.Typography ?? throw new ArgumentException("Typography options must not be null.")).Snapshot();
         Hyphenation = (options.Hyphenation ?? throw new ArgumentException("Hyphenation options must not be null.")).Snapshot();
         OcrMetadata = (options.OcrMetadata ?? throw new ArgumentException("OCR metadata options must not be null.")).Snapshot();
