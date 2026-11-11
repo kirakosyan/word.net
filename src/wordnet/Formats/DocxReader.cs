@@ -456,7 +456,7 @@ internal sealed partial class DocxReader
                 if (!noteIds.Contains((child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id))
                     throw new InvalidDataException("Docx.Notes: Unresolved note reference.");
                 DocumentNote note = notes[(child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id];
-                if (note.Number == 0) note.Number = notes.Values.Count(n => n.Endnote == note.Endnote && n.Number > 0) + 1;
+                if (note.Number == 0) note.Number = note.Endnote ? ++referencedEndnotes : ++referencedFootnotes;
                 Emit(runs, new TextRun(context, "", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
                     appearance: inherited.Appearance.Copy(), note: note));
             }

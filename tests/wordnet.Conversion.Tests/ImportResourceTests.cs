@@ -310,6 +310,7 @@ public sealed partial class ImportResourceTests
         DocumentModel model = DocxReader.Read(input, Context(BestEffort()));
         TableBlock[] tables = model.Notes.SelectMany(n => n.Blocks).OfType<TableBlock>().ToArray();
         Assert.Equal(2000, tables.Length);
+        Assert.Equal(Enumerable.Range(1, 2000), model.Notes.Select(n => n.Number).OrderBy(n => n));
         Assert.All(tables, t => { Assert.Same(tables[0].Style, t.Style); Assert.Equal("ABCDEF", t.Style!.EffectiveBackground); });
     }
 

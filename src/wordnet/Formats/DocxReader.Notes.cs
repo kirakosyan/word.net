@@ -11,6 +11,7 @@ namespace WordNet.Formats;
 internal sealed partial class DocxReader
 {
     private bool noteReferenceMark;
+    private int referencedFootnotes, referencedEndnotes;
     private readonly Dictionary<string, DocumentNote> notes = new Dictionary<string, DocumentNote>(StringComparer.Ordinal);
     private readonly HashSet<string> noteIds = new HashSet<string>(StringComparer.Ordinal);
 
