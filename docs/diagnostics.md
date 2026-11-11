@@ -1,9 +1,10 @@
 # Conversion diagnostics
 
-The pending #175–#181 source fixes add import admission failures:
+The 1.6.1 #175–#181 source fixes add import admission failures:
 
 | Code | Meaning |
 | --- | --- |
+| `Limit.Runs` | Imported run allocations exceed `MaximumRuns` |
 | `Limit.Blocks` | Aggregate imported paragraph/table/note budget exceeded |
 | `Limit.ImagePlacements` | Too many placements, including repeated resources |
 | `Limit.ImageBytes` | Unique encoded image resources exceed `MaximumExpandedBytes` |
@@ -11,14 +12,14 @@ The pending #175–#181 source fixes add import admission failures:
 | `Limit.DocProperties` | Applied DOC property bytes exceed the expansion/work budget |
 | `Limit.ImportWork` | DOCX property traversal exceeds its work budget |
 | `Limit.KindleWork` | Cumulative KF8 fragment copying exceeds the expansion/work budget |
-| `Limit.ExpandedBytes` | Also covers aggregate PDF filter decoding, including intermediate stages |
+| `Limit.ExpandedBytes` | Also covers aggregate PDF document-stream and per-page image filter decoding, including intermediate stages |
 | `Limit.PdfLzwTable` | LZW dictionary additions continue after its 4,096-entry bound |
 
 `Doc.Properties` rejects nested indirect DOC properties. `Kindle.Skeleton` rejects
-overlapping or out-of-order skeleton ranges. HTML `Limit.Bytes` can now reject
+empty, overlapping or out-of-order skeleton ranges. HTML `Limit.Bytes` can now reject
 embedded base64 images before constructing the output tree. These are exceptions in
 every fidelity mode, with staged destination preservation; they are not fidelity
-losses that BestEffort can waive. See [hosting limits](hosting.md#pending-source-fixes-for-175181).
+losses that BestEffort can waive. See [hosting limits](hosting.md#import-resource-fixes-in-161).
 
 
 For the 1.6.0 whole-table style profile, `Docx.TableStyleData` and

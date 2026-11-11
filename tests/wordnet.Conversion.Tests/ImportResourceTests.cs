@@ -246,6 +246,73 @@ public sealed partial class ImportResourceTests
         Reject(input, format, "Limit.Blocks", new ConversionOptions { MaximumBlocks = 2 });
     }
 
+    [Fact]
+    public void RtfRunFloodFailsBeforeAllocatingAMillionRuns()
+        => Reject(Encoding.ASCII.GetBytes(@"{\rtf1\ansi " + string.Concat(Enumerable.Repeat(@"a\b a\b0 ", 500000)) + "}"), DocumentFormat.Rtf, "Limit.Runs");
+
+    [Theory]
+    [InlineData(DocumentFormat.Rtf)]
+    [InlineData(DocumentFormat.Docx)]
+    [InlineData(DocumentFormat.Html)]
+    [InlineData(DocumentFormat.Markdown)]
+    public void ReadersShareTheConfiguredRunBudget(DocumentFormat format)
+    {
+        byte[] input = format switch
+        {
+            DocumentFormat.Rtf => Encoding.ASCII.GetBytes(@"{\rtf1\ansi a\b b\b0 c}"),
+            DocumentFormat.Docx => TestDocuments.Docx(TestDocuments.Body("<w:p><w:r><w:t>a</w:t></w:r><w:r><w:t>b</w:t></w:r><w:r><w:t>c</w:t></w:r></w:p>")),
+            DocumentFormat.Html => Encoding.UTF8.GetBytes("<p>a<b>b</b>c</p>"),
+            _ => Encoding.UTF8.GetBytes("a**b**c"),
+        };
+        Reject(input, format, "Limit.Runs", new ConversionOptions { MaximumRuns = 2 });
+    }
+
+    [Fact]
+    public void KindleRejectsEmptySkeletonsBeforeHtmlParsing()
+        => Reject(Kindle(20000, overlap: true, empty: true), DocumentFormat.Azw3, "Kindle.Skeleton");
+
+    [Fact]
+    public void LongOrdinaryTextRemainsWithinDefaultBlockBudget()
+    {
+        using var input = new MemoryStream(Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("ordinary line\n", 40000))));
+        using var output = new MemoryStream();
+        new WordConverter().Convert(input, output, DocumentFormat.Text, DocumentFormat.Docx, new ConversionOptions(), cancellationToken: TestContext.Current.CancellationToken);
+        using var read = new MemoryStream(output.ToArray());
+        ParagraphBlock[] paragraphs = DocxReader.Read(read, Context()).Paragraphs.ToArray();
+        Assert.Equal(40001, paragraphs.Length);
+        Assert.Equal("ordinary line", paragraphs[39999].Text);
+    }
+
+    [Fact]
+    public void NewLimitsValidateAtAssignmentAndAreSnapshotted()
+    {
+        var options = new ConversionOptions { MaximumBlocks = 2, MaximumRuns = 2, MaximumImagePlacements = 2 };
+        Assert.Throws<ArgumentOutOfRangeException>("MaximumBlocks", () => options.MaximumBlocks = 0);
+        Assert.Throws<ArgumentOutOfRangeException>("MaximumRuns", () => options.MaximumRuns = -1);
+        Assert.Throws<ArgumentOutOfRangeException>("MaximumImagePlacements", () => options.MaximumImagePlacements = 0);
+        var context = Context(options);
+        options.MaximumBlocks = options.MaximumRuns = options.MaximumImagePlacements = 3;
+        for (int i = 0; i < 2; i++) { context.ReserveBlocks(); context.ReserveRun(); context.ReserveImagePlacement(); }
+        Assert.Throws<InvalidDataException>(context.ReserveBlocks);
+        Assert.Throws<InvalidDataException>(context.ReserveRun);
+        Assert.Throws<InvalidDataException>(context.ReserveImagePlacement);
+    }
+
+    [Fact]
+    public void DocxSharesResolvedTableStylesAcrossNotes()
+    {
+        string styles = "<w:styles xmlns:w='" + TestDocuments.W + "'><w:style w:type='table' w:styleId='T'><w:tblPr><w:shd w:val='clear' w:fill='ABCDEF'/></w:tblPr></w:style></w:styles>";
+        string table = "<w:tbl><w:tblPr><w:tblStyle w:val='T'/></w:tblPr><w:tblGrid><w:gridCol w:w='1000'/></w:tblGrid><w:tr><w:tc><w:p><w:r><w:t>note</w:t></w:r></w:p></w:tc></w:tr></w:tbl>";
+        string notes = "<w:footnotes xmlns:w='" + TestDocuments.W + "'>" + string.Concat(Enumerable.Range(1, 2000).Select(i => "<w:footnote w:id='" + i + "'>" + table + "</w:footnote>")) + "</w:footnotes>";
+        string body = "<w:p>" + string.Concat(Enumerable.Range(1, 2000).Select(i => "<w:r><w:footnoteReference w:id='" + i + "'/></w:r>")) + "</w:p>";
+        byte[] source = WithParts(TestDocuments.Docx(TestDocuments.Body(body), "<Relationship Id='notes' Type='" + TestDocuments.R + "/footnotes' Target='footnotes.xml'/>", styles: styles), ("word/footnotes.xml", Encoding.UTF8.GetBytes(notes)));
+        using var input = new MemoryStream(source);
+        DocumentModel model = DocxReader.Read(input, Context(BestEffort()));
+        TableBlock[] tables = model.Notes.SelectMany(n => n.Blocks).OfType<TableBlock>().ToArray();
+        Assert.Equal(2000, tables.Length);
+        Assert.All(tables, t => { Assert.Same(tables[0].Style, t.Style); Assert.Equal("ABCDEF", t.Style!.EffectiveBackground); });
+    }
+
     private static ConversionOptions BestEffort() => new ConversionOptions(FidelityMode.BestEffort);
     private static ConversionContext Context(ConversionOptions? options = null) => new ConversionContext(options ?? new ConversionOptions(), TestContext.Current.CancellationToken);
     private static void Reject(byte[] bytes, DocumentFormat format, string code, ConversionOptions? options = null)

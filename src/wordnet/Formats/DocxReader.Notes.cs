@@ -45,7 +45,7 @@ internal sealed partial class DocxReader
                 var reader = new DocxReader(context, noteRelationships)
                 { package = package, mainPart = path, knownParts = knownParts, defaultAlignment = defaultAlignment, defaultRun = defaultRun.Copy(), defaultLayout = defaultLayout.Copy(), defaultStyle = defaultStyle, defaultTableStyle = defaultTableStyle, theme = theme };
                 // Definitions are immutable after the main part's setup. Keep note-local state isolated.
-                reader.styles = styles; reader.numbers = numbers; reader.abstracts = abstracts; reader.resolvedStyles = resolvedStyles;
+                reader.styles = styles; reader.numbers = numbers; reader.abstracts = abstracts; reader.resolvedStyles = resolvedStyles; reader.tableStyleCache = tableStyleCache;
                 var blocks = new List<DocumentBlock>(); reader.ReadBlocks(note, blocks);
                 sawLinkedTextBox |= reader.sawLinkedTextBox;
                 if (reader.fields.Count > 0) throw new InvalidDataException("Docx.Field: Unclosed note field.");

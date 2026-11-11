@@ -15,15 +15,20 @@ public enum FidelityMode
     Lenient = 2,
 }
 
-/// <summary>Conversion policy and immutable resource bounds. Configure export settings before concurrent use.</summary>
+/// <summary>Conversion policy and resource bounds. Configure settings before concurrent use.</summary>
 public sealed class ConversionOptions
 {
-    /// <summary>Gets or sets the aggregate imported paragraph, table and note budget. Defaults to 32,768.
+    private int maximumBlocks = 131072, maximumRuns = 262144, maximumImagePlacements = 10000;
+
+    /// <summary>Gets or sets the aggregate imported paragraph, table and note budget. Defaults to 131,072.
     /// Configure before concurrent use; each conversion snapshots this positive limit.</summary>
-    public int MaximumBlocks { get; set; } = 32768;
+    public int MaximumBlocks { get => maximumBlocks; set { ValidatePositive(value, nameof(MaximumBlocks)); maximumBlocks = value; } }
+
+    /// <summary>Gets or sets the aggregate imported run allocation budget. Defaults to 262,144. Snapshotted per conversion.</summary>
+    public int MaximumRuns { get => maximumRuns; set { ValidatePositive(value, nameof(MaximumRuns)); maximumRuns = value; } }
 
     /// <summary>Gets or sets the aggregate image placement budget, including repeated resources. Defaults to 10,000.</summary>
-    public int MaximumImagePlacements { get; set; } = 10000;
+    public int MaximumImagePlacements { get => maximumImagePlacements; set { ValidatePositive(value, nameof(MaximumImagePlacements)); maximumImagePlacements = value; } }
 
     /// <summary>Gets or sets opt-in balancing of final multicolumn pages containing ordinary managed body paragraphs.
     /// Tables, notes, keeps, explicit breaks, fields, links, lists, controls, tagged/native output and shared continuous-section pages are rejected.</summary>

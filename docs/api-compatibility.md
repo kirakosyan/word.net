@@ -1,5 +1,15 @@
 # API and support policy
 
+## 1.6.1 import admission options
+
+`ConversionOptions.MaximumBlocks`, `MaximumRuns` and `MaximumImagePlacements` are
+additive, positive integer properties on every target. Defaults are 131,072,
+262,144 and 10,000 respectively; setters reject nonpositive values immediately and
+each conversion snapshots them. Existing constructor signatures, assembly identity
+and target frameworks remain unchanged. New admission failures apply in every
+fidelity mode. See [hosting limits](hosting.md#import-resource-fixes-in-161) for
+counting semantics and the change in behavior for very large documents.
+
 <a id="unreleased-roadmap-138-api-work"></a>
 ## 1.6.0 roadmap #138 API work
 

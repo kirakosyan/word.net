@@ -363,7 +363,7 @@ internal static partial class RtfFormat
                 if (!lists.TryGetValue(id, out ListInfo? info)) { context.Loss("Rtf.ListDefinition", "An undefined list uses decimal numbering."); info = new ListInfo(); }
                 paragraph.List = new ListItem { Id = "rtf-" + id.ToString(CultureInfo.InvariantCulture), Level = state.Level, Ordered = info.Ordered, Start = info.Start };
             }
-            paragraph.Runs.Add(new TextRun(text.ToString(), state.Bold, state.Italic, fontSize: state.Size, color: state.Color == 0 || colors.Count == 0 ? null : colors[state.Color], appearance: appearance)); text.Clear();
+            paragraph.Runs.Add(new TextRun(context, text.ToString(), state.Bold, state.Italic, fontSize: state.Size, color: state.Color == 0 || colors.Count == 0 ? null : colors[state.Color], appearance: appearance)); text.Clear();
         }
         private void FinishParagraph(bool force)
         {
@@ -401,7 +401,7 @@ internal static partial class RtfFormat
                 byte[] bytes = picture.Binary.Length > 0 ? picture.Binary.ToArray() : new byte[picture.Hex.Length / 2];
                 if (picture.Binary.Length == 0) for (int i = 0; i < bytes.Length; i++) bytes[i] = (byte)(Hex((byte)picture.Hex[i * 2]) * 16 + Hex((byte)picture.Hex[i * 2 + 1]));
                 DocumentImage image = DocumentImage.Read(bytes, picture.Width.HasValue ? Twips(picture.Width.Value) : null, picture.Height.HasValue ? Twips(picture.Height.Value) : null, "", context);
-                paragraph.Runs.Add(new TextRun("", image: image)); primaryPicture = state.PrimaryContainer;
+                paragraph.Runs.Add(new TextRun(context, "", image: image)); primaryPicture = state.PrimaryContainer;
             }
             finally { picture.Binary.Dispose(); }
         }

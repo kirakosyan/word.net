@@ -51,8 +51,8 @@ internal sealed partial class DocxReader
             }
             else
             {
-                TextRun prototype = result.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
-                Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(string.Concat(result.Select(r => r.Run.Text)), prototype.Bold, prototype.Italic,
+                TextRun prototype = result.Select(r => r.Run).FirstOrDefault() ?? new TextRun(context, "");
+                Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(context, string.Concat(result.Select(r => r.Run.Text)), prototype.Bold, prototype.Italic,
                     prototype.Code, prototype.Link, prototype.FontSize, prototype.Color, appearance: prototype.Appearance, fieldInstruction: instruction)
                 { FieldCache = result.Select(r => r.Run).ToList() });
             }
@@ -73,7 +73,7 @@ internal sealed partial class DocxReader
             foreach (var cached in result)
             {
                 TextRun run = cached.Run;
-                Emit(cached.Target, new TextRun(run.Text, run.Bold, run.Italic, run.Code, link, run.FontSize, run.Color, run.Image, run.Appearance));
+                Emit(cached.Target, new TextRun(context, run.Text, run.Bold, run.Italic, run.Code, link, run.FontSize, run.Color, run.Image, run.Appearance));
             }
             return;
         }
@@ -82,7 +82,7 @@ internal sealed partial class DocxReader
             && result.All(r => r.Run.Image == null && r.Run.Box == null && r.Run.Note == null
                 && (r.Run.FieldInstruction == null || DocumentFields.Kind(r.Run.FieldInstruction) == "PAGEREF"));
         bool multipleParagraphs = result.Select(r => r.Target).Distinct().Skip(1).Any();
-        TextRun first = result.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
+        TextRun first = result.Select(r => r.Run).FirstOrDefault() ?? new TextRun(context, "");
         bool plain = result.All(r => r.Run.Image == null && r.Run.Box == null && r.Run.Note == null && r.Run.Bookmark == null && r.Run.FieldInstruction == null)
             && WordNet.Layout.RunCoalescer.Combine(result.Select(r => r.Run).ToList()).Count <= 1;
         if (!toc && (multipleParagraphs || !plain))
@@ -93,7 +93,7 @@ internal sealed partial class DocxReader
         }
         if (toc && multipleParagraphs)
             foreach (List<TextRun> target in result.Select(r => r.Target).Distinct().Skip(1)) replacedTocParagraphs.Add(target);
-        Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(string.Concat(result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
+        Emit(result.Count == 0 ? runs : result[0].Target, new TextRun(context, string.Concat(result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
             first.FontSize, first.Color, appearance: first.Appearance, fieldInstruction: instruction)
         { FieldChildren = children?.Count > 0 ? children : null });
     }
@@ -122,8 +122,8 @@ internal sealed partial class DocxReader
         if (!plain || !field.RetainTree || !ScalarFields.Candidate(instruction)) { parent.RetainTree = false; return; }
         int offset = parent.Instruction.Length;
         parent.Instruction.Append('\ufffc');
-        TextRun first = field.Result.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
-        parent.Children.Add(offset, new TextRun(string.Concat(field.Result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
+        TextRun first = field.Result.Select(r => r.Run).FirstOrDefault() ?? new TextRun(context, "");
+        parent.Children.Add(offset, new TextRun(context, string.Concat(field.Result.Select(r => r.Run.Text)), first.Bold, first.Italic, first.Code, first.Link,
             first.FontSize, first.Color, appearance: first.Appearance.Copy(), fieldInstruction: instruction)
         { FieldChildren = field.Children });
     }

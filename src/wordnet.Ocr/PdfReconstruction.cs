@@ -34,7 +34,7 @@ internal static class PdfReconstruction
             if (resolver == null)
             {
                 var fontModel = new DocumentModel(); var styles = new ParagraphBlock(context); fontModel.Blocks.Add(styles);
-                for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun("", bold: (style & 1) != 0, italic: (style & 2) != 0));
+                for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun(context, "", bold: (style & 1) != 0, italic: (style & 2) != 0));
                 resolver = new FontResolver(fontModel, context);
                 metrics = resolver.Data.Select(bytes => new FontKerning(bytes, metricsOnly: true)).ToArray();
             }
@@ -132,7 +132,7 @@ internal static class PdfReconstruction
                 mapped.Anchor = new DrawingAnchor { HorizontalOrigin = "page", VerticalOrigin = "page", X = left, Y = top, Wrap = "none" };
             }
             else context.Loss("Pdf.ReconstructionImageTransform", "Unsupported clipping, shear, rotation or out-of-page image geometry uses an inline image fallback.");
-            var paragraph = new ParagraphBlock(context) { Layout = new ParagraphLayout { After = 0 } }; paragraph.Runs.Add(new TextRun("", image: mapped));
+            var paragraph = new ParagraphBlock(context) { Layout = new ParagraphLayout { After = 0 } }; paragraph.Runs.Add(new TextRun(context, "", image: mapped));
             int column = Math.Min(options.Columns - 1, (int)Math.Floor(Math.Max(0, left) * options.Columns / page.Width));
             paragraph.Layout.Left = Math.Max(0, left - page.Width * column / options.Columns);
             blocks.Add((column, Math.Max(0, top), left, Math.Max(0, top) + height, paragraph));
@@ -146,7 +146,7 @@ internal static class PdfReconstruction
         foreach (var block in blocks.OrderBy(b => b.Column).ThenBy(b => b.Top).ThenBy(b => b.Left))
         {
             if (block.Column > previousColumn)
-            { var separator = new ParagraphBlock(context); separator.Runs.Add(new TextRun(new string('\v', block.Column - previousColumn))); result.Add(separator); previousBottom = 0; previousParagraph = null; }
+            { var separator = new ParagraphBlock(context); separator.Runs.Add(new TextRun(context, new string('\v', block.Column - previousColumn))); result.Add(separator); previousBottom = 0; previousParagraph = null; }
             double gap = Math.Max(0, block.Top - previousBottom);
             if (block.Block is ParagraphBlock paragraph) paragraph.Layout.Before = gap;
             else if (gap > 0)
@@ -189,7 +189,7 @@ internal static class PdfReconstruction
         void Flush()
         {
             if (text.Length == 0) return;
-            paragraph.Runs.Add(new TextRun(text.ToString(), bold: bold, italic: italic, fontSize: size)); text.Clear();
+            paragraph.Runs.Add(new TextRun(context, text.ToString(), bold: bold, italic: italic, fontSize: size)); text.Clear();
         }
         foreach (Line line in lines)
         {

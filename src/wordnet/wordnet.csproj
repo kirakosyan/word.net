@@ -5,12 +5,12 @@
     <AssemblyName>wordnet</AssemblyName>
     <IsPackable>true</IsPackable>
     <PackageId>wordnet</PackageId>
-    <Version>1.6.0</Version>
+    <Version>1.6.1</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>Armen Kirakosyan</Authors>
     <Description>Bounded Word conversion, document editing and templates for .NET. DOC/DOCX exchanges with PDF, HTML, RTF, Markdown, text and ebooks; XPS output, semantic PDF, previews and optional local English OCR. Explicit fidelity diagnostics.</Description>
     <PackageTags>word;docx;doc;pdf;html;rtf;markdown;epub;mobi;azw3;xps;converter;templates;ocr;tesseract;dotnet;csharp;cross-platform</PackageTags>
-    <PackageReleaseNotes>Bounded template, table, review, report, typography, accessibility and drawing additions with explicit diagnostics. See the 1.6.0 release notes for supported profiles, qualification and remaining limits.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix import resource amplification in DOC, DOCX, EPUB, RTF, KF8, PDF and plain text. Add configurable block, run and image-placement limits while preserving ordinary scanned-PDF OCR and long text imports. See the 1.6.1 release notes for compatibility and qualification.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kirakosyan/word.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

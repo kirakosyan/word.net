@@ -124,7 +124,7 @@ internal static class KindleFormat
             context.CheckCancellation();
             int fragmentCount = Value(item, 1, 0), start = Value(item, 6, 0), length = Value(item, 6, 1);
             Bounds(raw, start, length);
-            if (start < previousEnd || fragmentCount < 0) throw new InvalidDataException("Kindle.Skeleton: Overlapping or out-of-order skeleton ranges.");
+            if (length == 0 || start < previousEnd || fragmentCount < 0) throw new InvalidDataException("Kindle.Skeleton: Empty, overlapping or out-of-order skeleton ranges.");
             byte[] skeletonBytes = new byte[length];
             Buffer.BlockCopy(raw, start, skeletonBytes, 0, length);
             var assembled = new List<byte>(skeletonBytes);

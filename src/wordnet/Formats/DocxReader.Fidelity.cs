@@ -90,7 +90,7 @@ internal sealed partial class DocxReader
                 context.Loss("Docx.ListAppearance", "Centered/right-aligned list labels use left label alignment.");
             parsed.Layout = appearance.Layout;
             foreach (XElement property in source.Element(W + "pPr")?.Elements() ?? Enumerable.Empty<XElement>()) parsed.LayoutProperties.Add(property.Name.LocalName);
-            parsed.Appearance = new TextRun("", appearance.Bold, appearance.Italic, fontSize: appearance.FontSize, color: appearance.Color, appearance: appearance.Appearance);
+            parsed.Appearance = new TextRun(context, "", appearance.Bold, appearance.Italic, fontSize: appearance.FontSize, color: appearance.Color, appearance: appearance.Appearance);
             if (source.Elements().Any(e => e.Name != W + "start" && e.Name != W + "numFmt" && e.Name != W + "lvlText" && e.Name != W + "lvlJc"
                 && e.Name != W + "pPr" && e.Name != W + "rPr" && e.Name != W + "lvlRestart" && e.Name != W + "isLgl" && e.Name != W + "suff"))
                 context.Loss("Docx.ListBehavior", "Unsupported auxiliary numbering behavior is not retained.");
@@ -397,10 +397,10 @@ internal sealed partial class DocxReader
             }
         }
         visiting.Remove(id);
-        tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256
+        tableStyleCache.Bytes = checked(tableStyleCache.Bytes + ((long)id.Length + name.Length) * 2 + 256
             + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0) + regionThemes.Count + (parent?.EffectiveRegionThemes.Count ?? 0)
                 + regionBorders.Sum(region => (long)region.Value.Count + 1) + (parent?.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1) ?? 0)) * 128);
-        if (tableStyles.Count >= 10000 || tableStyleBytes > context.Options.MaximumExpandedBytes)
+        if (tableStyles.Count >= 10000 || tableStyleCache.Bytes > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
         var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, regionThemes, regionBorders, rowBandSize, columnBandSize);
         tableStyles.Add(id, result); return result;

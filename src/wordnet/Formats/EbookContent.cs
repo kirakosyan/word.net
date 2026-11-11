@@ -102,7 +102,7 @@ internal static partial class EbookContent
             context.CheckCancellation();
             if (node is IText text)
             {
-                if (!string.IsNullOrWhiteSpace(text.Data)) { var p = new ParagraphBlock(context) { Alignment = parent is IElement element ? Alignment(element, context) : ParagraphAlignment.Left }; p.Runs.Add(new TextRun(Collapse(text.Data))); model.Blocks.Add(p); }
+                if (!string.IsNullOrWhiteSpace(text.Data)) { var p = new ParagraphBlock(context) { Alignment = parent is IElement element ? Alignment(element, context) : ParagraphAlignment.Left }; p.Runs.Add(new TextRun(context, Collapse(text.Data))); model.Blocks.Add(p); }
                 continue;
             }
             if (node is not IElement e) continue;
@@ -266,7 +266,7 @@ internal static partial class EbookContent
             RunAppearance? appearance = null;
             if (context.HtmlImport && text.ParentElement is IElement parent)
                 appearance = new RunAppearance { FontFamily = HtmlInput.Css(parent, "font-family"), Underline = HtmlInput.Css(parent, "text-decoration") == "underline", Strike = HtmlInput.Css(parent, "text-decoration") == "line-through", Background = InlineBackground(parent) };
-            paragraph.Runs.Add(new TextRun(preserve ? text.Data : Collapse(text.Data), bold, italic, code, link, fontSize, color, appearance: appearance)); return;
+            paragraph.Runs.Add(new TextRun(context, preserve ? text.Data : Collapse(text.Data), bold, italic, code, link, fontSize, color, appearance: appearance)); return;
         }
         if (node is IElement e)
         {
@@ -277,12 +277,12 @@ internal static partial class EbookContent
             fontSize = CssLength(e, "font-size", context) ?? fontSize;
             color = CssColor(e, context) ?? color;
             if (tag is "script" or "style" or "iframe" or "object" or "svg" or "math") { context.Loss("Ebook.ActiveContent", "Active or unsupported embedded content was omitted."); return; }
-            if (tag == "br") { paragraph.Runs.Add(new TextRun("\n", bold, italic, code, link)); return; }
+            if (tag == "br") { paragraph.Runs.Add(new TextRun(context, "\n", bold, italic, code, link)); return; }
             if (tag == "img")
             {
                 DocumentImage? image = imageReader?.Invoke(e);
-                if (image != null) paragraph.Runs.Add(new TextRun("", image: image));
-                else { context.Loss("Image.Unsupported", "Unresolved or unsupported ebook images retain alternative text only."); paragraph.Runs.Add(new TextRun(e.GetAttribute("alt") ?? "")); }
+                if (image != null) paragraph.Runs.Add(new TextRun(context, "", image: image));
+                else { context.Loss("Image.Unsupported", "Unresolved or unsupported ebook images retain alternative text only."); paragraph.Runs.Add(new TextRun(context, e.GetAttribute("alt") ?? "")); }
                 return;
             }
             if (tag == "table") context.Loss("Ebook.NestedTable", "Nested tables are flattened.");
@@ -292,7 +292,7 @@ internal static partial class EbookContent
                 if (paragraph.Runs.Count == 0) paragraph.Alignment = alignment;
                 else
                 {
-                    paragraph.Runs.Add(new TextRun("\n"));
+                    paragraph.Runs.Add(new TextRun(context, "\n"));
                     if (paragraph.Alignment != alignment) context.Loss("Ebook.CellAlignment", "Multiple cell paragraphs use the first paragraph's alignment.");
                 }
             }

@@ -294,8 +294,8 @@ internal static partial class OdtFormat
                     bool end = child.Name == T + "bookmark-end";
                     if (!bookmarkNames.TryGetValue(name, out string? mapped) || !(end ? bookmarkEnds : bookmarkStarts).Add(name)
                         || end && !bookmarkStarts.Contains(name)) throw Invalid("Bookmark");
-                    output.Add(new TextRun("", bookmark: (end ? "/" : "") + mapped));
-                    if (child.Name == T + "bookmark") { bookmarkEnds.Add(name); output.Add(new TextRun("", bookmark: "/" + mapped)); }
+                    output.Add(new TextRun(context, "", bookmark: (end ? "/" : "") + mapped));
+                    if (child.Name == T + "bookmark") { bookmarkEnds.Add(name); output.Add(new TextRun(context, "", bookmark: "/" + mapped)); }
                 }
                 else if (child.Name == D + "frame")
                 {
@@ -317,7 +317,7 @@ internal static partial class OdtFormat
                     }
                     else admitted = admitted.Place(width, height, child.Element(V + "desc")?.Value ?? "", context);
                     FlushSpace(); space.Visible = true;
-                    output.Add(new TextRun("", image: admitted));
+                    output.Add(new TextRun(context, "", image: admitted));
                 }
                 else if (child.Name == T + "soft-page-break") { }
                 else if (child.Name == O + "annotation" || child.Name == O + "annotation-end") Loss("AnnotationLoss");
@@ -336,7 +336,7 @@ internal static partial class OdtFormat
                 bool italic = style.TryGetValue(F + "font-style", out string? slant) && slant == "italic";
                 double? size = style.TryGetValue(F + "font-size", out string? points) ? Length(points) : null;
                 if (size.HasValue && size <= 0) throw Invalid("FontSize");
-                var run = new TextRun(text, bold, italic, link: link, fontSize: size, color: Color(style.TryGetValue(F + "color", out string? color) ? color : null));
+                var run = new TextRun(context, text, bold, italic, link: link, fontSize: size, color: Color(style.TryGetValue(F + "color", out string? color) ? color : null));
                 if (style.TryGetValue(F + "font-family", out string? family))
                 {
                     if (family.Length > 256) throw Invalid("FontLimit"); Admit(text: family.Length);
@@ -514,7 +514,7 @@ internal static partial class OdtFormat
                             {
                                 var p = new ParagraphBlock(context);
                                 string? cached = (string?)cell.Attribute(O + "string-value") ?? (string?)cell.Attribute(O + "value") ?? (string?)cell.Attribute(O + "boolean-value") ?? (string?)cell.Attribute(O + "date-value");
-                                if (cached != null) { Loss("FieldLoss"); Admit(text: cached.Length); p.Runs.Add(new TextRun(cached)); }
+                                if (cached != null) { Loss("FieldLoss"); Admit(text: cached.Length); p.Runs.Add(new TextRun(context, cached)); }
                                 target.Content.Add(p); target.Paragraphs.Add(p);
                             }
                             output.Add(target); if (height > 1) expected[column] = (height - 1, width); column++;

@@ -118,6 +118,14 @@ internal sealed class ConversionContext
         if (!fontUsage.ContainsKey(key)) fontUsage.Add(key, new FontUsage(requested, resolved));
     }
     private readonly int maximumBlocks;
+    private readonly int maximumRuns;
+    private int runs;
+    internal void ReserveRun()
+    {
+        CheckCancellation();
+        if (runs >= maximumRuns) throw new InvalidDataException("Limit.Runs: Imported run allocations exceed MaximumRuns.");
+        runs++;
+    }
     private readonly int maximumImagePlacements;
     private int blocks, imagePlacements;
     private long imageBytes, importWork;
@@ -161,6 +169,7 @@ internal sealed class ConversionContext
     {
         Options = options;
         maximumBlocks = options.MaximumBlocks;
+        maximumRuns = options.MaximumRuns;
         maximumImagePlacements = options.MaximumImagePlacements;
         if (maximumBlocks <= 0) throw new ArgumentOutOfRangeException(nameof(options), "MaximumBlocks must be positive.");
         if (maximumImagePlacements <= 0) throw new ArgumentOutOfRangeException(nameof(options), "MaximumImagePlacements must be positive.");

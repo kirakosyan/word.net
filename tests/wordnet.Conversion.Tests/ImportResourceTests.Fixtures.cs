@@ -131,7 +131,7 @@ public sealed partial class ImportResourceTests
         return output.ToArray();
     }
 
-    private static byte[] Kindle(int skeletons, bool overlap)
+    private static byte[] Kindle(int skeletons, bool overlap, bool empty = false)
     {
         const int textLength = 800 * 1024;
         byte[] header = new byte[280]; Be16(header, 0, 1); Be32(header, 4, textLength); Be16(header, 8, textLength / 4096); Be16(header, 10, 4096);
@@ -149,7 +149,7 @@ public sealed partial class ImportResourceTests
             for (int i = first; i < Math.Min(first + 1000, skeletons); i++)
             {
                 offsets.Add(bytes.Count); bytes.AddRange(new byte[] { 1, (byte)'0', 3, 0x80 });
-                Variable(bytes, overlap ? textLength - 1 : textLength - skeletons + i); Variable(bytes, 1);
+                Variable(bytes, overlap ? textLength - 1 : textLength - skeletons + i); Variable(bytes, empty ? 0 : 1);
             }
             int idxt = bytes.Count; bytes.AddRange(Encoding.ASCII.GetBytes("IDXT"));
             foreach (int offset in offsets) { bytes.Add((byte)(offset >> 8)); bytes.Add((byte)offset); }

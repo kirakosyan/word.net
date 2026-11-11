@@ -1,6 +1,6 @@
 # Conversion tests and qualification
 
-## Pending import resource regression suite — #175–#181
+## 1.6.1 import resource regression suite — #175–#181
 
 `ImportResourceTests` contains independently constructed hostile DOC, DOCX, EPUB,
 RTF, KF8 and PDF inputs, plus paragraph-flood cases. Assertions check diagnostic
@@ -9,11 +9,14 @@ sharing of admitted image/font resources. Fixtures are generated in memory from
 published format layouts; the existing authored `color-grid.png` supplies PNG pixels.
 
 Run `eng/test-import-resources.ps1 -Framework net10.0` after a Release build to run
-this class in an isolated process with a 60-second/512-MiB sampled guard and fresh
+each method in its own process with a 60-second/512-MiB sampled guard and fresh
 xUnit/XML and JSON evidence. Repeat for `net8.0` and, on Windows, `net472`. The latter
 exercises the runtime-specific KF8 regression; a Linux build of the Framework asset
 is not Framework execution. The normal full conversion/OCR suites remain required.
-Results for this proposed source change are recorded in the PR; historical release
+The 40 resource cases include a million-run RTF, ordinary 40,000-line text and
+shared note-table styles. `PdfImportResourceCompatibilityTests` also checks empty
+Flate content and three/six-page 200/300-DPI RGB JPEG/Flate scans with real English
+OCR and default admission limits. Results are recorded in PR #182; historical release
 receipts below do not qualify it.
 
 The [1.6.0 release notes](releases/1.6.0.md) define the current bounded milestone

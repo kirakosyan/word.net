@@ -9,7 +9,8 @@ provider. New companion package IDs need their own authorized NuGet ownership/
 Trusted Publishing configuration before any release. Exact-commit CI and
 minimum-runtime gates apply to every release.
 
-The [1.6.0 notes](releases/1.6.0.md) describe a bounded milestone from roadmap #138
+The [1.6.1 patch notes](releases/1.6.1.md) describe import resource fixes for
+#175–#181. The [1.6.0 notes](releases/1.6.0.md) describe a bounded milestone from roadmap #138
 on top of [1.5.0](releases/1.5.0.md); the remaining roadmap stays open. All three
 project versions advance together. Select successful CI from the exact final-main commit for the new
 version; verify public indexes before dispatch and never republish an existing version.

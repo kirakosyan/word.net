@@ -16,8 +16,13 @@ internal sealed partial class DocxReader
     private readonly ConversionContext context;
     private readonly Dictionary<string, XElement> relationships;
     private Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
-    private readonly Dictionary<string, TableStyle> tableStyles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
-    private long tableStyleBytes;
+    private TableStyleCache tableStyleCache = new TableStyleCache();
+    private Dictionary<string, TableStyle> tableStyles => tableStyleCache.Styles;
+    private sealed class TableStyleCache
+    {
+        internal readonly Dictionary<string, TableStyle> Styles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
+        internal long Bytes;
+    }
     private Dictionary<(string Id, bool Character), TextStyle> resolvedStyles = new Dictionary<(string, bool), TextStyle>();
     private string? defaultStyle;
     private string? defaultTableStyle;
@@ -322,7 +327,7 @@ internal sealed partial class DocxReader
         ReadRunProperties(markProperties, mark);
         string? retainedStyle = styleId ?? defaultStyle;
         if (retainedStyle != null && (!styles.TryGetValue(retainedStyle, out XElement? retainedDefinition) || (string?)retainedDefinition.Attribute(W + "type") != "paragraph")) retainedStyle = null;
-        var paragraph = new ParagraphBlock(context) { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        var paragraph = new ParagraphBlock(context) { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun(context, "", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
         ReadParagraphFormatRevision(element, properties, paragraph, inheritedParagraph);
@@ -398,33 +403,33 @@ internal sealed partial class DocxReader
             }
             else if (child.Name == W + "t")
             {
-                Emit(runs, new TextRun(child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+                Emit(runs, new TextRun(context, child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "tab")
             {
-                Emit(runs, new TextRun("\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+                Emit(runs, new TextRun(context, "\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "br" || child.Name == W + "cr")
             {
                 string? type = (string?)child.Attribute(W + "type");
                 if (type is not null and not "textWrapping" and not "page" and not "column") throw new InvalidDataException("Docx.Break: Invalid break type.");
-                Emit(runs, new TextRun(type == "page" ? "\f" : type == "column" ? "\v" : "\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+                Emit(runs, new TextRun(context, type == "page" ? "\f" : type == "column" ? "\v" : "\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == MathObjectFormat.M + "oMath" || child.Name == MathObjectFormat.M + "oMathPara")
             {
                 DocumentObjectData? retained = ReadObjectForConversion(() => ReadRetainedMath(child));
-                if (retained != null) Emit(runs, new TextRun("", retainedObject: retained));
+                if (retained != null) Emit(runs, new TextRun(context, "", retainedObject: retained));
             }
             else if (child.Name == W + "drawing")
             {
                 DocumentObjectData? retained = ReadObjectForConversion(() => ReadRetainedDrawing(child));
-                if (retained != null) { Emit(runs, new TextRun("", retainedObject: retained)); continue; }
+                if (retained != null) { Emit(runs, new TextRun(context, "", retainedObject: retained)); continue; }
                 if (child.Descendants(ChartObjectFormat.C + "chart").Any()) continue;
                 XElement? box = child.Descendants(W + "txbxContent").FirstOrDefault();
                 XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
                 if (box != null || child.Descendants(wps + "linkedTxbx").Any() || child.Descendants(wps + "txbx").Any())
                 {
-                    Emit(runs, new TextRun("", box: ReadBox(child, box)));
+                    Emit(runs, new TextRun(context, "", box: ReadBox(child, box)));
                     continue;
                 }
                 if (child.Descendants(wps + "wsp").Any())
@@ -435,14 +440,14 @@ internal sealed partial class DocxReader
                         && !context.Typography.Enabled && (context.Destination != DocumentFormat.Pdf
                             || context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17))
                     { context.Loss("Shape.VectorUnsupported", "The drawing is outside the admitted vector profile and is omitted."); shape = null; }
-                    if (shape != null) Emit(runs, new TextRun("", box: shape));
+                    if (shape != null) Emit(runs, new TextRun(context, "", box: shape));
                     continue;
                 }
                 DocumentImage? image = ReadDrawing(child);
                 if (image != null)
                 {
                     if (context.CaptureLayoutSources && SnapshotInlineImage(child, image)) image.Source = context.Location;
-                    Emit(runs, new TextRun("", link: link, image: image));
+                    Emit(runs, new TextRun(context, "", link: link, image: image));
                 }
             }
             else if (child.Name == W + "footnoteReference" || child.Name == W + "endnoteReference")
@@ -452,7 +457,7 @@ internal sealed partial class DocxReader
                     throw new InvalidDataException("Docx.Notes: Unresolved note reference.");
                 DocumentNote note = notes[(child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id];
                 if (note.Number == 0) note.Number = notes.Values.Count(n => n.Endnote == note.Endnote && n.Number > 0) + 1;
-                Emit(runs, new TextRun("", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
+                Emit(runs, new TextRun(context, "", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
                     appearance: inherited.Appearance.Copy(), note: note));
             }
             else if (child.Name == W + "footnoteRef" || child.Name == W + "endnoteRef")

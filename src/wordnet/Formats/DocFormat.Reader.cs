@@ -186,7 +186,7 @@ internal static partial class DocFormat
                     foreach (string part in raw.Split('\u0001').Select((s, i) => (i == 0 ? "" : "\u0001") + s))
                     {
                         string value = part;
-                        if (value.Length > 0 && value[0] == '\u0001') { fields.AddRun(paragraph, new TextRun("", image: properties.Image(character.PictureOffset.Value))); value = value.Substring(1); }
+                        if (value.Length > 0 && value[0] == '\u0001') { fields.AddRun(paragraph, new TextRun(context, "", image: properties.Image(character.PictureOffset.Value))); value = value.Substring(1); }
                         fields.Text(paragraph, value, character);
                     }
                 }

@@ -366,7 +366,7 @@ internal sealed partial class DocxReader
     {
         if (fields.Count != 0 || link != null || !typedNodes.TryGetValue(element, out ControlData? data)) throw new NotSupportedException("Control.ProtectedOwner: Controls cannot be embedded in fields, hyperlinks or unsupported stories.");
         var cached = new List<TextRun>(); ReadInlines(element.Element(W + "sdtContent")!, cached, inherited, link);
-        if (cached.Count == 0) cached.Add(new TextRun("", inherited.Bold, inherited.Italic, inherited.Code, fontSize: inherited.FontSize, color: inherited.Color, appearance: inherited.Appearance.Copy()));
+        if (cached.Count == 0) cached.Add(new TextRun(context, "", inherited.Bold, inherited.Italic, inherited.Code, fontSize: inherited.FontSize, color: inherited.Color, appearance: inherited.Appearance.Copy()));
         ValidateTypedRuns(data, cached);
         foreach (TextRun r in cached) { r.TypedControlId = data.Id; runs.Add(r); }
         return true;
@@ -407,10 +407,10 @@ internal sealed partial class DocxReader
             // ReadBlocks can attach pending body/cell bookmark markers after the initial content validation.
             ValidateTypedRuns(data, owner.Runs);
             foreach (ParagraphBlock p in owner.Content) ValidateTypedParagraph(p);
-            TextRun prototype = owner.Runs.FirstOrDefault() ?? new TextRun("");
+            TextRun prototype = owner.Runs.FirstOrDefault() ?? new TextRun(context, "");
             var style = new TextStyle { Bold = prototype.Bold, Italic = prototype.Italic, Code = prototype.Code, FontSize = prototype.FontSize, Color = prototype.Color, Appearance = prototype.Appearance.Copy() };
             ReadRunProperties(data.Properties.Element(W + "rPr"), style);
-            data.InputStyle = new TextRun("", style.Bold, style.Italic, style.Code, fontSize: style.FontSize, color: style.Color, appearance: style.Appearance.Copy());
+            data.InputStyle = new TextRun(context, "", style.Bold, style.Italic, style.Code, fontSize: style.FontSize, color: style.Color, appearance: style.Appearance.Copy());
             string? placeholder = (string?)data.Properties.Element(W + "placeholder")?.Element(W + "docPart")?.Attribute(W + "val");
             if (placeholder != null)
             {

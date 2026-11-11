@@ -36,7 +36,7 @@ internal static class TextFormat
         {
             var paragraph = new ParagraphBlock(context);
             int end = text.IndexOf('\n', start);
-            paragraph.Runs.Add(new TextRun(end < 0 ? text.Substring(start) : text.Substring(start, end - start)));
+            paragraph.Runs.Add(new TextRun(context, end < 0 ? text.Substring(start) : text.Substring(start, end - start)));
             document.Blocks.Add(paragraph);
             if (end < 0) break;
             start = end + 1;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UglyToad.PdfPig.Filters;
 using UglyToad.PdfPig.Tokens;
 using WordNet.Internal;
@@ -10,12 +11,21 @@ using WordNet.Internal;
 namespace WordNet.Ocr;
 
 // Installed before PdfDocument.Open: cross-reference, object, font, form and page
-// streams all pass through the same conversion-local budget, including filter chains.
+// streams are bounded before allocation. Image decode work is released per page;
+// document content/resources keep an aggregate budget, including filter chains.
 internal sealed class BoundedPdfFilters : IFilterProvider
 {
     private readonly IFilterProvider inner;
     private readonly ConversionContext context;
-    private long expanded;
+    private long expanded, pageImages;
+    private bool imageScope, exceeded;
+    private long Used => imageScope ? pageImages : expanded;
+
+    internal void BeginPage()
+    {
+        EnsureWithinBudget();
+        pageImages = 0;
+    }
 
     internal BoundedPdfFilters(IFilterProvider inner, ConversionContext context)
     { this.inner = inner; this.context = context; }
@@ -35,15 +45,16 @@ internal sealed class BoundedPdfFilters : IFilterProvider
     private void Charge(long count)
     {
         context.CheckCancellation();
-        expanded = checked(expanded + count);
+        if (imageScope) pageImages = checked(pageImages + count);
+        else expanded = checked(expanded + count);
         EnsureWithinBudget();
     }
 
     internal void EnsureWithinBudget()
     {
         context.CheckCancellation();
-        if (expanded > context.Options.MaximumExpandedBytes)
-            throw new InvalidDataException("Limit.ExpandedBytes: Decoded PDF streams exceed MaximumExpandedBytes.");
+        exceeded |= expanded > context.Options.MaximumExpandedBytes || pageImages > context.Options.MaximumExpandedBytes;
+        if (exceeded) throw new InvalidDataException("Limit.ExpandedBytes: Decoded PDF document streams or page images exceed MaximumExpandedBytes.");
     }
 
     private static int Number(DictionaryToken dictionary, NameToken key, int fallback)
@@ -59,15 +70,24 @@ internal sealed class BoundedPdfFilters : IFilterProvider
         Charge(checked(((long)colors * bits * columns + 7) / 8 * 2));
     }
 
-    private void Flate(Memory<byte> input)
+    private Memory<byte> Flate(Memory<byte> input, bool retain)
     {
+        if (input.Length == 0) return Memory<byte>.Empty;
         if (input.Length < 2) throw new InvalidDataException("Pdf.Flate: Missing zlib header.");
-        using var source = new MemoryStream(input.ToArray(), writable: false);
+        if (!MemoryMarshal.TryGetArray((ReadOnlyMemory<byte>)input, out ArraySegment<byte> bytes))
+            bytes = new ArraySegment<byte>(input.ToArray());
+        using var source = new MemoryStream(bytes.Array!, bytes.Offset, bytes.Count, writable: false);
         source.Position = 2; // RFC 1950 header; DeflateStream consumes RFC 1951 data.
         using var deflate = new DeflateStream(source, CompressionMode.Decompress);
+        using var output = retain ? new MemoryStream() : null;
         var buffer = new byte[8192];
         int count;
-        while ((count = deflate.Read(buffer, 0, buffer.Length)) != 0) Charge(count);
+        while ((count = deflate.Read(buffer, 0, buffer.Length)) != 0)
+        {
+            Charge(count);
+            output?.Write(buffer, 0, count);
+        }
+        return output == null ? Memory<byte>.Empty : new Memory<byte>(output.GetBuffer(), 0, checked((int)output.Length));
     }
 
     private void RunLength(ReadOnlySpan<byte> input)
@@ -122,28 +142,44 @@ internal sealed class BoundedPdfFilters : IFilterProvider
         public Memory<byte> Decode(Memory<byte> input, DictionaryToken dictionary, IFilterProvider provider, int index)
         {
             owner.context.CheckCancellation();
-            long before = owner.expanded;
-            if (filter is FlateFilter or LzwFilter)
+            bool previousScope = owner.imageScope;
+            owner.imageScope = dictionary.TryGet(NameToken.Subtype, out NameToken subtype) && subtype == NameToken.Image;
+            try
             {
-                DictionaryToken parameters = DecodeParameterResolver.GetFilterParameters(dictionary, index);
-                owner.Predictor(parameters);
-                if (filter is FlateFilter) owner.Flate(input);
-                else owner.Lzw(input.Span, Number(parameters, NameToken.EarlyChange, 1));
+                long before = owner.Used;
+                if (filter is FlateFilter or LzwFilter)
+                {
+                    DictionaryToken parameters = DecodeParameterResolver.GetFilterParameters(dictionary, index);
+                    owner.Predictor(parameters);
+                    if (filter is FlateFilter)
+                    {
+                        // No-predictor streams are inflated exactly once. The provider's
+                        // predictor implementation remains guarded by a bounded preflight.
+                        bool retain = Number(parameters, NameToken.Predictor, 1) <= 1;
+                        Memory<byte> inflated = owner.Flate(input, retain);
+                        if (retain) return inflated;
+                    }
+                    else owner.Lzw(input.Span, Number(parameters, NameToken.EarlyChange, 1));
+                }
+                else if (filter is RunLengthFilter) owner.RunLength(input.Span);
+                else if (filter is Ascii85Filter) owner.Charge((long)input.Length * 4);
+                else if (filter is AsciiHexDecodeFilter) owner.Charge(input.Length);
+                else if (filter.IsSupported)
+                {
+                    int width = Number(dictionary, NameToken.Width, 0), height = Number(dictionary, NameToken.Height, 0);
+                    if (width <= 0 || height <= 0) throw new InvalidDataException("Pdf.Image: Image filters require positive dimensions.");
+                    // Admit a complete 32-bit decoder raster before entering native code.
+                    // Charge the actual decoded bytes below, not this conservative bound.
+                    long raster = checked((long)width * height * 4);
+                    if (raster > owner.context.Options.MaximumExpandedBytes - owner.Used)
+                    { owner.exceeded = true; owner.EnsureWithinBudget(); }
+                }
+                Memory<byte> decoded = filter.Decode(input, dictionary, provider, index);
+                if (decoded.Length > owner.Used - before) owner.Charge(decoded.Length - (owner.Used - before));
+                owner.context.CheckCancellation();
+                return decoded;
             }
-            else if (filter is RunLengthFilter) owner.RunLength(input.Span);
-            else if (filter is Ascii85Filter) owner.Charge((long)input.Length * 4); // Each z shorthand can emit four bytes.
-            else if (filter is AsciiHexDecodeFilter) owner.Charge(input.Length);
-            else if (filter.IsSupported)
-            {
-                int width = Number(dictionary, NameToken.Width, 0), height = Number(dictionary, NameToken.Height, 0);
-                if (width <= 0 || height <= 0) throw new InvalidDataException("Pdf.Image: Image filters require positive dimensions.");
-                owner.Charge(checked((long)width * height * 8));
-            }
-            // Preflight completed before the provider can allocate its decoded buffer.
-            Memory<byte> decoded = filter.Decode(input, dictionary, provider, index);
-            if (decoded.Length > owner.expanded - before) owner.Charge(decoded.Length - (owner.expanded - before));
-            owner.context.CheckCancellation();
-            return decoded;
+            finally { owner.imageScope = previousScope; }
         }
     }
 }

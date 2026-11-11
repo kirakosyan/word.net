@@ -29,7 +29,7 @@ internal static class PdfImport
         {
             UseLenientParsing = true,
             SkipMissingFonts = true,
-            MaxStackDepth = context.Options.MaximumNestingDepth,
+            MaxStackDepth = SkiaRenderingParsingOptions.Instance.MaxStackDepth,
             FilterProvider = filters,
         };
         using PdfDocument pdf = PdfDocument.Open(input, parsing);
@@ -45,6 +45,7 @@ internal static class PdfImport
         for (int p = 1; p <= pdf.NumberOfPages; p++)
         {
             context.CheckCancellation();
+            filters.BeginPage();
             var page = ReadPage(pdf, p);
             filters.EnsureWithinBudget();
             OcrRecognition? recognition = null;
@@ -90,8 +91,8 @@ internal static class PdfImport
                     double? previous = null;
                     foreach (var letter in line.OrderBy(l => l.StartBaseLine.X))
                     {
-                        if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.PointSize * 0.25) paragraph.Runs.Add(new TextRun(" "));
-                        paragraph.Runs.Add(new TextRun(letter.Value)); previous = letter.EndBaseLine.X;
+                        if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.PointSize * 0.25) paragraph.Runs.Add(new TextRun(context, " "));
+                        paragraph.Runs.Add(new TextRun(context, letter.Value)); previous = letter.EndBaseLine.X;
                     }
                     blocks.Add((line.Key, line.Min(l => l.StartBaseLine.X), paragraph));
                 }
@@ -105,7 +106,7 @@ internal static class PdfImport
                         bytes = embedded.RawMemory.ToArray();
                     else if (!embedded.TryGetPng(out bytes!)) throw new NotSupportedException("Pdf.ImageEncoding: Embedded image cannot be decoded to PNG or JPEG.");
                     DocumentImage image = DocumentImage.Read(bytes, embedded.BoundingBox.Width, embedded.BoundingBox.Height, "", context, embedded.WidthInSamples, embedded.HeightInSamples);
-                    var paragraph = new ParagraphBlock(context); paragraph.Runs.Add(new TextRun("", image: image));
+                    var paragraph = new ParagraphBlock(context); paragraph.Runs.Add(new TextRun(context, "", image: image));
                     blocks.Add((embedded.BoundingBox.Top, embedded.BoundingBox.Left, paragraph));
                 }
                 context.Loss("Pdf.ImagePlacement", "Images retain their displayed dimensions in reading-order paragraphs; original anchoring, clipping and transforms are not retained.");
