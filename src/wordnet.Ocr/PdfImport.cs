@@ -24,7 +24,16 @@ internal static class PdfImport
 
     private static DocumentModel ReadCore(Stream input, ConversionContext context)
     {
-        using PdfDocument pdf = PdfDocument.Open(input, SkiaRenderingParsingOptions.Instance);
+        var filters = new BoundedPdfFilters(SkiaRenderingParsingOptions.Instance.FilterProvider!, context);
+        var parsing = new ParsingOptions
+        {
+            UseLenientParsing = true,
+            SkipMissingFonts = true,
+            MaxStackDepth = SkiaRenderingParsingOptions.Instance.MaxStackDepth,
+            FilterProvider = filters,
+        };
+        using PdfDocument pdf = PdfDocument.Open(input, parsing);
+        filters.EnsureWithinBudget();
         if (pdf.IsEncrypted) throw new NotSupportedException("Pdf.Encryption: Encrypted PDFs are unsupported.");
         if (pdf.NumberOfPages > context.Options.MaximumPages) throw new InvalidDataException("Limit.Pages: PDF exceeds the page limit.");
         context.Loss("Pdf.Reconstruction", "PDF reading order is reconstructed into editable paragraphs; original page layout and vector graphics are not retained.");
@@ -36,7 +45,9 @@ internal static class PdfImport
         for (int p = 1; p <= pdf.NumberOfPages; p++)
         {
             context.CheckCancellation();
+            filters.BeginPage();
             var page = ReadPage(pdf, p);
+            filters.EnsureWithinBudget();
             OcrRecognition? recognition = null;
             string? logicalText = PdfActualText.Read(page, context);
             string text = logicalText ?? ContentOrderTextExtractor.GetText(page);
@@ -62,6 +73,7 @@ internal static class PdfImport
                 }
                 if (!rendererAdded) { pdf.AddSkiaPageFactory(); rendererAdded = true; }
                 using SKBitmap bitmap = pdf.GetPageAsSKBitmap(p, (float)scale, SKColors.White);
+                filters.EnsureWithinBudget();
                 if (context.OcrMetadata.Enabled) { recognition = EnglishOcr.RecognizeWithMetadata(bitmap, options, context); text = recognition.Text; }
                 else text = EnglishOcr.Recognize(bitmap, options, context);
             }
@@ -75,12 +87,12 @@ internal static class PdfImport
                 var blocks = new List<(double Top, double Left, ParagraphBlock Paragraph)>();
                 foreach (var line in page.Letters.GroupBy(l => Math.Round(l.StartBaseLine.Y, 1)).OrderByDescending(g => g.Key))
                 {
-                    var paragraph = new ParagraphBlock();
+                    var paragraph = new ParagraphBlock(context);
                     double? previous = null;
                     foreach (var letter in line.OrderBy(l => l.StartBaseLine.X))
                     {
-                        if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.PointSize * 0.25) paragraph.Runs.Add(new TextRun(" "));
-                        paragraph.Runs.Add(new TextRun(letter.Value)); previous = letter.EndBaseLine.X;
+                        if (previous.HasValue && letter.StartBaseLine.X - previous.Value > letter.PointSize * 0.25) paragraph.Runs.Add(new TextRun(context, " "));
+                        paragraph.Runs.Add(new TextRun(context, letter.Value)); previous = letter.EndBaseLine.X;
                     }
                     blocks.Add((line.Key, line.Min(l => l.StartBaseLine.X), paragraph));
                 }
@@ -94,7 +106,7 @@ internal static class PdfImport
                         bytes = embedded.RawMemory.ToArray();
                     else if (!embedded.TryGetPng(out bytes!)) throw new NotSupportedException("Pdf.ImageEncoding: Embedded image cannot be decoded to PNG or JPEG.");
                     DocumentImage image = DocumentImage.Read(bytes, embedded.BoundingBox.Width, embedded.BoundingBox.Height, "", context, embedded.WidthInSamples, embedded.HeightInSamples);
-                    var paragraph = new ParagraphBlock(); paragraph.Runs.Add(new TextRun("", image: image));
+                    var paragraph = new ParagraphBlock(context); paragraph.Runs.Add(new TextRun(context, "", image: image));
                     blocks.Add((embedded.BoundingBox.Top, embedded.BoundingBox.Left, paragraph));
                 }
                 context.Loss("Pdf.ImagePlacement", "Images retain their displayed dimensions in reading-order paragraphs; original anchoring, clipping and transforms are not retained.");
@@ -110,6 +122,7 @@ internal static class PdfImport
                     recognition.OriginalWidth, recognition.OriginalHeight, recognition.Width, recognition.Height, recognition.Transform, recognition.Confidence, recognition.Sequence, context));
             Append(content.Blocks);
         }
+        filters.EnsureWithinBudget();
         return result;
 
         void Append(IEnumerable<DocumentBlock> blocks)

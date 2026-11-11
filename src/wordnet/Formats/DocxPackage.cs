@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using WordNet.Internal;
+using WordNet.Model;
 
 namespace WordNet.Formats;
 
@@ -106,6 +107,26 @@ internal sealed class DocxPackage : IDisposable
     internal IEnumerable<string> PartNames => entries.Keys;
 
     internal bool Contains(string name) => entries.ContainsKey(name);
+
+    private readonly Dictionary<string, DocumentImage> images = new Dictionary<string, DocumentImage>(StringComparer.Ordinal);
+
+    private readonly Dictionary<string, string> unsupportedImages = new Dictionary<string, string>(StringComparer.Ordinal);
+
+    internal DocumentImage ReadImage(string name, double? width, double? height, string alt)
+    {
+        if (images.TryGetValue(name, out DocumentImage? image)) return image.Place(width, height, alt, context);
+        if (unsupportedImages.TryGetValue(name, out string? failure)) throw new NotSupportedException(failure);
+        try { image = DocumentImage.Read(ReadBytes(name), width, height, alt, context); }
+        catch (NotSupportedException error)
+        {
+            // Cache the outcome, not the bytes/exception, so every placement can
+            // still choose its own placeholder geometry without re-inflating a part.
+            unsupportedImages.Add(name, error.Message);
+            throw;
+        }
+        images.Add(name, image);
+        return image;
+    }
 
     internal byte[] ReadBytes(string name)
     {

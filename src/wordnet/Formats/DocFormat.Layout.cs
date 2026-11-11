@@ -34,7 +34,7 @@ internal static partial class DocFormat
                 position += checked((int)Math.Round(cell.CellWidth!.Value * 20));
                 int end = Array.BinarySearch(grid, position); cell.ColumnSpan = end - start; start = end;
             }
-            if (before > 0) { context.Loss("Doc.TableGrid", "Omitted leading DOC grid columns are represented by empty cells."); row.Insert(0, new TableCell(new ParagraphBlock()) { ColumnSpan = before, Padding = new CellPadding() }); }
+            if (before > 0) { context.Loss("Doc.TableGrid", "Omitted leading DOC grid columns are represented by empty cells."); row.Insert(0, new TableCell(new ParagraphBlock(context)) { ColumnSpan = before, Padding = new CellPadding() }); }
         }
     }
 

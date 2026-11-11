@@ -15,6 +15,13 @@ internal static partial class RtfFormat
     {
         internal StringBuilder Name = new StringBuilder();
         internal int? CodePage;
+        private string? family;
+        internal string Family => family ??= Name.ToString().Trim();
+        internal void Append(string value)
+        {
+            if (Name.Length + value.Length > 256) throw new InvalidDataException("Limit.FontName: RTF font names must not exceed 256 characters.");
+            Name.Append(value); family = null;
+        }
     }
     private sealed class ListInfo { internal int Id, Levels; internal bool Ordered = true; internal int Start = 1; }
     private sealed class Picture : IDisposable
@@ -57,7 +64,7 @@ internal static partial class RtfFormat
         private readonly List<Picture> pictures = new List<Picture>();
         private readonly StringBuilder text = new StringBuilder(), title = new StringBuilder(), author = new StringBuilder();
         private State state = new State();
-        private ParagraphBlock paragraph = new ParagraphBlock();
+        private ParagraphBlock paragraph;
         private List<ParagraphBlock> cellParagraphs = new List<ParagraphBlock>();
         private List<TableCell>? row;
         private readonly List<double> edges = new List<double>();
@@ -66,7 +73,7 @@ internal static partial class RtfFormat
         private bool rootClosed, header, rowHeader, rowKeep, primaryPicture;
         private int repeatedEdge = -1;
 
-        internal Reader(byte[] input, ConversionContext context) { this.input = input; this.context = context; }
+        internal Reader(byte[] input, ConversionContext context) { this.input = input; this.context = context; paragraph = new ParagraphBlock(context); }
         public void Dispose() { foreach (Picture picture in pictures) picture.Dispose(); }
 
         internal DocumentModel Read()
@@ -140,7 +147,7 @@ internal static partial class RtfFormat
         {
             if (state.Skip) return;
             characters = checked(characters + value.Length); context.CheckCharacters(characters);
-            if (state.Destination == "font") { if (state.FontEntry != null && value != ";") state.FontEntry.Name.Append(value); return; }
+            if (state.Destination == "font") { if (state.FontEntry != null && value != ";") state.FontEntry.Append(value); return; }
             if (state.Destination == "title") { title.Append(value); return; }
             if (state.Destination == "author") { author.Append(value); return; }
             if (state.Destination == "body") { text.Append(value); primaryPicture = false; }
@@ -344,7 +351,7 @@ internal static partial class RtfFormat
             appearance.Background = state.Background == 0 ? null : colors[state.Background];
             if (fonts.TryGetValue(state.Font, out FontInfo? face))
             {
-                appearance.FontFamily = face.Name.ToString().Trim();
+                appearance.FontFamily = face.Family;
                 if (face.CodePage == -1) context.Loss("Rtf.FontCharset", "A special font charset retains literal character values without a symbol-font encoding map.");
             }
             if (state.Color < 0 || state.Color >= colors.Count && state.Color != 0) throw Invalid("Invalid color table reference.");
@@ -356,7 +363,7 @@ internal static partial class RtfFormat
                 if (!lists.TryGetValue(id, out ListInfo? info)) { context.Loss("Rtf.ListDefinition", "An undefined list uses decimal numbering."); info = new ListInfo(); }
                 paragraph.List = new ListItem { Id = "rtf-" + id.ToString(CultureInfo.InvariantCulture), Level = state.Level, Ordered = info.Ordered, Start = info.Start };
             }
-            paragraph.Runs.Add(new TextRun(text.ToString(), state.Bold, state.Italic, fontSize: state.Size, color: state.Color == 0 || colors.Count == 0 ? null : colors[state.Color], appearance: appearance)); text.Clear();
+            paragraph.Runs.Add(new TextRun(context, text.ToString(), state.Bold, state.Italic, fontSize: state.Size, color: state.Color == 0 || colors.Count == 0 ? null : colors[state.Color], appearance: appearance)); text.Clear();
         }
         private void FinishParagraph(bool force)
         {
@@ -364,7 +371,7 @@ internal static partial class RtfFormat
             paragraph.HeadingLevel = state.Heading; paragraph.RightToLeft = state.RightToLeft; paragraph.Alignment = state.Alignment; paragraph.Layout = state.Layout.Copy();
             if (state.InTable || row != null) cellParagraphs.Add(paragraph);
             else { model.Blocks.Add(paragraph); table = null; }
-            paragraph = new ParagraphBlock();
+            paragraph = new ParagraphBlock(context);
         }
         private void FinishCell()
         {
@@ -376,7 +383,7 @@ internal static partial class RtfFormat
         private void FinishRow()
         {
             if (row == null || row.Count == 0 || row.Count != edges.Count || repeatedEdge >= 0 && repeatedEdge != edges.Count || cellParagraphs.Count > 0 || paragraph.Runs.Count > 0) throw Invalid("Unclosed cells or inconsistent table grid.");
-            if (table == null) { table = new TableBlock(); model.Blocks.Add(table); }
+            if (table == null) { table = new TableBlock(context); model.Blocks.Add(table); }
             double previous = 0;
             for (int i = 0; i < row.Count; i++) { row[i].CellWidth = edges[i] - previous; previous = edges[i]; }
             if (table.Rows.Count == 0) { table.ColumnWidths.AddRange(row.Select(c => c.CellWidth!.Value)); table.Width = previous; }
@@ -394,7 +401,7 @@ internal static partial class RtfFormat
                 byte[] bytes = picture.Binary.Length > 0 ? picture.Binary.ToArray() : new byte[picture.Hex.Length / 2];
                 if (picture.Binary.Length == 0) for (int i = 0; i < bytes.Length; i++) bytes[i] = (byte)(Hex((byte)picture.Hex[i * 2]) * 16 + Hex((byte)picture.Hex[i * 2 + 1]));
                 DocumentImage image = DocumentImage.Read(bytes, picture.Width.HasValue ? Twips(picture.Width.Value) : null, picture.Height.HasValue ? Twips(picture.Height.Value) : null, "", context);
-                paragraph.Runs.Add(new TextRun("", image: image)); primaryPicture = state.PrimaryContainer;
+                paragraph.Runs.Add(new TextRun(context, "", image: image)); primaryPicture = state.PrimaryContainer;
             }
             finally { picture.Binary.Dispose(); }
         }

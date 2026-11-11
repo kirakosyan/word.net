@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using WordNet.Internal;
 
 namespace WordNet.Model;
 
@@ -83,6 +84,8 @@ internal enum ParagraphAlignment { Left, Center, Right, Justified, Distributed }
 
 internal sealed class ParagraphBlock : DocumentBlock
 {
+    internal ParagraphBlock() { }
+    internal ParagraphBlock(ConversionContext context) => context.ReserveBlocks();
     internal double? FallbackFontSize { get; set; }
     internal double? FallbackAfter { get; set; }
     internal string? StyleId { get; set; }
@@ -109,6 +112,8 @@ internal sealed class ParagraphBlock : DocumentBlock
 
 internal sealed class TableBlock : DocumentBlock
 {
+    internal TableBlock() { }
+    internal TableBlock(ConversionContext context) => context.ReserveBlocks();
     internal int HeaderRowCount { get; set; }
     internal bool HasHeaderRow { get => HeaderRowCount > 0; set => HeaderRowCount = value ? System.Math.Max(1, HeaderRowCount) : 0; }
     internal double? Width { get; set; }
@@ -453,6 +458,11 @@ internal sealed class TextRun
     internal XElement? TemplateFieldElement { get; set; }
     // Captured only for a directly bounded complex-field begin marker during inspection.
     internal XElement? TemplateDirtyFieldElement { get; set; }
+    internal TextRun(ConversionContext context, string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
+        double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
+        : this(text, bold, italic, code, link, fontSize, color, image, appearance, fieldInstruction, note, box, bookmark, control, retainedObject)
+    { context.ReserveRun(); }
+
     internal TextRun(string text, bool bold = false, bool italic = false, bool code = false, string? link = null,
         double? fontSize = null, string? color = null, DocumentImage? image = null, RunAppearance? appearance = null, string? fieldInstruction = null, DocumentNote? note = null, PositionedBox? box = null, string? bookmark = null, TemplateControl? control = null, DocumentObjectData? retainedObject = null)
     {

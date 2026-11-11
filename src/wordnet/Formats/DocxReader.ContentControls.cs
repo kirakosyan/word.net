@@ -357,7 +357,7 @@ internal sealed partial class DocxReader
         if (!typedNodes.TryGetValue(element, out ControlData? data)) throw new NotSupportedException("Control.ProtectedOwner: Typed controls in this story/owner are unsupported.");
         int start = blocks.Count;
         ReadBlocks(element.Element(W + "sdtContent")!, blocks);
-        if (blocks.Count == start) blocks.Add(new ParagraphBlock { FallbackFontSize = 11, FallbackAfter = 0 });
+        if (blocks.Count == start) blocks.Add(new ParagraphBlock(context) { FallbackFontSize = 11, FallbackAfter = 0 });
         foreach (ParagraphBlock p in blocks.Skip(start).Cast<ParagraphBlock>()) { ValidateTypedParagraph(p); p.TypedControlId = data.Id; }
         ValidateTypedRuns(data, blocks.Skip(start).Cast<ParagraphBlock>().SelectMany(p => p.Runs));
         return true;
@@ -366,7 +366,7 @@ internal sealed partial class DocxReader
     {
         if (fields.Count != 0 || link != null || !typedNodes.TryGetValue(element, out ControlData? data)) throw new NotSupportedException("Control.ProtectedOwner: Controls cannot be embedded in fields, hyperlinks or unsupported stories.");
         var cached = new List<TextRun>(); ReadInlines(element.Element(W + "sdtContent")!, cached, inherited, link);
-        if (cached.Count == 0) cached.Add(new TextRun("", inherited.Bold, inherited.Italic, inherited.Code, fontSize: inherited.FontSize, color: inherited.Color, appearance: inherited.Appearance.Copy()));
+        if (cached.Count == 0) cached.Add(new TextRun(context, "", inherited.Bold, inherited.Italic, inherited.Code, fontSize: inherited.FontSize, color: inherited.Color, appearance: inherited.Appearance.Copy()));
         ValidateTypedRuns(data, cached);
         foreach (TextRun r in cached) { r.TypedControlId = data.Id; runs.Add(r); }
         return true;
@@ -407,10 +407,10 @@ internal sealed partial class DocxReader
             // ReadBlocks can attach pending body/cell bookmark markers after the initial content validation.
             ValidateTypedRuns(data, owner.Runs);
             foreach (ParagraphBlock p in owner.Content) ValidateTypedParagraph(p);
-            TextRun prototype = owner.Runs.FirstOrDefault() ?? new TextRun("");
+            TextRun prototype = owner.Runs.FirstOrDefault() ?? new TextRun(context, "");
             var style = new TextStyle { Bold = prototype.Bold, Italic = prototype.Italic, Code = prototype.Code, FontSize = prototype.FontSize, Color = prototype.Color, Appearance = prototype.Appearance.Copy() };
             ReadRunProperties(data.Properties.Element(W + "rPr"), style);
-            data.InputStyle = new TextRun("", style.Bold, style.Italic, style.Code, fontSize: style.FontSize, color: style.Color, appearance: style.Appearance.Copy());
+            data.InputStyle = new TextRun(context, "", style.Bold, style.Italic, style.Code, fontSize: style.FontSize, color: style.Color, appearance: style.Appearance.Copy());
             string? placeholder = (string?)data.Properties.Element(W + "placeholder")?.Element(W + "docPart")?.Attribute(W + "val");
             if (placeholder != null)
             {
@@ -420,7 +420,7 @@ internal sealed partial class DocxReader
             else if (data.Placeholder)
             {
                 var cloner = new DocumentCloner(context);
-                var content = owner.Paragraph == null ? owner.Content.Select(p => (ParagraphBlock)cloner.Block(p)).ToArray() : new[] { new ParagraphBlock() };
+                var content = owner.Paragraph == null ? owner.Content.Select(p => (ParagraphBlock)cloner.Block(p)).ToArray() : new[] { new ParagraphBlock(context) };
                 if (owner.Paragraph != null) content[0].Runs.AddRange(owner.Runs.Select(r => r.WithText(r.Text)));
                 foreach (ParagraphBlock p in content) { p.TypedControlId = null; foreach (TextRun r in p.Runs) r.TypedControlId = null; }
                 data.PlaceholderContent = content;

@@ -14,8 +14,8 @@ internal sealed partial class DocxReader
     private DocxPackage package = null!;
     private string mainPart = "";
     private HashSet<string> knownParts = null!;
-    private readonly Dictionary<int, XElement> numbers = new Dictionary<int, XElement>();
-    private readonly Dictionary<int, XElement> abstracts = new Dictionary<int, XElement>();
+    private Dictionary<int, XElement> numbers = new Dictionary<int, XElement>();
+    private Dictionary<int, XElement> abstracts = new Dictionary<int, XElement>();
     private static readonly XNamespace A = "http://schemas.openxmlformats.org/drawingml/2006/main";
     private static readonly XNamespace Wp = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
     private static readonly XNamespace Pic = "http://schemas.openxmlformats.org/drawingml/2006/picture";
@@ -90,7 +90,7 @@ internal sealed partial class DocxReader
                 context.Loss("Docx.ListAppearance", "Centered/right-aligned list labels use left label alignment.");
             parsed.Layout = appearance.Layout;
             foreach (XElement property in source.Element(W + "pPr")?.Elements() ?? Enumerable.Empty<XElement>()) parsed.LayoutProperties.Add(property.Name.LocalName);
-            parsed.Appearance = new TextRun("", appearance.Bold, appearance.Italic, fontSize: appearance.FontSize, color: appearance.Color, appearance: appearance.Appearance);
+            parsed.Appearance = new TextRun(context, "", appearance.Bold, appearance.Italic, fontSize: appearance.FontSize, color: appearance.Color, appearance: appearance.Appearance);
             if (source.Elements().Any(e => e.Name != W + "start" && e.Name != W + "numFmt" && e.Name != W + "lvlText" && e.Name != W + "lvlJc"
                 && e.Name != W + "pPr" && e.Name != W + "rPr" && e.Name != W + "lvlRestart" && e.Name != W + "isLgl" && e.Name != W + "suff"))
                 context.Loss("Docx.ListBehavior", "Unsupported auxiliary numbering behavior is not retained.");
@@ -178,7 +178,6 @@ internal sealed partial class DocxReader
             || blip!.HasElements || inline.Element(Wp + "effectExtent")?.Attributes().Any(a => a.Value != "0") == true)
             context.Loss("Docx.ImageEffects", "Unsupported image effects and nonrectangular geometry are not retained.");
         string path = DocxPackage.ResolvePart(mainPart, relation); knownParts.Add(path);
-        byte[] bytes = package.ReadBytes(path);
         string alt = (string?)inline.Element(Wp + "docPr")?.Attribute("descr") ?? "";
         if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".emf", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".wmf", StringComparison.OrdinalIgnoreCase))
         {
@@ -187,7 +186,7 @@ internal sealed partial class DocxReader
         }
         try
         {
-            DocumentImage image = DocumentImage.Read(bytes, width, height, alt, context);
+            DocumentImage image = package.ReadImage(path, width, height, alt);
             image.Decorative = inline.Element(Wp + "docPr")?.Descendants(XName.Get("decorative", "http://schemas.microsoft.com/office/drawing/2017/decorative")).Any(e => (string?)e.Attribute("val") is "1" or "true") == true;
             XElement? crop = picture.Element(Pic + "blipFill")?.Element(A + "srcRect");
             double Crop(string side)
@@ -342,7 +341,7 @@ internal sealed partial class DocxReader
                 || child.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration && attribute.Name != W + "val")))
             context.Loss("Docx.TableStyleData", "Unsupported table-style properties or metadata are not retained.");
         TableStyle? parent = parents.Length == 0 ? null : ResolveTableStyle(DocxPackage.RequiredAttribute(parents[0], W + "val"), visiting);
-        var appearance = new TableBlock(); int? rowBandSize = null, columnBandSize = null;
+        var appearance = new TableBlock(context); int? rowBandSize = null, columnBandSize = null;
         if (properties.Length != 0)
         {
             XElement container = properties[0];
@@ -386,22 +385,22 @@ internal sealed partial class DocxReader
                     context.Loss("Docx.TableStyleData", "Unsupported conditional cell properties are not retained.");
                 if (borders.Length == 1)
                 {
-                    var conditional = new TableBlock(); ReadTableBorders(borders[0], conditional);
+                    var conditional = new TableBlock(context); ReadTableBorders(borders[0], conditional);
                     if (conditional.Borders.Count != 0) regionBorders.Add(type, conditional.Borders);
                 }
                 if (shading.Length == 1)
                 {
-                    var conditional = new TableBlock(); ReadTableShading(shading[0], conditional, retainConditionalTheme: true);
+                    var conditional = new TableBlock(context); ReadTableShading(shading[0], conditional, retainConditionalTheme: true);
                     if (conditional.Background != null) regionColors.Add(type, conditional.Background);
                     if (conditional.BackgroundTheme != null) regionThemes.Add(type, conditional.BackgroundTheme);
                 }
             }
         }
         visiting.Remove(id);
-        tableStyleBytes = checked(tableStyleBytes + ((long)id.Length + name.Length) * 2 + 256
+        tableStyleCache.Bytes = checked(tableStyleCache.Bytes + ((long)id.Length + name.Length) * 2 + 256
             + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0) + regionThemes.Count + (parent?.EffectiveRegionThemes.Count ?? 0)
                 + regionBorders.Sum(region => (long)region.Value.Count + 1) + (parent?.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1) ?? 0)) * 128);
-        if (tableStyles.Count >= 10000 || tableStyleBytes > context.Options.MaximumExpandedBytes)
+        if (tableStyles.Count >= 10000 || tableStyleCache.Bytes > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
         var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, regionThemes, regionBorders, rowBandSize, columnBandSize);
         tableStyles.Add(id, result); return result;

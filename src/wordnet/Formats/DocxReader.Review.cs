@@ -110,7 +110,7 @@ internal sealed partial class DocxReader
             if (insideRevision || fields.Count > 0 || element.Ancestors().Any(e => e.Name == W + "sdt" || e.Name == W + "txbxContent"
                 || e.Name == W + "hdr" || e.Name == W + "ftr" || e.Name == W + "footnote" || e.Name == W + "endnote")) throw new NotSupportedException("Review.Unsupported: Comment markers cannot intersect structured runs or unsupported stories.");
             string id = Integer(element, W + "id", 0, int.MaxValue).ToString(CultureInfo.InvariantCulture);
-            runs.Add(new TextRun("") { Comment = id, CommentBoundary = element.Name == W + "commentRangeStart" ? 1 : element.Name == W + "commentRangeEnd" ? 2 : 3 }); return true;
+            runs.Add(new TextRun(context, "") { Comment = id, CommentBoundary = element.Name == W + "commentRangeStart" ? 1 : element.Name == W + "commentRangeEnd" ? 2 : 3 }); return true;
         }
         return false;
     }
@@ -147,11 +147,11 @@ internal sealed partial class DocxReader
             runs.RemoveRange(first, runs.Count - first); runs.Add(owner);
         }
         owner.FormatRevision = record.Id;
-        owner.PreviousFormat = new TextRun(owner.Text, previous.Bold, previous.Italic, previous.Code, fontSize: previous.FontSize, color: previous.Color, appearance: previous.Appearance.Copy());
+        owner.PreviousFormat = new TextRun(context, owner.Text, previous.Bold, previous.Italic, previous.Code, fontSize: previous.FontSize, color: previous.Color, appearance: previous.Appearance.Copy());
         RunAppearance currentAppearance = owner.Appearance.Copy(), previousAppearance = previous.Appearance.Copy();
         currentAppearance.ReviewCompanions = null; previousAppearance.ReviewCompanions = null;
-        TextRun currentOther = new TextRun(owner.Text, code: owner.Code, appearance: currentAppearance);
-        TextRun previousOther = new TextRun(owner.Text, code: previous.Code, appearance: previousAppearance);
+        TextRun currentOther = new TextRun(context, owner.Text, code: owner.Code, appearance: currentAppearance);
+        TextRun previousOther = new TextRun(context, owner.Text, code: previous.Code, appearance: previousAppearance);
         if (!RunCoalescer.Same(currentOther, previousOther)) throw new NotSupportedException("Review.Format: Unsupported non-admitted run property change.");
         review.Revisions.Add(record.Id, record);
     }

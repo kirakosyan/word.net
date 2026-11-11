@@ -199,6 +199,9 @@ internal static partial class DocFormat
         private readonly Func<byte[]> loadData;
         private readonly Dictionary<int, Properties> resolved = new Dictionary<int, Properties>();
         private readonly Dictionary<byte[], List<Prl>> parsed = new Dictionary<byte[], List<Prl>>();
+        private readonly Dictionary<int, byte[]> indirect = new Dictionary<int, byte[]>();
+        private readonly Dictionary<int, DocumentImage> images = new Dictionary<int, DocumentImage>();
+        private long propertyBytes;
         private byte[]? data;
 
         internal PropertyReader(Dictionary<int, DocStyle> styles, ConversionContext context, Func<byte[]> loadData)
@@ -261,6 +264,10 @@ internal static partial class DocFormat
 
         private void Apply(Properties state, byte[] bytes, Properties baseline, HashSet<int> pointers)
         {
+            // Charge applications, including cache hits: parsing once does not bound repeated work.
+            propertyBytes = checked(propertyBytes + Math.Max(1, bytes.Length));
+            if (propertyBytes > context.Options.MaximumExpandedBytes)
+                throw new InvalidDataException("Limit.DocProperties: Applied DOC properties exceed MaximumExpandedBytes.");
             foreach (Prl property in Get(bytes))
             {
                 context.CheckCancellation();
@@ -339,11 +346,17 @@ internal static partial class DocFormat
                     case 0x6646:
                     case 0x6645:
                     case 0x646b:
+                        // MS-DOC indirect grpprls are a single level, never a recursive graph.
+                        if (pointers.Count != 0) throw new InvalidDataException("Doc.Properties: Nested indirect properties are invalid.");
                         int pointer = I32(operand, 0);
-                        if (!pointers.Add(pointer) || pointers.Count > context.Options.MaximumNestingDepth) throw new InvalidDataException("Doc.Properties: Cyclic or excessive indirect properties.");
-                        data ??= loadData();
-                        int length = U16(data, pointer);
-                        Apply(state, Slice(data, checked(pointer + 2), length), baseline, pointers);
+                        if (!indirect.TryGetValue(pointer, out byte[]? target))
+                        {
+                            data ??= loadData();
+                            target = Slice(data, checked(pointer + 2), U16(data, pointer));
+                            indirect.Add(pointer, target);
+                        }
+                        pointers.Add(pointer);
+                        Apply(state, target, baseline, pointers);
                         pointers.Remove(pointer); break;
                     case 0x0800:
                     case 0x0801:
@@ -376,7 +389,16 @@ internal static partial class DocFormat
             if (state.Depth == 1) state.InTable = true;
         }
 
-        internal DocumentImage Image(int offset) => ReadPicture(data ??= loadData(), offset, context);
+        internal DocumentImage Image(int offset)
+        {
+            if (!images.TryGetValue(offset, out DocumentImage? image))
+            {
+                image = ReadPicture(data ??= loadData(), offset, context);
+                images.Add(offset, image);
+                return image;
+            }
+            return image.Place(image.FrameWidth, image.FrameHeight, image.AlternativeText, context);
+        }
     }
 
     private static void ReadPadding(Properties state, byte[] operand, bool defaults)

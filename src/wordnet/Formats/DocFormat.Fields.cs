@@ -60,7 +60,7 @@ internal static partial class DocFormat
                         foreach (var cached in field.Runs) AddRun(cached.Target, cached.Run);
                         continue;
                     }
-                    TextRun first = field.Runs.Select(r => r.Run).FirstOrDefault() ?? new TextRun("");
+                    TextRun first = field.Runs.Select(r => r.Run).FirstOrDefault() ?? new TextRun(context, "");
                     string result = string.Concat(field.Runs.Select(r => r.Run.Text));
                     if (DocumentFields.Kind(instruction) == "HYPERLINK")
                     {
@@ -69,7 +69,7 @@ internal static partial class DocFormat
                         foreach (var cached in field.Runs)
                         {
                             TextRun run = cached.Run;
-                            AddRun(cached.Target, new TextRun(run.Text, run.Bold, run.Italic, run.Code, link,
+                            AddRun(cached.Target, new TextRun(context, run.Text, run.Bold, run.Italic, run.Code, link,
                                 run.FontSize, run.Color, run.Image, run.Appearance));
                         }
                     }
@@ -80,7 +80,7 @@ internal static partial class DocFormat
                         foreach (var cached in field.Runs) AddRun(cached.Target, cached.Run);
                     }
                     else AddRun(field.Runs.Count == 0 ? paragraph : field.Runs[0].Target,
-                        new TextRun(result, first.Bold, first.Italic, fontSize: first.FontSize, color: first.Color, fieldInstruction: instruction));
+                        new TextRun(context, result, first.Bold, first.Italic, fontSize: first.FontSize, color: first.Color, fieldInstruction: instruction));
                 }
                 else if (InInstruction) stack.Peek().Instruction.Append(c);
                 else if (!properties.Hidden)
@@ -94,7 +94,7 @@ internal static partial class DocFormat
             void Flush()
             {
                 if (plain.Length == 0) return;
-                AddRun(paragraph, new TextRun(plain.ToString(), properties.Bold, properties.Italic, fontSize: properties.FontSize, color: properties.Color)); plain.Clear();
+                AddRun(paragraph, new TextRun(context, plain.ToString(), properties.Bold, properties.Italic, fontSize: properties.FontSize, color: properties.Color)); plain.Clear();
             }
         }
     }

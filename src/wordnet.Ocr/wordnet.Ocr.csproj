@@ -4,14 +4,14 @@
     <RootNamespace>WordNet.Ocr</RootNamespace>
     <AssemblyName>wordnet.Ocr</AssemblyName>
     <PackageId>wordnet.Ocr</PackageId>
-    <Version>1.6.0</Version>
+    <Version>1.6.1</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/kirakosyan/word.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Description>Optional native PDF import, local English OCR, Arabic typography and PNG preview providers for wordnet. Managed document export does not require this package.</Description>
-    <PackageReleaseNotes>Bounded template, table, review, report, typography, accessibility and drawing additions with explicit diagnostics. See the 1.6.0 release notes for supported profiles, qualification and remaining limits.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix import resource amplification in DOC, DOCX, EPUB, RTF, KF8, PDF and plain text. Add configurable block, run and image-placement limits while preserving ordinary scanned-PDF OCR and long text imports. See the 1.6.1 release notes for compatibility and qualification.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

@@ -38,9 +38,7 @@ internal sealed partial class DocxReader
             theme = theme,
             typedNodes = typedNodes,
         };
-        foreach (var pair in styles) reader.styles.Add(pair.Key, pair.Value);
-        foreach (var pair in numbers) reader.numbers.Add(pair.Key, pair.Value);
-        foreach (var pair in abstracts) reader.abstracts.Add(pair.Key, pair.Value);
+        reader.styles = styles; reader.numbers = numbers; reader.abstracts = abstracts; reader.resolvedStyles = resolvedStyles; reader.tableStyleCache = tableStyleCache;
         reader.ValidateReviewSource(root);
         var blocks = new List<DocumentBlock>(); reader.ReadBlocks(root, blocks);
         sawLinkedTextBox |= reader.sawLinkedTextBox;

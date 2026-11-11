@@ -33,8 +33,8 @@ internal static class PdfReconstruction
         {
             if (resolver == null)
             {
-                var fontModel = new DocumentModel(); var styles = new ParagraphBlock(); fontModel.Blocks.Add(styles);
-                for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun("", bold: (style & 1) != 0, italic: (style & 2) != 0));
+                var fontModel = new DocumentModel(); var styles = new ParagraphBlock(context); fontModel.Blocks.Add(styles);
+                for (int style = 0; style < 4; style++) styles.Runs.Add(new TextRun(context, "", bold: (style & 1) != 0, italic: (style & 2) != 0));
                 resolver = new FontResolver(fontModel, context);
                 metrics = resolver.Data.Select(bytes => new FontKerning(bytes, metricsOnly: true)).ToArray();
             }
@@ -132,7 +132,7 @@ internal static class PdfReconstruction
                 mapped.Anchor = new DrawingAnchor { HorizontalOrigin = "page", VerticalOrigin = "page", X = left, Y = top, Wrap = "none" };
             }
             else context.Loss("Pdf.ReconstructionImageTransform", "Unsupported clipping, shear, rotation or out-of-page image geometry uses an inline image fallback.");
-            var paragraph = new ParagraphBlock { Layout = new ParagraphLayout { After = 0 } }; paragraph.Runs.Add(new TextRun("", image: mapped));
+            var paragraph = new ParagraphBlock(context) { Layout = new ParagraphLayout { After = 0 } }; paragraph.Runs.Add(new TextRun(context, "", image: mapped));
             int column = Math.Min(options.Columns - 1, (int)Math.Floor(Math.Max(0, left) * options.Columns / page.Width));
             paragraph.Layout.Left = Math.Max(0, left - page.Width * column / options.Columns);
             blocks.Add((column, Math.Max(0, top), left, Math.Max(0, top) + height, paragraph));
@@ -146,13 +146,13 @@ internal static class PdfReconstruction
         foreach (var block in blocks.OrderBy(b => b.Column).ThenBy(b => b.Top).ThenBy(b => b.Left))
         {
             if (block.Column > previousColumn)
-            { var separator = new ParagraphBlock(); separator.Runs.Add(new TextRun(new string('\v', block.Column - previousColumn))); result.Add(separator); previousBottom = 0; previousParagraph = null; }
+            { var separator = new ParagraphBlock(context); separator.Runs.Add(new TextRun(context, new string('\v', block.Column - previousColumn))); result.Add(separator); previousBottom = 0; previousParagraph = null; }
             double gap = Math.Max(0, block.Top - previousBottom);
             if (block.Block is ParagraphBlock paragraph) paragraph.Layout.Before = gap;
             else if (gap > 0)
             {
                 if (previousParagraph != null) previousParagraph.Layout.After = (previousParagraph.Layout.After ?? 0) + gap;
-                else result.Add(new ParagraphBlock { Layout = new ParagraphLayout { Before = 0, After = 0, LineSpacing = gap, MultipleLineSpacing = false, ExactLineSpacing = true } });
+                else result.Add(new ParagraphBlock(context) { Layout = new ParagraphLayout { Before = 0, After = 0, LineSpacing = gap, MultipleLineSpacing = false, ExactLineSpacing = true } });
             }
             result.Add(block.Block); previousColumn = block.Column; previousBottom = Math.Max(previousBottom, block.Bottom);
             previousParagraph = block.Block as ParagraphBlock;
@@ -160,10 +160,10 @@ internal static class PdfReconstruction
         if (anchors.Length > 0)
         {
             ParagraphBlock? host = result.OfType<ParagraphBlock>().FirstOrDefault(p => p.Runs.Count > 0);
-            if (host == null) { host = new ParagraphBlock { Layout = new ParagraphLayout { Before = 0, After = 0 } }; result.Add(host); }
+            if (host == null) { host = new ParagraphBlock(context) { Layout = new ParagraphLayout { Before = 0, After = 0 } }; result.Add(host); }
             host.Runs.AddRange(anchors);
         }
-        if (result.Count == 0) result.Add(new ParagraphBlock());
+        if (result.Count == 0) result.Add(new ParagraphBlock(context));
         foreach (DocumentBlock block in result) block.Section = section;
         if (grid != null || options.Columns > 1) context.Report("Pdf.ReconstructionFlow", "Editable table/column geometry and reading order are inferred; vertical flow and pagination remain approximate.", DiagnosticSeverity.Warning);
         context.Report("Pdf.ReconstructionProfile", "Digital PDF uses bounded geometric prose grouping, caller-declared columns and complete populated ruled grids; confidence is heuristic, not recovered original structure.");
@@ -184,12 +184,12 @@ internal static class PdfReconstruction
     }
     private static ParagraphBlock Paragraph(IEnumerable<Line> lines, ConversionContext context)
     {
-        var paragraph = new ParagraphBlock(); bool first = true, bold = false, italic = false; double? size = null;
+        var paragraph = new ParagraphBlock(context); bool first = true, bold = false, italic = false; double? size = null;
         var text = new StringBuilder();
         void Flush()
         {
             if (text.Length == 0) return;
-            paragraph.Runs.Add(new TextRun(text.ToString(), bold: bold, italic: italic, fontSize: size)); text.Clear();
+            paragraph.Runs.Add(new TextRun(context, text.ToString(), bold: bold, italic: italic, fontSize: size)); text.Clear();
         }
         foreach (Line line in lines)
         {
@@ -238,7 +238,7 @@ internal static class PdfReconstruction
             if (letter.EndBaseLine.X > grid.X[column + 1] + .5) { used.Clear(); return null; }
             (buckets[row * columns + column] ??= new List<Letter>()).Add(letter);
         }
-        var table = new TableBlock { LeftIndent = grid.X[0], Width = grid.X[grid.X.Length - 1] - grid.X[0], LayoutExplicit = true };
+        var table = new TableBlock(context) { LeftIndent = grid.X[0], Width = grid.X[grid.X.Length - 1] - grid.X[0], LayoutExplicit = true };
         table.ColumnWidths.AddRange(grid.X.Zip(grid.X.Skip(1), (a, b) => b - a));
         for (int row = 0; row < grid.Y.Length - 1; row++)
         {

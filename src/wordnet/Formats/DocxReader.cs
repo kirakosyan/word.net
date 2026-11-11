@@ -15,9 +15,15 @@ internal sealed partial class DocxReader
     private static readonly string[] PlainBorderSides = { "top", "left", "bottom", "right", "insideH", "insideV" };
     private readonly ConversionContext context;
     private readonly Dictionary<string, XElement> relationships;
-    private readonly Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
-    private readonly Dictionary<string, TableStyle> tableStyles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
-    private long tableStyleBytes;
+    private Dictionary<string, XElement> styles = new Dictionary<string, XElement>(StringComparer.Ordinal);
+    private TableStyleCache tableStyleCache = new TableStyleCache();
+    private Dictionary<string, TableStyle> tableStyles => tableStyleCache.Styles;
+    private sealed class TableStyleCache
+    {
+        internal readonly Dictionary<string, TableStyle> Styles = new Dictionary<string, TableStyle>(StringComparer.Ordinal);
+        internal long Bytes;
+    }
+    private Dictionary<(string Id, bool Character), TextStyle> resolvedStyles = new Dictionary<(string, bool), TextStyle>();
     private string? defaultStyle;
     private string? defaultTableStyle;
     private ParagraphAlignment defaultAlignment;
@@ -26,6 +32,7 @@ internal sealed partial class DocxReader
     private string title = "";
     private string author = "";
     private bool evenAndOdd;
+    private readonly HashSet<string> bookmarkNames = new HashSet<string>(StringComparer.Ordinal);
     private readonly Dictionary<int, string> bookmarks = new Dictionary<int, string>();
 
     private DocxReader(ConversionContext context, Dictionary<string, XElement> relationships)
@@ -289,7 +296,7 @@ internal sealed partial class DocxReader
         }
         if (pendingBookmarks.Count > 0)
         {
-            if (!DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any()) blocks.Add(new ParagraphBlock());
+            if (!DocumentModel.Expand(blocks).OfType<ParagraphBlock>().Any()) blocks.Add(new ParagraphBlock(context));
             AttachBookmarks(pendingBookmarks, blocks, false);
         }
     }
@@ -320,7 +327,7 @@ internal sealed partial class DocxReader
         ReadRunProperties(markProperties, mark);
         string? retainedStyle = styleId ?? defaultStyle;
         if (retainedStyle != null && (!styles.TryGetValue(retainedStyle, out XElement? retainedDefinition) || (string?)retainedDefinition.Attribute(W + "type") != "paragraph")) retainedStyle = null;
-        var paragraph = new ParagraphBlock { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun("", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
+        var paragraph = new ParagraphBlock(context) { FallbackFontSize = style.Heading == 0 ? 11 : null, FallbackAfter = 0, StyleId = retainedStyle, Mark = new TextRun(context, "", mark.Bold, mark.Italic, mark.Code, fontSize: mark.FontSize, color: mark.Color, appearance: mark.Appearance.Copy()), RightToLeft = style.RightToLeft, Location = context.Location, HeadingLevel = style.Heading, IsCodeBlock = style.CodeBlock, Alignment = style.Alignment, List = list, Layout = style.Layout.Copy() };
         paragraph.StructuralRevision = ReadStructuralRevision(properties?.Element(W + "rPr"), "paragraph");
         ReadInlines(element, paragraph.Runs, style, null);
         ReadParagraphFormatRevision(element, properties, paragraph, inheritedParagraph);
@@ -396,33 +403,33 @@ internal sealed partial class DocxReader
             }
             else if (child.Name == W + "t")
             {
-                Emit(runs, new TextRun(child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+                Emit(runs, new TextRun(context, child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "tab")
             {
-                Emit(runs, new TextRun("\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+                Emit(runs, new TextRun(context, "\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "br" || child.Name == W + "cr")
             {
                 string? type = (string?)child.Attribute(W + "type");
                 if (type is not null and not "textWrapping" and not "page" and not "column") throw new InvalidDataException("Docx.Break: Invalid break type.");
-                Emit(runs, new TextRun(type == "page" ? "\f" : type == "column" ? "\v" : "\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+                Emit(runs, new TextRun(context, type == "page" ? "\f" : type == "column" ? "\v" : "\n", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == MathObjectFormat.M + "oMath" || child.Name == MathObjectFormat.M + "oMathPara")
             {
                 DocumentObjectData? retained = ReadObjectForConversion(() => ReadRetainedMath(child));
-                if (retained != null) Emit(runs, new TextRun("", retainedObject: retained));
+                if (retained != null) Emit(runs, new TextRun(context, "", retainedObject: retained));
             }
             else if (child.Name == W + "drawing")
             {
                 DocumentObjectData? retained = ReadObjectForConversion(() => ReadRetainedDrawing(child));
-                if (retained != null) { Emit(runs, new TextRun("", retainedObject: retained)); continue; }
+                if (retained != null) { Emit(runs, new TextRun(context, "", retainedObject: retained)); continue; }
                 if (child.Descendants(ChartObjectFormat.C + "chart").Any()) continue;
                 XElement? box = child.Descendants(W + "txbxContent").FirstOrDefault();
                 XNamespace wps = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
                 if (box != null || child.Descendants(wps + "linkedTxbx").Any() || child.Descendants(wps + "txbx").Any())
                 {
-                    Emit(runs, new TextRun("", box: ReadBox(child, box)));
+                    Emit(runs, new TextRun(context, "", box: ReadBox(child, box)));
                     continue;
                 }
                 if (child.Descendants(wps + "wsp").Any())
@@ -433,14 +440,14 @@ internal sealed partial class DocxReader
                         && !context.Typography.Enabled && (context.Destination != DocumentFormat.Pdf
                             || context.Options.Pdf.Accessibility == PdfAccessibility.None && context.Options.Pdf.Conformance == PdfConformance.Pdf17))
                     { context.Loss("Shape.VectorUnsupported", "The drawing is outside the admitted vector profile and is omitted."); shape = null; }
-                    if (shape != null) Emit(runs, new TextRun("", box: shape));
+                    if (shape != null) Emit(runs, new TextRun(context, "", box: shape));
                     continue;
                 }
                 DocumentImage? image = ReadDrawing(child);
                 if (image != null)
                 {
                     if (context.CaptureLayoutSources && SnapshotInlineImage(child, image)) image.Source = context.Location;
-                    Emit(runs, new TextRun("", link: link, image: image));
+                    Emit(runs, new TextRun(context, "", link: link, image: image));
                 }
             }
             else if (child.Name == W + "footnoteReference" || child.Name == W + "endnoteReference")
@@ -449,8 +456,8 @@ internal sealed partial class DocxReader
                 if (!noteIds.Contains((child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id))
                     throw new InvalidDataException("Docx.Notes: Unresolved note reference.");
                 DocumentNote note = notes[(child.Name == W + "footnoteReference" ? "footnotes:" : "endnotes:") + id];
-                if (note.Number == 0) note.Number = notes.Values.Count(n => n.Endnote == note.Endnote && n.Number > 0) + 1;
-                Emit(runs, new TextRun("", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
+                if (note.Number == 0) note.Number = note.Endnote ? ++referencedEndnotes : ++referencedFootnotes;
+                Emit(runs, new TextRun(context, "", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color,
                     appearance: inherited.Appearance.Copy(), note: note));
             }
             else if (child.Name == W + "footnoteRef" || child.Name == W + "endnoteRef")
@@ -491,7 +498,7 @@ internal sealed partial class DocxReader
     private TableBlock ReadTable(XElement element)
     {
         using var location = context.At(XmlSourceLocation.Create(element, mainPart));
-        var table = new TableBlock { Location = context.Location };
+        var table = new TableBlock(context) { Location = context.Location };
         var pendingTableBookmarks = new List<TextRun>();
         ReadTableGeometry(element, table);
         bool reportedShadingConflict = false;
@@ -589,7 +596,7 @@ internal sealed partial class DocxReader
                     ParagraphBlock paragraph = ReadParagraph(content); cell.Paragraphs.Add(paragraph); cell.Content.Add(paragraph);
                     AttachBookmarks(pendingBookmarks, new[] { paragraph }, true);
                 }
-                if (cell.Paragraphs.Count == 0) { var empty = new ParagraphBlock(); cell.Paragraphs.Add(empty); cell.Content.Add(empty); }
+                if (cell.Paragraphs.Count == 0) { var empty = new ParagraphBlock(context); cell.Paragraphs.Add(empty); cell.Content.Add(empty); }
                 AttachBookmarks(pendingBookmarks, cell.Content, false);
                 AttachBookmarks(pendingTableBookmarks, cell.Blocks, true);
                 cells.Add(cell);
@@ -606,7 +613,7 @@ internal sealed partial class DocxReader
                 int count = Integer(omitted, W + "val", 0, 1024);
                 if (count == 0) return;
                 context.Loss("Docx.TableGrid", "Omitted grid columns are represented by empty cells.");
-                var gap = new TableCell(new ParagraphBlock()) { ColumnSpan = count, Padding = new CellPadding() };
+                var gap = new TableCell(new ParagraphBlock(context)) { ColumnSpan = count, Padding = new CellPadding() };
                 if (before) cells.Insert(0, gap); else cells.Add(gap);
             }
         }
@@ -823,6 +830,9 @@ internal sealed partial class DocxReader
             TextStyle initial = characterStyle ? new TextStyle() : defaultRun.Copy(); initial.Alignment = defaultAlignment; initial.Layout = defaultLayout.Copy(); return initial;
         }
 
+        context.CheckCancellation();
+        bool root = visiting.Count == 0;
+        if (root && resolvedStyles.TryGetValue((id, characterStyle), out TextStyle? cached)) return cached.Copy();
         if (!visiting.Add(id) || visiting.Count > context.Options.MaximumNestingDepth)
         {
             throw new InvalidDataException("Docx.StyleCycle: Styles contain a cycle or exceed the nesting limit.");
@@ -839,6 +849,8 @@ internal sealed partial class DocxReader
         style.CodeBlock |= id == "WordnetCodeBlock";
         ReadParagraphProperties(element.Element(W + "pPr"), style);
         ReadRunProperties(element.Element(W + "rPr"), style, knownCodeStyle: style.Code || style.CodeBlock, visiting: visiting);
+        visiting.Remove(id);
+        if (root) resolvedStyles.Add((id, characterStyle), style.Copy());
         return style;
     }
 
@@ -851,6 +863,7 @@ internal sealed partial class DocxReader
 
         foreach (XElement property in properties.Elements())
         {
+            context.ReserveImportWork();
             if (property.Name == W + "outlineLvl")
             {
                 if (!int.TryParse((string?)property.Attribute(W + "val"), NumberStyles.None, CultureInfo.InvariantCulture, out int level)
@@ -927,6 +940,7 @@ internal sealed partial class DocxReader
 
         foreach (XElement property in properties.Elements().OrderBy(p => p.Name == W + "rStyle" ? 0 : 1))
         {
+            context.ReserveImportWork();
             if (property.Name == W + "rPrChange")
             {
                 if (!context.PreserveReview) context.Loss("Revisions.Accepted", "Run formatting history is omitted in the accepted-state conversion profile.");

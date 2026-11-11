@@ -1,5 +1,18 @@
 # wordnet implementation and delivery status
 
+## 1.6.1 import resource fixes — #175–#181
+
+[PR #182](https://github.com/kirakosyan/word.net/pull/182) addresses the seven resource-exhaustion reports together: bounded
+DOC property applications, shared image resources and early HTML base64 admission,
+RTF font-name caching/limits, DOCX style/note/bookmark lookup costs, runtime-independent
+KF8 copying/cancellation, bounded PDF filter decoding and aggregate imported blocks/runs.
+The changes preserve existing constructor signatures, targets and format boundaries.
+The PR records source acceptance; the [1.6.1 release](releases/1.6.1.md) and public
+NuGet indexes establish package availability separately. Regression cases and the isolated memory/deadline guard are described in [hosting](hosting.md#import-resource-fixes-in-161).
+Issue #175–#181 and roadmap #32 reconciliation records the final merge commit and
+exact CI evidence; package publication additionally requires immutable-package and
+actual-minimum-runtime gates.
+
 ## Roadmap #138 — 1.6.0 milestone and remaining combinations
 
 The [roadmap](https://github.com/kirakosyan/word.net/issues/138) tracks the next

@@ -83,7 +83,7 @@ internal static partial class DocFormat
             Properties paragraphProperties = style.Clone();
             properties.Apply(paragraphProperties, papx?.Data ?? Array.Empty<byte>(), style);
             properties.Apply(paragraphProperties, markPiece.Properties, style);
-            var paragraph = new ParagraphBlock { HeadingLevel = paragraphProperties.Heading, Alignment = paragraphProperties.Alignment, Layout = paragraphProperties.Layout.Copy(), Section = section };
+            var paragraph = new ParagraphBlock(context) { HeadingLevel = paragraphProperties.Heading, Alignment = paragraphProperties.Alignment, Layout = paragraphProperties.Layout.Copy(), Section = section };
             if (paragraphProperties.ListId != 0)
             {
                 if (!lists.TryGetValue(paragraphProperties.ListId, out ListItem[]? levels) || paragraphProperties.ListLevel >= levels.Length)
@@ -94,7 +94,7 @@ internal static partial class DocFormat
             char terminator = end < text.Length ? text[end] : '\r';
             if (paragraphProperties.InTable)
             {
-                if (currentTable == null) { currentTable = new TableBlock { Section = section }; model.Blocks.Add(currentTable); }
+                if (currentTable == null) { currentTable = new TableBlock(context) { Section = section }; model.Blocks.Add(currentTable); }
                 if (paragraphProperties.RowEnd)
                 {
                     if (terminator != '\u0007' || paragraph.Text.Length != 0 || pendingCell != null || row.Count == 0)
@@ -186,7 +186,7 @@ internal static partial class DocFormat
                     foreach (string part in raw.Split('\u0001').Select((s, i) => (i == 0 ? "" : "\u0001") + s))
                     {
                         string value = part;
-                        if (value.Length > 0 && value[0] == '\u0001') { fields.AddRun(paragraph, new TextRun("", image: properties.Image(character.PictureOffset.Value))); value = value.Substring(1); }
+                        if (value.Length > 0 && value[0] == '\u0001') { fields.AddRun(paragraph, new TextRun(context, "", image: properties.Image(character.PictureOffset.Value))); value = value.Substring(1); }
                         fields.Text(paragraph, value, character);
                     }
                 }

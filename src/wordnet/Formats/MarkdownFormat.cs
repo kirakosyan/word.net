@@ -43,8 +43,8 @@ internal static class MarkdownFormat
                     blocks.Add(ReadParagraph(paragraph, context));
                     break;
                 case CodeBlock code:
-                    var codeParagraph = new ModelParagraph { IsCodeBlock = true };
-                    codeParagraph.Runs.Add(new TextRun(code.Lines.ToString()));
+                    var codeParagraph = new ModelParagraph(context) { IsCodeBlock = true };
+                    codeParagraph.Runs.Add(new TextRun(context, code.Lines.ToString()));
                     blocks.Add(codeParagraph);
                     if (code is FencedCodeBlock fenced && !string.IsNullOrEmpty(fenced.Info))
                     {
@@ -80,8 +80,8 @@ internal static class MarkdownFormat
                     break;
                 case LeafBlock leaf:
                     context.Loss("Markdown.UnsupportedBlock", "Unsupported Markdown block syntax is retained as literal text.");
-                    var literal = new ModelParagraph();
-                    literal.Runs.Add(new TextRun(leaf.Lines.ToString()));
+                    var literal = new ModelParagraph(context);
+                    literal.Runs.Add(new TextRun(context, leaf.Lines.ToString()));
                     blocks.Add(literal);
                     break;
                 default:
@@ -93,7 +93,7 @@ internal static class MarkdownFormat
 
     private static ModelParagraph ReadParagraph(LeafBlock source, ConversionContext context, int heading = 0)
     {
-        var paragraph = new ModelParagraph { HeadingLevel = heading };
+        var paragraph = new ModelParagraph(context) { HeadingLevel = heading };
         if (source.Inline != null)
         {
             ReadInlines(source.Inline, paragraph.Runs, context);
@@ -111,17 +111,17 @@ internal static class MarkdownFormat
             switch (inline)
             {
                 case LiteralInline literal:
-                    runs.Add(new TextRun(literal.Content.ToString(), bold, italic, link: link));
+                    runs.Add(new TextRun(context, literal.Content.ToString(), bold, italic, link: link));
                     break;
                 case LineBreakInline line:
-                    runs.Add(new TextRun(line.IsHard ? "\n" : " ", bold, italic, link: link));
+                    runs.Add(new TextRun(context, line.IsHard ? "\n" : " ", bold, italic, link: link));
                     break;
                 case EmphasisInline emphasis:
                     ReadInlines(emphasis, runs, context, bold || emphasis.DelimiterCount >= 2,
                         italic || emphasis.DelimiterCount == 1 || emphasis.DelimiterCount == 3, link);
                     break;
                 case CodeInline code:
-                    runs.Add(new TextRun(code.Content, bold, italic, code: true, link: link));
+                    runs.Add(new TextRun(context, code.Content, bold, italic, code: true, link: link));
                     break;
                 case LinkInline hyperlink:
                     if (hyperlink.IsImage)
@@ -141,11 +141,11 @@ internal static class MarkdownFormat
 
                     break;
                 case AutolinkInline auto:
-                    runs.Add(new TextRun(auto.Url, bold, italic, link: context.SafeLink(auto.IsEmail ? "mailto:" + auto.Url : auto.Url)));
+                    runs.Add(new TextRun(context, auto.Url, bold, italic, link: context.SafeLink(auto.IsEmail ? "mailto:" + auto.Url : auto.Url)));
                     break;
                 case HtmlInline html:
                     context.Loss("Markdown.Html", "Inline HTML is retained as literal text, without rendering or executing it.");
-                    runs.Add(new TextRun(html.Tag, bold, italic));
+                    runs.Add(new TextRun(context, html.Tag, bold, italic));
                     break;
                 default:
                     context.Loss("Markdown.UnsupportedInline", "Unsupported inline formatting is flattened where text is available.");
@@ -161,7 +161,7 @@ internal static class MarkdownFormat
 
     private static TableBlock ReadTable(MarkdownTable source, ConversionContext context)
     {
-        var table = new TableBlock();
+        var table = new TableBlock(context);
         foreach (MarkdownRow row in source.Cast<MarkdownRow>())
         {
             table.HasHeaderRow |= row.IsHeader;
@@ -171,7 +171,7 @@ internal static class MarkdownFormat
                 if (cell.Count != 1 || !(cell[0] is LeafBlock leaf))
                 {
                     context.Loss("Markdown.TableCell", "Complex Markdown table cells are not supported.");
-                    cells.Add(new TableCell(new ModelParagraph()));
+                    cells.Add(new TableCell(new ModelParagraph(context)));
                     continue;
                 }
 
