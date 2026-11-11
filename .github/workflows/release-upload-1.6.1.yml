@@ -1,0 +1,46 @@
+name: Attach verified 1.6.1 release assets
+
+on:
+  push:
+    branches: [release/upload-1.6.1]
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download immutable final-main qualification
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: 43083836263
+          path: artifacts/release-upload/main
+      - name: Download publication test reports
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: 43091742624
+          path: artifacts/release-upload/publication
+      - name: Download candidate minimum-runtime evidence
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: 43077286116
+          pattern: minimum-framework472-*
+          path: artifacts/release-upload/candidate
+      - name: Verify evidence and attach the exact qualified packages
+        run: python3 eng/release-upload-1.6.1/upload.py
+      - name: Retain upload verification
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-upload-receipt-1.6.1
+          path: artifacts/release-upload/receipt.json
+          if-no-files-found: error

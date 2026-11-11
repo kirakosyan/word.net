@@ -1,0 +1,72 @@
+[
+  {
+    "package": "wordnet.1.6.1.nupkg",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "archiveSha256": "cdc32b4ce528d2af52e845bdd6bb4fe06e98e62fbf6972f251a0d4d0674d6437",
+    "binaries": {
+      "lib/net10.0/wordnet.dll": "dc18c9df8c924617ede1a718477b0399ca45b75d95353acf0a935e22b5b31be4",
+      "lib/net462/wordnet.dll": "a6a27cb2cad8f63f37c216eb2f64994f3d1bf45143ef9bcaf83fd557f99a2d6e",
+      "lib/net472/wordnet.dll": "59e95599de2a923f0dd66ebaa3aaa0b24972a26687b885ab423f887da80ea626",
+      "lib/net8.0/wordnet.dll": "8da8d6f4fb3a3649cba48c56e25124b9c0b09199709ac6085905d64e3805785c",
+      "lib/netstandard2.0/wordnet.dll": "d2354b20dd596ec4db6cb74957c0a03a4995c823816e6ac4ba200ae6d3749c63"
+    }
+  },
+  {
+    "package": "wordnet.1.6.1.snupkg",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "archiveSha256": "475f7a4ad80c476bac28dadc53e6b3e3976f6f53692177aeef380c5ccc5dff24",
+    "binaries": {
+      "lib/net10.0/wordnet.pdb": "ddcb456b266b1a70cb337eac2a46a9db8364a10c5606a66a4df3545486040462",
+      "lib/net462/wordnet.pdb": "846494f1365876ad09f86339b13fa39af633c5ce8e7bd07a13a9979a267385df",
+      "lib/net472/wordnet.pdb": "769da2445842405b90ddb0ec50a3cb4e3a0110c4eb48a2e14f51e4c7b1eb7dc0",
+      "lib/net8.0/wordnet.pdb": "317c446fcc4d03de2d9ae54af614b9a09f0af70c03247572627be37444230386",
+      "lib/netstandard2.0/wordnet.pdb": "ff11b6db8943d366a3f9fd844c8047299d21966aedcf4a79839286a89b9f7c06"
+    }
+  },
+  {
+    "package": "wordnet.Fonts.1.6.1.nupkg",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "archiveSha256": "af9410e55c04c1f45741368e3c9166043cabfbd9945460800599ee9ae144afe0",
+    "binaries": {
+      "lib/netstandard2.0/wordnet.Fonts.dll": "34e5b3c502b0f60cbbe7ca17922db16314a08c14d691efd1d0b3e1c85f100adf"
+    }
+  },
+  {
+    "package": "wordnet.Fonts.1.6.1.snupkg",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "archiveSha256": "4ee7c3d2e07df20563ad35e50428acaae81798d99703453da6048a42be423d0c",
+    "binaries": {
+      "lib/netstandard2.0/wordnet.Fonts.pdb": "260279df1eb7393ca6630bd974d053935ff9df8294725365c72c320e847b8d0b"
+    }
+  },
+  {
+    "package": "wordnet.Ocr.1.6.1.nupkg",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "archiveSha256": "875ee0e3da1f8d230175b2e8afe519907c690e6e56bacd3d6f962c2b1a59ce63",
+    "binaries": {
+      "lib/net10.0/wordnet.Ocr.dll": "d0746314c78b70d3b5406acb7fad6021c58a841f4ed7e032c1a54caa802b2384",
+      "lib/net462/wordnet.Ocr.dll": "2cd4cce867b6735882f0935205ad3f5265449f3806a94cad7aed894ef3aa7856",
+      "lib/net472/wordnet.Ocr.dll": "d719b4871649b51601d9baf98d7211b88f4d1c96fc4b8b426440d1923bbb4b64",
+      "lib/net8.0/wordnet.Ocr.dll": "2c4665e55b33bbd8bb520c7fd6623f4f6a0aa7e02a890450304a2de98858f973",
+      "lib/netstandard2.0/wordnet.Ocr.dll": "b57deaaee66b71ebe7622c3056aadb37e30c07539c2440ddd7083a2a3cfd0c18"
+    }
+  },
+  {
+    "package": "wordnet.Ocr.1.6.1.snupkg",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "archiveSha256": "baff1ad3bf36318f4606b322505e17f70cca002a9a32bab9c7ccdf5969ddd8f9",
+    "binaries": {
+      "lib/net10.0/wordnet.Ocr.pdb": "17f8da1000f4db8e5fe6f8c70418e645764b7b1bee75800a0a57f31804c6ea22",
+      "lib/net462/wordnet.Ocr.pdb": "39bf87400e611851c24c5f6bc275c44e67a528b3cf4b32aeca9456e969842303",
+      "lib/net472/wordnet.Ocr.pdb": "bfc5d2bd7beb937a91926b4abb4c17079a2833d949639935085b62d5f98fc048",
+      "lib/net8.0/wordnet.Ocr.pdb": "296c37e6afc381dac58b24536202cfa37e20b07e80839c2ae79c2c9bbe128644",
+      "lib/netstandard2.0/wordnet.Ocr.pdb": "67caa56daaf09a3d6bc541843c7571ce97f3f897d039aba7805829b9b7361685"
+    }
+  }
+]

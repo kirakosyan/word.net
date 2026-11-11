@@ -1,0 +1,80 @@
+[
+  {
+    "package": "wordnet.Fonts",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "publicArchiveSha256": "50ea571155e5071fe37311f66b8f09c3695b23b0313dc5bfab75ea981a88ebfb",
+    "testedArchiveSha256": "af9410e55c04c1f45741368e3c9166043cabfbd9945460800599ee9ae144afe0",
+    "matchingEntries": {
+      "_rels/.rels": "f543b01f103c1f040e607eb7ee487464f283ae4adca1c9dba659ca0afe7f6636",
+      "wordnet.Fonts.nuspec": "b8a165f2f242514dade4ad864cb3e855c8cf68de30de69eaa4f94c79c90a6821",
+      "LICENSE": "32d3e9dc9a8edb9aed2eddb4b26464d9c1b2663a9dd5ee73de5119efbb974314",
+      "README.md": "cb64dee1947ae8343947e1d8e226925d21bd9320559cf0df4acda114c3399687",
+      "lib/netstandard2.0/wordnet.Fonts.dll": "34e5b3c502b0f60cbbe7ca17922db16314a08c14d691efd1d0b3e1c85f100adf",
+      "licenses/Caladea-OFL.txt": "ccdab61d371d8c8683a128a92cd7d498dbdb1d37689f7cb21f1bf6b16658d213",
+      "licenses/Carlito-OFL.txt": "58402f82a7c332a700294988fe7554fbb0a63a8d27ccc1ee3bbc640311990a00",
+      "licenses/Liberation-OFL.txt": "93fed46019c38bbe566b479d22148e2e8a1e85ada614accb0211c37b2c61c19b",
+      "licenses/provenance.json": "81c82474035d85d33aa0a183f75f43066cf26a0d16fd4bc830a7ca2b3e211c14",
+      "[Content_Types].xml": "4a8f2c02ae2c8335f74c55163ef0fa3519d477e786f0ed5e87ea70fe7a6649ce",
+      "package/services/metadata/core-properties/nuget.psmdcp": "41d4df6778e383de3acca69af4bff456941b361661548294dbf9c77578189203"
+    },
+    "repositorySignaturePresent": true
+  },
+  {
+    "package": "wordnet",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "publicArchiveSha256": "b9e8b50cee1e354d8469dd98ec2218daa17f97e92c21f142b0dceb80395c37c4",
+    "testedArchiveSha256": "cdc32b4ce528d2af52e845bdd6bb4fe06e98e62fbf6972f251a0d4d0674d6437",
+    "matchingEntries": {
+      "_rels/.rels": "6fd6a5f95c78bf55bd77564a7268aff1a556ec036f519bbf943b465c9c1b34fa",
+      "wordnet.nuspec": "76f82fa93d068dcba251bdd7d8bcde6c299d27dafc19ba368d8eaa9a1d343b3c",
+      "LICENSE": "32d3e9dc9a8edb9aed2eddb4b26464d9c1b2663a9dd5ee73de5119efbb974314",
+      "README.md": "cb64dee1947ae8343947e1d8e226925d21bd9320559cf0df4acda114c3399687",
+      "THIRD_PARTY_NOTICES.md": "d5b4f65c7b58547c8112edb0a1d9e25c0f05d847706ae620c71986e4619f8251",
+      "lib/net10.0/wordnet.dll": "dc18c9df8c924617ede1a718477b0399ca45b75d95353acf0a935e22b5b31be4",
+      "lib/net10.0/wordnet.xml": "8d0ceb20508a8c17f3887a3b6901b1c312d341f7ba13949ef3fda53888b49dff",
+      "lib/net462/wordnet.dll": "a6a27cb2cad8f63f37c216eb2f64994f3d1bf45143ef9bcaf83fd557f99a2d6e",
+      "lib/net462/wordnet.xml": "8d0ceb20508a8c17f3887a3b6901b1c312d341f7ba13949ef3fda53888b49dff",
+      "lib/net472/wordnet.dll": "59e95599de2a923f0dd66ebaa3aaa0b24972a26687b885ab423f887da80ea626",
+      "lib/net472/wordnet.xml": "8d0ceb20508a8c17f3887a3b6901b1c312d341f7ba13949ef3fda53888b49dff",
+      "lib/net8.0/wordnet.dll": "8da8d6f4fb3a3649cba48c56e25124b9c0b09199709ac6085905d64e3805785c",
+      "lib/net8.0/wordnet.xml": "8d0ceb20508a8c17f3887a3b6901b1c312d341f7ba13949ef3fda53888b49dff",
+      "lib/netstandard2.0/wordnet.dll": "d2354b20dd596ec4db6cb74957c0a03a4995c823816e6ac4ba200ae6d3749c63",
+      "lib/netstandard2.0/wordnet.xml": "8d0ceb20508a8c17f3887a3b6901b1c312d341f7ba13949ef3fda53888b49dff",
+      "licenses/NotoSans-OFL.txt": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb",
+      "licenses/NotoSans-Provenance.md": "1351bd50f44f4a806583f532d98f87bad858444845551eac9832f750f16ec5a1",
+      "licenses/Unicode-3.0.txt/LICENSE": "fe5c62b543e287981db198f2acfa0ca732d12591a1024536dc8fd85dacd77104",
+      "[Content_Types].xml": "c2ab8484299f12d44ea4f6ecab5bbad0614026ab3a013b50865086afaa8f0fc9",
+      "package/services/metadata/core-properties/nuget.psmdcp": "bd48aa8e1b6648c6da5d1ebfe1449e78233456b6020376ecbd3e6a6a2ec8dcbd"
+    },
+    "repositorySignaturePresent": true
+  },
+  {
+    "package": "wordnet.Ocr",
+    "version": "1.6.1",
+    "commit": "e2dadeaef361aa1651bf37d1c9325d43de4d4bb2",
+    "publicArchiveSha256": "23562982f8e8073bf936ea95127d66e9c6d2469eddad4ca462d20647857fc504",
+    "testedArchiveSha256": "875ee0e3da1f8d230175b2e8afe519907c690e6e56bacd3d6f962c2b1a59ce63",
+    "matchingEntries": {
+      "_rels/.rels": "4b976751b20c8c148dde72470125dfdff36b07db7d0a7441caed88cfdc574a0a",
+      "wordnet.Ocr.nuspec": "cc3a7718c26c37a3613d239888b5054b88df2ab150ec9b70e5e3526b4db3d686",
+      "LICENSE": "32d3e9dc9a8edb9aed2eddb4b26464d9c1b2663a9dd5ee73de5119efbb974314",
+      "README.md": "cb64dee1947ae8343947e1d8e226925d21bd9320559cf0df4acda114c3399687",
+      "THIRD_PARTY_NOTICES.md": "d5b4f65c7b58547c8112edb0a1d9e25c0f05d847706ae620c71986e4619f8251",
+      "lib/net10.0/wordnet.Ocr.dll": "d0746314c78b70d3b5406acb7fad6021c58a841f4ed7e032c1a54caa802b2384",
+      "lib/net10.0/wordnet.Ocr.xml": "b61a2733be48a926cc360734cf37dcada186f48adcce59c27b37aa102adc0de1",
+      "lib/net462/wordnet.Ocr.dll": "2cd4cce867b6735882f0935205ad3f5265449f3806a94cad7aed894ef3aa7856",
+      "lib/net462/wordnet.Ocr.xml": "b61a2733be48a926cc360734cf37dcada186f48adcce59c27b37aa102adc0de1",
+      "lib/net472/wordnet.Ocr.dll": "d719b4871649b51601d9baf98d7211b88f4d1c96fc4b8b426440d1923bbb4b64",
+      "lib/net472/wordnet.Ocr.xml": "b61a2733be48a926cc360734cf37dcada186f48adcce59c27b37aa102adc0de1",
+      "lib/net8.0/wordnet.Ocr.dll": "2c4665e55b33bbd8bb520c7fd6623f4f6a0aa7e02a890450304a2de98858f973",
+      "lib/net8.0/wordnet.Ocr.xml": "b61a2733be48a926cc360734cf37dcada186f48adcce59c27b37aa102adc0de1",
+      "lib/netstandard2.0/wordnet.Ocr.dll": "b57deaaee66b71ebe7622c3056aadb37e30c07539c2440ddd7083a2a3cfd0c18",
+      "lib/netstandard2.0/wordnet.Ocr.xml": "b61a2733be48a926cc360734cf37dcada186f48adcce59c27b37aa102adc0de1",
+      "[Content_Types].xml": "3cbe179bcba7494405de7a39821048eef7bd6ed8be6d34a416337fe42053c0ec",
+      "package/services/metadata/core-properties/nuget.psmdcp": "e90085c778bc97f937c56e677eb66cf203c929594ca67604e7544aa3d612eb3d"
+    },
+    "repositorySignaturePresent": true
+  }
+]
