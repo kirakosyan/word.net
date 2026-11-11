@@ -45,9 +45,9 @@ internal sealed class DocumentImage
     internal static DocumentImage Read(byte[] bytes, double? width, double? height, string alt, ConversionContext context, int reservedWidth = 0, int reservedHeight = 0)
     {
         context.CheckCancellation();
+        var info = ManagedRaster.Identify(bytes);
         context.ReserveImagePlacement();
         context.ReserveImageBytes(bytes.Length);
-        var info = ManagedRaster.Identify(bytes);
         string extension = info.Extension;
         if (reservedWidth == 0) context.ReserveImagePixels(info.Width, info.Height);
         else if (info.Width != reservedWidth || info.Height != reservedHeight)

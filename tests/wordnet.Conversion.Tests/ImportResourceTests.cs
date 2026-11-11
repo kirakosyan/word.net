@@ -314,6 +314,25 @@ public sealed partial class ImportResourceTests
         Assert.All(tables, t => { Assert.Same(tables[0].Style, t.Style); Assert.Equal("ABCDEF", t.Style!.EffectiveBackground); });
     }
 
+    [Fact]
+    public void DocxCachesUnsupportedImageAdmissionAndPreservesEachPlaceholder()
+    {
+        byte[] tiff = new byte[16 * 1024 * 1024]; tiff[0] = tiff[1] = 73; tiff[2] = 42;
+        string body = string.Concat(Enumerable.Range(1, 5).Select(i => FidelityDocuments.ImageParagraph(12700 * i, 12700)));
+        byte[] source = WithParts(TestDocuments.Docx(TestDocuments.Body(body),
+            "<Relationship Id='image' Type='" + TestDocuments.R + "/image' Target='media/image.tiff'/>"), ("word/media/image.tiff", tiff));
+        var options = new ConversionOptions(FidelityMode.BestEffort) { MaximumImagePlacements = 5 };
+        using var input = new MemoryStream(source);
+        DocumentImage[] images = DocxReader.Read(input, Context(options)).Paragraphs.SelectMany(p => p.Runs).Select(r => r.Image!).ToArray();
+        Assert.Equal(5, images.Length);
+        Assert.All(images, image => Assert.True(image.IsPlaceholder));
+        Assert.Equal(1, images[0].FrameWidth); Assert.Equal(5, images[4].FrameWidth);
+        using var convert = new MemoryStream(source); using var output = new MemoryStream();
+        ConversionResult result = new WordConverter().Convert(convert, output, DocumentFormat.Docx, DocumentFormat.Html, options, TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, d => d.Code == "Image.UnsupportedFormat");
+        Assert.Equal(5, System.Xml.Linq.XDocument.Parse(Encoding.UTF8.GetString(output.ToArray())).Descendants().Count(e => e.Name.LocalName == "img"));
+    }
+
     private static ConversionOptions BestEffort() => new ConversionOptions(FidelityMode.BestEffort);
     private static ConversionContext Context(ConversionOptions? options = null) => new ConversionContext(options ?? new ConversionOptions(), TestContext.Current.CancellationToken);
     private static void Reject(byte[] bytes, DocumentFormat format, string code, ConversionOptions? options = null)

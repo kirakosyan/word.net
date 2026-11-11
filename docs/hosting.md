@@ -85,6 +85,8 @@ constructor signatures and all five library targets remain unchanged.
   only after considering memory requirements.
 - `MaximumImagePlacements` defaults to 10,000. Repeated DOCX/EPUB image parts and DOC
   picture offsets share admitted encoded bytes; placement geometry remains separate.
+  DOCX also caches unsupported-image outcomes, preserving per-placement placeholders
+  without repeatedly expanding or charging the failed resource.
   Unique encoded resources are charged against `MaximumExpandedBytes`, and existing
   per-placement pixel accounting remains. HTML also budgets base64 output before
   allocating its XML tree's image attributes.

@@ -23,7 +23,7 @@ if (-not (Test-Path -LiteralPath $binary)) { throw "Build the $Framework tests f
 $listing = & $executable @prefixArguments -class WordNet.Tests.ImportResourceTests -list methods/json -noColor
 if ($LASTEXITCODE -ne 0) { throw 'Resource fixture discovery failed.' }
 $methods = @($listing | ConvertFrom-Json)
-if ($methods.Count -lt 27 -or @($methods | Select-Object -Unique).Count -ne $methods.Count) { throw 'Incomplete resource fixture discovery.' }
+if ($methods.Count -lt 28 -or @($methods | Select-Object -Unique).Count -ne $methods.Count) { throw 'Incomplete resource fixture discovery.' }
 $receipts = @()
 $total = 0
 foreach ($method in $methods) {
@@ -99,5 +99,5 @@ foreach ($method in $methods) {
         $process.Dispose()
     }
 }
-if ($total -lt 40) { throw 'Missing resource regression cases.' }
+if ($total -lt 41) { throw 'Missing resource regression cases.' }
 [IO.File]::WriteAllText((Join-Path $output "$Framework.json"), ([ordered]@{ framework = $Framework; status = 'completed'; tests = $total; workers = $receipts } | ConvertTo-Json -Depth 5))
