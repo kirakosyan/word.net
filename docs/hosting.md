@@ -5,6 +5,24 @@ They do not cap total process memory or native decoder CPU time. Use a separate 
 process or container for untrusted documents. A cancellation token is cooperative, and
 cannot replace an external deadline.
 
+## HTML and Markdown parser work — #187–#188
+
+HTML and the shared EPUB/MOBI/KF8 reader check actual element ancestry during
+tree construction, before deeply nested input can grow the parser's open-element
+stack. Token and element callbacks observe cancellation. The final tree traversal
+still checks depth and node counts before mapping.
+
+Markdown reserves the remaining inline-block length before each inline-link
+lookahead. Successful inline links charge their consumed span; failed attempts,
+including shortcut-reference fallbacks, charge the remaining block. The allowance
+is `max(4096, 64 × input characters)`. Excessive lookahead throws
+`Limit.MarkdownWork` in every fidelity mode before output is copied. This is a
+conservative bound: documents with many malformed link attempts in one long block
+can reject even when a particular attempt would fail quickly. Ordinary links,
+escaped parentheses and code literals keep their usual semantics. Cancellation is
+checked before and after each link-parser call; a single bounded lookahead is
+still synchronous. These checks do not replace a worker deadline.
+
 ## Worker contract
 
 - Run as an unprivileged identity with no credentials and no network access. Mount only

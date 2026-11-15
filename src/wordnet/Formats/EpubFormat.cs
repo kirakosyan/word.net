@@ -54,7 +54,7 @@ internal static class EpubFormat
             if ((string?)item.Attribute("media-type") != "application/xhtml+xml") { context.Loss("Epub.ContentType", "Non-XHTML spine content is unsupported."); continue; }
             string path = PackageArchive.Resolve(package, (string?)item.Attribute("href") ?? "");
             byte[] bytes = archive.Read(path);
-            _ = PackageArchive.ParseXml(bytes, context); // EPUB content must be well-formed, bounded XHTML.
+            EpubContentXml.Validate(bytes, path, context);
             DocumentModel chapter = EbookContent.Read(bytes, context, image =>
             {
                 string target = image.GetAttribute("src") ?? "";

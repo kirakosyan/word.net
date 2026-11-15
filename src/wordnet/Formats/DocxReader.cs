@@ -405,8 +405,18 @@ internal sealed partial class DocxReader
             {
                 Emit(runs, new TextRun(context, child.Value, inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
-            else if (child.Name == W + "tab")
+            else if (child.Name == W + "noBreakHyphen" || child.Name == W + "softHyphen")
             {
+                Emit(runs, new TextRun(context, child.Name == W + "noBreakHyphen" ? "\u2011" : "\u00ad", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+            }
+            else if (child.Name == W + "sym")
+            {
+                context.Loss("Docx.Symbol", "A font-specific symbol was replaced with the visible replacement character U+FFFD.");
+                Emit(runs, new TextRun(context, "\ufffd", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
+            }
+            else if (child.Name == W + "tab" || child.Name == W + "ptab")
+            {
+                if (child.Name == W + "ptab") context.Loss("Docx.PositionalTab", "Positional tab alignment and leader formatting are replaced with an ordinary tab.");
                 Emit(runs, new TextRun(context, "\t", inherited.Bold, inherited.Italic, inherited.Code, link, inherited.FontSize, inherited.Color, appearance: inherited.Appearance.Copy()));
             }
             else if (child.Name == W + "br" || child.Name == W + "cr")

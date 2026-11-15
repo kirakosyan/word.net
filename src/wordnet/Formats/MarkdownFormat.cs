@@ -4,6 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Markdig;
+using Markdig.Helpers;
+using Markdig.Parsers;
+using Markdig.Parsers.Inlines;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using WordNet.Internal;
@@ -21,6 +24,7 @@ internal static class MarkdownFormat
     internal static DocumentModel Read(string text, ConversionContext context)
     {
         var builder = new MarkdownPipelineBuilder { MaximumNestingDepth = context.Options.MaximumNestingDepth };
+        builder.InlineParsers.Replace<LinkInlineParser>(new BoundedLinkParser(context, text.Length));
         MarkdownPipeline pipeline = builder.UsePipeTables().Build();
         MarkdownDocument syntax = Markdown.Parse(text, pipeline);
         context.CheckCancellation();
@@ -113,6 +117,9 @@ internal static class MarkdownFormat
                 case LiteralInline literal:
                     runs.Add(new TextRun(context, literal.Content.ToString(), bold, italic, link: link));
                     break;
+                case HtmlEntityInline entity:
+                    runs.Add(new TextRun(context, entity.Transcoded.ToString(), bold, italic, link: link));
+                    break;
                 case LineBreakInline line:
                     runs.Add(new TextRun(context, line.IsHard ? "\n" : " ", bold, italic, link: link));
                     break;
@@ -148,7 +155,9 @@ internal static class MarkdownFormat
                     runs.Add(new TextRun(context, html.Tag, bold, italic));
                     break;
                 default:
-                    context.Loss("Markdown.UnsupportedInline", "Unsupported inline formatting is flattened where text is available.");
+                    context.Loss("Markdown.UnsupportedInline", inline is ContainerInline
+                        ? "Unsupported inline formatting is flattened where text is available."
+                        : "Unsupported inline content without a text representation was omitted.");
                     if (inline is ContainerInline container)
                     {
                         ReadInlines(container, runs, context, bold, italic, link);
@@ -156,6 +165,33 @@ internal static class MarkdownFormat
 
                     break;
             }
+        }
+    }
+
+    // Failed link attempts may scan the entire remaining inline block. Reserve that
+    // upper bound before calling Markdig, and charge only consumed text on success.
+    // This keeps repeated failed lookahead linear in the admitted input size.
+    private sealed class BoundedLinkParser : LinkInlineParser
+    {
+        private readonly ConversionContext context;
+        private long remaining;
+
+        internal BoundedLinkParser(ConversionContext context, int length)
+        { this.context = context; remaining = Math.Max(4096L, length * 64L); }
+
+        public override bool Match(InlineProcessor processor, ref StringSlice slice)
+        {
+            context.CheckCancellation();
+            int start = slice.Start;
+            bool lookahead = slice.CurrentChar == ']' && start < slice.End && slice.Text[start + 1] == '(';
+            int reserve = lookahead ? slice.End - start + 1 : 0;
+            if (reserve > remaining) throw new System.IO.InvalidDataException("Limit.MarkdownWork: Inline link lookahead exceeds the parsing work budget.");
+            bool matched = base.Match(processor, ref slice);
+            // A successful shortcut reference after a failed inline URL consumes
+            // only the closing bracket; it still owes the failed-lookahead charge.
+            if (lookahead) remaining -= matched && slice.Start > start + 1 ? slice.Start - start : reserve;
+            context.CheckCancellation();
+            return matched;
         }
     }
 

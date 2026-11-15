@@ -1,5 +1,19 @@
 # Conversion tests and qualification
 
+## Import regressions — #183–#188
+
+`ImportContentRegressionTests` uses hand-authored HTML/XHTML/Markdown/OOXML and
+MS-DOC character controls injected into body/cell text. It checks list order and
+editable numbering, exact decoded characters and inherited emphasis/links,
+Strict loss handling, inert EPUB DOCTYPE declarations, named characters, custom
+entity rejection and chapter-specific malformed-input errors.
+`ImportParsingResourceTests` exercises 240–640 KB hostile HTML and Markdown,
+five-second rejection/cancellation ceilings, unchanged destinations, HTML optional
+end tags/raw text and ordinary Markdown links. Kindle's shared HTML reader is
+exercised directly after its decoding boundary. These timing checks are regression
+ceilings, not a hard runtime deadline. Run both classes on .NET 8 and .NET 10 with
+the full suite; Framework execution additionally requires a compatible Windows host.
+
 ## 1.6.1 import resource regression suite — #175–#181
 
 `ImportResourceTests` contains independently constructed hostile DOC, DOCX, EPUB,

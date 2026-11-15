@@ -403,8 +403,12 @@ reconstruction loss. This is not a guarantee of lossless interpretation of arbit
 
 ZIP readers check entry counts, duplicates, paths and aggregate declared expansion.
 EPUB resolves normalized relative parent segments only inside its package; DOCX uses
-a stricter canonical-path profile. XML rejects DTDs/entities and bounds characters/depth.
-HTML has no external loader and is depth checked before mapping. Binary readers validate
+a stricter canonical-path profile. Package XML rejects DTDs/entities and bounds characters/depth.
+EPUB chapter validation ignores DOCTYPE declarations with a null resolver and admits only
+XML character references and predefined HTML named characters, never DTD-defined entities.
+HTML has no external loader; token/element callbacks enforce depth during tree construction
+and observe cancellation. Markdown link parsing reserves remaining-block lookahead against
+a per-import work budget, including failures that fall back to shortcut references. Binary readers validate
 offsets, counts and decompressed content. No scripts/macros or remote resources execute.
 
 Input/output, characters, nesting, pages and raster/embedded-image pixel admission checks
