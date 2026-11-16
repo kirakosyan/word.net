@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 using WordNet.Internal;
 using WordNet.Model;
 
@@ -77,7 +76,7 @@ internal static partial class EbookContent
     {
         string text = TextFormat.Decode(bytes, context);
         // HtmlParser performs no network loading or script execution. Traverse iteratively before recursion.
-        using var document = new HtmlParser(new HtmlParserOptions { IsScripting = false }).ParseDocument(text);
+        using var document = BoundedHtml.Parse(text, context);
         var queue = new System.Collections.Generic.Stack<(INode Node, int Depth)>();
         queue.Push((document, 0));
         while (queue.Count > 0)
@@ -152,7 +151,7 @@ internal static partial class EbookContent
                             if (spans.ContainsKey(c)) throw new InvalidDataException("Ebook.TableMerge: Overlapping cell spans.");
                         var target = new TableCell { CellWidth = CssLength(cell, "width", context), Padding = CssPadding(cell, context), ColumnSpan = columnSpan, Merge = rowSpan > 1 ? VerticalMerge.Start : VerticalMerge.None };
                         if (context.HtmlImport) { target.WidthPercent = HtmlInput.Percent(cell); string? background = HtmlInput.Css(cell, "background-color"); target.Background = background == "transparent" ? null : background?.TrimStart('#').ToUpperInvariant(); }
-                        if (cell.QuerySelector("p,div,ul,ol,table,h1,h2,h3,h4,h5,h6,pre") != null)
+                        if (cell.QuerySelectorAll("*").Any(child => FlowBlock(child.LocalName)))
                         {
                             var content = new DocumentModel();
                             ReadBlocks(cell, content, context, imageReader);
@@ -163,7 +162,7 @@ internal static partial class EbookContent
                         else
                         {
                             var p = new ParagraphBlock(context) { Alignment = Alignment(cell, context) };
-                            Inline(cell, p, context, false, false, false, null, false, imageReader); Trim(p); target.Paragraphs.Add(p);
+                            Inline(cell, ref p, context, false, false, false, null, false, imageReader); Trim(p); target.Paragraphs.Add(p);
                         }
                         if (target.Paragraphs.Count == 0) target.Paragraphs.Add(new ParagraphBlock(context));
                         cells.Add(target);
@@ -221,12 +220,28 @@ internal static partial class EbookContent
             paragraph.List = tag == "li" ? list?.Copy() : null;
             if (tag == "li" && e.HasAttribute("value")) context.Loss("Ebook.ListValue", "Per-item numbering overrides are not retained.");
             if (!(tag is "p" or "pre" or "li" or "blockquote" || paragraph.HeadingLevel > 0)) context.Loss("Ebook.Block", "Unsupported ebook block formatting was flattened.");
-            Inline(e, paragraph, context, false, false, paragraph.IsCodeBlock, null, paragraph.IsCodeBlock, imageReader);
-            if (!paragraph.IsCodeBlock && !(context.HtmlImport && HtmlInput.Css(e, "white-space") is "pre" or "pre-wrap"))
-            { if (context.HtmlImport) HtmlInput.Trim(paragraph); else Trim(paragraph); }
-            model.Blocks.Add(paragraph);
-            if (tag == "li") foreach (IElement nested in e.Children.Where(c => c.LocalName is "ul" or "ol"))
-                ReadBlocks(e, model, context, imageReader, list, new[] { nested });
+            bool emitted = false;
+            Inline(e, ref paragraph, context, false, false, paragraph.IsCodeBlock, null, paragraph.IsCodeBlock, imageReader, blockReader: child =>
+            {
+                // Keep block descendants in source order, including those reached
+                // through inline wrappers. Only the first paragraph owns an li marker.
+                if (paragraph.Runs.Count > 0 || tag == "li" && !emitted && child.LocalName is "ul" or "ol") Flush();
+                int first = model.Blocks.Count;
+                ReadBlocks(e, model, context, imageReader, list, new[] { child });
+                if (!emitted && tag == "li" && model.Blocks.Count > first && model.Blocks[first] is ParagraphBlock item && item.List == null)
+                    item.List = list?.Copy();
+                emitted |= model.Blocks.Count > first;
+                paragraph = new ParagraphBlock(context) { RightToLeft = Direction(e), Alignment = Alignment(e, context), IsCodeBlock = tag == "pre" };
+            });
+            if (paragraph.Runs.Count > 0 || !emitted) Flush();
+
+            void Flush()
+            {
+                if (!paragraph.IsCodeBlock && !(context.HtmlImport && HtmlInput.Css(e, "white-space") is "pre" or "pre-wrap"))
+                { if (context.HtmlImport) HtmlInput.Trim(paragraph); else Trim(paragraph); }
+                model.Blocks.Add(paragraph);
+                emitted = true;
+            }
         }
     }
 
@@ -258,9 +273,14 @@ internal static partial class EbookContent
         return null;
     }
 
-    private static void Inline(INode node, ParagraphBlock paragraph, ConversionContext context, bool bold, bool italic, bool code, string? link, bool preserve,
-        Func<IElement, DocumentImage?>? imageReader = null, double? fontSize = null, string? color = null)
+    private static bool FlowBlock(string tag) => tag is "p" or "pre" or "div" or "section" or "article" or "main" or "blockquote"
+        or "header" or "footer" or "aside" or "figure" or "figcaption" or "dl" or "dt" or "dd" or "ul" or "ol" or "table"
+        or "h1" or "h2" or "h3" or "h4" or "h5" or "h6";
+
+    private static void Inline(INode node, ref ParagraphBlock paragraph, ConversionContext context, bool bold, bool italic, bool code, string? link, bool preserve,
+        Func<IElement, DocumentImage?>? imageReader = null, double? fontSize = null, string? color = null, Action<IElement>? blockReader = null, bool root = true)
     {
+        context.CheckCancellation();
         if (node is IText text)
         {
             RunAppearance? appearance = null;
@@ -272,8 +292,8 @@ internal static partial class EbookContent
         {
             Attributes(e, context);
             string tag = e.LocalName;
+            if (!root && blockReader != null && FlowBlock(tag)) { blockReader(e); return; }
             if (context.HtmlImport) preserve = HtmlInput.Css(e, "white-space") is "pre" or "pre-wrap" || tag == "pre";
-            if (tag is "ul" or "ol") return;
             fontSize = CssLength(e, "font-size", context) ?? fontSize;
             color = CssColor(e, context) ?? color;
             if (tag is "script" or "style" or "iframe" or "object" or "svg" or "math") { context.Loss("Ebook.ActiveContent", "Active or unsupported embedded content was omitted."); return; }
@@ -306,7 +326,7 @@ internal static partial class EbookContent
             code |= tag is "code" or "pre";
             if (tag == "a") link = context.SafeLink(e.GetAttribute("href") ?? "");
         }
-        foreach (INode child in node.ChildNodes) Inline(child, paragraph, context, bold, italic, code, link, preserve, imageReader, fontSize, color);
+        foreach (INode child in node.ChildNodes) Inline(child, ref paragraph, context, bold, italic, code, link, preserve, imageReader, fontSize, color, blockReader, false);
     }
 
     private static void Attributes(IElement element, ConversionContext context)

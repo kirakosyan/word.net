@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 using WordNet.Internal;
 using WordNet.Model;
 
@@ -24,7 +23,7 @@ internal static class HtmlInput
     {
         var resources = (context.Options.HtmlInput ?? throw new ArgumentException("HTML input options must not be null.")).Snapshot(context.Options);
         string text = TextFormat.Decode(bytes, context);
-        using var document = new HtmlParser(new HtmlParserOptions { IsScripting = false }).ParseDocument(text);
+        using var document = BoundedHtml.Parse(text, context);
         var nodes = new List<IElement>();
         var stack = new Stack<(INode Node, int Depth)>(); stack.Push((document, 0));
         int count = 0;

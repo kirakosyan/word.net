@@ -238,7 +238,7 @@ Output is staged inside the converter. Parsing, fidelity and admission-limit fai
 
 Defaults bound input to 16 MiB, output to 32 MiB, expansion to 64 MiB, ZIP entries to 1,024, characters to four million, nesting to 64 and pages to 1,000. The 1.6.1 source also bounds imported paragraphs/tables/notes to 131,072, run allocations to 262,144 and image placements to 10,000. Expansion budgets cover aggregate PDF document streams, per-page PDF image decoding, encoded image resources and repeated DOC property work. These are admission checks, not hard CPU/RSS limits. Async methods use async stream I/O; parsers, renderers and most native calls execute synchronously.
 
-XML entities and DTDs are prohibited. Conversion does not execute scripts/macros or fetch remote resources. For untrusted workloads and hard deadlines, use [isolated hosting](https://github.com/kirakosyan/word.net/blob/main/docs/hosting.md).
+Package XML entities and DTDs are prohibited. EPUB chapters accept inert DOCTYPE declarations and predefined HTML character references; DTDs are never loaded and custom entities are rejected. HTML depth and Markdown link-work checks also run during parsing. Conversion does not execute scripts/macros or fetch remote resources. For untrusted workloads and hard deadlines, use [isolated hosting](https://github.com/kirakosyan/word.net/blob/main/docs/hosting.md).
 
 ## Build and test
 

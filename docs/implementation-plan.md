@@ -1,5 +1,20 @@
 # wordnet implementation and delivery status
 
+## Import correctness and parser work — #183–#188 (unreleased source)
+
+This source change retains lists reached through block/inline wrappers in HTML
+and shared ebook content, DOC/DOCX non-breaking/soft hyphens, and Markdown named
+and numeric characters. Font-specific DOCX symbols use a visible replacement;
+positional tabs become ordinary tabs, each with an explicit fidelity diagnostic.
+EPUB chapters accept inert HTML/XHTML DOCTYPE declarations and predefined HTML
+entities without resolving DTDs or custom entities. HTML checks nesting during
+tree construction; Markdown bounds failed link lookahead and observes cancellation.
+
+`ImportContentRegressionTests` and `ImportParsingResourceTests` cover independently
+authored content, exact order/characters, diagnostics, output atomicity, hostile
+inputs and parser cancellation. The PR records current build/test evidence. These
+changes do not establish a new package release or additional platform qualification.
+
 ## 1.6.1 import resource fixes — #175–#181
 
 [PR #182](https://github.com/kirakosyan/word.net/pull/182) addresses the seven resource-exhaustion reports together: bounded

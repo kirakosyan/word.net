@@ -1,5 +1,34 @@
 # Conversion tests and qualification
 
+## Import regressions — #183–#188
+
+`ImportContentRegressionTests` uses hand-authored HTML/XHTML/Markdown/OOXML and
+MS-DOC character controls injected into body/cell text. It checks list order and
+editable numbering, exact decoded characters and inherited emphasis/links,
+Strict loss handling, inert EPUB DOCTYPE declarations, named characters, custom
+entity rejection and chapter-specific malformed-input errors.
+`ImportParsingResourceTests` exercises 240–640 KB hostile HTML and Markdown,
+five-second rejection/cancellation ceilings, unchanged destinations, HTML optional
+end tags/raw text and ordinary Markdown links. Kindle's shared HTML reader is
+exercised directly after its decoding boundary. These timing checks are regression
+ceilings, not a hard runtime deadline. Run both classes on .NET 8 and .NET 10 with
+the full suite; Framework execution additionally requires a compatible Windows host.
+The hostile Markdown cancellation cases trigger cancellation from an inline parser
+immediately before link lookahead, so they test cancellation during parsing without
+racing a timer against the separate work-limit rejection. The ordinary-link case
+retains its end-to-end cancellation latency check.
+Timed parser-cancellation cases use a joined dedicated thread for their deadline;
+they do not depend on thread-pool timers that can be delayed by the parallel suite.
+The five-second rejection and cancellation ceilings are unchanged.
+
+Apache POI comparison-tool downloads make up to five attempts per server for HTTP 429/502/503/504,
+honor `Retry-After` up to 60 seconds (longer waits fail for a later CI retry), and
+use the configured public Google mirror of Maven Central if the primary exhausts
+its retries. Every archive must match the same pinned SHA-256 before caching;
+permanent HTTP errors and hash mismatches fail without trying another server. Offline controls in
+`eng/test-prepare-comparison-poi.py` cover rate limits, permanent failures, retry
+exhaustion, mirror fallback and corrupted downloads/caches.
+
 ## 1.6.1 import resource regression suite — #175–#181
 
 `ImportResourceTests` contains independently constructed hostile DOC, DOCX, EPUB,

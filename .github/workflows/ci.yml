@@ -92,6 +92,7 @@ jobs:
       - name: Verify comparison controls and authored corpus (commercial tools optional)
         if: matrix.os == 'ubuntu-24.04'
         run: |
+          python3 eng/test-prepare-comparison-poi.py
           sudo apt-get update && sudo apt-get install -y poppler-utils
           python3 -m venv artifacts/comparison-venv
           artifacts/comparison-venv/bin/pip install -r eng/comparison-requirements.txt

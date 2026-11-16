@@ -86,6 +86,8 @@ internal static partial class DocFormat
                 else if (!properties.Hidden)
                 {
                     if (c is '\v' or '\f') { plain.Append('\n'); if (c == '\f') context.Loss("Doc.PageBreak", "Explicit page breaks become line breaks."); }
+                    else if (c == '\u001e') plain.Append('\u2011');
+                    else if (c == '\u001f') plain.Append('\u00ad');
                     else if (!char.IsControl(c) || c is '\n' or '\t') plain.Append(c);
                     else context.Loss("Doc.SpecialContent", "Unsupported object and special-content markers are omitted.");
                 }

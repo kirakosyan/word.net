@@ -1,5 +1,20 @@
 # Conversion diagnostics
 
+The #183–#188 source fixes retain wrapped HTML/ebook list content, Markdown
+character references and DOC/DOCX non-breaking and soft hyphens. These characters
+do not cause a fidelity loss. `Docx.Symbol` reports a font-specific symbol replaced
+with visible U+FFFD; `Docx.PositionalTab` reports positional alignment/leaders
+replaced with an ordinary tab. Both reject Strict and retain surrounding text in
+BestEffort/Lenient. Unsupported Markdown leaf content explicitly reports omission.
+
+`Epub.ContentXml` identifies malformed chapter XHTML with its part and position;
+`Epub.ContentEntity` identifies an unsupported/custom entity and chapter part.
+Inert chapter DOCTYPE declarations and predefined HTML named characters are
+admitted without loading a DTD. Package/OOXML XML restrictions are unchanged.
+`Limit.HtmlTree` can now reject during parsing, and `Limit.MarkdownWork` rejects
+excessive inline-link lookahead. Both preserve staged destinations in every mode.
+See [parser work bounds](hosting.md#html-and-markdown-parser-work--187188).
+
 The 1.6.1 #175–#181 source fixes add import admission failures:
 
 | Code | Meaning |
