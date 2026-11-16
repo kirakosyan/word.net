@@ -1,6 +1,6 @@
 # Conversion tests and qualification
 
-## Import regressions — #183–#188
+## 1.6.2 import regressions — #183–#188
 
 `ImportContentRegressionTests` uses hand-authored HTML/XHTML/Markdown/OOXML and
 MS-DOC character controls injected into body/cell text. It checks list order and
@@ -48,8 +48,9 @@ Flate content and three/six-page 200/300-DPI RGB JPEG/Flate scans with real Engl
 OCR and default admission limits. Results are recorded in PR #182; historical release
 receipts below do not qualify it.
 
-The [1.6.0 release notes](releases/1.6.0.md) define the current bounded milestone
-and its publication gates. The dated records below retain the source, package and
+The [1.6.2 release notes](releases/1.6.2.md) define the current patch and its
+publication gates; the [1.6.0 feature profiles](releases/1.6.0.md) remain in effect.
+The dated records below retain the source, package and
 runtime identities observed when they were written; labels such as "pending" or
 "unreleased" describe that historical state, not current package availability.
 

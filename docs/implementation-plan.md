@@ -1,6 +1,6 @@
 # wordnet implementation and delivery status
 
-## Import correctness and parser work — #183–#188 (unreleased source)
+## 1.6.2 import correctness and parser work — #183–#188
 
 This source change retains lists reached through block/inline wrappers in HTML
 and shared ebook content, DOC/DOCX non-breaking/soft hyphens, and Markdown named
@@ -12,8 +12,14 @@ tree construction; Markdown bounds failed link lookahead and observes cancellati
 
 `ImportContentRegressionTests` and `ImportParsingResourceTests` cover independently
 authored content, exact order/characters, diagnostics, output atomicity, hostile
-inputs and parser cancellation. The PR records current build/test evidence. These
-changes do not establish a new package release or additional platform qualification.
+inputs and parser cancellation. [PR #189](https://github.com/kirakosyan/word.net/pull/189)
+merged as `cf1430b3b628df69373f013939ca803177228862`, with tree equality to tested head
+`a88cfca7b7edd2b248d6bc4cb328c3365e182a2a`. All 24 candidate checks passed, including
+2,550-case source/package suites and actual Framework 4.7.2 qualification with verified
+VM cleanup. Issues #183–#188 are closed with acceptance evidence. The
+[1.6.2 release notes](releases/1.6.2.md) define the patch scope; exact final-main CI,
+immutable-package qualification and public NuGet verification establish publication
+separately. No additional platform qualification is claimed.
 
 ## 1.6.1 import resource fixes — #175–#181
 

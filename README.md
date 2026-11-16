@@ -8,7 +8,7 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
-This source and package target 1.6.1. The [release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.1.md) and [tested source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) describe the admitted feature profiles and their limits. The NuGet badge and [releases](https://github.com/kirakosyan/word.net/releases) show published availability. [Roadmap #138](https://github.com/kirakosyan/word.net/issues/138) remains open for broader combinations and qualification.
+This source and package target 1.6.2. The [release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.2.md) and [tested source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) describe the admitted feature profiles and their limits. The NuGet badge and [releases](https://github.com/kirakosyan/word.net/releases) show published availability. [Roadmap #138](https://github.com/kirakosyan/word.net/issues/138) remains open for broader combinations and qualification.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.
@@ -45,7 +45,11 @@ dotnet add package wordnet.Ocr
 This provider also supplies PNG previews and optional native typography. English OCR additionally requires a local Tesseract 5 library and `eng.traineddata`.
 See the [OCR setup guide](https://github.com/kirakosyan/word.net/blob/main/docs/interoperability.md) and [deployment requirements](https://github.com/kirakosyan/word.net/blob/main/docs/testing.md).
 
-## New in 1.6.1
+## New in 1.6.2
+
+Preserve wrapped HTML/ebook lists, Word hyphens and Markdown character references. Accept inert EPUB chapter DOCTYPE declarations and bound HTML/Markdown parser work with cooperative cancellation. See the [patch notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.2.md) for fidelity diagnostics and limits.
+
+## Previous: 1.6.1
 
 Fix resource amplification in document imports, with configurable block/run/image-placement limits and bounded PDF decoding. Ordinary multipage scanned PDFs and long text inputs remain supported. See the [patch notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.1.md) for admission behavior.
 
@@ -268,7 +272,7 @@ Linux requires Tesseract, fontconfig and the documented fonts. Run Framework tes
 | [Comparison harness](https://github.com/kirakosyan/word.net/blob/main/docs/comparison.md) | Reproducible corpus and optional licensed reference comparisons |
 | [Initial 1.5.0 fidelity measurements](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-138-initial.md) | Released-source/public-package measurements, retained failures and outstanding controls |
 | [Implementation plan](https://github.com/kirakosyan/word.net/blob/main/docs/implementation-plan.md) | Delivered work and remaining scope |
-| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.1.md) | Version scope, qualification and publication gates |
+| [Release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.2.md) | Version scope, qualification and publication gates |
 | [Release procedure](https://github.com/kirakosyan/word.net/blob/main/docs/releasing.md) | Package qualification and manual publishing |
 | [Contributing](https://github.com/kirakosyan/word.net/blob/main/AGENTS.md) | Engineering and validation requirements |
 
