@@ -17,6 +17,9 @@ The hostile Markdown cancellation cases trigger cancellation from an inline pars
 immediately before link lookahead, so they test cancellation during parsing without
 racing a timer against the separate work-limit rejection. The ordinary-link case
 retains its end-to-end cancellation latency check.
+Timed parser-cancellation cases use a joined dedicated thread for their deadline;
+they do not depend on thread-pool timers that can be delayed by the parallel suite.
+The five-second rejection and cancellation ceilings are unchanged.
 
 Apache POI comparison-tool downloads retry HTTP 429/502/503/504 up to five times,
 honor `Retry-After` up to 60 seconds (longer waits fail for a later CI retry), and

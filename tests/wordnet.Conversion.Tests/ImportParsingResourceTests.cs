@@ -54,7 +54,7 @@ public sealed class ImportParsingResourceTests
         using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         var context = new ConversionContext(new ConversionOptions(FidelityMode.BestEffort, maximumNestingDepth: 1000000), cancellation.Token);
         var timer = Stopwatch.StartNew();
-        cancellation.CancelAfter(10);
+        using var deadline = new CancellationDeadline(cancellation, 10);
         Assert.ThrowsAny<OperationCanceledException>(() => { using var document = BoundedHtml.Parse(html, context); });
         Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5), "Deep HTML must observe cancellation while constructing the tree.");
     }
@@ -88,7 +88,7 @@ public sealed class ImportParsingResourceTests
         using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         var context = new ConversionContext(new ConversionOptions(FidelityMode.BestEffort), cancellation.Token);
         var timer = Stopwatch.StartNew();
-        cancellation.CancelAfter(50);
+        using var deadline = new CancellationDeadline(cancellation, 50);
         Assert.ThrowsAny<OperationCanceledException>(() => { using var document = BoundedHtml.Parse(html, context); });
         Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5), "HTML cancellation must be observed inside parsing.");
     }
@@ -101,7 +101,7 @@ public sealed class ImportParsingResourceTests
         using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         var context = new ConversionContext(new ConversionOptions(FidelityMode.BestEffort), cancellation.Token);
         var timer = Stopwatch.StartNew();
-        cancellation.CancelAfter(50);
+        using var deadline = new CancellationDeadline(cancellation, 50);
         Assert.ThrowsAny<OperationCanceledException>(() => MarkdownFormat.Read(text, context));
         Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5), "Markdown cancellation must be observed inside parsing.");
     }
@@ -128,6 +128,36 @@ public sealed class ImportParsingResourceTests
     }
 
     private static ConversionContext Context() => new ConversionContext(new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+
+    // The parallel full suite can occupy the thread pool long enough to delay
+    // CancelAfter callbacks until parsing has completed. Keep the deadline on
+    // its own thread, and join it before disposing the token source.
+    private sealed class CancellationDeadline : IDisposable
+    {
+        private readonly ManualResetEventSlim started = new ManualResetEventSlim();
+        private readonly ManualResetEventSlim completed = new ManualResetEventSlim();
+        private readonly Thread worker;
+
+        internal CancellationDeadline(CancellationTokenSource cancellation, int milliseconds)
+        {
+            worker = new Thread(() =>
+            {
+                started.Set();
+                if (!completed.Wait(milliseconds)) cancellation.Cancel();
+            })
+            { IsBackground = true };
+            worker.Start();
+            started.Wait();
+        }
+
+        public void Dispose()
+        {
+            completed.Set();
+            worker.Join();
+            started.Dispose();
+            completed.Dispose();
+        }
+    }
 
     private sealed class CancelAtLinkLookahead : InlineParser
     {
