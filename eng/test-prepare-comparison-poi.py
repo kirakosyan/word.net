@@ -73,6 +73,55 @@ class ProvisionTests(unittest.TestCase):
                 poi.provision(self.item, Path(directory))
             self.assertEqual([], list(Path(directory).iterdir()))
 
+    def test_exhausted_primary_uses_pinned_mirror_and_then_cache(self):
+        self.item['mirrors'] = ['https://mirror.invalid/tool.jar']
+        with tempfile.TemporaryDirectory() as directory, patch.object(poi.urllib.request, 'urlopen',
+                side_effect=[self.error(429) for _ in range(5)] + [io.BytesIO(self.data)]) as request, \
+                patch.object(poi.time, 'sleep'):
+            destination = Path(directory)
+            poi.provision(self.item, destination)
+            poi.provision(self.item, destination)
+            self.assertEqual(self.data, (destination / 'tool.jar').read_bytes())
+            self.assertEqual([self.item['url']] * 5 + self.item['mirrors'],
+                             [call.args[0] for call in request.call_args_list])
+            self.assertFalse(list(destination.glob('*.download')))
+
+    def test_bad_mirror_bytes_are_not_cached(self):
+        self.item['mirrors'] = ['https://mirror.invalid/tool.jar']
+        with tempfile.TemporaryDirectory() as directory, patch.object(poi.urllib.request, 'urlopen',
+                side_effect=[self.error(503) for _ in range(5)] + [io.BytesIO(b'wrong mirror bytes')]), \
+                patch.object(poi.time, 'sleep'):
+            with self.assertRaisesRegex(ValueError, 'hash mismatch'):
+                poi.provision(self.item, Path(directory))
+            self.assertEqual([], list(Path(directory).iterdir()))
+
+    def test_mirror_exhaustion_fails_without_caching(self):
+        self.item['mirrors'] = ['https://mirror.invalid/tool.jar']
+        with tempfile.TemporaryDirectory() as directory, patch.object(poi.urllib.request, 'urlopen',
+                side_effect=self.error(429)) as request, patch.object(poi.time, 'sleep') as sleep:
+            with self.assertRaises(urllib.error.HTTPError):
+                poi.provision(self.item, Path(directory))
+            self.assertEqual(10, request.call_count)
+            self.assertEqual(8, sleep.call_count)
+            self.assertEqual([], list(Path(directory).iterdir()))
+
+    def test_permanent_primary_failure_does_not_use_mirror(self):
+        self.item['mirrors'] = ['https://mirror.invalid/tool.jar']
+        with tempfile.TemporaryDirectory() as directory, patch.object(poi.urllib.request, 'urlopen',
+                side_effect=self.error(404)) as request:
+            with self.assertRaises(urllib.error.HTTPError):
+                poi.provision(self.item, Path(directory))
+            self.assertEqual(1, request.call_count)
+
+    def test_corrupt_primary_is_rejected_without_trying_mirror(self):
+        self.item['mirrors'] = ['https://mirror.invalid/tool.jar']
+        with tempfile.TemporaryDirectory() as directory, patch.object(poi.urllib.request, 'urlopen',
+                return_value=io.BytesIO(b'wrong primary bytes')) as request:
+            with self.assertRaisesRegex(ValueError, 'hash mismatch'):
+                poi.provision(self.item, Path(directory))
+            self.assertEqual(1, request.call_count)
+            self.assertEqual([], list(Path(directory).iterdir()))
+
     def test_bad_cached_archive_is_not_accepted_or_silently_replaced(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(poi.urllib.request, 'urlopen') as request:
             (Path(directory) / 'tool.jar').write_bytes(b'wrong cached bytes')

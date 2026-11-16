@@ -21,11 +21,13 @@ Timed parser-cancellation cases use a joined dedicated thread for their deadline
 they do not depend on thread-pool timers that can be delayed by the parallel suite.
 The five-second rejection and cancellation ceilings are unchanged.
 
-Apache POI comparison-tool downloads retry HTTP 429/502/503/504 up to five times,
+Apache POI comparison-tool downloads make up to five attempts per server for HTTP 429/502/503/504,
 honor `Retry-After` up to 60 seconds (longer waits fail for a later CI retry), and
-verify the pinned SHA-256 before caching an archive. Offline controls in
+use the configured public Google mirror of Maven Central if the primary exhausts
+its retries. Every archive must match the same pinned SHA-256 before caching;
+permanent HTTP errors and hash mismatches fail without trying another server. Offline controls in
 `eng/test-prepare-comparison-poi.py` cover rate limits, permanent failures, retry
-exhaustion and corrupted downloads/caches.
+exhaustion, mirror fallback and corrupted downloads/caches.
 
 ## 1.6.1 import resource regression suite — #175–#181
 

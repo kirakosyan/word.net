@@ -10,13 +10,16 @@ import urllib.error
 import urllib.request
 
 
+RETRYABLE_STATUS = (429, 502, 503, 504)
+
+
 def download(url):
     for attempt in range(5):
         try:
             with urllib.request.urlopen(url, timeout=60) as response:
                 return response.read()
         except urllib.error.HTTPError as error:
-            if error.code not in (429, 502, 503, 504) or attempt == 4:
+            if error.code not in RETRYABLE_STATUS or attempt == 4:
                 raise
             delay = 2 ** (attempt + 1)
             retry_after = error.headers.get('Retry-After')
@@ -33,9 +36,22 @@ def download(url):
             time.sleep(delay)
 
 
+def download_dependency(item):
+    urls = [item['url'], *item.get('mirrors', [])]
+    for index, url in enumerate(urls):
+        try:
+            return download(url)
+        except urllib.error.HTTPError as error:
+            if error.code not in RETRYABLE_STATUS or index == len(urls) - 1:
+                raise
+            error.close()
+            print(f'Dependency server exhausted retries with HTTP {error.code}; '
+                  f'trying the configured mirror for {item["name"]}.', flush=True)
+
+
 def provision(item, destination):
     path = destination / item['name']
-    data = path.read_bytes() if path.is_file() else download(item['url'])
+    data = path.read_bytes() if path.is_file() else download_dependency(item)
     if hashlib.sha256(data).hexdigest() != item['sha256']:
         raise ValueError('Pinned test dependency hash mismatch: ' + item['name'])
     if not path.is_file():
