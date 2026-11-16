@@ -23,14 +23,19 @@ internal static class MarkdownFormat
 {
     internal static DocumentModel Read(string text, ConversionContext context)
     {
-        var builder = new MarkdownPipelineBuilder { MaximumNestingDepth = context.Options.MaximumNestingDepth };
-        builder.InlineParsers.Replace<LinkInlineParser>(new BoundedLinkParser(context, text.Length));
-        MarkdownPipeline pipeline = builder.UsePipeTables().Build();
+        MarkdownPipeline pipeline = CreatePipelineBuilder(context, text.Length).Build();
         MarkdownDocument syntax = Markdown.Parse(text, pipeline);
         context.CheckCancellation();
         var document = new DocumentModel();
         ReadBlocks(syntax, document.Blocks, context);
         return document;
+    }
+
+    internal static MarkdownPipelineBuilder CreatePipelineBuilder(ConversionContext context, int inputLength)
+    {
+        var builder = new MarkdownPipelineBuilder { MaximumNestingDepth = context.Options.MaximumNestingDepth };
+        builder.InlineParsers.Replace<LinkInlineParser>(new BoundedLinkParser(context, inputLength));
+        return builder.UsePipeTables();
     }
 
     private static void ReadBlocks(ContainerBlock source, List<DocumentBlock> blocks, ConversionContext context, int listDepth = 0)

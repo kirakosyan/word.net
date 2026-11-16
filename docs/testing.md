@@ -13,6 +13,16 @@ end tags/raw text and ordinary Markdown links. Kindle's shared HTML reader is
 exercised directly after its decoding boundary. These timing checks are regression
 ceilings, not a hard runtime deadline. Run both classes on .NET 8 and .NET 10 with
 the full suite; Framework execution additionally requires a compatible Windows host.
+The hostile Markdown cancellation cases trigger cancellation from an inline parser
+immediately before link lookahead, so they test cancellation during parsing without
+racing a timer against the separate work-limit rejection. The ordinary-link case
+retains its end-to-end cancellation latency check.
+
+Apache POI comparison-tool downloads retry HTTP 429/502/503/504 up to five times,
+honor `Retry-After` up to 60 seconds (longer waits fail for a later CI retry), and
+verify the pinned SHA-256 before caching an archive. Offline controls in
+`eng/test-prepare-comparison-poi.py` cover rate limits, permanent failures, retry
+exhaustion and corrupted downloads/caches.
 
 ## 1.6.1 import resource regression suite — #175–#181
 

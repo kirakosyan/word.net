@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Markdig;
+using Markdig.Helpers;
+using Markdig.Parsers;
 using WordNet.Formats;
 using WordNet.Internal;
 using Xunit;
@@ -65,9 +68,16 @@ public sealed class ImportParsingResourceTests
         string text = string.Concat(Enumerable.Repeat(pattern, 100000));
         using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         var context = new ConversionContext(new ConversionOptions(FidelityMode.BestEffort), cancellation.Token);
+        var builder = MarkdownFormat.CreatePipelineBuilder(context, text.Length);
+        var cancelAtLookahead = new CancelAtLinkLookahead(cancellation);
+        builder.InlineParsers.Insert(0, cancelAtLookahead);
+        var pipeline = builder.Build();
         var timer = Stopwatch.StartNew();
-        cancellation.CancelAfter(1);
-        Assert.ThrowsAny<OperationCanceledException>(() => MarkdownFormat.Read(text, context));
+        // Cancel inside inline parsing, immediately before the production link
+        // parser runs. A timer can lose the race to a valid work-limit rejection.
+        var error = Assert.ThrowsAny<OperationCanceledException>(() => Markdown.Parse(text, pipeline));
+        Assert.True(cancelAtLookahead.Reached);
+        Assert.Equal(cancellation.Token, error.CancellationToken);
         Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5), "Unclosed Markdown links must observe cancellation during parsing.");
     }
 
@@ -118,6 +128,26 @@ public sealed class ImportParsingResourceTests
     }
 
     private static ConversionContext Context() => new ConversionContext(new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+
+    private sealed class CancelAtLinkLookahead : InlineParser
+    {
+        private readonly CancellationTokenSource cancellation;
+
+        internal CancelAtLinkLookahead(CancellationTokenSource cancellation)
+        { this.cancellation = cancellation; OpeningCharacters = new[] { ']' }; }
+
+        internal bool Reached { get; private set; }
+
+        public override bool Match(InlineProcessor processor, ref StringSlice slice)
+        {
+            if (slice.PeekCharExtra(1) == '(')
+            {
+                Reached = true;
+                cancellation.Cancel();
+            }
+            return false;
+        }
+    }
 
     private static void Reject(string text, DocumentFormat format, string code)
     {
