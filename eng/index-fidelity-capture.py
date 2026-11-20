@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from zipfile import ZipFile
 
+import fidelity_policy_v1 as policy
+
 
 def load_tool(filename):
     spec = importlib.util.spec_from_file_location(filename, Path(__file__).with_name(filename + '.py'))
@@ -16,17 +18,6 @@ def load_tool(filename):
 
 
 baseline = load_tool('refresh-fidelity-baseline')
-comparison = load_tool('run-comparison')
-ledger = load_tool('generate-roadmap-138-ledger')
-
-
-def classify(verdict, result, reference, theme_controls):
-    if verdict == 'page-geometry' and ledger.a4_rounding(result['measurement']['snapshot']['pages'], reference['pages']):
-        return 'reference-policy-difference'
-    if verdict == 'diagnostic-expectations' and result['inputSha256'] in theme_controls and result['knownLossChecks'] == {
-            'passed': False, 'missing': [], 'unexpected': ['Docx.ThemeFont']}:
-        return 'documented-unsupported'
-    return 'unknown'
 
 
 def read_report(capture, directory, kind, expected_hash):
@@ -38,9 +29,6 @@ def read_report(capture, directory, kind, expected_hash):
 
 def index(capture):
     receipt = json.loads(capture.read('receipt.json'))
-    manifest = baseline.ROOT / 'docs/measurements/roadmap-138-combination-baseline/fixtures/manifest.json'
-    theme_controls = {d['sha256'] for d in json.loads(manifest.read_bytes())['documents']
-                      if d['id'] in ('theme-direct', 'theme-styled')}
     rows = []
     for name, cohort in receipt['cohorts'].items():
         for mode in ('source', 'package'):
@@ -49,25 +37,30 @@ def index(capture):
             report = read_report(capture, directory, 'results', hashes['results'])
             defects = read_report(capture, directory, 'defects', hashes['defects'])
             if report['sourceRevision'] != receipt['selectedSourceCommit'] or report['sourceDirty'] or \
-                    report['manifestSha256'] != cohort['manifestSha256'] or report['tolerances'] != comparison.TOLERANCES:
+                    report['manifestSha256'] != cohort['manifestSha256'] or report['tolerances'] != policy.TOLERANCES:
                 raise ValueError('Comparison identity or thresholds changed: ' + directory)
-            baseline.verify_measurements(report, defects, comparison, cohort['manifest']['documents'],
+            baseline.verify_measurements(report, defects, policy, cohort['manifest']['documents'],
                                          receipt['workers'][mode]['binaries'])
             if baseline.compact(report) != cohort['measurements'][mode] or defects != cohort['defects'][mode]:
                 raise ValueError('Receipt and raw results disagree: ' + directory)
+            references = hashes['referenceSnapshots']
+            if set(references) != {doc['id'] for doc in cohort['manifest']['documents']}:
+                raise ValueError('Reference snapshot identities differ from the captured manifest: ' + directory)
             for result in report['results']:
                 document = result['documentId']
                 measured = result['measurement']
                 if measured['inputSha256'] != result['inputSha256']:
                     raise ValueError(f'Worker measured a different input for {directory}/{document}')
                 actual = measured['snapshot']
-                reference = json.loads(capture.read(f'{directory}/{document}-wordnet-reference.json'))
-                observed = comparison.snapshot_check(actual, reference)
+                reference = read_report(capture, directory, document + '-wordnet-reference', references[document])
+                observed = policy.snapshot_check(actual, reference)
                 check = result['referenceChecks'][0]
                 if any(check[key] != value for key, value in observed.items()):
                     raise ValueError(f'Reference snapshot disagrees with {directory}/{document}')
-                for rank, verdict in comparison.failure_verdicts(result):
-                    rows.append((rank, name, document, mode, verdict, classify(verdict, result, reference, theme_controls)))
+                for rank, verdict in policy.failure_verdicts(result):
+                    status, _ = policy.classification(name, document, verdict, actual['pages'], reference['pages'],
+                                                      result['knownLossChecks'])
+                    rows.append((rank, name, document, mode, verdict, status))
     return sorted(rows)
 
 

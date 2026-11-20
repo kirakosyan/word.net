@@ -119,9 +119,28 @@ python eng/refresh-fidelity-baseline.py \
   --combinations "$release/docs/measurements/roadmap-138-combination-baseline/fixtures/manifest.json"
 ```
 
+The original receipt records SHA-256
+`b01f744f7f02a67dee4c696c48cd77cd7c95a8c99c90a45f26672fc2cabf925a` for
+the executed CRLF copy in `qualification/executed-runner.py`. Converting those
+line endings to LF reproduces the runner at commit
+`24cc58a2559f7d88b459a582e020d996e2132535` with SHA-256
+`cbeb9d15b80c6fcb368748a6152bd2b1d1f8dc4b123717d2aa7a963f80ab7c53`.
+Future checkouts use LF. In this capture, the registration files numbered 0, 1
+and 2 belong to wordnet, wordnet.Fonts and wordnet.Ocr respectively, as recorded
+by URL in `packageSelection.registration`. New captures include the package ID
+in each filename.
+
+The original receipt is preserved byte-for-byte in
+`qualification/original-receipt.json`. The replay receipt adds SHA-256 hashes for
+each of the 80 reference snapshots. Each snapshot was checked against the raw
+Linux capture (archive SHA-256
+`080a5c1fbf81c4673998cd24c2cb7295c997ac12e2e0afb89cb4a0b9d79146dd`).
+New captures record these hashes during measurement.
+
 To reproduce the published ledger offline, run the indexer against the capture
-ZIP. It checks the raw results and defect hashes, input and assembly identities,
-and recomputes reference geometry and glyph verdicts. Original output/reference
+ZIP. It verifies the raw report and reference snapshot hashes, checks input and
+assembly identities against the capture, and applies the versioned replay rules
+for geometry, glyph placement and ranking. Original output/reference
 PDFs and raster images are excluded from the Git archive. Their hashes remain in
 the capture. Recreating the pixel comparisons requires the render step above.
 

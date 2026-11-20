@@ -86,11 +86,21 @@ def verify_poi(directory, pins=None):
     return {pin['name']: pin['sha256'] for pin in pins}
 
 
+def archive_registration(directory, evidence, package, url):
+    with urllib.request.urlopen(url, timeout=60) as response:
+        data = response.read()
+    suffix = '.json.gz' if data.startswith(b'\x1f\x8b') else '.json'
+    path = directory / f'{package}-registration-{len(evidence)}{suffix}'
+    path.write_bytes(data)
+    evidence.append(dict(package=package, url=url, file=path.name, sha256=sha(path)))
+    return decode_json(data)
+
+
 def latest_listed_stable(fetch, package):
     versions = []
-    index = fetch(REGISTRATION.format(package))
+    index = fetch(package, REGISTRATION.format(package))
     for page in index['items']:
-        leaves = page['items'] if 'items' in page else fetch(page['@id'])['items']
+        leaves = page['items'] if 'items' in page else fetch(package, page['@id'])['items']
         for leaf in leaves:
             entry = leaf['catalogEntry']
             version = entry['version']
@@ -178,6 +188,10 @@ def summarize(receipt):
     return summary
 
 
+def reference_hashes(directory, documents):
+    return {doc['id']: sha(directory / (doc['id'] + '-wordnet-reference.json')) for doc in documents}
+
+
 def audit_evidence(receipt, output, comparison):
     for name, cohort in receipt['cohorts'].items():
         for reference in cohort['references']['references']:
@@ -190,6 +204,8 @@ def audit_evidence(receipt, output, comparison):
             for kind in ('results', 'defects'):
                 if sha(directory / (kind + '.json')) != cohort['rawHashes'][mode][kind]:
                     raise ValueError('Raw report hash mismatch: ' + str(directory))
+            if reference_hashes(directory, cohort['manifest']['documents']) != cohort['rawHashes'][mode]['referenceSnapshots']:
+                raise ValueError('Reference snapshot hash mismatch: ' + str(directory))
             verify_measurements(raw, defects, comparison, cohort['manifest']['documents'], receipt['workers'][mode]['binaries'])
             if compact(raw) != report or defects != cohort['defects'][mode]:
                 raise ValueError('Compact receipt differs from retained raw evidence.')
@@ -245,14 +261,9 @@ def main():
     archives = output / 'packages'
     archives.mkdir()
     listing_evidence = []
-    def fetch_registration(url):
-        with urllib.request.urlopen(url, timeout=60) as response:
-            data = response.read()
-        suffix = '.json.gz' if data.startswith(b'\x1f\x8b') else '.json'
-        path = archives / f'wordnet-registration-{len(listing_evidence)}{suffix}'
-        path.write_bytes(data)
-        listing_evidence.append(dict(url=url, file=path.name, sha256=sha(path)))
-        return decode_json(data)
+    def fetch_registration(package, url):
+        return archive_registration(archives, listing_evidence, package, url)
+
     version = matching_release(fetch_registration)
     receipt['packageSelection'] = dict(policy='latest-listed-stable', registration=listing_evidence)
     indexes = {}
@@ -335,7 +346,8 @@ def main():
             cohort_receipt['measurements'][mode] = compact(report)
             cohort_receipt['defects'][mode] = defects
             cohort_receipt.setdefault('rawHashes', {})[mode] = dict(results=sha(destination / 'results.json'),
-                defects=sha(destination / 'defects.json'))
+                defects=sha(destination / 'defects.json'),
+                referenceSnapshots=reference_hashes(destination, cohort_receipt['manifest']['documents']))
             save(output / 'progress.json', receipt)
     receipt['completedAtUtc'] = datetime.now(timezone.utc).isoformat()
     if subprocess.check_output(['git', 'status', '--porcelain'], cwd=root, text=True).strip():

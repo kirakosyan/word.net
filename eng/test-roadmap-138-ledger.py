@@ -35,10 +35,10 @@ class ReleaseLedgerTests(unittest.TestCase):
     def test_reference_rounding_is_recognized_only_for_the_measured_geometry(self):
         source = [{'width': 595.3, 'height': 841.9}]
         reference = [{'width': 595.303937007874, 'height': 841.889763779528}]
-        self.assertTrue(ledger.a4_rounding(source, reference))
-        self.assertFalse(ledger.a4_rounding(source, []))
-        self.assertFalse(ledger.a4_rounding(source + source, reference))
-        self.assertFalse(ledger.a4_rounding(source, [{'width': 595.3, 'height': 840.0}]))
+        self.assertTrue(ledger.policy.a4_rounding(source, reference))
+        self.assertFalse(ledger.policy.a4_rounding(source, []))
+        self.assertFalse(ledger.policy.a4_rounding(source + source, reference))
+        self.assertFalse(ledger.policy.a4_rounding(source, [{'width': 595.3, 'height': 840.0}]))
         for item in self.data['findings']:
             if item['cohort'] == 'contrast-existing' and item['verdict'] == 'page-geometry':
                 self.assertIsNone(item['referenceSnapshot'])
