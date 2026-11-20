@@ -2,6 +2,7 @@
 import copy
 import contextlib
 import gzip
+import hashlib
 import importlib.util
 import io
 import json
@@ -27,6 +28,7 @@ def module(name, path):
 baseline = module('baseline', ROOT / 'eng/refresh-fidelity-baseline.py')
 comparison = module('comparison', ROOT / 'eng/run-comparison.py')
 generator = module('reductions', ROOT / 'eng/generate-fidelity-reductions.py')
+capture_index = module('capture_index', ROOT / 'eng/index-fidelity-capture.py')
 
 
 class FidelityBaselineTests(unittest.TestCase):
@@ -50,13 +52,14 @@ class FidelityBaselineTests(unittest.TestCase):
                 snapshot=dict(pages=[dict(width=100, height=200, text='Example', glyphs=[dict(text='E', x=1, y=2)])])))
         self.report = dict(sourceRevision='exact-revision', sourceDirty=False, manifestSha256='d' * 64,
                            tolerances=comparison.TOLERANCES, results=[self.result])
-        self.manifest = dict(documents=[dict(id='example', path='example.docx')])
+        self.documents = [dict(id='example', path='example.docx', sha256='c' * 64)]
+        self.manifest = dict(documents=self.documents)
 
     def defects(self, report):
         return comparison.defect_report(report, self.manifest)
 
     def test_known_reference_failure_remains_failure(self):
-        self.assertEqual(1, baseline.verify_measurements(self.report, self.defects(self.report), comparison, 1, self.binaries))
+        self.assertEqual(1, baseline.verify_measurements(self.report, self.defects(self.report), comparison, self.documents, self.binaries))
         self.assertEqual(['page-geometry'], self.defects(self.report)['findings'][0]['failedVerdicts'])
 
     def test_missing_duplicate_or_uncaptured_document_is_rejected(self):
@@ -66,7 +69,7 @@ class FidelityBaselineTests(unittest.TestCase):
             elif change == 'duplicate': report['results'] *= 2
             else: report['results'][0]['referenceChecks'] = [dict(status='not-provided')]
             with self.subTest(change=change), self.assertRaises(ValueError):
-                baseline.verify_measurements(report, self.defects(report), comparison, 1, self.binaries)
+                baseline.verify_measurements(report, self.defects(report), comparison, self.documents, self.binaries)
 
     def test_duplicate_ids_are_rejected_even_when_count_and_all_verdicts_pass(self):
         result = copy.deepcopy(self.result)
@@ -76,20 +79,26 @@ class FidelityBaselineTests(unittest.TestCase):
         self.assertEqual([], defects['findings'])
         comparison.validate_defect_report(report, defects)
         with self.assertRaisesRegex(ValueError, 'Missing or duplicate'):
-            baseline.verify_measurements(report, defects, comparison, 2, self.binaries)
+            baseline.verify_measurements(report, defects, comparison, self.documents + [dict(id='second', sha256='d' * 64)], self.binaries)
+
+    def test_matching_count_cannot_hide_wrong_id_digest_or_duplicate_manifest(self):
+        for documents in ([dict(id='other', sha256='c' * 64)], [dict(id='example', sha256='d' * 64)],
+                          self.documents * 2, []):
+            with self.subTest(documents=documents), self.assertRaisesRegex(ValueError, 'input identity'):
+                baseline.verify_measurements(self.report, self.defects(self.report), comparison, documents, self.binaries)
 
     def test_source_package_binary_substitution_is_rejected(self):
         for name in self.binaries:
             expected = dict(self.binaries, **{name: '0' * 64})
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'unexpected binary'):
-                baseline.verify_measurements(self.report, self.defects(self.report), comparison, 1, expected)
+                baseline.verify_measurements(self.report, self.defects(self.report), comparison, self.documents, expected)
 
     def test_unused_embedded_font_assembly_is_not_claimed_as_executed(self):
         self.result['measurement']['assemblies'] = [a for a in self.result['measurement']['assemblies'] if a['name'] != 'wordnet.Fonts']
-        self.assertEqual(1, baseline.verify_measurements(self.report, self.defects(self.report), comparison, 1, self.binaries))
+        self.assertEqual(1, baseline.verify_measurements(self.report, self.defects(self.report), comparison, self.documents, self.binaries))
         self.result['measurement']['assemblies'] = []
         with self.assertRaisesRegex(ValueError, 'unexpected binary'):
-            baseline.verify_measurements(self.report, self.defects(self.report), comparison, 1, self.binaries)
+            baseline.verify_measurements(self.report, self.defects(self.report), comparison, self.documents, self.binaries)
 
     def test_compaction_retains_all_verdicts_and_raw_samples_without_mutation(self):
         compact = baseline.compact(self.report)
@@ -224,18 +233,116 @@ class FidelityBaselineTests(unittest.TestCase):
     def test_registration_selection_excludes_unlisted_prerelease_and_fetches_pages(self):
         def entry(version, listed=True):
             return dict(catalogEntry=dict(version=version, listed=listed))
-        pages = {baseline.REGISTRATION: dict(items=[dict(items=[entry('1.9.0'), entry('9.0.0', False), entry('10.0.0-preview.1')]),
+        pages = {baseline.REGISTRATION.format('wordnet'): dict(items=[dict(items=[entry('1.9.0'), entry('9.0.0', False), entry('10.0.0-preview.1')]),
                                                        {'@id': 'next-page'}]),
                  'next-page': dict(items=[entry('1.10.0'), entry('2.0.0', False)])}
-        self.assertEqual('1.10.0', baseline.latest_listed_stable(pages.__getitem__))
+        self.assertEqual('1.10.0', baseline.latest_listed_stable(lambda package, url: pages[url], 'wordnet'))
         with self.assertRaisesRegex(ValueError, 'no listed stable'):
-            baseline.latest_listed_stable(lambda _: dict(items=[dict(items=[entry('9.0.0', False), entry('10.0.0-rc.1')])]))
+            baseline.latest_listed_stable(lambda package, url: dict(items=[dict(items=[entry('9.0.0', False), entry('10.0.0-rc.1')])]), 'wordnet')
+
+    def test_companion_registration_must_be_listed_and_match_core(self):
+        def entries(*versions):
+            return {'items': [{'items': [{'catalogEntry': {'version': version, 'listed': listed}}
+                                         for version, listed in versions]}]}
+        pages = {baseline.REGISTRATION.format(name): entries(('1.6.2', True)) for name in baseline.PACKAGE_IDS}
+        self.assertEqual('1.6.2', baseline.matching_release(lambda package, url: pages[url]))
+        for name in ('wordnet.fonts', 'wordnet.ocr'):
+            for listing in (entries(('1.6.1', True), ('1.6.2', False)), entries(('1.7.0', True)),
+                            entries(('1.7.0-preview.1', True))):
+                with self.subTest(name=name, listing=listing), self.assertRaisesRegex(ValueError, name):
+                    baseline.matching_release(lambda package, url: listing if package == name else pages[url])
+
+    def test_archived_index_and_external_page_keep_their_package_identity(self):
+        with tempfile.TemporaryDirectory() as folder:
+            directory = Path(folder)
+            evidence = []
+            def fetch(package, url):
+                data = (json.dumps({'items': [{'@id': 'external-page'}]}).encode() if url != 'external-page'
+                        else gzip.compress(b'{"items":[{"catalogEntry":{"version":"1.6.2","listed":true}}]}'))
+                with patch.object(baseline.urllib.request, 'urlopen', return_value=io.BytesIO(data)):
+                    return baseline.archive_registration(directory, evidence, package, url)
+            self.assertEqual('1.6.2', baseline.matching_release(fetch))
+            self.assertEqual(6, len(set(row['file'] for row in evidence)))
+            for index, row in enumerate(evidence):
+                package = baseline.PACKAGE_IDS[index // 2]
+                suffix = '.json.gz' if index % 2 else '.json'
+                self.assertEqual(package, row['package'])
+                self.assertEqual(f'{package}-registration-{index}{suffix}', row['file'])
+                self.assertEqual(baseline.sha(directory / row['file']), row['sha256'])
 
     def test_registration_json_supports_real_feed_gzip_and_plain_responses(self):
         document = dict(items=[dict(items=[dict(catalogEntry=dict(version='1.4.0', listed=True))])])
         plain = json.dumps(document).encode()
         for data in (plain, gzip.compress(plain)):
             self.assertEqual(document, baseline.decode_json(data))
+
+    def test_published_162_index_reproduces_every_rank_and_classification(self):
+        evidence = ROOT / 'docs/measurements/fidelity-1.6.2'
+        # Replay must survive changes to live thresholds, ranking and fixture manifests.
+        with ZipFile(evidence / 'capture.zip') as capture, patch.object(capture_index.baseline, 'ROOT', Path('absent')), \
+             patch.object(comparison, 'TOLERANCES', {}), patch.object(comparison, 'failure_verdicts', return_value=[]):
+            rows = capture_index.index(capture)
+        output = io.StringIO()
+        capture_index.write_index(rows, output)
+        self.assertEqual((evidence / 'findings.tsv').read_bytes(), output.getvalue().encode('utf-8'))
+        # Unequal page counts cannot establish the cause of a geometry difference.
+        for mode in ('source', 'package'):
+            self.assertIn((7, 'reductions', 'notes-continuation', mode, 'page-geometry', 'unknown'), rows)
+            self.assertIn((7, 'combinations', 'explicit-direct', mode, 'page-geometry', 'reference-policy-difference'), rows)
+            self.assertIn((3, 'combinations', 'theme-styled', mode, 'diagnostic-expectations', 'documented-unsupported'), rows)
+
+    def test_original_runner_matches_recorded_and_normalized_hashes(self):
+        with ZipFile(ROOT / 'docs/measurements/fidelity-1.6.2/capture.zip') as capture:
+            original = json.loads(capture.read('receipt.json'))
+            runner = capture.read('qualification/executed-runner.py')
+            self.assertEqual(original['runnerSha256'], hashlib.sha256(runner).hexdigest())
+            self.assertEqual('cbeb9d15b80c6fcb368748a6152bd2b1d1f8dc4b123717d2aa7a963f80ab7c53',
+                             hashlib.sha256(runner.replace(b'\r\n', b'\n')).hexdigest())
+
+    def test_capture_index_rejects_altered_raw_report_or_swapped_reference_snapshot(self):
+        with ZipFile(ROOT / 'docs/measurements/fidelity-1.6.2/capture.zip') as capture:
+            read = capture.read
+            def tamper(name):
+                raw = read(name)
+                if name == altered:
+                    if name.endswith(('/results.json', '/defects.json', '/reference-snapshot-hashes.json')):
+                        return raw + b' '
+                    snapshot = json.loads(raw)
+                    snapshot['pages'][0]['text'] = 'Different reference text'
+                    return json.dumps(snapshot).encode()
+                return raw
+            for altered, error in (('existing-24-source/results.json', 'hash mismatch'),
+                                   ('combinations-package/defects.json', 'hash mismatch'),
+                                   ('qualification/reference-snapshot-hashes.json', 'hash mismatch'),
+                                   ('combinations-package/theme-styled-wordnet-reference.json', 'hash mismatch')):
+                with self.subTest(altered=altered), patch.object(capture, 'read', tamper), self.assertRaisesRegex(ValueError, error):
+                    capture_index.index(capture)
+
+    def test_geometry_tampering_in_both_modes_preserves_verdict_but_fails_hash(self):
+        with ZipFile(ROOT / 'docs/measurements/fidelity-1.6.2/capture.zip') as capture:
+            read = capture.read
+            def changed(name):
+                raw = read(name)
+                if name.startswith('combinations-') and name.endswith('/explicit-direct-wordnet-reference.json'):
+                    snapshot = json.loads(raw)
+                    snapshot['pages'][0]['width'] = 595.0
+                    return json.dumps(snapshot).encode()
+                return raw
+            with patch.object(capture, 'read', changed), self.assertRaisesRegex(ValueError, 'reference hash mismatch'):
+                capture_index.index(capture)
+
+    def test_only_named_controls_in_the_measured_cohort_attribute_a_single_warning(self):
+        diagnostics = dict(missing=[], unexpected=['Docx.ThemeFont'], passed=False, extraMetadata='advisory')
+        for cohort, document, changes, expected in (
+                ('combinations', 'theme-direct', {}, 'documented-unsupported'),
+                ('unrelated', 'theme-direct', {}, 'unknown'),
+                ('combinations', 'renamed-control', {}, 'unknown'),
+                ('combinations', 'theme-styled', {'missing': ['Docx.TableFormatting']}, 'unknown'),
+                ('combinations', 'theme-styled', {'unexpected': ['Docx.ThemeFont', 'Other']}, 'unknown')):
+            with self.subTest(cohort=cohort, document=document, changes=changes):
+                actual, _ = capture_index.policy.classification(cohort, document, 'diagnostic-expectations', [], [],
+                                                                diagnostics | changes)
+                self.assertEqual(expected, actual)
 
     def test_summary_reproduces_every_committed_count_and_timing_statistic(self):
         receipt = json.loads((ROOT / 'docs/measurements/fidelity-103-baseline.json').read_text())
@@ -270,7 +377,9 @@ class FidelityBaselineTests(unittest.TestCase):
             baseline.save(directory / 'results.json', raw); baseline.save(directory / 'defects.json', defects)
             cohort['measurements'][mode] = baseline.compact(raw)
             cohort['defects'][mode] = copy.deepcopy(defects)
+            (directory / 'example-wordnet-reference.json').write_bytes(b'{}')
             cohort['rawHashes'][mode] = {kind: baseline.sha(directory / (kind + '.json')) for kind in ('results', 'defects')}
+            cohort['rawHashes'][mode]['referenceSnapshots'] = baseline.reference_hashes(directory, self.documents)
         return dict(cohorts=dict(example=cohort), workers={mode: dict(binaries=self.binaries) for mode in ('source', 'package')},
             publicPackages={'wordnet': dict(entries={'lib/net10.0/wordnet.dll': self.binaries['wordnet.dll']}),
                 'wordnet.fonts': dict(entries={'lib/netstandard2.0/wordnet.Fonts.dll': self.binaries['wordnet.Fonts.dll']})})
@@ -285,10 +394,11 @@ class FidelityBaselineTests(unittest.TestCase):
             self.assertEqual('not-run', audit['independentOpenXmlSchemas']['status'])
 
     def test_evidence_audit_rejects_changed_reference_raw_compact_and_package_assets(self):
-        for change in ('reference', 'raw', 'compact', 'package'):
+        for change in ('reference', 'snapshot', 'raw', 'compact', 'package'):
             with self.subTest(change=change), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory); receipt = self.audit_fixture(root)
                 if change == 'reference': (root / 'example-office/reference.pdf').write_bytes(b'changed reference')
+                elif change == 'snapshot': (root / 'example-package/example-wordnet-reference.json').write_bytes(b'{ }')
                 elif change == 'raw': (root / 'example-source/results.json').write_text('{}')
                 elif change == 'compact': receipt['cohorts']['example']['measurements']['source']['results'][0]['authoredChecks']['passed'] = False
                 else: receipt['publicPackages']['wordnet']['entries']['lib/net10.0/wordnet.dll'] = '0' * 64

@@ -1,5 +1,11 @@
 # Conversion tests and qualification
 
+The [1.6.2 comparison and workflow controls](fidelity-1.6.2.md) record source,
+NuGet and independent-reader results for roadmap #138 phase 0. Focused tests
+combine Word-derived placeholders with fragment copying and retained or decided
+text revisions with composition. Both the complete source suites and the
+historical release counts below identify which build they exercised.
+
 ## 1.6.2 import regressions — #183–#188
 
 `ImportContentRegressionTests` uses hand-authored HTML/XHTML/Markdown/OOXML and

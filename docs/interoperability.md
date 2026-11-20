@@ -1,8 +1,13 @@
 # Interoperability, typography and import
 
+Version 1.6.2 includes the 1.6.0 typography, layout and template-format profiles
+and two subsequent import patches. The [published release](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2)
+and [combination matrix](roadmap-138-source-matrix.json) identify the platform
+and document boundaries.
+
 ## 1.5.0 release profile
 
-The current published packages include the bounded roadmap #102 additions. See the
+Version 1.5.0 introduced the bounded roadmap #102 additions. See the
 [release notes](releases/1.5.0.md) and [capability matrix](roadmap-102-capability-matrix.json)
 for supported combinations and their runtime qualification. Further compatibility
 work is planned in [roadmap #138](https://github.com/kirakosyan/word.net/issues/138).
@@ -174,7 +179,7 @@ the affected cases in Strict and warn in BestEffort/Lenient. An initial test usi
 CID-keyed CFF Noto faces also failed in the existing CFF converter; the qualified
 fixtures are independently converted TrueType subsets and that CFF limitation stays open.
 The [testing record](testing.md) describes the conformance data and independent
-controls. These additions are 1.6.0 source, not published 1.5.0 behavior.
+controls for this profile.
 
 ```csharp
 var options = new ConversionOptions(FidelityMode.BestEffort);
@@ -345,8 +350,7 @@ upright text intent, transformed linked chains, nested structured content,
 native shaping, tagged and archival output are unsupported or diagnosed under
 their existing fidelity rules. Rotated boxes whose frame or stroke extends beyond
 the physical page are rejected. The [testing record](testing.md) describes the
-reference measurements and controls; this 1.6.0 source is separate from the
-published 1.5.0 packages.
+reference measurements and controls.
 
 <a id="unreleased-source-linear-gradients"></a>
 ### 1.6.0 profile: linear gradients
@@ -376,8 +380,7 @@ and tagged, archival or native output remain outside this profile. Strict and
 editable sessions reject unsupported vectors; ordinary BestEffort/Lenient can
 omit them only with a diagnostic. The [independent observation](measurements/roadmap-138-gradients-reference.json)
 records format structure, sampled colors, clipping and the corrected XPS-rendering
-failure. This source increment is not in the published 1.5.0 packages and does not
-claim live Word or complete #162 acceptance.
+failure. Live Word validation and broader #162 acceptance remain open.
 
 <a id="unreleased-source-tagged-archival-pdf"></a>
 ### 1.6.0 profile: tagged archival PDF
@@ -519,8 +522,8 @@ fields and generated items return null bounds with an `UnavailableReason`, and
 Other run, cell, object, note and story identities, arbitrary clipping, review displays and
 cross-edit identity remain open; requesting a detached review-display snapshot
 fails explicitly. The [independent observation](measurements/roadmap-138-layout-snapshot-reference.json)
-checks two simple paragraphs against font outlines, SVG and PDF. This source work
-does not establish full #167 acceptance or change published 1.5.0 capabilities.
+checks two simple paragraphs against font outlines, SVG and PDF. Issue #167
+tracks the remaining inspection requirements.
 
 ## Digital PDF reconstruction
 

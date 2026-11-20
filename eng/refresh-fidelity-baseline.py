@@ -19,7 +19,8 @@ from xml.etree import ElementTree
 from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
-REGISTRATION = 'https://api.nuget.org/v3/registration5-gz-semver2/wordnet/index.json'
+PACKAGE_IDS = ('wordnet', 'wordnet.fonts', 'wordnet.ocr')
+REGISTRATION = 'https://api.nuget.org/v3/registration5-gz-semver2/{}/index.json'
 
 
 def sha(path):
@@ -56,10 +57,12 @@ def compact(report):
     return value
 
 
-def verify_measurements(report, defects, comparison, expected, binaries):
+def verify_measurements(report, defects, comparison, documents, binaries):
     comparison.validate_defect_report(report, defects)
-    if len(report['results']) != expected or len({r['documentId'] for r in report['results']}) != expected:
-        raise ValueError('Missing or duplicate document measurements')
+    expected = {d['id']: d['sha256'] for d in documents}
+    actual = {r['documentId']: r['inputSha256'] for r in report['results']}
+    if not expected or len(expected) != len(documents) or len(actual) != len(report['results']) or actual != expected:
+        raise ValueError('Missing or duplicate document measurements, or input identity mismatch')
     for result in report['results']:
         if result['status'] != 'measured' or len(result.get('referenceChecks', [])) != 1 or \
                 result['referenceChecks'][0]['status'] != 'compared':
@@ -83,19 +86,36 @@ def verify_poi(directory, pins=None):
     return {pin['name']: pin['sha256'] for pin in pins}
 
 
-def latest_listed_stable(fetch):
+def archive_registration(directory, evidence, package, url):
+    with urllib.request.urlopen(url, timeout=60) as response:
+        data = response.read()
+    suffix = '.json.gz' if data.startswith(b'\x1f\x8b') else '.json'
+    path = directory / f'{package}-registration-{len(evidence)}{suffix}'
+    path.write_bytes(data)
+    evidence.append(dict(package=package, url=url, file=path.name, sha256=sha(path)))
+    return decode_json(data)
+
+
+def latest_listed_stable(fetch, package):
     versions = []
-    index = fetch(REGISTRATION)
+    index = fetch(package, REGISTRATION.format(package))
     for page in index['items']:
-        leaves = page['items'] if 'items' in page else fetch(page['@id'])['items']
+        leaves = page['items'] if 'items' in page else fetch(package, page['@id'])['items']
         for leaf in leaves:
             entry = leaf['catalogEntry']
             version = entry['version']
             if entry.get('listed') is True and re.fullmatch(r'\d+(?:\.\d+){2,3}', version):
                 versions.append(version)
     if not versions:
-        raise ValueError('NuGet registration contains no listed stable wordnet version.')
+        raise ValueError(f'NuGet registration contains no listed stable version for {package}.')
     return max(versions, key=lambda v: tuple(int(x) for x in v.split('.')))
+
+
+def matching_release(fetch):
+    versions = {name: latest_listed_stable(fetch, name) for name in PACKAGE_IDS}
+    if len(set(versions.values())) != 1:
+        raise ValueError(f'Latest listed stable package versions differ: {versions}')
+    return versions['wordnet']
 
 
 def prepare_package_project(root, destination, archives, version):
@@ -168,6 +188,10 @@ def summarize(receipt):
     return summary
 
 
+def reference_hashes(directory, documents):
+    return {doc['id']: sha(directory / (doc['id'] + '-wordnet-reference.json')) for doc in documents}
+
+
 def audit_evidence(receipt, output, comparison):
     for name, cohort in receipt['cohorts'].items():
         for reference in cohort['references']['references']:
@@ -180,7 +204,9 @@ def audit_evidence(receipt, output, comparison):
             for kind in ('results', 'defects'):
                 if sha(directory / (kind + '.json')) != cohort['rawHashes'][mode][kind]:
                     raise ValueError('Raw report hash mismatch: ' + str(directory))
-            verify_measurements(raw, defects, comparison, len(cohort['manifest']['documents']), receipt['workers'][mode]['binaries'])
+            if reference_hashes(directory, cohort['manifest']['documents']) != cohort['rawHashes'][mode]['referenceSnapshots']:
+                raise ValueError('Reference snapshot hash mismatch: ' + str(directory))
+            verify_measurements(raw, defects, comparison, cohort['manifest']['documents'], receipt['workers'][mode]['binaries'])
             if compact(raw) != report or defects != cohort['defects'][mode]:
                 raise ValueError('Compact receipt differs from retained raw evidence.')
     for name, asset in (('wordnet', 'lib/net10.0/wordnet.dll'), ('wordnet.fonts', 'lib/netstandard2.0/wordnet.Fonts.dll')):
@@ -198,6 +224,7 @@ def main():
     parser.add_argument('--commit')
     parser.add_argument('--output', type=Path, help='New, empty evidence directory')
     parser.add_argument('--reductions', type=Path, help='Additional independently authored manifest')
+    parser.add_argument('--combinations', type=Path, help='Separate combination-control manifest')
     parser.add_argument('--poi-classpath', type=Path, default=ROOT / 'artifacts/comparison-poi',
                         help='Pinned POI jars prepared in the runner checkout (or an explicit directory)')
     parser.add_argument('--iterations', type=int, default=3)
@@ -234,18 +261,13 @@ def main():
     archives = output / 'packages'
     archives.mkdir()
     listing_evidence = []
-    def fetch_registration(url):
-        with urllib.request.urlopen(url, timeout=60) as response:
-            data = response.read()
-        suffix = '.json.gz' if data.startswith(b'\x1f\x8b') else '.json'
-        path = archives / f'wordnet-registration-{len(listing_evidence)}{suffix}'
-        path.write_bytes(data)
-        listing_evidence.append(dict(url=url, file=path.name, sha256=sha(path)))
-        return decode_json(data)
-    version = latest_listed_stable(fetch_registration)
+    def fetch_registration(package, url):
+        return archive_registration(archives, listing_evidence, package, url)
+
+    version = matching_release(fetch_registration)
     receipt['packageSelection'] = dict(policy='latest-listed-stable', registration=listing_evidence)
     indexes = {}
-    for name in ('wordnet', 'wordnet.fonts', 'wordnet.ocr'):
+    for name in PACKAGE_IDS:
         url = f'https://api.nuget.org/v3-flatcontainer/{name}/index.json'
         with urllib.request.urlopen(url, timeout=60) as response:
             data = response.read()
@@ -255,7 +277,7 @@ def main():
         receipt['publicPackages'][name] = dict(indexUrl=url, indexSha256=sha(path),
                                              versions=indexes[name])
     receipt['publicPackageVersion'] = version
-    for name in ('wordnet', 'wordnet.fonts'):
+    for name in PACKAGE_IDS:
         if version not in indexes[name]:
             raise RuntimeError('Matching public dependency version is unavailable: ' + name)
         url = f'https://api.nuget.org/v3-flatcontainer/{name}/{version}/{name}.{version}.nupkg'
@@ -298,6 +320,8 @@ def main():
     manifests = [('existing-24', root / 'tests/wordnet.Conversion.Tests/Fixtures/Comparison/manifest.json')]
     if args.reductions:
         manifests.append(('reductions', args.reductions.resolve()))
+    if args.combinations:
+        manifests.append(('combinations', args.combinations.resolve()))
     for cohort, manifest in manifests:
         office = output / (cohort + '-office')
         commands.append(run([sys.executable, root / 'eng/capture-office-comparison.py', '--cohort', 'all',
@@ -315,15 +339,15 @@ def main():
             commands.append(command)
             report = json.loads((destination / 'results.json').read_text())
             defects = json.loads((destination / 'defects.json').read_text())
-            expected = len(cohort_receipt['manifest']['documents'])
-            failures = verify_measurements(report, defects, comparison, expected,
+            failures = verify_measurements(report, defects, comparison, cohort_receipt['manifest']['documents'],
                                            receipt['workers'][mode]['binaries'])
             if command['exitCode'] != (1 if failures else 0):
                 raise RuntimeError('Runner exit status does not match retained verdicts')
             cohort_receipt['measurements'][mode] = compact(report)
             cohort_receipt['defects'][mode] = defects
             cohort_receipt.setdefault('rawHashes', {})[mode] = dict(results=sha(destination / 'results.json'),
-                defects=sha(destination / 'defects.json'))
+                defects=sha(destination / 'defects.json'),
+                referenceSnapshots=reference_hashes(destination, cohort_receipt['manifest']['documents']))
             save(output / 'progress.json', receipt)
     receipt['completedAtUtc'] = datetime.now(timezone.utc).isoformat()
     if subprocess.check_output(['git', 'status', '--porcelain'], cwd=root, text=True).strip():

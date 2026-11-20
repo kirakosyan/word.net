@@ -1,14 +1,11 @@
 """Index retained 1.5.0 comparison failures without inventing causes or new measurements."""
 import argparse
 import hashlib
-import importlib.util
+import fidelity_policy_v1 as policy
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('comparison', ROOT / 'eng/run-comparison.py')
-comparison = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(comparison)
 REVISION = 'bf5ab004d1622e66084aedf4bbc83e3cf8d9c2c7'
 COHORTS = {
     'initial-existing': ('docs/measurements/roadmap-138-initial/existing-24-{mode}/defects.json',
@@ -36,29 +33,6 @@ def load(relative):
     path = ROOT / relative
     raw = path.read_bytes()
     return json.loads(raw), hashlib.sha256(raw).hexdigest()
-
-
-def a4_rounding(source_pages, reference_pages):
-    """Recognize only the measured A4 unit-rounding contrast, not arbitrary geometry failures."""
-    if not source_pages or len(source_pages) != len(reference_pages):
-        return False
-    pairs = zip(source_pages, reference_pages)
-    return all(abs(source['width'] - 595.3) < 0.000001 and abs(source['height'] - 841.9) < 0.000001
-               and abs(reference['width'] - 595.303937007874) < 0.000001
-               and abs(reference['height'] - 841.889763779528) < 0.000001
-               for source, reference in pairs)
-
-
-def classification(cohort, document, verdict, source_pages, reference_pages, diagnostics):
-    if verdict == 'page-geometry' and a4_rounding(source_pages, reference_pages):
-        return ('reference-policy-difference', 'The measured paired pages use the recorded A4 unit rounding; the unchanged geometry verdict remains failed.')
-    if cohort == 'contrast-theme-table':
-        known = {'theme-font': 'Docx.ThemeFont', 'theme-color': 'Docx.ThemeColor', 'table-style': 'Docx.TableFormatting'}
-        if verdict == 'diagnostic-expectations' and document in known and diagnostics == [known[document]]:
-            return ('documented-unsupported', 'The release reports the expected documented feature boundary, while the authored control expected no loss.')
-        if document in ('theme-font', 'table-style') and verdict in ('glyph-placement', 'raster'):
-            return ('documented-unsupported', 'A separate explicit-format contrast reproduces this specific release boundary; other differences are not attributed.')
-    return ('unknown', 'The failed check is retained; its cause is not established by this comparison.')
 
 
 def build():
@@ -104,7 +78,7 @@ def build():
                 raise ValueError('Unexpected source identity or evidence schema: ' + defect_path)
             if defects.get('sourceDirty') or results.get('sourceDirty') or results.get('sourceRevision') != REVISION:
                 raise ValueError('The recorded comparison is not the clean selected release source: ' + result_path)
-            comparison.validate_defect_report(results, defects)
+            policy.validate_defect_report(results, defects)
             measured = {item['documentId']: item for item in results['results']}
             if len(measured) != len(results['results']):
                 raise ValueError('Duplicate measured document in ' + result_path)
@@ -128,10 +102,10 @@ def build():
                 checks = result['referenceChecks']
                 if len(checks) != 1 or checks[0].get('kind') != 'libreoffice':
                     reference_pages = []
-                diagnostics = item['knownLossChecks']['unexpected']
-                ranks = {name: rank for rank, name in comparison.failure_verdicts(result)}
+                diagnostics = item['knownLossChecks']
+                ranks = {name: rank for rank, name in policy.failure_verdicts(result)}
                 for verdict in item['failedVerdicts']:
-                    status, rationale = classification(cohort, document, verdict, source_pages, reference_pages, diagnostics)
+                    status, rationale = policy.classification(cohort, document, verdict, source_pages, reference_pages, diagnostics)
                     findings.append({
                         'cohort': cohort, 'mode': mode, 'documentId': document, 'inputSha256': item['inputSha256'],
                         'verdict': verdict, 'classification': status, 'rationale': rationale,
@@ -143,7 +117,7 @@ def build():
                         'observedReference': [{key: check.get(key) for key in ('kind', 'version', 'pageCountMatches', 'pageGeometryMatches',
                                               'textAndOrderMatches', 'glyphSequenceMatches', 'maximumGlyphDisplacementPoints', 'glyphPlacementPasses', 'visualPassed')}
                                               for check in checks],
-                        'unexpectedDiagnostics': diagnostics if verdict == 'diagnostic-expectations' else [],
+                        'unexpectedDiagnostics': diagnostics['unexpected'] if verdict == 'diagnostic-expectations' else [],
                     })
     for mode in ('source', 'package'):
         path = 'docs/measurements/roadmap-138-contrasts/workflow-' + mode + '.json'

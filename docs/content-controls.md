@@ -1,4 +1,9 @@
-# Typed DOCX content controls — roadmap #102 P2 source
+<a id="typed-docx-content-controls--roadmap-102-p2-source"></a>
+# Typed DOCX content controls
+
+Version 1.6.2 includes the [bounded glossary](#unreleased-source-bounded-glossary-metadata),
+ownership and creation profiles introduced in 1.6.0. The [combination measurements](fidelity-1.6.2.md)
+cover Word-derived controls used as fragments.
 
 ## 1.5.0 roadmap #102 delivery
 
@@ -196,8 +201,7 @@ fragment profile. The [independent form observation](measurements/roadmap-138-bl
 records schema, ownership, ID and static LibreOffice text checks. The separate
 [cell observation](measurements/roadmap-138-cell-block-controls-reference.json)
 checks independently authored inputs, output schemas, reference text and protected
-owners. Story block creation, broader owners and full #145 qualification remain open; this source
-increment is not part of the published 1.5.0 packages.
+owners. Story block creation, broader owners and full #145 qualification remain open.
 
 <a id="unreleased-source-removing-an-admitted-control"></a>
 ## 1.6.0 profile: removing an admitted control

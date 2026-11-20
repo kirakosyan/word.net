@@ -1,5 +1,22 @@
 # wordnet implementation and delivery status
 
+## Roadmap #138 phase 0 — 20 November 2026
+
+The [1.6.2 baseline](fidelity-1.6.2.md) measures the released source and
+independently restored NuGet packages for #139. It includes the original corpus,
+reduced contrasts, theme/table combinations and workflow controls. The ranked
+findings retain failed comparisons at the original tolerances. For #140 the
+current guides identify the [published release](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2),
+the [bounded profiles](roadmap-138-source-matrix.json) and their remaining limits.
+The earlier 1.5.0 measurements and 1.6.0 implementation records below are dated evidence.
+
+The documentation audit checked local Markdown links, explicit anchors and links
+to files on GitHub main, and verified public release-tag links. The automation
+and interoperability examples produced their outputs on Windows x64. The template
+lint example reported uninspected coverage and returned its documented exit 1.
+The [historical 1.4.0 notes](releases/1.4.0.md) now point to its public NuGet
+listing in place of a GitHub tag that returned 404.
+
 ## 1.6.2 import correctness and parser work — #183–#188
 
 This source change retains lists reached through block/inline wrappers in HTML
@@ -17,9 +34,9 @@ merged as `cf1430b3b628df69373f013939ca803177228862`, with tree equality to test
 `a88cfca7b7edd2b248d6bc4cb328c3365e182a2a`. All 24 candidate checks passed, including
 2,550-case source/package suites and actual Framework 4.7.2 qualification with verified
 VM cleanup. Issues #183–#188 are closed with acceptance evidence. The
-[1.6.2 release notes](releases/1.6.2.md) define the patch scope; exact final-main CI,
-immutable-package qualification and public NuGet verification establish publication
-separately. No additional platform qualification is claimed.
+[1.6.2 release notes](releases/1.6.2.md) define the patch scope. The final release
+commit `d95225937b49dc3b0507fc87928b92fe86dd78ee` passed [exact-main CI](https://github.com/kirakosyan/word.net/actions/runs/43970628583)
+and [publication](https://github.com/kirakosyan/word.net/actions/runs/43977883343).
 
 ## 1.6.1 import resource fixes — #175–#181
 
@@ -78,12 +95,9 @@ retain four additional source/package and open-reference comparisons, including
 their unchanged failures and the limits of attributing the original difference.
 [Additional fragment and review controls](fidelity-138-initial.md#additional-fragment-and-review-controls--2026-11-01)
 check output schemas and source/package text, geometry and raster equality.
-#139 remains incomplete until its additional feature controls and requested
-combination evidence are delivered.
-The #140 documentation reconciliation distinguishes the historical 1.5.0 support
-from historical design and test claims. Its [audit receipt](measurements/roadmap-138-documentation-audit.json)
-records the checked public versions, release provenance and local link review; the
-issue remains open until the merged result is reconciled.
+These 1.5.0 captures and the [October documentation audit](measurements/roadmap-138-documentation-audit.json)
+retain their historical identities. The [1.6.2 baseline](fidelity-1.6.2.md) adds
+current measurements and combination controls.
 The 1.6.0 work for #141 resolves a bounded subset of local theme text appearance and
 retains selected editable text references in a reconstructed theme, with loss
 diagnostics for the remaining theme semantics. The

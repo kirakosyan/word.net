@@ -1,5 +1,10 @@
 # Formatting and image profile
 
+The [1.6.2 comparison](fidelity-1.6.2.md) records which documents match the
+independent reference for text, pagination, glyph positions, geometry and raster
+appearance. The [capability matrix](roadmap-138-source-matrix.json) lists the
+feature combinations admitted by the released implementation.
+
 <a id="unreleased-source-plain-fixed-table-geometry"></a>
 ## 1.6.0 profile: plain fixed-table geometry
 
@@ -168,14 +173,12 @@ horizontal and vertical placement differences; pixel-identical placement is not
 established. LibreOffice omitted the table-level fill in the separate shading
 probe while a direct-cell control painted its fill. That failed reference result
 is retained; the control checks color but does not establish table-shading parity.
-This is 1.6.0 source and does not qualify published packages or every runtime.
 
 The 1.6.0 source adds an explicit managed PDF/SVG display for bounded retained
 text revisions, with textual labels as well as colors and searchable deleted PDF
 text. An explicit numbered policy also shows supported comments, format changes and
 paired paragraph moves. Its exclusions and source-history guarantees are in the
 [review profile](review-workflows.md#unreleased-source-detached-text-revision-display).
-This is not a published 1.5.0 capability.
 
 The 1.6.0 source also admits rectangular matrix equations with selected alignment
 and spacing through editable OMML and ordinary managed fixed output. Its documented
@@ -224,8 +227,8 @@ The bounded fields, controls, reports, review and drawing additions ship togethe
 all five target frameworks and existing platform limits remain. Historical results
 below retain their original source/package identities.
 
-The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) retain all
-current comparison failures. Some requested controls and combinations remain outstanding.
+The [initial 1.5.0 fidelity measurements](fidelity-138-initial.md) retain the
+comparison failures observed for that release.
 
 
 The [1.5.0 P4/P5 profile](roadmap-102-p4-p5.md) describes the bounded review,
