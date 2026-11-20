@@ -57,6 +57,9 @@ unsupported style properties, conflicts and pagination are diagnosed.
 Used implicit table defaults retain document-level identity and per-table omission
 of explicit references; cloning and compatible composition preserve that state.
 Unqualified static default rendering and conflicting composition are explicit.
+Development source carries the original theme fill alongside its resolved RGB for
+direct cells and direct or style-defined whole-table shading. Inheritance passes the reference
+only when the child omits its own fill.
 Conditional style fills also retain bounded theme tokens, transforms and original
 fallbacks alongside resolved RGB values. The effective chain tracks explicit child
 overrides; static theme-color differences are diagnosed rather than hidden.

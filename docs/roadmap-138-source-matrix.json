@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "availability": "Bounded profiles introduced in 1.6.0 and included in published 1.6.2. Runtime and public-package qualification: https://github.com/kirakosyan/word.net/releases/tag/v1.6.2. Additional 1.6.2 fidelity measurements: docs/fidelity-1.6.2.md.",
+  "availability": "Profiles are included in published 1.6.2 unless marked development source. Runtime and public-package qualification: https://github.com/kirakosyan/word.net/releases/tag/v1.6.2. Additional 1.6.2 fidelity measurements: docs/fidelity-1.6.2.md.",
   "profiles": [
     {
       "id": "best-effort-location-bound-policy",
@@ -898,6 +898,33 @@
         { "class": "DocxTableBorderTests", "method": "BorderOnlyConditionsRequireExplicitTableLook" },
         { "class": "DocxTableBorderTests", "method": "BorderOnlyBandRetainsDataAndReportsItsUnqualifiedDefaults" },
         { "class": "DocxTableBorderTests", "method": "DuplicateConditionalBorderSetsFailBeforeOutput" }
+      ]
+    },
+    {
+      "id": "whole-table-theme-fill-editing",
+      "issue": 141,
+      "outcome": "supported-bounded",
+      "availability": "development source",
+      "boundary": "Editable direct cell, whole-table and based-on style fills preserve the local theme token, one tint or shade and the original fallback.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "DirectCellKeepsItsEditableThemeFillAndNeighborColor" },
+        { "class": "DocxTableBorderTests", "method": "EditingTheThemeChangesOnlyTheDirectCellThatReferencesIt" },
+        { "class": "DocxTableBorderTests", "method": "WholeTableThemeFillPreservesItsOwnerAndOriginalFallback" },
+        { "class": "DocxTableBorderTests", "method": "EditingSavedThemeRecolorsTheWholeTableWithoutChangingFallback" },
+        { "class": "DocxTableBorderTests", "method": "ExplicitChildBackgroundMasksTheParentThemeForRenderingOnly" }
+      ]
+    },
+    {
+      "id": "whole-table-theme-fill-boundaries",
+      "issue": 142,
+      "outcome": "rejected",
+      "availability": "development source",
+      "boundary": "An unresolved fill retains a diagnosed fallback. Desktop Word omitted the measured whole-table fills. Effective whole-table theme fills reject Strict static output, and comparison rejects changed fallback metadata.",
+      "tests": [
+        { "class": "DocxTableBorderTests", "method": "UnresolvedWholeTableThemeFlattensToTheStoredColorWithALoss" },
+        { "class": "DocxTableBorderTests", "method": "StrictStaticOutputRejectsAnEffectiveWholeTableThemeBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "ChangedWholeTableFallbackCannotDisappearInTextComparison" },
+        { "class": "DocxTableBorderTests", "method": "ResolvableWholeTableThemeCannotHideAMalformedRgbFallback" }
       ]
     },
     {

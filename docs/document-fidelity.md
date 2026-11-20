@@ -3,7 +3,30 @@
 The [1.6.2 comparison](fidelity-1.6.2.md) records which documents match the
 independent reference for text, pagination, glyph positions, geometry and raster
 appearance. The [capability matrix](roadmap-138-source-matrix.json) lists the
-feature combinations admitted by the released implementation.
+feature combinations and identifies additions in development source.
+
+## Editable whole-table theme shading
+
+Current development source keeps a clear whole-table fill on its original DOCX
+owner, either the table's direct properties or the defining table style. A
+complete local theme supplies the color. The saved fill keeps its theme token,
+one optional tint or shade and the original RGB, automatic or omitted fallback.
+Direct cell fills keep the same editable metadata on the owning cell.
+After a DOCX save, changing the saved theme changes the inherited fill on reload.
+An explicit child RGB fill masks the parent theme. Public wordnet 1.6.2 saves
+the resolved RGB color for direct table, cell and inherited whole-table fills.
+
+Desktop Word's print-layout page showed no whole-table fill for any of the ten
+direct and inherited controls, including explicit red and blue. The two explicit RGB
+cell controls displayed their authored colors. Managed PDF painted the resolved
+whole-table color in all ten. Strict static export rejects an effective whole-table
+theme fill. [Measured color observations](measurements/whole-table-theme-word.json)
+
+For direct cells, Word and managed PDF agreed on the untransformed accent blue
+and the measured shade. For tint `80`, Word painted `89B0EB` and managed PDF
+painted `90B2E5`. Static export retains a loss diagnostic for direct cell theme
+fills. Missing or unsupported theme references use the diagnosed fallback. Existing
+table-style conflicts and theme reconstruction limits still apply.
 
 <a id="unreleased-source-plain-fixed-table-geometry"></a>
 ## 1.6.0 profile: plain fixed-table geometry

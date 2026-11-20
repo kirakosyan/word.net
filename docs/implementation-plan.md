@@ -1,7 +1,18 @@
 # wordnet implementation and delivery status
 
+## Roadmap #138 phase 1 table theme fills — in development
+
+The next #141/#142 increment preserves clear whole-table theme fills on their
+direct or inherited DOCX style owner, and direct cell fills on their owning cells.
+The source tests cover theme edits,
+explicit child overrides, comparison and fallback behavior. Desktop Word omitted whole-table fills in the new controls.
+Broader script resolution, conditional border precedence and rendering compatibility
+remain open. Public 1.6.2 materializes these whole-table fills as
+RGB on save. [Editable table shading](document-fidelity.md#editable-whole-table-theme-shading)
+
 ## Roadmap #138 phase 0 — 20 November 2026
 
+PR #190 merged at `66f7415f4247243e766d41a38bb866d12cb74283` and closed #139 and #140.
 The [1.6.2 baseline](fidelity-1.6.2.md) measures the released source and
 independently restored NuGet packages for #139. It includes the original corpus,
 reduced contrasts, theme/table combinations and workflow controls. The ranked
