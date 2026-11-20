@@ -283,7 +283,7 @@ internal sealed partial class DocxReader
         if (borderSets.Length == 1) ReadTableBorders(borderSets[0], table);
         XElement[] shading = properties?.Elements(W + "shd").ToArray() ?? Array.Empty<XElement>();
         if (shading.Length > 1) throw new InvalidDataException("Docx.TableShading: Duplicate table shading properties.");
-        if (shading.Length == 1) ReadTableShading(shading[0], table);
+        if (shading.Length == 1) (table.Background, table.BackgroundTheme) = ReadTableShading(shading[0]);
         if (table.Style != null && (borderSets.Length != 0 || shading.Length != 0))
             context.Loss("Table.StyleConflict", "Direct table borders or shading combined with a table style are not independently qualified.");
         if (properties?.Elements().Any(e => e.Name != W + "tblStyle" && e.Name != W + "tblW" && e.Name != W + "tblCellMar" && e.Name != W + "tblLayout" && e.Name != W + "tblInd" && e.Name != W + "tblBorders" && e.Name != W + "shd" && e.Name != W + "tblLook") == true)
@@ -348,7 +348,7 @@ internal sealed partial class DocxReader
             XElement[] borders = container.Elements(W + "tblBorders").ToArray(), shading = container.Elements(W + "shd").ToArray();
             if (borders.Length > 1 || shading.Length > 1) throw new InvalidDataException("Docx.TableStyle: Duplicate style appearance properties.");
             if (borders.Length != 0) ReadTableBorders(borders[0], appearance);
-            if (shading.Length != 0) ReadTableShading(shading[0], appearance);
+            if (shading.Length != 0) (appearance.Background, appearance.BackgroundTheme) = ReadTableShading(shading[0]);
             rowBandSize = ReadStyleBandSize(container, "tblStyleRowBandSize");
             columnBandSize = ReadStyleBandSize(container, "tblStyleColBandSize");
             if (container.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)
@@ -390,19 +390,20 @@ internal sealed partial class DocxReader
                 }
                 if (shading.Length == 1)
                 {
-                    var conditional = new TableBlock(context); ReadTableShading(shading[0], conditional, retainConditionalTheme: true);
-                    if (conditional.Background != null) regionColors.Add(type, conditional.Background);
-                    if (conditional.BackgroundTheme != null) regionThemes.Add(type, conditional.BackgroundTheme);
+                    (string? color, TableThemeColor? reference) = ReadTableShading(shading[0]);
+                    if (color != null) regionColors.Add(type, color);
+                    if (reference != null) regionThemes.Add(type, reference);
                 }
             }
         }
         visiting.Remove(id);
         tableStyleCache.Bytes = checked(tableStyleCache.Bytes + ((long)id.Length + name.Length) * 2 + 256
+            + (appearance.BackgroundTheme == null ? 0 : 128)
             + ((long)regionColors.Count + (parent?.EffectiveRegions.Count ?? 0) + regionThemes.Count + (parent?.EffectiveRegionThemes.Count ?? 0)
                 + regionBorders.Sum(region => (long)region.Value.Count + 1) + (parent?.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1) ?? 0)) * 128);
         if (tableStyles.Count >= 10000 || tableStyleCache.Bytes > context.Options.MaximumExpandedBytes)
             throw new InvalidDataException("Limit.TableStyles: Table-style metadata exceeds the operation allowance.");
-        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, regionColors, regionThemes, regionBorders, rowBandSize, columnBandSize);
+        var result = new TableStyle(id, name, parent, appearance.Borders, appearance.Background, appearance.BackgroundTheme, regionColors, regionThemes, regionBorders, rowBandSize, columnBandSize);
         tableStyles.Add(id, result); return result;
     }
 
@@ -418,7 +419,7 @@ internal sealed partial class DocxReader
         return value;
     }
 
-    private void ReadTableShading(XElement shading, TableBlock table, bool retainConditionalTheme = false)
+    private (string? Color, TableThemeColor? Theme) ReadTableShading(XElement shading)
     {
         string pattern = (string?)shading.Attribute(W + "val") ?? throw new InvalidDataException("Docx.TableShading: Table shading requires a pattern.");
         if (pattern != "clear") context.Loss("Table.ShadingApproximated", "Only clear table shading is retained; other patterns use the background color.");
@@ -440,14 +441,12 @@ internal sealed partial class DocxReader
         string? fallbackRgb = ReadRgb(fallback);
         if (token != null && !ThemeAppearance.ValidColorToken(token) || !ThemeAppearance.ValidTransform(tint) || !ThemeAppearance.ValidTransform(shade))
             throw new InvalidDataException("Docx.ThemeColor: Invalid theme color reference or transform.");
-        string? resolved = retainConditionalTheme && pattern == "clear" && token != null && theme?.Package != null ? theme.Color(token, tint, shade) : null;
+        string? resolved = pattern == "clear" && token != null && theme?.Package != null ? theme.Color(token, tint, shade) : null;
         if (resolved != null)
-        {
-            table.Background = resolved;
-            table.BackgroundTheme = new TableThemeColor(token!, tint, shade, fallback);
-        }
-        else table.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", fallbackRgb);
-        if (table.Background == null) context.Loss("Table.ShadingColor", "Automatic or missing table-shading colors are not retained.");
+            return (resolved, new TableThemeColor(token!, tint, shade, fallback));
+        string? color = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", fallbackRgb);
+        if (color == null) context.Loss("Table.ShadingColor", "Automatic or missing table-shading colors are not retained.");
+        return (color, null);
     }
 
     private static bool QualifiedConditionalCellShading(XElement shading) =>
@@ -497,10 +496,15 @@ internal sealed partial class DocxReader
         cell.Padding = ReadPadding(properties?.Element(W + "tcMar"), padding);
         if (properties?.Element(W + "shd") is XElement shading)
         {
-            cell.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", ReadRgb((string?)shading.Attribute(W + "fill")));
-            _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
-            if ((string?)shading.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
-                context.Loss("Table.ShadingApproximated", "Patterned cell shading uses its solid background color.");
+            if ((string?)shading.Attribute(W + "val") == "clear" && shading.Attribute(W + "themeFill") != null)
+                (cell.Background, cell.BackgroundTheme) = ReadTableShading(shading);
+            else
+            {
+                cell.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", ReadRgb((string?)shading.Attribute(W + "fill")));
+                _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
+                if ((string?)shading.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
+                    context.Loss("Table.ShadingApproximated", "Patterned cell shading uses its solid background color.");
+            }
         }
         if (properties?.Element(W + "vAlign") is XElement vertical)
         {
@@ -545,7 +549,7 @@ internal sealed partial class DocxReader
     private static string? ReadRgb(string? value)
     {
         if (value is null or "auto") return null;
-        if (value.Length != 6 || !uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _))
+        if (value.Length != 6 || !uint.TryParse(value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out _))
             throw new InvalidDataException("Docx.Color: Invalid RGB color.");
         return value.ToUpperInvariant();
     }

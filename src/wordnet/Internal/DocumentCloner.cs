@@ -79,6 +79,7 @@ internal sealed class DocumentCloner
                 PlainDocxUnqualifiedBorderGeometry = table.PlainDocxUnqualifiedBorderGeometry,
                 LeftIndent = table.LeftIndent,
                 Background = table.Background,
+                BackgroundTheme = table.BackgroundTheme,
                 Style = table.Style,
                 UsesDefaultStyle = table.UsesDefaultStyle,
                 Look = table.Look
@@ -111,7 +112,8 @@ internal sealed class DocumentCloner
             ColumnSpan = source.ColumnSpan,
             Merge = source.Merge,
             VerticalAlignment = source.VerticalAlignment,
-            Background = source.Background
+            Background = source.Background,
+            BackgroundTheme = source.BackgroundTheme
         };
         foreach (var border in source.Borders) cell.Borders.Add(border.Key, Border(border.Value));
         cell.Content.AddRange(source.Blocks.Select(Block));

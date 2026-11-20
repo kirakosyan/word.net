@@ -21,6 +21,9 @@ Windows and Linux · x64 and ARM64 · MIT licensed
 
 [Quick start](#quick-start) · [Automation recipes](#automation-recipes) · [Supported formats](#supported-formats) · [Documentation](#documentation)
 
+Development source preserves editable [table and cell theme shading](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md#editable-whole-table-theme-shading) in DOCX.
+Public 1.6.2 saves those fills as RGB.
+
 ## Install
 
 ```sh

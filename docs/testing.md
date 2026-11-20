@@ -6,6 +6,41 @@ combine Word-derived placeholders with fragment copying and retained or decided
 text revisions with composition. Both the complete source suites and the
 historical release counts below identify which build they exercised.
 
+## Whole-table theme fills in development
+
+The table theme tests build independent OOXML inputs with direct and inherited
+fills and validate saved files with the Open XML SDK. They edit the saved theme,
+check resolved color and text geometry against explicit RGB controls with PdfPig,
+and inspect XPS fills. Cases cover omitted and automatic fallbacks, child RGB
+overrides, missing schemes, conflicting transforms, atomic Strict rejection and
+changed fallback metadata during text comparison.
+
+For the separate desktop Word check, generate the 15 synthetic inputs with
+`python eng/generate-whole-table-theme-controls.py --output <directory>`.
+The generator uses the existing authored table/theme package, a two-row table
+and Arial. Both the inputs and wordnet's saved DOCX files passed the Open XML
+SDK validator. A separate consumer loaded the verified public 1.6.2 assembly
+from the archived NuGet package and processed the same 15 inputs. Its nine
+themed outputs contained just the resolved RGB. Development source preserved
+the original token, transform and fallback in all nine, and both consumers
+preserved the six explicit RGB controls. Licensed Word 16.0 build 16.0.20527
+opened each input read-only with macros disabled. The first print-layout page was captured with
+`ActiveWindow.Panes.Item(1).Pages.Item(1).EnhMetaFileBits` using the local
+Microsoft Print to PDF printer for that Word instance. The Word PDF export
+attempt stalled and yielded no measurement.
+
+Windows GDI via Pillow decoded the Word metafiles. Poppler rasterized page one of
+each managed PDF at a maximum dimension of 720 pixels. Counts refer to exact RGB
+values within each rendering. Word's five variants for each whole-table owner
+had identical raster bytes. The direct-cell controls produced 1,359 blue pixels
+and 1,373 red pixels. Word and managed PDF agreed on the base and shade
+colors of the themed cell. The tint differed. The managed exporter substituted
+its font, so this capture qualifies the observed color differences only. [Input hashes, reader identities and per-file counts](measurements/whole-table-theme-word.json)
+
+The Windows x64 Release suites for this increment passed all 2,574 conversion and
+English OCR cases on .NET 10, .NET 8 and the net472 target running on the installed
+Framework 4.8.1 (release key 534296). Locked restore and the five-target build passed.
+
 ## 1.6.2 import regressions — #183–#188
 
 `ImportContentRegressionTests` uses hand-authored HTML/XHTML/Markdown/OOXML and
