@@ -140,6 +140,7 @@ internal sealed class TableBlock : DocumentBlock
     internal bool UsesDefaultStyle { get; set; }
     internal TableStyleLook? Look { get; set; }
     internal string? EffectiveBackground => Background ?? Style?.EffectiveBackground;
+    internal TableThemeColor? EffectiveBackgroundTheme => Background != null ? BackgroundTheme : Style?.EffectiveBackgroundTheme;
     internal bool HasTableShading => EffectiveBackground != null || Look != null && Style?.EffectiveRegions.Count > 0;
     internal bool HasUnqualifiedConditionalInheritance => Look != null && Style is TableStyle style && style.BasedOn is TableStyle parent
         && Rows.Count > 0 && Rows[0].Count > 0
@@ -320,11 +321,11 @@ internal sealed class TableBlock : DocumentBlock
 // properties. Unsupported style elements are diagnosed before construction.
 internal sealed class TableStyle
 {
-    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background,
+    internal TableStyle(string id, string name, TableStyle? basedOn, IDictionary<string, CellBorder> borders, string? background, TableThemeColor? backgroundTheme,
         IDictionary<string, string> regions, IDictionary<string, TableThemeColor> regionThemes,
         IDictionary<string, Dictionary<string, CellBorder>> regionBorders, int? rowBandSize, int? columnBandSize)
     {
-        Id = id; Name = name; BasedOn = basedOn; Background = background;
+        Id = id; Name = name; BasedOn = basedOn; Background = background; BackgroundTheme = backgroundTheme;
         var specified = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
         var effective = new Dictionary<string, CellBorder>(System.StringComparer.Ordinal);
         if (basedOn != null) foreach (var border in basedOn.EffectiveBorders) effective.Add(border.Key, border.Value);
@@ -335,6 +336,7 @@ internal sealed class TableStyle
         }
         Borders = specified; EffectiveBorders = effective;
         EffectiveBackground = background ?? basedOn?.EffectiveBackground;
+        EffectiveBackgroundTheme = background != null ? backgroundTheme : basedOn?.EffectiveBackgroundTheme;
         var specifiedRegions = new Dictionary<string, string>(regions, System.StringComparer.Ordinal);
         var effectiveRegions = new Dictionary<string, string>(System.StringComparer.Ordinal);
         if (basedOn != null) foreach (var region in basedOn.EffectiveRegions) effectiveRegions.Add(region.Key, region.Value);
@@ -379,6 +381,8 @@ internal sealed class TableStyle
     internal IReadOnlyDictionary<string, CellBorder> EffectiveBorders { get; }
     internal string? Background { get; }
     internal string? EffectiveBackground { get; }
+    internal TableThemeColor? BackgroundTheme { get; }
+    internal TableThemeColor? EffectiveBackgroundTheme { get; }
     internal IReadOnlyDictionary<string, string> Regions { get; }
     internal IReadOnlyDictionary<string, string> EffectiveRegions { get; }
     internal IReadOnlyDictionary<string, TableThemeColor> RegionThemes { get; }
@@ -391,7 +395,7 @@ internal sealed class TableStyle
     internal int? EffectiveColumnBandSize { get; }
 }
 
-// Captured only for a resolved, bounded theme and clear conditional cell fill.
+// Captured only for a resolved, bounded theme and clear table or conditional style shading.
 internal sealed class TableThemeColor
 {
     internal TableThemeColor(string token, string? tint, string? shade, string? fallback)
@@ -400,6 +404,7 @@ internal sealed class TableThemeColor
     internal string? Tint { get; }
     internal string? Shade { get; }
     internal string? Fallback { get; }
+    internal int CharacterCount => Token.Length + (Tint?.Length ?? 0) + (Shade?.Length ?? 0) + (Fallback?.Length ?? 0);
     internal bool Same(TableThemeColor? other) => other != null && Token == other.Token && Tint == other.Tint && Shade == other.Shade && Fallback == other.Fallback;
 }
 
@@ -435,6 +440,7 @@ internal sealed class TableCell
     internal VerticalMerge Merge { get; set; }
     internal string VerticalAlignment { get; set; } = "top";
     internal string? Background { get; set; }
+    internal TableThemeColor? BackgroundTheme { get; set; }
     internal Dictionary<string, CellBorder> Borders { get; } = new Dictionary<string, CellBorder>();
     internal string Text => string.Join("\n", Paragraphs.Select(p => p.Text));
 }

@@ -35,6 +35,11 @@ internal static class FidelityChecks
             context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.UsesDefaultStyle))
             context.Loss("Docx.TableStyleDefault", "Implicit default table styles are retained in DOCX, but their rendered behavior differs between reference applications.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx)
+            && model.Tables.SelectMany(table => table.Rows).SelectMany(row => row).Any(cell => cell.BackgroundTheme != null))
+            context.Loss("Docx.ThemeColor", "Static cell shading uses the resolved color. Transformed fills can differ from desktop Word.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.EffectiveBackgroundTheme != null))
+            context.Loss("Table.StyleThemeColor", "Static output paints the resolved whole-table theme color. Desktop Word omitted this fill in the measured controls.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.Style?.EffectiveRegionThemes.Count > 0))
             context.Loss("Table.StyleThemeColor", "Conditional theme fills are retained in DOCX, but their rendered color differs between reference applications.");
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalBorderConflict))

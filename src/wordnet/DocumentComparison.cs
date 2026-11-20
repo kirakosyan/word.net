@@ -243,6 +243,7 @@ public static partial class DocumentComparison
         {
             context.CheckCancellation();
             if (left.Id != right.Id || left.Name != right.Name || left.Background != right.Background
+                || !(left.BackgroundTheme?.Same(right.BackgroundTheme) ?? right.BackgroundTheme == null)
                 || left.RowBandSize != right.RowBandSize || left.ColumnBandSize != right.ColumnBandSize
                 || left.Regions.Count != right.Regions.Count || left.RegionThemes.Count != right.RegionThemes.Count
                 || left.RegionBorders.Count != right.RegionBorders.Count || left.Borders.Count != right.Borders.Count)

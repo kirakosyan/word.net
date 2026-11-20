@@ -229,7 +229,8 @@ public sealed partial class WordDocument
                 + (run.FieldCache?.Sum(ThemeReferences) ?? 0));
         long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
             + (model.Theme?.Xml.Length ?? 0) + (model.Theme?.Mapping?.Length ?? 0)
-            + themeReferences
+            + themeReferences + model.Tables.Sum(table => (long)(table.BackgroundTheme?.CharacterCount ?? 0)
+                + table.Rows.SelectMany(row => row).Sum(cell => (long)(cell.BackgroundTheme?.CharacterCount ?? 0)))
             + model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Box != null)
                 .Sum(r => (long)r.Box!.AlternativeText.Length + r.Box.AlternativeTitle.Length)
             + model.CustomProperties.Values.Sum(p => (long)p.Name.Length + CustomPropertyValues.Display(p).Length)
