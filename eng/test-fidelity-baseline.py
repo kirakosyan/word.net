@@ -291,14 +291,9 @@ class FidelityBaselineTests(unittest.TestCase):
             self.assertIn((7, 'combinations', 'explicit-direct', mode, 'page-geometry', 'reference-policy-difference'), rows)
             self.assertIn((3, 'combinations', 'theme-styled', mode, 'diagnostic-expectations', 'documented-unsupported'), rows)
 
-    def test_replay_receipt_only_adds_original_snapshot_hashes(self):
+    def test_original_runner_matches_recorded_and_normalized_hashes(self):
         with ZipFile(ROOT / 'docs/measurements/fidelity-1.6.2/capture.zip') as capture:
-            replay = json.loads(capture.read('receipt.json'))
-            original = json.loads(capture.read('qualification/original-receipt.json'))
-            for cohort in replay['cohorts'].values():
-                for hashes in cohort['rawHashes'].values():
-                    hashes.pop('referenceSnapshots')
-            self.assertEqual(original, replay)
+            original = json.loads(capture.read('receipt.json'))
             runner = capture.read('qualification/executed-runner.py')
             self.assertEqual(original['runnerSha256'], hashlib.sha256(runner).hexdigest())
             self.assertEqual('cbeb9d15b80c6fcb368748a6152bd2b1d1f8dc4b123717d2aa7a963f80ab7c53',
@@ -310,7 +305,7 @@ class FidelityBaselineTests(unittest.TestCase):
             def tamper(name):
                 raw = read(name)
                 if name == altered:
-                    if name.endswith(('/results.json', '/defects.json')):
+                    if name.endswith(('/results.json', '/defects.json', '/reference-snapshot-hashes.json')):
                         return raw + b' '
                     snapshot = json.loads(raw)
                     snapshot['pages'][0]['text'] = 'Different reference text'
@@ -318,6 +313,7 @@ class FidelityBaselineTests(unittest.TestCase):
                 return raw
             for altered, error in (('existing-24-source/results.json', 'hash mismatch'),
                                    ('combinations-package/defects.json', 'hash mismatch'),
+                                   ('qualification/reference-snapshot-hashes.json', 'hash mismatch'),
                                    ('combinations-package/theme-styled-wordnet-reference.json', 'hash mismatch')):
                 with self.subTest(altered=altered), patch.object(capture, 'read', tamper), self.assertRaisesRegex(ValueError, error):
                     capture_index.index(capture)

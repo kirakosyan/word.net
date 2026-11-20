@@ -28,7 +28,14 @@ def read_report(capture, directory, kind, expected_hash):
 
 
 def index(capture):
-    receipt = json.loads(capture.read('receipt.json'))
+    raw_receipt = capture.read('receipt.json')
+    receipt = json.loads(raw_receipt)
+    # The original 1.6.2 receipt predates per-snapshot hashing. Its supplement
+    # was verified against the separately retained Linux run.
+    supplement = {}
+    if hashlib.sha256(raw_receipt).hexdigest() == '3ca806bfd7389ea2f86053f220d83d7e74a47c297ed293b4d9b8317660e6ef91':
+        supplement = read_report(capture, 'qualification', 'reference-snapshot-hashes',
+                                 'afd3a929ae93f0110b5654e473368fd7b21aa0b47d04bda28646773fa3f32634')
     rows = []
     for name, cohort in receipt['cohorts'].items():
         for mode in ('source', 'package'):
@@ -43,7 +50,7 @@ def index(capture):
                                          receipt['workers'][mode]['binaries'])
             if baseline.compact(report) != cohort['measurements'][mode] or defects != cohort['defects'][mode]:
                 raise ValueError('Receipt and raw results disagree: ' + directory)
-            references = hashes['referenceSnapshots']
+            references = hashes.get('referenceSnapshots', supplement.get(directory, {}))
             if set(references) != {doc['id'] for doc in cohort['manifest']['documents']}:
                 raise ValueError('Reference snapshot identities differ from the captured manifest: ' + directory)
             for result in report['results']:

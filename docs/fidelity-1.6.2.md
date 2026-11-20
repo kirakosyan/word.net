@@ -130,9 +130,10 @@ and 2 belong to wordnet, wordnet.Fonts and wordnet.Ocr respectively, as recorded
 by URL in `packageSelection.registration`. New captures include the package ID
 in each filename.
 
-The original receipt is preserved byte-for-byte in
-`qualification/original-receipt.json`. The replay receipt adds SHA-256 hashes for
-each of the 80 reference snapshots. Each snapshot was checked against the raw
+The original `receipt.json` and all measured files retain their captured bytes.
+A supplemental `qualification/reference-snapshot-hashes.json` records SHA-256
+hashes for all 80 reference snapshots. Replay pins both the original receipt and
+the supplement. Each snapshot was checked against the raw
 Linux capture (archive SHA-256
 `080a5c1fbf81c4673998cd24c2cb7295c997ac12e2e0afb89cb4a0b9d79146dd`).
 New captures record these hashes during measurement.
