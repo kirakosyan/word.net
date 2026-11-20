@@ -1,6 +1,15 @@
 # Minimum-runtime qualification on AK-PC
 
-## Current 1.5.0 release evidence
+## Published 1.6.2 runtime qualification
+
+The [1.6.2 release evidence](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2)
+records 2,550 passing cases for both source and package on actual Framework
+4.7.2 x64, release key 461814, using the legacy JIT. The release also qualified
+Windows/Linux x64 and ARM64 on the runtimes listed in the release record.
+Actual Framework 4.6.2 execution remains unqualified.
+
+<a id="current-150-release-evidence"></a>
+## Historical 1.5.0 release evidence
 
 The [1.5.0 release record](releases/1.5.0.md) identifies the final source and
 package qualification, including actual Framework 4.7.2 x64 with the documented

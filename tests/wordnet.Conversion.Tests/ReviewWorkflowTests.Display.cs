@@ -11,6 +11,44 @@ namespace WordNet.Tests;
 
 public sealed partial class ReviewWorkflowTests
 {
+    [Theory]
+    [InlineData(ReviewDecision.Accept, "20", "10")]
+    [InlineData(ReviewDecision.Reject, "10", "20")]
+    public void DecidedFragmentExportsOneVersionWhileDetachedReviewRetainsBoth(ReviewDecision decision, string kept, string removed)
+    {
+        var token = TestContext.Current.CancellationToken;
+        byte[] input = Input(Revisions);
+        Schema(input);
+        WordDocument reviewed = Load(input);
+        byte[] original = Save(reviewed);
+        DocumentReviewDisplay display = reviewed.CreateReviewDisplay(new ReviewDisplayOptions { IncludeLegend = false }, token);
+        WordDocument target = WordDocument.Create(Policy());
+        target.AddParagraph("Slot", cancellationToken: token);
+        target.AddBookmark("slot", 0, 0, 4, token);
+        byte[] before = Save(target);
+        var failure = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("slot", reviewed, token));
+        Assert.StartsWith("Fragment.SourceStructure:", failure.Message, StringComparison.Ordinal);
+        Assert.Equal(before, Save(target));
+
+        target.InsertFragmentAtBookmark("slot", reviewed.CreateReviewView(decision, cancellationToken: token), token);
+        byte[] saved = Save(target);
+        Schema(saved);
+        XDocument main = Part(saved);
+        Assert.Empty(main.Descendants(W + "del"));
+        Assert.Empty(main.Descendants(W + "ins"));
+        Assert.Equal("Total " + kept, string.Concat(main.Descendants(W + "t").Select(t => t.Value)));
+        using var pdf = PdfDocument.Open(Save(target, DocumentFormat.Pdf));
+        Assert.Equal("Total " + kept, pdf.GetPage(1).Text);
+        Assert.DoesNotContain(removed, pdf.GetPage(1).Text, StringComparison.Ordinal);
+        using var redline = new MemoryStream();
+        display.SavePdf(redline, token);
+        using var markedPdf = PdfDocument.Open(redline.ToArray());
+        string markedText = string.Concat(markedPdf.GetPages().Select(page => page.Text));
+        Assert.Contains("10[/D1]", markedText, StringComparison.Ordinal);
+        Assert.Contains("20[/I2]", markedText, StringComparison.Ordinal);
+        Assert.Equal(original, Save(reviewed));
+    }
+
     [Fact]
     public void ReviewDisplayExportsSearchableMarkedTextAndKeepsSourceHistory()
     {

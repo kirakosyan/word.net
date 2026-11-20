@@ -1,5 +1,9 @@
 # API and support policy
 
+Version 1.6.2 retains the 1.6.1 public API and all five library targets.
+The [release record](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2)
+identifies the tested packages and runtimes for the profiles below.
+
 ## 1.6.1 import admission options
 
 `ConversionOptions.MaximumBlocks`, `MaximumRuns` and `MaximumImagePlacements` are
@@ -43,8 +47,7 @@ permit only fixed-profile in-process reuse of the immutable inspection after che
 input, schema, destination and environment fingerprints. An additive overload selects
 DOCX, PDF or XPS as the inspected destination; the original overload selects DOCX. The underlying report still cannot
 independently authorize reuse of a conversion policy, and no output or loss policy is
-enforced. The module fingerprint is not binary attestation. These APIs are part of the 1.6.0 source
-and are not in published 1.5.0.
+enforced. The module fingerprint is not binary attestation. These APIs shipped in 1.6.0.
 
 The additive `CompileTemplateCompatibilityPlan`, `TemplateCompatibilityPlan`,
 `TemplatePolicyOutcome` and `TemplatePolicyFinding` expose the separate
@@ -60,7 +63,7 @@ The 1.6.0 source for #144 adds the nullable `DocumentContentControl.ParentId`
 snapshot property for admitted nested typed owners. This additive property does
 not change existing constructor or method signatures; handles retain their
 session/version rules. See the [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
-for the ownership and locking limits. It is not in the published 1.5.0 API.
+for the ownership and locking limits.
 
 `InsertFragmentAtTableCellBookmark`, the distinct fragment-options methods and
 `FragmentInsertionOptions` add bounded opt-in placement and field policies while
@@ -69,9 +72,7 @@ detached `DocumentReviewDisplay` with immutable revision metadata and explicit
 managed PDF/SVG output. `ReviewAnnotationPolicy.NumberedEndNotes` opts into
 numbered comments, format changes and paired move indicators. See the [fragment](editing-and-templates.md) and
 [review](review-workflows.md#unreleased-source-detached-text-revision-display)
-profiles for bounds and exclusions. These signatures are 1.6.0 source work,
-not part of the published 1.5.0 API; exact-framework and package qualification
-are reported separately.
+profiles for bounds and exclusions. These signatures shipped in 1.6.0.
 
 The 1.6.0 #147 profile broadens existing fragment methods to admit the separately documented
 [typed-control](editing-and-templates.md#unreleased-source-typed-controls-in-fragments)
@@ -147,8 +148,7 @@ and enum values remain unchanged. See the [n-ary profile](p2-objects-typography.
 
 The 1.6.0 [#159 table-field profile](table-formulas.md) changes bounded field
 evaluation without adding a public API. Its deterministic culture, cached-result
-fallback and per-table limits are part of the documented behavior; it is not yet
-available in the published 1.5.0 packages.
+fallback and per-table limits are part of the released behavior.
 
 The 1.6.0 #150 profile adds default-enabled `ComparisonOptions.CompareStoryText` and
 `CompareRunFormatting` switches. See the [selection profile](review-workflows.md#unreleased-source-comparison-selection)
@@ -259,15 +259,13 @@ remote service, publishing credential or repository checkout is required there.
 The 1.6.0 source for #145 adds the provider-neutral `WordDocument.InsertBlockContentControl`
 for an empty ordinary body paragraph and `InsertBlockContentControlInTableCell` for
 an empty simple-cell paragraph; it keeps the existing inline creation API.
-See the [bounded block profile](content-controls.md#unreleased-source-creating-a-block-control);
-it is not in published 1.5.0 packages.
+See the [bounded block profile](content-controls.md#unreleased-source-creating-a-block-control).
 
 The 1.6.0 source for #167 adds `PreviewOptions.Layout` and immutable preview-layout
 snapshot types. The additive `LayoutFragment.CellSource`, `ObjectSource` and
 `RunSource` identify bounded DOCX cell, inline-drawing and unambiguous text-run
 owners when available. They expose no provider or model types; text is
 opt-in and unqualified geometry is nullable. See the [snapshot profile](interoperability.md#unreleased-source-preview-layout-snapshots).
-The published 1.5.0 API does not include them.
 
 Published 1.2.0 includes the merged source from PR #37, which appends `Rtf`, adds provider-neutral typography/import/metadata
 options, immutable OCR/preview results, PDF accessibility/language/page selection and

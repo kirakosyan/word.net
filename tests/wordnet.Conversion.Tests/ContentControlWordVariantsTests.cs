@@ -50,6 +50,73 @@ public sealed class ContentControlWordVariantsTests
         return output.ToArray();
     }
 
+    [Fact]
+    public void WordDerivedControlWithoutGlossaryRunDefaultsKeepsIndependentPlaceholders()
+    {
+        var token = TestContext.Current.CancellationToken;
+        var options = new ConversionOptions(FidelityMode.Lenient);
+        byte[] input = Modify(Authored("plain-block"), zip =>
+        {
+            const string stylesPart = "word/glossary/styles.xml";
+            XDocument styles = Xml(zip, stylesPart);
+            styles.Descendants(W + "rPrDefault").Single().Remove();
+            Put(zip, stylesPart, styles.ToString());
+        });
+        Validate(input);
+        WordDocument fragment = Load(input, options);
+        Assert.Empty(fragment.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Select(d => d.Code));
+        byte[] original = Save(fragment);
+        WordDocument target = WordDocument.Create(options);
+        target.AddParagraph("One", cancellationToken: token);
+        target.AddParagraph("Two", cancellationToken: token);
+        target.AddBookmark("one", 0, 0, 3, token);
+        target.AddBookmark("two", 1, 0, 3, token);
+        target.InsertFragmentAtBookmark("one", fragment, token);
+        target.InsertFragmentAtBookmark("two", fragment, token);
+        Assert.Equal(2, target.ContentControls.Count);
+        Assert.NotEqual(target.ContentControls[0].Id, target.ContentControls[1].Id);
+        target.SetControlText(target.ContentControls[0], "First copy", token);
+        target.ShowControlPlaceholder(target.ContentControls[1], token);
+
+        byte[] saved = Save(target);
+        Validate(saved);
+        XElement[] controls = Xml(saved, "word/document.xml").Descendants(W + "sdt").ToArray();
+        Assert.Equal(2, controls.Length);
+        Assert.Equal("First copy", string.Concat(controls[0].Descendants(W + "t").Select(t => t.Value)));
+        Assert.Equal("Click here to enter text.", string.Concat(controls[1].Descendants(W + "t").Select(t => t.Value)));
+        Assert.Null(controls[0].Element(W + "sdtPr")!.Element(W + "showingPlcHdr"));
+        Assert.NotNull(controls[1].Element(W + "sdtPr")!.Element(W + "showingPlcHdr"));
+        foreach (var resource in Resources)
+        {
+            string path = "word/glossary/" + resource.Kind + ".xml";
+            Assert.Equal(Part(input, path), Part(saved, path));
+        }
+        Assert.Equal("FirstcopyClickheretoentertext.", Compact(Pdf(target)));
+        Assert.Equal(original, Save(fragment));
+    }
+
+    [Theory]
+    [InlineData("date-placeholder", true, "Control.CharacterStyle")]
+    [InlineData("plain-block", false, "Docx.ThemeFont")]
+    public void WordDerivedControlWithLoadLossRejectsFragmentInsertionAtomically(string name, bool includeStyles, string expectedLoss)
+    {
+        var token = TestContext.Current.CancellationToken;
+        var options = new ConversionOptions(FidelityMode.Lenient);
+        byte[] input = Authored(name, includeMainStyles: includeStyles);
+        Validate(input);
+        WordDocument fragment = Load(input, options);
+        Assert.Contains(fragment.Diagnostics, diagnostic => diagnostic.Code == expectedLoss && diagnostic.Severity == DiagnosticSeverity.Warning);
+        WordDocument target = WordDocument.Create(options);
+        target.AddParagraph("Slot", cancellationToken: token);
+        target.AddBookmark("slot", 0, 0, 4, token);
+        byte[] before = Save(target);
+        byte[] original = Save(fragment);
+        var failure = Assert.Throws<NotSupportedException>(() => target.InsertFragmentAtBookmark("slot", fragment, token));
+        Assert.StartsWith("Fragment.SourceLoss:", failure.Message, StringComparison.Ordinal);
+        Assert.Equal(before, Save(target));
+        Assert.Equal(original, Save(fragment));
+    }
+
     [Theory]
     [InlineData("rich-block", false, ContentControlKind.RichText, "This is an SdtBlock.  ")]
     [InlineData("rich-inline", true, ContentControlKind.RichText, "SdtRun")]

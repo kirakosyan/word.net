@@ -8,7 +8,7 @@
 
 **Document conversion and automation for .NET.** Create, edit and convert Word documents with local processing, bounded resource use and explicit fidelity diagnostics.
 
-This source and package target 1.6.2. The [release notes](https://github.com/kirakosyan/word.net/blob/main/docs/releases/1.6.2.md) and [tested source matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) describe the admitted feature profiles and their limits. The NuGet badge and [releases](https://github.com/kirakosyan/word.net/releases) show published availability. [Roadmap #138](https://github.com/kirakosyan/word.net/issues/138) remains open for broader combinations and qualification.
+**Published release 1.6.2.** Use matching versions of `wordnet`, `wordnet.Fonts` and `wordnet.Ocr`. The [release record](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2) identifies the qualified source, packages and runtimes. The [capability matrix](https://github.com/kirakosyan/word.net/blob/main/docs/roadmap-138-source-matrix.json) lists bounded feature combinations. The [1.6.2 fidelity measurements](https://github.com/kirakosyan/word.net/blob/main/docs/fidelity-1.6.2.md) record independent rendering differences. [Roadmap #138](https://github.com/kirakosyan/word.net/issues/138) tracks the remaining work.
 
 - Convert DOC and DOCX to and from PDF, Markdown, text, EPUB, MOBI, AZW3, HTML and RTF. Export Word documents to XPS.
 - Populate templates with mail-merge fields, repeated table rows, conditional content and caller-supplied images.

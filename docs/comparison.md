@@ -1,5 +1,10 @@
 # Reproducible business-document comparison
 
+The [1.6.2 measurements](fidelity-1.6.2.md) cover the released source and
+public NuGet packages with the original 24 inputs, 12 reductions and four
+separately reported theme/table combinations. They include independent
+Open XML SDK checks and a ranked ledger of all failed comparison verdicts.
+
 The [issue #103 refresh](fidelity-103-baseline.md), merged in
 [PR #131](https://github.com/kirakosyan/word.net/pull/131), records the selected clean source
 and independently restored public 1.4.0 measurements, plus twelve separate reduced

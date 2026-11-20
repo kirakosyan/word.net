@@ -1,7 +1,8 @@
 # Production qualification — 1.0 history
 
-The [1.6.0 release notes](releases/1.6.0.md) describe the current source profile
-and its publication gates. The earlier 1.5.0 profiles and qualification are recorded
+The [1.6.2 release record](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2)
+identifies the tested packages, runtime checks and public verification. It retains
+the [1.6.0 feature profiles](releases/1.6.0.md). The earlier 1.5.0 profiles and qualification are recorded
 in the [capability matrix](roadmap-102-capability-matrix.json) and
 [release record](https://github.com/kirakosyan/word.net/releases/tag/v1.5.0).
 The older requirements and counts below retain their original release identities.

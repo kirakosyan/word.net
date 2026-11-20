@@ -1,5 +1,8 @@
 # Bounded P2 objects and typography
 
+Version 1.6.2 includes the 1.6.0 profiles below. The [capability matrix](roadmap-138-source-matrix.json)
+lists drawing, script, equation and output combinations individually.
+
 ## 1.4.0 roadmap #99 profile
 
 Version 1.4.0 extends the 1.3.0 profiles with the bounded changes in
@@ -105,8 +108,7 @@ with `Chart.BarProfile`. The independently authored [reference case](measurement
 confirms signed relative lengths, order and default-gap geometry, but its plot
 zero origin differs by 19.722 points and its category-label gap by 2.289 points.
 Both fail the existing 0.5-point absolute geometry tolerance; that threshold is
-unchanged and the failures remain open. This is not published 1.5.0 support or a
-claim of general Word/LibreOffice plot parity. Broader chart and data-label forms
+unchanged and the failures remain open. Broader chart and data-label forms
 remain open in #163.
 
 <a id="unreleased-source-stacked-bars-and-columns"></a>
@@ -136,8 +138,7 @@ and workbook bytes, signed-stack proportions and cross-format vector geometry.
 At the unchanged 0.5-point tolerance their maximum rectangle deviations from
 LibreOffice are 26.12 points for bars and 36.10 points for columns; reference axis
 origins differ by 20.67 and 17.08 points respectively. These failures remain open
-and are not evidence of Microsoft Word behavior. This profile is 1.6.0 source,
-not public 1.5.0 support or full #163 acceptance.
+and are not evidence of Microsoft Word behavior. Issue #163 tracks broader acceptance.
 
 <a id="unreleased-source-chart-point-labels"></a>
 ### 1.6.0 profile: chart point labels
@@ -172,8 +173,7 @@ the measured difference. The independent XlsxWriter and LibreOffice
 finds consistent label text and PDF/SVG/XPS vector origins, but label origins
 differ by up to 17.40 points for bars and 14.67 points for columns from the office
 reference, above the unchanged 0.5-point tolerance. The reference column also
-places one label outside its bar. These remain open reference differences, not
-evidence about Microsoft Word, a public 1.5.0 feature or full #163 acceptance.
+places one label outside its bar. These LibreOffice differences remain open in #163.
 
 <a id="unreleased-source-circular-charts"></a>
 ### 1.6.0 profile: circular charts
@@ -203,8 +203,7 @@ Independently authored XlsxWriter pie and doughnut documents preserve chart and
 workbook bytes, 6:3:1 proportions, legend order and the doughnut hole across the
 tested outputs. Their [reference observation](measurements/roadmap-138-circular-reference.json)
 records a 23.5-point maximum raster-bound difference from LibreOffice at the
-unchanged 0.5-point geometry tolerance. This remains open, is not a Microsoft Word
-result and does not qualify public 1.5.0 packages or all of #163.
+unchanged 0.5-point geometry tolerance. The LibreOffice difference remains open in #163.
 
 <a id="unreleased-source-labels-on-circular-slices"></a>
 ### 1.6.0 profile: labels on circular slices
@@ -234,8 +233,8 @@ PDF/SVG/XPS origins agree within 0.1 point and both labels fit in the tested
 sectors. The [exact-source receipt](measurements/roadmap-138-circular-labels-a8e9b96.json)
 also records the kerning-heavy advance check and its XPS limitations.
 BestEffort/Lenient reports both `Chart.DataLabelApproximation` and
-`Chart.CircularLayoutApproximation`; Strict rejects the measured loss. These are
-not Microsoft Word results, public 1.5.0 support or full #163 acceptance.
+`Chart.CircularLayoutApproximation`; Strict rejects the measured loss. Issue #163
+tracks the remaining chart acceptance work.
 
 ### Equation authoring
 
@@ -288,8 +287,7 @@ and unknown matrix properties remain unsupported with `Equation.Matrix*` errors.
 Existing `Object.UnsupportedLoss` behavior governs ordinary lenient conversion of
 valid unsupported objects; strict/session and other profile boundaries remain unchanged.
 Public editing, DOCX composition and ordinary managed PDF/XPS/SVG have focused
-source tests; this work is not in published 1.5.0 and does not add native, tagged or
-archival qualification.
+source tests. Native, tagged and archival output remain outside this profile.
 
 ```csharp
 var grid = EquationExpression.Matrix(new[] {
@@ -327,8 +325,7 @@ can depend on document math settings. Operand-height growth, other operator glyp
 hidden nonempty limits and visible empty placeholders are unsupported; valid
 out-of-profile objects retain the existing explicit loss or strict rejection policy.
 Common run-size/appearance and managed-output boundaries remain those of the
-existing equation profile. This is 1.6.0 source work, not published 1.5.0 or a
-claim about native, tagged or archival combinations.
+existing equation profile. Native, tagged and archival combinations require separate qualification.
 
 ```csharp
 var sum = EquationExpression.Nary(EquationNaryOperator.Summation,
@@ -344,8 +341,7 @@ doc.AddEquation(sum);
 
 The 1.6.0 source for #151 admits horizontal and vertical merges in one-column,
 non-nested native tables with Hindi and Latin text, subject to the existing font,
-cluster, owner and resource checks. This is separate from the published 1.5.0
-profile and is not yet complete #151 qualification. BestEffort and Lenient output
+cluster, owner and resource checks. Broader #151 qualification remains open. BestEffort and Lenient output
 report `Typography.MergedTableSpacing`: the native conservative line metrics can
 make rows taller than the source application's rows. Strict output rejects that
 known difference. Oversized vertically merged groups fail rather than splitting;

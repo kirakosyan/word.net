@@ -1,5 +1,8 @@
 # Bounded DOCX review workflows
 
+Version 1.6.2 includes the managed review-display and comparison profiles below.
+For the supported owners and exclusions, see the [capability matrix](roadmap-138-source-matrix.json).
+
 <a id="unreleased-source-comparison-selection"></a>
 ## 1.6.0 profile: comparison selection
 
@@ -12,9 +15,7 @@ still be tracked. These policies retain the existing source admission, section a
 shared-story topology checks, budgets and atomicity. Unsupported formatting and
 structured owners still fail rather than being hidden by an ignore option.
 
-These switches do not implement every story and formatting category requested by
-#150. They are 1.6.0 source work, not part of published 1.5.0; exact runtime and
-package qualification remain separate.
+Issue #150 tracks the remaining story and formatting categories.
 
 <a id="unreleased-source-paragraph-format-revisions"></a>
 ## 1.6.0 profile: paragraph-format revisions
@@ -48,9 +49,7 @@ paragraph text and a separate insertion or deletion.
 The source tests inspect independent OOXML and Open XML SDK validation, compare
 accepted/rejected PDF glyph positions, and cover inherited resets, cells, sections,
 composition, selective decisions, independent insertions and deletions, budgets and
-unsupported owners. This remains
-1.6.0 source; the broader #150 acceptance and exact-platform/package
-qualification remain open.
+unsupported owners. Issue #150 tracks broader comparison coverage.
 
 <a id="unreleased-source-detached-text-revision-display"></a>
 ## 1.6.0 profile: detached text-revision display
@@ -122,8 +121,7 @@ tables must have ordinary unmerged, unnested cells. Source load warnings also
 prevent display creation. Invalid profiles and cancellation are checked before
 the staged PDF is copied to the caller's stream. The normal final-copy I/O limits
 still apply. The original accepted/rejected view APIs and regular export behavior
-remain available. This is 1.6.0 source work; issues #148 and #149 remain open
-pending their complete acceptance and exact-runtime qualification.
+remain available. Issues #148 and #149 track broader review-display acceptance.
 
 ## 1.5.0 roadmap #102 delivery
 

@@ -1,6 +1,10 @@
 # Invoice and report automation recipes
 
-## P3 customer statement — merged source
+The sample builds against the checkout. Its managed recipes are available in the
+[1.6.2 release](https://github.com/kirakosyan/word.net/releases/tag/v1.6.2).
+
+<a id="p3-customer-statement--merged-source"></a>
+## P3 customer statement
 
 The program also writes `p3-statement.docx` and `p3-statement.pdf`. It repeats
 customer paragraphs and nested line-item paragraph/table regions; caller code sums

@@ -1,6 +1,6 @@
 # Conversion diagnostics
 
-The 1.6.2 #183–#188 source fixes retain wrapped HTML/ebook list content, Markdown
+The 1.6.2 #183–#188 release fixes retain wrapped HTML/ebook list content, Markdown
 character references and DOC/DOCX non-breaking and soft hyphens. These characters
 do not cause a fidelity loss. `Docx.Symbol` reports a font-specific symbol replaced
 with visible U+FFFD; `Docx.PositionalTab` reports positional alignment/leaders

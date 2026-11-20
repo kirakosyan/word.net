@@ -1,5 +1,9 @@
 # Creating, editing and filling documents
 
+Version 1.6.2 ships the bounded fragment, report and inspection APIs below. The
+[capability matrix](roadmap-138-source-matrix.json) lists the admitted owners,
+field policies and output combinations for each profile.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
@@ -282,7 +286,7 @@ a partial report. Streams are consumed from their current positions and left ope
 inspection performs no merge. Item declarations and their collection names in the
 schema are caller data and may themselves be sensitive. Up to 4,096 declared paths, requirements, findings and
 aliases and 100,000 work items are admitted, in addition to conversion input bounds.
-The API is 1.6.0 source, and full #171 acceptance remains open.
+Full #171 acceptance remains open.
 The [independent location observation](measurements/roadmap-138-preflight-locations-reference.json)
 checks simple body/cell field positions against source XML and confirms that a
 complex field remains unlocated; nine altered controls exercise the checker.
@@ -355,7 +359,7 @@ aggregate row, character, byte and reference-work budgets apply across all level
 tables, overlapping non-repeat wrappers, same-path ancestors, section breaks,
 positioned objects and unresolved links or field structures remain outside this
 profile. More ownership combinations and the full acceptance/runtime evidence for
-#157 remain open; this change is not in the published 1.5.0 packages.
+#157 remain open.
 
 `AddCrossTab(records, aggregation, includeTotals, token)` appends an editable
 table from explicit `CrossTabRecord` values. Keys are non-empty Unicode strings,
@@ -458,9 +462,8 @@ the source fragment and are remapped with its bookmarks; sequence
 names are isolated. `Fragment.CachedFields` records the caller's explicit acceptance:
 cached values can be stale, while existing DOCX/PDF/XPS rules refresh supported
 references or page fields in the destination. Template merge is explicit. Other
-field kinds and unresolved targets fail atomically. These source changes are not
-in the published 1.5.0 package; #146 remains open for its full acceptance and
-independent qualification.
+field kinds and unresolved targets fail atomically. Issue #146 tracks the remaining
+fragment requirements.
 
 ```csharp
 // Both sessions are loaded separately; this explicitly accepts cached field values.
@@ -771,8 +774,7 @@ ordinary non-merge fields remain editable and follow the existing field profile.
 The 1.6.0 source work for #159 adds [bounded table formulas](table-formulas.md), including
 dependency-aware refresh after admitted report expansion and edits. It requires
 simple invariant numeric cells and retains all table formula caches together when
-the table or a dependency falls outside that profile. This work is not in the
-published 1.5.0 packages.
+the table or a dependency falls outside that profile.
 
 ## Run the standalone sample
 
