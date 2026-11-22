@@ -12,7 +12,7 @@ Editable save retains the part, its relationships and the bytes of the admitted
 styles, settings, font table and web settings. It writes an empty
 `w:glossaryDocument` for both forms of empty input. A copied named placeholder
 can supply its first entry. Fragment insertion rejects a merge that would introduce
-local style defaults into independently formatted glossary entries. A control that names a missing entry fails to load.
+local style defaults into independently formatted glossary entries or activate a dormant, populated stylesheet for an incoming entry with no stylesheet of its own. An empty source glossary contributes no parts to a fragment destination. A control that names a missing entry fails to load.
 
 A top-level, unbound rich-text block in a plain header or footer can own inline
 rich text, plain text, checkbox, dropdown, combo and date controls in its ordinary
@@ -22,6 +22,14 @@ require an explicit apply or write-back. The same story can appear on several
 pages with a single set of control IDs. Deeper nesting, a placeholder parent,
 a structural story wrapper and controls in notes or text boxes remain outside
 this profile. [Fixture provenance and Word observations](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StoryOwners/README.md)
+
+| Owner | Rich text | Plain text, checkbox, dropdown, combo, date |
+| --- | --- | --- |
+| Ordinary body or simple cell paragraph, inline or block | Yes | Yes |
+| Ordinary header or footer paragraph, inline or block | Yes | Yes |
+| Direct inline child of an admitted unbound rich-text block | Yes | Yes |
+| Admitted row or cell wrapper | Structural wrapper | Rejected |
+| Scalar parent, repeated report row, note, comment or text box | Rejected | Rejected |
 
 ## 1.5.0 roadmap #102 delivery
 

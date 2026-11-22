@@ -127,6 +127,10 @@ public sealed partial class WordDocument
             if (incoming.GlossaryContent.Count != 0 || incoming.GlossaryResources.Count != 0) throw new InvalidDataException("Control.Malformed: Fragment glossary entries have no glossary part.");
             return;
         }
+        if (incoming.GlossaryContent.Count == 0) return;
+        if (target.GlossaryContent.Count == 0 && target.GlossaryResources.TryGetValue("styles", out ControlGlossaryResource? dormantStyles)
+            && dormantStyles.Xml.HasElements && !incoming.GlossaryResources.ContainsKey("styles"))
+            throw new NotSupportedException("Fragment.ControlResources: The first imported entry would activate previously unused glossary styles.");
         if (target.GlossaryContent.Count + incoming.GlossaryContent.Count > 128)
             throw new InvalidDataException("Limit.Controls: Combined glossary entries exceed their limit.");
         if (IntroducesGlossaryDefaults(target, incoming, c) || IntroducesGlossaryDefaults(incoming, target, c))

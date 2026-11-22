@@ -22,7 +22,7 @@ Windows and Linux · x64 and ARM64 · MIT licensed
 [Quick start](#quick-start) · [Automation recipes](#automation-recipes) · [Supported formats](#supported-formats) · [Documentation](#documentation)
 
 Development source preserves editable [table and cell theme shading](https://github.com/kirakosyan/word.net/blob/main/docs/document-fidelity.md#editable-whole-table-theme-shading) in DOCX.
-Public 1.6.2 saves those fills as RGB. Development source also retains empty glossary parts and supports nested inline controls in ordinary headers and footers. [Content-control profile](docs/content-controls.md#empty-glossaries-and-nested-headerfooter-controls-in-development)
+Public 1.6.2 saves those fills as RGB. Development source also retains empty glossary parts and supports nested inline controls in ordinary headers and footers. [Content-control profile](https://github.com/kirakosyan/word.net/blob/main/docs/content-controls.md#empty-glossaries-and-nested-headerfooter-controls-in-development)
 
 ## Install
 

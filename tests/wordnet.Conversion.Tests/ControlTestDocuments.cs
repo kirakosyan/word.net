@@ -22,6 +22,16 @@ internal static class ControlTestDocuments
     internal static readonly XNamespace Ct = "http://schemas.openxmlformats.org/package/2006/content-types";
     internal static readonly XNamespace Ds = "http://schemas.openxmlformats.org/officeDocument/2006/customXml";
     internal const string StoreId = "{A67AC88A-A164-4ADE-8889-8826CE44DE6E}";
+    internal static string FixtureSha256(byte[] bytes)
+    {
+#if NETFRAMEWORK
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        return BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", "").ToLowerInvariant();
+#else
+        return Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant();
+#endif
+    }
+
     internal static string Fixture(string name) => TestDocuments.Fixture(Path.Combine("ContentControls", name));
     internal static string Document(string body) => "<w:document xmlns:w='" + W + "' xmlns:w14='" + W14 + "' xmlns:r='" + R + "' xmlns:mc='http://schemas.openxmlformats.org/markup-compatibility/2006' mc:Ignorable='w14'><w:body>" + body + "</w:body></w:document>";
     internal static string Run(string text) => new XElement(W + "r", new XElement(W + "t", new XAttribute(XNamespace.Xml + "space", "preserve"), text)).ToString(SaveOptions.DisableFormatting);

@@ -820,7 +820,11 @@
       "tests": [
         { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryStaysEditableAndCanReceiveItsFirstNamedPlaceholder" },
         { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryCannotSatisfyANamedReference" },
-        { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryStyleDefaultsCannotRestyleAnIndependentFragment" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "FirstEntryCannotActivateDormantDestinationStyles" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "MatchingStylesWithAnUnusedThemeFontAdmitTheFirstEntryInStrictMode" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "EmptySourceGlossaryDoesNotAddPartsOrRestyleExistingEntries" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "GlossaryRootRejectsTextBeforeNormalizingAnEmptyCollection" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "UnstyledGlossaryEntriesRejectUnresolvedStylesAndProtectedOwners" },
         { "class": "ContentControlGlossaryFragmentTests", "method": "GlossaryParagraphCannotAcquireAControlOwner" },
         { "class": "ContentControlWordVariantsTests", "method": "EmptyGlossaryKeepsWordResourcesWithoutResolvingUnusedRunDefaults" },
         { "class": "ContentControlWordVariantsTests", "method": "SixWordGeneratedControlKindsKeepTheirValuesAndNamedPlaceholders" },

@@ -78,7 +78,12 @@ public sealed class ContentControlWordVariantsTests
     [Fact]
     public void SixWordGeneratedControlKindsKeepTheirValuesAndNamedPlaceholders()
     {
-        XElement controls = XElement.Parse(Fixture("OfficeWordVariants/word-20625-six-controls.xml"));
+        const string file = "word-20625-six-controls.xml";
+        using var manifest = JsonDocument.Parse(Fixture("OfficeWordVariants/manifest.json"));
+        byte[] bytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "ContentControls", "OfficeWordVariants", file));
+        Assert.Equal(manifest.RootElement.GetProperty(file).GetString(), FixtureSha256(bytes));
+        using var inputXml = new MemoryStream(bytes);
+        XElement controls = XElement.Load(inputXml);
         string body = string.Concat(controls.Elements().Select(p => p.ToString(SaveOptions.DisableFormatting)));
         string[] names = controls.Descendants(W + "placeholder").Elements(W + "docPart")
             .Select(p => (string)p.Attribute(W + "val")!).Distinct(StringComparer.Ordinal).ToArray();

@@ -57,6 +57,7 @@ public sealed class ContentControlGlossaryFragmentTests
     [Theory]
     [InlineData("")]
     [InlineData("<w:docParts/>")]
+    [InlineData("   ")]
     public void EmptyGlossaryStaysEditableAndCanReceiveItsFirstNamedPlaceholder(string contents)
     {
         string host = "<w:p>" + Control(1, "<w:text/>", "old") + "</w:p>" + Bookmark("slot", 4);
@@ -85,25 +86,84 @@ public sealed class ContentControlGlossaryFragmentTests
         Assert.Contains("Control.Unsupported", Assert.Throws<NotSupportedException>(() => Load(input)).Message, StringComparison.Ordinal);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void EmptyGlossaryStyleDefaultsCannotRestyleAnIndependentFragment(bool emptyIsTarget)
+    private static byte[] WithLocalStyles(byte[] package, string content) => Modify(package, zip =>
     {
-        string slot = Bookmark("slot", 4);
-        byte[] empty = Modify(EmptyGlossary("<w:p>" + Control(1, "<w:text/>", "Plain") + "</w:p>" + (emptyIsTarget ? slot : ""), ""), zip =>
-        {
-            const string part = "word/glossary/styles.xml";
-            AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "styles", "styles", "styles.xml");
-            Put(zip, part, "<w:styles xmlns:w='" + W + "'><w:docDefaults><w:rPrDefault><w:rPr><w:b/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>");
-            Override(zip, part, "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
-        });
-        byte[] named = WithGlossary("<w:p>" + Control(2, "<w:text/>", "Choose", Placeholder) + "</w:p>" + (emptyIsTarget ? "" : slot));
-        WordDocument target = Load(emptyIsTarget ? empty : named), source = Load(emptyIsTarget ? named : empty);
+        const string part = "word/glossary/styles.xml";
+        AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "styles", "styles", "styles.xml");
+        Put(zip, part, "<w:styles xmlns:w='" + W + "'>" + content + "</w:styles>");
+        Override(zip, part, "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+    });
+
+    private const string ThemeStyle = "<w:style w:type='character' w:styleId='Unused'><w:rPr><w:rFonts w:asciiTheme='minorHAnsi'/></w:rPr></w:style>";
+
+    [Theory]
+    [InlineData(ThemeStyle)]
+    [InlineData("<w:docDefaults><w:rPrDefault><w:rPr><w:b/></w:rPr></w:rPrDefault></w:docDefaults>")]
+    public void FirstEntryCannotActivateDormantDestinationStyles(string styles)
+    {
+        var strict = new ConversionOptions(FidelityMode.Strict);
+        WordDocument target = Load(WithLocalStyles(EmptyGlossary("<w:p>" + Control(3, "<w:text/>", "Host") + "</w:p>" + Bookmark("slot", 4), ""), styles), strict);
+        WordDocument source = Load(WithGlossary("<w:p>" + Control(2, "<w:text/>", "Choose", Placeholder) + "</w:p>"), strict);
         byte[] targetBefore = Save(target), sourceBefore = Save(source);
         Assert.Contains("Fragment.ControlResources", Assert.Throws<NotSupportedException>(() =>
             target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
         Assert.Equal(targetBefore, Save(target)); Assert.Equal(sourceBefore, Save(source));
+    }
+
+    [Fact]
+    public void MatchingStylesWithAnUnusedThemeFontAdmitTheFirstEntryInStrictMode()
+    {
+        var strict = new ConversionOptions(FidelityMode.Strict);
+        WordDocument target = Load(WithLocalStyles(EmptyGlossary("<w:p>" + Control(3, "<w:text/>", "Host") + "</w:p>" + Bookmark("slot", 4), ""), ThemeStyle), strict);
+        WordDocument source = Load(WithLocalStyles(WithGlossary("<w:p>" + Control(2, "<w:text/>", "Choose", Placeholder) + "</w:p>"), ThemeStyle), strict);
+        target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken);
+        byte[] saved = Save(target); Validate(saved);
+        Assert.Equal("Choose", Assert.Single(Load(saved, strict).ContentControls, control => control.ShowingPlaceholder).DisplayText);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void EmptySourceGlossaryDoesNotAddPartsOrRestyleExistingEntries(bool named)
+    {
+        var strict = new ConversionOptions(FidelityMode.Strict);
+        WordDocument source = Load(WithLocalStyles(EmptyGlossary("<w:p>" + Control(1, "<w:text/>", "Plain") + "</w:p>", ""), ThemeStyle), strict);
+        string slot = Bookmark("slot", 4);
+        WordDocument target = named ? Load(WithGlossary("<w:p>" + Control(2, "<w:text/>", "Choose", Placeholder) + "</w:p>" + slot), strict) : LoadBody(slot, strict);
+        byte[] before = Save(source);
+        target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken);
+        byte[] saved = Save(target); Validate(saved);
+        WordDocument reopened = Load(saved, strict);
+        Assert.Contains(reopened.ContentControls, control => control.DisplayText == "Plain");
+        using var archive = new ZipArchive(new MemoryStream(saved));
+        Assert.Equal(named ? 1 : 0, archive.Entries.Count(entry => entry.FullName.StartsWith("word/glossary/", StringComparison.Ordinal)));
+        if (named) Assert.Equal("Choose", Assert.Single(reopened.ContentControls, control => control.ShowingPlaceholder).DisplayText);
+        Assert.Equal(before, Save(source));
+    }
+
+    [Theory]
+    [InlineData("unexpected")]
+    [InlineData("<![CDATA[unexpected]]>")]
+    [InlineData("<w:docParts/>unexpected")]
+    public void GlossaryRootRejectsTextBeforeNormalizingAnEmptyCollection(string contents)
+    {
+        Assert.Contains("Control.Malformed", Assert.Throws<InvalidDataException>(() => Load(EmptyGlossary("<w:p>" + Control(3, "<w:text/>", "Host") + "</w:p>" + Bookmark("slot", 4), contents))).Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("<w:r><w:rPr><w:rStyle w:val='PlaceholderText'/></w:rPr><w:t>Choose</w:t></w:r>", "Control.Unsupported")]
+    [InlineData("<w:bookmarkStart w:id='1' w:name='here'/><w:r><w:t>Choose</w:t></w:r><w:bookmarkEnd w:id='1'/>", "Control.ProtectedOwner")]
+    [InlineData("<w:fldSimple w:instr='DATE'><w:r><w:t>Choose</w:t></w:r></w:fldSimple>", "Control.ProtectedOwner")]
+    public void UnstyledGlossaryEntriesRejectUnresolvedStylesAndProtectedOwners(string content, string diagnostic)
+    {
+        byte[] input = Modify(WithGlossary("<w:p>" + Control(1, "<w:text/>", "Choose", Placeholder) + "</w:p>"), zip =>
+        {
+            const string part = "word/glossary/document.xml";
+            XDocument glossary = Xml(zip, part);
+            glossary.Descendants(W + "p").Single().ReplaceWith(XElement.Parse("<w:p xmlns:w='" + W + "'>" + content + "</w:p>"));
+            Put(zip, part, glossary.ToString());
+        });
+        Assert.Contains(diagnostic, Assert.Throws<NotSupportedException>(() => Load(input)).Message, StringComparison.Ordinal);
     }
 
     [Fact]

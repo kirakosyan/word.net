@@ -1,6 +1,8 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Xml.Linq;
 using UglyToad.PdfPig;
@@ -91,16 +93,22 @@ public sealed class ContentControlStoryOwnerTests
     [Fact]
     public void WordCheckedNestedHeaderMatchesItsParentIdsTextAndPageCount()
     {
-        string path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "ContentControls", "StoryOwners", "nested-empty-glossary.docx");
-        byte[] fixture = File.ReadAllBytes(path); Validate(fixture); WordDocument source = Load(fixture);
-        Assert.Equal(4, source.ContentControls.Count); Assert.Null(ById(source, 26134427).ParentId);
-        Assert.Equal(26134427, ById(source, 25057961).ParentId); Assert.Equal(26134427, ById(source, 26000000).ParentId);
-        const string header = "ThisisanSdtBlock.SdtRunandPlain.";
-        Assert.Equal(header, Compact(ById(source, 26134427).DisplayText));
+        string directory = Path.Combine(AppContext.BaseDirectory, "Fixtures", "ContentControls", "StoryOwners");
+        using var manifest = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(directory, "manifest.json")));
+        JsonElement receipt = manifest.RootElement.GetProperty("nestedHeader");
+        byte[] fixture = File.ReadAllBytes(Path.Combine(directory, receipt.GetProperty("fixture").GetString()!));
+        Assert.Equal(receipt.GetProperty("sha256").GetString(), FixtureSha256(fixture));
+        Validate(fixture); WordDocument source = Load(fixture);
+        int parent = int.Parse(receipt.GetProperty("parentId").GetString()!, CultureInfo.InvariantCulture);
+        Assert.Equal(4, source.ContentControls.Count); Assert.Null(ById(source, parent).ParentId);
+        foreach (JsonElement child in receipt.GetProperty("childIds").EnumerateArray())
+            Assert.Equal(parent, ById(source, int.Parse(child.GetString()!, CultureInfo.InvariantCulture)).ParentId);
+        string header = Compact(receipt.GetProperty("headerText").GetString()!);
+        Assert.Equal(header, Compact(ById(source, parent).DisplayText));
         byte[] saved = Save(source); Validate(saved);
         Assert.Empty(Xml(saved, "word/glossary/document.xml").Root!.Elements());
         using PdfDocument pages = PdfDocument.Open(Save(Load(saved), DocumentFormat.Pdf));
-        Assert.Equal(2, pages.NumberOfPages);
+        Assert.Equal(receipt.GetProperty("pages").GetInt32(), pages.NumberOfPages);
         foreach (var page in pages.GetPages())
         {
             Assert.Contains(header, Compact(page.Text), StringComparison.Ordinal);
@@ -270,7 +278,7 @@ public sealed class ContentControlStoryOwnerTests
     [InlineData(true)]
     public void StoryBindingIsExplicitAndRetainsAtomicWriteBack(bool nested)
     {
-        string body = "<w:p>" + Run("Body") + "</w:p><w:sectPr>" + HeaderRef + "</w:sectPr>";
+        string body = "<w:p><w:pPr><w:sectPr>" + HeaderRef + "</w:sectPr></w:pPr>" + Run("First") + "</w:p><w:p>" + Run("Second") + "</w:p><w:sectPr/>";
         string child = Control(7, "<w:text/>", "cached", Binding("/p:invoice/p:customer/@name"));
         string header = nested ? Control(8, "<w:richText/>", "", block: true, content: child) : "<w:p>" + child + "</w:p>";
         WordDocument document = Load(WithStories(WithStore(body), header));
@@ -284,7 +292,11 @@ public sealed class ContentControlStoryOwnerTests
         document.WriteBackControlBindings(new[] { ById(document, 7) }, TestContext.Current.CancellationToken);
         byte[] saved = Save(document); Validate(saved);
         Assert.Equal("New & Co", (string?)Xml(saved, "customXml/item1.xml").Descendants(XName.Get("customer", "urn:wordnet:controls")).Single().Attribute("name"));
-        Assert.Equal("New & Co", ById(Load(saved), 7).DisplayText);
+        WordDocument reopened = Load(saved);
+        Assert.Equal("New & Co", Assert.Single(reopened.ContentControls, control => control.Id == 7).DisplayText);
+        using PdfDocument pages = PdfDocument.Open(Save(reopened, DocumentFormat.Pdf));
+        Assert.Equal(2, pages.NumberOfPages);
+        Assert.All(pages.GetPages(), page => Assert.Contains("New&Co", Compact(page.Text), StringComparison.Ordinal));
     }
 
     [Fact]

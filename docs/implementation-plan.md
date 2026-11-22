@@ -7,8 +7,8 @@ validated resources, permits inserting their first named entry, and extends the
 two-level control ownership rules to ordinary headers and footers. A desktop
 Word check covers two-page display text and parent/child identity. Public
 1.6.2 rejects the nested-header fixture and the separate empty-glossary control.
-Broader Word-authored fixture coverage and repeated report-row ownership
-remain open. [Content-control profile](content-controls.md#empty-glossaries-and-nested-headerfooter-controls-in-development)
+PR #192 also exercises all six Word-generated control kinds, inherited bindings
+and refusal of typed controls in repeated report rows. [Content-control profile](content-controls.md#empty-glossaries-and-nested-headerfooter-controls-in-development)
 
 ## Roadmap #138 phase 1 table theme fills — in development
 

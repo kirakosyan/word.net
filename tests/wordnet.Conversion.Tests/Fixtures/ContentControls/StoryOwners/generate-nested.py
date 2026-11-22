@@ -1,7 +1,7 @@
 """Assemble the nested-header and empty-glossary control from the licensed fixture parts."""
 from pathlib import Path
 from xml.etree import ElementTree as ET
-from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
+from zipfile import ZIP_STORED, ZipFile, ZipInfo
 
 here = Path(__file__).resolve().parent
 w = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
@@ -33,4 +33,4 @@ with ZipFile(here / 'nested-empty-glossary.docx', 'w') as archive:
     for name, content in sorted(parts.items()):
         entry = ZipInfo(name, (2000, 1, 1, 0, 0, 0))
         entry.create_system = 0
-        archive.writestr(entry, content, compress_type=ZIP_DEFLATED)
+        archive.writestr(entry, content, compress_type=ZIP_STORED)

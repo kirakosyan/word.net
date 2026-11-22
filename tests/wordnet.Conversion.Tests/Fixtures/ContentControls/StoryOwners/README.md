@@ -24,7 +24,7 @@ bindings, lock enforcement or pixel-identical geometry.
 inline children from the NestedOwners fixture into the existing two-page
 header. It adds a local glossary relationship and an empty glossary document.
 Both the placement and the empty glossary are synthetic. The generator writes
-fixed ZIP timestamps. [Nested fixture provenance](../NestedOwners/README.md)
+uncompressed, sorted ZIP members with fixed timestamps. [Nested fixture provenance](../NestedOwners/README.md)
 
 On November 22, 2026, desktop Word 16.0.20625 opened the file read-only with
 macros disabled. Print layout reported two pages. The header range read

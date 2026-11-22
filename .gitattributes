@@ -22,6 +22,7 @@ eng/refresh-fidelity-baseline.py text eol=lf
 *.png binary
 *.tif binary
 tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordParts/*.xml text eol=lf
+tests/wordnet.Conversion.Tests/Fixtures/ContentControls/OfficeWordVariants/*.xml text eol=lf
 # Preserve the byte-identical, independently licensed Word-authored theme part.
 tests/wordnet.Conversion.Tests/Fixtures/Theme/OfficeWordParts/theme1.xml -text whitespace=cr-at-eol
 
