@@ -34,7 +34,7 @@ public sealed partial class DocxTableBorderTests
 
     [Theory]
     [InlineData("theme", null, "2266CC")]
-    [InlineData("theme-tint", "themeFillTint", "90B2E5")]
+    [InlineData("theme-tint", "themeFillTint", "89B0EB")]
     [InlineData("theme-shade", "themeFillShade", "113366")]
     public void ConditionalThemeFillKeepsItsReferenceAndReportsReferenceColorDifference(string name, string? transform, string resolved)
     {

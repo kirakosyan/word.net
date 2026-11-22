@@ -190,18 +190,27 @@ internal sealed partial class DocxReader
             if (tint != null && shade != null || !mapping.TryGetValue(value, out string? slot) || !Colors.TryGetValue(slot, out string? rgb)) return null;
             string? transform = tint ?? shade;
             if (transform == null) return rgb;
-            if (transform.Length != 2 || !byte.TryParse(transform, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out byte factor)) return null;
-            var result = new System.Text.StringBuilder(6);
-            for (int index = 0; index < 6; index += 2)
+            if (!ValidTransform(transform) || !byte.TryParse(transform, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out byte factor)) return null;
+
+            int packed = int.Parse(rgb, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+            int red = packed >> 16, green = (packed >> 8) & 255, blue = packed & 255;
+            int minimum = Math.Min(red, Math.Min(green, blue)), maximum = Math.Max(red, Math.Max(green, blue));
+            // Twice the RGB midpoint is the HSL lightness on a 0..510 scale.
+            // Keep hue and saturation by scaling each channel's offset from that midpoint.
+            const int full = 2 * byte.MaxValue;
+            int lightness = maximum + minimum;
+            int range = Math.Min(lightness, full - lightness);
+            int adjusted = lightness * factor + (tint != null ? full * (byte.MaxValue - factor) : 0);
+            int adjustedRange = Math.Min(adjusted, full * byte.MaxValue - adjusted);
+            return Channel(red) + Channel(green) + Channel(blue);
+
+            string Channel(int channel)
             {
-                int component = Hex(rgb[index]) * 16 + Hex(rgb[index + 1]);
-                int product = shade != null ? component * factor : (255 - component) * factor;
-                int scaled = (product + 127) / 255;
-                result.Append((shade != null ? scaled : 255 - scaled).ToString("X2", CultureInfo.InvariantCulture));
+                int value = range == 0 ? adjusted / full
+                    : (adjusted * range + (2 * channel - lightness) * adjustedRange) / (full * range);
+                return value.ToString("X2", CultureInfo.InvariantCulture);
             }
-            return result.ToString();
         }
-        private static int Hex(char value) => value <= '9' ? value - '0' : value - 'A' + 10;
         private static string? Slot(string value) => value switch
         {
             "dark1" => "dk1",

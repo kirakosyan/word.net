@@ -33,11 +33,11 @@ Windows GDI via Pillow decoded the Word metafiles. Poppler rasterized page one o
 each managed PDF at a maximum dimension of 720 pixels. Counts refer to exact RGB
 values within each rendering. Word's five variants for each whole-table owner
 had identical raster bytes. The direct-cell controls produced 1,359 blue pixels
-and 1,373 red pixels. Word and managed PDF agreed on the base and shade
-colors of the themed cell. The tint differed. The managed exporter substituted
+and 1,373 red pixels. Word and managed PDF agreed on the base, shade and tint
+colors of the themed cell after HSL lightness resolution. The managed exporter substituted
 its font, so this capture qualifies the observed color differences only. [Input hashes, reader identities and per-file counts](measurements/whole-table-theme-word.json)
 
-The Windows x64 Release suites for this increment passed all 2,574 conversion and
+The Windows x64 Release suites for this increment passed all 2,582 conversion and
 English OCR cases on .NET 10, .NET 8 and the net472 target running on the installed
 Framework 4.8.1 (release key 534296). Locked restore and the five-target build passed.
 

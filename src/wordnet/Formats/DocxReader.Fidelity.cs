@@ -74,8 +74,8 @@ internal sealed partial class DocxReader
             if (parsed.Pattern.Length > 128) throw new InvalidDataException("Limit.ListLabel: A list label exceeds 128 characters.");
             if (parsed.Pattern.Any(c => c >= 0xe000 && c <= 0xf8ff))
             {
-                if (parsed.Pattern == "\uf0b7") parsed.Pattern = "•";
-                else { context.Loss("Docx.ListLabel", "A private-use bullet without portable glyph semantics uses a round bullet."); parsed.Pattern = "•"; }
+                if (parsed.Pattern == "\uf0b7") parsed.Pattern = "â€¢";
+                else { context.Loss("Docx.ListLabel", "A private-use bullet without portable glyph semantics uses a round bullet."); parsed.Pattern = "â€¢"; }
             }
             XElement? start = levelOverrides.Select(e => e.Element(W + "startOverride") ?? e.Element(W + "lvl")?.Element(W + "start"))
                 .FirstOrDefault(e => e != null) ?? source.Element(W + "start");
@@ -419,21 +419,24 @@ internal sealed partial class DocxReader
         return value;
     }
 
-    private (string? Color, TableThemeColor? Theme) ReadTableShading(XElement shading)
+    private (string? Color, TableThemeColor? Theme) ReadTableShading(XElement shading, bool cell = false)
     {
-        string pattern = (string?)shading.Attribute(W + "val") ?? throw new InvalidDataException("Docx.TableShading: Table shading requires a pattern.");
-        if (pattern != "clear") context.Loss("Table.ShadingApproximated", "Only clear table shading is retained; other patterns use the background color.");
+        string owner = cell ? "cell" : "table";
+        string? pattern = (string?)shading.Attribute(W + "val");
+        if (pattern == null && !cell) throw new InvalidDataException("Docx.TableShading: Table shading requires a pattern.");
+        if (pattern != "clear" && !(cell && pattern is null or "nil" or "solid"))
+            context.Loss("Table.ShadingApproximated", $"Patterned {owner} shading uses the background color.");
         if (shading.HasElements || shading.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value)))
-            context.Loss("Table.ShadingApproximated", "Unsupported table-shading content is not retained.");
+            context.Loss("Table.ShadingApproximated", $"Unsupported {owner} shading content is not retained.");
         if (shading.Attributes().Any(a => !a.IsNamespaceDeclaration && a.Name != W + "val" && a.Name != W + "fill" && a.Name != W + "color"
             && a.Name != W + "themeFill" && a.Name != W + "themeFillTint" && a.Name != W + "themeFillShade"
             && a.Name != W + "themeColor" && a.Name != W + "themeTint" && a.Name != W + "themeShade"))
-            context.Loss("Table.ShadingApproximated", "Unsupported table-shading attributes are not retained.");
+            context.Loss("Table.ShadingApproximated", $"Unsupported {owner} shading attributes are not retained.");
         string? foreground = (string?)shading.Attribute(W + "color");
         if (foreground != null && foreground != "auto")
         {
             _ = ReadRgb(foreground);
-            context.Loss("Table.ShadingApproximated", "The foreground color of table shading is not retained.");
+            if (!cell || pattern != "clear") context.Loss("Table.ShadingApproximated", $"The foreground color of {owner} shading is not retained.");
         }
         _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
         string? fallback = (string?)shading.Attribute(W + "fill"), token = (string?)shading.Attribute(W + "themeFill");
@@ -443,9 +446,9 @@ internal sealed partial class DocxReader
             throw new InvalidDataException("Docx.ThemeColor: Invalid theme color reference or transform.");
         string? resolved = pattern == "clear" && token != null && theme?.Package != null ? theme.Color(token, tint, shade) : null;
         if (resolved != null)
-            return (resolved, new TableThemeColor(token!, tint, shade, fallback));
+            return (resolved, new TableThemeColor(token!, tint?.ToUpperInvariant(), shade?.ToUpperInvariant(), fallbackRgb ?? fallback));
         string? color = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", fallbackRgb);
-        if (color == null) context.Loss("Table.ShadingColor", "Automatic or missing table-shading colors are not retained.");
+        if (color == null && !cell) context.Loss("Table.ShadingColor", "Automatic or missing table-shading colors are not retained.");
         return (color, null);
     }
 
@@ -495,17 +498,7 @@ internal sealed partial class DocxReader
         CellPadding? padding = ReadPadding(defaults, null);
         cell.Padding = ReadPadding(properties?.Element(W + "tcMar"), padding);
         if (properties?.Element(W + "shd") is XElement shading)
-        {
-            if ((string?)shading.Attribute(W + "val") == "clear" && shading.Attribute(W + "themeFill") != null)
-                (cell.Background, cell.BackgroundTheme) = ReadTableShading(shading);
-            else
-            {
-                cell.Background = ThemeReference(shading, "themeFill", "themeFillTint", "themeFillShade", ReadRgb((string?)shading.Attribute(W + "fill")));
-                _ = ThemeReference(shading, "themeColor", "themeTint", "themeShade", null);
-                if ((string?)shading.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
-                    context.Loss("Table.ShadingApproximated", "Patterned cell shading uses its solid background color.");
-            }
-        }
+            (cell.Background, cell.BackgroundTheme) = ReadTableShading(shading, cell: true);
         if (properties?.Element(W + "vAlign") is XElement vertical)
         {
             string value = (string?)vertical.Attribute(W + "val") ?? "top";

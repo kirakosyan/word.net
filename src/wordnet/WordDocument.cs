@@ -223,13 +223,14 @@ public sealed partial class WordDocument
             { context.CheckCancellation(); controlMetadata = checked(controlMetadata + glyph.Text.Length + glyph.Font.Length + 32); }
         static long ThemeReferences(TextRun run) => (long)(run.Appearance.ThemeFontAscii?.Length ?? 0) + (run.Appearance.ThemeFontHighAnsi?.Length ?? 0)
             + (run.Appearance.ThemeColor?.Length ?? 0) + (run.Appearance.ThemeTint?.Length ?? 0) + (run.Appearance.ThemeShade?.Length ?? 0);
+        var tables = model.Tables.ToArray();
         long themeReferences = model.Paragraphs.SelectMany(p => p.Runs)
             .Concat(model.Review.Comments.Values.SelectMany(comment => comment.Body).SelectMany(p => p.Runs))
             .Sum(run => ThemeReferences(run) + (run.PreviousFormat == null ? 0 : ThemeReferences(run.PreviousFormat))
                 + (run.FieldCache?.Sum(ThemeReferences) ?? 0));
         long reviewMetadata = controlMetadata + model.Styles.Sum(p => (long)p.Key.Length + p.Value.Length)
             + (model.Theme?.Xml.Length ?? 0) + (model.Theme?.Mapping?.Length ?? 0)
-            + themeReferences + model.Tables.Sum(table => (long)(table.BackgroundTheme?.CharacterCount ?? 0)
+            + themeReferences + tables.Sum(table => (long)(table.BackgroundTheme?.CharacterCount ?? 0)
                 + table.Rows.SelectMany(row => row).Sum(cell => (long)(cell.BackgroundTheme?.CharacterCount ?? 0)))
             + model.Paragraphs.SelectMany(p => p.Runs).Where(r => r.Box != null)
                 .Sum(r => (long)r.Box!.AlternativeText.Length + r.Box.AlternativeTitle.Length)
@@ -253,7 +254,7 @@ public sealed partial class WordDocument
         if (bytes + nodes * 64L > context.Options.MaximumExpandedBytes) throw new InvalidDataException("Limit.ExpandedBytes: Edited document exceeds aggregate resource limits.");
         model.ObjectCount = objects?.Placements ?? 0;
         if (objects != null) { ObjectSafety.Owners(model, context); objects.Finish(model.CharacterCount + reviewMetadata, bytes + nodes * 64L); }
-        foreach (TableBlock table in model.Tables) TableValidation.Validate(table, context);
+        foreach (TableBlock table in tables) TableValidation.Validate(table, context);
     }
     private static bool EditingFormat(DocumentFormat format) => format is DocumentFormat.Doc or DocumentFormat.Docx or DocumentFormat.Dotx or DocumentFormat.Odt or DocumentFormat.Ott or DocumentFormat.Pdf
         or DocumentFormat.Markdown or DocumentFormat.Text or DocumentFormat.Azw3 or DocumentFormat.Epub or DocumentFormat.Mobi

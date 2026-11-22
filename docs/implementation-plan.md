@@ -4,7 +4,7 @@
 
 The next #141/#142 increment preserves clear whole-table theme fills on their
 direct or inherited DOCX style owner, and direct cell fills on their owning cells.
-The source tests cover theme edits,
+The source tests cover HSL tint/shade, hex validation, theme edits,
 explicit child overrides, comparison and fallback behavior. Desktop Word omitted whole-table fills in the new controls.
 Broader script resolution, conditional border precedence and rendering compatibility
 remain open. Public 1.6.2 materializes these whole-table fills as

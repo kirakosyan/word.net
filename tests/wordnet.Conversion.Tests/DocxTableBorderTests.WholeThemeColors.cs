@@ -21,15 +21,15 @@ public sealed partial class DocxTableBorderTests
     }
 
     [Theory]
-    [InlineData(null, "themeFillTint", "80", "90B2E5")]
+    [InlineData(null, "themeFillTint", "80", "89B0EB")]
     [InlineData("auto", "themeFillShade", "80", "113366")]
     [InlineData("FF0000", null, null, "2266CC")]
     public void DirectCellKeepsItsEditableThemeFillAndNeighborColor(string? fallback, string? transform, string? amount, string resolved)
     {
         string attributes = "w:themeFill='accent1'" + (fallback == null ? "" : " w:fill='" + fallback + "'")
             + (transform == null ? "" : " w:" + transform + "='" + amount + "'");
-        string first = Cell("Themed", "<w:shd w:val='clear' " + attributes + "/>");
-        string second = Cell("Explicit", "<w:shd w:val='clear' w:fill='00FF00'/>");
+        string first = Cell("Themed", "<w:shd w:val='clear' w:color='000000' " + attributes + "/>");
+        string second = Cell("Explicit", "<w:shd w:val='clear' w:color='000000' w:fill='00FF00'/>");
         string table = "<w:tbl><w:tblPr><w:tblW w:w='4800' w:type='dxa'/></w:tblPr>"
             + "<w:tblGrid><w:gridCol w:w='2400'/><w:gridCol w:w='2400'/></w:tblGrid><w:tr>" + first + second + "</w:tr></w:tbl>";
         byte[] source = DocxThemeTests.Package(table); Schema(source);
@@ -43,10 +43,8 @@ public sealed partial class DocxTableBorderTests
         using PdfDocument pdf = PdfDocument.Open(Convert(saved, DocumentFormat.Pdf));
         Assert.True(PdfFill(pdf, resolved)); Assert.True(PdfFill(pdf, "00FF00"));
         Assert.Contains("ThemedExplicit", pdf.GetPage(1).Text, StringComparison.Ordinal);
-        using var input = new MemoryStream(saved); using var output = new MemoryStream();
-        Assert.Contains("Docx.ThemeColor", Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output,
-            DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
-        Assert.Empty(output.ToArray());
+        using PdfDocument strict = PdfDocument.Open(Convert(saved, DocumentFormat.Pdf, FidelityMode.Strict));
+        Assert.True(PdfFill(strict, resolved));
     }
 
     [Fact]
@@ -68,7 +66,7 @@ public sealed partial class DocxTableBorderTests
     }
 
     [Theory]
-    [InlineData(false, null, "themeFillTint", "80", "90B2E5")]
+    [InlineData(false, null, "themeFillTint", "80", "89B0EB")]
     [InlineData(true, "auto", "themeFillShade", "80", "113366")]
     [InlineData(false, "FF0000", null, null, "2266CC")]
     [InlineData(true, null, null, null, "2266CC")]
@@ -129,7 +127,8 @@ public sealed partial class DocxTableBorderTests
         XDocument styles = Part(saved, "word/styles.xml");
         Assert.Equal(2, styles.Descendants(W + "shd").Count());
         Assert.Single(styles.Descendants(W + "shd").Attributes(W + "themeFill"));
-        using PdfDocument pdf = PdfDocument.Open(Convert(saved, DocumentFormat.Pdf, FidelityMode.Strict));
+        Assert.Contains("Table.WholeShading", Assert.Throws<NotSupportedException>(() => Convert(saved, DocumentFormat.Pdf, FidelityMode.Strict)).Message, StringComparison.Ordinal);
+        using PdfDocument pdf = PdfDocument.Open(Convert(saved, DocumentFormat.Pdf));
         Assert.True(PdfFill(pdf, "AABBCC")); Assert.False(PdfFill(pdf, "2266CC"));
     }
 
@@ -150,14 +149,16 @@ public sealed partial class DocxTableBorderTests
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void StrictStaticOutputRejectsAnEffectiveWholeTableThemeBeforeWriting(bool inherited)
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    public void StrictStaticOutputRejectsAnEffectiveWholeTableFillBeforeWriting(bool inherited, bool themed)
     {
-        byte[] source = WholeTableFill("w:themeFill='accent1'", inherited);
+        byte[] source = WholeTableFill(themed ? "w:themeFill='accent1'" : "w:fill='2266CC'", inherited);
         using var input = new MemoryStream(source); using var output = new MemoryStream();
         output.WriteByte(42); output.Position = 0;
-        Assert.Contains("Table.StyleThemeColor", Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output,
+        Assert.Contains(themed ? "Table.StyleThemeColor" : "Table.WholeShading", Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output,
             DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
         Assert.Equal(new byte[] { 42 }, output.ToArray());
     }
@@ -172,6 +173,21 @@ public sealed partial class DocxTableBorderTests
         Assert.Contains("Docx.Color", Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(source, output,
             DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
         Assert.Equal(new byte[] { 42 }, output.ToArray()); Assert.True(source.CanRead);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EquivalentHexSpellingsUseTheSameTableAppearance(bool inherited)
+    {
+        WordDocument first = LoadStyle(WholeTableFill("w:themeFill='accent1' w:themeFillTint='bf' w:fill='abcdef'", inherited));
+        WordDocument second = LoadStyle(WholeTableFill("w:themeFill='accent1' w:themeFillTint='BF' w:fill='ABCDEF'", inherited));
+        var options = new ComparisonOptions("Reviewer", new DateTimeOffset(2026, 11, 20, 0, 0, 0, TimeSpan.Zero))
+        { CompareParagraphFormatting = false, CompareRunFormatting = false };
+        _ = DocumentComparison.Compare(first, second, options, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+        XElement shading = Part(SaveStyle(first, DocumentFormat.Docx), inherited ? "word/styles.xml" : "word/document.xml").Descendants(W + "shd").Single();
+        Assert.Equal("BF", (string?)shading.Attribute(W + "themeFillTint"));
+        Assert.Equal("ABCDEF", (string?)shading.Attribute(W + "fill"));
     }
 
     [Theory]

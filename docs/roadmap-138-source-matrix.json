@@ -919,10 +919,10 @@
       "issue": 142,
       "outcome": "rejected",
       "availability": "development source",
-      "boundary": "An unresolved fill retains a diagnosed fallback. Desktop Word omitted the measured whole-table fills. Effective whole-table theme fills reject Strict static output, and comparison rejects changed fallback metadata.",
+      "boundary": "An unresolved fill retains a diagnosed fallback. Desktop Word omitted the measured whole-table fills. Explicit and themed whole-table fills reject Strict PDF and XPS output, and comparison rejects changed fallback metadata.",
       "tests": [
         { "class": "DocxTableBorderTests", "method": "UnresolvedWholeTableThemeFlattensToTheStoredColorWithALoss" },
-        { "class": "DocxTableBorderTests", "method": "StrictStaticOutputRejectsAnEffectiveWholeTableThemeBeforeWriting" },
+        { "class": "DocxTableBorderTests", "method": "StrictStaticOutputRejectsAnEffectiveWholeTableFillBeforeWriting" },
         { "class": "DocxTableBorderTests", "method": "ChangedWholeTableFallbackCannotDisappearInTextComparison" },
         { "class": "DocxTableBorderTests", "method": "ResolvableWholeTableThemeCannotHideAMalformedRgbFallback" }
       ]
