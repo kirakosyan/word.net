@@ -12,7 +12,7 @@ namespace WordNet.Formats;
 
 internal sealed partial class DocxReader
 {
-    private void ReadGlossaryResources(string glossaryPart, XElement contentTypes)
+    private void ReadGlossaryResources(string glossaryPart, XElement contentTypes, bool hasEntries)
     {
         Dictionary<string, XElement> relations = package.ReadRelationships(glossaryPart);
         if (relations.Count > 4) throw new InvalidDataException("Limit.Controls: Too many glossary resource relationships.");
@@ -40,7 +40,7 @@ internal sealed partial class DocxReader
                 throw new NotSupportedException("Control.Unsupported: Nested glossary resource relationships are not admitted.");
             XElement root = TypedXml(part);
             ValidateGlossaryResource(kind, root);
-            if (kind == "styles" && root.HasElements)
+            if (hasEntries && kind == "styles" && root.HasElements)
             {
                 glossaryStyleReader = new DocxReader(context, new Dictionary<string, XElement>(StringComparer.Ordinal))
                 { mainPart = glossaryPart, theme = theme };

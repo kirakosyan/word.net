@@ -812,6 +812,35 @@
       ]
     },
     {
+      "id": "empty-control-glossary",
+      "issue": 143,
+      "outcome": "supported-bounded",
+      "availability": "development source",
+      "boundary": "A referenced empty glossary retains its validated local resources, serializes without an empty docParts collection and can receive a copied named entry. Named references still require a matching entry.",
+      "tests": [
+        { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryStaysEditableAndCanReceiveItsFirstNamedPlaceholder" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryCannotSatisfyANamedReference" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryStyleDefaultsCannotRestyleAnIndependentFragment" },
+        { "class": "ContentControlGlossaryFragmentTests", "method": "GlossaryParagraphCannotAcquireAControlOwner" },
+        { "class": "ContentControlWordVariantsTests", "method": "EmptyGlossaryKeepsWordResourcesWithoutResolvingUnusedRunDefaults" },
+        { "class": "ContentControlWordVariantsTests", "method": "EmptyGlossaryStillValidatesUnusedLocalStyleDefinitions" }
+      ]
+    },
+    {
+      "id": "nested-header-footer-control-owners",
+      "issue": 144,
+      "outcome": "supported-bounded",
+      "availability": "development source",
+      "boundary": "A plain header or footer can own a top-level unbound rich block with direct inline children of the six admitted kinds. Shared stories retain one set of IDs, the parent lock and bounded binding behavior.",
+      "tests": [
+        { "class": "ContentControlStoryOwnerTests", "method": "WordCheckedNestedHeaderMatchesItsParentIdsTextAndPageCount" },
+        { "class": "ContentControlStoryOwnerTests", "method": "NestedStoryChildrenRetainOrderIdentityAndSharedPagePlacement" },
+        { "class": "ContentControlStoryOwnerTests", "method": "LockedStoryParentProtectsChildAndLeavesTheSavedDocumentUntouched" },
+        { "class": "ContentControlStoryOwnerTests", "method": "EveryAdmittedKindEditsInPlainHeaderAndFooterOwners" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryBindingIsExplicitAndRetainsAtomicWriteBack" }
+      ]
+    },
+    {
       "id": "plain-story-control-owners",
       "issue": 144,
       "outcome": "supported-bounded",
@@ -836,7 +865,7 @@
         { "class": "ContentControlStoryOwnerTests", "method": "StoryAndBodyControlsSharingOneBindingMustAgreeAtomically" },
         { "class": "ContentControlStoryOwnerTests", "method": "StoryLocksAndCancellationLeaveTheDocumentUntouched" },
         { "class": "ContentControlStoryOwnerTests", "method": "GlobalControlLimitIncludesDistinctStoryParts" },
-        { "class": "ContentControlStoryOwnerTests", "method": "StoryControlsCannotCrossBookmarksOrUseNestedOwners" },
+        { "class": "ContentControlStoryOwnerTests", "method": "StoryControlsCannotCrossBookmarksOrUseScalarParents" },
         { "class": "ContentControlBoundaryTests", "method": "MultipleRowsAndHeaderTableOwnersAreExplicitlyRejected" }
       ]
     },

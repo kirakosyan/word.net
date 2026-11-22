@@ -17,3 +17,24 @@ The [manifest](manifest.json) records the input and output hashes; ZIP timestamp
 may vary, so regenerated decompressed parts are compared instead. This checks the
 selected static text and story placement, not Word execution, every story variant,
 bindings, lock enforcement or pixel-identical geometry.
+
+## Nested header and empty glossary
+
+`generate-nested.py` copies the licensed, Word-derived wrapper and its two
+inline children from the NestedOwners fixture into the existing two-page
+header. It adds a local glossary relationship and an empty glossary document.
+Both the placement and the empty glossary are synthetic. The generator writes
+fixed ZIP timestamps. [Nested fixture provenance](../NestedOwners/README.md)
+
+On November 22, 2026, desktop Word 16.0.20625 opened the file read-only with
+macros disabled. Print layout reported two pages. The header range read
+`This is an SdtBlock.  SdtRun and Plain.` and the footer read `Footer label`.
+Word's header content-control collection identified `26134427` as the parent
+of both `25057961` and `26000000`. The manifest records the input hash. Tests
+compare the managed IDs and page count, inspect editable XML and check the
+header and footer text positions relative to the body on both PDF pages.
+
+The isolated NuGet 1.6.2 consumer loaded assembly SHA-256
+`e27f5355ee328aded61d5d3039601034e6bc9f183e5844b45090a490c9751d04`.
+The nested fixture raised `Control.ProtectedOwner`. Restoring the original
+single-level header while keeping the empty glossary raised `Control.Unsupported`.

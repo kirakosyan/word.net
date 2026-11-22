@@ -6,6 +6,17 @@ combine Word-derived placeholders with fragment copying and retained or decided
 text revisions with composition. Both the complete source suites and the
 historical release counts below identify which build they exercised.
 
+## Development content controls
+
+The control tests validate editable DOCX with the Open XML SDK, inspect glossary
+relationships and individual resource bytes, and exercise all six child kinds
+in header and footer rich-text parents. Cases cover shared page placement,
+explicit binding, parent locks, stale handles, missing entries and malformed
+unused styles. Word 16.0.20625 reported two pages, the expected story text and
+the parent IDs for both children in the Word-derived synthetic fixture. A separate
+public 1.6.2 consumer rejected that fixture and its unnested empty-glossary
+control. [Fixture and reader evidence](../tests/wordnet.Conversion.Tests/Fixtures/ContentControls/StoryOwners/README.md)
+
 ## Whole-table theme fills in development
 
 The table theme tests build independent OOXML inputs with direct and inherited

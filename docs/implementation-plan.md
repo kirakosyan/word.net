@@ -1,8 +1,18 @@
 # wordnet implementation and delivery status
 
+## Roadmap #138 content-control glossary and story ownership
+
+The #143/#144 development increment retains empty glossary parts and their
+validated resources, permits inserting their first named entry, and extends the
+two-level control ownership rules to ordinary headers and footers. A desktop
+Word check covers two-page display text and parent/child identity. Public
+1.6.2 rejects the nested-header fixture and the separate empty-glossary control.
+Broader Word-authored fixture coverage and repeated report-row ownership
+remain open. [Content-control profile](content-controls.md#empty-glossaries-and-nested-headerfooter-controls-in-development)
+
 ## Roadmap #138 phase 1 table theme fills — in development
 
-The next #141/#142 increment preserves clear whole-table theme fills on their
+PR #191 merged at `ab89903988199c735ffc89577a669f4e665cb34b`. Its #141/#142 increment preserves clear whole-table theme fills on their
 direct or inherited DOCX style owner, and direct cell fills on their owning cells.
 The source tests cover HSL tint/shade, hex validation, theme edits,
 explicit child overrides, comparison and fallback behavior. Desktop Word omitted whole-table fills in the new controls.

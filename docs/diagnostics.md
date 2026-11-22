@@ -1,5 +1,11 @@
 # Conversion diagnostics
 
+Empty glossary resources still undergo relationship and style validation.
+`Control.Unsupported` identifies an unresolved named placeholder.
+`Control.ProtectedOwner` excludes a wrapper inside a glossary paragraph or
+an inadmissible nested story owner. A content-locked rich-text story parent
+protects its children with `Control.Locked`.
+
 The 1.6.2 #183–#188 release fixes retain wrapped HTML/ebook list content, Markdown
 character references and DOC/DOCX non-breaking and soft hyphens. These characters
 do not cause a fidelity loss. `Docx.Symbol` reports a font-specific symbol replaced

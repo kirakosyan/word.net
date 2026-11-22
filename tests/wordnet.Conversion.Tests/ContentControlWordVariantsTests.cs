@@ -50,6 +50,44 @@ public sealed class ContentControlWordVariantsTests
         return output.ToArray();
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EmptyGlossaryKeepsWordResourcesWithoutResolvingUnusedRunDefaults(bool collection)
+    {
+        byte[] source = Modify(Authored("date-value"), zip => Put(zip, "word/glossary/document.xml",
+            "<w:glossaryDocument xmlns:w='" + W + "'>" + (collection ? "<w:docParts/>" : "") + "</w:glossaryDocument>"));
+        WordDocument document = Load(source, new ConversionOptions(FidelityMode.Strict));
+        Assert.DoesNotContain(document.Diagnostics, diagnostic => diagnostic.Code == "Docx.ThemeFont");
+        DocumentContentControl date = Assert.Single(document.ContentControls);
+        document.SetControlDate(date, ContentControlDateValue.FromInstant(new DateTimeOffset(2024, 2, 29, 0, 0, 0, TimeSpan.Zero)), TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        Assert.Empty(Xml(saved, "word/glossary/document.xml").Root!.Elements());
+        static string[] Relationships(byte[] package) => Xml(package, "word/glossary/_rels/document.xml.rels").Root!.Elements()
+            .Select(r => $"{r.Attribute("Id")?.Value} {r.Attribute("Type")?.Value} {r.Attribute("Target")?.Value}").OrderBy(value => value, StringComparer.Ordinal).ToArray();
+        Assert.Equal(Relationships(source), Relationships(saved));
+        foreach (var resource in Resources)
+        {
+            string part = "word/glossary/" + resource.Kind + ".xml";
+            Assert.Equal(Part(source, part), Part(saved, part));
+        }
+        DocumentContentControl reopened = Assert.Single(Load(saved).ContentControls);
+        Assert.Equal(date.Id, reopened.Id); Assert.Equal("2/29/2024", reopened.DisplayText);
+    }
+
+    [Fact]
+    public void EmptyGlossaryStillValidatesUnusedLocalStyleDefinitions()
+    {
+        byte[] source = Modify(Authored("date-value"), zip =>
+        {
+            Put(zip, "word/glossary/document.xml", "<w:glossaryDocument xmlns:w='" + W + "'/>");
+            const string part = "word/glossary/styles.xml";
+            XDocument styles = Xml(zip, part); XElement style = styles.Root!.Elements(W + "style").First();
+            styles.Root.Add(new XElement(style)); Put(zip, part, styles.ToString());
+        });
+        Assert.Contains("Control.Malformed", Assert.Throws<InvalidDataException>(() => Load(source)).Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void WordDerivedControlWithoutGlossaryRunDefaultsKeepsIndependentPlaceholders()
     {

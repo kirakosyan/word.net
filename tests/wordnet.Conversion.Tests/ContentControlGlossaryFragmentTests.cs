@@ -51,6 +51,74 @@ public sealed class ContentControlGlossaryFragmentTests
         Assert.Equal(before, Save(source));
     }
 
+    private static byte[] EmptyGlossary(string body, string contents) => Modify(WithGlossary(body), zip =>
+        Put(zip, "word/glossary/document.xml", "<w:glossaryDocument xmlns:w='" + W + "'>" + contents + "</w:glossaryDocument>"));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("<w:docParts/>")]
+    public void EmptyGlossaryStaysEditableAndCanReceiveItsFirstNamedPlaceholder(string contents)
+    {
+        string host = "<w:p>" + Control(1, "<w:text/>", "old") + "</w:p>" + Bookmark("slot", 4);
+        byte[] input = EmptyGlossary(host, contents);
+        if (contents.Length == 0) Validate(input);
+        WordDocument target = Load(input);
+        target.SetControlText(target.ContentControls[0], "edited", TestContext.Current.CancellationToken);
+        byte[] empty = Save(target); Validate(empty);
+        Assert.Empty(Xml(empty, "word/glossary/document.xml").Root!.Elements());
+        Assert.Equal("edited", Load(empty).ContentControls[0].DisplayText);
+        Assert.Contains("edited", Pdf(target), StringComparison.Ordinal);
+        WordDocument source = Load(WithGlossary("<w:p>" + Control(1, "<w:text/>", "Choose", Placeholder) + "</w:p>"));
+        byte[] before = Save(source); target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken);
+        byte[] saved = Save(target); Validate(saved);
+        Assert.Single(Xml(saved, "word/glossary/document.xml").Descendants(W + "docPartPr"));
+        DocumentContentControl prompt = Load(saved).ContentControls.Single(control => control.ShowingPlaceholder);
+        Assert.Equal("Choose", prompt.DisplayText); Assert.Equal(before, Save(source));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("<w:docParts/>")]
+    public void EmptyGlossaryCannotSatisfyANamedReference(string contents)
+    {
+        byte[] input = EmptyGlossary("<w:p>" + Control(1, "<w:text/>", "Choose", Placeholder) + "</w:p>", contents);
+        Assert.Contains("Control.Unsupported", Assert.Throws<NotSupportedException>(() => Load(input)).Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EmptyGlossaryStyleDefaultsCannotRestyleAnIndependentFragment(bool emptyIsTarget)
+    {
+        string slot = Bookmark("slot", 4);
+        byte[] empty = Modify(EmptyGlossary("<w:p>" + Control(1, "<w:text/>", "Plain") + "</w:p>" + (emptyIsTarget ? slot : ""), ""), zip =>
+        {
+            const string part = "word/glossary/styles.xml";
+            AddRelationship(zip, "word/glossary/_rels/document.xml.rels", "styles", "styles", "styles.xml");
+            Put(zip, part, "<w:styles xmlns:w='" + W + "'><w:docDefaults><w:rPrDefault><w:rPr><w:b/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>");
+            Override(zip, part, "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+        });
+        byte[] named = WithGlossary("<w:p>" + Control(2, "<w:text/>", "Choose", Placeholder) + "</w:p>" + (emptyIsTarget ? "" : slot));
+        WordDocument target = Load(emptyIsTarget ? empty : named), source = Load(emptyIsTarget ? named : empty);
+        byte[] targetBefore = Save(target), sourceBefore = Save(source);
+        Assert.Contains("Fragment.ControlResources", Assert.Throws<NotSupportedException>(() =>
+            target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
+        Assert.Equal(targetBefore, Save(target)); Assert.Equal(sourceBefore, Save(source));
+    }
+
+    [Fact]
+    public void GlossaryParagraphCannotAcquireAControlOwner()
+    {
+        byte[] input = Modify(WithGlossary("<w:p>" + Control(1, "<w:text/>", "value") + "</w:p>"), zip =>
+        {
+            const string part = "word/glossary/document.xml";
+            XDocument glossary = Xml(zip, part);
+            glossary.Descendants(W + "p").Single().Add(XElement.Parse(Control(2, "<w:text/>", "child")));
+            Put(zip, part, glossary.ToString());
+        });
+        Assert.Contains("Control.ProtectedOwner", Assert.Throws<NotSupportedException>(() => Load(input)).Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void ANewGlossaryGetsAnIsolatedPackagePartAndRemainsEditable()
     {
