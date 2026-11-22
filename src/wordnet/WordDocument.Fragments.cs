@@ -45,16 +45,16 @@ public sealed partial class WordDocument
         return InsertFragment(name, fragment, cellDestination: false, fragmentOptions.Fields, fragmentOptions.Style, cancellationToken);
     }
 
-    /// <summary>Replaces a dedicated bookmark paragraph in a simple body-table cell with a private fragment copy.</summary>
+    /// <summary>Replaces one or more whole bookmarked paragraphs in a simple body-table cell with a private fragment copy.</summary>
     /// <remarks>The host must be a single unmerged cell in a top-level body table. The bookmark must own
-    /// the whole paragraph. Source sections/stories, nested tables, fields, review history and positioned
+    /// contiguous whole paragraphs within that cell. Source sections/stories, nested source tables, fields, review history and positioned
     /// text boxes remain unsupported. Admitted charts, equations and typed controls retain their source
     /// appearance and receive independent placement identities. Both sessions remain unchanged on failure.</remarks>
     public DocumentEditResult InsertFragmentAtTableCellBookmark(string name, WordDocument fragment, CancellationToken cancellationToken = default)
         => InsertFragment(name, fragment, cellDestination: true, FragmentFieldHandling.Reject, CompositionStyle.KeepSource, cancellationToken);
 
-    /// <summary>Replaces a simple body-table-cell bookmark under explicit field and appearance policies.</summary>
-    /// <remarks>Retained field results may be stale; supported references can be recalculated in the destination.</remarks>
+    /// <summary>Replaces whole bookmarked paragraphs within one simple body-table cell under explicit field and appearance policies.</summary>
+    /// <remarks>Destination styling uses the first placeholder paragraph. Retained field results may be stale; supported references can be recalculated in the destination.</remarks>
     public DocumentEditResult InsertFragmentAtTableCellBookmarkWithOptions(string name, WordDocument fragment, FragmentInsertionOptions fragmentOptions, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(fragmentOptions, nameof(fragmentOptions));
@@ -172,11 +172,7 @@ public sealed partial class WordDocument
                     ? "Fragment.Placeholder: A unique unwrapped bookmark paragraph in one simple top-level body-table cell is required."
                     : "Fragment.Placeholder: A unique unwrapped body bookmark paragraph is required.");
             ParagraphBlock placeholder = matches[0].Paragraph;
-            int start = placeholder.Runs.FindIndex(r => r.Bookmark == name), end = placeholder.Runs.FindIndex(r => r.Bookmark == "/" + name);
-            if (start != 0 || end != placeholder.Runs.Count - 1 || end <= start
-                || placeholder.Runs.Any(r => r.TypedControlId.HasValue)
-                || placeholder.Runs.Skip(1).Take(end - 1).Any(r => r.Bookmark != null || r.Control != null || r.Note != null || r.Image != null || r.FieldInstruction != null || r.Link != null || r.Box != null || r.Object != null))
-                throw new NotSupportedException("Fragment.Placeholder: The bookmark must own the complete plain-text placeholder paragraph.");
+            int placeholderCount = FragmentPlaceholderLength(matches[0].Blocks, matches[0].Index, name, cellDestination, c);
             var pending = new Stack<TextRun>(m.Paragraphs.SelectMany(p => p.Runs)); long work = 0;
             var reservedReferences = new HashSet<string>(StringComparer.Ordinal);
             while (pending.Count != 0)
@@ -237,7 +233,7 @@ public sealed partial class WordDocument
             foreach (DocumentBlock block in incoming.Blocks) block.Section = placeholder.Section;
             m.HasControlDisplay |= incoming.HasControlDisplay;
             List<DocumentBlock> destination = matches[0].Blocks;
-            destination.RemoveAt(matches[0].Index); destination.InsertRange(matches[0].Index, incoming.Blocks);
+            destination.RemoveRange(matches[0].Index, placeholderCount); destination.InsertRange(matches[0].Index, incoming.Blocks);
             // WordprocessingML cells must end in a paragraph, even when the fragment ends in a table.
             if (cellDestination && destination[destination.Count - 1] is not ParagraphBlock)
                 destination.Add(new ParagraphBlock { Section = placeholder.Section });
@@ -248,5 +244,29 @@ public sealed partial class WordDocument
             m.Notes.AddRange(incoming.Notes);
             ValidateRanges(m); return incoming.Blocks.Count;
         }, cancellationToken, objectAware: true, controlAware: true);
+    }
+
+    private static int FragmentPlaceholderLength(List<DocumentBlock> blocks, int index, string name, bool cellDestination, ConversionContext context)
+    {
+        string end = "/" + name;
+        for (int i = index; i < blocks.Count; i++)
+        {
+            context.CheckCancellation();
+            if (blocks[i] is not ParagraphBlock paragraph || paragraph.Control != null || paragraph.NestedControl != null || paragraph.TypedControlId.HasValue) break;
+            if (i == index && paragraph.Runs.FirstOrDefault()?.Bookmark != name) break;
+            for (int j = i == index ? 1 : 0; j < paragraph.Runs.Count; j++)
+            {
+                context.CheckCancellation();
+                TextRun run = paragraph.Runs[j];
+                if (run.Bookmark == end && j == paragraph.Runs.Count - 1) return i - index + 1;
+                if (run.Bookmark != null || run.Control != null || run.TypedControlId.HasValue || run.Note != null || run.Image != null
+                    || run.FieldInstruction != null || run.Link != null || run.Box != null || run.Object != null)
+                    throw new NotSupportedException("Fragment.Placeholder: A placeholder cannot include another range or protected content.");
+            }
+            if (!cellDestination) break;
+        }
+        throw new NotSupportedException(cellDestination
+            ? "Fragment.Placeholder: The bookmark must own contiguous whole plain-text paragraphs in one cell."
+            : "Fragment.Placeholder: The bookmark must own one complete plain-text body paragraph.");
     }
 }

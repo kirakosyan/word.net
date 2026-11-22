@@ -1,5 +1,18 @@
 # wordnet implementation and delivery status
 
+## Roadmap #138 form ranges and cell placeholders
+
+PR #192 merged at `bcd62353bf01386214c8b3fa27c7332c2dc8a059`. Its tree matched
+the reviewed head. Issues #143 and #144 closed with the documented glossary and
+owner matrix, including independent Word evidence and repeated-row rejection.
+[Merge and acceptance](https://github.com/kirakosyan/word.net/pull/192)
+
+The next source increment for #145 and #146 adds range-based inline control
+creation and field-bearing fragments for multi-paragraph cell placeholders.
+Public 1.6.2 supplies the preceding insertion-at-offset and single-paragraph
+cell operations. [Control ranges](content-controls.md#replace-a-text-range-with-a-control)
+and [cell ranges](editing-and-templates.md#multi-paragraph-cell-placeholders).
+
 ## Roadmap #138 content-control glossary and story ownership
 
 The #143/#144 development increment retains empty glossary parts and their
