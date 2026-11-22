@@ -165,6 +165,19 @@ public sealed class ContentControlCreationTests
         Assert.Equal(mergedBefore, Save(mergedDocument));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TypedLoadingRejectsRepeatRowsContainingControlsBeforeBindingOrCloning(bool bound)
+    {
+        string properties = bound ? Binding("/p:invoice/p:customer/@name") : "";
+        string row = "<w:tr><w:tc><w:p>" + Control(7, "<w:text/>", "cached", properties) + "</w:p></w:tc></w:tr>";
+        string body = "<w:tbl><w:sdt><w:sdtPr><w:tag w:val='repeat:Items'/></w:sdtPr><w:sdtContent>" + row + "</w:sdtContent></w:sdt></w:tbl>";
+        using var input = new MemoryStream(WithStore(body));
+        Assert.Throws<NotSupportedException>(() => WordDocument.LoadWithControls(input, new ContentControlLoadOptions(), out _, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.True(input.CanRead);
+    }
+
     [Fact]
     public void ARepeatRowCannotReceiveANewTypedControl()
     {

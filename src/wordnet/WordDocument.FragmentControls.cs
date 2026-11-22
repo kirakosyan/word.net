@@ -105,6 +105,21 @@ public sealed partial class WordDocument
         foreach (ControlData data in incoming.Items.Values) target.Items.Add(data.Id, data);
     }
 
+    private static bool IntroducesGlossaryDefaults(ContentControlStore provider, ContentControlStore recipient, ConversionContext context)
+    {
+        if (recipient.GlossaryContent.Count == 0 || recipient.GlossaryResources.ContainsKey("styles")
+            || !provider.GlossaryResources.TryGetValue("styles", out ControlGlossaryResource? styles)) return false;
+        XNamespace w = ControlValues.W;
+        foreach (XElement element in styles.Xml.Elements())
+        {
+            context.ReserveControlWork(1);
+            if (element.Name == w + "docDefaults" && element.Elements().Elements().Any(properties => properties.HasElements)) return true;
+            if (element.Name == w + "style" && (string?)element.Attribute(w + "type") is "paragraph" or "character"
+                && (string?)element.Attribute(w + "default") is string value && ControlValues.Bool(value)) return true;
+        }
+        return false;
+    }
+
     private static void MergeFragmentGlossary(ContentControlStore target, ContentControlStore incoming, HashSet<string> parts, ConversionContext c)
     {
         if (incoming.Glossary == null)
@@ -112,8 +127,14 @@ public sealed partial class WordDocument
             if (incoming.GlossaryContent.Count != 0 || incoming.GlossaryResources.Count != 0) throw new InvalidDataException("Control.Malformed: Fragment glossary entries have no glossary part.");
             return;
         }
+        if (incoming.GlossaryContent.Count == 0) return;
+        if (target.GlossaryContent.Count == 0 && target.GlossaryResources.TryGetValue("styles", out ControlGlossaryResource? dormantStyles)
+            && dormantStyles.Xml.HasElements && !incoming.GlossaryResources.ContainsKey("styles"))
+            throw new NotSupportedException("Fragment.ControlResources: The first imported entry would activate previously unused glossary styles.");
         if (target.GlossaryContent.Count + incoming.GlossaryContent.Count > 128)
             throw new InvalidDataException("Limit.Controls: Combined glossary entries exceed their limit.");
+        if (IntroducesGlossaryDefaults(target, incoming, c) || IntroducesGlossaryDefaults(incoming, target, c))
+            throw new NotSupportedException("Fragment.ControlResources: Merging glossary style defaults could change existing placeholder formatting.");
         XNamespace w = ControlValues.W;
         XElement sourceEntries = incoming.Glossary.Element(w + "docParts") ?? throw new InvalidDataException("Control.Malformed: Missing fragment glossary entries.");
         if (target.Glossary == null)

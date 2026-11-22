@@ -5,5 +5,19 @@
   "files": {
     "stories.docx": "8c31d3ec2f8f50844d655df9c896eb4203a74a98780d6cd5e5a7121188d59ceb",
     "stories.pdf": "6ba9234829209082b5fbf48f03eabb49362ee4eb7d0112951b4f88a5ce02e2e2"
+  },
+  "nestedHeader": {
+    "fixture": "nested-empty-glossary.docx",
+    "sha256": "7f03928cebeb6e6cb4ec02b710aabf4ba32eee9b292720544024ddadb370ee69",
+    "date": "2026-11-22",
+    "wordBuild": "16.0.20625",
+    "pages": 2,
+    "headerText": "This is an SdtBlock.  SdtRun and Plain.",
+    "footerText": "Footer label",
+    "parentId": "26134427",
+    "childIds": [
+      "25057961",
+      "26000000"
+    ]
   }
 }

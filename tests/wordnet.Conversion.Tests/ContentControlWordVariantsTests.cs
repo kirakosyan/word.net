@@ -50,6 +50,93 @@ public sealed class ContentControlWordVariantsTests
         return output.ToArray();
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EmptyGlossaryKeepsWordResourcesWithoutResolvingUnusedRunDefaults(bool collection)
+    {
+        byte[] source = Modify(Authored("date-value"), zip => Put(zip, "word/glossary/document.xml",
+            "<w:glossaryDocument xmlns:w='" + W + "'>" + (collection ? "<w:docParts/>" : "") + "</w:glossaryDocument>"));
+        WordDocument document = Load(source, new ConversionOptions(FidelityMode.Strict));
+        Assert.DoesNotContain(document.Diagnostics, diagnostic => diagnostic.Code == "Docx.ThemeFont");
+        DocumentContentControl date = Assert.Single(document.ContentControls);
+        document.SetControlDate(date, ContentControlDateValue.FromInstant(new DateTimeOffset(2024, 2, 29, 0, 0, 0, TimeSpan.Zero)), TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        Assert.Empty(Xml(saved, "word/glossary/document.xml").Root!.Elements());
+        static string[] Relationships(byte[] package) => Xml(package, "word/glossary/_rels/document.xml.rels").Root!.Elements()
+            .Select(r => $"{r.Attribute("Id")?.Value} {r.Attribute("Type")?.Value} {r.Attribute("Target")?.Value}").OrderBy(value => value, StringComparer.Ordinal).ToArray();
+        Assert.Equal(Relationships(source), Relationships(saved));
+        foreach (var resource in Resources)
+        {
+            string part = "word/glossary/" + resource.Kind + ".xml";
+            Assert.Equal(Part(source, part), Part(saved, part));
+        }
+        DocumentContentControl reopened = Assert.Single(Load(saved).ContentControls);
+        Assert.Equal(date.Id, reopened.Id); Assert.Equal("2/29/2024", reopened.DisplayText);
+    }
+
+    [Fact]
+    public void SixWordGeneratedControlKindsKeepTheirValuesAndNamedPlaceholders()
+    {
+        const string file = "word-20625-six-controls.xml";
+        using var manifest = JsonDocument.Parse(Fixture("OfficeWordVariants/manifest.json"));
+        byte[] bytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "ContentControls", "OfficeWordVariants", file));
+        Assert.Equal(manifest.RootElement.GetProperty(file).GetString(), FixtureSha256(bytes));
+        using var inputXml = new MemoryStream(bytes);
+        XElement controls = XElement.Load(inputXml);
+        string body = string.Concat(controls.Elements().Select(p => p.ToString(SaveOptions.DisableFormatting)));
+        string[] names = controls.Descendants(W + "placeholder").Elements(W + "docPart")
+            .Select(p => (string)p.Attribute(W + "val")!).Distinct(StringComparer.Ordinal).ToArray();
+        Assert.Equal(3, names.Length);
+        byte[] input = Modify(WithGlossary(body), zip =>
+        {
+            const string part = "word/glossary/document.xml";
+            XDocument glossary = Xml(zip, part);
+            XElement entries = glossary.Root!.Element(W + "docParts")!;
+            XElement prototype = entries.Elements().Single(); entries.RemoveNodes();
+            foreach (string name in names)
+            {
+                XElement entry = new XElement(prototype);
+                entry.Element(W + "docPartPr")!.Element(W + "name")!.SetAttributeValue(W + "val", name);
+                entry.Descendants(W + "t").Single().Value = "Prompt " + Array.IndexOf(names, name);
+                entries.Add(entry);
+            }
+            Put(zip, part, glossary.ToString());
+        });
+        Validate(input); WordDocument document = Load(input, new ConversionOptions(FidelityMode.Lenient));
+        Assert.Equal(6, document.ContentControls.Select(control => control.Kind).Distinct().Count());
+        DocumentContentControl ByTag(string tag) => document.ContentControls.Single(control => control.Tag == tag);
+        var token = TestContext.Current.CancellationToken;
+        Assert.Equal("WordRich", ByTag("Rich").DisplayText); Assert.Equal("WordPlain", ByTag("Plain").DisplayText);
+        Assert.True(ByTag("Checkbox").IsChecked); Assert.Equal("b", ByTag("Combo").SelectedValue);
+        Assert.Equal("b", ByTag("Dropdown").SelectedValue); Assert.Equal("2024-02-29", ByTag("Date").DisplayText);
+        document.ReplaceControlContent(ByTag("Rich"), new[] { new DocumentText("Rich edit") }, token);
+        document.SetControlText(ByTag("Plain"), "Plain edit", token); document.SetControlChecked(ByTag("Checkbox"), false, token);
+        document.SetControlSelection(ByTag("Dropdown"), "a", token); document.SetControlComboText(ByTag("Combo"), "Custom", token);
+        document.ShowControlPlaceholder(ByTag("Date"), token);
+        byte[] saved = Save(document); Validate(saved); WordDocument reloaded = Load(saved, new ConversionOptions(FidelityMode.Lenient));
+        Assert.Equal(document.ContentControls.Select(c => (c.Id, c.Tag, c.Kind, c.DisplayText)),
+            reloaded.ContentControls.Select(c => (c.Id, c.Tag, c.Kind, c.DisplayText)));
+        Assert.Equal("Alpha", ByTag("Dropdown").DisplayText); Assert.Equal("Custom", ByTag("Combo").DisplayText);
+        Assert.Equal("Prompt 2", ByTag("Date").DisplayText);
+        Assert.Equal(controls.Descendants(W + "placeholder").Elements(W + "docPart").Select(p => (string?)p.Attribute(W + "val")),
+            Xml(saved, "word/document.xml").Descendants(W + "placeholder").Elements(W + "docPart").Select(p => (string?)p.Attribute(W + "val")));
+        Assert.Contains("RicheditPlainedit-AlphaCustomPrompt2", Compact(Pdf(reloaded)), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void EmptyGlossaryStillValidatesUnusedLocalStyleDefinitions()
+    {
+        byte[] source = Modify(Authored("date-value"), zip =>
+        {
+            Put(zip, "word/glossary/document.xml", "<w:glossaryDocument xmlns:w='" + W + "'/>");
+            const string part = "word/glossary/styles.xml";
+            XDocument styles = Xml(zip, part); XElement style = styles.Root!.Elements(W + "style").First();
+            styles.Root.Add(new XElement(style)); Put(zip, part, styles.ToString());
+        });
+        Assert.Contains("Control.Malformed", Assert.Throws<InvalidDataException>(() => Load(source)).Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void WordDerivedControlWithoutGlossaryRunDefaultsKeepsIndependentPlaceholders()
     {

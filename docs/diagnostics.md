@@ -1,5 +1,11 @@
 # Conversion diagnostics
 
+Empty glossary resources still undergo relationship and style validation.
+`Control.Unsupported` identifies an unresolved named placeholder.
+`Control.ProtectedOwner` excludes a wrapper inside a glossary paragraph or
+an inadmissible nested story owner. A content-locked rich-text story parent
+protects its children with `Control.Locked`.
+
 The 1.6.2 #183–#188 release fixes retain wrapped HTML/ebook list content, Markdown
 character references and DOC/DOCX non-breaking and soft hyphens. These characters
 do not cause a fidelity loss. `Docx.Symbol` reports a font-specific symbol replaced
@@ -834,3 +840,8 @@ Names in the [later-design ADRs](later-design-decisions.md), including `Odt.*` a
 catalog entry or fidelity behavior changes in the design PR. Existing revision/comment
 losses and encrypted/unsupported-object rejection remain. Future implementations must
 add catalog/usage tests and content-free crypto/history diagnostics at their own gate.
+
+Typed glossary entries use the local glossary text profile. A run style such as
+`PlaceholderText` without a glossary stylesheet raises `Control.Unsupported`.
+Bookmarks and fields inside a placeholder paragraph raise `Control.ProtectedOwner`.
+Non-whitespace text or CDATA directly inside the glossary root raises `Control.Malformed`.

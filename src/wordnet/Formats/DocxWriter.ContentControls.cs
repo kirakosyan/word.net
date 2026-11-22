@@ -70,7 +70,7 @@ internal sealed partial class DocxWriter
         {
             string part = model.Controls.GlossaryPart!;
             var root = new XElement(W + "glossaryDocument", new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName));
-            var entries = new XElement(W + "docParts"); root.Add(entries);
+            var entries = new XElement(W + "docParts");
             foreach (XElement entry in model.Controls.Glossary.Element(W + "docParts")!.Elements(W + "docPart"))
             {
                 XElement original = entry.Element(W + "docPartPr")!; var props = new XElement(W + "docPartPr");
@@ -79,6 +79,7 @@ internal sealed partial class DocxWriter
                 string key = (string)original.Element(W + "name")!.Attribute(W + "val")!;
                 entries.Add(new XElement(W + "docPart", props, new XElement(W + "docPartBody", Paragraph(model.Controls.GlossaryContent[key]))));
             }
+            if (entries.HasElements) root.Add(entries);
             relationships.Add(Relationship("rControlGlossary", "glossaryDocument", "/" + part));
             types.Add(new XElement(DocxPackage.ContentTypes + "Override", new XAttribute("PartName", "/" + part), new XAttribute("ContentType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml")));
             WritePart(archive, part, root);

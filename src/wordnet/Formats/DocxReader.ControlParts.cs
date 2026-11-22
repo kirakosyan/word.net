@@ -57,13 +57,15 @@ internal sealed partial class DocxReader
         if (glossary.Length == 0) return;
         string glossaryPart = ControlPart(mainPart, glossary[0]);
         RequireControlPart(glossaryPart, GlossaryType, contentTypes);
-        ReadGlossaryResources(glossaryPart, contentTypes);
         XElement root = TypedXml(glossaryPart);
         if (root.Name != W + "glossaryDocument") throw new InvalidDataException("Control.Malformed: Invalid glossary root.");
         Attributes(root);
+        // Keep one collection internally so an empty glossary can receive a fragment later.
+        if (!root.HasElements) root.Add(new XElement(W + "docParts"));
         XElement? parts = root.Element(W + "docParts");
         if (root.Elements().Count() != 1 || parts == null) throw new NotSupportedException("Control.Unsupported: Glossaries contain only admitted named placeholder entries.");
         Attributes(parts);
+        ReadGlossaryResources(glossaryPart, contentTypes, parts.HasElements);
         foreach (XElement entry in parts.Elements())
         {
             context.ReserveControlWork(1); Attributes(entry);

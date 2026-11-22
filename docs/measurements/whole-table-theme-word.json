@@ -679,6 +679,7 @@
     }
   ],
   "supplementaryDirectCellPalette": {
+    "wordBuild": "16.0.20625",
     "date": "2026-11-22",
     "procedure": "Set accent1 and the first clear cell transform on the generated cell-theme control. Sample Word EMF at (356,30) and the 720-pixel managed PDF raster at (161,66).",
     "amounts": "00 01 40 80 99 BF FE FF",

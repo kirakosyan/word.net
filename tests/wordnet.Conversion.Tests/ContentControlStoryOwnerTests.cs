@@ -1,6 +1,8 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Xml.Linq;
 using UglyToad.PdfPig;
@@ -13,6 +15,7 @@ public sealed class ContentControlStoryOwnerTests
 {
     private const string HeaderRef = "<w:headerReference w:type='default' r:id='header'/>";
     private const string FooterRef = "<w:footerReference w:type='default' r:id='footer'/>";
+    private static readonly string[] NestedStoryIds = { "2", "3" };
     private static readonly int[] StoryIds = { 10, 11 };
     private static DocumentContentControl ById(WordDocument document, int id) => document.ContentControls.Single(control => control.Id == id);
     private static byte[] WithStories(byte[] source, string? header = null, string? footer = null) => Modify(source, zip =>
@@ -88,6 +91,78 @@ public sealed class ContentControlStoryOwnerTests
     }
 
     [Fact]
+    public void WordCheckedNestedHeaderMatchesItsParentIdsTextAndPageCount()
+    {
+        string directory = Path.Combine(AppContext.BaseDirectory, "Fixtures", "ContentControls", "StoryOwners");
+        using var manifest = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(directory, "manifest.json")));
+        JsonElement receipt = manifest.RootElement.GetProperty("nestedHeader");
+        byte[] fixture = File.ReadAllBytes(Path.Combine(directory, receipt.GetProperty("fixture").GetString()!));
+        Assert.Equal(receipt.GetProperty("sha256").GetString(), FixtureSha256(fixture));
+        Validate(fixture); WordDocument source = Load(fixture);
+        int parent = int.Parse(receipt.GetProperty("parentId").GetString()!, CultureInfo.InvariantCulture);
+        Assert.Equal(4, source.ContentControls.Count); Assert.Null(ById(source, parent).ParentId);
+        foreach (JsonElement child in receipt.GetProperty("childIds").EnumerateArray())
+            Assert.Equal(parent, ById(source, int.Parse(child.GetString()!, CultureInfo.InvariantCulture)).ParentId);
+        string header = Compact(receipt.GetProperty("headerText").GetString()!);
+        Assert.Equal(header, Compact(ById(source, parent).DisplayText));
+        byte[] saved = Save(source); Validate(saved);
+        Assert.Empty(Xml(saved, "word/glossary/document.xml").Root!.Elements());
+        using PdfDocument pages = PdfDocument.Open(Save(Load(saved), DocumentFormat.Pdf));
+        Assert.Equal(receipt.GetProperty("pages").GetInt32(), pages.NumberOfPages);
+        foreach (var page in pages.GetPages())
+        {
+            Assert.Contains(header, Compact(page.Text), StringComparison.Ordinal);
+            var words = page.GetWords().ToArray();
+            double headY = words.Single(word => word.Text == "This").BoundingBox.Bottom;
+            double bodyY = words.Single(word => word.Text == "page").BoundingBox.Bottom;
+            double footY = words.Single(word => word.Text == "Footer").BoundingBox.Bottom;
+            Assert.True(headY > bodyY && bodyY > footY);
+        }
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void NestedStoryChildrenRetainOrderIdentityAndSharedPagePlacement(bool header)
+    {
+        string part = header ? "word/header1.xml" : "word/footer1.xml";
+        string reference = header ? HeaderRef : FooterRef;
+        string body = "<w:p><w:pPr><w:sectPr>" + reference + "<w:type w:val='nextPage'/></w:sectPr></w:pPr>"
+            + Run("First") + "</w:p><w:p>" + Run("Second") + "</w:p><w:sectPr/>";
+        string children = Run("Before ") + Control(2, "<w:text/>", "old") + Run(" then ") + Control(3, Checkbox(), "-");
+        string story = Control(1, "<w:richText/>", "", block: true, content: children);
+        byte[] input = WithStories(Package(Document(body)), header ? story : null, header ? null : story); Validate(input);
+        WordDocument document = Load(input);
+        Assert.Equal(3, document.ContentControls.Count);
+        Assert.Equal(1, ById(document, 2).ParentId); Assert.Equal(1, ById(document, 3).ParentId);
+        DocumentContentControl old = ById(document, 2);
+        document.SetControlText(old, "new", TestContext.Current.CancellationToken);
+        Assert.Throws<ArgumentException>(() => document.SetControlText(old, "stale", TestContext.Current.CancellationToken));
+        document.SetControlChecked(ById(document, 3), true, TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved); WordDocument reopened = Load(saved);
+        Assert.True(ById(reopened, 3).IsChecked); Assert.Equal("new", ById(reopened, 2).DisplayText);
+        XElement parent = Xml(saved, part).Root!.Elements(W + "sdt").Single();
+        Assert.Equal(NestedStoryIds, parent.Descendants(W + "sdt").Select(child => (string?)child.Element(W + "sdtPr")!.Element(W + "id")!.Attribute(W + "val")));
+        using PdfDocument pdf = PdfDocument.Open(Save(reopened, DocumentFormat.Pdf)); Assert.Equal(2, pdf.NumberOfPages);
+        Assert.All(pdf.GetPages(), page => Assert.Contains("BeforenewthenX", Compact(page.Text), StringComparison.Ordinal));
+        WordDocument display = reopened.CreateControlDisplayView(out _, TestContext.Current.CancellationToken);
+        Assert.Empty(display.ContentControls); Assert.Empty(Xml(Save(display), part).Descendants(W + "sdt"));
+        Assert.Contains("BeforenewthenX", Compact(Xps(display)), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("contentLocked")]
+    [InlineData("sdtContentLocked")]
+    public void LockedStoryParentProtectsChildAndLeavesTheSavedDocumentUntouched(string lockValue)
+    {
+        string nested = Control(1, "<w:richText/>", "", "<w:lock w:val='" + lockValue + "'/>", block: true, content: Control(2, "<w:text/>", "old"));
+        WordDocument document = Load(Source("<w:p/>", nested)); byte[] before = Save(document);
+        var error = Assert.Throws<InvalidOperationException>(() => document.SetControlText(ById(document, 2), "new", TestContext.Current.CancellationToken));
+        Assert.Contains("Control.Locked", error.Message, StringComparison.Ordinal);
+        Assert.Equal(before, Save(document));
+    }
+
+    [Fact]
     public void ASharedInheritedHeaderHasOneOwnerAndEditsAppearOnBothPages()
     {
         string firstSection = "<w:sectPr>" + HeaderRef + "<w:type w:val='nextPage'/></w:sectPr>";
@@ -141,7 +216,13 @@ public sealed class ContentControlStoryOwnerTests
     [InlineData("combo", true)]
     [InlineData("date", false)]
     [InlineData("date", true)]
-    public void EveryAdmittedKindEditsInPlainHeaderAndFooterOwners(string kind, bool block)
+    [InlineData("rich", false, true)]
+    [InlineData("plain", false, true)]
+    [InlineData("checkbox", false, true)]
+    [InlineData("dropdown", false, true)]
+    [InlineData("combo", false, true)]
+    [InlineData("date", false, true)]
+    public void EveryAdmittedKindEditsInPlainHeaderAndFooterOwners(string kind, bool block, bool nested = false)
     {
         string type = kind switch
         {
@@ -156,6 +237,7 @@ public sealed class ContentControlStoryOwnerTests
         string Story(int id)
         {
             string control = Control(id, type, text, block: block);
+            if (nested) return Control(id + 100, "<w:richText/>", "", block: true, content: control);
             return block ? control : "<w:p>" + control + "</w:p>";
         }
         WordDocument document = Load(Source("<w:p>" + Run("Body") + "</w:p>", Story(10), Story(11)));
@@ -191,23 +273,30 @@ public sealed class ContentControlStoryOwnerTests
         Assert.Throws<InvalidDataException>(() => Load(Source("<w:p>" + Run("body") + "</w:p>", header, header)));
     }
 
-    [Fact]
-    public void StoryBindingIsExplicitAndRetainsAtomicWriteBack()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void StoryBindingIsExplicitAndRetainsAtomicWriteBack(bool nested)
     {
-        string body = "<w:p>" + Run("Body") + "</w:p><w:sectPr>" + HeaderRef + "</w:sectPr>";
-        string header = "<w:p>" + Control(7, "<w:text/>", "cached", Binding("/p:invoice/p:customer/@name")) + "</w:p>";
+        string body = "<w:p><w:pPr><w:sectPr>" + HeaderRef + "</w:sectPr></w:pPr>" + Run("First") + "</w:p><w:p>" + Run("Second") + "</w:p><w:sectPr/>";
+        string child = Control(7, "<w:text/>", "cached", Binding("/p:invoice/p:customer/@name"));
+        string header = nested ? Control(8, "<w:richText/>", "", block: true, content: child) : "<w:p>" + child + "</w:p>";
         WordDocument document = Load(WithStories(WithStore(body), header));
         Assert.Equal("cached", ById(document, 7).DisplayText);
-        document.ApplyControlBindings(document.ContentControls, TestContext.Current.CancellationToken);
+        document.ApplyControlBindings(new[] { ById(document, 7) }, TestContext.Current.CancellationToken);
         Assert.Equal("Ada & Co", ById(document, 7).DisplayText);
         document.SetControlText(ById(document, 7), "New & Co", TestContext.Current.CancellationToken);
         using var output = new MemoryStream(); output.WriteByte(42);
         Assert.Throws<InvalidOperationException>(() => document.Save(output, DocumentFormat.Docx, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(new byte[] { 42 }, output.ToArray());
-        document.WriteBackControlBindings(document.ContentControls, TestContext.Current.CancellationToken);
+        document.WriteBackControlBindings(new[] { ById(document, 7) }, TestContext.Current.CancellationToken);
         byte[] saved = Save(document); Validate(saved);
         Assert.Equal("New & Co", (string?)Xml(saved, "customXml/item1.xml").Descendants(XName.Get("customer", "urn:wordnet:controls")).Single().Attribute("name"));
-        Assert.Equal("New & Co", ById(Load(saved), 7).DisplayText);
+        WordDocument reopened = Load(saved);
+        Assert.Equal("New & Co", Assert.Single(reopened.ContentControls, control => control.Id == 7).DisplayText);
+        using PdfDocument pages = PdfDocument.Open(Save(reopened, DocumentFormat.Pdf));
+        Assert.Equal(2, pages.NumberOfPages);
+        Assert.All(pages.GetPages(), page => Assert.Contains("New&Co", Compact(page.Text), StringComparison.Ordinal));
     }
 
     [Fact]
@@ -252,12 +341,12 @@ public sealed class ContentControlStoryOwnerTests
     }
 
     [Fact]
-    public void StoryControlsCannotCrossBookmarksOrUseNestedOwners()
+    public void StoryControlsCannotCrossBookmarksOrUseScalarParents()
     {
         string control = Control(2, "<w:text/>", "inside");
         string crossing = "<w:p><w:bookmarkStart w:id='9' w:name='cross'/>" + control + "<w:bookmarkEnd w:id='9'/></w:p>";
         Assert.Throws<NotSupportedException>(() => Load(Source("<w:p>" + Run("Body") + "</w:p>", crossing)));
-        string nested = Control(1, "<w:richText/>", "", block: true, content: control);
+        string nested = Control(1, "<w:text/>", "", block: true, content: control);
         Assert.Throws<NotSupportedException>(() => Load(Source("<w:p>" + Run("Body") + "</w:p>", nested)));
     }
 }

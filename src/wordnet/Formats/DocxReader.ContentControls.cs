@@ -78,7 +78,8 @@ internal sealed partial class DocxReader
                 || !typedNodes.TryGetValue(parents[0], out ControlData? parent) || parent.Inline || parent.Kind != ContentControlKind.RichText
                 || parent.Placeholder || parent.Binding != null))
                 throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
-            if (entry.Story && (parents.Length != 0 || (inline ? node.Parent?.Parent != node.Document?.Root : node.Parent != node.Document?.Root))
+            XElement? storyContainer = parents.Length == 0 && inline ? node.Parent?.Parent : (parents.FirstOrDefault() ?? node).Parent;
+            if (entry.Story && storyContainer != node.Document?.Root
                 || !entry.Story && (!inline && structure == ControlStructure.None && node.Parent?.Name != W + "body" && node.Parent?.Name != W + "tc" || !node.Ancestors(W + "body").Any())
                 || node.Ancestors().Any(a => a.Name == W + "fldSimple" || a.Name == W + "txbxContent"
                     || a.Name == W + "ins" || a.Name == W + "del" || a.Name == W + "moveFrom" || a.Name == W + "moveTo")
@@ -303,14 +304,15 @@ internal sealed partial class DocxReader
             throw new NotSupportedException("Control.ProtectedOwner: Controls admit formatted runs or ordinary paragraphs only.");
         if (!data.Inline && data.Kind != ContentControlKind.RichText && content.Elements(W + "p").Count() > 1)
             throw new NotSupportedException("Control.ProtectedOwner: Scalar controls admit at most one paragraph.");
+        XElement? containingControl = content.Ancestors(W + "sdt").FirstOrDefault();
         var renderedBreaks = new List<XElement>();
         foreach (XElement e in content.Descendants())
         {
             context.ReserveControlWork(1);
-            if (e.Ancestors(W + "sdt").FirstOrDefault() != content.Parent) continue;
+            if (e.Ancestors(W + "sdt").FirstOrDefault() != containingControl) continue;
             if (e.Name == W + "sdt")
             {
-                if (data.Inline || data.Kind != ContentControlKind.RichText || data.Placeholder || data.Binding != null
+                if (containingControl == null || data.Inline || data.Kind != ContentControlKind.RichText || data.Placeholder || data.Binding != null
                     || e.Parent?.Name != W + "p" || e.Parent.Parent != content)
                     throw new NotSupportedException("Control.ProtectedOwner: Nested controls require a non-placeholder, unbound block rich-text parent.");
                 continue;
