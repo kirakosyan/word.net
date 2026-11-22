@@ -176,7 +176,8 @@ public sealed partial class DocxTableBorderTests
     public void InheritedClearTableShadingIsRetainedAndEditableOutputLossIsExplicit()
     {
         byte[] source = StyledInput(TableStyles(Shading)); Schema(source);
-        using PdfDocument pdf = PdfDocument.Open(Convert(source, DocumentFormat.Pdf, FidelityMode.Strict));
+        Assert.Contains("Table.WholeShading", Assert.Throws<NotSupportedException>(() => Convert(source, DocumentFormat.Pdf, FidelityMode.Strict)).Message, StringComparison.Ordinal);
+        using PdfDocument pdf = PdfDocument.Open(Convert(source, DocumentFormat.Pdf));
         Assert.Equal(4, pdf.GetPage(1).Paths.Count(IsReferenceFill));
         WordDocument document = LoadStyle(source); byte[] word = SaveStyle(document, DocumentFormat.Docx); Schema(word);
         XDocument body = Part(word, "word/document.xml"), styles = Part(word, "word/styles.xml");

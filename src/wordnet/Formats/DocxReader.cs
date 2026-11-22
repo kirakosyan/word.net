@@ -1054,10 +1054,7 @@ internal sealed partial class DocxReader
             {
                 string? fill = (string?)property.Attribute(W + "fill");
                 if (fill is not null and not "auto")
-                {
-                    if (fill.Length != 6 || !uint.TryParse(fill, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _)) throw new InvalidDataException("Docx.Color: Invalid shading color.");
-                    style.Appearance.Background = fill.ToUpperInvariant();
-                }
+                    style.Appearance.Background = ReadRgb(fill);
                 style.Appearance.Background = ThemeReference(property, "themeFill", "themeFillTint", "themeFillShade", style.Appearance.Background);
                 _ = ThemeReference(property, "themeColor", "themeTint", "themeShade", null);
                 if ((string?)property.Attribute(W + "val") is string pattern && pattern is not "clear" and not "solid" and not "nil")
@@ -1065,10 +1062,7 @@ internal sealed partial class DocxReader
             }
             else if (property.Name == W + "color")
             {
-                string value = DocxPackage.RequiredAttribute(property, W + "val");
-                if (value != "auto" && (value.Length != 6 || !uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _)))
-                    throw new InvalidDataException("Docx.Color: Expected six RGB hexadecimal digits or auto.");
-                style.Color = value == "auto" ? null : value.ToUpperInvariant();
+                style.Color = ReadRgb(DocxPackage.RequiredAttribute(property, W + "val"));
                 string? colorTheme = (string?)property.Attribute(W + "themeColor");
                 if (colorTheme != null && !ThemeAppearance.ValidColorToken(colorTheme)
                     || !ThemeAppearance.ValidTransform((string?)property.Attribute(W + "themeTint")) || !ThemeAppearance.ValidTransform((string?)property.Attribute(W + "themeShade")))

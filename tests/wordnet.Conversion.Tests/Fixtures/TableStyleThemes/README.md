@@ -6,7 +6,7 @@ first-row conditional style and a bounded local theme whose `accent1` is `2266CC
 The `theme`, `theme-tint` and `theme-shade` inputs also store `FF0000` as the RGB
 fallback. The explicit-blue and explicit-red inputs contain the corresponding
 direct RGB styles. The tint and shade use `80`; their OOXML calculations for the
-theme value are `90B2E5` and `113366`. The published [shading element](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.shading?view=openxml-3.0.1)
+theme value are `89B0EB` and `113366`. The published [shading element](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.shading?view=openxml-3.0.1)
 describes the theme and fallback attributes.
 
 LibreOffice 24.2.7.2 (`420(Build:2)`) on Ubuntu 24.04 exported the PDFs with

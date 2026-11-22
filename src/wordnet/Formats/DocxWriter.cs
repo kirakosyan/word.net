@@ -383,8 +383,7 @@ internal sealed partial class DocxWriter
         if (table.LeftIndent != 0) element.Element(W + "tblPr")!.Add(new XElement(W + "tblInd", new XAttribute(W + "w", Twips(table.LeftIndent)), new XAttribute(W + "type", "dxa")));
         if (table.Borders.Count != 0)
             element.Element(W + "tblPr")!.Add(TableBorders(table.Borders));
-        if (table.Background != null) element.Element(W + "tblPr")!.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
-            new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", table.Background)));
+        if (table.Background != null) element.Element(W + "tblPr")!.Add(TableShading(table.Background, table.BackgroundTheme));
         if (table.LayoutExplicit) element.Element(W + "tblPr")!.Add(new XElement(W + "tblLayout", new XAttribute(W + "type", table.AutoFit ? "autofit" : "fixed")));
         if (table.PlainDocxGeometry && table.PlainDocxTableMargins != null)
             element.Element(W + "tblPr")!.Add(SourceMargins("tblCellMar", table.PlainDocxTableMargins));
@@ -420,7 +419,7 @@ internal sealed partial class DocxWriter
                 if (cell.Merge != VerticalMerge.None) cellProperties.Add(new XElement(W + "vMerge", new XAttribute(W + "val", cell.Merge == VerticalMerge.Start ? "restart" : "continue")));
                 if (cell.Borders.Count > 0) cellProperties.Add(new XElement(W + "tcBorders", cell.Borders.Select(b => new XElement(W + b.Key,
                     new XAttribute(W + "val", b.Value.Width == 0 ? "nil" : b.Value.Style), new XAttribute(W + "sz", Math.Round(b.Value.Width * 8)), new XAttribute(W + "color", b.Value.Color)))));
-                if (cell.Background != null) cellProperties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "fill", cell.Background)));
+                if (cell.Background != null) cellProperties.Add(TableShading(cell.Background, cell.BackgroundTheme, automaticForeground: false));
                 if (table.PlainDocxGeometry && cell.PlainDocxCellMargins != null)
                     cellProperties.Add(SourceMargins("tcMar", cell.PlainDocxCellMargins));
                 else if (!table.PlainDocxGeometry && cell.Padding != null)
@@ -531,6 +530,7 @@ internal sealed partial class DocxWriter
         {
             context.CheckCancellation(); sourceIds.Add(style.Id);
             metadataBytes = checked(metadataBytes + ((long)style.Id.Length + style.Name.Length) * 2 + 256
+                + (style.BackgroundTheme == null ? 0 : 128)
                 + ((long)style.Regions.Count + style.EffectiveRegions.Count + style.RegionThemes.Count + style.EffectiveRegionThemes.Count) * 128);
             metadataBytes = checked(metadataBytes + (style.RegionBorders.Sum(region => (long)region.Value.Count + 1)
                 + style.EffectiveRegionBorders.Sum(region => (long)region.Value.Count + 1)) * 128);
@@ -547,6 +547,17 @@ internal sealed partial class DocxWriter
             }
             assigned.Add(id); tableStyleIds.Add(style, id); tableStyleOrder.Add(style);
         }
+    }
+
+    private static XElement TableShading(string color, TableThemeColor? theme, bool automaticForeground = true)
+    {
+        string? fallback = theme == null ? color : theme.Fallback;
+        return new XElement(W + "shd", new XAttribute(W + "val", "clear"),
+            automaticForeground ? new XAttribute(W + "color", "auto") : null,
+            fallback == null ? null : new XAttribute(W + "fill", fallback),
+            theme == null ? null : new XAttribute(W + "themeFill", theme.Token),
+            theme?.Tint == null ? null : new XAttribute(W + "themeFillTint", theme.Tint),
+            theme?.Shade == null ? null : new XAttribute(W + "themeFillShade", theme.Shade));
     }
 
     private XElement Styles()
@@ -584,8 +595,7 @@ internal sealed partial class DocxWriter
             if (definition.RowBandSize.HasValue) properties.Add(new XElement(W + "tblStyleRowBandSize", new XAttribute(W + "val", definition.RowBandSize.Value)));
             if (definition.ColumnBandSize.HasValue) properties.Add(new XElement(W + "tblStyleColBandSize", new XAttribute(W + "val", definition.ColumnBandSize.Value)));
             if (definition.Borders.Count != 0) properties.Add(TableBorders(definition.Borders));
-            if (definition.Background != null) properties.Add(new XElement(W + "shd", new XAttribute(W + "val", "clear"),
-                new XAttribute(W + "color", "auto"), new XAttribute(W + "fill", definition.Background)));
+            if (definition.Background != null) properties.Add(TableShading(definition.Background, definition.BackgroundTheme));
             if (properties.HasElements) style.Add(properties);
             foreach (string region in TableStyleRegions)
                 if (definition.Regions.ContainsKey(region) || definition.RegionBorders.ContainsKey(region))
@@ -597,11 +607,7 @@ internal sealed partial class DocxWriter
                         conditionalBorders == null ? null : new XElement(W + "tcBorders", TableBorderSides.Where(side => conditionalBorders.ContainsKey(side)).Select(side =>
                             new XElement(W + side, new XAttribute(W + "val", conditionalBorders[side].Style), new XAttribute(W + "sz", Math.Round(conditionalBorders[side].Width * 8)),
                                 new XAttribute(W + "color", conditionalBorders[side].Color)))),
-                        color == null ? null : new XElement(W + "shd", new XAttribute(W + "val", "clear"), new XAttribute(W + "color", "auto"),
-                            reference == null ? new XAttribute(W + "fill", color) : reference.Fallback == null ? null : new XAttribute(W + "fill", reference.Fallback),
-                            reference == null ? null : new XAttribute(W + "themeFill", reference.Token),
-                            reference?.Tint == null ? null : new XAttribute(W + "themeFillTint", reference.Tint),
-                            reference?.Shade == null ? null : new XAttribute(W + "themeFillShade", reference.Shade)))));
+                        color == null ? null : TableShading(color, reference))));
                 }
             styles.Add(style);
         }

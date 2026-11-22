@@ -61,7 +61,13 @@ reports unqualified rendering that relies on inherited conditional regions.
 documented limit use `Docx.TableStyleData`.
 `Table.StyleThemeColor` reports an effective conditional theme-fill reference in
 non-DOCX output because the independent renderer uses its stored fallback instead.
-Unresolved references and unsupported transforms retain `Docx.ThemeColor`.
+Development source also reports `Table.StyleThemeColor` on static output when
+the managed exporter paints an effective whole-table theme fill. The desktop
+Word controls omitted that fill. `Table.WholeShading` reports the same
+difference for an effective explicit whole-table fill in PDF or XPS. An explicit
+child override of an inherited theme uses that diagnostic. Resolved clear
+direct cell fills can render in Strict. Unresolved references and unsupported
+transforms retain `Docx.ThemeColor`.
 `Table.StyleBorderConflict` reports unqualified non-DOCX rendering of conditional
 interior edges, competing whole-table or direct-cell borders, or overlapping
 conditional edges; admitted conditional style borders remain editable in DOCX.

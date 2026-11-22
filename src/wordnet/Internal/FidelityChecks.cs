@@ -33,23 +33,28 @@ internal static class FidelityChecks
             }
         if ((format is DocumentFormat.Docx or DocumentFormat.Dotx) && model.Theme != null)
             context.Loss("Docx.ThemeData", "DOCX/DOTX output retains a bounded Latin-font and RGB scheme; original theme effects, script fonts and system-color behavior are not preserved.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.UsesDefaultStyle))
+        var tables = model.Tables.ToArray();
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.UsesDefaultStyle))
             context.Loss("Docx.TableStyleDefault", "Implicit default table styles are retained in DOCX, but their rendered behavior differs between reference applications.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.Style?.EffectiveRegionThemes.Count > 0))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.EffectiveBackgroundTheme != null))
+            context.Loss("Table.StyleThemeColor", "Static output paints the resolved whole-table theme color. Desktop Word omitted this fill in the measured controls.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.Style?.EffectiveRegionThemes.Count > 0))
             context.Loss("Table.StyleThemeColor", "Conditional theme fills are retained in DOCX, but their rendered color differs between reference applications.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalBorderConflict))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.HasUnqualifiedConditionalBorderConflict))
             context.Loss("Table.StyleBorderConflict", "Conditional interior or competing borders are retained in DOCX but their rendered precedence is not independently qualified.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedRegionOverlap))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.HasUnqualifiedRegionOverlap))
             context.Loss("Table.StyleRegionOverlap", "Overlapping first/last regions on a single row or column are not independently qualified.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedConditionalInheritance))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.HasUnqualifiedConditionalInheritance))
             context.Loss("Table.StyleInheritance", "Inherited conditional styles are retained in DOCX but their rendered inheritance is not independently qualified.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedWholeConditionalShading))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.HasUnqualifiedWholeConditionalShading))
             context.Loss("Table.ShadingConflict", "Whole-table and conditional shading are retained in DOCX but their combined appearance is not independently qualified.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasAmbiguousDefaultBandSize))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.HasAmbiguousDefaultBandSize))
             context.Loss("Table.StyleBandDefault", "Omitted band sizes use the OOXML default of one, while Microsoft documents a different Word default.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.HasUnqualifiedBandSize))
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.HasUnqualifiedBandSize))
             context.Loss("Table.StyleBandSize", "Explicit non-unit table-style band sizes are retained in DOCX but their rendered appearance is not independently qualified.");
-        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && model.Tables.Any(table => table.Style != null))
+        if (format is DocumentFormat.Pdf or DocumentFormat.Xps && tables.Any(table => table.EffectiveBackground != null && table.EffectiveBackgroundTheme == null))
+            context.Loss("Table.WholeShading", "Static output paints an explicit whole-table fill that desktop Word omitted in the measured controls.");
+        if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && tables.Any(table => table.Style != null))
         {
             if (format is DocumentFormat.Doc or DocumentFormat.Rtf or DocumentFormat.Odt or DocumentFormat.Ott)
                 context.Loss("Table.StyleOutput", "This editable destination does not retain the DOCX table-style reference or inheritance.");
@@ -98,9 +103,9 @@ internal static class FidelityChecks
             return;
         }
         if (format is not (DocumentFormat.Docx or DocumentFormat.Dotx) && (model.Paragraphs.Any(p => p.Control != null || p.Runs.Any(r => r.Control != null || r.FieldInstruction != null && DocumentFields.Kind(r.FieldInstruction) == "MERGEFIELD"))
-            || model.Tables.Any(t => t.Control != null || t.RowControls.Count > 0)))
+            || tables.Any(t => t.Control != null || t.RowControls.Count > 0)))
             context.Loss("Template.UnmergedOutput", "Unexecuted template constructs use cached content without editable template semantics in this destination.");
-        foreach (TableBlock table in model.Tables)
+        foreach (TableBlock table in tables)
         {
             using var location = context.At(table.Location);
             TableValidation.Validate(table, context);
@@ -116,7 +121,6 @@ internal static class FidelityChecks
                 model.Blocks.AddRange(note.Blocks);
             }
         }
-        var tables = model.Tables.ToArray();
         var paragraphs = model.Paragraphs.Distinct().ToArray();
         if (format is not DocumentFormat.Docx and not DocumentFormat.Dotx and not DocumentFormat.Pdf and not DocumentFormat.Xps)
             foreach (ParagraphBlock paragraph in paragraphs)

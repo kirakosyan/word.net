@@ -149,9 +149,16 @@ public sealed partial class DocxTableBorderTests
             + "<w:tblGrid><w:gridCol w:w='2400'/><w:gridCol w:w='2400'/></w:tblGrid>" + header + rows + "</w:tbl>";
         using var input = new MemoryStream(TestDocuments.Docx(TestDocuments.Body(table + section))); using var output = new MemoryStream();
         output.WriteByte(42); output.Position = 0;
-        Assert.Contains(diagnostic, Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output,
+        Assert.Contains("Table.WholeShading", Assert.Throws<NotSupportedException>(() => new WordConverter().Convert(input, output,
             DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.Strict), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
         Assert.Equal(new byte[] { 42 }, output.ToArray());
+        input.Position = 0;
+        using var painted = new MemoryStream();
+        ConversionResult result = new WordConverter().Convert(input, painted, DocumentFormat.Docx, DocumentFormat.Pdf,
+            new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken);
+        Assert.Contains(result.Diagnostics, finding => finding.Code == diagnostic);
+        using PdfDocument pdf = PdfDocument.Open(painted.ToArray());
+        Assert.True(pdf.NumberOfPages > 1);
     }
 
     [Fact]

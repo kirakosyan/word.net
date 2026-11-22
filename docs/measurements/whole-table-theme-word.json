@@ -1,0 +1,762 @@
+{
+  "date": "2026-11-20",
+  "scope": "Whole-table and direct-cell fill colors on the first page of synthetic DOCX controls.",
+  "generator": "eng/generate-whole-table-theme-controls.py",
+  "baseFixture": "tests/wordnet.Conversion.Tests/Fixtures/TableStyleThemes/theme.docx",
+  "baseFixtureSha256": "987ccdf76846cbc689fe2a1901a22e9864c16bb5f99f7bafd7c5e17f1f2ef75b",
+  "word": {
+    "version": "16.0",
+    "build": "16.0.20527",
+    "executableSha256": "c93a476ebae673f571414fd4e230a1920c1456807ff813105ac5e0ff34a24619",
+    "font": "Arial",
+    "regularFontSha256": "edfbd22a3d088fc2f5d7c79b8c9c732df6dc878a60f0a80be0f92a3c7a634404",
+    "page": "ActiveWindow.Panes.Item(1).Pages.Item(1).EnhMetaFileBits",
+    "view": "Print layout",
+    "printer": "Microsoft Print to PDF, per Word instance",
+    "rasterReader": "Windows GDI via Pillow 12.3.0"
+  },
+  "managed": {
+    "implementationCommit": "17ad70735d296a24fb1b82a3d2e9029253f2d6ec",
+    "buildBasis": "Clean checkout before and after a non-incremental locked Release solution build. The probe loaded the identical net10.0 assembly.",
+    "font": "Substituted by the managed exporter",
+    "renderer": "pdftoppm version 26.07.0",
+    "scaleToPixels": 720,
+    "assemblySha256": "dde553a4729e1af8e8cd29fc93efdb0f5c841ff457634ac0faf3fe297f87b1f9",
+    "date": "2026-11-22",
+    "sourceTree": "5aa5ab99a81dd9789cd204c4ba73c9b014fe21d6",
+    "sdk": "10.0.401"
+  },
+  "publicPackageContrast": {
+    "version": "1.6.2",
+    "archiveSha256": "7bf0fb7578530216188c0bd3f0172f85da9eb8efa4a6d9eeb18b6897d51f0bad",
+    "assemblySha256": "e27f5355ee328aded61d5d3039601034e6bc9f183e5844b45090a490c9751d04"
+  },
+  "measurements": [
+    {
+      "id": "cell-explicit-blue",
+      "inputSha256": "4ac023b677f528aed673ec58dc2e4c6e3739099ec67344897302991787bd3d42",
+      "wordPage": {
+        "emfSha256": "b90dba3640d365a0a433c575b9e8a5b73cd7aa86f67daee688e563c3be1caf28",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "54db77926e78d509175b0a3947979d6fefc2205bd45f5362cde6f5c7db8af0c3",
+        "pixels": {
+          "2266CC": 1359,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "887b3558e0cb41736e89c6d2777aa347501884b2dda2139b06bfda88a0daca97",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "b0ecbccbfb655a98afda5d05a745297dec2912c9ddf0973cc9f49f5e86982b6b",
+        "pixels": {
+          "2266CC": 877,
+          "FF0000": 0,
+          "113366": 1,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "2266CC"
+        },
+        "nuget162": {
+          "fill": "2266CC"
+        }
+      }
+    },
+    {
+      "id": "cell-explicit-red",
+      "inputSha256": "2d1834eb437f8fd60080a149d8538f2bd2908e31acb18f770e7e3c92bd80243d",
+      "wordPage": {
+        "emfSha256": "0ecbf6894e59db52acfdea357d4606f030dd5b106b6e7c2292d473ba976eb8d4",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "846b1461a3e3889e3b990269d3145b6a0c14bd2d9a4bc70ece38af6a5a34548b",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 1373,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "0273d9cb5383e93ef1ec7a9173f4a8fb54bd0192c7f453e966ce7280ba8abe88",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "d41aebb33bff6c48f4b8f7566f37a2c44d1c7746c970295aaf9e635dd0118efc",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 877,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000"
+        },
+        "nuget162": {
+          "fill": "FF0000"
+        }
+      }
+    },
+    {
+      "id": "cell-shade",
+      "inputSha256": "625f54861920e3031204352c60b8bd20e5300bd7a5f6bd050924abc54346eb25",
+      "wordPage": {
+        "emfSha256": "33c52deaf54505b7b4bf6d2bed9168f7dda544c21deeefc948764333c7cbaf21",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "8445c0f4a19c0b6da1cc4da496762a0926a192edd59c9357fe3ffc88a9d34a36",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 1359,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "e9d4931c3395a10bbecba27cc72a5c6dcc1147f94a0d74c1a4655015b8e5f440",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "e41ec30c994faacede26082f833fe8c497506ec0e1daba8970ce691c04ed0c58",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 877,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1",
+          "themeFillShade": "80"
+        },
+        "nuget162": {
+          "fill": "113366"
+        }
+      }
+    },
+    {
+      "id": "cell-theme",
+      "inputSha256": "998c14a8812c9df84f1563c3175c20446d3e5c895a63d808d9fe917f722d9589",
+      "wordPage": {
+        "emfSha256": "19f5386cb3421faedeb5ec5b4fa8ddde9d81fbf78ae4a8ff2f64d737bfca3c50",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "54db77926e78d509175b0a3947979d6fefc2205bd45f5362cde6f5c7db8af0c3",
+        "pixels": {
+          "2266CC": 1359,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "887b3558e0cb41736e89c6d2777aa347501884b2dda2139b06bfda88a0daca97",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "b0ecbccbfb655a98afda5d05a745297dec2912c9ddf0973cc9f49f5e86982b6b",
+        "pixels": {
+          "2266CC": 877,
+          "FF0000": 0,
+          "113366": 1,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1"
+        },
+        "nuget162": {
+          "fill": "2266CC"
+        }
+      }
+    },
+    {
+      "id": "cell-tint",
+      "inputSha256": "b73672de0f281531f75b41c8339f73162a864465d642aba85861e37514967ebc",
+      "wordPage": {
+        "emfSha256": "cd835fa0ce828e36bfed09050de46d8f1b7a775de27f52a198269be5cdf7e592",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "76fcd0bf4bc9878d97189d323b3c3b42d5bf6c26e6b4dcc641c825ad0be67dbd",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 1359
+        }
+      },
+      "managedPdf": {
+        "sha256": "5b0b5d577d454228dd9a0a325499a589ab3684556cfe63012ec76a570bd932a4",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "f54771c82b668e70649389a1c4b5afaf308eefe3b85b2ba4e992ad80302d27d7",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 877
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1",
+          "themeFillTint": "80"
+        },
+        "nuget162": {
+          "fill": "90B2E5"
+        }
+      }
+    },
+    {
+      "id": "direct-explicit-blue",
+      "inputSha256": "0e5b30bc8ad5580529ce556e9c3f2cb58fdcee5203e08cbaad6f57b623ad80cd",
+      "wordPage": {
+        "emfSha256": "1aa3ba87265f6b086008dd436927dda54f71751309e8c3c7ff21af576bf66dd8",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "3de742d8ffc1e98e846758b02992f2197a4bd02897744b5668a22cb0949b446c",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "64afec30dcc53752daad6b9d8313245ea4ad51a8abb205c06b138b81ed5ce8be",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "712cc11a949a7ee547bcfd243397fe911028dc261a484f89784cbc58c40bb19a",
+        "pixels": {
+          "2266CC": 3821,
+          "FF0000": 0,
+          "113366": 3,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "2266CC"
+        },
+        "nuget162": {
+          "fill": "2266CC"
+        }
+      }
+    },
+    {
+      "id": "direct-explicit-red",
+      "inputSha256": "d392ffbadc0487bdfb79feeb9247cc72035adbc377740dc23ed3112dbded2ab0",
+      "wordPage": {
+        "emfSha256": "d7433a4e3236524ec080a2afc08c5dbc0a6b999f8a18f2d8a0b45c4e5c452f1d",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "3de742d8ffc1e98e846758b02992f2197a4bd02897744b5668a22cb0949b446c",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "20bd8f6832001941712cbd6267c8f09886bf581d2e58bfde4bf3dffaf3d70023",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "2a37d6cc9ae27a2b5e3a6848510c2a99d392f83b66c097f4d796312ce282b603",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 3821,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000"
+        },
+        "nuget162": {
+          "fill": "FF0000"
+        }
+      }
+    },
+    {
+      "id": "direct-shade",
+      "inputSha256": "a43d86d17cc813b55777dd4cc480504200cfaa0c0f8a9d016e757b251a8b80d8",
+      "wordPage": {
+        "emfSha256": "afabe08e38e4658fd86dfa0911c4f3382e056cc748bf955a34ce1d909e95f172",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "3de742d8ffc1e98e846758b02992f2197a4bd02897744b5668a22cb0949b446c",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "8e77a8509c0638d4cd2f25789442e185a5d81bbf9af7cf224570d4a28b519a0a",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "c6858323922a8d1ca9b270eb54f8cf4b7c4a13907e6a102d05af9d176940e96f",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 3821,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1",
+          "themeFillShade": "80"
+        },
+        "nuget162": {
+          "fill": "113366"
+        }
+      }
+    },
+    {
+      "id": "direct-theme",
+      "inputSha256": "630ca42bda116b7a0eeb914dccc1c61f1fab8fee956fe42a137f681b53a7dd22",
+      "wordPage": {
+        "emfSha256": "c5ffaa5b4b18be165ae0612f45d723d89e37be723505348d67cb0254d6604302",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "3de742d8ffc1e98e846758b02992f2197a4bd02897744b5668a22cb0949b446c",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "64afec30dcc53752daad6b9d8313245ea4ad51a8abb205c06b138b81ed5ce8be",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "712cc11a949a7ee547bcfd243397fe911028dc261a484f89784cbc58c40bb19a",
+        "pixels": {
+          "2266CC": 3821,
+          "FF0000": 0,
+          "113366": 3,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1"
+        },
+        "nuget162": {
+          "fill": "2266CC"
+        }
+      }
+    },
+    {
+      "id": "direct-tint",
+      "inputSha256": "0bda7e2e632321761eb391bdeeb4a93c33bf84d62fcd057c9d6ad2c3ec5485ff",
+      "wordPage": {
+        "emfSha256": "d7433a4e3236524ec080a2afc08c5dbc0a6b999f8a18f2d8a0b45c4e5c452f1d",
+        "size": [
+          1486,
+          327
+        ],
+        "rgbSha256": "3de742d8ffc1e98e846758b02992f2197a4bd02897744b5668a22cb0949b446c",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "4fe7722792bd3d34923db2608c7722ddab431242dda7fababa6674359b121371",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "1764b0d430dede83a1bddecec12a578402083d8440eea0d655bea1abbc28f686",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 3821
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1",
+          "themeFillTint": "80"
+        },
+        "nuget162": {
+          "fill": "90B2E5"
+        }
+      }
+    },
+    {
+      "id": "inherited-explicit-blue",
+      "inputSha256": "5ed1a78cbac2e5f56a25de348c727b8232d8f4b288d8c9737a72703ea8db9698",
+      "wordPage": {
+        "emfSha256": "21142b82aa2e5e5389eece1d591f7942cf57f2b04c04c5695b638b5875647bdf",
+        "size": [
+          1482,
+          327
+        ],
+        "rgbSha256": "3dfe8d5e3dbf077db8f09271d09edba304b30127ee84aae5a17a23dc57f86865",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "cffd6d3f7103698d72d4c014582827fd5f7a23106b4bda08eed965bd5834bb21",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "712cc11a949a7ee547bcfd243397fe911028dc261a484f89784cbc58c40bb19a",
+        "pixels": {
+          "2266CC": 3821,
+          "FF0000": 0,
+          "113366": 3,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "2266CC"
+        },
+        "nuget162": {
+          "fill": "2266CC"
+        }
+      }
+    },
+    {
+      "id": "inherited-explicit-red",
+      "inputSha256": "17d713347cd09079489ab9849d36ce9ec4345ddd36a60322f97463d058a7da03",
+      "wordPage": {
+        "emfSha256": "c45ff57917b981982d9149c7af1d17499a14c1bb2d0fb12017717515de2d8dea",
+        "size": [
+          1482,
+          327
+        ],
+        "rgbSha256": "3dfe8d5e3dbf077db8f09271d09edba304b30127ee84aae5a17a23dc57f86865",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "a5a03193658e7868690037e0dede53a75eca2eb1482b0a6b40b678510de4f69f",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "2a37d6cc9ae27a2b5e3a6848510c2a99d392f83b66c097f4d796312ce282b603",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 3821,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000"
+        },
+        "nuget162": {
+          "fill": "FF0000"
+        }
+      }
+    },
+    {
+      "id": "inherited-shade",
+      "inputSha256": "b74eb5222bfb72c2ab3817e4b770f2ba1b385735fe970ff0b7b84427c79b34d3",
+      "wordPage": {
+        "emfSha256": "468269f3490ae85c63f39100d787c581ac3d5a93f9344e22899dc7ee28d16ac9",
+        "size": [
+          1482,
+          327
+        ],
+        "rgbSha256": "3dfe8d5e3dbf077db8f09271d09edba304b30127ee84aae5a17a23dc57f86865",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "84ecf79946b2ce00eda9299a33269fda0030f53a16aa6a5b1f827cd412c767cd",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "c6858323922a8d1ca9b270eb54f8cf4b7c4a13907e6a102d05af9d176940e96f",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 3821,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1",
+          "themeFillShade": "80"
+        },
+        "nuget162": {
+          "fill": "113366"
+        }
+      }
+    },
+    {
+      "id": "inherited-theme",
+      "inputSha256": "5982665134a99f2e74976576da64db0e41ece04cabb099b80ca48ce45d2b7e89",
+      "wordPage": {
+        "emfSha256": "21142b82aa2e5e5389eece1d591f7942cf57f2b04c04c5695b638b5875647bdf",
+        "size": [
+          1482,
+          327
+        ],
+        "rgbSha256": "3dfe8d5e3dbf077db8f09271d09edba304b30127ee84aae5a17a23dc57f86865",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "cffd6d3f7103698d72d4c014582827fd5f7a23106b4bda08eed965bd5834bb21",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "712cc11a949a7ee547bcfd243397fe911028dc261a484f89784cbc58c40bb19a",
+        "pixels": {
+          "2266CC": 3821,
+          "FF0000": 0,
+          "113366": 3,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1"
+        },
+        "nuget162": {
+          "fill": "2266CC"
+        }
+      }
+    },
+    {
+      "id": "inherited-tint",
+      "inputSha256": "edbf7dd63f5ac6fea19c61a61283a886070f8d2a84d1c030cd81744cef850609",
+      "wordPage": {
+        "emfSha256": "e3a16ee0058f9345c621e9965f50cf1a452a4665b650a8591e953a227918c92c",
+        "size": [
+          1482,
+          327
+        ],
+        "rgbSha256": "3dfe8d5e3dbf077db8f09271d09edba304b30127ee84aae5a17a23dc57f86865",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 0
+        }
+      },
+      "managedPdf": {
+        "sha256": "6886c82b5d070d0a68857bbbc2fecded0423692620a4d0c8740645c20ff2d266",
+        "size": [
+          510,
+          720
+        ],
+        "rgbSha256": "1764b0d430dede83a1bddecec12a578402083d8440eea0d655bea1abbc28f686",
+        "pixels": {
+          "2266CC": 0,
+          "FF0000": 0,
+          "113366": 0,
+          "90B2E5": 0,
+          "89B0EB": 3821
+        }
+      },
+      "savedDocxFill": {
+        "development": {
+          "fill": "FF0000",
+          "themeFill": "accent1",
+          "themeFillTint": "80"
+        },
+        "nuget162": {
+          "fill": "90B2E5"
+        }
+      }
+    }
+  ],
+  "supplementaryDirectCellPalette": {
+    "date": "2026-11-22",
+    "procedure": "Set accent1 and the first clear cell transform on the generated cell-theme control. Sample Word EMF at (356,30) and the 720-pixel managed PDF raster at (161,66).",
+    "amounts": "00 01 40 80 99 BF FE FF",
+    "exactMatches": 85,
+    "maximumAbsoluteChannelDifference": 1,
+    "series": [
+      {
+        "schemeRgb": "2266CC",
+        "transform": "themeFillTint",
+        "word": "FFFFFF FDFEFE C4D7F5 89B0EB 73A1E7 508AE1 2266CC 2266CC",
+        "managed": "FFFFFF FEFEFE C4D7F5 89B0EB 73A1E7 508AE1 2266CC 2266CC"
+      },
+      {
+        "schemeRgb": "2266CC",
+        "transform": "themeFillShade",
+        "word": "000000 000000 081933 113366 143D7A 194C98 2265CB 2266CC",
+        "managed": "000000 000000 081933 113366 143D7A 194C98 2165CB 2266CC"
+      },
+      {
+        "schemeRgb": "C0504D",
+        "transform": "themeFillTint",
+        "word": "FFFFFF FEFEFE EFD2D2 DFA6A5 D99594 CF7B79 C0504D C0504D",
+        "managed": "FFFFFF FEFEFE EFD3D2 DFA7A5 D99694 CF7B79 C0504D C0504D"
+      },
+      {
+        "schemeRgb": "C0504D",
+        "transform": "themeFillShade",
+        "word": "000000 000000 311211 632423 772C2A 943634 BF4E4C C0504D",
+        "managed": "000000 000000 311211 632423 772C2A 943734 BF4F4C C0504D"
+      },
+      {
+        "schemeRgb": "4F81BD",
+        "transform": "themeFillTint",
+        "word": "FFFFFF FEFEFE D2DFEE A6BFDD 95B3D7 7BA0CD 4F80BD 4F81BD",
+        "managed": "FFFFFF FEFEFE D2DFEE A6BFDD 95B3D7 7BA0CD 4F81BD 4F81BD"
+      },
+      {
+        "schemeRgb": "4F81BD",
+        "transform": "themeFillShade",
+        "word": "000000 000000 122030 244061 2C4C74 365F91 4E7FBC 4F81BD",
+        "managed": "000000 000000 122030 244061 2B4D74 366091 4E80BC 4F81BD"
+      },
+      {
+        "schemeRgb": "777777",
+        "transform": "themeFillTint",
+        "word": "FFFFFF FEFEFE DCDCDC BABABA ADADAD 999999 777777 777777",
+        "managed": "FFFFFF FEFEFE DCDCDC BABABA ADADAD 999999 777777 777777"
+      },
+      {
+        "schemeRgb": "777777",
+        "transform": "themeFillShade",
+        "word": "000000 000000 1D1D1D 3B3B3B 474747 595959 767676 777777",
+        "managed": "000000 000000 1D1D1D 3B3B3B 474747 595959 767676 777777"
+      },
+      {
+        "schemeRgb": "000000",
+        "transform": "themeFillTint",
+        "word": "FFFFFF FEFEFE BFBFBF 7F7F7F 666666 404040 010101 000000",
+        "managed": "FFFFFF FEFEFE BFBFBF 7F7F7F 666666 404040 010101 000000"
+      },
+      {
+        "schemeRgb": "000000",
+        "transform": "themeFillShade",
+        "word": "000000 000000 000000 000000 000000 000000 000000 000000",
+        "managed": "000000 000000 000000 000000 000000 000000 000000 000000"
+      },
+      {
+        "schemeRgb": "FFFFFF",
+        "transform": "themeFillTint",
+        "word": "FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF",
+        "managed": "FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF"
+      },
+      {
+        "schemeRgb": "FFFFFF",
+        "transform": "themeFillShade",
+        "word": "000000 010101 404040 808080 999999 BFBFBF FEFEFE FFFFFF",
+        "managed": "000000 010101 404040 808080 999999 BFBFBF FEFEFE FFFFFF"
+      }
+    ]
+  }
+}

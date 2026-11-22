@@ -188,12 +188,12 @@ public sealed class DocxThemeTests
             + Paragraph("<w:color w:val='FF0000' w:themeColor='accent1' w:themeShade='80'/>", "Shade");
         byte[] input = Package(body); Schema(input); WordDocument source = Load(input, out _);
         Assert.Equal("2266CC", source.Paragraphs[0].Runs[0].Formatting.Color);
-        Assert.Equal("7AA3E0", source.Paragraphs[1].Runs[0].Formatting.Color);
+        Assert.Equal("73A1E7", source.Paragraphs[1].Runs[0].Formatting.Color);
         Assert.Equal("113366", source.Paragraphs[2].Runs[0].Formatting.Color);
         using PdfDocument pdf = PdfDocument.Open(Save(source, DocumentFormat.Pdf));
         var page = pdf.GetPage(1); var first = page.Letters.First(l => l.Value == "B").Color.ToRGBValues(); var tint = page.Letters.First(l => l.Value == "T").Color.ToRGBValues();
         var shade = page.Letters.First(l => l.Value == "S").Color.ToRGBValues();
-        Assert.Equal(34 / 255.0, first.r, 2); Assert.Equal(122 / 255.0, tint.r, 2); Assert.Equal(17 / 255.0, shade.r, 2);
+        Assert.Equal(34 / 255.0, first.r, 2); Assert.Equal(115 / 255.0, tint.r, 2); Assert.Equal(17 / 255.0, shade.r, 2);
         string settings = "<w:settings xmlns:w='" + W + "'><w:evenAndOddHeaders/><w:clrSchemeMapping w:bg1='dark2' w:t1='dark1' w:bg2='light2' w:t2='dark2'"
             + " w:accent1='accent2' w:accent2='accent2' w:accent3='accent3' w:accent4='accent4' w:accent5='accent5' w:accent6='accent6' w:hyperlink='hyperlink' w:followedHyperlink='followedHyperlink'/></w:settings>";
         input = Package(Paragraph("<w:color w:val='FF0000' w:themeColor='accent1'/>", "Mapped")
@@ -229,6 +229,24 @@ public sealed class DocxThemeTests
         Assert.Equal(expected, document.Paragraphs[0].Runs[0].Formatting.Color);
     }
 
+    [Theory]
+    [InlineData(" FF000", false)]
+    [InlineData("FF000 ", false)]
+    [InlineData(" FF000", true)]
+    [InlineData("FF000 ", true)]
+    public void RunRgbFallbackRequiresSixHexDigits(string value, bool themed)
+    {
+        foreach (string property in new[] { "<w:color w:val='" + value + "'" + (themed ? " w:themeColor='accent1'" : "") + "/>",
+            "<w:shd w:val='clear' w:fill='" + value + "'" + (themed ? " w:themeFill='accent1'" : "") + "/>" })
+        {
+            using var source = new MemoryStream(Package(Paragraph(property)));
+            using var target = new MemoryStream(); target.WriteByte(42); target.Position = 0;
+            Assert.Contains("Docx.Color", Assert.Throws<InvalidDataException>(() => new WordConverter().Convert(source, target,
+                DocumentFormat.Docx, DocumentFormat.Pdf, new ConversionOptions(FidelityMode.BestEffort), TestContext.Current.CancellationToken)).Message, StringComparison.Ordinal);
+            Assert.Equal(new byte[] { 42 }, target.ToArray());
+        }
+    }
+
     [Fact]
     public void HeaderAndFootnoteRunsUseTheDocumentTheme()
     {
@@ -257,11 +275,11 @@ public sealed class DocxThemeTests
         Assert.Contains(result.Diagnostics, d => d.Code == "Docx.ThemeColor" && d.Severity == DiagnosticSeverity.Warning);
         using PdfDocument pdf = PdfDocument.Open(Save(source, DocumentFormat.Pdf)); var page = pdf.GetPage(1);
         Assert.Contains("Cell", page.Text, StringComparison.Ordinal);
-        Assert.Contains(page.Paths, p => p.IsFilled && p.FillColor != null && Math.Abs(p.FillColor.ToRGBValues().r - 122 / 255.0) < 0.01
-            && Math.Abs(p.FillColor.ToRGBValues().g - 163 / 255.0) < 0.01 && Math.Abs(p.FillColor.ToRGBValues().b - 224 / 255.0) < 0.01);
+        Assert.Contains(page.Paths, p => p.IsFilled && p.FillColor != null && Math.Abs(p.FillColor.ToRGBValues().r - 115 / 255.0) < 0.01
+            && Math.Abs(p.FillColor.ToRGBValues().g - 161 / 255.0) < 0.01 && Math.Abs(p.FillColor.ToRGBValues().b - 231 / 255.0) < 0.01);
         using var zip = new ZipArchive(new MemoryStream(Save(source, DocumentFormat.Xps)));
         using Stream file = zip.GetEntry("Documents/1/Pages/1.fpage")!.Open(); XDocument xps = XDocument.Load(file);
-        Assert.Contains(xps.Descendants(), e => (string?)e.Attribute("Fill") == "#FF7AA3E0");
+        Assert.Contains(xps.Descendants(), e => (string?)e.Attribute("Fill") == "#FF73A1E7");
         Assert.Contains(xps.Descendants(), e => (string?)e.Attribute("Stroke") == "#FF2266CC");
         byte[] saved = Save(source, DocumentFormat.Docx); Schema(saved);
     }

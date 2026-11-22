@@ -3,7 +3,30 @@
 The [1.6.2 comparison](fidelity-1.6.2.md) records which documents match the
 independent reference for text, pagination, glyph positions, geometry and raster
 appearance. The [capability matrix](roadmap-138-source-matrix.json) lists the
-feature combinations admitted by the released implementation.
+feature combinations and identifies additions in development source.
+
+## Editable whole-table theme shading
+
+Current development source keeps a clear whole-table fill on its original DOCX
+owner, either the table's direct properties or the defining table style. A
+complete local theme supplies the color. The saved fill keeps its theme token,
+one optional tint or shade and the original RGB, automatic or omitted fallback.
+Direct cell fills keep the same editable metadata on the owning cell.
+After a DOCX save, changing the saved theme changes the inherited fill on reload.
+An explicit child RGB fill masks the parent theme. Public wordnet 1.6.2 saves
+the resolved RGB color for direct table, cell and inherited whole-table fills.
+
+Desktop Word's print-layout page showed no whole-table fill for any of the ten
+direct and inherited controls, including explicit red and blue. The two explicit RGB
+cell controls displayed their authored colors. Managed PDF painted the resolved
+whole-table color in all ten. Strict PDF and XPS export reject both explicit and themed whole-table fills. [Measured color observations](measurements/whole-table-theme-word.json)
+
+For direct cells, Word and managed PDF agreed on the untransformed accent blue
+and the `80` shade and tint. The shared resolver applies tint or shade to HSL
+lightness. The blue tint renders as `89B0EB`. In a separate 96-case Word palette,
+individual channels occasionally differed from the HSL result by one RGB level.
+[Microsoft’s cell-shading implementation notes](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/4f0cccae-70c2-492a-bc94-3ccc39172119). Missing or unsupported theme references use the diagnosed fallback. Existing
+table-style conflicts and theme reconstruction limits still apply.
 
 <a id="unreleased-source-plain-fixed-table-geometry"></a>
 ## 1.6.0 profile: plain fixed-table geometry
@@ -202,8 +225,8 @@ appearance for the documented subset. When the local theme has all 12 supported
 RGB slots and both Latin fonts, a DOCX save reconstructs a bounded theme and retains
 resolved text font/color references and supported settings color mappings. It does
 not copy arbitrary source theme XML or theme relationships. Original effects,
-script fonts and dynamic system colors are not retained; direct cell theme
-references are flattened to their resolved colors. `Docx.ThemeFont`,
+script fonts and dynamic system colors are not retained; public 1.6.2 flattens direct cell theme
+references to resolved colors. Development source preserves qualified clear fills. `Docx.ThemeFont`,
 `Docx.ThemeColor` and `Docx.ThemeData` remain loss diagnostics, so strict mode
 rejects the corresponding loss. Composition and comparison reject incompatible or
 missing document themes rather than silently changing references.
