@@ -42,3 +42,23 @@ python eng/extract-word-control-variants.py --input /path/to/sdtContent.docx \
 ```
 
 The [manifest](manifest.json) records the extracted XML SHA-256 values.
+
+## Six control kinds captured in Word 16.0.20625
+
+On November 22, 2026, an isolated desktop Word instance created rich text,
+plain text, checkbox, dropdown, combo and date controls in a new synthetic
+document. Each was tagged with its kind. The checkbox used ASCII X and a
+hyphen as its selected and cleared symbols. The two lists offered Alpha and
+Beta with values a and b, and selected Beta. The date was February 29, 2024.
+
+`word-20625-six-controls.xml` contains the six actual `w:sdt` subtrees
+extracted from the Word range's Flat OPC XML, each placed in a plain paragraph.
+The test builds an independent minimal package and creates three local,
+named placeholder entries with synthetic prompt text for Word's references.
+It checks each kind, the shared placeholder references, editing, saved XML
+and the static PDF. The unreduced Flat OPC package, including its Office
+glossary extension metadata, still rejects typed loading with
+`Control.Unsupported` at the glossary root. The original package and its
+document properties are excluded from this fixture.
+
+Fixture SHA-256: `d2d15d89a8e83180b704625d183ecf1f8f2cdb1dc25607e699865ba93ad4a453`.

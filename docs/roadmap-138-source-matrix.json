@@ -823,6 +823,7 @@
         { "class": "ContentControlGlossaryFragmentTests", "method": "EmptyGlossaryStyleDefaultsCannotRestyleAnIndependentFragment" },
         { "class": "ContentControlGlossaryFragmentTests", "method": "GlossaryParagraphCannotAcquireAControlOwner" },
         { "class": "ContentControlWordVariantsTests", "method": "EmptyGlossaryKeepsWordResourcesWithoutResolvingUnusedRunDefaults" },
+        { "class": "ContentControlWordVariantsTests", "method": "SixWordGeneratedControlKindsKeepTheirValuesAndNamedPlaceholders" },
         { "class": "ContentControlWordVariantsTests", "method": "EmptyGlossaryStillValidatesUnusedLocalStyleDefinitions" }
       ]
     },
