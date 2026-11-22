@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Xml.Linq;
 using UglyToad.PdfPig;
 using Xunit;
 
@@ -124,6 +125,79 @@ public sealed partial class EditingTemplateTests
         foreach (string text in new[] { "BodyBefore", "CellBefore", "ClauseOne", "ClauseTwo", "NestedValue", "RightCell", "BodyAfter" })
             Assert.Contains(words, w => w.Text == text);
         Assert.True(words.Single(w => w.Text == "RightCell").BoundingBox.Left > words.Single(w => w.Text == "ClauseOne").BoundingBox.Left);
+    }
+
+    private static readonly string[] RangeResultParagraphs = { "Before", "Clause", "Clause", "After" };
+    private const string RangeStart = "<w:bookmarkStart w:id='9' w:name='slot'/>";
+    private const string RangeEnd = "<w:bookmarkEnd w:id='9'/>";
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CellFragmentReplacesWholeParagraphRangeAndKeepsGridAndFieldTarget(bool destinationStyle)
+    {
+        string first = "<w:p>" + RangeStart + "<w:r><w:rPr><w:b/></w:rPr><w:t>First</w:t></w:r></w:p>";
+        string last = "<w:p><w:r><w:t>Last</w:t></w:r>" + RangeEnd + "</w:p>";
+        string left = "<w:tc><w:tcPr><w:tcW w:type='dxa' w:w='4000'/></w:tcPr>" + P("Before") + first + P("") + last + P("After") + "</w:tc>";
+        string host = "<w:tbl><w:tblGrid><w:gridCol w:w='4000'/><w:gridCol w:w='2000'/></w:tblGrid><w:tr>" + left + Cell(P("RightCell")) + "</w:tr></w:tbl>";
+        var target = Load(Docx(host));
+        string anchor = "<w:p><w:bookmarkStart w:id='1' w:name='anchor'/><w:r><w:t>Clause</w:t></w:r><w:bookmarkEnd w:id='1'/></w:p>";
+        WordDocument source = Load(Docx(anchor + "<w:p>" + Field("REF anchor", "stale") + "</w:p>" + Table(Cell(P("Nested")))));
+        byte[] sourceBefore = Save(source);
+        var options = new FragmentInsertionOptions { Fields = FragmentFieldHandling.AcceptCachedResults, Style = destinationStyle ? CompositionStyle.UseDestination : CompositionStyle.KeepSource };
+        DocumentEditResult edit = target.InsertFragmentAtTableCellBookmarkWithOptions("slot", source, options, TestContext.Current.CancellationToken);
+        Assert.Contains(edit.Diagnostics, d => d.Code == "Fragment.CachedFields");
+        Assert.Equal(sourceBefore, Save(source));
+        byte[] result = Save(target); Schema(result);
+        XElement table = Part(result, "word/document.xml").Descendants(W + "tbl").First();
+        Assert.Equal(HostGrid, table.Element(W + "tblGrid")!.Elements().Select(column => (string?)column.Attribute(W + "w")));
+        XElement cell = table.Element(W + "tr")!.Elements(W + "tc").First();
+        Assert.Equal("4000", (string?)cell.Element(W + "tcPr")!.Element(W + "tcW")!.Attribute(W + "w"));
+        Assert.Equal(RangeResultParagraphs, cell.Elements(W + "p").Select(p => p.Value));
+        Assert.Single(cell.Elements(W + "tbl"));
+        string bookmark = (string)Assert.Single(cell.Descendants(W + "bookmarkStart")).Attribute(W + "name")!;
+        XElement field = Assert.Single(cell.Descendants(W + "fldSimple"));
+        Assert.Equal("REF " + bookmark, (string?)field.Attribute(W + "instr"));
+        Assert.Equal(destinationStyle, field.Descendants(W + "b").Any());
+        using PdfDocument pdf = PdfDocument.Open(Save(Load(result), DocumentFormat.Pdf));
+        var words = pdf.GetPage(1).GetWords().ToArray();
+        Assert.Equal(2, words.Count(word => word.Text == "Clause"));
+        Assert.True(words.Single(word => word.Text == "RightCell").BoundingBox.Left > words.First(word => word.Text == "Clause").BoundingBox.Left);
+    }
+
+    [Theory]
+    [InlineData("cross-cell")]
+    [InlineData("partial-first")]
+    [InlineData("partial-last")]
+    [InlineData("field")]
+    [InlineData("table")]
+    [InlineData("bookmark")]
+    [InlineData("body")]
+    public void FragmentRangeCannotCrossOwnersOrDiscardProtectedContent(string scenario)
+    {
+        const string run = "<w:r><w:t>Keep</w:t></w:r>";
+        string first = "<w:p>" + (scenario == "partial-first" ? run : "") + RangeStart + run + "</w:p>";
+        string last = "<w:p>" + run + RangeEnd + (scenario == "partial-last" ? run : "") + "</w:p>";
+        string middle = scenario switch
+        {
+            "field" => "<w:p>" + Field("MERGEFIELD Name", "Cached") + "</w:p>",
+            "table" => Table(Cell(P("Nested"))),
+            "bookmark" => Placeholder("other", 6),
+            _ => P("Middle")
+        };
+        string body = scenario switch
+        {
+            "cross-cell" => "<w:tbl><w:tblGrid><w:gridCol w:w='2000'/><w:gridCol w:w='2000'/></w:tblGrid><w:tr>" + Cell(first) + Cell(last) + "</w:tr></w:tbl>",
+            "body" => first + middle + last,
+            _ => Table(Cell(first + middle + last))
+        };
+        WordDocument target = Load(Docx(body)), source = Load(Docx(P("Replacement")));
+        byte[] targetBefore = Save(target), sourceBefore = Save(source);
+        var error = Assert.Throws<NotSupportedException>(() => scenario == "body"
+            ? target.InsertFragmentAtBookmark("slot", source, TestContext.Current.CancellationToken)
+            : target.InsertFragmentAtTableCellBookmark("slot", source, TestContext.Current.CancellationToken));
+        Assert.StartsWith("Fragment.Placeholder:", error.Message, StringComparison.Ordinal);
+        Assert.Equal(targetBefore, Save(target)); Assert.Equal(sourceBefore, Save(source));
     }
 
     [Fact]

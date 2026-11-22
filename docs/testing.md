@@ -6,6 +6,16 @@ combine Word-derived placeholders with fragment copying and retained or decided
 text revisions with composition. Both the complete source suites and the
 historical release counts below identify which build they exercised.
 
+## Form authoring and cell range tests
+
+The range tests inspect the runs on either side of an authored form field,
+reopen an edited dropdown, and exercise split surrogate pairs and oversized
+endpoints. A composed form checks independent IDs, stale handles and both
+wrapper-removal policies. Cell fragment tests validate the DOCX schema, REF
+target, style, grid and adjacent cell, then inspect text and geometry with
+PdfPig. Cross-cell and partial bookmarks and protected interior content
+must leave both sessions byte-identical.
+
 ## Development content controls
 
 The control tests validate editable DOCX with the Open XML SDK, inspect glossary

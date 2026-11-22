@@ -14,6 +14,13 @@ public sealed partial class WordDocument
     /// <summary>Inserts one typed inline control at a UTF-16 offset in an ordinary unstyled body or simple-cell paragraph and returns a fresh handle.</summary>
     /// <remarks>Offsets must be scalar boundaries. Existing controls, fields, links, bookmarks, objects, lists, nested tables and styled or protected owners are rejected. Bindings resolve only against an existing local XML store.</remarks>
     public DocumentContentControl InsertContentControl(int paragraphIndex, int offset, ContentControlDefinition definition, CancellationToken cancellationToken = default)
+        => ReplaceTextWithContentControl(paragraphIndex, offset, 0, definition, cancellationToken);
+
+    /// <summary>Replaces a UTF-16 text range in an ordinary body or simple-cell paragraph with a new inline control.</summary>
+    /// <remarks>The definition supplies the initial value. Both ends must be Unicode scalar boundaries within the same
+    /// paragraph. A zero length inserts at the offset. Surrounding text keeps its formatting, and protected owners
+    /// reject the entire edit. A local binding must resolve in the document's existing store.</remarks>
+    public DocumentContentControl ReplaceTextWithContentControl(int paragraphIndex, int offset, int length, ContentControlDefinition definition, CancellationToken cancellationToken = default)
     {
         Guard.NotNull(definition, nameof(definition));
         lock (gate)
@@ -37,8 +44,10 @@ public sealed partial class WordDocument
                     throw new NotSupportedException("Control.ProtectedOwner: Creation requires an ordinary unstyled body or simple-cell paragraph without protected content.");
                 string text = paragraph.Text;
                 if (offset < 0 || offset > text.Length) throw new ArgumentOutOfRangeException(nameof(offset));
-                if (offset > 0 && offset < text.Length && char.IsHighSurrogate(text[offset - 1]) && char.IsLowSurrogate(text[offset]))
-                    throw new ArgumentException("Control.Location: The offset cannot split a Unicode scalar.", nameof(offset));
+                if (length < 0 || length > text.Length - offset) throw new ArgumentOutOfRangeException(nameof(length));
+                int end = offset + length;
+                if (SplitsScalar(text, offset)) throw new ArgumentException("Control.Location: The offset cannot split a Unicode scalar.", nameof(offset));
+                if (SplitsScalar(text, end)) throw new ArgumentException("Control.Location: The end of the range cannot split a Unicode scalar.", nameof(length));
                 if (m.Controls.Items.Count == 1024) throw new InvalidDataException("Limit.Controls: At most 1024 typed controls are admitted.");
                 assigned = NewControlId(m, c);
                 ControlData data = CreateControlData(definition, assigned, c);
@@ -49,6 +58,11 @@ public sealed partial class WordDocument
                     data.Properties.Add(binding);
                 }
                 int runIndex = SplitControlInsertionRun(paragraph, offset, c);
+                if (length != 0)
+                {
+                    int endIndex = SplitControlInsertionRun(paragraph, end, c);
+                    paragraph.Runs.RemoveRange(runIndex, endIndex - runIndex);
+                }
                 var run = new TextRun("") { TypedControlId = assigned };
                 paragraph.Runs.Insert(runIndex, run); m.Controls.Items.Add(assigned, data);
                 ControlOwner owner = ControlOwners.Index(m, c)[assigned];
@@ -203,6 +217,9 @@ public sealed partial class WordDocument
         return new XElement(w + "dataBinding", new XAttribute(w + "storeItemID", binding.StoreItemId), new XAttribute(w + "xpath", binding.Path),
             mappings.Length == 0 ? null : new XAttribute(w + "prefixMappings", mappings));
     }
+
+    private static bool SplitsScalar(string text, int offset) => offset > 0 && offset < text.Length
+        && char.IsHighSurrogate(text[offset - 1]) && char.IsLowSurrogate(text[offset]);
 
     private static int SplitControlInsertionRun(ParagraphBlock paragraph, int offset, ConversionContext c)
     {

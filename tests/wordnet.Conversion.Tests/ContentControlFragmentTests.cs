@@ -28,6 +28,35 @@ public sealed class ContentControlFragmentTests
         return Load(WithStore("<w:p>" + bound + "</w:p>" + parent), new ConversionOptions(FidelityMode.Lenient));
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void RangeAuthoredFormComposesIntoCellAndUnwrapsIndependently(bool preserve)
+    {
+        WordDocument source = WordDocument.Create();
+        source.AddParagraph("Name: [name]", cancellationToken: TestContext.Current.CancellationToken);
+        source.ReplaceTextWithContentControl(0, 6, 6,
+            new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Ada", tag: "name"), TestContext.Current.CancellationToken);
+        byte[] sourceBefore = Save(source);
+        string slot = "<w:p><w:bookmarkStart w:id='1' w:name='slot'/>" + Run("Old") + "</w:p><w:p>" + Run("form") + "<w:bookmarkEnd w:id='1'/></w:p>";
+        string body = "<w:p>" + Control(1, "<w:text/>", "Host") + "</w:p><w:tbl><w:tblGrid><w:gridCol w:w='4000'/></w:tblGrid><w:tr><w:tc>" + slot + "</w:tc></w:tr></w:tbl>";
+        WordDocument host = LoadBody(body);
+        host.InsertFragmentAtTableCellBookmark("slot", source, TestContext.Current.CancellationToken);
+        var copied = Assert.Single(host.ContentControls, c => c.Tag == "name");
+        Assert.NotEqual(source.ContentControls[0].Id, copied.Id);
+        host.SetControlText(copied, "Grace", TestContext.Current.CancellationToken);
+        Assert.Throws<ArgumentException>(() => host.RemoveControl(copied, preserve, TestContext.Current.CancellationToken));
+        WordDocument view = host.CreateControlDisplayView(out _, TestContext.Current.CancellationToken);
+        Assert.Contains("Name:Grace", Compact(Pdf(view)), StringComparison.Ordinal);
+        host.RemoveControl(Assert.Single(host.ContentControls, c => c.Tag == "name"), preserve, TestContext.Current.CancellationToken);
+        byte[] saved = Save(host); Validate(saved);
+        XElement cell = Xml(saved, "word/document.xml").Descendants(W + "tc").Single();
+        Assert.Empty(cell.Descendants(W + "sdt"));
+        Assert.Equal(preserve ? "Name: Grace" : "Name: ", string.Concat(cell.Descendants(W + "t").Select(t => t.Value)));
+        Assert.Equal("Host", Assert.Single(Load(saved).ContentControls).DisplayText);
+        Assert.Equal(sourceBefore, Save(source));
+    }
+
     [Fact]
     public void CreatedCellBlocksComposeIntoBodyWithIndependentIdentities()
     {

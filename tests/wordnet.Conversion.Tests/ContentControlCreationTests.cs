@@ -64,6 +64,60 @@ public sealed class ContentControlCreationTests
         byte[] saved = Save(document); Validate(saved); Assert.Equal("A\U0001F600XB", Assert.Single(Load(saved).Paragraphs).Text);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ReplacingARunSpanningRangeKeepsNeighbourFormattingAndEditableControl(bool cell)
+    {
+        const string paragraph = "<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>LeftA</w:t></w:r>"
+            + "<w:r><w:t>\U0001F600</w:t></w:r><w:r><w:rPr><w:i/></w:rPr><w:t>BRight</w:t></w:r></w:p>";
+        string body = cell ? "<w:tbl><w:tblGrid><w:gridCol w:w='4000'/></w:tblGrid><w:tr><w:tc>" + paragraph + "</w:tc></w:tr></w:tbl>" : paragraph;
+        WordDocument document = LoadBody(body);
+        var definition = new ContentControlDefinition(ContentControlKind.DropDownList, items: Choices, selectedValue: "a");
+        DocumentContentControl created = document.ReplaceTextWithContentControl(0, 4, 4, definition, TestContext.Current.CancellationToken);
+        document.SetControlSelection(created, "b", TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        XElement owner = Xml(saved, "word/document.xml").Descendants(W + "sdt").Single().Parent!;
+        XElement[] outside = owner.Elements(W + "r").ToArray();
+        Assert.Collection(outside,
+            left => { Assert.Equal("Left", left.Value); Assert.NotNull(left.Element(W + "rPr")!.Element(W + "b")); },
+            right => { Assert.Equal("Right", right.Value); Assert.NotNull(right.Element(W + "rPr")!.Element(W + "i")); });
+        WordDocument reopened = Load(saved);
+        Assert.Equal("b", Assert.Single(reopened.ContentControls).SelectedValue);
+        Assert.Contains("LeftBetaRight", Compact(Pdf(reopened)), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(2, 1, "offset")]
+    [InlineData(1, 1, "length")]
+    [InlineData(1, -1, "length")]
+    [InlineData(1, int.MaxValue, "length")]
+    [InlineData(int.MaxValue, 0, "offset")]
+    public void InvalidControlRangeReportsItsEndpointAndPreservesTheDocument(int offset, int length, string parameter)
+    {
+        WordDocument document = WordDocument.Create();
+        document.AddParagraph("A\U0001F600B", cancellationToken: TestContext.Current.CancellationToken);
+        byte[] before = Save(document);
+        var definition = new ContentControlDefinition(ContentControlKind.PlainText, initialText: "new");
+        var error = Assert.ThrowsAny<ArgumentException>(() => document.ReplaceTextWithContentControl(0, offset, length, definition, TestContext.Current.CancellationToken));
+        Assert.Equal(parameter, error.ParamName); Assert.Equal(before, Save(document)); Assert.Empty(document.ContentControls);
+    }
+
+    [Fact]
+    public void ReplacingTheWholeParagraphWithAnEmptyControlKeepsAnEditableOwner()
+    {
+        WordDocument document = WordDocument.Create();
+        document.AddParagraph("Slot", cancellationToken: TestContext.Current.CancellationToken);
+        var definition = new ContentControlDefinition(ContentControlKind.PlainText);
+        document.ReplaceTextWithContentControl(0, 0, 4, definition, TestContext.Current.CancellationToken);
+        byte[] saved = Save(document); Validate(saved);
+        WordDocument reopened = Load(saved);
+        DocumentContentControl empty = Assert.Single(reopened.ContentControls);
+        Assert.Equal(ContentControlValueState.Empty, empty.State);
+        reopened.SetControlText(empty, "Done", TestContext.Current.CancellationToken);
+        Assert.Equal("Done", Assert.Single(reopened.Paragraphs).Text);
+    }
+
     [Fact]
     public void IdsAvoidExistingControlsAndHandlesBecomeStaleAfterInsertion()
     {

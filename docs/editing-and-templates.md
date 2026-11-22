@@ -441,6 +441,19 @@ Source note appearance is unchanged. Detached typed-control display and code-sty
 content/placeholders cannot use this restyling policy, and both sessions remain
 unchanged on failure.
 
+### Multi-paragraph cell placeholders
+
+Development source accepts a single bookmark around contiguous whole paragraphs
+in the same unmerged cell of a top-level body table. Start the bookmark before
+the first run and end it after the last run. Empty paragraphs inside the range
+are allowed. The cell API replaces the entire range, preserves the host grid
+and surrounding cell content, and keeps source formatting by default.
+`CompositionStyle.UseDestination` uses the first paragraph's appearance.
+Field-bearing fragments still require explicit cache handling. An intervening
+table, field, control, nested bookmark, partial paragraph or boundary in another
+cell rejects the insertion before either session changes. The body API continues
+to require one whole paragraph.
+
 The 1.6.0 source adds `InsertFragmentAtTableCellBookmark(name, fragment, token)`
 for a dedicated whole-paragraph bookmark inside an unmerged, single-column-span
 cell of a top-level body table. It keeps the host grid, widths and neighboring

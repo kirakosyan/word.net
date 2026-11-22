@@ -65,6 +65,12 @@ not change existing constructor or method signatures; handles retain their
 session/version rules. See the [nested-control profile](content-controls.md#unreleased-source-a-bounded-nested-owner)
 for the ownership and locking limits.
 
+Development source adds `WordDocument.ReplaceTextWithContentControl(int, int, int,
+ContentControlDefinition, CancellationToken)` for bounded UTF-16 ranges on all
+five targets. The existing cell fragment methods also accept a bookmark spanning
+contiguous whole paragraphs in one cell. Public 1.6.2 provides the earlier
+insertion and single-paragraph cell APIs.
+
 `InsertFragmentAtTableCellBookmark`, the distinct fragment-options methods and
 `FragmentInsertionOptions` add bounded opt-in placement and field policies while
 retaining the original fragment signatures. `CreateReviewDisplay` returns a

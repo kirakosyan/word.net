@@ -845,3 +845,8 @@ Typed glossary entries use the local glossary text profile. A run style such as
 `PlaceholderText` without a glossary stylesheet raises `Control.Unsupported`.
 Bookmarks and fields inside a placeholder paragraph raise `Control.ProtectedOwner`.
 Non-whitespace text or CDATA directly inside the glossary root raises `Control.Malformed`.
+
+Range-based control creation reports the offending offset or length for invalid
+UTF-16 endpoints. Cell fragment insertion raises `Fragment.Placeholder` if a
+bookmark covers part of a paragraph, crosses cells or encloses another protected
+owner. The source and destination remain usable after either failure.

@@ -31,6 +31,23 @@ this profile. [Fixture provenance and Word observations](../tests/wordnet.Conver
 | Admitted row or cell wrapper | Structural wrapper | Rejected |
 | Scalar parent, repeated report row, note, comment or text box | Rejected | Rejected |
 
+## Replace a text range with a control
+
+Development source adds `ReplaceTextWithContentControl` on all five targets.
+Select a range in one ordinary body or simple-cell paragraph. Both endpoints
+count UTF-16 code units and must fall on Unicode scalar boundaries. For example,
+a paragraph containing `Name: [name]` can become an editable form field.
+
+```csharp
+var field = form.ReplaceTextWithContentControl(0, 6, 6,
+    new ContentControlDefinition(ContentControlKind.PlainText, initialText: "Ada"));
+```
+
+The selected text and its formatting are replaced by the definition's value.
+Surrounding runs keep their formatting. A length of zero inserts at the offset.
+All six kinds use the existing lock, local binding and removal policies.
+A paragraph containing protected content rejects the edit atomically.
+
 ## 1.5.0 roadmap #102 delivery
 
 The [release notes](releases/1.5.0.md), [capability matrix](roadmap-102-capability-matrix.json)
